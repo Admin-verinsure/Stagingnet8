@@ -2,161 +2,223 @@
 
 
 <div class="container-fluid">
-    @Html.HiddenFor(m => m.AnswerSheetId)
-    @Html.HiddenFor(m => m.ClientInformationSheet.Status)
-    @Html.HiddenFor(m => m.ClientAgreement)
-    @Html.HiddenFor(m => m.ClientProgramme.Id)
-    <div id="accordion">
-        @if (Model.Sections != null)
-        {
-            var count = 0;
+    <div class="accordion" id="accordionExample">
+        @Html.HiddenFor(m => m.AnswerSheetId)
+        @Html.HiddenFor(m => m.ClientInformationSheet.Status)
+        @Html.HiddenFor(m => m.ClientAgreement)
+        @Html.HiddenFor(m => m.ClientProgramme.Id)
 
-            foreach (var informationSection in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position <= 5))
+
+
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Accordion Item #1
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        Accordion Item #2
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        Accordion Item #3
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="accordion-item">
+            @if (Model.Sections != null)
             {
-                <h4 style="background-color:#00A8C8; color:white" id="@informationSection.Name">@informationSection.Name</h4>
-                @if (!string.IsNullOrWhiteSpace(informationSection.CustomView))
+                var count = 0;
+
+                foreach (var informationSection in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position <= 5))
                 {
 
-                    @await Html.PartialAsync("PrefabSections/" + informationSection.CustomView, Model)
-                    count++;
 
-                    if (count == 5)
-                    {
-                        <div id="later" class="hidden">
-                            @foreach (var Section in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position > 5))
+                    <h4 style="background-color:#00A8C8; color:white" id="@informationSection.Name+1" class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@informationSection.Name" aria-expanded="false" aria-controls="@informationSection.Name">
+
+                            @informationSection.Name
+
+                        </button>
+                    </h4>
+
+                    <div id="@informationSection.Name" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+
+                            @if (!string.IsNullOrWhiteSpace(informationSection.CustomView))
                             {
-                                <h4 style="background-color:#00A8C8; color:white" id="@Section.Name">@Section.Name</h4>
-                                if (!string.IsNullOrWhiteSpace(Section.CustomView))
+
+                                @await Html.PartialAsync("PrefabSections/" + informationSection.CustomView, Model)
+                                count++;
+
+                                if (count == 5)
                                 {
-                                    @await Html.PartialAsync("PrefabSections/" + Section.CustomView, Model)
-
-                                }
-                            }
-                        </div>
-                    }
-
-                }
-
-                else
-                {
-                    <div class="padding-10">
-                        <div id="proposalcreate-form" class="smart-form" novalidate="novalidate">
-                            <fieldset id="@informationSection.Id">
-                                <div class="row">
-                                    @if (informationSection.Items != null)
-                                    {
-                                        var items = informationSection.Items;
-                                        for (int i = 0; i < items.Count(); i++)
+                                    <div id="later" class="hidden">
+                                        @foreach (var Section in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position > 5))
                                         {
-                                            var item = items.ElementAtOrDefault(i);
-                                            if (item.Type != ItemType.SECTIONBREAK)
+                                            <h4 style="background-color:#00A8C8; color:white" id="@Section.Name">@Section.Name</h4>
+                                            if (!string.IsNullOrWhiteSpace(Section.CustomView))
                                             {
-                                                <section class="col col-@item.Width">
+                                                @await Html.PartialAsync("PrefabSections/" + Section.CustomView, Model)
 
-                                                    @switch (item.Type)
-                                                    {
-                                                        case ItemType.TEXTBOX:
-                                                            <label class="label">@item.Label</label>
-                                                            <label class="input">
-                                                                <i class="@item.Icon"></i>
-                                                                <input data-id="@item.Id" data-type="@item.Type" data-name="@item.Name"
-                                                                       id="@item.Name" type="@item.ControlType" name="@item.Name" placeholder="@item.Label" value="@item.Value" data-rule="@item.Rule" />
-                                                            </label>
-                                                            break;
-
-                                                        case ItemType.TEXTAREA:
-                                                            <label class="label">@item.Label</label>
-                                                            <label class="textarea">
-                                                                <textarea data-id="@item.Id" data-type="@item.Type" data-name="@item.Name"
-                                                                          id="@item.Name" type="@item.ControlType" name="@item.Name" placeholder="@item.Label" value="@item.Value"></textarea>
-                                                            </label>
-                                                            break;
-
-                                                        case ItemType.LABEL:
-                                                            <article class="col col-@item.Width col-xs-12">
-                                                                @Html.Raw(@item.Label)
-                                                            </article>
-                                                            break;
-
-                                                        case ItemType.DROPDOWNLIST:
-                                                            <label class="label">@item.Label</label>
-                                                            <label class="input">
-                                                                @*@Html.DropDownListFor(item => item.Student.StudentId, new SelectList(Model.StudentList, "StudentId", "FirstName"), "--Select--", new { @id = "myid", @class = "myclass" })*@
-
-                                                                @Html.DropDownList(@item.Name, @item.Options, @item.Value, new { @id = @item.Name }).
-
-
-                                                                @*@Html.DropDownList(@item.Name, @item.Options,@item.Value, new { @id = @item.Name }).SelectedValue(@item.Value).OptionLabel(@item.DefaultText).Id(@item.Name)*@
-                                                            </label>
-                                                            break;
-
-                                                        case ItemType.PERCENTAGEBREAKDOWN:
-                                                            <div class="row">
-                                                                <div class="col col-12 col-xs-12"><label class="label">@item.Label</label></div>
-                                                                <div class="col col-10 col-xs-12">
-                                                                    @Html.DropDownList(@item.Name, @item.Options, @item.DefaultText, new { @Class = "form-control" }).
-
-                                                                    @*@Html.Bootstrap().DropDownList(@item.Name, @item.Options).OptionLabel(@item.DefaultText).Class("form-control")*@
-                                                                </div>
-                                                                <div class="col col-2 col-xs-12">
-                                                                    <button id="clickMe" onclick="AddBusinessActivity(this, '#@item.Name', '#tableResult');" class="btn btn-sm btn-success" style="width:100px">
-                                                                        Add
-                                                                    </button>
-                                                                </div>
-                                                                <div class="col col-12">
-                                                                    <table id="tableResult" cellpadding="4" cellspacing="0">
-                                                                        <tbody></tbody>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                            break;
-
-                                                        case ItemType.MULTISELECT:
-                                                            <label class="label">@item.Label</label>
-                                                            <label class="input">
-                                                                @*@Html.ListBox(@item.Name, @item.Options).Class("cselect").Data(new { placeholder = @item.Label })*@
-                                                            </label>
-                                                            break;
-
-                                                        case ItemType.JSBUTTON:
-                                                            @*@Html.Bootstrap().Button().Text(@item.Label).HtmlAttributes(new { onclick = @item.Value }).Class("btn-sm")*@
-                                                            break;
-
-                                                        case ItemType.SUBMITBUTTON:
-                                                            @*@Html.Bootstrap().SubmitButton().Text(@item.Label).Class("btn-sm")*@
-                                                            break;
-
-                                                    }
-                                                    @if (item.ConditionalList.Count != 0)
-                                                    {
-                                                        <label class="label">@item.ConditionalList.FirstOrDefault().Label</label>
-                                                        <label class="input">
-                                                            <i class="@item.Icon"></i>
-                                                            <input data-id="@item.ConditionalList.FirstOrDefault().Id" data-type="@item.ConditionalList.FirstOrDefault().Type" data-name="@item.ConditionalList.FirstOrDefault().Name"
-                                                                   id="@item.ConditionalList.FirstOrDefault().Name" type="@item.ConditionalList.FirstOrDefault().ControlType" name="@item.ConditionalList.FirstOrDefault().Name" placeholder="@item.ConditionalList.FirstOrDefault().Label" value="@item.Value" />
-                                                        </label>
-                                                    }
-                                                </section>
-                                            }
-                                            else
-                                            {
-                                                @Html.Raw("</div><div class=\"row\">")
                                             }
                                         }
+                                    </div>
+                                }
 
-                                        @*<button onclick="AddSection(informationSection.Id)" class="btn-sm AddupdateBoat" id="updateBoat">Add</button>*@
-                                        @*<button onclick="ClearBoats(event,'#boatTabs3','boatTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Clear and Cancel</button>*@
-                                    }
+                            }
+
+                            else
+                            {
+                                <div class="padding-10">
+                                    <div id="proposalcreate-form" class="smart-form" novalidate="novalidate">
+                                        <fieldset id="@informationSection.Id">
+                                            <div class="row">
+                                                @if (informationSection.Items != null)
+                                                {
+                                                    var items = informationSection.Items;
+                                                    for (int i = 0; i < items.Count(); i++)
+                                                    {
+                                                        var item = items.ElementAtOrDefault(i);
+                                                        if (item.Type != ItemType.SECTIONBREAK)
+                                                        {
+                                                            <section class="col col-@item.Width">
+
+                                                                @switch (item.Type)
+                                                                {
+                                                                    case ItemType.TEXTBOX:
+                                                                        <label class="label">@item.Label</label>
+                                                                        <label class="input">
+                                                                            <i class="@item.Icon"></i>
+                                                                            <input data-id="@item.Id" data-type="@item.Type" data-name="@item.Name"
+                                                                                   id="@item.Name" type="@item.ControlType" name="@item.Name" placeholder="@item.Label" value="@item.Value" data-rule="@item.Rule" />
+                                                                        </label>
+                                                                        break;
+
+                                                                    case ItemType.TEXTAREA:
+                                                                        <label class="label">@item.Label</label>
+                                                                        <label class="textarea">
+                                                                            <textarea data-id="@item.Id" data-type="@item.Type" data-name="@item.Name"
+                                                                                      id="@item.Name" type="@item.ControlType" name="@item.Name" placeholder="@item.Label" value="@item.Value"></textarea>
+                                                                        </label>
+                                                                        break;
+
+                                                                    case ItemType.LABEL:
+                                                                        <article class="col col-@item.Width col-xs-12">
+                                                                            @Html.Raw(@item.Label)
+                                                                        </article>
+                                                                        break;
+
+                                                                    case ItemType.DROPDOWNLIST:
+                                                                        <label class="label">@item.Label</label>
+                                                                        <label class="input">
+                                                                            @*@Html.DropDownListFor(item => item.Student.StudentId, new SelectList(Model.StudentList, "StudentId", "FirstName"), "--Select--", new { @id = "myid", @class = "myclass" })*@
+
+                                                                            @Html.DropDownList(@item.Name, @item.Options, @item.Value, new { @id = @item.Name }).
+
+
+                                                                            @*@Html.DropDownList(@item.Name, @item.Options,@item.Value, new { @id = @item.Name }).SelectedValue(@item.Value).OptionLabel(@item.DefaultText).Id(@item.Name)*@
+                                                                        </label>
+                                                                        break;
+
+                                                                    case ItemType.PERCENTAGEBREAKDOWN:
+                                                                        <div class="row">
+                                                                            <div class="col col-12 col-xs-12"><label class="label">@item.Label</label></div>
+                                                                            <div class="col col-10 col-xs-12">
+                                                                                @Html.DropDownList(@item.Name, @item.Options, @item.DefaultText, new { @Class = "form-control" }).
+
+                                                                                @*@Html.Bootstrap().DropDownList(@item.Name, @item.Options).OptionLabel(@item.DefaultText).Class("form-control")*@
+                                                                            </div>
+                                                                            <div class="col col-2 col-xs-12">
+                                                                                <button id="clickMe" onclick="AddBusinessActivity(this, '#@item.Name', '#tableResult');" class="btn btn-sm btn-success" style="width:100px">
+                                                                                    Add
+                                                                                </button>
+                                                                            </div>
+                                                                            <div class="col col-12">
+                                                                                <table id="tableResult" cellpadding="4" cellspacing="0">
+                                                                                    <tbody></tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                        break;
+
+                                                                    case ItemType.MULTISELECT:
+                                                                        <label class="label">@item.Label</label>
+                                                                        <label class="input">
+                                                                            @*@Html.ListBox(@item.Name, @item.Options).Class("cselect").Data(new { placeholder = @item.Label })*@
+                                                                        </label>
+                                                                        break;
+
+                                                                    case ItemType.JSBUTTON:
+                                                                        @*@Html.Bootstrap().Button().Text(@item.Label).HtmlAttributes(new { onclick = @item.Value }).Class("btn-sm")*@
+                                                                        break;
+
+                                                                    case ItemType.SUBMITBUTTON:
+                                                                        @*@Html.Bootstrap().SubmitButton().Text(@item.Label).Class("btn-sm")*@
+                                                                        break;
+
+                                                                }
+                                                                @if (item.ConditionalList.Count != 0)
+                                                                {
+                                                                    <label class="label">@item.ConditionalList.FirstOrDefault().Label</label>
+                                                                    <label class="input">
+                                                                        <i class="@item.Icon"></i>
+                                                                        <input data-id="@item.ConditionalList.FirstOrDefault().Id" data-type="@item.ConditionalList.FirstOrDefault().Type" data-name="@item.ConditionalList.FirstOrDefault().Name"
+                                                                               id="@item.ConditionalList.FirstOrDefault().Name" type="@item.ConditionalList.FirstOrDefault().ControlType" name="@item.ConditionalList.FirstOrDefault().Name" placeholder="@item.ConditionalList.FirstOrDefault().Label" value="@item.Value" />
+                                                                    </label>
+                                                                }
+                                                            </section>
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.Raw("</div><div class=\"row\">")
+                                                        }
+                                                    }
+
+                                                    @*<button onclick="AddSection(informationSection.Id)" class="btn-sm AddupdateBoat" id="updateBoat">Add</button>*@
+                                                    @*<button onclick="ClearBoats(event,'#boatTabs3','boatTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Clear and Cancel</button>*@
+                                                }
+                                            </div>
+                                        </fieldset>
+                                    </div>
                                 </div>
-                            </fieldset>
+                            }
                         </div>
                     </div>
                 }
             }
-        }
 
-        <a onclick=" $('#later').removeClass('hidden');$('#less').removeClass('hidden'); $('#more').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken" id="more">More </a>
-        <a onclick=" $('#later').addClass('hidden'); $('#more').removeClass('hidden');$('#less').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken hidden" id="less">Less </a>
+            <a onclick=" $('#later').removeClass('hidden');$('#less').removeClass('hidden'); $('#more').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken" id="more">More </a>
+            <a onclick=" $('#later').addClass('hidden'); $('#more').removeClass('hidden');$('#less').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken hidden" id="less">Less </a>
+
+        </div>
 
     </div>
 </div>
