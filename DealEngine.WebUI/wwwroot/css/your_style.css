@@ -356,3 +356,19 @@ input::-webkit-inner-spin-button {
     text-align: center;
     padding-top: 35px !important;
 }
+
+
+
+
+
+/*=====bootstrap====*/
+
+/*for bootstrap accordion icons*/
+.accordion-button::after {
+    background-image: url(../jqueryui/images/accordion.svg) !important;
+    
+}
+
+.accordion-button:not(.collapsed)::after {
+    background-image: url(../jqueryui/images/accordionactive.svg) !important;
+}

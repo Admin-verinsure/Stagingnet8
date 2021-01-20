@@ -326,6 +326,6 @@
 /// <reference path="plugin/x-editable/x-editable.min.js" />
 /// <reference path="smart-chat-ui/smart.chat.manager.min.js" />
 /// <reference path="smart-chat-ui/smart.chat.ui.min.js" />
-/// /*<reference path="smartwidgets/jarvis.widget.min.js" />*/
+/// //<reference path="smartwidgets/jarvis.widget.min.js" />
 /// <reference path="speech/voicecommand.min.js" />
 /// <reference path="TwitterBootstrapMvcJs.js" />
