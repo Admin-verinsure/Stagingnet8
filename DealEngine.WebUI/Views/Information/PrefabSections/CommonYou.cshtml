@@ -1,36 +1,42 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
-<form>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-2">
-                <label class="label">First Name </label>
-            </div>
-            <div class="col-3">
-                <input id="sharedFirstName" class="form-control" name="UserDetails.FirstName" placeholder="First Name (Read-Only)" value="@Model.User.FirstName">
-            </div>
-            <div class="col-2">
-                <label class="label">Last Name </label>
-            </div>
-            <div class="col-3">
-                <input id="sharedLastName" class="form-control" name="UserDetails.LastName" placeholder="Last Name (Read-Only)" value="@Model.User.LastName">
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="row">
-            <div class="col-2">
-                <label class="label">E-mail </label>
-            </div>
-            <div class="col-3">
-                <input id="sharedEmail" class="form-control" name="UserDetails.Email" placeholder="E-mail (Read-Only)" value="@Model.User.Email">
-            </div>
-            <div class="col-2">
-                <label class="label">Phone </label>
-            </div>
-            <div class="col-3">
-                <input id="sharedPhone" class="form-control" name="UserDetails.Phone" placeholder="Phone (Read-Only)" value="@Model.User.Phone">
-            </div>
-        </div>
-    </div>
-</form>
+
+
+    @*<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+        <div class="accordion-body">*@
+            <form>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label class="label">First Name </label>
+                        </div>
+                        <div class="col-3">
+                            <input id="sharedFirstName" class="form-control" name="UserDetails.FirstName" placeholder="First Name (Read-Only)" value="@Model.User.FirstName">
+                        </div>
+                        <div class="col-2">
+                            <label class="label">Last Name </label>
+                        </div>
+                        <div class="col-3">
+                            <input id="sharedLastName" class="form-control" name="UserDetails.LastName" placeholder="Last Name (Read-Only)" value="@Model.User.LastName">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label class="label">E-mail </label>
+                        </div>
+                        <div class="col-3">
+                            <input id="sharedEmail" class="form-control" name="UserDetails.Email" placeholder="E-mail (Read-Only)" value="@Model.User.Email">
+                        </div>
+                        <div class="col-2">
+                            <label class="label">Phone </label>
+                        </div>
+                        <div class="col-3">
+                            <input id="sharedPhone" class="form-control" name="UserDetails.Phone" placeholder="Phone (Read-Only)" value="@Model.User.Phone">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        @*</div>
+    </div>*@
