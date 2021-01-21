@@ -134,9 +134,9 @@
                                                                                     <select onchange="ModalMarinaLocSelected()" class="form-control b" id="WaterLocationMarinaLocationModal" name="WaterLocationMarinaLocation" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         @*@foreach (var bwloc in Model.MarinaLocations)
-                                                                                        {
-                                                                                            <option value="@bwloc.ID">@string.Join(", ", bwloc.Organisation.Name)</option>
-                                                                                        }*@
+                                                                                            {
+                                                                                                <option value="@bwloc.ID">@string.Join(", ", bwloc.Organisation.Name)</option>
+                                                                                            }*@
                                                                                         <option value="add">Add Marina Location</option>
                                                                                     </select>
                                                                                 </label>
@@ -207,12 +207,12 @@
                                                                                 <label class="label cgmodalLabel required">Location</label>
                                                                                 <label class="input w100">
                                                                                     <select onchange="addNewLoc()" class="form-control b" id="BuildingLocationModal" name="BuildingLocation" required>
-                                                                                            <option selected="selected" value="">-- Select --</option>
-                                                                                            @foreach (var wloc in Model.LocationViewModel.Locations)
-                                                                                            {
-                                                                                                <option value="@wloc.Id">@string.Join(", ", wloc.Street, wloc.Suburb, wloc.City)</option>
-                                                                                            }
-                                                                                            <option value="add">Add Location</option>
+                                                                                        <option selected="selected" value="">-- Select --</option>
+                                                                                        @foreach (var wloc in Model.LocationViewModel.Locations)
+                                                                                        {
+                                                                                            <option value="@wloc.Id">@string.Join(", ", wloc.Street, wloc.Suburb, wloc.City)</option>
+                                                                                        }
+                                                                                        <option value="add">Add Location</option>
                                                                                     </select>
                                                                                 </label>
                                                                             </section>
@@ -286,7 +286,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Interested Party</label>
                                                                                 <label class="input cgmodalInput" style="padding:10px 25px 0px 25px" id="IPList">
-                                                                                    <label class="radio-inline" style="width:25%;" id="Financial"><input onclick="InterestedPartyUpdated()" type="radio" name="InsuranceAttribute" value="Financial">    Financial</label>                                                                                    
+                                                                                    <label class="radio-inline" style="width:25%;" id="Financial"><input onclick="InterestedPartyUpdated()" type="radio" name="InsuranceAttribute" value="Financial">    Financial</label>
                                                                                     <label class="radio-inline " style="width:22%;" id="CoOwner"><input onclick="InterestedPartyUpdated()" type="radio" name="InsuranceAttribute" value="CoOwner">    Co Owner</label>
                                                                                 </label>
                                                                             </section>
@@ -338,73 +338,73 @@
                                                                             </div>
                                                                         </div>
                                                                         @*<div id="PrivateSection" class="hidden">
-                                                                            <div class="row">
-                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                                                    <label class="label " style="padding-top:5px;padding-bottom:15px;color:lightskyblue !important;font-size:115% !important;">Private Interested Party</label>
-                                                                                </section>
-                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12"></section>
-                                                                                <hr id="boutUseCategoryHairline" style="display:none;" />
-                                                                                <div id="AdminUser">
-                                                                                    <div class="row">
-                                                                                        <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                                                            <label class="label cgmodalLabel">Who will Administer this Interested Party Details?</label>
-                                                                                            <label class="input cgmodalInput" style="padding:10px 25px 0px 25px">
-                                                                                                <label class="radio-inline" style="width:28%;"><input onclick="AdminUpdated()" type="radio" name="IsAdmin" value="Yes">Me</label>
-                                                                                                <label class="radio-inline" style="width:28%;"><input onclick="AdminUpdated()" type="radio" name="IsAdmin" value="No">SomeoneElse</label>
-                                                                                            </label>
-                                                                                        </section>
-                                                                                    </div>
-                                                                                    <div id="AdminSection" class="hidden">
+                                                                                <div class="row">
+                                                                                    <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                                                        <label class="label " style="padding-top:5px;padding-bottom:15px;color:lightskyblue !important;font-size:115% !important;">Private Interested Party</label>
+                                                                                    </section>
+                                                                                    <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12"></section>
+                                                                                    <hr id="boutUseCategoryHairline" style="display:none;" />
+                                                                                    <div id="AdminUser">
                                                                                         <div class="row">
                                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                                                                <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                                                                                    <label>Email</label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9" style="margin-top:5px;">
-                                                                                                    <label class="input">
-                                                                                                        <input data-type="TEXTBOX" data-name="Email" id="Email" name="Email" placeholder="Admin User Email">
-                                                                                                    </label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-12 col-sm-3 col-md-3 col-lg-3" style="margin-top:25px;" id="UserSearchSec">
-                                                                                                    <button onclick="GetUser('#Email')" class="btn-sm w100">Search</button>
-                                                                                                </section>
-                                                                                            </section>
-                                                                                            <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" style="margin-top:5px;" id="firstnameSec">
-                                                                                                <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                                                                                    <label>FirstName</label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
-                                                                                                    <label class="input">
-                                                                                                        <input data-type="TEXTBOX" data-name="FirstName" id="FirstName" name="FirstName" placeholder="Admin User FirstName">
-                                                                                                    </label>
-                                                                                                </section>
-                                                                                            </section>
-                                                                                            <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" id="LastnameSec">
-                                                                                                <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                                                                                    <label>LastName</label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
-                                                                                                    <label class="input">
-                                                                                                        <input data-type="TEXTBOX" data-name="LastName" id="LastName" name="LastName" placeholder="Admin User LastName">
-                                                                                                    </label>
-                                                                                                </section>
-                                                                                            </section>
-                                                                                            <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" id="PhoneSec">
-                                                                                                <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                                                                                    <label>Phone</label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
-                                                                                                    <label class="input">
-                                                                                                        <input data-type="TEXTBOX" data-name="Phone" id="Phone" name="Phone" placeholder="Admin User Phone">
-                                                                                                    </label>
-                                                                                                </section>
+                                                                                                <label class="label cgmodalLabel">Who will Administer this Interested Party Details?</label>
+                                                                                                <label class="input cgmodalInput" style="padding:10px 25px 0px 25px">
+                                                                                                    <label class="radio-inline" style="width:28%;"><input onclick="AdminUpdated()" type="radio" name="IsAdmin" value="Yes">Me</label>
+                                                                                                    <label class="radio-inline" style="width:28%;"><input onclick="AdminUpdated()" type="radio" name="IsAdmin" value="No">SomeoneElse</label>
+                                                                                                </label>
                                                                                             </section>
                                                                                         </div>
+                                                                                        <div id="AdminSection" class="hidden">
+                                                                                            <div class="row">
+                                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                                                                    <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                                                                                        <label>Email</label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9" style="margin-top:5px;">
+                                                                                                        <label class="input">
+                                                                                                            <input data-type="TEXTBOX" data-name="Email" id="Email" name="Email" placeholder="Admin User Email">
+                                                                                                        </label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-12 col-sm-3 col-md-3 col-lg-3" style="margin-top:25px;" id="UserSearchSec">
+                                                                                                        <button onclick="GetUser('#Email')" class="btn-sm w100">Search</button>
+                                                                                                    </section>
+                                                                                                </section>
+                                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" style="margin-top:5px;" id="firstnameSec">
+                                                                                                    <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                                                                                        <label>FirstName</label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                                                                                                        <label class="input">
+                                                                                                            <input data-type="TEXTBOX" data-name="FirstName" id="FirstName" name="FirstName" placeholder="Admin User FirstName">
+                                                                                                        </label>
+                                                                                                    </section>
+                                                                                                </section>
+                                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" id="LastnameSec">
+                                                                                                    <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                                                                                        <label>LastName</label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                                                                                                        <label class="input">
+                                                                                                            <input data-type="TEXTBOX" data-name="LastName" id="LastName" name="LastName" placeholder="Admin User LastName">
+                                                                                                        </label>
+                                                                                                    </section>
+                                                                                                </section>
+                                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" id="PhoneSec">
+                                                                                                    <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                                                                                        <label>Phone</label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                                                                                                        <label class="input">
+                                                                                                            <input data-type="TEXTBOX" data-name="Phone" id="Phone" name="Phone" placeholder="Admin User Phone">
+                                                                                                        </label>
+                                                                                                    </section>
+                                                                                                </section>
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
+                                                                                    <hr />
                                                                                 </div>
-                                                                                <hr />
-                                                                            </div>
-                                                                        </div>*@
+                                                                            </div>*@
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <section class="col col-xs-12">
@@ -660,7 +660,7 @@
                                                                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden ">
                                                                             <input class="form-control b " type="text" data-type="TEXTBOX" id="vehicledestTable" name="destTable" value="" required>
                                                                         </section>
-                                                                        
+
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label class="label cgmodalLabel required" for="CeaseDate">Cease Date</label>
                                                                             <label class="input cgmodalInput">
@@ -668,7 +668,7 @@
                                                                                 <input name="BoatEffectiveDate" placeholder="Cease Date" class="form-control b" id="RemoveVehicleCeaseEffectiveDate" type="text">
                                                                             </label>
                                                                             <p class="validationContainer" id="validateVehicleCeasedate"></p>
-                                                                        </section>                                                                        
+                                                                        </section>
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label for="CeaseReason" class="label cgmodalLabel required" style="color:black; font-size:100%;">Cease Reason</label>
                                                                             <label class="input cgmodalInput">
@@ -680,7 +680,7 @@
                                                                                     <option value="4">Transfered</option>
                                                                                     <option value="9">Other</option>
                                                                                 </select>
-                                                                            </label>                                                                            
+                                                                            </label>
                                                                             <p class="validationContainer" id="validateVehicleDescription"></p>
                                                                         </section>
                                                                     </div>
@@ -712,7 +712,7 @@
                                                                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden">
                                                                             <input class="form-control b " type="text" data-type="TEXTBOX" id="destTable" name="destTable" value="" required>
                                                                         </section>
-                                                                        
+
                                                                         <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6" style="">
                                                                             <label class="label cgmodalLabel required" for="CeaseDate">Cease Date</label>
                                                                             <label class="input cgmodalInput">
@@ -720,7 +720,7 @@
                                                                                 <input name="BoatEffectiveDate" placeholder="Cease Date" class="form-control b" id="RemoveCeaseEffectiveDate" type="text">
                                                                             </label>
                                                                             <p class="validationContainer" id="validateBoatCeasedate"></p>
-                                                                        </section>                                                                      
+                                                                        </section>
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label for="CeaseReason" class="label cgmodalLabel required" style="color:black; font-size:100%;">Cease Reason</label>
                                                                             <label class="input cgmodalInput">
@@ -1000,12 +1000,18 @@
     </section>
 </div>
 
+
+
+@*<script src="~/jquery/jquery-3.5.1.slim.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>*@
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
 @section pagespecific {
     @*<link rel="stylesheet" href="~/css/smartadmin-production.min.css">*@
 
     @await Html.PartialAsync("_InformationWizardScripts")
     @await Html.PartialAsync("_DataTableScripts")
-<script>
+    <script>
         $(document).ready(function () {
             var accordianPanel = sessionStorage.getItem("accordianTrigger");
             if (accordianPanel != null) {
@@ -1056,7 +1062,7 @@
                 $('#advisoryModal').modal('hide');
             }
         }
-</script>
+    </script>
 
 }
 
