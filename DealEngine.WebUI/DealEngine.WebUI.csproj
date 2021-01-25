@@ -46,6 +46,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_grid.scss" Link="_grid.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\_grid.scss" Link="_grid.scss" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="bundleconfig.json" />
   </ItemGroup>
 

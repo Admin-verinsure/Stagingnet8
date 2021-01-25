@@ -372,3 +372,14 @@ input::-webkit-inner-spin-button {
 .accordion-button:not(.collapsed)::after {
     background-image: url(../jqueryui/images/accordionactive.svg) !important;
 }
+
+/*for row max width*/
+.row > * {
+    max-width: 1320px !important;
+}
+
+/*for smart wizard*/
+.smartwizard {
+    background: #fff;
+}
+
