@@ -381,14 +381,37 @@ input::-webkit-inner-spin-button {
 
 /*=====bootstrap====*/
 
-
-h3 {
+.navbar {
+    padding: .5rem 1rem;
+}
+.btn-info {
+    color: #fff !important;
+    background-color: #17a2b8 !important;
+    border-color: #17a2b8 !important;
+}
+    h3 {
     display: block;
     font-size: 19px !important;
     font-weight: 400 !important;
-    margin: 20px 0;
+    margin: 20px 0 !important;
     line-height: normal !important;
     font-family: "Open Sans", Arial, Helvetica, Sans-Serif;
+}
+
+#header {
+    display: block;
+    height: 49px;
+    margin: 0;
+    padding: 0 13px 0 0;
+    background-color: #f3f3f3;
+    background-image: -moz-linear-gradient(top, #f3f3f3, #e2e2e2);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f3f3f3), to(#e2e2e2));
+    background-image: -webkit-linear-gradient(top, #f3f3f3, #e2e2e2);
+    background-image: -o-linear-gradient(top, #f3f3f3, #e2e2e2);
+    background-image: linear-gradient(to bottom, #f3f3f3, #e2e2e2);
+    background-repeat: repeat-x;
+    position: relative;
+    z-index: 905;
 }
 
 /*for bootstrap accordion */
