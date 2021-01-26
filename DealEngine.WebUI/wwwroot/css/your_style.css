@@ -142,7 +142,25 @@ body.smart-style-3, .smart-style-3 body {
 }
 
 .jarviswidget > div {
-  background: #F5FFFA !important;
+    background-color: #fff !important;
+    /*background: #F5FFFA !important;*/
+    /*float: left;*/
+    width: 100%;
+    position: relative;
+    font-size: 13px;
+    -moz-border-radius: 0;
+    -khtml-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    margin: 0;
+    border-width: 1px 1px 2px;
+    border-style: solid;
+    border-top: none;
+    border-right-color: #CCC !important;
+    border-bottom-color: #CCC !important;
+    border-left-color: #CCC !important;
+    padding: 13px 13px 0;
+    overflow: visible;
 }
 
 .page-footer {
@@ -363,23 +381,63 @@ input::-webkit-inner-spin-button {
 
 /*=====bootstrap====*/
 
-/*for bootstrap accordion icons*/
-.accordion-button::after {
-    background-image: url(../jqueryui/images/accordion.svg) !important;
-    
+
+h3 {
+    display: block;
+    font-size: 19px !important;
+    font-weight: 400 !important;
+    margin: 20px 0;
+    line-height: normal !important;
+    font-family: "Open Sans", Arial, Helvetica, Sans-Serif;
 }
 
-.accordion-button:not(.collapsed)::after {
+/*for bootstrap accordion */
+.accordion-button::after {
+    display:none;
+}
+.accordion-button::before {
+    margin-right: 10px;
+    background-image: url(../jqueryui/images/accordion.svg) !important;
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    /*margin-left: auto;*/
+    content: "";
+     background-repeat: no-repeat;
+    background-size: 1rem;
+    transition: transform .2s ease-in-out;
+}
+
+.accordion-button:not(.collapsed)::before {
     background-image: url(../jqueryui/images/accordionactive.svg) !important;
 }
-
+    .accordion-button:not(.collapsed)::after
+    {
+        display:none;
+    }
+    .accordion-button {
+        font-size: 15px !important;
+        padding: 10px 15px 10px 10px !important;
+        background-color: #00A8C8 !important;
+        color: white !important;
+        /*flex-direction: row-reverse;*/
+    }
 /*for row max width*/
 .row > * {
     max-width: 1320px !important;
 }
 
 /*for smart wizard*/
-.smartwizard {
-    background: #fff;
+#smartwizard {
+   /* background: #fff;*/
 }
 
+/*jarviswidget > header css*/
+.jarviswidget > header {
+    color: #333;
+    border: 1px solid #C2C2C2;
+    background: #fafafa;
+    height: 34px;
+    padding: 0;
+    line-height: 40px;
+}
