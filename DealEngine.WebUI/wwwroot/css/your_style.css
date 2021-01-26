@@ -432,7 +432,7 @@ h3 {
    /* background: #fff;*/
 }
 
-/*jarviswidget > header css*/
+/*jarviswidget css*/
 .jarviswidget > header {
     color: #333;
     border: 1px solid #C2C2C2;
@@ -440,4 +440,17 @@ h3 {
     height: 34px;
     padding: 0;
     line-height: 40px;
+}
+
+.jarviswidget > header h2 {
+        height: 100%;
+        width: auto;
+        /*display: inline-block;*/
+        font-size: 14px;
+        position: relative;
+        margin: 0;
+        line-height: 34px;
+        font-weight: 400;
+        /*letter-spacing: 0;*/
+        margin-left: 10px;
 }
