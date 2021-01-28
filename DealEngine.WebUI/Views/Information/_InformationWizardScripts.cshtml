@@ -438,8 +438,12 @@
                             $("[id='Policy Effective Date']").trigger("click");
                         }
                     }
-                    //document.getElementById("toastbody").innerHTML = ui.oldHeader[0].id + " section has saved";
                     document.getElementById("toastbody").innerHTML = ui.oldHeader[0].id + " section has saved";
+                   // document.getElementById("toastbody").innerHTML = ui.oldHeader[0].childNodes[1] + " section has saved";
+                    //document.getElementById("toastbody").innerHTML = ui.oldHeader[0].childNodes[1].nodeValue;
+                    //console.log(" ui.oldHeader=" + ui.oldHeader);
+                   // consol.log("header0=" + ui.oldHeader[0]);
+                   // consol.log("children=" + ui.oldHeader[0].childNodes[1]);
                     $('.toast').toast('show');
                     $('#tblBuilding').trigger('reloadGrid');
                     $('#Principal,Partners or Directors').trigger('reloadGrid');

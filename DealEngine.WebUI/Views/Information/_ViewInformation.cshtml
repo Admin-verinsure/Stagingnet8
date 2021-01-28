@@ -23,7 +23,7 @@
 
                     var collapse = "collapse" + collapseCount;
 
-                    <h4 style="background-color:#00A8C8; color:white" id="@header" class="accordion-header ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all">
+                    <h4 style="background-color:#00A8C8; color:white" id="@informationSection.Name" class="accordion-header ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@collapse" aria-expanded="false" aria-controls="@collapse">
 
                             @informationSection.Name
@@ -37,7 +37,7 @@
 
                     @if (!string.IsNullOrWhiteSpace(informationSection.CustomView))
                     {
-                                <div id="@collapse" class="accordion-collapse collapse" aria-labelledby="@header" data-bs-parent="#accordionExample">
+                                <div id="@collapse" class="accordion-collapse collapse" aria-labelledby="@informationSection.Name" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         @await Html.PartialAsync("PrefabSections/" + informationSection.CustomView, Model)
                                         
@@ -62,7 +62,7 @@
 
                                         var collapseNew = "collapseNew" + @collapseCountNew;
 
-                                        <h4 style="background-color:#00A8C8; color:white" id="@headerNew" class="accordion-header ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all">
+                                        <h4 style="background-color:#00A8C8; color:white" id="@Section.Name" class="accordion-header ui-accordion-header ui-corner-top ui-state-default ui-accordion-icons ui-accordion-header-collapsed ui-corner-all">
                                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#@collapseNew" aria-expanded="false" aria-controls="@collapseNew">
 
                                                 @Section.Name
@@ -74,7 +74,7 @@
                                         if (!string.IsNullOrWhiteSpace(Section.CustomView))
                                         {
 
-                                            <div id="@collapseNew" class="accordion-collapse collapse" aria-labelledby="@headerNew" data-bs-parent="#accordionExample">
+                                            <div id="@collapseNew" class="accordion-collapse collapse" aria-labelledby="@Section.Name" data-bs-parent="#accordionExample">
                                                 <div class="accordion-body">
                                                     @await Html.PartialAsync("PrefabSections/" + Section.CustomView, Model)
                                                 </div>
