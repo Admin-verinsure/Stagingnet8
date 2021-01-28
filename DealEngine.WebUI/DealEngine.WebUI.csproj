@@ -78,19 +78,6 @@
     <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_transition.scss" Link="_transition.scss" />
     <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_visibility.scss" Link="_visibility.scss" />
     <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\_grid.scss" Link="_grid.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\css\app.bundle.css" Link="app.bundle.css" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\css\smartadmin-production-plugins.css" Link="smartadmin-production-plugins.css" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\css\smartadmin-production-plugins.min.css" Link="smartadmin-production-plugins.min.css" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\css\smartadmin-production.css" Link="smartadmin-production.css" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\css\smartadmin-production.min.css" Link="smartadmin-production.min.css" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\css\smartadmin-rtl.css" Link="smartadmin-rtl.css" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\css\smartadmin-rtl.min.css" Link="smartadmin-rtl.min.css" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\Scripts\app.config" Link="app.config" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\Scripts\app.js" Link="app.js" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\Scripts\app.min" Link="app.min" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\Scripts\smartwidgets\jarvis.widget" Link="jarvis.widget" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\Scripts\smartwidgets\jarvis.widget.min" Link="jarvis.widget.min" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\smartwizard\css\smartadmin-production.min.css" Link="smartadmin-production.min.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -152,7 +139,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\ckeditor\" />
-    <Folder Include="wwwroot\Scripts\smartwidgets\" />
   </ItemGroup>
 
 </Project>
