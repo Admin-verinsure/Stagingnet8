@@ -139,7 +139,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\ckeditor\" />
-    <Folder Include="wwwroot\Scripts\smartwidgets\" />
   </ItemGroup>
 
 </Project>
