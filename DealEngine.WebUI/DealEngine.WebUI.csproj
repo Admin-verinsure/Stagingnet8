@@ -78,6 +78,8 @@
     <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_transition.scss" Link="_transition.scss" />
     <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_visibility.scss" Link="_visibility.scss" />
     <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\_grid.scss" Link="_grid.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\Scripts\notification\SmartNotification.js" Link="SmartNotification.js" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\Scripts\notification\SmartNotification.min" Link="SmartNotification.min" />
   </ItemGroup>
 
   <ItemGroup>
@@ -139,6 +141,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\ckeditor\" />
+    <Folder Include="wwwroot\Scripts\notification\" />
     <Folder Include="wwwroot\Scripts\smartwidgets\" />
   </ItemGroup>
 
