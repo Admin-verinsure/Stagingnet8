@@ -435,12 +435,12 @@ input::-webkit-inner-spin-button {
     margin-right: 10px;
     background-image: url(../jqueryui/images/accordion.svg) !important;
     flex-shrink: 0;
-    width: 1rem;
-    height: 1rem;
+    width: 1.1rem;
+    height: 1.1rem;
     /*margin-left: auto;*/
     content: "";
      background-repeat: no-repeat;
-    background-size: 1rem;
+    background-size: 1.1rem;
     transition: transform .2s ease-in-out;
 }
 
