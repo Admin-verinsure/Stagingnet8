@@ -785,3 +785,15 @@ h1, h2, h3, h4 {
     padding: 0;
     line-height: 40px;
 }
+    .jarviswidget > header > .widget-icon {
+        display: block;
+        width: 30px;
+        height: 32px;
+        position: relative;
+        float: left;
+        font-size: 111%;
+        line-height: 32px;
+        text-align: center;
+        margin-right: -10px;
+        color: royalblue;
+    }
