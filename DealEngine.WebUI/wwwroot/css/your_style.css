@@ -709,7 +709,7 @@ h1, h2, h3, h4 {
 .ui-tabs .ui-tabs-nav li.ui-tabs-active a {
     border: 1px solid #ddd;
     border-bottom: 1px solid #fff;
-    background-color: #fff;
+    background-color: #fff !important;
     color: #555;
 }
 .ui-tabs .ui-tabs-nav li.ui-tabs-active a {
@@ -745,4 +745,43 @@ h1, h2, h3, h4 {
     border: 0;
     list-style: none;
     white-space: nowrap;
+}
+
+/*for jarvis header*/
+.clearfix, .inner-spacer:after, .jarviswidget, .jarviswidget-editbox, .jarviswidget > div {
+    zoom: 1;
+}
+.jarviswidget {
+    margin: 0 0 30px;
+    position: relative;
+    -moz-border-radius: 0;
+    -khtml-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+    padding: 0;
+}
+    .clearfix:after, .clearfix:before, .inner-spacer:after, .inner-spacer:before, .jarviswidget-editbox:after, .jarviswidget-editbox:before, .jarviswidget:after, .jarviswidget:before, .jarviswidget > div:after, .jarviswidget > div:before {
+        content: "\0020";
+        display: block;
+        height: 0;
+        overflow: hidden;
+        font-size: 0;
+        line-height: 0;
+        visibility: hidden;
+    }
+.jarviswidget-color-blue > header {
+    border-color: #3a57b8 !important;
+    background: #3a57b8;
+    color: #fff;
+}
+.jarviswidget > header {
+    /*color: #333;*/
+    border: 1px solid #C2C2C2;
+    display:flex;
+    /*background: #fafafa;*/
+}
+.jarviswidget > header {
+    height: 34px;
+    padding: 0;
+    line-height: 40px;
 }
