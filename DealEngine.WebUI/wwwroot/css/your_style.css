@@ -806,7 +806,7 @@ body {
     padding: 8px 10px;
 }
 table.table-bordered tbody td, table.table-bordered tbody th {
-   /* border-left-width: 0;*/
+    border-left-width: 0;
     border-bottom-width: 0;
 }
 .table-bordered td, .table-bordered th {
@@ -839,4 +839,7 @@ table.table-bordered tbody td, table.table-bordered tbody th {
     padding: .75rem;
     vertical-align: top;
     border-top: 1px solid #dee2e6;
+}
+table.table-bordered td:last-child, table.table-bordered th:last-child {
+    border-right-width: 0;
 }
