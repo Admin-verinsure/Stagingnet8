@@ -411,7 +411,7 @@ input::-webkit-inner-spin-button {
     font-family: "Open Sans", Arial, Helvetica, Sans-Serif;
 }
 
-#header {
+/*#header {
     display: block;
     height: 49px;
     margin: 0;
@@ -426,7 +426,7 @@ input::-webkit-inner-spin-button {
     position: relative;
     z-index: 905;
 }
-
+*/
 /*for bootstrap accordion */
 .accordion-button::after {
     display:none;
@@ -576,7 +576,7 @@ body {
 }
 .ui-widget-content {
     border: 0px solid #aaa;
-    background: #fff;
+    /*background: #fff;*/
     color: #404040;
 }
 .ui-widget {
@@ -626,7 +626,7 @@ body {
 }
 .ui-widget-content {
     /*border: 1px solid #aaa;*/
-    background: #fff;
+    /*background: #fff;*/
     color: #404040;
 }
 .jarviswidget .widget-body {
@@ -825,7 +825,18 @@ table.table-bordered tbody td, table.table-bordered tbody th {
     background-color: #28a745 !important;
     border-color: #28a745 !important;
 }
-    .btn-success:hover {
-        background-color: #218838 !important;
-        border-color: #1e7e34 !important;
-    }
+.btn-success:hover {
+   background-color: #218838 !important;
+   border-color: #1e7e34 !important;
+ }
+
+/*for table(on nav tab)*/
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+}
+.table td, .table th {
+    padding: .75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
