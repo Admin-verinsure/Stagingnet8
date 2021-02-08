@@ -813,7 +813,7 @@ table.table-bordered tbody td, table.table-bordered tbody th {
     border: 1px solid #dee2e6;
 }
 .table-light, .table-light > td, .table-light > th {
-    background-color: #fdfdfe;
+    background-color: #fdfdfe !important;
 }
 
 /*for button for */
