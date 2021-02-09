@@ -34,8 +34,8 @@
                 @*<a class="btn btn-primary btn-sm" href="~/Home/GetBreakdown?ProgrammeId=@Model.ProgrammeId"><i class="fa fa-pencil"></i>Breakdown</a>*@
             </li>
             @*<li class="nav-item">
-                <a asp-controller="Home" asp-action="ReportView" asp-route-ProgrammeId="@Model.Programme.Id" class="btn btn-primary btn-sm" style="color:white">View Report </a>
-            </li>*@
+                    <a asp-controller="Home" asp-action="ReportView" asp-route-ProgrammeId="@Model.Programme.Id" class="btn btn-primary btn-sm" style="color:white">View Report </a>
+                </li>*@
         }
         else if (Model.CurrentUserIsProgrammeManager == "True")
         {
@@ -47,8 +47,8 @@
             </li>
         }
         @*<li class="nav-item">
-            <a onclick="location.href='@Url.Action("getuserdetails", "Home", new { ProgrammeId = @Model.ProgrammeId})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> View Report </a>
-        </li>*@
+                <a onclick="location.href='@Url.Action("getuserdetails", "Home", new { ProgrammeId = @Model.ProgrammeId})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> View Report </a>
+            </li>*@
 
 
     </ul>
@@ -156,7 +156,7 @@
                 </div>
             </form>
         </div>
-        
+
     </div>
 </div>
 <div id="CreateUISModal" class="modal" aria-hidden="true">
@@ -203,9 +203,9 @@
                         @Html.TextBox("OrganisationViewModel.Organisation.Phone", "", new { @class = "form-control", @name = "OrganisationViewModel.Organisation.Phone" })
                     </div>
                     @*<div class="form-group">
-                        @Html.Label("Does not require Principal Advisor")
-                        @Html.DropDownList("Principal.Advisor", Model.BooleanOptions, new { @class = "form-control", @name = "Principal Advisor" })
-                    </div>*@
+                            @Html.Label("Does not require Principal Advisor")
+                            @Html.DropDownList("Principal.Advisor", Model.BooleanOptions, new { @class = "form-control", @name = "Principal Advisor" })
+                        </div>*@
                 </div>
                 <div class="modal-footer">
                     <button id="next" type="submit" class="btn btn-success btn-sm">Submit</button>
@@ -261,8 +261,7 @@
 
 
 @section pagespecific {
-
-    <script type="text/javascript">
+   <script type="text/javascript">
 
         $(document).ready(function () {
             //$.noConflict();
@@ -273,7 +272,7 @@
              });
         });
 
-        $('#myChangeModal').on('show.bs.modal', function (e) {            
+        $('#myChangeModal').on('show.bs.modal', function (e) {
             $('.modal').css({ "width": "50%", "margin-left": "25%" });
             var dealId = $(e.relatedTarget).data('dealitem-id');
             $(e.currentTarget).find('input[name="DealId"]').val(dealId);
