@@ -63,6 +63,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int coverperiodindays = 0;
             coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
 
+            int coverperiodindaysforchange = 0;
+            coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+
             string strretrodate = "";
             if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
             {
@@ -116,6 +119,34 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termsl2millimitoption.Brokerage = TermBrokerage2mil;
             termsl2millimitoption.DateDeleted = null;
             termsl2millimitoption.DeletedBy = null;
+
+            //Change policy premium calculation
+            if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
+            {
+                var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "SL"));
+                foreach (var term in PreviousAgreement.ClientAgreementTerms)
+                {
+                    if (term.Bound)
+                    {
+                        var PreviousBoundPremium = term.Premium;
+                        if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
+                        {
+                            PreviousBoundPremium = term.BasePremium;
+                        }
+                        termsl2millimitoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        termsl2millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termsl2millimitoption.TermLimit == term.TermLimit && termsl2millimitoption.Excess == term.Excess)
+                        {
+                            termsl2millimitoption.Bound = true;
+                        }
+                        if (termsl2millimitoption.PremiumDiffer < 0)
+                        {
+                            termsl2millimitoption.PremiumDiffer = 0;
+                        }
+                    }
+
+                }
+            }
 
 
             //Referral points per agreement

@@ -202,6 +202,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                             termcl100klimitoptionbase.PremiumDiffer = (TermPremium100kBase - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                             termcl100klimitoptionbase.PremiumPre = PreviousBoundPremium;
+                            if (termcl100klimitoptionbase.TermLimit == term.TermLimit && termcl100klimitoptionbase.Excess == term.Excess)
+                            {
+                                termcl100klimitoptionbase.Bound = true;
+                            }
                             if (termcl100klimitoptionbase.PremiumDiffer < 0)
                             {
                                 termcl100klimitoptionbase.PremiumDiffer = 0;
@@ -270,12 +274,20 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                             termcl100klimitoptionultra.PremiumDiffer = (TermPremium100kUltra - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                             termcl100klimitoptionultra.PremiumPre = PreviousBoundPremium;
+                            if (termcl100klimitoptionultra.TermLimit == term.TermLimit && termcl100klimitoptionultra.Excess == term.Excess)
+                            {
+                                termcl100klimitoptionultra.Bound = true;
+                            }
                             if (termcl100klimitoptionultra.PremiumDiffer < 0)
                             {
                                 termcl100klimitoptionultra.PremiumDiffer = 0;
                             }
                             termcl250klimitoptionultra.PremiumDiffer = (TermPremium250kUltra - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                             termcl250klimitoptionultra.PremiumPre = PreviousBoundPremium;
+                            if (termcl250klimitoptionultra.TermLimit == term.TermLimit && termcl250klimitoptionultra.Excess == term.Excess)
+                            {
+                                termcl250klimitoptionultra.Bound = true;
+                            }
                             if (termcl250klimitoptionultra.PremiumDiffer < 0)
                             {
                                 termcl250klimitoptionultra.PremiumDiffer = 0;

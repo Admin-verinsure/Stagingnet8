@@ -63,6 +63,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int coverperiodindays = 0;
             coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
 
+            int coverperiodindaysforchange = 0;
+            coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+
             string strretrodate = "";
             if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
             {
@@ -135,6 +138,35 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termot2millimitoption.Brokerage = TermBrokerage2mil;
             termot2millimitoption.DateDeleted = null;
             termot2millimitoption.DeletedBy = null;
+
+
+            //Change policy premium calculation
+            if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
+            {
+                var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "OT"));
+                foreach (var term in PreviousAgreement.ClientAgreementTerms)
+                {
+                    if (term.Bound)
+                    {
+                        var PreviousBoundPremium = term.Premium;
+                        if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
+                        {
+                            PreviousBoundPremium = term.BasePremium;
+                        }
+                        termot2millimitoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        termot2millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termot2millimitoption.TermLimit == term.TermLimit && termot2millimitoption.Excess == term.Excess)
+                        {
+                            termot2millimitoption.Bound = true;
+                        }
+                        if (termot2millimitoption.PremiumDiffer < 0)
+                        {
+                            termot2millimitoption.PremiumDiffer = 0;
+                        }
+                    }
+
+                }
+            }
 
             //Referral points per agreement
             //OT Cover Selected by any advisor

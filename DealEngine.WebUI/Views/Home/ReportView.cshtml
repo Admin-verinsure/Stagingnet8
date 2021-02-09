@@ -1,12 +1,12 @@
 ﻿@model IssueUISViewModel
 
 <div class="container">
-    <form method="POST" action="~/Home/GetReportView" novalidate>
+    <form id="ReportForm"    method="POST" action="~/Home/GetReportView" novalidate>
         <input type="text" class="form-control" value="@Model.ProgrammeId" id="programmeId" name="ProgrammeId" hidden>
         <div class="card">
             <div class="card-header">
                 <h5>
-                    This page lists the clients from this programme. 
+                    This page lists the reports available for this programme.
                 </h5>
             </div>
             <div class="card-body">
@@ -17,44 +17,62 @@
 
                                 Name
                             </th>
-                         
+
                         </tr>
                     </thread>
                     <tbody>
-                       
+
                         <tr>
 
                             <td>
                                 <select class="form-control b" id="ClientProg" name="queryselect">
                                     <option selected="selected" value="">-- Select --</option>
-                                    <option selected="false" value="PI">PI Cover Limit and Premium Selected</option>
-                                    <option selected="false" value="ED">ED Premium</option>
-                                    <option selected="false" value="CL">Cyber Premium</option>
-                                    <option selected="false" value="Ed">Limit and Premium Breakdown</option>
-                                    <option selected="false" value="Cyber">Investment Defence and Settlement Costs Sub-Limit Premium and Limits</option>
+                                    <option value="PI">PI Cover Limit and Premium Selected</option>
+                                    <option value="ED">ED Premium</option>
+                                    <option value="CL">Cyber Premium</option>
+                                    <option value="Ed">Limit and Premium Breakdown</option>
+                                    <option value="Cyber">Investment Defence and Settlement Costs Sub-Limit Premium and Limits</option>
+                                    @{
+                                        if (Model.ProgrammeName == "NZFSG Programme")
+                                        {
+                                            <option value="NZFSGFAP">NZFG FAP Report</option>
+
+                                        }
+
+                                    }
+
                                 </select>
 
                             </td>
-                           
-                            @*<td>
-            <select name="ClientProgramme">
-                <option selected="selected" value="">-- Select --</option>
-                @foreach (var prog in Model.ListClientProgrammes)
-                {
-                    <option value="@prog.Value">@prog.Text</option>
-                }
-            </select>
 
-        </td>*@
 
                         </tr>
-                        
+
                     </tbody>
                 </table>
             </div>
             <div class="card-footer">
-                <button class="btn btn-primary btn-xs" type="submit">Send</button>
+                <button class="btn btn-primary btn-xs" id="submit" type="submit">View</button>
             </div>
         </div>
     </form>
 </div>
+<div class="modal overlay" id="AddReportModal" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p><img src="/img/loading.gif" /> Fetching Records. Please wait...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        $("#submit").click(function () {
+            $("#AddReportModal").show();
+            
+        });
+    })
+</script>

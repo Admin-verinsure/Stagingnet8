@@ -170,18 +170,30 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                         termpl1millimitoption.PremiumDiffer = (TermPremium1mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         termpl1millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termpl1millimitoption.TermLimit == term.TermLimit && termpl1millimitoption.Excess == term.Excess)
+                        {
+                            termpl1millimitoption.Bound = true;
+                        }
                         if (termpl1millimitoption.PremiumDiffer < 0)
                         {
                             termpl1millimitoption.PremiumDiffer = 0;
                         }
                         termpl2millimitoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         termpl2millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termpl2millimitoption.TermLimit == term.TermLimit && termpl2millimitoption.Excess == term.Excess)
+                        {
+                            termpl2millimitoption.Bound = true;
+                        }
                         if (termpl2millimitoption.PremiumDiffer < 0)
                         {
                             termpl2millimitoption.PremiumDiffer = 0;
                         }
                         termpl5millimitoption.PremiumDiffer = (TermPremium5mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         termpl5millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termpl5millimitoption.TermLimit == term.TermLimit && termpl5millimitoption.Excess == term.Excess)
+                        {
+                            termpl5millimitoption.Bound = true;
+                        }
                         if (termpl5millimitoption.PremiumDiffer < 0)
                         {
                             termpl5millimitoption.PremiumDiffer = 0;

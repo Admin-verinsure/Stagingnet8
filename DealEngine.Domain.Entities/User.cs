@@ -29,6 +29,7 @@ namespace DealEngine.Domain.Entities
             AgreementBoundNotifyProgrammes = new List<Programme>();
             PaymentConfigNotifyProgrammes = new List<Programme>();
             InvoiceConfigNotifyProgrammes = new List<Programme>();
+            RemoveAdvisorNotifyProgrammes = new List<Programme>();
         }
 
         public virtual OrganisationalUnit DefaultOU { get; set; }
@@ -111,6 +112,8 @@ namespace DealEngine.Domain.Entities
         public virtual IList<Programme> PaymentConfigNotifyProgrammes { get; set; }
         [JsonIgnore]
         public virtual IList<Programme> InvoiceConfigNotifyProgrammes { get; set; }
+        [JsonIgnore]
+        public virtual IList<Programme> RemoveAdvisorNotifyProgrammes { get; set; }
         [JsonIgnore]
         public virtual IList<UserTask> UserTasks { get; set; }
         public virtual string EbixDepartmentCode { get; set; }

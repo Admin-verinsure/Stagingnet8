@@ -3,33 +3,16 @@
 
 <h3>@ViewBag.Title</h3>
 
-<li class="nav-item">
-
-    <a href="@("Export File")" >Export File</a>
-</li>
-
-
-@*<button onclick="viewreport()"> view rport </button>*@
 <br />
-<div id='control_sh'>
 
-    @foreach (System.Data.DataColumn col in Model.Columns)
-    {
-        <input type="checkbox" class="hide_show"><span>@col.Caption</span>
-    }
-
-</div>
 <br />
 
 <div class="container">
-    @*<form method="post" action="~/Home/GetReportView?IsReport='True'" novalidate id="ReportForm">*@
     <form method="post" novalidate id="ReportForm">
 
         <div class="card-footer">
-            <button class="btn btn-primary btn-xs" id="ReportView" onclick="getReport()">Export Report</button>
+            <button class="btn btn-primary btn-xs" id="ReportView" onclick="getReport()">Export to Excel</button>
         </div>
-        <a href="@("Export File")">Export File</a>
-
         <input type="text" class="form-control" value="@ViewBag.reportName" name="queryselect" hidden>
 
         <input type="text" class="form-control" value="@ViewBag.ProgrammeId" name="ProgrammeId" hidden>
@@ -74,64 +57,31 @@
 
     </form>
 </div>
+<div class="modal overlay" id="AddReportModal" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p><img src="/img/loading.gif" /> Getting Report. Please wait...</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
+       $(window).on("load", function () {
+                        $("#AddReportModal").hide();
 
-    $(document).ready(function () {
-        //var table = $('#ReportAnalysis').DataTable();
+       });
 
-        $("#hide_show_all").on("change", function () {
-            var hide = $(this).is(":checked");
-            $(".hide_show").prop("checked", hide);
-
-            if (hide) {
-                $('#ReportAnalysis tr th').hide(100);
-                $('#ReportAnalysis tr td').hide(100);
-            } else {
-                $('#ReportAnalysis tr th').show(100);
-                $('#ReportAnalysis tr td').show(100);
-            }
+        $("#ReportView").click(function () {
+            $("#AddReportModal").delay(5000).fadeOut(1000);
+            
         });
-
-        $(".hide_show").on("change", function () {
-            debugger;
-            var hide = $(this).is(":checked");
-
-            var all_ch = $(".hide_show:checked").length == $(".hide_show").length;
-
-         //   $("#hide_show_all").prop("checked", all_ch);
-
-            var ti = $(this).index(".hide_show");
-
-            $('#ReportAnalysis tr').each(function () {
-                if (hide) {
-                    $('td:eq(' + ti + ')', this).hide(100);
-                    $('th:eq(' + ti + ')', this).hide(100);
-                } else {
-                    $('td:eq(' + ti + ')', this).show(100);
-                    $('th:eq(' + ti + ')', this).show(100);
-                }
-            });
-
-        });
-        $('#ReportAnalysis tfoot th').each(function () {
-            debugger;
-            var title = $(this).text();
-            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-        });
-
-        //$('#myInput').keyup(function () {
-        //    table.draw();
-        //});
-        $('input.column_filter').on('keyup click', function () {
-            filterColumn($(this).parents('tr').attr('data-column'));
-        });
-
-    });
-
+    
     function getReport() {
         debugger;
         $('#IsReport').val("True");
+        //$("#AddReportModal").delay(5000).fadeOut(1000);
         $('#ReportForm').submit();
 
     };
@@ -148,15 +98,13 @@
                    url: "/Home/ExportExcel",
                    type : "POST",
                    data : postData,
-                   //dataType: "json",
-                   //traditional: true,
-                   //contentType: "application/json; charset=utf-8",
+                  
                    success: function (data) {
  
                        // perform your save call here
  
                        if (data.status == "Success") {
-                           alert("Done");
+                           $("#AddReportModal").delay(5000).fadeOut(1000);
                        } else {
                            alert("Error occurs on the Database level!");
                        }

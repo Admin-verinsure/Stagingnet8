@@ -440,7 +440,7 @@ namespace DealEngine.Services.Impl
                 changeReason.ChangeType = collection["ChangeType"];
                 changeReason.Reason = collection["Reason"];
                 changeReason.Description = collection["ReasonDesc"];
-                changeReason.EffectiveDate = DateTime.Now;
+                changeReason.EffectiveDate = DateTime.UtcNow;
                 oldClientProgramme = await GetClientProgramme(Guid.Parse(collection["ClientProgrammeID"]));
             }
             
@@ -449,7 +449,7 @@ namespace DealEngine.Services.Impl
             newClientInformationSheet.ReferenceId = await _referenceService.GetLatestReferenceId();
             newClientInformationSheet.IsChange = true;
             newClientInformationSheet.Status = "Not Started";
-            newClientInformationSheet.DateCreated = DateTime.Now;
+            newClientInformationSheet.DateCreated = DateTime.UtcNow;
             newClientInformationSheet.UnlockDate = DateTime.MinValue;
             newClientInformationSheet.PreviousInformationSheet = oldClientProgramme.InformationSheet;
             await _referenceRepository.AddAsync(new Reference(newClientInformationSheet.Id, newClientInformationSheet.ReferenceId));

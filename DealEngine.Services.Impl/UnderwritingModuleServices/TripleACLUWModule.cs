@@ -65,6 +65,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int coverperiodindays = 0;
             coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
 
+            int coverperiodindaysforchange = 0;
+            coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+
             decimal feeincome = 0;
             decimal extpremium = 0m;
 
@@ -227,6 +230,66 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termcl2millimitoption.Brokerage = TermBrokerage2mil;
             termcl2millimitoption.DateDeleted = null;
             termcl2millimitoption.DeletedBy = null;
+
+
+            //Change policy premium calculation
+            if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
+            {
+                var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "CL"));
+                foreach (var term in PreviousAgreement.ClientAgreementTerms)
+                {
+                    if (term.Bound)
+                    {
+                        var PreviousBoundPremium = term.Premium;
+                        if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
+                        {
+                            PreviousBoundPremium = term.BasePremium;
+                        }
+                        termcl250klimitoption.PremiumDiffer = (TermPremium250k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        termcl250klimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termcl250klimitoption.TermLimit == term.TermLimit && termcl250klimitoption.Excess == term.Excess)
+                        {
+                            termcl250klimitoption.Bound = true;
+                        }
+                        if (termcl250klimitoption.PremiumDiffer < 0)
+                        {
+                            termcl250klimitoption.PremiumDiffer = 0;
+                        }
+                        termcl500klimitoption.PremiumDiffer = (TermPremium500k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        termcl500klimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termcl500klimitoption.TermLimit == term.TermLimit && termcl500klimitoption.Excess == term.Excess)
+                        {
+                            termcl500klimitoption.Bound = true;
+                        }
+                        if (termcl500klimitoption.PremiumDiffer < 0)
+                        {
+                            termcl500klimitoption.PremiumDiffer = 0;
+                        }
+                        termcl1millimitoption.PremiumDiffer = (TermPremium1mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        termcl1millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termcl1millimitoption.TermLimit == term.TermLimit && termcl1millimitoption.Excess == term.Excess)
+                        {
+                            termcl1millimitoption.Bound = true;
+                        }
+                        if (termcl1millimitoption.PremiumDiffer < 0)
+                        {
+                            termcl1millimitoption.PremiumDiffer = 0;
+                        }
+                        termcl2millimitoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        termcl2millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termcl2millimitoption.TermLimit == term.TermLimit && termcl2millimitoption.Excess == term.Excess)
+                        {
+                            termcl2millimitoption.Bound = true;
+                        }
+                        if (termcl2millimitoption.PremiumDiffer < 0)
+                        {
+                            termcl2millimitoption.PremiumDiffer = 0;
+                        }
+                    }
+
+                }
+            }
+
 
             //Referral points per agreement
             //Not a renewal of an existing policy

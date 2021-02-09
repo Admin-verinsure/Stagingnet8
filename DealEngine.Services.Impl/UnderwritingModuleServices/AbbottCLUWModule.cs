@@ -194,6 +194,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                         termcl250klimitoption.PremiumDiffer = (TermPremium250k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         termcl250klimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termcl250klimitoption.TermLimit == term.TermLimit && termcl250klimitoption.Excess == term.Excess)
+                        {
+                            termcl250klimitoption.Bound = true;
+                        }
                         if (termcl250klimitoption.PremiumDiffer < 0)
                         {
                             termcl250klimitoption.PremiumDiffer = 0;

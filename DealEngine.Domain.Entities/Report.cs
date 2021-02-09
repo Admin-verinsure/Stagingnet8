@@ -38,6 +38,23 @@ namespace DealEngine.Domain.Entities
         public virtual string Premium { get; set; }
 
     }
+
+    public class FAPReport : EntityBase
+    {
+        public FAPReport() : this(null) { }
+
+        public FAPReport(User createdBy) : base(createdBy)
+        {
+        }
+        public virtual string Email { get; set; }
+        public virtual string MemberName { get; set; }
+        public virtual string Status { get; set; }
+        public virtual string AdvisorName { get; set; }
+        public virtual string Hastraditionallicence { get; set; }
+        public virtual string Hasadvisers { get; set; }
+        public virtual string Hasadditionaltraditionallicence { get; set; }
+
+    }
 }
 
 

@@ -27,6 +27,7 @@ namespace DealEngine.Domain.Entities
         public virtual IList<User> AgreementBoundNotifyUsers { get; set; }
         public virtual IList<User> PaymentConfigNotifyUsers { get; set; }
         public virtual IList<User> InvoiceConfigNotifyUsers { get; set; }
+        public virtual IList<User> RemoveAdvisorNotifyUsers { get; set; }
         public virtual bool StopAgreement { get; set; }
         public virtual bool StopDeclaration { get; set; }
         public virtual DateTime StopAgreementDateTime { get; set; }
@@ -82,6 +83,7 @@ namespace DealEngine.Domain.Entities
             AgreementBoundNotifyUsers = new List<User>();
             PaymentConfigNotifyUsers = new List<User>();
             InvoiceConfigNotifyUsers = new List<User>();
+            RemoveAdvisorNotifyUsers = new List<User>();
             Packages = new List<Package>();
         }
 
