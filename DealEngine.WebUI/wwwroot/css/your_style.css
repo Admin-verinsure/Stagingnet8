@@ -843,3 +843,11 @@ table.table-bordered tbody td, table.table-bordered tbody th {
 table.table-bordered td:last-child, table.table-bordered th:last-child {
   /*  border-right-width: 0;*/
 }
+
+/*for popover in viewAgreementEndorsement*/
+.popover {
+    transform: translate3d(295px, 117px, 0px);
+    top: 0px;
+    left: 0px;
+    will-change: transform;
+}

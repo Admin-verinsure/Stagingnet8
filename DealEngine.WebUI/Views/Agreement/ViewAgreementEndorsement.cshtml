@@ -77,27 +77,36 @@
                                 <label class="col-md-2 control-label">Endorsement Title: </label>
                             </td>
                             <td>
-                                    <label class="input form-group">
+                                <label class="input form-group">
 
-                                        <select data-placeholder="Choose Primary Policy Product..." onchange="onSelect('endorsementtitle')" id="endorsementtitle" name="SelectedClaimProducts" class="form-control b">
-                                            <option selected="selected" value="">-- Select here --</option>
-                                            @foreach (var bwloc in Model.AvailableEndorsementTitles)
-                                            {
-                                                <option value="@bwloc.Value"> @bwloc.Text</option>
-                                            }
-                                            <option value="Add New"> Add New</option>
-                                        </select>
-                                    </label>
+                                    <select data-placeholder="Choose Primary Policy Product..." onchange="onSelect('endorsementtitle')" id="endorsementtitle" name="SelectedClaimProducts" class="form-control b">
+                                        <option selected="selected" value="">-- Select here --</option>
+                                        @foreach (var bwloc in Model.AvailableEndorsementTitles)
+                                        {
+                                            <option value="@bwloc.Value"> @bwloc.Text</option>
+                                        }
+                                        <option value="Add New"> Add New</option>
+                                    </select>
+                                </label>
 
-                                    <i id="elem" href="#"
-                                       class="fa fa-question-circle"
-                                       data-placement="bottom"
-                                       data-container="body"
-                                       data-toggle="popover"
-                                       data-content="Please select the Existing Endorsement Title to Add Endorsement Back or use Endorsement Name and Text Field directly to add new Endorsement.">
+                                @*<i id="elem" href="#"
+           class="fa fa-question-circle"
+           data-placement="bottom"
+           data-container="body"
+           data-toggle="popover"
+           data-content="Please select the Existing Endorsement Title to Add Endorsement Back or use Endorsement Name and Text Field directly to add new Endorsement.">
 
-                                    </i>
-                               
+        </i>*@
+
+                                <i id="elem" href="#"
+                                   class="fa fa-question-circle"
+                                   data-bs-placement="top"
+                                   data-bs-container="body"
+                                   data-bs-toggle="popover"
+                                   data-bs-content="Please select the Existing Endorsement Title to Add Endorsement Back or use Endorsement Name and Text Field directly to add new Endorsement.">
+
+                                </i>
+
                             </td>
                         </tr>
                         <tr>
@@ -199,17 +208,21 @@
     </script>
 
 <script>
-
+    //$(function () {
+    //    $('[ data-bs-toggle="popover"]').popover();
+    //});
     $(document).ready(function () {
-        $('[data-toggle="popover"]').popover({
+        $('[ data-bs-toggle="popover"]').popover({
             trigger: 'manual',
             html: true,
             animation: false
         }).on('mouseenter', function () {
-
+            
             var _this = this;
             $(this).popover('show');
             $('.popover').on('mouseleave', function () {
+               
+                console.log(_this);
                 $(_this).popover('hide');
             });
         }).on('mouseleave', function () {
