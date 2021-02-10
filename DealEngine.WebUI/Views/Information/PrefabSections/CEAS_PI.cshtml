@@ -9,7 +9,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasceasmembership" name="PIViewModel.HasCEASMembershipOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasceasmembership" name="PIViewModel.HasCEASMembershipOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasCEASMembershipOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -57,7 +57,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hassubstantialchange" name="PIViewModel.HasSubstantialChangeOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hassubstantialchange" name="PIViewModel.HasSubstantialChangeOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasSubstantialChangeOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -88,7 +88,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasaluminium" name="PIViewModel.HasAluminium" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasaluminium" name="PIViewModel.HasAluminium" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasAluminium)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -119,7 +119,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasconsultantantsresponsibility" name="PIViewModel.HasConsultantantsResponsibilityOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasconsultantantsresponsibility" name="PIViewModel.HasConsultantantsResponsibilityOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasConsultantantsResponsibilityOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -155,7 +155,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasassociatedpractice" name="PIViewModel.HasAssociatedPracticeOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasassociatedpractice" name="PIViewModel.HasAssociatedPracticeOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasAssociatedPracticeOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -186,7 +186,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasengageconsortium" name="PIViewModel.HasEngageConsortium" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasengageconsortium" name="PIViewModel.HasEngageConsortium" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasEngageConsortium)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -217,7 +217,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hassignificantshareholder" name="PIViewModel.HasSignificantShareholderOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hassignificantshareholder" name="PIViewModel.HasSignificantShareholderOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasSignificantShareholderOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -248,7 +248,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasindustrialsoftware" name="PIViewModel.HasIndustrialSoftwareOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasindustrialsoftware" name="PIViewModel.HasIndustrialSoftwareOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasIndustrialSoftwareOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -279,7 +279,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasengagesoftware" name="PIViewModel.HasEngageSoftwareOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasengagesoftware" name="PIViewModel.HasEngageSoftwareOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasEngageSoftwareOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -319,7 +319,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="haslossdocuments" name="PIViewModel.HasLossDocumentsOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="haslossdocuments" name="PIViewModel.HasLossDocumentsOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.PIViewModel.HasLossDocumentsOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -353,7 +353,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="hasdishonesty" name="PIViewModel.HasDishonestyOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="hasdishonesty" name="PIViewModel.HasDishonestyOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.PIViewModel.HasDishonestyOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -387,7 +387,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="hascomputersoftware" name="PIViewModel.HasComputerSoftwareOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="hascomputersoftware" name="PIViewModel.HasComputerSoftwareOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.PIViewModel.HasComputerSoftwareOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -420,7 +420,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="haslegalcouncel" name="PIViewModel.HasLegalCouncelOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="haslegalcouncel" name="PIViewModel.HasLegalCouncelOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasLegalCouncelOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
