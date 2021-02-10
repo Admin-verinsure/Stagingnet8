@@ -151,27 +151,28 @@ body.smart-style-3, .smart-style-3 body {
     padding: 0;
 }
 
-.jarviswidget > div {
-    background-color: #fff !important;
-    /*background: #F5FFFA !important;*/
-    /*float: left;*/
-    width: 100%;
-    position: relative;
-    font-size: 13px;
-    -moz-border-radius: 0;
-    -khtml-border-radius: 0;
-    -webkit-border-radius: 0;
-    border-radius: 0;
-    margin: 0;
-    border-width: 1px 1px 2px;
-    border-style: solid;
-    border-top: none;
-    border-right-color: #CCC !important;
-    border-bottom-color: #CCC !important;
-    border-left-color: #CCC !important;
-    padding: 13px 13px 0;
-    overflow: visible;
-}
+    .jarviswidget > div {
+        background-color: #fff !important;
+        /*background: #F5FFFA !important;*/
+        /*float: left;*/
+        width: 100%;
+        position: relative;
+        font-size: 13px;
+        -moz-border-radius: 0;
+        -khtml-border-radius: 0;
+        -webkit-border-radius: 0;
+        border-radius: 0;
+        margin: 0;
+        border-width: 1px 1px 2px;
+        border-style: solid;
+        border-top: none;
+        border-right-color: #CCC !important;
+        border-bottom-color: #CCC !important;
+        border-left-color: #CCC !important;
+        /*padding: 13px 13px 0;*/
+        padding: 13px;
+        overflow: visible;
+    }
 
 .page-footer {
   padding: 15px 13px 0;
@@ -833,7 +834,7 @@ table.table-bordered tbody td, table.table-bordered tbody th {
 /*for table(on nav tab)*/
 .table thead th {
     vertical-align: bottom;
-    border-bottom: 2px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6 !important;
 }
 .table td, .table th {
     padding: .75rem;
