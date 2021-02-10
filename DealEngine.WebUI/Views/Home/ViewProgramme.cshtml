@@ -80,7 +80,7 @@
                             <label for="changeType" class="required">Change Type</label>
                         </td>
                         <td>
-                            <select class="form-control b" id="ChangeType" name="ChangeType" title="" required>
+                            <select class="form-control b form-select" id="ChangeType" name="ChangeType" title="" required>
                                 <option selected="selected" value="">-- Select here --</option>
                                 <option Value="TC_addAmendRiskInfo">Add Amend Risk Information</option>
                                 <option Value="TC_newCoverable">Add New Coverable</option>
@@ -108,7 +108,7 @@
                             <label for="Reason" class="required">Reason</label>
                         </td>
                         <td>
-                            <select class="form-control" id="ChangeReason" name="Reason" title="" required>
+                            <select class="form-control form-select" id="ChangeReason" name="Reason" title="" required>
                                 <option selected="selected" value="">-- Select here --</option>
                                 <option Value="TC_businessSoldOrClosed_lgi">Business Sold or Closed</option>
                                 <option Value="TC_changeInCoverReq_lgi">Change in cover requirements</option>
@@ -171,7 +171,7 @@
                     @Html.HiddenFor(m => m.Programme.Id)
                     <div class="form-group">
                         @Html.LabelFor(m => m.OrganisationViewModel.OrganisationTypes, new { @class = "label required" })
-                        <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="custom-select" onclick="OrganisationTypeChange(this.value)" required>
+                        <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="custom-select form-select" onclick="OrganisationTypeChange(this.value)" required>
                             @foreach (var option in Model.OrganisationViewModel.OrganisationTypes)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
