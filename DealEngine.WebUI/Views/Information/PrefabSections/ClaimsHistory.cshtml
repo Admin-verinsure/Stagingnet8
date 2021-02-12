@@ -12,7 +12,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="hasdamageloss" name="ClaimsHistoryViewModel.HasDamageLossOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="hasdamageloss" name="ClaimsHistoryViewModel.HasDamageLossOptions" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.ClaimsHistoryViewModel.HasDamageLossOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -43,7 +43,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="haswithdrawn" name="ClaimsHistoryViewModel.HasWithdrawnOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="haswithdrawn" name="ClaimsHistoryViewModel.HasWithdrawnOptions" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.ClaimsHistoryViewModel.HasWithdrawnOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -74,7 +74,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="hasrefused" name="ClaimsHistoryViewModel.HasRefusedOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="hasrefused" name="ClaimsHistoryViewModel.HasRefusedOptions" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.ClaimsHistoryViewModel.HasRefusedOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -108,7 +108,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="hasstatutoryoffence" name="ClaimsHistoryViewModel.HasStatutoryOffenceOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="hasstatutoryoffence" name="ClaimsHistoryViewModel.HasStatutoryOffenceOptions" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.ClaimsHistoryViewModel.HasStatutoryOffenceOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -139,7 +139,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="hasliquidation" name="ClaimsHistoryViewModel.HasLiquidationOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="hasliquidation" name="ClaimsHistoryViewModel.HasLiquidationOptions" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.ClaimsHistoryViewModel.HasLiquidationOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>

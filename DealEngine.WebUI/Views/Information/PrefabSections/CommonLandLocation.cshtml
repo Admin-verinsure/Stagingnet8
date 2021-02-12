@@ -86,7 +86,7 @@
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <label class="label cgmodalLabel required">Storage Type</label>
                             <label class="input">
-                                <select class="form-control bui" id="BuildingCategory" name="BuildingCategory">
+                                <select class="form-select form-control bui" id="BuildingCategory" name="BuildingCategory">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="Lockup">Lockup At Address</option>
                                     <option value="OpenPark">Open Park At Address</option>
@@ -107,7 +107,7 @@
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <label class="label required">Location</label>
                             <label class="input">
-                                <select onchange="addLandLoc()" class="form-control bui" id="BuildingLocation" name="BuildingLocation">
+                                <select onchange="addLandLoc()" class="form-select form-control bui" id="BuildingLocation" name="BuildingLocation">
                                     <option selected="selected" value="">-- Select --</option>
                                     @foreach (var clloc in Model.LocationViewModel.Locations)
                                     {
@@ -144,7 +144,7 @@
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <label class="label cgmodalLabel required">Storage Type</label>
                             <label class="input">
-                                <select class="form-control bui" id="AddBuildingCategory" name="BuildingCategory">
+                                <select class="form-select form-control bui" id="AddBuildingCategory" name="BuildingCategory">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="Lockup">Lockup At Address</option>
                                     <option value="OpenPark">Open Park At Address</option>
@@ -165,7 +165,7 @@
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <label class="label required">Location</label>
                             <label class="input">
-                                <select onchange="AddaddLandLoc()" class="form-control bui" id="AddBuildingLocation" name="BuildingLocation">
+                                <select onchange="AddaddLandLoc()" class="form-select form-control bui" id="AddBuildingLocation" name="BuildingLocation">
                                     <option selected="selected" value="">-- Select --</option>
                                     @foreach (var clloc in Model.LocationViewModel.Locations)
                                     {

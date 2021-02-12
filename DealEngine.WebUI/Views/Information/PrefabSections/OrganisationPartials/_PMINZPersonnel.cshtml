@@ -17,7 +17,7 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.IsCurrentMembershipPMINZ, new { @class = "label required" })
-            <select id="PersonnelUnit.IsCurrentMembershipPMINZ" name="OrganisationViewModel.ProjectPersonnelUnit.IsCurrentMembershipPMINZ" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="PersonnelUnit.IsCurrentMembershipPMINZ" name="OrganisationViewModel.ProjectPersonnelUnit.IsCurrentMembershipPMINZ" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasCurrentMembershipOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">
@@ -34,7 +34,7 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.MajorShareHolder, new { @class = "label required" })
-            <select id="PersonnelUnit.MajorShareHolder" name="OrganisationViewModel.PersonnelUnit.MajorShareHolder" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="PersonnelUnit.MajorShareHolder" name="OrganisationViewModel.PersonnelUnit.MajorShareHolder" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasMajorShareHolder)
                 {
                     <option selected="@option.Selected" value="@option.Value">
@@ -51,7 +51,7 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.InsuredEntityRelation, new { @class = "label required" })
-            <select id="PersonnelUnit.InsuredEntityRelation" name="OrganisationViewModel.ProjectPersonnelUnit.InsuredEntityRelation" class="custom-select" data-rule="OptionOnChange" onchange="OnChange(this.id, this.name)" required>
+            <select id="PersonnelUnit.InsuredEntityRelation" name="OrganisationViewModel.ProjectPersonnelUnit.InsuredEntityRelation" class="custom-select form-select" data-rule="OptionOnChange" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.InsuredEntityRelationOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">
@@ -63,7 +63,7 @@
         <div id="Contractor" hidden>
             <div class="form-group">
                 @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.IsContractorInsured, new { @class = "label required" })
-                <select id="PersonnelUnit.IsContractorInsured" name="OrganisationViewModel.ProjectPersonnelUnit.IsContractorInsured" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="PersonnelUnit.IsContractorInsured" name="OrganisationViewModel.ProjectPersonnelUnit.IsContractorInsured" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in @Model.OrganisationViewModel.HasContractorInsuredOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">
@@ -75,7 +75,7 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.CertType, new { @class = "label required" })
-            <select id="PersonnelUnit.CertType" name="OrganisationViewModel.PersonnelUnit.CertType" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="PersonnelUnit.CertType" name="OrganisationViewModel.PersonnelUnit.CertType" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.CertTypes)
                 {
                     <option selected="@option.Selected" value="@option.Value">

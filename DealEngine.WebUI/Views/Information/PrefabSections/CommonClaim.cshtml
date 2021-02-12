@@ -232,7 +232,7 @@
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 hidden" id="EditClaimStatus">
                                 <label class="label required">Claim Status</label>
                                 <label class="input">
-                                    <select class="form-control bui" id="ClaimStatus" name="ClaimStatus" disabled>
+                                    <select class="form-control form-select bui" id="ClaimStatus" name="ClaimStatus" disabled>
                                         <option selected="selected" value="Precautionary notification only">Precautionary notification only</option>
                                         <option value="Withdrawn by insured">Withdrawn by insured</option>
                                         <option value="Formal claim filed">Formal claim filed</option>
@@ -363,7 +363,7 @@
                                 <label class="label">Primary Policy Product</label>
                                 <label class="input form-group">
 
-                                    <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b">
+                                    <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select">
                                         <option selected="selected" value="">-- Select here --</option>
 
                                         @foreach (var product in Model.ClientProgramme.BaseProgramme.Products)
@@ -382,7 +382,7 @@
                                 <label class="label">Responsible Principal</label>
                                 <label class="input form-group">
 
-                                    <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-control b">
+                                    <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
                                         <option selected="selected" value="">-- Select here --</option>
                                         @foreach (var org in Model.OrganisationViewModel.Organisations)
                                         {
@@ -459,7 +459,7 @@
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 hidden ClaimStatus">
                                 <label class="label required">Claim Status</label>
                                 <label class="input">
-                                    <select class="form-control bui" id="AddClaimStatus" name="ClaimStatus">
+                                    <select class="form-control bui form-select" id="AddClaimStatus" name="ClaimStatus">
                                         <option selected="selected" value="Precautionary notification only">Precautionary notification only</option>
                                         <option value="Withdrawn by insured">Withdrawn by insured</option>
                                         <option value="Formal claim filed">Formal claim filed</option>
@@ -563,7 +563,7 @@
                                 <label class="label">Primary Policy Product</label>
                                 <label class="input form-group">
 
-                                    <select data-placeholder="Choose Primary Policy Product..." id="AddPrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b">
+                                    <select data-placeholder="Choose Primary Policy Product..." id="AddPrimaryPolicyprod" name="SelectedClaimProducts" class="form-select form-control b">
 
                                         <option selected="selected" value="">-- Select here --</option>
 
@@ -583,7 +583,7 @@
                                 <label class="label">Responsible Principal</label>
                                 <label class="input form-group">
 
-                                    <select data-placeholder="Choose Responsible Principal..." id="AddResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-control b">
+                                    <select data-placeholder="Choose Responsible Principal..." id="AddResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-control b form-select">
 
                                         <option selected="selected" value="">-- Select here --</option>
 

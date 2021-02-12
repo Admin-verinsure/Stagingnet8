@@ -61,7 +61,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasnegotiate" name="PIViewModel.HasNegotiateOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasnegotiate" name="PIViewModel.HasNegotiateOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasNegotiateOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
