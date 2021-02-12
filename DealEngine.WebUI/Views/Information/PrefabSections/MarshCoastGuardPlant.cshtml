@@ -123,7 +123,7 @@
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                             <label class="label required">Location</label>
                             <label class="input">
-                                <select onchange="addPlantLoc()" class="form-control omv" id="MotorLocation" name="VehicleLocation">
+                                <select onchange="addPlantLoc()" class="form-control omv form-select" id="MotorLocation" name="VehicleLocation">
                                     <option selected="selected" value="" required>-- Select --</option>
                                     @foreach (var utrloc in Model.LocationViewModel.Locations)
                                     {
@@ -227,7 +227,7 @@
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                             <label class="label required">Location</label>
                             <label class="input">
-                                <select onchange="AddaddPlantLoc()" class="form-control omv" id="AddMotorLocation" name="VehicleLocation">
+                                <select onchange="AddaddPlantLoc()" class="form-control omv form-select" id="AddMotorLocation" name="VehicleLocation">
                                     <option selected="selected" value="" required>-- Select --</option>
                                     @foreach (var utrloc in Model.LocationViewModel.Locations)
                                     {

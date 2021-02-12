@@ -32,7 +32,7 @@
                     @Html.HiddenFor(m => m.Name)
 
                     <div class="form-group">
-                        <select onchange="selectorgUser()" class="form-control b" id="selectParty" name="selectedparty">
+                        <select onchange="selectorgUser()" class="form-select form-control b" id="selectParty" name="selectedparty">
                             <option selected="selected" value="">-- Select Party --</option>
                             @foreach (var blloc in Model.Programme.ClientProgrammes)
                             {

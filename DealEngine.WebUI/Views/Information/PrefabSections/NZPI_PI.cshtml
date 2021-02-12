@@ -21,7 +21,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasstandardtermsservices" name="PIViewModel.HasStandardTermsServicesOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasstandardtermsservices" name="PIViewModel.HasStandardTermsServicesOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasStandardTermsServicesOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -49,7 +49,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hascontractharmprov" name="PIViewModel.HasHarmProvOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hascontractharmprov" name="PIViewModel.HasHarmProvOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasHarmProvOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -90,7 +90,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasindependentspi" name="PIViewModel.HasIndependentsPIOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasindependentspi" name="PIViewModel.HasIndependentsPIOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasIndependentsPIOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -107,7 +107,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasindependentsbound" name="PIViewModel.HasIndependentsBoundOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasindependentsbound" name="PIViewModel.HasIndependentsBoundOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasIndependentsBoundOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>

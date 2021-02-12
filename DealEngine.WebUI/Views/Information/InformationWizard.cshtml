@@ -135,7 +135,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Marina Location</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="ModalMarinaLocSelected()" class="form-control b" id="WaterLocationMarinaLocationModal" name="WaterLocationMarinaLocation" required>
+                                                                                    <select onchange="ModalMarinaLocSelected()" class="form-select form-control b" id="WaterLocationMarinaLocationModal" name="WaterLocationMarinaLocation" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         @*@foreach (var bwloc in Model.MarinaLocations)
                                                                                             {
@@ -149,7 +149,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Organisational Unit</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="ModalOUSelected()" class="form-control b" id="OrgUnitModal" name="OrganisationalUnit" required>
+                                                                                    <select onchange="ModalOUSelected()" class="form-select form-control b" id="OrgUnitModal" name="OrganisationalUnit" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                     </select>
                                                                                 </label>
@@ -158,7 +158,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12" style="border-bottom:.5px solid #e5e5e5; padding-bottom:18px; margin-bottom:20px;">
                                                                                 <label class="label cgmodalLabel">Location</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="addNewLoc()" class="form-control b" id="WaterLocationLocationModal" name="WaterLocationLocation">
+                                                                                    <select onchange="addNewLoc()" class="form-select form-control b" id="WaterLocationLocationModal" name="WaterLocationLocation">
                                                                                         <option selected="selected" value="00000000-0000-0000-0000-000000000000">-- Select --</option>
                                                                                         @foreach (var wloc in Model.LocationViewModel.Locations)
                                                                                         {
@@ -179,7 +179,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Moored Type</label>
                                                                                 <label class="input w100">
-                                                                                    <select class="form-control b" data-name="WaterLocationMooringType" id="MooredTypeModal" name="WaterLocationMooringType">
+                                                                                    <select class="form-select form-control b" data-name="WaterLocationMooringType" id="MooredTypeModal" name="WaterLocationMooringType">
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         <option value="Pile">Pile</option>
                                                                                         <option id="MooredTypeMarina" value="Marina">Marina</option>
@@ -210,7 +210,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12" style="border-bottom:.5px solid #e5e5e5; padding-bottom:18px; margin-bottom:20px;">
                                                                                 <label class="label cgmodalLabel required">Location</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="addNewLoc()" class="form-control b" id="BuildingLocationModal" name="BuildingLocation" required>
+                                                                                    <select onchange="addNewLoc()" class="form-select form-control b" id="BuildingLocationModal" name="BuildingLocation" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         @foreach (var wloc in Model.LocationViewModel.Locations)
                                                                                         {
@@ -223,7 +223,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel required">Storage Type</label>
                                                                                 <label class="input w100">
-                                                                                    <select class="form-control b" data-name="BuildingCategory" id="BuildingCategoryModal" name="BuildingCategory" required>
+                                                                                    <select class="form-select form-control b" data-name="BuildingCategory" id="BuildingCategoryModal" name="BuildingCategory" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         <option value="Lockup">Lockup At Address</option>
                                                                                         <option value="Open Park">Open Park At Address</option>
@@ -304,7 +304,7 @@
                                                                                         <label>Organisation Type</label>
                                                                                     </section>
                                                                                     <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                                                        <select class="form-control" data-name="organisationType" id="OrganisationTypeName" name="OrganisationTypeName" value="" required>
+                                                                                        <select class="form-select form-control" data-name="organisationType" id="OrganisationTypeName" name="OrganisationTypeName" value="" required>
                                                                                             <option selected>--Select---</option>
                                                                                             <option>Person - Individual</option>
                                                                                             <option>Corporation – Limited liability</option>
@@ -466,7 +466,7 @@
                                                                                 <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                     <label class="label cgmodalLabel required ">Race Category</label>
                                                                                     <label class="input cgmodalInput">
-                                                                                        <select class="form-control b" id="BoatUseRaceCategoryModal" name="BoatUseRaceCategory" required>
+                                                                                        <select class="form-select form-control b" id="BoatUseRaceCategoryModal" name="BoatUseRaceCategory" required>
                                                                                             <option selected="selected" value="">-- Select --</option>
                                                                                             <option value="YachtClubSocialRacingupto50nm">Yacht Club Social Racing up to 50nm</option>
                                                                                             <option value="Yachtracingupto200nm">Yacht racing up to 200nm</option>
@@ -478,7 +478,7 @@
                                                                                 <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                     <label class="label cgmodalLabel required">Do you use spinnakers and/or extras?</label>
                                                                                     <label class="input cgmodalInput">
-                                                                                        <select class="form-control b" id="BoatUseRaceUseSpinnakersModal" name="BoatUseRaceUseSpinnakers" required>
+                                                                                        <select class="form-select form-control b" id="BoatUseRaceUseSpinnakersModal" name="BoatUseRaceUseSpinnakers" required>
                                                                                             <option selected="selected" value="">-- Select --</option>
                                                                                             <option value="True">Yes</option>
                                                                                             <option value="False">No</option>
@@ -585,7 +585,7 @@
                                                                                 <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12" id="VesselTrailerLoc" style="display:none;">
                                                                                     <label class="label cgmodalLabel required">Location</label>
                                                                                     <label class="input cgmodalInput">
-                                                                                        <select onchange="addNewTrailerLoc()" class="form-control b" id="VehicleLocationModal" name="VehicleLocation" required>
+                                                                                        <select onchange="addNewTrailerLoc()" class="form-select form-control b" id="VehicleLocationModal" name="VehicleLocation" required>
                                                                                             <option selected="selected" value="">-- Select --</option>
                                                                                             @foreach (var tloc in Model.LocationViewModel.Locations)
                                                                                             {
@@ -676,7 +676,7 @@
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label for="CeaseReason" class="label cgmodalLabel required" style="color:black; font-size:100%;">Cease Reason</label>
                                                                             <label class="input cgmodalInput">
-                                                                                <select class="form-control b" id="VehicleCeaseReason" name="VehicleCeaseReason">
+                                                                                <select class="form-select form-control b" id="VehicleCeaseReason" name="VehicleCeaseReason">
                                                                                     <option selected="selected" value="">-- Select --</option>
                                                                                     <option value="1">Sold</option>
                                                                                     <option value="2">Decommision</option>
@@ -728,7 +728,7 @@
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label for="CeaseReason" class="label cgmodalLabel required" style="color:black; font-size:100%;">Cease Reason</label>
                                                                             <label class="input cgmodalInput">
-                                                                                <select class="form-control b" id="RemoveCeaseReason" name="BoatCeaseReason" required>
+                                                                                <select class="form-select form-control b" id="RemoveCeaseReason" name="BoatCeaseReason" required>
                                                                                     <option selected="selected" value="">-- Select --</option>
                                                                                     <option value="1">Sold</option>
                                                                                     <option value="2">Decommision</option>
@@ -776,7 +776,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel required">Location Type</label>
                                                                                 <label class="input w100">
-                                                                                    <select class="form-control b" id="LocationTypeModal" name="LocationType" required>
+                                                                                    <select class="form-select form-control b" id="LocationTypeModal" name="LocationType" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         <option value="Residential">Residential</option>
                                                                                         <option value="Commercial">Commercial</option>

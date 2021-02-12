@@ -133,9 +133,9 @@
                                                                         case ItemType.DROPDOWNLIST:
                                                                             <label class="label">@item.Label</label>
                                                                             <label class="input">
-                                                                                @*@Html.DropDownListFor(item => item.Student.StudentId, new SelectList(Model.StudentList, "StudentId", "FirstName"), "--Select--", new { @id = "myid", @class = "myclass" })*@
+                                                                                @*@Html.DropDownListFor(item => item.Student.StudentId, new SelectList(Model.StudentList, "StudentId", "FirstName"), "--Select--", new { @id = "myid", @class = "form-select" })*@
 
-                                                                                @Html.DropDownList(@item.Name, @item.Options, @item.Value, new { @id = @item.Name }).
+                                                                                @Html.DropDownList(@item.Name, @item.Options, @item.Value, new { @id = @item.Name, @class = "form-select" }).
 
 
                                                                                 @*@Html.DropDownList(@item.Name, @item.Options,@item.Value, new { @id = @item.Name }).SelectedValue(@item.Value).OptionLabel(@item.DefaultText).Id(@item.Name)*@

@@ -1,7 +1,7 @@
 ﻿@model DealEngine.WebUI.Models.Milestone.MilestoneBuilderViewModel
 
 <div id="taskPriority" class="form-group">
-    <select class="form-control b" id="Priortylist" required>
+    <select class="form-control b form-select" id="Priortylist" required>
         <option selected="selected" value="">-- Select Task Priority --</option>
         @foreach (var taskPriorty in Model.Priorities)
         {

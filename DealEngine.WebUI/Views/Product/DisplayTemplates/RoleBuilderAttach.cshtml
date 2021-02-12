@@ -7,7 +7,7 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    <select id="RoleAttach_SelectedProgramme" name="RoleAttach.SelectedProgramme" class="form-control">
+                    <select id="RoleAttach_SelectedProgramme" name="RoleAttach.SelectedProgramme" class="form-select form-control">
                         @foreach (var prog in Model.BaseProgList)
                         {
                             <option value="@prog.Value">@prog.Text</option>

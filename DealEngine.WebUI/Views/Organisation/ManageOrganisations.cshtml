@@ -7,7 +7,7 @@
                     <h5 class="card-title">Update/Add Marina</h5>
                     <p class="card-text" style="margin-top:30px;">Marina Name</p>
                     <div class="form-group">
-                        <select class="form-control" Id="MarinaId" onchange="GetMarina(this.id)">
+                        <select class="form-control form-select" Id="MarinaId" onchange="GetMarina(this.id)">
                             <option selected="selected" value="">Add New</option>
                             @foreach (var marina in Model.Organisations.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Marina")).ToList())
                             {
@@ -41,7 +41,7 @@
                     <h5 class="card-title">Update/Add Financial Institute</h5>
                     <p class="card-text" style="margin-top:30px;">Financial Institutes</p>
                     <div class="form-group">
-                        <select class="form-control" Id="FinancialId" onchange="GetInstitute(this.id)">
+                        <select class="form-control form-select" Id="FinancialId" onchange="GetInstitute(this.id)">
                             <option selected="selected" value="">Add New</option>
                             @foreach (var Financial in Model.Organisations.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Financial")).ToList())
                             {
