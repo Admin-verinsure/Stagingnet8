@@ -2,88 +2,90 @@
 <div class="container-fluid">
     <div class="row">
         <div class="accordion container" id="accordionExample">
-            <div class="card">
-                <div class="card-header" id="headingOne">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Configure Role
-                        </button>
-                    </h2>
-                </div>
-                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-                    <div class="card-body">
-                        <div class="container" id="AddRoleForm">
-                            <form>
-                                <div class="form-group">
-                                    @await Html.PartialAsync("AddRoleForm", Model)
-                                </div>
-                                <div class="form-group">
-                                    @await Html.PartialAsync("UpdateRoleForm", Model)
-                                </div>
-                                <div class="form-group">
-                                    @await Html.PartialAsync("DeleteRoleForm", Model)
-                                </div>
-                            </form>
-                        </div>                        
+            <div class="accordion-item">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0 accordion-header">
+                            <button class="btn btn-link " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Configure Role
+                            </button>
+                        </h2>
                     </div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header" id="headingThree">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                            Add Claims to User
-                        </button>
-                    </h2>
-                </div>
-                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
-
-                    <div class="card-body">
-                        <form id="userclaimform">
-                            <div class="form-group">
-                                <select class="custom-select form-control form-select" id="AddClaimUser" data-placeholder="Select User">
-                                    @foreach (var user in Model.UserList)
-                                    {
-                                        <option value="@user.Id">@user.UserName</option>
-                                    }
-                                </select>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="container" id="AddRoleForm">
+                                <form>
+                                    <div class="form-group">
+                                        @await Html.PartialAsync("AddRoleForm", Model)
+                                    </div>
+                                    <div class="form-group">
+                                        @await Html.PartialAsync("UpdateRoleForm", Model)
+                                    </div>
+                                    <div class="form-group">
+                                        @await Html.PartialAsync("DeleteRoleForm", Model)
+                                    </div>
+                                </form>
                             </div>
-                            <div class="form-group">
-                                <select class="cselect form-control form-select" data-placeholder="Add Claims" id="AddUserClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)">
-                                    @foreach (var claim in Model.ClaimList)
-                                    {
-                                        <option value="@claim.Value">@claim.Value</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <button type="button" class="btn btn-primary btn-sm" onclick="SaveClaimToUser()">Save</button>
-                            </div>
-                        </form>
-                    </div>
-
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header" id="headingfour">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapsefour" aria-expanded="false" aria-controls="collapsefour">
-                            Add Role to User
-                        </button>
-                    </h2>
-                </div>
-                <div id="collapsefour" class="collapse" aria-labelledby="headingfour" data-parent="#accordionExample">
-                    <div class="card-body">
-                        <div class="container" id="AddRoleToUserForm">
-                            @await Html.PartialAsync("AddRoleToUserForm", Model)
                         </div>
                     </div>
-                    @*<div class="card-footer">
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingThree">
+                        <h2 class="mb-0 accordion-header">
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Add Claims to User
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+
+                        <div class="card-body">
+                            <form id="userclaimform">
+                                <div class="form-group">
+                                    <select class="custom-select form-control form-select" id="AddClaimUser" data-placeholder="Select User">
+                                        @foreach (var user in Model.UserList)
+                                        {
+                                            <option value="@user.Id">@user.UserName</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <select class="cselect form-control form-select" data-placeholder="Add Claims" id="AddUserClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)">
+                                        @foreach (var claim in Model.ClaimList)
+                                        {
+                                            <option value="@claim.Value">@claim.Value</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="SaveClaimToUser()">Save</button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingfour">
+                        <h2 class="mb-0 accordion-header">
+                            <button class="btn btn-link " type="button" data-bs-toggle="collapse" data-bs-target="#collapsefour" aria-expanded="false" aria-controls="collapsefour">
+                                Add Role to User
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapsefour" class="accordion-collapse collapse" aria-labelledby="headingfour" data-bs-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="container" id="AddRoleToUserForm">
+                                @await Html.PartialAsync("AddRoleToUserForm", Model)
+                            </div>
+                        </div>
+                        @*<div class="card-footer">
                         <div class="btn-group" role="group" aria-label="Basic example">
                             <button type="button" class="btn btn-primary" onclick="AddRoleToUser()">Add User Permissions</button>
                             <button type="button" class="btn btn-primary">Delete</button>
                         </div>
                     </div>*@
+                    </div>
                 </div>
             </div>
         </div>

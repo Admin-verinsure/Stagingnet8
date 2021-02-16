@@ -61,7 +61,7 @@
         <div class="form-group nonsubmitted">
             <label class="radio">
                 <a>
-                    <input id="agreementDecline" name="radio" type="radio" data-toggle="modal" data-target="#advisoryModalDecline">
+                    <input id="agreementDecline" name="radio" type="radio" data-bs-toggle="modal" data-bs-target="#advisoryModalDecline">
                     <i></i>No, I wish to decline the offered Agreement
                 </a>
             </label>
@@ -83,7 +83,7 @@
                     @Html.Raw(Model.Advisory)
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="CloseAdvisory('@Model.InformationSheetId')">Ok</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="CloseAdvisory('@Model.InformationSheetId')">Ok</button>
                 </div>
             </div>
         </div>
