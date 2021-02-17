@@ -16,8 +16,8 @@
                                 <i class="fa fa-globe">
                                     <strong class="mr-auto"> Success </strong>
                                     <small class="text-muted"> just now </small>
-                                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
+                                    <button type="button" class="ml-2 mb-1 btn-close" data-bs-dismiss="toast" aria-label="Close">
+                                        @*<span aria-hidden="true">&times;</span>*@
                                     </button>
                                 </i>
                             </div>
@@ -74,7 +74,7 @@
                                                 Advisory
                                             </button>
                                             </h3>
-                                            <div id="form-step-0" role="form" data-toggle="validator">
+                                            <div id="form-step-0" role="form" data-bs-toggle="validator">
                                                 <div class="form-group">
                                                     <div class="row">
                                                         @{ await Html.RenderPartialAsync("_ViewInformation"); }
