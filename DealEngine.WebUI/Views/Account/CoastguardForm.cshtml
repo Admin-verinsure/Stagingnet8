@@ -46,7 +46,9 @@
                     <form id="quickQuote">
                         <div class="container">
 
-                            <h1 class="text-align-center" style="font-size: 18px;font-weight: 600;font-family: Arial;text-align: center;color: black;padding-bottom: 15px; padding-top:10px" strong id="QuickQuoteText2">Tell us a little bit more about your vessel...</h1>
+                            <h1 class="text-align-center" style="font-size: 18px;font-weight: 600;font-family: Arial;text-align: center;color: black;padding-bottom: 15px; padding-top:10px" strong id="QuickQuoteText2">
+                            Tell us a little bit more about your vessel...
+                            </h1>
 
                             <select onchange="updateLabel()" id="CraftTypeDrop" class="form-control form-select input-lg" hidden style="margin-top: 20px; margin-bottom: 25px;">
                                 <option value="" selected="selected">Pick your highest value vessel.</option>
@@ -69,7 +71,12 @@
                                 <table class="table table-bordered">
                                     <tr id="mnumbfgroup" class="coastguardformtr">
                                         <td class="coastguardformtd1">
-                                            <span class="input-group-addon" style="width:220px;height:28px"><label class="cgform-label" id="memNum">Coastguard Membership #<p style="color:red; float:right;">&nbsp;*</p></label></span>
+                                            <span class="input-group-addon" style="width:220px;height:28px">
+                                                <label class="cgform-label" id="memNum">
+                                                    Coastguard Membership #
+                                                    <p style="color:red; float:right;">&nbsp;*</p>
+                                                </label>
+                                            </span>
 
                                         </td>
                                         <td class="coastguardformtd">
@@ -82,7 +89,12 @@
                                     </tr>
                                     <tr id="vtypefgroup" class="coastguardformtr">
                                         <td class="coastguardformtd1">
-                                            <span class="input-group-addon" style="width:220px;height:28px"><label class="cgform-label" id="VesselType">Vessel Type<p style="color:red; float:right;">&nbsp;*</p></label></span>
+                                            <span class="input-group-addon" style="width:220px;height:28px">
+                                                <label class="cgform-label" id="VesselType">
+                                                    Vessel Type
+                                                    <p style="color:red; float:right;">&nbsp;*</p>
+                                                </label>
+                                            </span>
 
                                         </td>
                                         <td class="coastguardformtd">
@@ -885,6 +897,7 @@
             }
 
             else {
+                console.log("badCount = " + badCount);
                 if (badCount < 1) {
                     $('#mnumb').attr('readonly', 'readonly');
                     $('#mnumb').disableSelection;
@@ -909,7 +922,7 @@
                     $('#indiQuoteSpan').show();
                     $('#quoteInc').show();
                     $('#next').show();
-
+                    next.classList.remove("hidden");
                     
                     qref.hidden = true;
                     indiQuoteSpan.hidden = false;
@@ -1282,9 +1295,11 @@
                 //m.classList.add("hidden");
                 //t.classList.add("hidden");
                 //qq.classList.add("hidden");
-            }
-        });
 
+            }
+
+        });
+        
         /*
                     // Model i agree button
                     $("#i-agree").click(function () {
