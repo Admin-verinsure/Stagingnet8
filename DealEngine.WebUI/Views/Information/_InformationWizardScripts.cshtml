@@ -66,6 +66,7 @@
                 })
                 .done(function (url) {
                     $("#agreementView").load(url, function () {
+                        console.log("test for tab-1");
                     });
                 })
                 .fail(function (a, s, d) {
