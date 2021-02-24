@@ -242,7 +242,7 @@
     //np code
     function RemoveClaimNotification(Id) {
         sessionStorage.setItem('accordianTrigger', 'Notifications');
-        var postData = { LocationId: Id };
+        var postData = { claimId: Id };
         $.ajax({
             url: '@Url.Action("RemoveClaimNotification", "Services")',
             type: "POST",
