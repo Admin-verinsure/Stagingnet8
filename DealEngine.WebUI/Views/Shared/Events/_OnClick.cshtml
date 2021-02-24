@@ -26,7 +26,7 @@
         CloneForm("OrganisationTab3", "OrganisationTab2", "OrganisationSubmitBtn", "OrganisationClearButton");
     }
 
-    function RemoveOrganisation(organisationId, AccordionId) {        
+    function RemoveOrganisation(organisationId, AccordionId) {
         var programmeId = document.getElementById("Programme_Id").value;
         var clientInformationId = document.getElementById("AnswerSheetId").value;
         sessionStorage.setItem('accordianTrigger', AccordionId);
@@ -63,7 +63,7 @@
                 debugger;
             }
         });
-    }    
+    }
 
     function CloneForm(AddTabId, EditTabId, AddButtonId, CancelButtonId) {
         var addTabHTML = document.getElementById(AddTabId);
@@ -75,14 +75,14 @@
         form = document.getElementById(editTabHTML.firstElementChild.id);
         addTabHTML.innerHTML = "";
         document.getElementById(AddButtonId).innerText = "Update";
-        document.getElementById(CancelButtonId).innerText = "Cancel Update";        
+        document.getElementById(CancelButtonId).innerText = "Cancel Update";
         SetCurrentTab(EditTabId);
         var lists = form.getElementsByClassName("chosen-select");
-        if (lists != null) {     
+        if (lists != null) {
             for (i = 0; i < lists.length; i++) {
                 var chosenList = document.getElementById(lists[i].id);
                 chosenList.nextElementSibling.remove();
-            }            
+            }
             $(".chosen-select").chosen({ width: "95%" });
 
         }
@@ -160,17 +160,17 @@
         if (editTabHTML.firstElementChild.tagName == "FORM") {
             var form = document.getElementById(editTabHTML.firstElementChild.id);
             var obj = $("#" + form.id).clone();
-            $("#" + AddTabId).append(obj);                       
+            $("#" + AddTabId).append(obj);
             editTabHTML.innerHTML = "";
             editTabHTML.appendChild(CreateEditLabel(Object));
             var addTabHTML = document.getElementById(AddTabId);
-            form = document.getElementById(addTabHTML.firstElementChild.id);       
+            form = document.getElementById(addTabHTML.firstElementChild.id);
             var lists = form.getElementsByClassName("chosen-select");
             if (lists != null) {
                 for (i = 0; i < lists.length; i++) {
                     var chosenList = document.getElementById(lists[i].id);
                     chosenList.nextElementSibling.remove();
-                } 
+                }
                 $(".chosen-select").chosen({ width: "95%" });
             }
         }
@@ -178,6 +178,27 @@
         document.getElementById(CancelButtonId).innerText = "Clear and Cancel";
         ResetOrganisation();
     }
+    @*function AddClaim() {
+        var form = document.getElementById("ClaimViewModel");
+        var formValid = TableFormValidation(form , "claim");
+        if (formValid) {
+            sessionStorage.setItem('accordianTrigger', 'Notifications');
+            $.ajax({
+                url: '@Url.Action("AddClaim", "Services")',
+                type: "POST",
+                data: $("#tab_1 :input").serialize({ json: true }),
+                async: false
+            })
+                .done(function () {
+                    //Save the session and reload
+                    form.reset();
+                    location.reload();
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                });
+        }
+    }*@
 
     function AddLocation() {
         var form = document.getElementById("LocationViewModel");

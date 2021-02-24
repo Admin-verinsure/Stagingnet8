@@ -7,6 +7,8 @@ namespace DealEngine.WebUI.Models
 {
     public class ClaimViewModel
     {
+     
+
         public Guid AnswerSheetId { get; set; }
 
         public Guid ClaimId { get; set; }
@@ -51,6 +53,12 @@ namespace DealEngine.WebUI.Models
 
         public Guid[] ClaimProducts { get; set; }
 
+        //public ClaimViewModel(ClientInformationSheet ClientInformationSheet)
+        //{
+        //    claim = GetLocations(ClientInformationSheet);
+        //    LocationType = GetLocationTypes();
+
+        //}
         public ClaimNotification ToEntity(User creatingUser)
         {
             ClaimNotification claim = new ClaimNotification(creatingUser);

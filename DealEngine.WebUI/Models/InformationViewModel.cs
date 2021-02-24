@@ -28,6 +28,7 @@ namespace DealEngine.WebUI.Models
             RevenueDataViewModel = new RevenueDataViewModel(clientInformationSheet.Programme.BaseProgramme);
             RoleDataViewModel = new RoleDataViewModel(clientInformationSheet.Programme.BaseProgramme);
             LocationViewModel = new LocationViewModel(clientInformationSheet);
+            //ClaimViewModel = new ClaimViewModel(clientInformationSheet);
             ProjectViewModel = new ProjectViewModel(clientInformationSheet);
             ResearchHouseViewModel = new ResearchHouseViewModel(clientInformationSheet);
             OrganisationViewModel = new OrganisationViewModel(clientInformationSheet, OrgUser);
@@ -55,6 +56,7 @@ namespace DealEngine.WebUI.Models
         public List<SelectListItem> BoatUseslist { get; set; }
         public IEnumerable<OrganisationViewModel> MarinaLocations { get; set; }
         public IEnumerable<ClaimViewModel> Claims { get; set; }
+        public ClaimViewModel ClaimViewModel { get; set; }
         public string Advisory { get; set; }
         public RevenueDataViewModel RevenueDataViewModel { get; set; }
         public RoleDataViewModel RoleDataViewModel { get; set; }
