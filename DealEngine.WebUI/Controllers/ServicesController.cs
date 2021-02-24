@@ -2826,6 +2826,36 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+
+        //RemoveClaimNotification np code
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveClaimNotification(Guid claimId, bool status)
+        {
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                ClaimNotification claim = await _claimNotificationService.GetClaimNotificationById(claimId);
+
+                using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    claim.Removed = status;
+                    await uow.Commit();
+                }
+
+                return new JsonResult(true);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> SetClaimRemovedStatus(Guid claimId, bool status)
         {

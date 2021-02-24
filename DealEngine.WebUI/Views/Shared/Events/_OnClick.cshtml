@@ -239,6 +239,24 @@
             });
     }
 
+    //np code
+    function RemoveClaimNotification(Id) {
+        sessionStorage.setItem('accordianTrigger', 'Notifications');
+        var postData = { LocationId: Id };
+        $.ajax({
+            url: '@Url.Action("RemoveClaimNotification", "Services")',
+            type: "POST",
+            data: postData
+        })
+            .done(function () {
+                //Save the session and reload
+                location.reload();
+            })
+            .fail(function (a, s, d) {
+                debugger;
+            });
+    }
+
     function RestoreLocation(Id) {
         sessionStorage.setItem('accordianTrigger', 'Location');
         var postData = { LocationId: Id };

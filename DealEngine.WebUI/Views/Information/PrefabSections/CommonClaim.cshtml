@@ -181,7 +181,9 @@
                                 @claim.Claimant
                             </td>
                             <td>
-                                <button onclick="SetClaimRemovedStatus('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+                                @*<button onclick="SetClaimRemovedStatus('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>*@
+                                <button onclick="RemoveClaimNotification('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+
                             </td>
                         </tr>
                     }
@@ -196,7 +198,7 @@
         </div>
         <div id="clTabs3" class="tab-pane" role="tabpanel">
 
-            <form class="" id="ClaimNotifications">
+            <form class="" id="ClaimViewModel">
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
@@ -205,7 +207,7 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.ClientInformationSheet.ClaimNotifications, new { id = "ClaimTitle", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimNotifications" })
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimTitle, new { id = "ClaimTitle", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
                         </div>
                     </div>
                 </div>
@@ -213,23 +215,11 @@
                     <div class="row">
                         <div class="col-6">
                             <label for="ClaimDescription form-label" class="label required">
-                                ?? text area Claim Description:
+                                text area Claim Description:
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.ClientInformationSheet.ClaimNotifications, new { id = "ClaimDescription", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimNotifications" })
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-6">
-                            <label for="ClaimStatus" class="label required form-label">
-                                Claim Status
-                            </label>
-                        </div>
-                        <div class="col-6">
-                            @*@Html.DropDownListFor(m => m.ClientInformationSheet.ClaimNotifications, Model.ClientInformationSheet.ClaimNotifications, new { id = "ClaimStatus", @class = "custom-select form-select", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimNotifications" })*@
+                            @Html.TextAreaFor(m => m.ClaimViewModel.ClaimDescription, new { id = "ClaimDescription", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
                         </div>
                     </div>
                 </div>
@@ -241,7 +231,7 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.ClientInformationSheet.ClaimNotifications, new { id = "ClaimReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimNotifications" })
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimReference, new { id = "ClaimReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
                         </div>
                     </div>
                 </div>
@@ -253,19 +243,19 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.ClientInformationSheet.ClaimNotifications, new { id = "ClaimPolicyReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimNotifications" })
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimPolicyReference, new { id = "ClaimPolicyReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="postcodedetails" class="label form-label">
+                            <label for="ClaimInsurerName" class="label form-label">
                                 Policy Insurer Name
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.LocationViewModel.Postcode, new { id = "postcodedetails", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimNotifications" })
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimInsurerName, new { id = "ClaimInsurerName", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
                         </div>
                     </div>
                 </div>
@@ -277,224 +267,122 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.LocationViewModel.CommonName, new { id = "ClaimInsuredName", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimNotifications" })
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimInsuredName, new { id = "ClaimInsuredName", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
                         </div>
                     </div>
                 </div>
-
                 <div class="form-group">
-                    <button class="btn btn-sm btn-success text-light" id="AddupdateBoat" onclick="ValidateAddClaim()" form="ClaimNotifications"> Add </button>
-                    <button class="btn btn-sm btn-danger text-light" id="AddClearBoat" onclick="ClearBoats('ClaimNotifications','clTabs1')" form="ClaimNotifications"> Clear and Cancel </button>
-                </div>
-            </form>
-
-
-
-
-
-
-            <fieldset id="fieldset">
-                <input id="ClaimId" name="ClaimId" type="hidden" />
-                <input id="OrganisationId" name="OrganisationId" type="hidden" />
-                <!-- 1st rows -->
-                <div class="row">
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label required">Claim Title</label>
-                        <label class="input">
-                            <i></i>
-                            <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimTitle" id="AddClaimTitle" name="ClaimTitle" placeholder="Claim Title" value="">
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimTitle"></p>
-
-                    </section>
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label required">Claim Description</label>
-                        <label class="textarea">
-                            <textarea class="form-control cl" data-type="TEXTAREA" data-name="ClaimDescription" id="AddClaimDescription" name="ClaimDescription" placeholder="Claim Description" value=""></textarea>
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimDescription"></p>
-
-                    </section>
-                    @*<section class="col col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                            <label class="label">Product</label>
-                            <label class="input">
-                                <select class="cselect form-control cl" data-placeholder="Product" id="ClaimProducts" multiple="multiple" name="ClaimProducts" style="display: none;">
-                                    @foreach (var pro in Model.AvailableProducts)
-                                    {
-                                        //<option value="@pro.ID">@pro.Name</option>
-                                    }
-                                </select>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="Claimant form-label" class="label required">
+                                Name of Claimant
                             </label>
-                        </section>*@
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 hidden ClaimStatus">
-                        <label class="label required">Claim Status</label>
-                        <label class="input">
-                            <select class="form-control bui form-select" id="AddClaimStatus" name="ClaimStatus">
-                                <option selected="selected" value="Precautionary notification only">Precautionary notification only</option>
-                                <option value="Withdrawn by insured">Withdrawn by insured</option>
-                                <option value="Formal claim filed">Formal claim filed</option>
-                                <option value="Information request to insured">Information request to insured</option>
-                                <option value="Third party has made formal demand">Third party has made formal demand</option>
-                                <option value="Solicitors instructed for claimant">Solicitors instructed for claimant</option>
-                                <option value="Subrogated to insurer">Subrogated to insurer</option>
-                                <option value="In discussions">In discussions</option>
-                                <option value="In agreed alternative process">In agreed alternative process</option>
-                                <option value="Proceedings issued">Proceedings issued</option>
-                                <option value="Part Settled">Part Settled</option>
-                                <option value="Settled">Settled</option>
-                                <option value="Closed">Closed</option>
-                                <option value="Open">Open</option>
-
-                            </select>
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimStatus"></p>
-
-                    </section>
-
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.Claimant, new { id = "Claimant", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                        </div>
+                    </div>
                 </div>
-
-                <!-- 2nd rows -->
-                <div class="row">
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label">Claim Reference</label>
-                        <label class="input">
-                            <i></i>
-                            <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimReference" id="AddClaimReference" name="ClaimReference" placeholder="Claim Reference" value="">
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimReference"></p>
-
-                    </section>
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label">Policy Reference</label>
-                        <label class="input">
-                            <i></i>
-                            <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimPolicyReference" id="AddClaimPolicyReference" name="ClaimPolicyReference" placeholder="Policy Reference" value="">
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimPolicyReference"></p>
-
-                    </section>
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label">Policy Insurer Name</label>
-                        <label class="input">
-                            <i></i>
-                            <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimInsurerName" id="AddClaimInsurerName" name="ClaimInsurerName" placeholder="Policy Insurer Name" value="">
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimInsurerName"></p>
-
-                    </section>
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label ">Policy Insured Name</label>
-                        <label class="input">
-                            <i></i>
-                            <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimInsuredName" id="AddClaimInsuredName" name="ClaimInsuredName" placeholder="Policy Insured Name" value="">
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimInsuredName"></p>
-
-                    </section>
-
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label required">Name of Claimant</label>
-                        <label class="input">
-                            <i></i>
-                            <input class="form-control cl" data-type="TEXTBOX" data-name="Claimant" id="AddClaimant" name="Claimant" placeholder="Name of Claimant" value="">
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimant"></p>
-
-                    </section>
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label required">Approx Date of Loss</label>
-                        <label class="input">
-                            <i class="icon-append fa fa-calendar"></i>
-                            <input name="ClaimDateOfLoss" placeholder="Date of Loss" class="Startdate form-control cl" id="AddClaimDateOfLoss" type="text">
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimDateOfLoss"></p>
-
-                    </section>
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label required">Notification Date</label>
-                        <label class="input">
-                            <i class="icon-append fa fa-calendar"></i>
-                            <input name="ClaimNotifiedDate" placeholder="Notification Date" class=" Startdate form-control cl" id="AddClaimNotifiedDate" type="text">
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimNotifiedDate"></p>
-
-                    </section>
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label">$ Estimate of Liability</label>
-                        <label class="input">
-                            <i></i>
-                            <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimEstimateInsuredLiability" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="AddClaimEstimateInsuredLiability" name="ClaimEstimateInsuredLiability" placeholder="$ Estimate of Liability" value="">
-                        </label>
-                        <p class="validationContainer" id="AddvalidateClaimEstimateInsuredLiability"></p>
-
-                    </section>
-
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label">Primary Policy Product</label>
-                        <label class="input form-group">
-
-                            <select data-placeholder="Choose Primary Policy Product..." id="AddPrimaryPolicyprod" name="SelectedClaimProducts" class="form-select form-control b">
-
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimDateOfLoss form-label" class="label required">
+                                Approx Date of Loss
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimDateOfLoss, new { id = "ClaimDateOfLoss", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimNotifiedDate form-label" class="label required">
+                                Notification Date
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimNotifiedDate, new { id = "ClaimNotifiedDate", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimEstimateInsuredLiability form-label" class="label required">
+                                $ Estimate of Liability
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimEstimateInsuredLiability, new { id = "ClaimEstimateInsuredLiability", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="PrimaryPolicyprod form-label" class="label required">
+                                Primary Policy Product
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @*@Html.DropDownListFor(m => m.ClientProgramme.BaseProgramme.Products, Model.ClientProgramme.BaseProgramme.Products, new { id = "PrimaryPolicyprod", @class = "custom-select form-select", @onchange = "OnChange(this.id, this.name)", @form = "ClaimNotifications" })*@
+                            <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select">
                                 <option selected="selected" value="">-- Select here --</option>
 
-                                @foreach (var Product in Model.ClientProgramme.BaseProgramme.Products)
+                                @foreach (var product in Model.ClientProgramme.BaseProgramme.Products)
                                 {
-                                    <option value="@Product.Id"> @Product.Name</option>
+                                    <option value="@product.Id"> @product.Name</option>
                                 }
 
                             </select>
-                        </label>
-                        <p class="validationContainer" id="AddvalidatePrimaryPolicyprod"></p>
-
-
-                    </section>
-
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label">Responsible Principal</label>
-                        <label class="input form-group">
-
-                            <select data-placeholder="Choose Responsible Principal..." id="AddResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-control b form-select">
-
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="locationtypeoptions form-label" class="label required">
+                                Responsible Principal
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @*@Html.DropDownListFor(m => m.LocationViewModel.LocationType, Model.LocationViewModel.LocationType, new { id = "locationtypeoptions", @class = "custom-select form-select", @onchange = "OnChange(this.id, this.name)", @form = "ClaimNotifications" })*@
+                            <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
                                 <option selected="selected" value="">-- Select here --</option>
-
                                 @foreach (var org in Model.OrganisationViewModel.Organisations)
                                 {
                                     <option value="@org.Id"> @org.Name</option>
                                 }
 
                             </select>
-                        </label>
-                        <p class="validationContainer" id="AddvalidateResponsiblePrincipal"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimNotes form-label" class="label required">
+                                ??Notes
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextAreaFor(m => m.ClaimViewModel.ClaimDescription, new { id = "ClaimNotes", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
 
-
-                    </section>
-
-
+                        </div>
+                    </div>
                 </div>
 
-                <!-- 3rd row -->
-                <div class="row">
-                    <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                        <label class="label">Notes</label>
-                        <label class="textarea">
-                            <textarea class="form-control cl" data-type="TEXTAREA" data-name="ClaimNotes" id="AddClaimNotes" name="ClaimNotes" placeholder="Notes" value=""></textarea>
-                        </label>
-                    </section>
+
+
+                <div class="form-group">
+                    <button class="btn btn-sm btn-success text-light" id="AddupdateBoat" onclick="AddClaim()" form="ClaimViewModel"> Add </button>
+                    <button class="btn btn-sm btn-danger text-light" id="AddClearBoat" onclick="Cancel('ClaimViewModel','clTabs1')" form="ClaimViewModel"> Clear and Cancel </button>
                 </div>
-
-                <div class="row" id="update">
-                    <section class="col col-xs-12">
-                        <button onclick="ValidateAddClaim(event,'#clTabs3', '#tblClaim','clTabs1')" class="btn-sm AddupdateBoat" id="AddupdateBoat">Add</button>
-                        <button onclick="ClearBoats(event,'#clTabs3','clTabs1')" class="btn-sm AddClearBoat" id="AddClearBoat">Clear and Cancel</button>
+            </form>
 
 
-                        @*@Html.Bootstrap().Button().Text("Add").HtmlAttributes(new { onclick = "ValidateAddClaim('#clTabs-3', '#tblClaim','clTabs-1');" }).Class("btn-sm AddupdateBoat").Id("AddupdateBoat")
-
-                            @Html.Bootstrap().Button().Text("Clear and Cancel").HtmlAttributes(new { onclick = "ClearBoats('#clTabs-3','clTabs-1');" }).Class("btn-sm AddClearBoat").Id("AddClearBoat")*@
-
-                    </section>
-                </div>
-            </fieldset>
 
         </div>
         <div id="clTabs4" class="tab-pane" role="tabpanel">
