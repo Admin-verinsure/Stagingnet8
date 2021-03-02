@@ -2049,8 +2049,8 @@ function UpdateChosen() {
             return result1;
         }
     }
-
-    function AddClaim( tabId, tableId) {
+    //np code comment
+    @*function AddClaim( tabId, tableId) {
         var informationId = $('#AnswerSheetId').serialize();
         $.ajax({
             url: '@Url.Action("AddClaim", "Services")',
@@ -2065,7 +2065,7 @@ function UpdateChosen() {
         .fail(function (jqXHR, textStatus, errorThrown) {
             alert("There was an error while trying to save the Claim.");
         });
-    };
+    };*@
 
     function EditClaim(claimId, tableId) {
         var _sheetId = $('#AnswerSheetId').val();

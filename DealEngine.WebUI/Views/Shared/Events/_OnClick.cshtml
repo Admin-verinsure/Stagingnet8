@@ -178,17 +178,21 @@
         document.getElementById(CancelButtonId).innerText = "Clear and Cancel";
         ResetOrganisation();
     }
-    @*function AddClaim() {
+
+    //np code
+    function AddClaim() {
         var form = document.getElementById("ClaimViewModel");
         var formValid = TableFormValidation(form , "claim");
         if (formValid) {
-            sessionStorage.setItem('accordianTrigger', 'Notifications');
+            debugger;
+            sessionStorage.setItem('accordianTrigger', 'ClaimNotification');
             $.ajax({
                 url: '@Url.Action("AddClaim", "Services")',
                 type: "POST",
                 data: $("#tab_1 :input").serialize({ json: true }),
                 async: false
             })
+           
                 .done(function () {
                     //Save the session and reload
                     form.reset();
@@ -197,8 +201,9 @@
                 .fail(function (a, s, d) {
                     debugger;
                 });
+            console.log(data);
         }
-    }*@
+    }
 
     function AddLocation() {
         var form = document.getElementById("LocationViewModel");

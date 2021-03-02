@@ -2680,45 +2680,87 @@ namespace DealEngine.WebUI.Controllers
         #region Claim
 
         [HttpPost]
-        public async Task<IActionResult> AddClaim(ClaimViewModel model)
+        public async Task<IActionResult> AddClaim(IFormCollection collection)
         {
             User user = null;
 
             try
             {
-                if (model == null)
-                    throw new ArgumentNullException(nameof(model));
+                if (collection == null)
+                    throw new ArgumentNullException(nameof(collection));
                 user = await CurrentUser();
-
-                ClientInformationSheet sheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+                ClaimNotification claimNotification = null;
+                ClientInformationSheet sheet = await _clientInformationService.GetInformation(Guid.Parse(collection["AnswerSheetId"]));
                 if (sheet == null)
-                    throw new Exception("Unable to save Claim - No Client information for " + model.AnswerSheetId);
+                    throw new Exception("Unable to save Claim - No Client information for " + Guid.Parse(collection["AnswerSheetId"]));
 
-                ClaimNotification claimNotification = await _claimNotificationService.GetClaimNotificationById(model.ClaimId);
+                //ClaimNotification claimNotification = await _claimNotificationService.GetClaimNotificationById(model["ClaimId"]);
+                var claimNotificationForm = collection.Keys.Where(s => s.StartsWith("ClaimViewModel", StringComparison.CurrentCulture));
+                var ClaimId = collection["ClaimViewModel.ClaimId"];
                 // no claim, so create new
-                if (claimNotification == null)
-                    claimNotification = model.ToEntity(user);
-                model.UpdateEntity(claimNotification);
-
-                if (model.OrganisationId != Guid.Empty)
+                if (string.IsNullOrWhiteSpace(ClaimId))
                 {
-                    Organisation org = await _organisationService.GetOrganisation(model.OrganisationId);
-                    claimNotification.Organisation = org;
+                    claimNotification = new ClaimNotification(user);
                 }
-
-                if (model.ClaimProducts != null)
+                else
                 {
-                    var productList = await _productService.GetAllProducts();
-                    claimNotification.ClaimProducts = productList.Where(pro => model.ClaimProducts.Contains(pro.Id)).ToList();
+                    claimNotification = await _claimNotificationService.GetClaimNotificationById(Guid.Parse(ClaimId));
                 }
+                var type = claimNotification.GetType();
+                foreach (var keyField in claimNotificationForm)
+                {
+                    if (keyField != "ClaimViewModel.ClaimId")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
 
-                using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(claimNotification, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
+                        }
+                    }
+                }
+                        //    claimNotification = model.ToEntity(user);
+                //model.UpdateEntity(claimNotification);
+
+                ///Organisation organisation = null;
+                // var OrganisationId = model["ClaimViewModel.OrganisationId"];
+                // if (string.IsNullOrWhiteSpace(OrganisationId)) 
+                // {
+                ///organisation = new Organisation(user);
+                //}
+                //else
+                //{
+                // Organisation org = await _organisationService.GetOrganisation(Guid.Parse(OrganisationId));
+                //claimNotification.Organisation = org;
+                //}
+
+                //if (Guid.Parse(model["ClaimProducts"]) != null)
+                //{
+                //var productList = await _productService.GetAllProducts();
+                //claimNotification.ClaimProducts = productList.Where(pro => model.ClaimProducts.Contains(pro.Id)).ToList();
+                //}
+
+
+
+
+
+                if (sheet.ClaimNotifications.Contains(claimNotification))
+                {
+                    await _claimNotificationService.UpdateClaimNotification(claimNotification);
+                }
+               else
                 {
                     sheet.ClaimNotifications.Add(claimNotification);
-                    await uow.Commit();
+                    await _claimNotificationService.UpdateClaimNotification(claimNotification);
                 }
 
-                return Json(model);
+                //return Json(claimNotification);
+                return new JsonResult(claimNotification.Id);
             }
             catch (Exception ex)
             {
@@ -2726,6 +2768,62 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
+
+
+
+
+
+
+
+
+        //public async Task<IActionResult> AddClaim(ClaimViewModel model)
+        //{
+        //    User user = null;
+
+        //    try
+        //    {
+        //        if (model == null)
+        //            throw new ArgumentNullException(nameof(model));
+        //        user = await CurrentUser();
+
+        //        ClientInformationSheet sheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+        //        if (sheet == null)
+        //            throw new Exception("Unable to save Claim - No Client information for " + model.AnswerSheetId);
+
+        //        ClaimNotification claimNotification = await _claimNotificationService.GetClaimNotificationById(model.ClaimId);
+        //        // no claim, so create new
+        //        if (claimNotification == null)
+        //            claimNotification = model.ToEntity(user);
+        //        model.UpdateEntity(claimNotification);
+
+        //        if (model.OrganisationId != Guid.Empty)
+        //        {
+        //            Organisation org = await _organisationService.GetOrganisation(model.OrganisationId);
+        //            claimNotification.Organisation = org;
+        //        }
+
+        //        if (model.ClaimProducts != null)
+        //        {
+        //            var productList = await _productService.GetAllProducts();
+        //            claimNotification.ClaimProducts = productList.Where(pro => model.ClaimProducts.Contains(pro.Id)).ToList();
+        //        }
+
+        //        using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+        //        {
+        //            sheet.ClaimNotifications.Add(claimNotification);
+        //            await uow.Commit();
+        //        }
+
+        //        return Json(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        //        return RedirectToAction("Error500", "Error");
+        //    }
+        //}
 
         [HttpPost]
         public async Task<IActionResult> GetClaim(Guid answerSheetId, Guid claimId)

@@ -124,18 +124,18 @@
 
     @tabs.Tab("List Removed").Class("ClaimRemoved")*@
 <div id="Claimtabs">
-    <input id="ClaimId" name="ClaimId" type="hidden" form="ClaimNotifications" />
-    <input id="OrganisationId" name="OrganisationId" type="hidden" form="ClaimNotifications" />
+    <input id="ClaimId" name="ClaimViewModel.ClaimId" type="hidden" form="ClaimViewModel" />
+    <input id="OrganisationId" name="OrganisationId" type="hidden" form="ClaimViewModel" />
 
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" id="tab1">
-            <a class="nav-link active" href="#clTabs1" data-bs-toggle="tab" onclick="ResetForm('clTabs3','clTabs2', 'ClaimNotification', 'AddupdateBoat', 'AddClearBoat')"> List All </a>
+            <a class="nav-link active" href="#clTabs1" data-bs-toggle="tab" onclick="ResetForm('clTabs3','clTabs2', 'ClaimNotification', 'ClaimAddButton', 'AddClearBoat')"> List All </a>
         </li>
         <li class="nav-item" id="tab2">
             <a class="nav-link" href="#clTabs2" data-bs-toggle="tab"> Edit </a>
         </li>
         <li class="nav-item" id="tab3">
-            <a class="nav-link" href="#clTabs3" data-bs-toggle="tab" onclick="ResetForm('clTabs3','clTabs2', 'ClaimNotification', 'AddupdateBoat', 'AddClearBoat')"> Add </a>
+            <a class="nav-link" href="#clTabs3" data-bs-toggle="tab" onclick="ResetForm('clTabs3','clTabs2', 'ClaimNotification', 'ClaimAddButton', 'AddClearBoat')"> Add </a>
         </li>
         <li class="nav-item" id="tab4">
             <a class="nav-link" href="#clTabs4" data-bs-toggle="tab"> List Removed </a>
@@ -144,7 +144,7 @@
     </ul>
     <div class="tab-content">
         <div id="clTabs1" class="tab-pane" role="tabpanel">
-            <table id="tblLocation"
+            <table id="tblClaimNotification"
                    class="table table-striped" width="100%"
                    data-show-columns="true"
                    data-pagination="true"
@@ -162,31 +162,32 @@
                 </thead>
 
                 <tbody>
-                    @foreach (var claim in Model.ClientInformationSheet.ClaimNotifications.Where(l => l.Removed == false).ToList())
-                    {
-                        <tr id="@claim.Id">
-                            <td>
-                                <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle')"><i class="fa fa-edit"></i> Edit</button>
-                            </td>
-                            <td>
-                                @claim.ClaimTitle
-                            </td>
-                            <td>
-                                @claim.ClaimDescription
-                            </td>
-                            <td>
-                                @claim.ClaimReference
-                            </td>
-                            <td>
-                                @claim.Claimant
-                            </td>
-                            <td>
-                                @*<button onclick="SetClaimRemovedStatus('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>*@
-                                <button onclick="RemoveClaimNotification('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+              
+                @foreach (var claim in Model.ClientInformationSheet.ClaimNotifications.Where(l => l.Removed == false).ToList())
+                {
+                    <tr id="@claim.Id">
+                        <td>
+                            <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle')"><i class="fa fa-edit"></i> Edit</button>
+                        </td>
+                        <td>
+                            title   @claim.ClaimTitle
+                        </td>
+                        <td>
+                            @claim.ClaimDescription
+                        </td>
+                        <td>
+                            @claim.ClaimReference
+                        </td>
+                        <td>
+                            @claim.Claimant
+                        </td>
+                        <td>
+                            @*<button onclick="SetClaimRemovedStatus('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>*@
+                            <button onclick="RemoveClaimNotification('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
 
-                            </td>
-                        </tr>
-                    }
+                        </td>
+                    </tr>
+                }
                 </tbody>
             </table>
         </div>
@@ -283,7 +284,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
+                @*<div class="form-group">
                     <div class="row">
                         <div class="col-6">
                             <label for="ClaimDateOfLoss form-label" class="label required">
@@ -294,8 +295,8 @@
                             @Html.TextBoxFor(m => m.ClaimViewModel.ClaimDateOfLoss, new { id = "ClaimDateOfLoss", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
+                </div>*@
+                @*<div class="form-group">
                     <div class="row">
                         <div class="col-6">
                             <label for="ClaimNotifiedDate form-label" class="label required">
@@ -306,7 +307,7 @@
                             @Html.TextBoxFor(m => m.ClaimViewModel.ClaimNotifiedDate, new { id = "ClaimNotifiedDate", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
                         </div>
                     </div>
-                </div>
+                </div>*@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
@@ -319,7 +320,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
+                @*<div class="form-group">
                     <div class="row">
                         <div class="col-6">
                             <label for="PrimaryPolicyprod form-label" class="label required">
@@ -327,7 +328,6 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @*@Html.DropDownListFor(m => m.ClientProgramme.BaseProgramme.Products, Model.ClientProgramme.BaseProgramme.Products, new { id = "PrimaryPolicyprod", @class = "custom-select form-select", @onchange = "OnChange(this.id, this.name)", @form = "ClaimNotifications" })*@
                             <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select">
                                 <option selected="selected" value="">-- Select here --</option>
 
@@ -339,8 +339,8 @@
                             </select>
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
+                </div>*@
+                @*<div class="form-group">
                     <div class="row">
                         <div class="col-6">
                             <label for="locationtypeoptions form-label" class="label required">
@@ -348,7 +348,6 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @*@Html.DropDownListFor(m => m.LocationViewModel.LocationType, Model.LocationViewModel.LocationType, new { id = "locationtypeoptions", @class = "custom-select form-select", @onchange = "OnChange(this.id, this.name)", @form = "ClaimNotifications" })*@
                             <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
                                 <option selected="selected" value="">-- Select here --</option>
                                 @foreach (var org in Model.OrganisationViewModel.Organisations)
@@ -359,16 +358,16 @@
                             </select>
                         </div>
                     </div>
-                </div>
+                </div>*@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
                             <label for="ClaimNotes form-label" class="label required">
-                                ??Notes
+                                Notes
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextAreaFor(m => m.ClaimViewModel.ClaimDescription, new { id = "ClaimNotes", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                            @Html.TextAreaFor(m => m.ClaimViewModel.ClaimNotes, new { id = "ClaimNotes", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
 
                         </div>
                     </div>
@@ -377,7 +376,7 @@
 
 
                 <div class="form-group">
-                    <button class="btn btn-sm btn-success text-light" id="AddupdateBoat" onclick="AddClaim()" form="ClaimViewModel"> Add </button>
+                    <button class="btn btn-sm btn-success text-light" id="ClaimAddButton" onclick="AddClaim('claim')" form="ClaimViewModel"> Add </button>
                     <button class="btn btn-sm btn-danger text-light" id="AddClearBoat" onclick="Cancel('ClaimViewModel','clTabs1')" form="ClaimViewModel"> Clear and Cancel </button>
                 </div>
             </form>
