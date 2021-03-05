@@ -125,8 +125,8 @@
     @tabs.Tab("List Removed").Class("ClaimRemoved")*@
 <div id="Claimtabs">
     <input id="ClaimId" name="ClaimViewModel.ClaimId" type="hidden" form="ClaimViewModel" />
-    <input id="OrganisationId" name="OrganisationId" type="hidden" form="ClaimViewModel" />
-
+    @*<input id="OrganisationId" name="ClaimViewModel.OrganisationId" type="hidden" form="ClaimViewModel" />*@
+    <input id="ProductId" name="ClientProgramme.BaseProgramme.Products.product.Id" type="hidden" form="ClaimViewModel" />
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" id="tab1">
             <a class="nav-link active" href="#clTabs1" data-bs-toggle="tab" onclick="ResetForm('clTabs3','clTabs2', 'ClaimNotification', 'ClaimAddButton', 'AddClearBoat')"> List All </a>
@@ -162,32 +162,32 @@
                 </thead>
 
                 <tbody>
-              
-                @foreach (var claim in Model.ClientInformationSheet.ClaimNotifications.Where(l => l.Removed == false).ToList())
-                {
-                    <tr id="@claim.Id">
-                        <td>
-                            <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle')"><i class="fa fa-edit"></i> Edit</button>
-                        </td>
-                        <td>
-                            title   @claim.ClaimTitle
-                        </td>
-                        <td>
-                            @claim.ClaimDescription
-                        </td>
-                        <td>
-                            @claim.ClaimReference
-                        </td>
-                        <td>
-                            @claim.Claimant
-                        </td>
-                        <td>
-                            @*<button onclick="SetClaimRemovedStatus('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>*@
-                            <button onclick="RemoveClaimNotification('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
 
-                        </td>
-                    </tr>
-                }
+                    @foreach (var claim in Model.ClientInformationSheet.ClaimNotifications.Where(l => l.Removed == false).ToList())
+                    {
+                        <tr id="@claim.Id">
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle')"><i class="fa fa-edit"></i> Edit</button>
+                            </td>
+                            <td>
+                                @claim.ClaimTitle
+                            </td>
+                            <td>
+                                @claim.ClaimDescription
+                            </td>
+                            <td>
+                                @claim.ClaimReference
+                            </td>
+                            <td>
+                                @claim.Claimant
+                            </td>
+                            <td>
+                                @*<button onclick="SetClaimRemovedStatus('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>*@
+                                <button onclick="RemoveClaimNotification('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -216,7 +216,7 @@
                     <div class="row">
                         <div class="col-6">
                             <label for="ClaimDescription form-label" class="label required">
-                                text area Claim Description:
+                                Claim Description:
                             </label>
                         </div>
                         <div class="col-6">
@@ -227,7 +227,7 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="ClaimReference" class="label required form-label">
+                            <label for="ClaimReference" class="label form-label">
                                 Claim Reference
                             </label>
                         </div>
@@ -285,29 +285,29 @@
                     </div>
                 </div>
                 <div class="form-group">
-            <div class="row">
-                <div class="col-6">
-                    <label for="ClaimDateOfLoss form-label" class="label required">
-                        Approx Date of Loss
-                    </label>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimDateOfLoss form-label" class="label required">
+                                Approx Date of Loss
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimDateOfLoss, new { id = "ClaimDateOfLoss", @class = "form-control Startdate", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                        </div>
+                    </div>
                 </div>
-                <div class="col-6">
-                    @Html.TextBoxFor(m => m.ClaimViewModel.ClaimDateOfLoss, new { id = "ClaimDateOfLoss", @class = "form-control Startdate", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
-                </div>
-            </div>
-        </div>
                 <div class="form-group">
-            <div class="row">
-                <div class="col-6">
-                    <label for="ClaimNotifiedDate form-label" class="label required">
-                        Notification Date
-                    </label>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimNotifiedDate form-label" class="label required">
+                                Notification Date
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimNotifiedDate, new { id = "ClaimNotifiedDate", @class = "form-control Startdate", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                        </div>
+                    </div>
                 </div>
-                <div class="col-6">
-                    @Html.TextBoxFor(m => m.ClaimViewModel.ClaimNotifiedDate, new { id = "ClaimNotifiedDate", @class = "form-control Startdate", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
-                </div>
-            </div>
-        </div>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
@@ -321,44 +321,63 @@
                     </div>
                 </div>
                 @*<div class="form-group">
-            <div class="row">
-                <div class="col-6">
-                    <label for="PrimaryPolicyprod form-label" class="label required">
-                        Primary Policy Product
-                    </label>
-                </div>
-                <div class="col-6">
-                    <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select">
-                        <option selected="selected" value="">-- Select here --</option>
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="locationtypeoptions form-label" class="label required">
+                                    Primary Policy Product
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                @Html.DropDownListFor(m => m.ClaimViewModel.LocationType, Model.ClaimViewModel.LocationType, new { id = "locationtypeoptions", @class = "custom-select form-select", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "LocationViewModel" })
+                            </div>
+                        </div>
+                    </div>*@
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="PrimaryPolicyprod form-label" class="label required">
+                                Primary Policy Product
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @*@Html.DropDownList("SelectedClaimProducts", new List<SelectListItem> {
 
-                        @foreach (var product in Model.ClientProgramme.BaseProgramme.Products)
-                        {
-                            <option value="@product.Id"> @product.Name</option>
-                        }
+                                new SelectListItem {Text="Cyber Liability", Value="CyberLiability"},
+                                 new SelectListItem {Text="Legal ProsecutionDefence", Value="LegalProsecutionDefence"},
+                                }, "-- Select--"
 
-                    </select>
+                                     )*@
+                            <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select" form = "ClaimViewModel" >
+                                <option selected="selected" value="">-- Select here --</option>
+
+                                @foreach (var product in Model.ClientProgramme.BaseProgramme.Products)
+                                {
+                                    <option value="@product.Id"> @product.Name</option>
+                                }
+
+                            </select>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>*@
                 @*<div class="form-group">
-            <div class="row">
-                <div class="col-6">
-                    <label for="locationtypeoptions form-label" class="label required">
-                        Responsible Principal
-                    </label>
-                </div>
-                <div class="col-6">
-                    <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
-                        <option selected="selected" value="">-- Select here --</option>
-                        @foreach (var org in Model.OrganisationViewModel.Organisations)
-                        {
-                            <option value="@org.Id"> @org.Name</option>
-                        }
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="locationtypeoptions form-label" class="label required">
+                                    Responsible Principal
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
+                                    <option selected="selected" value="">-- Select here --</option>
+                                    @foreach (var org in Model.OrganisationViewModel.Organisations)
+                                    {
+                                        <option value="@org.Id"> @org.Name</option>
+                                    }
 
-                    </select>
-                </div>
-            </div>
-        </div>*@
+                                </select>
+                            </div>
+                        </div>
+                    </div>*@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">

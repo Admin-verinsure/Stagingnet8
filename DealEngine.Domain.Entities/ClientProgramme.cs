@@ -20,6 +20,7 @@ namespace DealEngine.Domain.Entities
         public virtual ChangeReason ChangeReason { get; set; }
         public virtual DateTime IssueDate { get; set; }
         public virtual DateTime ReminderDate { get; set; }
+        //public virtual IList<Product> Products { get; set; }
         public virtual IDictionary<Product, bool> Products { get; set; }      
         [JsonIgnore]
         public virtual IList<ClientAgreement> Agreements { get; set; }        
