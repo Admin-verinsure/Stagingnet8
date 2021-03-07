@@ -2702,7 +2702,10 @@ namespace DealEngine.WebUI.Controllers
 
                 var SelectedClaimProducts = collection.Keys.Where(s => s.StartsWith("SelectedClaimProducts", StringComparison.CurrentCulture));
                 var claimProductID = collection["SelectedClaimProducts"];
-               
+
+                var SelectedResponsiblePrincipal = collection.Keys.Where(s => s.StartsWith("SelectedResponsiblePrincipal", StringComparison.CurrentCulture));
+                var SelectedResponsiblePrincipalID = collection["SelectedResponsiblePrincipal"];
+
                 // no claim, so create new
                 if (string.IsNullOrWhiteSpace(ClaimId))
                 {
@@ -2713,28 +2716,6 @@ namespace DealEngine.WebUI.Controllers
                     claimNotification = await _claimNotificationService.GetClaimNotificationById(Guid.Parse(ClaimId));
                 }
 
-
-
-                //var type1 = claimNotification.SelectedClaimProducts.GetType();
-                //foreach (var keyField1 in SelectedClaimProducts)
-                //{
-                //    if (keyField1 == "SelectedClaimProducts")
-                //    {
-                //        // var propertyName1 = keyField1.Split('.').ToList();
-                //        var propertyName1 = keyField1.Split('.').ToList();
-                //        var property1 = type1.GetProperty(propertyName1.LastOrDefault());
-
-                //        if (typeof(string) == property1.PropertyType)
-                //        {
-                //            property1.SetValue(claimNotification.SelectedClaimProducts, collection[keyField1].ToString());
-                //        }
-                //        if (typeof(decimal) == property1.PropertyType)
-                //        {
-                //            property1.SetValue(claimNotification.SelectedClaimProducts, decimal.Parse(collection[keyField1].ToString()));
-                //        }
-                //    }
-
-                //}
 
                 if (string.IsNullOrWhiteSpace(claimProductID))
                 {
@@ -2761,7 +2742,28 @@ namespace DealEngine.WebUI.Controllers
 
                 }
 
-          
+             
+
+                //    if (string.IsNullOrWhiteSpace(SelectedResponsiblePrincipalID))
+                //{
+
+                //    //claimNotification.ClaimProducts = new List<Product>();
+                //    //List<SelectListItem> ClaimProducts = new List<SelectListItem>();
+
+                //}
+                //else
+                //{
+                //    var Organisation = await _organisationService.GetOrganisation(model.OrganisationId);
+                //        claimNotification.Organisation = org;
+                //    }
+
+
+
+
+
+
+
+
                 var type = claimNotification.GetType();
                 foreach (var keyField in claimNotificationForm)
                 {
@@ -2799,6 +2801,29 @@ namespace DealEngine.WebUI.Controllers
                     }
 
                 }
+
+                foreach (var keyField in SelectedResponsiblePrincipal)
+                {
+                    if (keyField == "SelectedResponsiblePrincipal")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(claimNotification, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
+                        }
+                    }
+
+                }
+
+
+
+
 
 
                 if (sheet.ClaimNotifications.Contains(claimNotification))
