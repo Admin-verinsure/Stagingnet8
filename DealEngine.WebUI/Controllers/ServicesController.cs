@@ -2776,7 +2776,14 @@ namespace DealEngine.WebUI.Controllers
                         {
                             property.SetValue(claimNotification, collection[keyField].ToString());
                         }
-                        if (typeof(decimal) == property.PropertyType)
+                        else if (typeof(DateTime) == property.PropertyType)
+                        {
+                            //collection.Value.ToString("dd-MM-yyyy");
+                            //var dateStr = string.Format("{0:dd-MM-yyyy}", collection[keyField]);
+                            //property.SetValue(claimNotification, collection[keyField].string.Format("{0:dd-MM-yyyy}", collection[keyField]));
+                            property.SetValue(claimNotification, DateTime.Parse(collection[keyField].ToString()));
+                        }
+                        else if (typeof(decimal) == property.PropertyType)
                         {
                             property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
                         }
