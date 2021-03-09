@@ -167,7 +167,7 @@
                     {
                         <tr id="@claim.Id">
                             <td>
-                                <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle', '@claim.ClaimDescription', '@claim.ClaimReference', '@claim.ClaimPolicyReference', '@claim.ClaimInsurerName','@claim.ClaimInsuredName','@claim.Claimant','@claim.ClaimDateOfLoss','@claim.ClaimNotifiedDate','@claim.ClaimEstimateInsuredLiability','@claim.SelectedClaimProducts','@claim.SelectedResponsiblePrincipal','@claim.ClaimNotes')">
+                                <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle', '@claim.ClaimDescription', '@claim.ClaimReference', '@claim.ClaimPolicyReference', '@claim.ClaimInsurerName', '@claim.ClaimInsuredName', '@claim.Claimant', '@claim.ClaimDateOfLoss', '@claim.ClaimNotifiedDate', '@claim.ClaimEstimateInsuredLiability', '@claim.SelectedClaimProducts', '@claim.SelectedResponsiblePrincipal', '@claim.ClaimNotes', '@claim.ClaimBrokerReference', '@claim.ClaimStatus')">
                                 <i class="fa fa-edit"></i> 
                                 Edit
                                 </button>
@@ -227,25 +227,74 @@
                         </div>
                     </div>
                 </div>
-                @*@{var ClaimIdData = Model.ClaimViewModel.ClaimId.ToString();}
-                @if (ClaimIdData != "")
-                {
+                @*
 
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-6">
-                                <label for="ClaimReference" class="label form-label">
-                                    Broker Reference (Read-Only)
-                                </label>
-                            </div>
-                            <div class="col-6">
-                                @Html.TextBoxFor(m => m.ClaimViewModel.ClaimBrokerReference, new { id = "ClaimBrokerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
-                            </div>
+        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 hidden ClaimStatus">
+                    <label class="label required">Claim Status</label>
+                    <label class="input">
+                        <select class="form-control bui form-select" id="AddClaimStatus" name="ClaimStatus">
+                            <option selected="selected" value="Precautionary notification only">Precautionary notification only</option>
+                            <option value="Withdrawn by insured">Withdrawn by insured</option>
+                            <option value="Formal claim filed">Formal claim filed</option>
+                            <option value="Information request to insured">Information request to insured</option>
+                            <option value="Third party has made formal demand">Third party has made formal demand</option>
+                            <option value="Solicitors instructed for claimant">Solicitors instructed for claimant</option>
+                            <option value="Subrogated to insurer">Subrogated to insurer</option>
+                            <option value="In discussions">In discussions</option>
+                            <option value="In agreed alternative process">In agreed alternative process</option>
+                            <option value="Proceedings issued">Proceedings issued</option>
+                            <option value="Part Settled">Part Settled</option>
+                            <option value="Settled">Settled</option>
+                            <option value="Closed">Closed</option>
+                            <option value="Open">Open</option>
+
+                        </select>
+                    </label>
+                    <p class="validationContainer" id="AddvalidateClaimStatus"></p>
+
+                </section>
+                *@
+                <div class="form-group" style="display:none;" id="ClaimStatusFormGroup">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimReference" class="label form-label required">
+                                Claim Status
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <select class="form-control bui form-select" id="AddClaimStatus" name="ClaimStatus" disabled>
+                                <option selected="selected" value="Precautionary notification only">Precautionary notification only</option>
+                                <option value="Withdrawn by insured">Withdrawn by insured</option>
+                                <option value="Formal claim filed">Formal claim filed</option>
+                                <option value="Information request to insured">Information request to insured</option>
+                                <option value="Third party has made formal demand">Third party has made formal demand</option>
+                                <option value="Solicitors instructed for claimant">Solicitors instructed for claimant</option>
+                                <option value="Subrogated to insurer">Subrogated to insurer</option>
+                                <option value="In discussions">In discussions</option>
+                                <option value="In agreed alternative process">In agreed alternative process</option>
+                                <option value="Proceedings issued">Proceedings issued</option>
+                                <option value="Part Settled">Part Settled</option>
+                                <option value="Settled">Settled</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Open">Open</option>
+
+                            </select>
                         </div>
                     </div>
-                }*@
+                </div>
 
-
+                <div class="form-group" style="display:none;" id="ClaimBrokerReferenceFormGroup">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimReference" class="label form-label">
+                                Broker Reference (Read-Only)
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimBrokerReference, new { id = "ClaimBrokerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                        </div>
+                    </div>
+                </div>
 
                 @*
         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">

@@ -65,10 +65,16 @@
         });
     }
 
-    function CloneForm(AddTabId, EditTabId, AddButtonId, CancelButtonId) {
+    function CloneForm(AddTabId, EditTabId, AddButtonId, CancelButtonId, ClaimBrokerReferenceFormGroup, ClaimStatusFormGroup) {
         var addTabHTML = document.getElementById(AddTabId);
         var editTabHTML = document.getElementById(EditTabId);
         var form = document.getElementById(addTabHTML.firstElementChild.id);
+        var ClaimBrokerReferenceFormGroup = document.getElementById("ClaimBrokerReferenceFormGroup");
+        ClaimBrokerReferenceFormGroup.style.display = "block";
+            //document.getElementById("ClaimBrokerReferenceFormGroup").style.color = "blue";
+        var ClaimStatusFormGroup = document.getElementById("ClaimStatusFormGroup");
+        ClaimStatusFormGroup.style.display = "block";
+        
         editTabHTML.innerHTML = "";
         var obj = $("#" + form.id).clone();
         $("#" + EditTabId).append(obj);
@@ -309,10 +315,10 @@
         SetCurrentTab("locationtab2");
     }
 
-    function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes)
+    function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, AddClaimStatus)
     {
         event.preventDefault();
-        CloneForm("clTabs3", "clTabs2", "ClaimAddButton", "AddClearBoat");
+        CloneForm("clTabs3", "clTabs2", "ClaimAddButton", "AddClearBoat", "ClaimBrokerReferenceFormGroup","ClaimStatusFormGroup");
         document.getElementById("ClaimId").value = Id;
         document.getElementById("ClaimTitle").value = ClaimTitle;
         document.getElementById("ClaimDescription").value = ClaimDescription;
@@ -327,6 +333,9 @@
         document.getElementById("PrimaryPolicyprod").value = SelectedClaimProducts;
         document.getElementById("ResponsiblePrincipal").value = SelectedResponsiblePrincipal;
         document.getElementById("ClaimNotes").value = ClaimNotes;
+        document.getElementById("ClaimBrokerReference").value = ClaimBrokerReference;
+        document.getElementById("AddClaimStatus").value = AddClaimStatus;
+
         SetCurrentTab("clTabs2");
     }
 
