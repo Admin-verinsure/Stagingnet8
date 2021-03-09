@@ -2841,12 +2841,6 @@ namespace DealEngine.WebUI.Controllers
 
 
 
-
-
-
-
-
-
         //public async Task<IActionResult> AddClaim(ClaimViewModel model)
         //{
         //    User user = null;
@@ -2893,6 +2887,30 @@ namespace DealEngine.WebUI.Controllers
         //        return RedirectToAction("Error500", "Error");
         //    }
         //}
+
+        [HttpPost]
+        public async Task<IActionResult> RestoreClaimNotification(string ClaimId)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+               // Location location = await _locationService.GetLocationById(Guid.Parse(locationId));
+               ClaimNotification claimNotification =  await _claimNotificationService.GetClaimNotificationById(Guid.Parse(ClaimId));
+                claimNotification.Removed = false;
+                //await _locationService.UpdateLocation(location);
+                await _claimNotificationService.UpdateClaimNotification(claimNotification);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> GetClaim(Guid answerSheetId, Guid claimId)

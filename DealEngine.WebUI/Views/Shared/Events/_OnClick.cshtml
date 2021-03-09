@@ -192,7 +192,7 @@
                 data: $("#tab_1 :input").serialize({ json: true }),
                 async: false
             })
-           
+
                 .done(function () {
                     //Save the session and reload
                     form.reset();
@@ -249,6 +249,23 @@
         var postData = { claimId: Id };
         $.ajax({
             url: '@Url.Action("RemoveClaimNotification", "Services")',
+            type: "POST",
+            data: postData
+        })
+            .done(function () {
+                //Save the session and reload
+                location.reload();
+            })
+            .fail(function (a, s, d) {
+                debugger;
+            });
+    }
+
+    function RestoreCommonClaim(Id) {
+        sessionStorage.setItem('accordianTrigger', 'Notifications');
+        var postData = { claimId: Id };
+        $.ajax({
+            url: '@Url.Action("RestoreClaimNotification", "Services")',
             type: "POST",
             data: postData
         })

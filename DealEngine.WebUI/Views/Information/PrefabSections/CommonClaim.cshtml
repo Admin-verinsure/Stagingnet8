@@ -227,6 +227,61 @@
                         </div>
                     </div>
                 </div>
+                @*@{var ClaimIdData = Model.ClaimViewModel.ClaimId.ToString();}
+                @if (ClaimIdData != "")
+                {
+
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-6">
+                                <label for="ClaimReference" class="label form-label">
+                                    Broker Reference (Read-Only)
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                @Html.TextBoxFor(m => m.ClaimViewModel.ClaimBrokerReference, new { id = "ClaimBrokerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                            </div>
+                        </div>
+                    </div>
+                }*@
+
+
+
+                @*
+        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <label class="label">Broker Reference (Read-Only)</label>
+                    <label class="input">
+                        <i></i>
+                        <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimBrokerReference" id="ClaimBrokerReference" name="ClaimBrokerReference" placeholder="Broker Reference (Read-Only)" readonly="true" value="">
+                    </label>
+                </section>
+                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <label class="label">Insurer Reference (Read-Only)</label>
+                    <label class="input">
+                        <i></i>
+                        <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimInsurerReference" id="ClaimInsurerReference" name="ClaimInsurerReference" placeholder="Insurer Reference (Read-Only)" readonly="true" value="">
+                    </label>
+                </section>
+                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <label class="label">$ Paid (Read-Only)</label>
+                    <label class="input">
+                        <i></i>
+                        <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimPaid" id="ClaimPaid" name="ClaimPaid" placeholder="$ Paid (Read-Only)" readonly="true" value="">
+                    </label>
+                </section>
+                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <label class="label">$ Reserve (Read-Only)</label>
+                    <label class="input">
+                        <i></i>
+                        <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimReserve" id="ClaimReserve" name="ClaimReserve" placeholder="$ Reserve (Read-Only)" readonly="true" value="">
+                    </label>
+                </section>
+
+
+                *@
+
+
+
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
@@ -324,17 +379,17 @@
                     </div>
                 </div>
                 @*<div class="form-group">
-                        <div class="row">
-                            <div class="col-6">
-                                <label for="locationtypeoptions form-label" class="label required">
-                                    Primary Policy Product
-                                </label>
-                            </div>
-                            <div class="col-6">
-                                @Html.DropDownListFor(m => m.ClaimViewModel.LocationType, Model.ClaimViewModel.LocationType, new { id = "locationtypeoptions", @class = "custom-select form-select", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "LocationViewModel" })
-                            </div>
-                        </div>
-                    </div>*@
+            <div class="row">
+                <div class="col-6">
+                    <label for="locationtypeoptions form-label" class="label required">
+                        Primary Policy Product
+                    </label>
+                </div>
+                <div class="col-6">
+                    @Html.DropDownListFor(m => m.ClaimViewModel.LocationType, Model.ClaimViewModel.LocationType, new { id = "locationtypeoptions", @class = "custom-select form-select", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "LocationViewModel" })
+                </div>
+            </div>
+        </div>*@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
@@ -345,12 +400,12 @@
                         <div class="col-6">
                             @*@Html.DropDownList("SelectedClaimProducts", new List<SelectListItem> {
 
-                                new SelectListItem {Text="Cyber Liability", Value="CyberLiability"},
-                                 new SelectListItem {Text="Legal ProsecutionDefence", Value="LegalProsecutionDefence"},
-                                }, "-- Select--"
+                    new SelectListItem {Text="Cyber Liability", Value="CyberLiability"},
+                     new SelectListItem {Text="Legal ProsecutionDefence", Value="LegalProsecutionDefence"},
+                    }, "-- Select--"
 
-                                     )*@
-                            <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select" form = "ClaimViewModel" >
+                         )*@
+                            <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select" form="ClaimViewModel">
                                 <option selected="selected" value="">-- Select here --</option>
 
                                 @foreach (var product in Model.ClientProgramme.BaseProgramme.Products)
@@ -363,24 +418,24 @@
                     </div>
                 </div>
                 <div class="form-group">
-                        <div class="row">
-                            <div class="col-6">
-                                <label for="locationtypeoptions form-label" class="label required">
-                                    Responsible Principal
-                                </label>
-                            </div>
-                            <div class="col-6">
-                                <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
-                                    <option selected="selected" value="">-- Select here --</option>
-                                    @foreach (var org in Model.OrganisationViewModel.Organisations)
-                                    {
-                                        <option value="@org.Id"> @org.Name</option>
-                                    }
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="locationtypeoptions form-label" class="label required">
+                                Responsible Principal
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
+                                <option selected="selected" value="">-- Select here --</option>
+                                @foreach (var org in Model.OrganisationViewModel.Organisations)
+                                {
+                                    <option value="@org.Id"> @org.Name</option>
+                                }
 
-                                </select>
-                            </div>
+                            </select>
                         </div>
                     </div>
+                </div>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
@@ -407,7 +462,50 @@
 
         </div>
         <div id="clTabs4" class="tab-pane" role="tabpanel">
+            <table id="tblRemovedClaimNotification"
+                   class="table table-striped" width="100%"
+                   data-show-columns="true"
+                   data-pagination="true"
+                   data-search="true"
+                   data-show-jump-to="true">
+                <thead>
+                    <tr>
+                        <th data-field="editButton" data-sortable="false"></th>
+                        <th data-field="claimTitle" data-sortable="true">ClaimTitle</th>
+                        <th data-field="claimDescription" data-sortable="true">Claim Description</th>
+                        <th data-field="claimReference" data-sortable="true">Claim Reference</th>
+                        <th data-field="nameofClaimant" data-sortable="true">Name of Claimant</th>
+                        <th data-field="deleteButton" data-sortable="false"></th>
+                    </tr>
+                </thead>
 
+                <tbody>
+
+                    @foreach (var claim in Model.ClientInformationSheet.ClaimNotifications.Where(l => l.Removed == true).ToList())
+                    {
+                        <tr id="@claim.Id">
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="RestoreCommonClaim('@claim.Id')">
+                                    <i class="fa fa-undo"></i>
+                                    
+                                </button>
+                            </td>
+                            <td>
+                                @claim.ClaimTitle
+                            </td>
+                            <td>
+                                @claim.ClaimDescription
+                            </td>
+                            <td>
+                                @claim.ClaimReference
+                            </td>
+                            <td>
+                                @claim.Claimant
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
         </div>
     </div>
