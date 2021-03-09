@@ -167,7 +167,10 @@
                     {
                         <tr id="@claim.Id">
                             <td>
-                                <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle')"><i class="fa fa-edit"></i> Edit</button>
+                                <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle', '@claim.ClaimDescription', '@claim.ClaimReference', '@claim.ClaimPolicyReference', '@claim.ClaimInsurerName','@claim.ClaimInsuredName','@claim.Claimant','@claim.ClaimDateOfLoss','@claim.ClaimNotifiedDate','@claim.ClaimEstimateInsuredLiability','@claim.SelectedClaimProducts','@claim.SelectedResponsiblePrincipal','@claim.ClaimNotes')">
+                                <i class="fa fa-edit"></i> 
+                                Edit
+                                </button>
                             </td>
                             <td>
                                 @claim.ClaimTitle

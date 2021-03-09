@@ -2742,21 +2742,6 @@ namespace DealEngine.WebUI.Controllers
 
                 }
 
-             
-
-                //    if (string.IsNullOrWhiteSpace(SelectedResponsiblePrincipalID))
-                //{
-
-                //    //claimNotification.ClaimProducts = new List<Product>();
-                //    //List<SelectListItem> ClaimProducts = new List<SelectListItem>();
-
-                //}
-                //else
-                //{
-                //    var Organisation = await _organisationService.GetOrganisation(model.OrganisationId);
-                //        claimNotification.Organisation = org;
-                //    }
-
 
 
 
