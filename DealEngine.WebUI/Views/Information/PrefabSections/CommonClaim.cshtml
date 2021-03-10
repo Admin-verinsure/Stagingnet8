@@ -1,128 +1,5 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
-@*
-        form conversion later
-        <div id="AddClaimNotification">
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item" id="tab1">
-                <a class="nav-link active" href="#ClaimNotification1" data-toggle="tab" onclick="ResetForm('ClaimNotification3','ClaimNotification2', 'Organisation', 'OrganisationSubmitBtn', 'OrganisationClearButton')"> List All </a>
-            </li>
-            <li class="nav-item" id="tab2">
-                <a class="nav-link" href="#ClaimNotification2" data-toggle="tab"> Edit </a>
-            </li>
-            <li class="nav-item" id="tab3">
-                <a class="nav-link" href="#ClaimNotification3" data-toggle="tab" onclick="ResetForm('ClaimNotification3','ClaimNotification2', 'Organisation', 'OrganisationSubmitBtn', 'OrganisationClearButton')"> Add </a>
-            </li>
-            <li class="nav-item" id="tab4">
-                <a class="nav-link" href="#ClaimNotification3" data-toggle="tab"> Removed </a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div id="ClaimNotification1" class="tab-pane active" role="tabpanel">
-                <table id="tblClaimNotification"
-                       class="table table-striped" width="100%"
-                       data-show-columns="true"
-                       data-pagination="true"
-                       data-search="true"
-                       data-show-jump-to="true">
-                    <thead>
-                        <tr>
-                            <th data-field="editButton" data-sortable="false"></th>
-                            <th data-field="OrganisationName" data-sortable="true">Claim Title</th>
-                            <th data-field="OrganisationType" data-sortable="true">Claim Description</th>
-                            <th data-field="IsPrincipal" data-sortable="true">Claim Reference</th>
-                            <th data-field="IsPrincipal" data-sortable="true">Name of Claimant</th>
-                            <th data-field="deleteButton" data-sortable="false"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var ClaimNotification in Model.ClientInformationSheet.ClaimNotifications.Where(c => c.Removed != true).ToList())
-                        {
-                        <tr id="@ClaimNotification.Id">
-                            <td>
-                                <button class="btn btn-success btn-sm" onclick="OnClick('', 'ClaimNotification', '@ClaimNotification.Id', '@Model.ClientInformationSheet.Id')"><i class="fa fa-edit"></i> Edit</button>
-                            </td>
-                            <td>
-                                @ClaimNotification.ClaimTitle
-                            </td>
-                            <td>
-                                @ClaimNotification.ClaimDescription
-                            </td>
-                            <td>
-                                @ClaimNotification.ClaimReference
-                            </td>
-                            <td>
-                                @ClaimNotification.ClaimInsuredName
-                            </td>
-                            <td>
-                                <button onclick="RemoveClaimNotification('@ClaimNotification.Id', 'Insured Details / Named Parties')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
-                            </td>
-                        </tr>
-                            }
-                    </tbody>
-                </table>
-            </div>
-            <div id="ClaimNotification2" class="tab-pane" role="tabpanel">
-                <div class="form-group">
-                    <label>Select a Claim from the 'List All' Tab and Click Edit Button</label>
-                </div>
-            </div>
-            <div id="ClaimNotification3" class="tab-pane" role="tabpanel">
-                @using (Html.BeginForm("AddClaimNotification", "ClaimNotification", FormMethod.Post, new { @id = "claimNotificationViewModel", @name = "ClaimNotificationViewModel" }))
-                {
 
-                    <div class="form-group">
-                        <button class="btn btn-success" type="submit" id="ClaimNotificationSubmitBtn" onclick="OnClaimNotificationSubmit('claimNotificationViewModel', 'Insured Details / Named Parties')">Add</button>
-                        <button class="btn btn-danger" id="ClaimNotificationClearButton" onclick="ResetClaimNotification('claimNotificationViewModel')"> Clear</button>
-                    </div>
-                }
-
-            </div>
-            <div id="ClaimNotification3" class="tab-pane" role="tabpanel">
-                <table id="tblclaimnotificationremoved"
-                       class="table table-striped" width="100%"
-                       data-show-columns="true"
-                       data-pagination="true"
-                       data-search="true"
-                       data-show-jump-to="true">
-                    <thead>
-                        <tr>
-                            <th data-field="editButton" data-sortable="false"></th>
-                            <th data-field="OrganisationName" data-sortable="true">Organisation Name</th>
-                            <th data-field="OrganisationType" data-sortable="true">Organisation Type</th>
-                            <th data-field="deleteButton" data-sortable="false"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.Id != Model.ClientInformationSheet.Owner.Id && o.Removed == true).ToList())
-                        {
-                            <tr id="@organisation.Id">
-                                <td>
-                                    <button class="btn btn-success btn-sm" onclick="RestoreOrganisation('@organisation.Id', 'Insured Details / Named Parties')"><i class="fa fa-undo"></i> Restore</button>
-                                </td>
-                                <td>
-                                    @organisation.Name
-                                </td>
-                                <td>
-                                    @organisation.InsuranceAttributes.FirstOrDefault().Name
-                                </td>
-                                <td>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>*@
-
-@*<div class="padding-10">
-    <div id="proposalcreate-form" class="smart-form" novalidate="novalidate">*@
-
-@*@tabs.Tab("List All")
-    @tabs.Tab("Edit")
-    @tabs.Tab("Add")
-
-    @tabs.Tab("List Removed").Class("ClaimRemoved")*@
 <div id="Claimtabs">
     <input id="ClaimId" name="ClaimViewModel.ClaimId" type="hidden" form="ClaimViewModel" />
     @*<input id="OrganisationId" name="ClaimViewModel.OrganisationId" type="hidden" form="ClaimViewModel" />*@
@@ -167,7 +44,7 @@
                     {
                         <tr id="@claim.Id">
                             <td>
-                                <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle', '@claim.ClaimDescription', '@claim.ClaimReference', '@claim.ClaimPolicyReference', '@claim.ClaimInsurerName', '@claim.ClaimInsuredName', '@claim.Claimant', '@claim.ClaimDateOfLoss', '@claim.ClaimNotifiedDate', '@claim.ClaimEstimateInsuredLiability', '@claim.SelectedClaimProducts', '@claim.SelectedResponsiblePrincipal', '@claim.ClaimNotes', '@claim.ClaimBrokerReference', '@claim.ClaimStatus')">
+                                <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle', '@claim.ClaimDescription', '@claim.ClaimReference', '@claim.ClaimPolicyReference', '@claim.ClaimInsurerName', '@claim.ClaimInsuredName', '@claim.Claimant', '@claim.ClaimDateOfLoss', '@claim.ClaimNotifiedDate', '@claim.ClaimEstimateInsuredLiability', '@claim.SelectedClaimProducts', '@claim.SelectedResponsiblePrincipal', '@claim.ClaimNotes', '@claim.ClaimBrokerReference', '@claim.ClaimStatus', '@claim.ClaimInsurerReference', '@claim.ClaimPaid', '@claim.ClaimReserve')">
                                 <i class="fa fa-edit"></i> 
                                 Edit
                                 </button>
@@ -227,33 +104,7 @@
                         </div>
                     </div>
                 </div>
-                @*
 
-        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 hidden ClaimStatus">
-                    <label class="label required">Claim Status</label>
-                    <label class="input">
-                        <select class="form-control bui form-select" id="AddClaimStatus" name="ClaimStatus">
-                            <option selected="selected" value="Precautionary notification only">Precautionary notification only</option>
-                            <option value="Withdrawn by insured">Withdrawn by insured</option>
-                            <option value="Formal claim filed">Formal claim filed</option>
-                            <option value="Information request to insured">Information request to insured</option>
-                            <option value="Third party has made formal demand">Third party has made formal demand</option>
-                            <option value="Solicitors instructed for claimant">Solicitors instructed for claimant</option>
-                            <option value="Subrogated to insurer">Subrogated to insurer</option>
-                            <option value="In discussions">In discussions</option>
-                            <option value="In agreed alternative process">In agreed alternative process</option>
-                            <option value="Proceedings issued">Proceedings issued</option>
-                            <option value="Part Settled">Part Settled</option>
-                            <option value="Settled">Settled</option>
-                            <option value="Closed">Closed</option>
-                            <option value="Open">Open</option>
-
-                        </select>
-                    </label>
-                    <p class="validationContainer" id="AddvalidateClaimStatus"></p>
-
-                </section>
-                *@
                 <div class="form-group" style="display:none;" id="ClaimStatusFormGroup">
                     <div class="row">
                         <div class="col-6">
@@ -296,38 +147,47 @@
                     </div>
                 </div>
 
-                @*
-        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                    <label class="label">Broker Reference (Read-Only)</label>
-                    <label class="input">
-                        <i></i>
-                        <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimBrokerReference" id="ClaimBrokerReference" name="ClaimBrokerReference" placeholder="Broker Reference (Read-Only)" readonly="true" value="">
-                    </label>
-                </section>
-                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                    <label class="label">Insurer Reference (Read-Only)</label>
-                    <label class="input">
-                        <i></i>
-                        <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimInsurerReference" id="ClaimInsurerReference" name="ClaimInsurerReference" placeholder="Insurer Reference (Read-Only)" readonly="true" value="">
-                    </label>
-                </section>
-                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                    <label class="label">$ Paid (Read-Only)</label>
-                    <label class="input">
-                        <i></i>
-                        <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimPaid" id="ClaimPaid" name="ClaimPaid" placeholder="$ Paid (Read-Only)" readonly="true" value="">
-                    </label>
-                </section>
-                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                    <label class="label">$ Reserve (Read-Only)</label>
-                    <label class="input">
-                        <i></i>
-                        <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimReserve" id="ClaimReserve" name="ClaimReserve" placeholder="$ Reserve (Read-Only)" readonly="true" value="">
-                    </label>
-                </section>
+                <div class="form-group" style="display:none;" id="ClaimInsurerReferenceFormGroup">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimInsurerReference" class="label form-label">
+                                Insurer Reference (Read-Only)
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimInsurerReference, new { id = "ClaimInsurerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display:none;" id="ClaimPaidFormGroup">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimPaid" class="label form-label">
+                                $ Paid (Read-Only)
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimPaid, new { id = "ClaimPaid", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                        </div>
+                    </div>
+                </div>
 
 
-                *@
+
+                <div class="form-group" style="display:none;" id="ClaimReserveFormGroup">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="ClaimReserve" class="label form-label">
+                                $ Reserve (Read-Only)
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimPaid, new { id = "ClaimReserve", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                        </div>
+                    </div>
+                </div>
+
 
 
 

@@ -3013,7 +3013,7 @@ namespace DealEngine.WebUI.Controllers
 
 
 
-        //RemoveClaimNotification np code
+        //RemoveClaimNotification
 
         [HttpPost]
         public async Task<IActionResult> RemoveClaimNotification(string claimId)
