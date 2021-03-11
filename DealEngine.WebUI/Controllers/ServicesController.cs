@@ -2702,7 +2702,7 @@ namespace DealEngine.WebUI.Controllers
                 var SelectedClaimProducts = collection.Keys.Where(s => s.StartsWith("SelectedClaimProducts", StringComparison.CurrentCulture));
                 var claimProductID = collection["SelectedClaimProducts"];
 
-                var SelectedAddClaimStatus = collection.Keys.Where(s => s.StartsWith("SelectedAddClaimStatus", StringComparison.CurrentCulture));
+                var ClaimStatus = collection.Keys.Where(s => s.StartsWith("ClaimStatus", StringComparison.CurrentCulture));
                 
 
                 var SelectedResponsiblePrincipal = collection.Keys.Where(s => s.StartsWith("SelectedResponsiblePrincipal", StringComparison.CurrentCulture));
@@ -2806,14 +2806,14 @@ namespace DealEngine.WebUI.Controllers
                     }
 
                 }
-                foreach (var keyField in SelectedAddClaimStatus)
+                foreach (var keyField in ClaimStatus)
                 {
-                    if (keyField == "SelectedAddClaimStatus")
+                    if (keyField == "ClaimStatus")
                     {
                         var propertyName = keyField.Split('.').ToList();
                         var property = type.GetProperty(propertyName.LastOrDefault());
 
-                        if(property == null)
+                        if (property == null)
                         {
                             //property = "String";
                         }
@@ -2825,12 +2825,12 @@ namespace DealEngine.WebUI.Controllers
                         {
                             property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
                         }
-                      
+
                     }
 
-                }
+                    }
 
-                foreach (var keyField in SelectedResponsiblePrincipal)
+                    foreach (var keyField in SelectedResponsiblePrincipal)
                 {
                     if (keyField == "SelectedResponsiblePrincipal")
                     {

@@ -265,6 +265,7 @@
                 </div>
 
                 <div class="form-group" style="display:none;" id="ClaimStatusFormGroup">
+
                     <div class="row">
                         <div class="col-6">
                             <label for="ClaimReference form-label" class="label required">
@@ -273,7 +274,7 @@
                         </div>
                         <div class="col-6">
 
-                            <select data-placeholder="Choose Primary Policy Product..." id="AddClaimStatus" name="SelectedAddClaimStatus" class="form-control b form-select" form="ClaimViewModel">
+                            <select data-placeholder="Choose Primary Policy Product..." id="ClaimStatus" name="ClaimStatus" class="form-control b form-select" form="ClaimViewModel" readonly disabled>
                                 <option selected="selected" value="PrecautionaryNotificationOnly">Precautionary notification only</option>
                                 <option value="Withdrawnbyinsured">Withdrawn by insured</option>
                                 <option value="Formalclaimfiled">Formal claim filed</option>
@@ -303,7 +304,7 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimBrokerReference, new { id = "ClaimBrokerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimBrokerReference, new { id = "ClaimBrokerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true", disabled = "disabled" })
                         </div>
                     </div>
                 </div>
@@ -316,7 +317,7 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimInsurerReference, new { id = "ClaimInsurerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimInsurerReference, new { id = "ClaimInsurerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true", disabled = "disabled" })
                         </div>
                     </div>
                 </div>
@@ -328,7 +329,7 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimReserve, new { id = "ClaimReserve", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimReserve, new { id = "ClaimReserve", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true", disabled = "disabled" })
                         </div>
                     </div>
                 </div>
@@ -342,7 +343,7 @@
                         </div>
                         <div class="col-6">
 
-                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimPaid, new { id = "ClaimPaid", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @value = "" })
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimPaid, new { id = "ClaimPaid", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @value = "", disabled = "disabled" })
                         </div>
                     </div>
                 </div>
