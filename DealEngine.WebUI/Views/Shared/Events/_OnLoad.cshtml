@@ -13,6 +13,34 @@
         var startDate = new Date(currYear, currMonth, currDate);
     }
 
+
+  
+
+
+    var mm = d.getMonth() + 1; //January is 0 so need to add 1 to make it 1!
+    if (currDate < 10) {
+        currDate = '0' + currDate
+    }
+    if (mm < 10) {
+        mm = '0' + mm
+    }
+
+    d = currYear + '-' + mm + '-' + currDate;
+    if (document.getElementById("dateselected") != null) {
+        document.getElementById("dateselected").setAttribute("min", d);
+    }
+
+    debugger;
+
+    var currentDate  = document.getElementsByClassName("currentDate");
+    console.log(currentDate);
+    if (document.getElementsByClassName("currentDate") != null) {
+
+        document.getElementsByClassName("currentDate")[0].setAttribute("max", d);
+    }
+
+
+
     $('#FAPCoverStartDate').datepicker({
         dateFormat: "dd/mm/yy",
         minDate: startDate
@@ -22,6 +50,8 @@
     //if (document.getElementById("FAPCoverStartDate") != null) {
     //    document.getElementById("FAPCoverStartDate").setAttribute("min", startDate.toISOString().split('T')[0]);
     //}
+
+    //currentDate
 
     $('#AddBoatEffectiveDate').datepicker({
         dateFormat: "yy-mm-dd",

@@ -363,14 +363,16 @@
         document.getElementById("ClaimInsuredName").value = ClaimInsuredName;
         document.getElementById("Claimant").value = Claimant;
         document.getElementById("ClaimDateOfLoss").value = ClaimDateOfLoss;
-        document.getElementById("ClaimNotifiedDate").value = ClaimNotifiedDate;
+        document.getElementById("ClaimNotifiedDate").value = ClaimNotifiedDate.split(' ')[0];
         document.getElementById("ClaimEstimateInsuredLiability").value = ClaimEstimateInsuredLiability;
         document.getElementById("PrimaryPolicyprod").value = SelectedClaimProducts;
         document.getElementById("ResponsiblePrincipal").value = SelectedResponsiblePrincipal;
         document.getElementById("ClaimNotes").value = ClaimNotes;
         document.getElementById("ClaimBrokerReference").value = ClaimBrokerReference;
         document.getElementById("ClaimStatus").value = ClaimStatus;
-        //console.log("AddClaimStatus = " + AddClaimStatus);
+        console.log("ClaimNotifiedDate = " + ClaimNotifiedDate.split(' ')[0]);
+        //d = d.split(' ')[0];
+
         document.getElementById("ClaimInsurerReference").value = ClaimInsurerReference;
         document.getElementById("ClaimReserve").value = ClaimReserve;
 

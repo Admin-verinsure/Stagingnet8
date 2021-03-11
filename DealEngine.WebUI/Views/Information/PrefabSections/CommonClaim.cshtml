@@ -193,7 +193,8 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimNotifiedDate, new { id = "ClaimNotifiedDate", @class = "form-control Startdate", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                            @*@Html.TextBoxFor(m => m.ClaimViewModel.ClaimNotifiedDate, new { id = "ClaimNotifiedDate", @class = "form-control Startdate", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })*@
+                            @Html.TextBoxFor(m => m.ClaimViewModel.ClaimNotifiedDate, new { id = "ClaimNotifiedDate", @class = "form-control currentDate", onfocus = "(this.type='date')", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel"})
                         </div>
                     </div>
                 </div>
