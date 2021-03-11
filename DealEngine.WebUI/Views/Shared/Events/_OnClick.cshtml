@@ -349,6 +349,15 @@
         SetCurrentTab("locationtab2");
     }
 
+
+    function enable(id) {
+        var eleman = document.getElementById(id);
+        //eleman.setAttribute("disabled", false);
+        //eleman.setAttribute("editable", true);
+        element.removeAttribute("disabled");
+
+    }
+
     //function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, ClaimStatus, ClaimInsurerReference, ClaimPaid, ClaimReserve)
     function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, ClaimStatus, ClaimInsurerReference, ClaimReserve, ClaimPaid )
     {
@@ -362,7 +371,7 @@
         document.getElementById("ClaimInsurerName").value = ClaimInsurerName;
         document.getElementById("ClaimInsuredName").value = ClaimInsuredName;
         document.getElementById("Claimant").value = Claimant;
-        document.getElementById("ClaimDateOfLoss").value = ClaimDateOfLoss;
+        document.getElementById("ClaimDateOfLoss").value = ClaimDateOfLoss.split(' ')[0];
         document.getElementById("ClaimNotifiedDate").value = ClaimNotifiedDate.split(' ')[0];
         document.getElementById("ClaimEstimateInsuredLiability").value = ClaimEstimateInsuredLiability;
         document.getElementById("PrimaryPolicyprod").value = SelectedClaimProducts;
@@ -370,20 +379,36 @@
         document.getElementById("ClaimNotes").value = ClaimNotes;
         document.getElementById("ClaimBrokerReference").value = ClaimBrokerReference;
         document.getElementById("ClaimStatus").value = ClaimStatus;
-        console.log("ClaimNotifiedDate = " + ClaimNotifiedDate.split(' ')[0]);
+        //console.log("ClaimStatus = " + ClaimStatus);
         //d = d.split(' ')[0];
 
         document.getElementById("ClaimInsurerReference").value = ClaimInsurerReference;
         document.getElementById("ClaimReserve").value = ClaimReserve;
 
         document.getElementById("ClaimPaid").value = ClaimPaid;
-        
+
+
+        var eleman = document.getElementById("ClaimStatus");
+        eleman.setAttribute("disabled", "true");
+
+        var eleman1 = document.getElementById("ClaimBrokerReference");
+        eleman1.setAttribute("disabled", "true");
+
+        var eleman2 = document.getElementById("ClaimInsurerReference");
+        eleman2.setAttribute("disabled", "true");
+
+        var eleman3 = document.getElementById("ClaimReserve");
+        eleman3.setAttribute("disabled", "true");
+
+        var eleman4 = document.getElementById("ClaimPaid");
+        eleman4.setAttribute("disabled", "true");
 
         SetCurrentTab("clTabs2");
     }
 
     function AddProject(SectionName) {
         var form = document.getElementById("ProjectViewModel");
+
         var formValid = TableFormValidation(form, "project");
         if (formValid) {
             //add section name here
