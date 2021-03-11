@@ -22,20 +22,20 @@
 
             <div>
                 <ul class="nav nav-tabs d-sm-flex" hidden>
-                    <li class="active" data-target="#step1" hidden>
-                        <a href="#tab1" data-toggle="tab"> <span class="step">1</span> <span class="title">Step 1</span> </a>
+                    <li class="active" data-bs-target="#step1" hidden>
+                        <a href="#tab1" data-bs-toggle="tab"> <span class="step">1</span> <span class="title">Step 1</span> </a>
                     </li>
-                    <li data-target="#step2" hidden>
-                        <a href="#tab2" data-toggle="tab"> <span class="step">2</span> <span class="title">Step 2</span> </a>
+                    <li data-bs-target="#step2" hidden>
+                        <a href="#tab2" data-bs-toggle="tab"> <span class="step">2</span> <span class="title">Step 2</span> </a>
                     </li>
-                    <li data-target="#step3" hidden>
-                        <a href="#tab3" data-toggle="tab"> <span class="step">3</span> <span class="title">Step 3</span> </a>
+                    <li data-bs-target="#step3" hidden>
+                        <a href="#tab3" data-bs-toggle="tab"> <span class="step">3</span> <span class="title">Step 3</span> </a>
                     </li>
-                    <li data-target="#step4" hidden>
-                        <a href="#tab4" data-toggle="tab"> <span class="step">4</span> <span class="title">Step 4</span> </a>
+                    <li data-bs-target="#step4" hidden>
+                        <a href="#tab4" data-bs-toggle="tab"> <span class="step">4</span> <span class="title">Step 4</span> </a>
                     </li>
-                    <li data-target="#step5" hidden>
-                        <a href="#tab5" data-toggle="tab"> <span class="step">5</span> <span class="title">Step 5</span> </a>
+                    <li data-bs-target="#step5" hidden>
+                        <a href="#tab5" data-bs-toggle="tab"> <span class="step">5</span> <span class="title">Step 5</span> </a>
                     </li>
 
                 </ul>
@@ -46,9 +46,11 @@
                     <form id="quickQuote">
                         <div class="container">
 
-                            <h1 class="text-align-center" style="font-size: 18px;font-weight: 600;font-family: Arial;text-align: center;color: black;padding-bottom: 15px; padding-top:10px" strong id="QuickQuoteText2">Tell us a little bit more about your vessel...</h1>
+                            <h1 class="text-align-center" style="font-size: 18px;font-weight: 600;font-family: Arial;text-align: center;color: black;padding-bottom: 15px; padding-top:10px" strong id="QuickQuoteText2">
+                            Tell us a little bit more about your vessel...
+                            </h1>
 
-                            <select onchange="updateLabel()" id="CraftTypeDrop" class="form-control input-lg" hidden style="margin-top: 20px; margin-bottom: 25px;">
+                            <select onchange="updateLabel()" id="CraftTypeDrop" class="form-control form-select input-lg" hidden style="margin-top: 20px; margin-bottom: 25px;">
                                 <option value="" selected="selected">Pick your highest value vessel.</option>
                                 <option>Roadtrailer</option>
                                 <option>Stored</option>
@@ -69,7 +71,12 @@
                                 <table class="table table-bordered">
                                     <tr id="mnumbfgroup" class="coastguardformtr">
                                         <td class="coastguardformtd1">
-                                            <span class="input-group-addon" style="width:220px;height:28px"><label class="cgform-label" id="memNum">Coastguard Membership #<p style="color:red; float:right;">&nbsp;*</p></label></span>
+                                            <span class="input-group-addon" style="width:220px;height:28px">
+                                                <label class="cgform-label" id="memNum">
+                                                    Coastguard Membership #
+                                                    <p style="color:red; float:right;">&nbsp;*</p>
+                                                </label>
+                                            </span>
 
                                         </td>
                                         <td class="coastguardformtd">
@@ -82,13 +89,18 @@
                                     </tr>
                                     <tr id="vtypefgroup" class="coastguardformtr">
                                         <td class="coastguardformtd1">
-                                            <span class="input-group-addon" style="width:220px;height:28px"><label class="cgform-label" id="VesselType">Vessel Type<p style="color:red; float:right;">&nbsp;*</p></label></span>
+                                            <span class="input-group-addon" style="width:220px;height:28px">
+                                                <label class="cgform-label" id="VesselType">
+                                                    Vessel Type
+                                                    <p style="color:red; float:right;">&nbsp;*</p>
+                                                </label>
+                                            </span>
 
                                         </td>
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select onchange="updateOptions()" id="vtype" class="form-control input-lg" style="font-size:1.1em;" required>
+                                                    <select onchange="updateOptions()" id="vtype" class="form-control form-select input-lg" style="font-size:1.1em;" required>
                                                         <option id="" value="" selected="selected">-- Select --</option>
                                                         <option id="Powerboats" value="Powerboats">Powerboats</option>
                                                         <option id="Cruisers" value="CruisersandLaunches">Cruisers and Launches</option>
@@ -107,7 +119,7 @@
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select id="ctype" class="form-control input-lg" style="font-size:1.1em;">
+                                                    <select id="ctype" class="form-control input-lg form-select" style="font-size:1.1em;">
                                                         <option value="" selected="selected">-- Select --</option>
                                                         <option id="Aluminium" value="Aluminium">Aluminium</option>
                                                         <option id="Steel" value="Steel">Steel</option>
@@ -130,7 +142,7 @@
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select id="hcfig" class="form-control input-lg" style="font-size:1.1em;">
+                                                    <select id="hcfig" class="form-control form-select input-lg" style="font-size:1.1em;">
                                                         <option id="" value="" selected="selected">-- Select --</option>
                                                         <option id="Mono" value="Mono">Mono</option>
                                                         <option id="Catamaran" value="Catamaran">Catamaran</option>
@@ -148,7 +160,7 @@
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select id="mtype" class="form-control input-lg" style="font-size:1.1em;">
+                                                    <select id="mtype" class="form-control form-select input-lg" style="font-size:1.1em;">
                                                         <option value="" selected="selected">-- Select --</option>
                                                         <option id="Pile" value="Pile">Pile</option>
                                                         <option id="Marina" value="Marina">Marina</option>
@@ -166,7 +178,7 @@
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select id="hastr" class="form-control input-lg" style="font-size:1.1em;">
+                                                    <select id="hastr" class="form-control form-select input-lg" style="font-size:1.1em;">
                                                         <option value="" selected="selected">-- Select --</option>
                                                         <option id="True" value="True">Yes</option>
                                                         <option id="False" value="False">No</option>
@@ -220,13 +232,13 @@
                             </div>
                             <div style="margin-bottom:50px;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <div role="group" aria-label="First group">
-                                    <!--<a href="#tab2" data-toggle="tab"><button onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</button></a>-->
-                                    <a href="#tab2" data-toggle="tab" onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</a>
+                                    <!--<a href="#tab2" data-bs-toggle="tab"><button onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</button></a>-->
+                                    <a href="#tab2" data-bs-toggle="tab" onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</a>
                                     @*<a href="Coastguardreg" style=" width:100%; background-color:#72BF44 !important;color:white;" id="newQuote" class="btn btn-secondary margin-top-10 " hidden>Get A New Quote</a>*@
                                     <a href="Coastguardreg" style=" width:100%; background-color:#72BF44 !important;color:white;" id="newQuote" class="btn btn-secondary margin-top-10 w100 hidden">Get A New Quote</a>
 
                                     <!--<button type="button" class="btn btn-secondary margin-top-10 w100 hidden">Save for later</button>-->
-                                    <a data-toggle="tab" onclick="pleaseCallButton(); return false;" style="width:100%;background-color:#004280 !important;color:white;" type="submit" class="btn btn-secondary margin-top-10 w100">Please give me a call to discuss</a>
+                                    <a data-bs-toggle="tab" onclick="pleaseCallButton(); return false;" style="width:100%;background-color:#004280 !important;color:white;" type="submit" class="btn btn-secondary margin-top-10 w100">Please give me a call to discuss</a>
 
                                     <a style="width:100%; background-color:#F04E45 !important;color:white;" href="Coastguardreg" class="btn btn-secondary margin-top-10 w100 ">No Thanks, I think I'll leave it</a>
                                     @*<button style="background-color:#004280 !important;color:white;" href="#tab2" type="button" class="btn btn-secondary margin-top-10 w100" onlick="validationCheck()">Please give me a call to discuss</button>*@
@@ -354,15 +366,15 @@
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding margin-top-5">
                                 <div class="btn-group w100" style="margin-bottom:50px;" role="group" aria-label="First group">
                                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                        <a href="#tab1" data-toggle="tab"><button style="width:100%; background-color:#F04E45 !important;color:white;" type="button" class="btn btn-secondary margin-top-10 w100">BACK</button></a>
+                                        <a href="#tab1" data-bs-toggle="tab"><button style="width:100%; background-color:#F04E45 !important;color:white;" type="button" class="btn btn-secondary margin-top-10 w100">BACK</button></a>
                                     </div>
 
                                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="nextsec">
-                                        <a onclick="validationCheck2(); return false;" id="nextButton" data-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white;" id="next" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
+                                        <a onclick="validationCheck2(); return false;" id="nextButton" data-bs-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white;" id="next" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
                                     </div>
 
                                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                        <a onclick="validationCheck2('pleaseCall'); return false;" data-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white; display:none" id="callMeNext" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
+                                        <a onclick="validationCheck2('pleaseCall'); return false;" data-bs-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white; display:none" id="callMeNext" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
                                     </div>
 
                                     <!--href="#tab1"-->
@@ -465,7 +477,7 @@
 
 @section pagespecific{
     @*<script src="~/twitter-bootstrap/js/bootstrap.min.js"></script>*@
-    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    @*<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>*@
     <script type="text/javascript">
         var qq = document.getElementById("qquotfgroup");
         var n = document.getElementById("mnumbfgroup");
@@ -885,6 +897,7 @@
             }
 
             else {
+                console.log("badCount = " + badCount);
                 if (badCount < 1) {
                     $('#mnumb').attr('readonly', 'readonly');
                     $('#mnumb').disableSelection;
@@ -909,7 +922,7 @@
                     $('#indiQuoteSpan').show();
                     $('#quoteInc').show();
                     $('#next').show();
-
+                    next.classList.remove("hidden");
                     
                     qref.hidden = true;
                     indiQuoteSpan.hidden = false;
@@ -1282,9 +1295,11 @@
                 //m.classList.add("hidden");
                 //t.classList.add("hidden");
                 //qq.classList.add("hidden");
-            }
-        });
 
+            }
+
+        });
+        
         /*
                     // Model i agree button
                     $("#i-agree").click(function () {

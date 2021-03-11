@@ -9,9 +9,12 @@
         </li>
         @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
         {
-            <li class="nav-item">
-                <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-toggle="modal"><i class="fa fa-pencil"></i> Create UIS</a>
-            </li>
+    <li class="nav-item">
+        @*<button type="button" class="btn btn-sm pull-right text-white" data-bs-toggle="modal" data-bs-target="#advisoryModal" data-bs-whatever="mdo" style="background-color: #00A8C8">*@
+            <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
+                <i class="fa fa-pencil"></i> Create UIS
+            </a>
+    </li>
             <li class="nav-item">
                 <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
             </li>
@@ -40,7 +43,7 @@
         else if (Model.CurrentUserIsProgrammeManager == "True")
         {
             <li class="nav-item">
-                <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-toggle="modal"><i class="fa fa-pencil"></i> Create UIS</a>
+                <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal"><i class="fa fa-pencil"></i> Create UIS</a>
             </li>
             <li class="nav-item">
                 <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
@@ -69,7 +72,9 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" style="color:blue; font-size:22px">Change Details</h3>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            @*<button type="button" class="close" data-bs-dismiss="modal">&times;</button>*@
+            <button type="button" class="btn-close" data-bs-dismiss="modal">
+            </button>
         </div>
         <div class="modal-body">
             <form id="ProdForm" method="post" action="~/Information/UpdateInformation">
@@ -80,7 +85,7 @@
                             <label for="changeType" class="required">Change Type</label>
                         </td>
                         <td>
-                            <select class="form-control b" id="ChangeType" name="ChangeType" title="" required>
+                            <select class="form-control b form-select" id="ChangeType" name="ChangeType" title="" required>
                                 <option selected="selected" value="">-- Select here --</option>
                                 <option Value="TC_addAmendRiskInfo">Add Amend Risk Information</option>
                                 <option Value="TC_newCoverable">Add New Coverable</option>
@@ -108,7 +113,7 @@
                             <label for="Reason" class="required">Reason</label>
                         </td>
                         <td>
-                            <select class="form-control" id="ChangeReason" name="Reason" title="" required>
+                            <select class="form-control form-select" id="ChangeReason" name="Reason" title="" required>
                                 <option selected="selected" value="">-- Select here --</option>
                                 <option Value="TC_businessSoldOrClosed_lgi">Business Sold or Closed</option>
                                 <option Value="TC_changeInCoverReq_lgi">Change in cover requirements</option>
@@ -165,13 +170,14 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title" style="color:blue; font-size:22px">Client Details</h3>
-                    <button type="button" class="close" id="CreateUISModalClose" data-dismiss="modal">&times;</button>
+                    @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
+                    <button type="button" class="btn-close" id="CreateUISModalClose" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     @Html.HiddenFor(m => m.Programme.Id)
                     <div class="form-group">
                         @Html.LabelFor(m => m.OrganisationViewModel.OrganisationTypes, new { @class = "label required" })
-                        <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="custom-select" onclick="OrganisationTypeChange(this.value)" required>
+                        <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="custom-select form-select" onclick="OrganisationTypeChange(this.value)" required>
                             @foreach (var option in Model.OrganisationViewModel.OrganisationTypes)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -220,7 +226,8 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            @*<button type="button" class="close" data-bs-dismiss="modal">&times;</button>*@
+            <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
             <form id="ProdForm">
@@ -242,7 +249,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-toggle="tab">Submit</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
         </div>
     </div>
 </div>

@@ -22,7 +22,7 @@
 
                             <div id="milestone1" class="tab-pane step-content">
                                 @Html.LabelFor(m => m.Programmes, new { @class = "label required" })
-                                <select id="Milestone.Programme" name="MilestoneViewModel.Programme" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                <select id="Milestone.Programme" name="MilestoneViewModel.Programme" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.Programmes)
                                     {
                                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -31,7 +31,7 @@
                             </div>
                             <div id="milestone2" class="tab-pane step-content">
                                 @Html.LabelFor(m => m.ProgrammeProcesses, new { @class = "label required" })
-                                <select id="Milestone.ProgrammeProcess" name="MilestoneViewModel.ProgrammeProcesses" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                <select id="Milestone.ProgrammeProcess" name="MilestoneViewModel.ProgrammeProcesses" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.ProgrammeProcesses)
                                     {
                                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -40,7 +40,7 @@
                             </div>
                             <div id="milestone3" class="tab-pane step-content">
                                 @Html.LabelFor(m => m.Activities, new { @class = "label required" })
-                                <select id="Milestone.Activity" name="MilestoneViewModel.Activity" class="custom-select" data-rule="GetMilestone" onchange="OnChange(this.id, this.name)" required>
+                                <select id="Milestone.Activity" name="MilestoneViewModel.Activity" class="custom-select form-select" data-rule="GetMilestone" onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.Activities)
                                     {
                                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -51,7 +51,7 @@
 
                                 <div class="form-group">
                                     @Html.LabelFor(m => m.UserTask.IsActive, new { @class = "label" })
-                                    <select id="Milestone.UserTask.IsActive" name="MilestoneViewModel.UserTask.IsActive" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="Milestone.UserTask.IsActive" name="MilestoneViewModel.UserTask.IsActive" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.StandardOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -64,7 +64,7 @@
                                 </div>*@
                                 <div class="form-group">
                                     @Html.Label("Advisory")
-                                    <a class="btn btn-primary btn-sm" href="#AdvisoryModal" aria-hidden="true" style="color:white" data-toggle="modal"><i class="fa fa-pencil"></i> Create/View/Edit</a>
+                                    <a class="btn btn-primary btn-sm" href="#AdvisoryModal" aria-hidden="true" style="color:white" data-bs-toggle="modal"><i class="fa fa-pencil"></i> Create/View/Edit</a>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h3 class="modal-title" style="color:blue; font-size:22px">Advisory Details</h3>
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
                                 </div>
                                 <div class="modal-body">
                                     <div class="form-group">
@@ -94,7 +94,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h3 class="modal-title" style="color:blue; font-size:22px">Task Details</h3>
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
                                 </div>
                                 <div class="modal-body">
                                     @*<div class="form-group">

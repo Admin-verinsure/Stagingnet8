@@ -9,10 +9,10 @@
         <div id="SharedRole">
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" id="tab1">
-                <a class="nav-link active" href="#RoleTab1" data-toggle="tab"> Roles </a>
+                <a class="nav-link active" href="#RoleTab1" data-bs-toggle="tab"> Roles </a>
             </li>
             <li class="nav-item" id="tab2">
-                <a class="nav-link" href="#RoleTab2" data-toggle="tab"> Additional Information </a>
+                <a class="nav-link" href="#RoleTab2" data-bs-toggle="tab"> Additional Information </a>
             </li>
         </ul>
         <div class="tab-content">
@@ -23,7 +23,7 @@
                             <label for="roles" class="label required">Select principals and staff in each applicable category and indicate the number:</label>
                         </div>
                         <div class="col-8">
-                            <select id="dataroles" name="RoleDataViewModel.DataRoles" class="chosen-select form-control b" form="RoleDataViewModel" multiple data-rule="BuildSharedTable" data-item="dataroles,rolestable" onchange="OnChange(this.id, this.name)" required>
+                            <select id="dataroles" name="RoleDataViewModel.DataRoles" class="chosen-select form-control b form-select" form="RoleDataViewModel" multiple data-rule="BuildSharedTable" data-item="dataroles,rolestable" onchange="OnChange(this.id, this.name)" required>
                                 @foreach (var option in Model.RoleDataViewModel.DataRoles)
                                 {
                                     <option selected="@option.Selected" value="@option.TemplateId.ToString()">@option.Name</option>

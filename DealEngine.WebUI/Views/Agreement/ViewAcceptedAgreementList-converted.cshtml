@@ -29,154 +29,155 @@
     <div class="form-group">
 
         <div class="accordion" id="agreementAccordion">
+            <div class="accordion-item">
 
+                    @foreach (var item in Model)
+                    {
+                        <div class="card">
+                            <div class="card-header text-white" id="header_@item.ClientAgreementId" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@item.ClientAgreementId" aria-expanded="true" aria-controls="collapse_@item.ClientAgreementId" style="height:70px;background-color:#00A8C8; text-align:left;">
+                                <h3 class="mb-0">
+                                    @item.ProductName - <small class="text-justify">@item.Status</small>
+                                </h3>
+                            </div>
 
-            @foreach (var item in Model)
-            {
-                <div class="card">
-                        <div class="card-header text-white" id="header_@item.ClientAgreementId" type="button" data-toggle="collapse" data-target="#collapse_@item.ClientAgreementId" aria-expanded="true" aria-controls="collapse_@item.ClientAgreementId" style="height:70px;background-color:#00A8C8; text-align:left;">
-                            <h3 class="mb-0">
-                                @item.ProductName - <small class="text-justify">@item.Status</small>
-                            </h3>                            
-                        </div>
-
-                    <div id="collapse_@item.ClientAgreementId" class="collapse" aria-labelledby="header_@item.ClientAgreementId" data-parent="#agreementAccordion">
-                        <div class="card-body">
-                            <div class="form-group">
-                                <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
-                                    <div class="btn-group mr-2" role="group" aria-label="First group">
-                                        @if (item.CurrentUser.PrimaryOrganisation.IsBroker || item.CurrentUser.PrimaryOrganisation.IsTC)
-                                        {
-
-                                            <a href="~/Information/ViewProgrammeDetails/@item.ClientProgrammeId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> View Information Sheet</a>
-                                            <a href="~/Agreement/EditAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Agreement</a>
-                                            <a href="~/Agreement/ViewAgreementRule/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Agreement Rules</a>
-                                            <a href="~/Agreement/ViewAgreementEndorsement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Agreement Endorsements</a>
-                                            <a href="~/Agreement/EditTerms/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Terms</a>
-                                            <a href="@Url.Action("AuthoriseReferrals", "Agreement", new { sheetId = @item.ClientProgrammeId, informationsheet = @item.InformationSheetId, agreementId = @item.ClientAgreementId })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Authorise Referrals</a>
-
-                                            @if (item.Status == "Quoted" && item.ClientInformationSheet.Status == "Submitted")
-                                            {
-                                                @if (item.SentOnlineAcceptance != true)
+                            <div id="collapse_@item.ClientAgreementId" class="accordion-collapse collapse" aria-labelledby="header_@item.ClientAgreementId" data-bs-parent="#agreementAccordion">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                                            <div class="btn-group mr-2" role="group" aria-label="First group">
+                                                @if (item.CurrentUser.PrimaryOrganisation.IsBroker || item.CurrentUser.PrimaryOrganisation.IsTC)
                                                 {
-                                                    <a href="~/Information/SendOnlineAcceptance/?ClientAgreement=@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Send Online Acceptance</a>
+
+                                                    <a href="~/Information/ViewProgrammeDetails/@item.ClientProgrammeId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> View Information Sheet</a>
+                                                    <a href="~/Agreement/EditAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Agreement</a>
+                                                    <a href="~/Agreement/ViewAgreementRule/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Agreement Rules</a>
+                                                    <a href="~/Agreement/ViewAgreementEndorsement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Agreement Endorsements</a>
+                                                    <a href="~/Agreement/EditTerms/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Terms</a>
+                                                    <a href="@Url.Action("AuthoriseReferrals", "Agreement", new { sheetId = @item.ClientProgrammeId, informationsheet = @item.InformationSheetId, agreementId = @item.ClientAgreementId })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Authorise Referrals</a>
+
+                                                    @if (item.Status == "Quoted" && item.ClientInformationSheet.Status == "Submitted")
+                                                    {
+                                                        @if (item.SentOnlineAcceptance != true)
+                                                        {
+                                                            <a href="~/Information/SendOnlineAcceptance/?ClientAgreement=@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Send Online Acceptance</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="~/Information/SendOnlineAcceptance/?ClientAgreement=@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Resend Online Acceptance</a>
+                                                        }
+                                                    }
+                                                    @if (item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled" ||
+    item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Status != "Bound and invoiced")
+                                                    {
+                                                        <a href="~/Agreement/DeclineAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Decline Agreement</a>
+                                                    }
+                                                    @if (item.Status == "Declined by Insurer" || item.Status == "Declined by Insured")
+                                                    {
+                                                        <a href="~/Agreement/UndeclineAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Undecline Agreement</a>
+                                                    }
+                                                    @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
+    (item.Status == "Bound" || item.Status == "Bound and invoice pending" || item.Status == "Bound and invoiced" || item.Status == "Cancel Pending"))
+                                                    {
+                                                        <a href="~/Agreement/CancellAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Cancel Agreement</a>
+                                                    }
+                                                    <a href="@Url.Action("EditBillingConfiguration", "Programme", new { programmeId = @item.ClientProgrammeId })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Billing Information Configuration</a>
+
                                                 }
-                                                else
+                                                else if (item.CurrentUser.PrimaryOrganisation.IsInsurer)
                                                 {
-                                                    <a href="~/Information/SendOnlineAcceptance/?ClientAgreement=@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Resend Online Acceptance</a>
+                                                    <a href="~/Information/ViewProgrammeDetails/@item.ClientProgrammeId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> View Information Sheet</a>
+                                                    <a href="~/Agreement/ViewAgreementEndorsement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Agreement Endorsements</a>
+                                                    <a href="~/Agreement/EditTerms/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Terms</a>
+                                                    <a href="@Url.Action("AuthoriseReferrals", "Agreement", new { sheetId = @item.ClientProgrammeId, informationsheet = @item.InformationSheetId, agreementId = @item.ClientAgreementId })" class="btn txt-color-white bg-color-green btn-sm"><i class="fa fa-edit"></i> Authorise Referrals</a>
+
+                                                    @if (item.Status == "Quoted" && item.ClientInformationSheet.Status == "Submitted")
+                                                    {
+                                                        @if (item.SentOnlineAcceptance != true)
+                                                        {
+                                                            <a href="~/Information/SendOnlineAcceptance/?ClientAgreement=@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Send Online Acceptance</a>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="~/Information/SendOnlineAcceptance/?ClientAgreement=@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Resend Online Acceptance</a>
+                                                        }
+                                                    }
+
+
+                                                    @if (item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled" ||
+    item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Status != "Bound and invoiced")
+                                                    {
+                                                        <a href="~/Agreement/DeclineAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Decline Agreement</a>
+                                                    }
+                                                    @if (item.Status == "Declined by Insurer" || item.Status == "Declined by Insured")
+                                                    {
+                                                        <a href="~/Agreement/UndeclineAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Undecline Agreement</a>
+                                                    }
+                                                    @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
+    (item.Status == "Bound" || item.Status == "Bound and invoice pending" || item.Status == "Bound and invoiced"))
+                                                    {
+                                                        <a href="~/Agreement/CancellAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Cancel Agreement</a>
+                                                    }
+
                                                 }
-                                            }
-                                            @if (item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled" ||
-item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Status != "Bound and invoiced")
-                                            {
-                                                <a href="~/Agreement/DeclineAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Decline Agreement</a>
-                                            }
-                                            @if (item.Status == "Declined by Insurer" || item.Status == "Declined by Insured")
-                                            {
-                                                <a href="~/Agreement/UndeclineAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Undecline Agreement</a>
-                                            }
-                                            @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
-(item.Status == "Bound" || item.Status == "Bound and invoice pending" || item.Status == "Bound and invoiced" || item.Status == "Cancel Pending"))
-                                            {
-                                                <a href="~/Agreement/CancellAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Cancel Agreement</a>
-                                            }
-                                            <a href="@Url.Action("EditBillingConfiguration", "Programme", new { programmeId = @item.ClientProgrammeId })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Billing Information Configuration</a>
 
-                                        }
-                                        else if (item.CurrentUser.PrimaryOrganisation.IsInsurer)
-                                        {
-                                            <a href="~/Information/ViewProgrammeDetails/@item.ClientProgrammeId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> View Information Sheet</a>
-                                            <a href="~/Agreement/ViewAgreementEndorsement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Agreement Endorsements</a>
-                                            <a href="~/Agreement/EditTerms/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Terms</a>
-                                            <a href="@Url.Action("AuthoriseReferrals", "Agreement", new { sheetId = @item.ClientProgrammeId, informationsheet = @item.InformationSheetId, agreementId = @item.ClientAgreementId })" class="btn txt-color-white bg-color-green btn-sm"><i class="fa fa-edit"></i> Authorise Referrals</a>
+                                            </div>
+                                        </div>
 
-                                            @if (item.Status == "Quoted" && item.ClientInformationSheet.Status == "Submitted")
-                                            {
-                                                @if (item.SentOnlineAcceptance != true)
-                                                {
-                                                    <a href="~/Information/SendOnlineAcceptance/?ClientAgreement=@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Send Online Acceptance</a>
-                                                }
-                                                else
-                                                {
-                                                    <a href="~/Information/SendOnlineAcceptance/?ClientAgreement=@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Resend Online Acceptance</a>
-                                                }
-                                            }
-
-
-                                            @if (item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled" ||
-item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Status != "Bound and invoiced")
-                                            {
-                                                <a href="~/Agreement/DeclineAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Decline Agreement</a>
-                                            }
-                                            @if (item.Status == "Declined by Insurer" || item.Status == "Declined by Insured")
-                                            {
-                                                <a href="~/Agreement/UndeclineAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Undecline Agreement</a>
-                                            }
-                                            @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
-(item.Status == "Bound" || item.Status == "Bound and invoice pending" || item.Status == "Bound and invoiced"))
-                                            {
-                                                <a href="~/Agreement/CancellAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Cancel Agreement</a>
-                                            }
-
-                                        }
+                                        <div class="form-group">
+                                            @await Html.PartialAsync("Partials/ViewAgreement", item)
+                                        </div>
 
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    }
 
+                    <div class="card">
+                        <div class="card-header text-white" id="documentheader" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_document" aria-expanded="true" aria-controls="collapse_document" style="height:70px;background-color:#00A8C8; text-align:left;">
+                            <h3 class="mb-0">
+                                Documents/Options
+                            </h3>
+                        </div>
+
+                        <div id="collapse_document" class="collapse accordion-collapse" aria-labelledby="documentheader" data-bs-parent="#agreementAccordion">
+                            <div class="card-body">
                                 <div class="form-group">
-                                    @await Html.PartialAsync("Partials/ViewAgreement", item)
+                                    @foreach (var item in Model)
+                                    {
+
+                                        @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
+    (item.Status == "Bound" || item.Status == "Bound and invoice pending" || item.Status == "Bound and invoiced"))
+                                        {
+                                            <h3><strong>All Documents </strong></h3>
+
+                                            @await Html.PartialAsync("Partials/ViewAgreementDocs", item.Documents)
+
+                                            @if (@ViewBag.IsBroker || @ViewBag.IsTC || @ViewBag.IsInsurer)
+                                            {
+                                                <h3><strong>Options </strong></h3>
+                                                <a class="btn btn-primary btn-sm" href="/Agreement/RenderDocuments/@item.InformationSheetId">Render Documents</a>
+                                                <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@false"><i class="fa fa-edit"></i> Send Insurer Documents</a>
+                                                <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@true"><i class="fa fa-edit"></i> Send Me Documents</a>
+                                            }
+                                        }
+                                        //loop through process once only!!
+                                        break;
+                                    }
                                 </div>
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-
-        <div class="card">
-                <div class="card-header text-white" id="documentheader" type="button" data-toggle="collapse" data-target="#collapse_document" aria-expanded="true" aria-controls="collapse_document" style="height:70px;background-color:#00A8C8; text-align:left;">
-                    <h3 class="mb-0">
-                        Documents/Options
-                    </h3>
-                </div>
-
-                <div id="collapse_document" class="collapse" aria-labelledby="documentheader" data-parent="#agreementAccordion">
-                    <div class="card-body">
-                        <div class="form-group">
-                            @foreach (var item in Model)
-                            {
-
-                                @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
-(item.Status == "Bound" || item.Status == "Bound and invoice pending" || item.Status == "Bound and invoiced"))
+                                @if (multiCoverOptionsStatus && (ViewBag.IsBroker || ViewBag.IsTC || ViewBag.IsInsurer))
                                 {
-                                    <h3><strong>All Documents </strong></h3>
-
-                                    @await Html.PartialAsync("Partials/ViewAgreementDocs", item.Documents)
-
-                                    @if (@ViewBag.IsBroker || @ViewBag.IsTC || @ViewBag.IsInsurer)
-                                    {
-                                        <h3><strong>Options </strong></h3>
-                                        <a class="btn btn-primary btn-sm" href="/Agreement/RenderDocuments/@item.InformationSheetId">Render Documents</a>
-                                        <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@false"><i class="fa fa-edit"></i> Send Insurer Documents</a>
-                                        <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@true"><i class="fa fa-edit"></i> Send Me Documents</a>
-                                    }
+                                    <div class="form-group">
+                                        <div> <button class="btn btn-success btn-sm" onclick="SaveCoveroptions();">Save All Cover Options</button></div>
+                                    </div>
                                 }
-                                //loop through process once only!!
-                                break;
-                            }
-                        </div>
-
-                        @if (multiCoverOptionsStatus && (ViewBag.IsBroker || ViewBag.IsTC || ViewBag.IsInsurer))
-                        {
-                            <div class="form-group">
-                                <div> <button class="btn btn-success btn-sm" onclick="SaveCoveroptions();">Save All Cover Options</button></div>
                             </div>
-                        }
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
 </form>
 

@@ -299,18 +299,30 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                         term2millimit1kexcesspremiumoption.PremiumDiffer = (TermPremium2mil1kExcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         term2millimit1kexcesspremiumoption.PremiumPre = PreviousBoundPremium;
+                        if (term2millimit1kexcesspremiumoption.TermLimit == term.TermLimit && term2millimit1kexcesspremiumoption.Excess == term.Excess)
+                        {
+                            term2millimit1kexcesspremiumoption.Bound = true;
+                        }
                         if (term2millimit1kexcesspremiumoption.PremiumDiffer < 0)
                         {
                             term2millimit1kexcesspremiumoption.PremiumDiffer = 0;
                         }
                         term3millimit1kexcesspremiumoption.PremiumDiffer = (TermPremium3mil1kExcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         term3millimit1kexcesspremiumoption.PremiumPre = PreviousBoundPremium;
+                        if (term3millimit1kexcesspremiumoption.TermLimit == term.TermLimit && term3millimit1kexcesspremiumoption.Excess == term.Excess)
+                        {
+                            term3millimit1kexcesspremiumoption.Bound = true;
+                        }
                         if (term3millimit1kexcesspremiumoption.PremiumDiffer < 0)
                         {
                             term3millimit1kexcesspremiumoption.PremiumDiffer = 0;
                         }
                         term5millimit1kexcesspremiumoption.PremiumDiffer = (TermPremium5mil1kExcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         term5millimit1kexcesspremiumoption.PremiumPre = PreviousBoundPremium;
+                        if (term5millimit1kexcesspremiumoption.TermLimit == term.TermLimit && term5millimit1kexcesspremiumoption.Excess == term.Excess)
+                        {
+                            term5millimit1kexcesspremiumoption.Bound = true;
+                        }
                         if (term5millimit1kexcesspremiumoption.PremiumDiffer < 0)
                         {
                             term5millimit1kexcesspremiumoption.PremiumDiffer = 0;

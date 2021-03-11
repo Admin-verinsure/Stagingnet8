@@ -247,24 +247,40 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                         termcl250klimitoption.PremiumDiffer = (TermPremium250k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         termcl250klimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termcl250klimitoption.TermLimit == term.TermLimit && termcl250klimitoption.Excess == term.Excess)
+                        {
+                            termcl250klimitoption.Bound = true;
+                        }
                         if (termcl250klimitoption.PremiumDiffer < 0)
                         {
                             termcl250klimitoption.PremiumDiffer = 0;
                         }
                         termcl500klimitoption.PremiumDiffer = (TermPremium500k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         termcl500klimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termcl500klimitoption.TermLimit == term.TermLimit && termcl500klimitoption.Excess == term.Excess)
+                        {
+                            termcl500klimitoption.Bound = true;
+                        }
                         if (termcl500klimitoption.PremiumDiffer < 0)
                         {
                             termcl500klimitoption.PremiumDiffer = 0;
                         }
                         termcl1millimitoption.PremiumDiffer = (TermPremium1mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         termcl1millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termcl1millimitoption.TermLimit == term.TermLimit && termcl1millimitoption.Excess == term.Excess)
+                        {
+                            termcl1millimitoption.Bound = true;
+                        }
                         if (termcl1millimitoption.PremiumDiffer < 0)
                         {
                             termcl1millimitoption.PremiumDiffer = 0;
                         }
                         termcl2millimitoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         termcl2millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termcl2millimitoption.TermLimit == term.TermLimit && termcl2millimitoption.Excess == term.Excess)
+                        {
+                            termcl2millimitoption.Bound = true;
+                        }
                         if (termcl2millimitoption.PremiumDiffer < 0)
                         {
                             termcl2millimitoption.PremiumDiffer = 0;

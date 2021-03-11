@@ -66,6 +66,7 @@
                 })
                 .done(function (url) {
                     $("#agreementView").load(url, function () {
+                        
                     });
                 })
                 .fail(function (a, s, d) {
@@ -242,7 +243,7 @@
    });
 // DO NOT REMOVE : GLOBAL FUNCTIONS!
     $(document).ready(function () {
-        $('[data-toggle="popover"]').popover({
+        $('[data-bs-toggle="popover"]').popover({
             trigger: 'manual',
             html: true,
             animation: false
@@ -449,6 +450,8 @@
                     $('#Principal,Partners or Directors').trigger('reloadGrid');
                     $('#tblWaterLocation').trigger('reloadGrid');
                     $('#tblLocation').trigger('reloadGrid');
+                    //np code
+                    //$('#tblClaimNotification').trigger('reloadGrid');
                     $('#tblRegisteredMV').trigger('reloadGrid');
                     $('#tblUnRegisteredMV').trigger('reloadGrid');
                     $('#tblOperator').trigger('reloadGrid');
@@ -2046,8 +2049,8 @@ function UpdateChosen() {
             return result1;
         }
     }
-
-    function AddClaim( tabId, tableId) {
+    //np code comment
+    @*function AddClaim( tabId, tableId) {
         var informationId = $('#AnswerSheetId').serialize();
         $.ajax({
             url: '@Url.Action("AddClaim", "Services")',
@@ -2062,7 +2065,7 @@ function UpdateChosen() {
         .fail(function (jqXHR, textStatus, errorThrown) {
             alert("There was an error while trying to save the Claim.");
         });
-    };
+    };*@
 
     function EditClaim(claimId, tableId) {
         var _sheetId = $('#AnswerSheetId').val();

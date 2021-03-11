@@ -12,7 +12,7 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PlannerUnit.IsNZPIAMember, new { @class = "label required" })
-            <select id="PlannerUnit.IsNZPIAMember" name="OrganisationViewModel.PlannerUnit.IsNZPIAMember" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="PlannerUnit.IsNZPIAMember" name="OrganisationViewModel.PlannerUnit.IsNZPIAMember" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasNZPIAMemberOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">
@@ -26,7 +26,7 @@
         <div class="form-group" id="HidePrincipal">
             <div class="form-group">
                 @Html.LabelFor(m => m.OrganisationViewModel.PlannerUnit.IsPrincipalPlanner, new { @class = "label required" })
-                <select id="PlannerUnit.IsPrincipalPlanner" name="OrganisationViewModel.PlannerUnit.IsPrincipalPlanner" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="PlannerUnit.IsPrincipalPlanner" name="OrganisationViewModel.PlannerUnit.IsPrincipalPlanner" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in @Model.OrganisationViewModel.HasPrincipalOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">
@@ -43,7 +43,7 @@
             </div>
             <div class="form-group">
                 @Html.LabelFor(m => m.OrganisationViewModel.PlannerUnit.ContractedInsured, new { @class = "label required" })
-                <select id="PlannerUnit.ContractedInsured" name="OrganisationViewModel.PlannerUnit.ContractedInsured" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="PlannerUnit.ContractedInsured" name="OrganisationViewModel.PlannerUnit.ContractedInsured" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in @Model.OrganisationViewModel.HasContractedInsuredOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">

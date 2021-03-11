@@ -9,7 +9,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hassecurity" name="CLIViewModel.HasSecurityOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hassecurity" name="CLIViewModel.HasSecurityOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasSecurityOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -26,7 +26,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasprohibitaccess" name="CLIViewModel.HasProhibitAccessOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasprohibitaccess" name="CLIViewModel.HasProhibitAccessOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasProhibitAccessOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -43,7 +43,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasaccesscontrol" name="CLIViewModel.HasAccessControlOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasaccesscontrol" name="CLIViewModel.HasAccessControlOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasAccessControlOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -60,7 +60,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasbackup" name="CLIViewModel.HasBackupOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasbackup" name="CLIViewModel.HasBackupOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasBackupOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>

@@ -39,12 +39,12 @@
                         <div class="card">
                             <div class="card-header" id="heading_@item.SubClientProgrammes.FirstOrDefault().Id">
                                 <h2 class="mb-0">
-                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse_@item.SubClientProgrammes.FirstOrDefault().Id" aria-expanded="false" aria-controls="collapse_@item.SubClientProgrammes.FirstOrDefault().Id">
+                                    <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@item.SubClientProgrammes.FirstOrDefault().Id" aria-expanded="false" aria-controls="collapse_@item.SubClientProgrammes.FirstOrDefault().Id">
                                         Subclients
                                     </button>
                                 </h2>
                             </div>
-                            <div id="collapse_@item.SubClientProgrammes.FirstOrDefault().Id" class="collapse" aria-labelledby="heading_@item.SubClientProgrammes.FirstOrDefault().Id" data-parent="#subsystemAccodion">
+                            <div id="collapse_@item.SubClientProgrammes.FirstOrDefault().Id" class="collapse accordion-collapse" aria-labelledby="heading_@item.SubClientProgrammes.FirstOrDefault().Id" data-bs-parent="#subsystemAccodion">
                                 <div class="card-body">
                                     <table class="table table-striped">
                                         <thead class="thead-light">
@@ -142,7 +142,7 @@
                             if (((item.Status == "Bound and invoiced" && Model.Programme.UsesEGlobal) || (item.Status == "Bound" && !Model.Programme.UsesEGlobal)) &&
                                 Model.Programme.AllowUsesChange && item.NextInfoSheet == false)
                             {
-                                <a href="#myChangeModal" aria-hidden="true" class="btn btn-primary btn-sm" data-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Update</a>
+                                <a href="#myChangeModal" aria-hidden="true" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Update</a>
                             }
 
                         }
@@ -160,7 +160,7 @@
                             if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
                             {
                                 @*<a class="btn btn-primary btn-sm" href="/Information/Unlock/@item.Id"><i class="fa fa-unlock"></i> Unlock</a>*@
-                                <a href="#myUnlockModal" aria-hidden="true" class="btn btn-primary btn-sm" data-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Unlock</a>
+                                <a href="#myUnlockModal" aria-hidden="true" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Unlock</a>
 
                             }
                             if (item.SubClientProgrammes.Count > 0)
@@ -206,7 +206,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" style="color:blue; font-size:22px">Change Details</h3>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
             <form id="ProdForm" method="post" action="~/Information/UpdateInformation">
@@ -217,7 +217,7 @@
                             <label for="changeType" class="required">Change Type</label>
                         </td>
                         <td>
-                            <select class="form-control b" id="ChangeType" name="ChangeType" title="" required>
+                            <select class="form-control b form-select" id="ChangeType" name="ChangeType" title="" required>
                                 <option selected="selected" value="">-- Select here --</option>
                                 <option Value="TC_addAmendRiskInfo">Add Amend Risk Information</option>
                                 <option Value="TC_newCoverable">Add New Coverable</option>
@@ -251,7 +251,7 @@
                             <label for="Reason" class="required">Reason</label>
                         </td>
                         <td>
-                            <select class="form-control" id="ChangeReason" name="Reason" title="" required>
+                            <select class="form-control form-select" id="ChangeReason" name="Reason" title="" required>
                                 <option selected="selected" value="">-- Select here --</option>
                                 <option Value="TC_cancelbusinessSoldOrClosed_lgi">Business Sold or Closed</option>
                                 <option Value="TC_changeInCoverReq_lgi">Change in cover requirements</option>
@@ -307,7 +307,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
             <form id="ProdForm">
@@ -329,7 +329,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-toggle="tab">Submit</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
         </div>
     </div>
 </div>

@@ -155,6 +155,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                         termot2millimitoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         termot2millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termot2millimitoption.TermLimit == term.TermLimit && termot2millimitoption.Excess == term.Excess)
+                        {
+                            termot2millimitoption.Bound = true;
+                        }
                         if (termot2millimitoption.PremiumDiffer < 0)
                         {
                             termot2millimitoption.PremiumDiffer = 0;

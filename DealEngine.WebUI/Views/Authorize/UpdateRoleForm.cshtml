@@ -2,7 +2,7 @@
 
 <form>
     <div class="form-group col-6">
-        <select class="custom-select" id="UpdateRoleSelect">
+        <select class="custom-select form-select" id="UpdateRoleSelect">
             @foreach (var role in Model.RoleList)
             {
                 <option value="@role.Name">@role.Name</option>
@@ -11,7 +11,7 @@
     </div>
 
     <div class="form-group col-6">
-        <select class="cselect form-control" data-placeholder="UpdateClaims" id="UpdateClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)" style="display: none;">
+        <select class="cselect form-select form-control" data-placeholder="UpdateClaims" id="UpdateClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)" style="display: none;">
             @foreach (var claim in Model.ClaimList)
             {
                 <option value="@claim.Value">@claim.Value</option>

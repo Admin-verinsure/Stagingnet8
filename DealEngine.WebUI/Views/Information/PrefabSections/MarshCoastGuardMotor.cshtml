@@ -204,7 +204,7 @@
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                 <label class="label required">Location</label>
                                 <label class="input">
-                                    <select onchange="addTrailerLoc()" class="form-control rmv" id="VehicleLocation" name="VehicleLocation">
+                                    <select onchange="addTrailerLoc()" class="form-control rmv form-select" id="VehicleLocation" name="VehicleLocation">
                                         <option selected="selected" value="">-- Select --</option>
 
                                         @foreach (var tloc in Model.LocationViewModel.Locations)
@@ -357,7 +357,7 @@
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                 <label class="label required">Location</label>
                                 <label class="input">
-                                    <select onchange="AddaddTrailerLoc()" class="form-control rmv" id="AddVehicleLocation" name="VehicleLocation">
+                                    <select onchange="AddaddTrailerLoc()" class="form-control rmv form-select" id="AddVehicleLocation" name="VehicleLocation">
                                         <option selected="selected" value="">-- Select --</option>
                                         @foreach (var tloc in Model.LocationViewModel.Locations)
                                         {

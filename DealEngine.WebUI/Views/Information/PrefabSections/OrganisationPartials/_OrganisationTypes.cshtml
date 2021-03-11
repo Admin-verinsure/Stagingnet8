@@ -3,8 +3,8 @@
 <div class="form-group row">
     <div class="form-group col-md-6">
         <div class="form-group" id="HideOrganisationType">
-            @Html.LabelFor(m => m.OrganisationViewModel.OrganisationTypes, new { @class = "label required" })
-            <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            @Html.LabelFor(m => m.OrganisationViewModel.OrganisationTypes, new { @class = "label required form-label" })
+            <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in Model.OrganisationViewModel.OrganisationTypes)
                 {
                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -12,15 +12,15 @@
             </select>
         </div>
         <div class="form-group">
-            @Html.LabelFor(m => m.OrganisationViewModel.User.Email, new { @class = "label required" })
+            @Html.LabelFor(m => m.OrganisationViewModel.User.Email, new { @class = "label required form-label" })
             @Html.TextBoxFor(m => m.OrganisationViewModel.User.Email, new { @class = "form-control", @id = "User.Email", @data_rule = "OrganisationEmail", @onchange = "OnChange(this.id, this.name)", @required = "", @type = "email" })
             <div id="InvalidOrganisationEmail" class="invalid-feedback">Organisation email already exists - please enter a different email</div>
         </div>
     </div>
     <div class="form-group col-md-6">
         <div class="form-group" id="HideInsuranceAttribute">
-            @Html.LabelFor(m => m.OrganisationViewModel.InsuranceAttributes, new { @class = "label required" })
-            <select id="Organisation.InsuranceAttribute" name="OrganisationViewModel.InsuranceAttribute" class="custom-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
+            @Html.LabelFor(m => m.OrganisationViewModel.InsuranceAttributes, new { @class = "label required form-label" })
+            <select id="Organisation.InsuranceAttribute" name="OrganisationViewModel.InsuranceAttribute" class="custom-select form-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.InsuranceAttributes)
                 {
                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -31,12 +31,12 @@
 </div>
 <div id="Else" class="form-group row" hidden>
     <div class="form-group col-md-6">
-        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.Name, new { @class = "label required" })
+        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.Name, new { @class = "label required form-label" })
         @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.Name, new { @class = "form-control", @id = "Organisation.Name", @onchange = "OnChange(this.id, this.name)", @required = "" })
         @if (Model.OrganisationViewModel.Programme.Name == "Apollo Programme" || Model.OrganisationViewModel.Programme.Name == "Abbott Financial Advisor Liability Programme")
         {
         <div class="form-group" id="HideDateofIncorportation" hidden>
-            @Html.LabelFor(m => m.OrganisationViewModel.Organisation.DateofIncorportation, new { @class = "label required" })
+            @Html.LabelFor(m => m.OrganisationViewModel.Organisation.DateofIncorportation, new { @class = "label required form-label" })
             @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.DateofIncorportation, "dd/MM/yyyy", new { @class = "form-control", @id = "Organisation.DateofIncorportation", @type = "date", @onchange = "OnChange(this.id, this.name)", @required = "" })            
             @if (Model.OrganisationViewModel.Organisation.DateofIncorportation == null)
             {
@@ -50,7 +50,7 @@
             <div class="form-group" id="TradingName">
                 @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
                 {
-                    @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label" })
+                    @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label form-label" })
                     @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", placeholder = "If Applicable" })
                 }
             </div>
@@ -64,7 +64,7 @@ Model.OrganisationViewModel.Programme.Name == "NZPI Programme"
         <div class="form-group col-md-6" id="TradingName" hidden>
             @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
             {
-                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label required" })
+                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label form-label required" })
                 @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", @required = "" })
                 @if (string.IsNullOrWhiteSpace(Model.OrganisationViewModel.Organisation.TradingName))
                 {

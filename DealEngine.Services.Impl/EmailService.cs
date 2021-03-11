@@ -1070,14 +1070,33 @@ namespace DealEngine.Services.Impl
             removedUserEmail.WithBody(removedUserEmailbody);
             removedUserEmail.Send();
 
-            EmailBuilder programmeOwnerUserEmail = await GetLocalizedEmailBuilder(DefaultSender, programmeOwnerUser.Email);
+
+            var notificationrecipent = new List<string>();
+
+            if (sheet.Programme.BaseProgramme.RemoveAdvisorNotifyUsers.Count > 0)
+            {
+                foreach (User objNotifyUser in sheet.Programme.BaseProgramme.RemoveAdvisorNotifyUsers)
+                {
+                    notificationrecipent.Add(objNotifyUser.Email);
+                }
+            } else
+            {
+                notificationrecipent.Add(programmeOwnerUser.Email);
+            }
+
+            EmailBuilder programmeOwnerUserEmail = await GetLocalizedEmailBuilder(DefaultSender, null);
             string programmeOwnerUserEmailsubject = removedUser.FirstName + " has been removed from " + sheet.Owner.Name + "'s " + sheet.Programme.BaseProgramme.Name + " of Insurance. Reference ID: " + sheet.ReferenceId.ToString();
             string programmeOwnerUserEmailbody = "Dear " + programmeOwnerUser.FirstName + ", " + removedUser.FirstName + " has been removed from " + sheet.Owner.Name + "'s " + sheet.Programme.BaseProgramme.Name + " of Insurance. Reference ID: " + sheet.ReferenceId.ToString();
             programmeOwnerUserEmail.From(DefaultSender);
+            programmeOwnerUserEmail.To(notificationrecipent.ToArray());
             programmeOwnerUserEmail.WithSubject(programmeOwnerUserEmailsubject);
             programmeOwnerUserEmail.UseHtmlBody(true);
             programmeOwnerUserEmail.WithBody(programmeOwnerUserEmailbody);
             programmeOwnerUserEmail.Send();
+
+            sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(removedUser, sheet, null, "Remove Advisor Notification Sent"));
+            await _clientInformationSheetmapperSession.UpdateAsync(sheet);
+
         }
 
         #region Merge Field Library

@@ -26,7 +26,7 @@
         CloneForm("OrganisationTab3", "OrganisationTab2", "OrganisationSubmitBtn", "OrganisationClearButton");
     }
 
-    function RemoveOrganisation(organisationId, AccordionId) {        
+    function RemoveOrganisation(organisationId, AccordionId) {
         var programmeId = document.getElementById("Programme_Id").value;
         var clientInformationId = document.getElementById("AnswerSheetId").value;
         sessionStorage.setItem('accordianTrigger', AccordionId);
@@ -63,26 +63,32 @@
                 debugger;
             }
         });
-    }    
+    }
 
-    function CloneForm(AddTabId, EditTabId, AddButtonId, CancelButtonId) {
+    function CloneForm(AddTabId, EditTabId, AddButtonId, CancelButtonId, ClaimBrokerReferenceFormGroup, ClaimStatusFormGroup) {
         var addTabHTML = document.getElementById(AddTabId);
         var editTabHTML = document.getElementById(EditTabId);
         var form = document.getElementById(addTabHTML.firstElementChild.id);
+        var ClaimBrokerReferenceFormGroup = document.getElementById("ClaimBrokerReferenceFormGroup");
+        ClaimBrokerReferenceFormGroup.style.display = "block";
+            //document.getElementById("ClaimBrokerReferenceFormGroup").style.color = "blue";
+        var ClaimStatusFormGroup = document.getElementById("ClaimStatusFormGroup");
+        ClaimStatusFormGroup.style.display = "block";
+        
         editTabHTML.innerHTML = "";
         var obj = $("#" + form.id).clone();
         $("#" + EditTabId).append(obj);
         form = document.getElementById(editTabHTML.firstElementChild.id);
         addTabHTML.innerHTML = "";
         document.getElementById(AddButtonId).innerText = "Update";
-        document.getElementById(CancelButtonId).innerText = "Cancel Update";        
+        document.getElementById(CancelButtonId).innerText = "Cancel Update";
         SetCurrentTab(EditTabId);
         var lists = form.getElementsByClassName("chosen-select");
-        if (lists != null) {     
+        if (lists != null) {
             for (i = 0; i < lists.length; i++) {
                 var chosenList = document.getElementById(lists[i].id);
                 chosenList.nextElementSibling.remove();
-            }            
+            }
             $(".chosen-select").chosen({ width: "95%" });
 
         }
@@ -160,23 +166,49 @@
         if (editTabHTML.firstElementChild.tagName == "FORM") {
             var form = document.getElementById(editTabHTML.firstElementChild.id);
             var obj = $("#" + form.id).clone();
-            $("#" + AddTabId).append(obj);                       
+            $("#" + AddTabId).append(obj);
             editTabHTML.innerHTML = "";
             editTabHTML.appendChild(CreateEditLabel(Object));
             var addTabHTML = document.getElementById(AddTabId);
-            form = document.getElementById(addTabHTML.firstElementChild.id);       
+            form = document.getElementById(addTabHTML.firstElementChild.id);
             var lists = form.getElementsByClassName("chosen-select");
             if (lists != null) {
                 for (i = 0; i < lists.length; i++) {
                     var chosenList = document.getElementById(lists[i].id);
                     chosenList.nextElementSibling.remove();
-                } 
+                }
                 $(".chosen-select").chosen({ width: "95%" });
             }
         }
         document.getElementById(AddButtonId).innerText = "Add";
         document.getElementById(CancelButtonId).innerText = "Clear and Cancel";
         ResetOrganisation();
+    }
+
+    //np code
+    function AddClaim() {
+        var form = document.getElementById("ClaimViewModel");
+        var formValid = TableFormValidation(form , "claim");
+        if (formValid) {
+            debugger;
+            sessionStorage.setItem('accordianTrigger', 'ClaimNotification');
+            $.ajax({
+                url: '@Url.Action("AddClaim", "Services")',
+                type: "POST",
+                data: $("#tab_1 :input").serialize({ json: true }),
+                async: false
+            })
+
+                .done(function () {
+                    //Save the session and reload
+                    form.reset();
+                    location.reload();
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                });
+            console.log(data);
+        }
     }
 
     function AddLocation() {
@@ -218,6 +250,40 @@
             });
     }
 
+    function RemoveClaimNotification(Id) {
+        sessionStorage.setItem('accordianTrigger', 'Notifications');
+        var postData = { claimId: Id };
+        $.ajax({
+            url: '@Url.Action("RemoveClaimNotification", "Services")',
+            type: "POST",
+            data: postData
+        })
+            .done(function () {
+                //Save the session and reload
+                location.reload();
+            })
+            .fail(function (a, s, d) {
+                debugger;
+            });
+    }
+
+    function RestoreCommonClaim(Id) {
+        sessionStorage.setItem('accordianTrigger', 'Notifications');
+        var postData = { claimId: Id };
+        $.ajax({
+            url: '@Url.Action("RestoreClaimNotification", "Services")',
+            type: "POST",
+            data: postData
+        })
+            .done(function () {
+                //Save the session and reload
+                location.reload();
+            })
+            .fail(function (a, s, d) {
+                debugger;
+            });
+    }
+
     function RestoreLocation(Id) {
         sessionStorage.setItem('accordianTrigger', 'Location');
         var postData = { LocationId: Id };
@@ -247,6 +313,30 @@
         document.getElementById("suburbdetails").value = Suburb;
         document.getElementById("postcodedetails").value = Postcode;
         SetCurrentTab("locationtab2");
+    }
+
+    function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, AddClaimStatus)
+    {
+        event.preventDefault();
+        CloneForm("clTabs3", "clTabs2", "ClaimAddButton", "AddClearBoat", "ClaimBrokerReferenceFormGroup","ClaimStatusFormGroup");
+        document.getElementById("ClaimId").value = Id;
+        document.getElementById("ClaimTitle").value = ClaimTitle;
+        document.getElementById("ClaimDescription").value = ClaimDescription;
+        document.getElementById("ClaimReference").value = ClaimReference;
+        document.getElementById("ClaimPolicyReference").value = ClaimPolicyReference;
+        document.getElementById("ClaimInsurerName").value = ClaimInsurerName;
+        document.getElementById("ClaimInsuredName").value = ClaimInsuredName;
+        document.getElementById("Claimant").value = Claimant;
+        document.getElementById("ClaimDateOfLoss").value = ClaimDateOfLoss;
+        document.getElementById("ClaimNotifiedDate").value = ClaimNotifiedDate;
+        document.getElementById("ClaimEstimateInsuredLiability").value = ClaimEstimateInsuredLiability;
+        document.getElementById("PrimaryPolicyprod").value = SelectedClaimProducts;
+        document.getElementById("ResponsiblePrincipal").value = SelectedResponsiblePrincipal;
+        document.getElementById("ClaimNotes").value = ClaimNotes;
+        document.getElementById("ClaimBrokerReference").value = ClaimBrokerReference;
+        document.getElementById("AddClaimStatus").value = AddClaimStatus;
+
+        SetCurrentTab("clTabs2");
     }
 
     function AddProject(SectionName) {

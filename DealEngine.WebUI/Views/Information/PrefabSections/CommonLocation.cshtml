@@ -4,16 +4,16 @@
     <input id="LocationId" name="LocationViewModel.LocationId" hidden form="LocationViewModel" />
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" id="tab1">
-            <a class="nav-link active" href="#locationtab1" data-toggle="tab" onclick="ResetForm('locationtab3', 'locationtab2', 'Location', 'LocationAddButton', 'LocationCancelButton')"> List All </a>
+            <a class="nav-link active" href="#locationtab1" data-bs-toggle="tab" onclick="ResetForm('locationtab3', 'locationtab2', 'Location', 'LocationAddButton', 'LocationCancelButton')"> List All </a>
         </li>
         <li class="nav-item" id="tab2">
-            <a class="nav-link" href="#locationtab2" data-toggle="tab"> Edit </a>
+            <a class="nav-link" href="#locationtab2" data-bs-toggle="tab"> Edit </a>
         </li>
         <li class="nav-item" id="tab2">
-            <a class="nav-link" href="#locationtab3" data-toggle="tab" onclick="ResetForm('locationtab3', 'locationtab2', 'Location', 'LocationAddButton', 'LocationCancelButton')"> Add </a>
+            <a class="nav-link" href="#locationtab3" data-bs-toggle="tab" onclick="ResetForm('locationtab3', 'locationtab2', 'Location', 'LocationAddButton', 'LocationCancelButton')"> Add </a>
         </li>
         <li class="nav-item" id="tab3">
-            <a class="nav-link" href="#locationtab4" data-toggle="tab"> List Removed </a>
+            <a class="nav-link" href="#locationtab4" data-bs-toggle="tab"> List Removed </a>
         </li>
     </ul>
     <div class="tab-content">
@@ -79,19 +79,19 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="locationtypeoptions" class="label required">
+                            <label for="locationtypeoptions form-label" class="label required">
                                 Location Type:
                             </label>
                         </div>
                         <div class="col-6">
-                            @Html.DropDownListFor(m => m.LocationViewModel.LocationType, Model.LocationViewModel.LocationType, new { id = "locationtypeoptions", @class = "custom-select", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "LocationViewModel" })
+                            @Html.DropDownListFor(m => m.LocationViewModel.LocationType, Model.LocationViewModel.LocationType, new { id = "locationtypeoptions", @class = "custom-select form-select", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "LocationViewModel" })
                         </div>
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="streetdetails" class="label required">
+                            <label for="streetdetails form-label" class="label required">
                                 Street:
                             </label>
                         </div>
@@ -103,7 +103,7 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="suburbdetails" class="label required">
+                            <label for="suburbdetails" class="label required form-label">
                                 Suburb:
                             </label>
                         </div>
@@ -115,7 +115,7 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="citydetails" class="label required">
+                            <label for="citydetails" class="label required form-label">
                                 City:
                             </label>
                         </div>
@@ -127,7 +127,7 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="countrydetails" class="label">
+                            <label for="countrydetails" class="label form-label">
                                 Country:
                             </label>
                         </div>
@@ -139,7 +139,7 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="postcodedetails" class="label">
+                            <label for="postcodedetails" class="label form-label">
                                 Postcode
                             </label>
                         </div>
@@ -151,7 +151,7 @@
                 <div class="form-group">
                     <div class="row">
                         <div class="col-6">
-                            <label for="commonnamedetails" class="label">
+                            <label for="commonnamedetails" class="label form-label">
                                 Common Name
                             </label>
                         </div>

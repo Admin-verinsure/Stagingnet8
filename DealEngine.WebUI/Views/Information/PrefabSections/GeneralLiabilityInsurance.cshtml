@@ -10,7 +10,7 @@
                         </label>
                     </div>
                     <div class="col-6">
-                        <select id="HasGL" name="GLViewModel.HasGLOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="HasGL" name="GLViewModel.HasGLOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.GLViewModel.HasGLOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -28,7 +28,7 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            <select id="hashighergl" name="GLViewModel.HasHigherGLOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                            <select id="hashighergl" name="GLViewModel.HasHigherGLOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                                 @foreach (var option in Model.GLViewModel.HasHigherGLOptions)
                                 {
                                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -45,7 +45,7 @@
                             </label>
                         </div>
                         <div class="col-6">
-                            <select id="hasexistingpolicy" name="GLViewModel.HasExistingPolicyOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                            <select id="hasexistingpolicy" name="GLViewModel.HasExistingPolicyOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                                 @foreach (var option in Model.GLViewModel.HasExistingPolicyOptions)
                                 {
                                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>
