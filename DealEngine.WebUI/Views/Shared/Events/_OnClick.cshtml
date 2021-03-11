@@ -80,6 +80,20 @@
         ClaimPaidFormGroup.style.display = "block";
         var ClaimReserveFormGroup = document.getElementById("ClaimReserveFormGroup");
         ClaimReserveFormGroup.style.display = "block";
+              //var d1 = document.getElementById('ClaimInsurerReferenceFormGroup');
+        //d1.insertAdjacentHTML('beforeend', '< div class= "form-group" style = "display:none;" id = "ClaimInsurerReferenceFormGroup" > '+
+        //           ' <div class="row">' +
+        //    ' <div class="col-6">' +
+        //    ' <label for="ClaimInsurerReference" class="label form-label">' +
+        //    'Insurer Reference (Read-Only)' +
+        //    ' </label>' +
+        //    '</div>' +
+        //    '<div class="col-6">'
+        //    +
+        //    ' <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimPaid" id="ClaimPaid" name="ClaimPaid" placeholder="$ Paid (Read-Only)" readonly="true" value="">
+
+        //    + '</div>' + ' </div>' + '</div>');
+
 
         editTabHTML.innerHTML = "";
         var obj = $("#" + form.id).clone();
@@ -133,6 +147,8 @@
         ClaimPaidFormGroup.style.display = "none";
         var ClaimReserveFormGroup = document.getElementById("ClaimReserveFormGroup");
         ClaimReserveFormGroup.style.display = "none";
+
+
 
 
         document.getElementById(Form).reset();
@@ -203,7 +219,7 @@
         ResetOrganisation();
     }
 
-    
+
     function AddClaim() {
         var form = document.getElementById("ClaimViewModel");
         var formValid = TableFormValidation(form , "claim");
@@ -333,7 +349,8 @@
         SetCurrentTab("locationtab2");
     }
 
-    function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, AddClaimStatus, ClaimInsurerReference, ClaimPaid, ClaimReserve)
+    //function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, AddClaimStatus, ClaimInsurerReference, ClaimPaid, ClaimReserve)
+    function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, AddClaimStatus, ClaimInsurerReference, ClaimReserve, ClaimPaid )
     {
         event.preventDefault();
         CloneForm("clTabs3", "clTabs2", "ClaimAddButton", "AddClearBoat");
@@ -353,12 +370,13 @@
         document.getElementById("ClaimNotes").value = ClaimNotes;
         document.getElementById("ClaimBrokerReference").value = ClaimBrokerReference;
         document.getElementById("AddClaimStatus").value = AddClaimStatus;
-        console.log("AddClaimStatus = " + AddClaimStatus);
+        //console.log("AddClaimStatus = " + AddClaimStatus);
         document.getElementById("ClaimInsurerReference").value = ClaimInsurerReference;
-        document.getElementById("ClaimPaid").value = ClaimPaid;
         document.getElementById("ClaimReserve").value = ClaimReserve;
 
+        document.getElementById("ClaimPaid").value = ClaimPaid;
         
+
         SetCurrentTab("clTabs2");
     }
 

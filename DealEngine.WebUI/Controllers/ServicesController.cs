@@ -2697,14 +2697,17 @@ namespace DealEngine.WebUI.Controllers
                 //ClaimNotification claimNotification = await _claimNotificationService.GetClaimNotificationById(model["ClaimId"]);
                 var claimNotificationForm = collection.Keys.Where(s => s.StartsWith("ClaimViewModel", StringComparison.CurrentCulture));
                 var ClaimId = collection["ClaimViewModel.ClaimId"];
-
-               
+              
 
                 var SelectedClaimProducts = collection.Keys.Where(s => s.StartsWith("SelectedClaimProducts", StringComparison.CurrentCulture));
                 var claimProductID = collection["SelectedClaimProducts"];
 
+                var SelectedAddClaimStatus = collection.Keys.Where(s => s.StartsWith("SelectedAddClaimStatus", StringComparison.CurrentCulture));
+                
+
                 var SelectedResponsiblePrincipal = collection.Keys.Where(s => s.StartsWith("SelectedResponsiblePrincipal", StringComparison.CurrentCulture));
                 var SelectedResponsiblePrincipalID = collection["SelectedResponsiblePrincipal"];
+
 
                 // no claim, so create new
                 if (string.IsNullOrWhiteSpace(ClaimId))
@@ -2770,7 +2773,17 @@ namespace DealEngine.WebUI.Controllers
                         }
                         else if (typeof(decimal) == property.PropertyType)
                         {
-                            property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
+                            var fieldValue = collection[keyField];
+                            if (string.IsNullOrWhiteSpace(collection[keyField]))
+                            {
+                                fieldValue = "0";
+                            }
+                            else
+                            {
+                                property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
+                            }
+                                
+                           
                         }
                     }
 
@@ -2790,6 +2803,29 @@ namespace DealEngine.WebUI.Controllers
                         {
                             property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
                         }
+                    }
+
+                }
+                foreach (var keyField in SelectedAddClaimStatus)
+                {
+                    if (keyField == "SelectedAddClaimStatus")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if(property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(claimNotification, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
+                        }
+                      
                     }
 
                 }
