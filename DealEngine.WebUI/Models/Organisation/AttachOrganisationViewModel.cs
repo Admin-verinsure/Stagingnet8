@@ -15,8 +15,6 @@ namespace DealEngine.WebUI.Models.Organisation
             PopulateOwnerList(clientProgrammes);
             RemovedOrganisation = removedOrganisation;
         }
-
-
         private void PopulateOwnerList(IList<ClientProgramme> clientProgrammes)
         {
             Owners = new List<SelectListItem>();
@@ -38,5 +36,6 @@ namespace DealEngine.WebUI.Models.Organisation
         public Domain.Entities.Organisation RemovedOrganisation { get; set; }
     }
 }
+
 
 

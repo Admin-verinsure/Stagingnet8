@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DealEngine.Domain.Entities;
+using SystemDocument = DealEngine.Domain.Entities.Document;
+using Document = DealEngine.Domain.Entities.Document;
 using DealEngine.Services.Interfaces;
 using DealEngine.WebUI.Models;
 using DealEngine.Infrastructure.FluentNHibernate;
@@ -14,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
+using UpdateType = DealEngine.Domain.Entities.UpdateType;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -41,8 +44,12 @@ namespace DealEngine.WebUI.Controllers
         IOrganisationService _organisationService;
         SignInManager<IdentityUser> _signInManager;
         UserManager<IdentityUser> _userManager;
+        // IUpdateTypeService _updateTypeService;
+        IUpdateTypeService _updateTypeServices;
+        public AdminController(
+                    //
 
-        public AdminController (
+        IUpdateTypeService updateTypeService,
             IOrganisationService organisationService,
             ISerializerationService serializerationService,
             IMilestoneService milestoneService,
@@ -88,6 +95,8 @@ namespace DealEngine.WebUI.Controllers
             _systemEmailService = systemEmailService;
             _referenceService = referenceService;
             _developerToolService = developerToolService;
+            //
+            _updateTypeServices = updateTypeService;
         }
 
 		[HttpGet]
@@ -95,24 +104,32 @@ namespace DealEngine.WebUI.Controllers
 		{
             AdminViewModel model = new AdminViewModel();
             var user = await CurrentUser();
-            try
-            {         
-                var privateServers = await _privateServerService.GetAllPrivateServers();
-                var paymentGateways = await _paymentGatewayService.GetAllPaymentGateways();
-                var merchants = await _merchantService.GetAllMerchants();
-                var users = _userManager.Users.ToList();
 
-                model.PrivateServers = _mapper.Map<IList<PrivateServer>, IList<PrivateServerViewModel>>(privateServers);
-                model.PaymentGateways = _mapper.Map<IList<PaymentGateway>, IList<PaymentGatewayViewModel>>(paymentGateways);
-                model.Merchants = _mapper.Map<IList<Merchant>, IList<MerchantViewModel>>(merchants);
-                model.Users = users;
-                return View(model);
-            }
-            catch(Exception ex)
+            if (user.PrimaryOrganisation.IsTC)
             {
-                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-                return RedirectToAction("Error500", "Error");
-            }            
+                try
+                {
+                    var privateServers = await _privateServerService.GetAllPrivateServers();
+                    var paymentGateways = await _paymentGatewayService.GetAllPaymentGateways();
+                    var merchants = await _merchantService.GetAllMerchants();
+                    var users = _userManager.Users.ToList();
+
+                    model.PrivateServers = _mapper.Map<IList<PrivateServer>, IList<PrivateServerViewModel>>(privateServers);
+                    model.PaymentGateways = _mapper.Map<IList<PaymentGateway>, IList<PaymentGatewayViewModel>>(paymentGateways);
+                    model.Merchants = _mapper.Map<IList<Merchant>, IList<MerchantViewModel>>(merchants);
+                    model.Users = users;
+                    return View(model);
+                }
+                catch (Exception ex)
+                {
+                    await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                    return RedirectToAction("Error500", "Error");
+                }
+            }
+            else
+            {
+                return RedirectToAction("Error404", "Error");
+            }
         }
         
         [HttpGet]
@@ -722,6 +739,124 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+         [HttpGet]
+        public async Task<IActionResult> UpdateType()
+        {
+            User user = null;
+            UpdateTypesViewModel model = new UpdateTypesViewModel();
+
+            try
+            {
+                user = await CurrentUser();
+                var dbUpdatemodelTypes = await _updateTypeServices.GetAllUpdateTypes();
+                var updateTypeModel = new List<UpdateTypesViewModel>();
+                model.Programme = await _programmeService.GetAllProgrammes();
+
+                foreach (var updateType in dbUpdatemodelTypes.Where(t => t.DateDeleted == null))
+                {
+                    updateTypeModel.Add(new UpdateTypesViewModel
+                    {
+                        Id = updateType.Id,
+                        NameType = updateType.TypeName,
+                        ValueType = updateType.TypeValue,
+                        TypeIsBroker = updateType.TypeIsBroker,
+                        TypeIsClient = updateType.TypeIsClient,
+                        TypeIsInsurer = updateType.TypeIsInsurer,
+                        TypeIsTc = updateType.TypeIsTc
+                        //ProgrammeIsFanz = updateType.ProgrammeIsFanz,
+                        //ProgrammeIsFmc = updateType.ProgrammeIsFmc
+                    });
+
+
+                }
+                model.UpdateTypes = updateTypeModel.OrderBy(acat => acat.UpdateTypes).ToList();
+                return View(model);
+            }
+
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteUpdateType(UpdateTypesViewModel updateType)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                UpdateType UpdateType = await _updateTypeServices.GetUpdateType(updateType.Id);
+
+                UpdateType updatetype = null;
+
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    if(UpdateType.Id != null)
+                    {
+                        UpdateType.DateDeleted = DateTime.UtcNow;
+                        await uow.Commit();
+
+                    }
+
+
+                }
+                return RedirectToAction("UpdateType");
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditUpdateType( UpdateTypesViewModel updateType)
+        {
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                UpdateType updatetype = await _updateTypeServices.GetUpdateType(updateType.Id);
+                if (updateType.Id != Guid.Empty)
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                            updatetype.TypeName = updateType.NameType;
+                        updatetype.TypeValue = updateType.ValueType;
+                        updatetype.TypeIsTc = updateType.TypeIsTc;
+                        updatetype.TypeIsBroker = updateType.TypeIsBroker;
+                        updatetype.TypeIsClient = updateType.TypeIsClient;
+                        updatetype.TypeIsInsurer = updateType.TypeIsInsurer;
+                        //updatetype.ProgrammeIsFmc = updateType.ProgrammeIsFmc;
+                        //updatetype.ProgrammeIsFanz = updateType.ProgrammeIsFanz;
+
+                        await uow.Commit();
+
+                    }
+                }
+                else
+                {
+
+                    await _updateTypeServices.AddUpdateType(user, updateType.NameType, updateType.ValueType, updateType.TypeIsTc, updateType.TypeIsBroker, updateType.TypeIsInsurer, updateType.TypeIsClient);
+                    
+                }
+                return RedirectToAction("UpdateType");
+
+
+            }
+            catch (Exception ex)
+            {
+               await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+               return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> SysEmailTemplate(String systemEmailType, String internalNotes)

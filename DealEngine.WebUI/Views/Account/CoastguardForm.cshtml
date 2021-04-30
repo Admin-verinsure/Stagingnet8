@@ -5,11 +5,7 @@
 
 @section topright{
     <span id="extr-page-header-space" class="pull-right"> <span class="hidden-mobile">Already registered?</span> <a href="~/Account/Login" class="btn btn-danger">Sign In</a> </span>
-    @*TODO Change back when mono 4.3 or later is installed*@
-    @*<span id="extr-page-header-space"> <span class="hidden-mobile">Already registered?</span> <a href="@Url.Action("login", "account")" class="btn btn-danger">Sign In</a> </span>*@
 }
-
-
 
 <div style="font-family:Arial !important;">
     <article class="container col-sm-12 col-md-6 col-lg-6">
@@ -19,36 +15,33 @@
 
 
         <div class="container">
-
-            <div>
-                <ul class="nav nav-tabs d-sm-flex" hidden>
-                    <li class="active" data-bs-target="#step1" hidden>
-                        <a href="#tab1" data-bs-toggle="tab"> <span class="step">1</span> <span class="title">Step 1</span> </a>
+            <div hidden>
+                <ul class="nav nav-tabs d-sm-flex" id="tablist" role="tablist"><!--hidden-->
+                    <li class="nav-item">
+                        <a class="nav-link active" id="step1" data-toggle="tab" href="#step1" role="tab" aria-controls="step1" aria-selected="true"> Step 1</a>
                     </li>
-                    <li data-bs-target="#step2" hidden>
-                        <a href="#tab2" data-bs-toggle="tab"> <span class="step">2</span> <span class="title">Step 2</span> </a>
+                    <li data-target="#step2" hidden>
+                        <a href="#tab2" data-toggle="tab"> <span class="step">2</span> <span class="title">Step 2</span> </a>
                     </li>
-                    <li data-bs-target="#step3" hidden>
-                        <a href="#tab3" data-bs-toggle="tab"> <span class="step">3</span> <span class="title">Step 3</span> </a>
+                    <li data-target="#step3" hidden>
+                        <a href="#tab3" data-toggle="tab"> <span class="step">3</span> <span class="title">Step 3</span> </a>
                     </li>
-                    <li data-bs-target="#step4" hidden>
-                        <a href="#tab4" data-bs-toggle="tab"> <span class="step">4</span> <span class="title">Step 4</span> </a>
+                    <li data-target="#step4" hidden>
+                        <a href="#tab4" data-toggle="tab"> <span class="step">4</span> <span class="title">Step 4</span> </a>
                     </li>
-                    <li data-bs-target="#step5" hidden>
-                        <a href="#tab5" data-bs-toggle="tab"> <span class="step">5</span> <span class="title">Step 5</span> </a>
+                    <li data-target="#step5" hidden>
+                        <a href="#tab5" data-toggle="tab"> <span class="step">5</span> <span class="title">Step 5</span> </a>
                     </li>
 
                 </ul>
             </div>
 
-            <div class="tab-content">
-                <div class="tab-pane active" id="tab1">
+            <div class="tab-content" id="tabcontent">
+                <div class="tab-pane fade show active" id="step1" role="tabpanel" aria-labelledby="step1">
                     <form id="quickQuote">
                         <div class="container">
 
-                            <h1 class="text-align-center" style="font-size: 18px;font-weight: 600;font-family: Arial;text-align: center;color: black;padding-bottom: 15px; padding-top:10px" strong id="QuickQuoteText2">
-                            Tell us a little bit more about your vessel...
-                            </h1>
+                            <h1 class="text-align-center" style="font-size: 18px;font-weight: 600;font-family: Arial;text-align: center;color: black;padding-bottom: 15px; padding-top:10px" strong id="QuickQuoteText2">Tell us a little bit more about your vessel...</h1>
 
                             <select onchange="updateLabel()" id="CraftTypeDrop" class="form-control form-select input-lg" hidden style="margin-top: 20px; margin-bottom: 25px;">
                                 <option value="" selected="selected">Pick your highest value vessel.</option>
@@ -67,16 +60,10 @@
                                     <label style="float:right; color:red;">* = Required</label>
                                 </div>
                                 <br />
-
                                 <table class="table table-bordered">
                                     <tr id="mnumbfgroup" class="coastguardformtr">
                                         <td class="coastguardformtd1">
-                                            <span class="input-group-addon" style="width:220px;height:28px">
-                                                <label class="cgform-label" id="memNum">
-                                                    Coastguard Membership #
-                                                    <p style="color:red; float:right;">&nbsp;*</p>
-                                                </label>
-                                            </span>
+                                            <span class="input-group-addon" style="width:220px;height:28px"><label class="cgform-label" id="memNum">Coastguard Membership #<p style="color:red; float:right;">&nbsp;*</p></label></span>
 
                                         </td>
                                         <td class="coastguardformtd">
@@ -89,12 +76,7 @@
                                     </tr>
                                     <tr id="vtypefgroup" class="coastguardformtr">
                                         <td class="coastguardformtd1">
-                                            <span class="input-group-addon" style="width:220px;height:28px">
-                                                <label class="cgform-label" id="VesselType">
-                                                    Vessel Type
-                                                    <p style="color:red; float:right;">&nbsp;*</p>
-                                                </label>
-                                            </span>
+                                            <span class="input-group-addon" style="width:220px;height:28px"><label class="cgform-label" id="VesselType">Vessel Type<p style="color:red; float:right;">&nbsp;*</p></label></span>
 
                                         </td>
                                         <td class="coastguardformtd">
@@ -137,7 +119,6 @@
                                     <tr id="hcfigfgroup" class="coastguardformtr">
                                         <td class="coastguardformtd1">
                                             <span class="input-group-addon" style="width:220px;height:28px"><label class="cgform-label" id="HullConfig">Hull Configuration<p style="color:red; float:right;">&nbsp;*</p></label></span>
-
                                         </td>
                                         <td class="coastguardformtd">
                                             <div class="form-group">
@@ -173,7 +154,6 @@
                                     <tr id="hastrfgroup" class="coastguardformtr">
                                         <td class="coastguardformtd1">
                                             <span class="input-group-addon" style="width:220px;height:28px"><label class="cgform-label" id="hastrrailer">Trailered<p style="color:red; float:right;">&nbsp;*</p></label></span>
-
                                         </td>
                                         <td class="coastguardformtd">
                                             <div class="form-group">
@@ -190,7 +170,6 @@
                                     <tr id="vivalfgroup" class="coastguardformtr">
                                         <td class="coastguardformtd1">
                                             <span class="input-group-addon" style="width:220px;height:28px"><label class="cgform-label" id="VesselIVal">Vessel Insured Value<p style="color:red; float:right;">&nbsp;*</p></label></span>
-
                                         </td>
                                         <td class="coastguardformtd">
                                             <div class="form-group">
@@ -216,7 +195,6 @@
                                     <label class="indiQuoteValue" style="font-size:1.4em;"> (p/month incl GST)</label>
                                 </div>
                             </div>
-
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <div hidden id="quoteIncludes">
                                     <span class="font-italic" style="font-size:1.4em;">Cover includes:</span>
@@ -232,31 +210,148 @@
                             </div>
                             <div style="margin-bottom:50px;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <div role="group" aria-label="First group">
-                                    <!--<a href="#tab2" data-bs-toggle="tab"><button onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</button></a>-->
-                                    <a href="#tab2" data-bs-toggle="tab" onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</a>
+                                    <!--<a href="#tab2" data-toggle="tab"><button onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</button></a>-->
+                                    <a href="#tab2" data-toggle="tab" onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</a>
                                     @*<a href="Coastguardreg" style=" width:100%; background-color:#72BF44 !important;color:white;" id="newQuote" class="btn btn-secondary margin-top-10 " hidden>Get A New Quote</a>*@
                                     <a href="Coastguardreg" style=" width:100%; background-color:#72BF44 !important;color:white;" id="newQuote" class="btn btn-secondary margin-top-10 w100 hidden">Get A New Quote</a>
 
                                     <!--<button type="button" class="btn btn-secondary margin-top-10 w100 hidden">Save for later</button>-->
-                                    <a data-bs-toggle="tab" onclick="pleaseCallButton(); return false;" style="width:100%;background-color:#004280 !important;color:white;" type="submit" class="btn btn-secondary margin-top-10 w100">Please give me a call to discuss</a>
+                                    <a data-toggle="tab" onclick="pleaseCallButton(); return false;" style="width:100%;background-color:#004280 !important;color:white;" type="submit" class="btn btn-secondary margin-top-10 w100">Please give me a call to discuss</a>
 
                                     <a style="width:100%; background-color:#F04E45 !important;color:white;" href="Coastguardreg" class="btn btn-secondary margin-top-10 w100 ">No Thanks, I think I'll leave it</a>
-                                    @*<button style="background-color:#004280 !important;color:white;" href="#tab2" type="button" class="btn btn-secondary margin-top-10 w100" onlick="validationCheck()">Please give me a call to discuss</button>*@
-                                    <!--<a style="background-color:#F04E45 !important;color:white;" href="Coastguardreg"><button type="button" class="btn btn-secondary margin-top-10 w100">NO THANKS</button>-->
-
                                 </div>
-                            </div>
-                           
+                            </div>                         
                         </div>
                     </form>
                 </div>
 
-                <div class="tab-pane" id="tab2">
+                <div class="tab-pane fade" id="step2" role="tabpanel" aria-labelledby="step2">
+                    <div class="form-group" style="height:700px; overflow:auto; padding-top:25px;">
+                        <h5><b>Financial Advice Disclosures</b></h5>
+                        <div>
+                            <p>
+                                Marsh Limited (we, our, us) (FSP22364), trading as Marsh, Mercer Marsh Benefits and Marsh JLT Specialty, holds a licence issued 
+                                by the Financial Markets Authority to provide a financial advice service. It is a condition of Marsh's licence that Marsh can 
+                                only provide financial advice on life and health insurance products and non-life general insurance products.<br>
+                                We engage financial advisers who can provide financial advice to our customers (you, your) on our behalf.<br> 
+                            </p>
+                        </div>
+                        <h5><b>Material limitations or restrictions on the scope of this advice: The Coastguard First Mate Insurance Programme</b></h5>
+                        <div>
+                            <p>
+                                Marsh has worked with Ando Insurance Group Limited (Ando) to provide two insurance products, Vessel Insurance and Legal Liability
+                                Insurance available to be purchased under the Coastguard First Mate Insurance programme.<br>
+                                Ando Insurance Group Limited is an agent underwriting for and on behalf of certain underwriters at Lloyd’s. Lloyd’s has a financial 
+                                strength rating of A (Excellent) issued by A.M. Best, A+ (Strong) issued by Standard and Poor's,  and AA- (Very Strong) issued by 
+                                Fitch. Further information on the financial strength rating of Lloyd’s is available at www.lloyds.com/investor-relations/ratings.<br>
+                                The Insurance products offered under this programme are limited to Vessel Insurance and Legal Liability Insurance as provided by Ando
+                                Insurance. Our advice is limited to these insurance products, and solely in relation to cover for the loss or accidental damage to 
+                                your vessel, or for loss or damage to a third party due to your actions as set out in the Policy Wording. Please note, you must be a
+                                Coastguard member to purchase this product.<br>
+                                If you need advice on other types of insurance products then we can refer you to an appropriate financial adviser within our organisation.<br>
+                                Our financial advisers give advice on behalf of us. You can contact us using the contact information set out at the bottom of this 
+                                document to find out the name of a financial adviser who can provide financial advice to you on our behalf.<br>
+                            </p>                           
+                        </div>
+                        <h5><b>Fees, expenses or other amounts payable</b></h5>
+                        <div>
+                            <p>
+                                <b>Administration Fee:</b> In addition to Broking Commission, we will charge an Administrative Fee to cover our disbursements and 
+                                expenses incurred in the administration and servicing of clients. This includes recovery of telephone, mobile phone, and general 
+                                office administration overheads which can ordinarily be regarded as disbursements incurred in the day to day running of a client 
+                                file. The Administration Fee for this advice will be $25.<br>
+                                <b>Your insurance:</b> You will need to pay certain amounts associated with your insurance policy, such as premiums and claims
+                                excess.  You may also be required to pay certain taxes and, depending on the type of insurance, statutory charges (most notably to
+                                the Earthquake Commission (EQC Levy) and Fire & Emergency New Zealand (FENZ Levy)).<br>
+                                <b>Credit Card Payments:</b> You must purchase the Coastguard First Mate Insurance programme by a credit card payment. When you pay
+                                us by credit card, we will include an additional surcharge of 1.3% of the amount that you are paying us. The full amount of this 
+                                surcharge is paid to the credit card issuer.<br>
+                            </p>
+                        </div>
+
+                        <h5><b>Conflicts of interest and commissions or other incentives </b></h5>
+                        <div>
+                            <p>
+                            <b>Broking Commission (commonly known as “brokerage”):</b>Broking Commission will be paid to us by an insurer for arranging your insurance
+                            policy. Broking Commission is included in the amount of the premium charged by insurer(s) and is based on a percentage of the premium, less
+                            taxes and statutory charges. When you pay us the premium for your insurance policy, we retain our Broking Commission and pay the balance to
+                            the insurer. The amount of Broking Commission we will receive for your insurance policy is set out below:<br>
+                            <table class="table" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Insurance Product</th>
+                                        <th>Broking Commission</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Vessel Insurance </td>
+                                        <td>21.5%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Legal Liability </td>
+                                        <td>21.5%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <b>Benefits or Compensation:</b> We may, from time to time, participate in insurer funded promotional events or training and development. 
+                            Sometimes we are reimbursed by insurers for our costs related to promotional marketing. Marsh financial advisers may also receive non-monetary
+                            benefits from insurers which may include entertainment and attendance at insurer sponsored functions. These benefits are not generally attributed
+                            to any particular type of insurance or insurance policy. <br>
+                            <b>Other Factors:</b> Our remuneration may be influenced by factors such as the volume of business placed with an insurer or insurer profit from
+                            the business.<br>
+                            To ensure that Marsh financial advisers prioritise your interests above their own, Marsh financial advisers follow an advice process that ensures
+                            their recommendations are made on the basis of your goals and circumstances. All our financial advisers undergo ongoing training about how to 
+                            manage conflicts of interest and we have compliance policies to ensure that the conflicts identified do not create a conflict with your interests.
+                            Marsh undertakes a compliance audit, and a review of our compliance programme by a reputable compliance adviser, on a regular basis.<br>
+                            </p>
+                        </div>
+                        <h5><b>Complaints and disputes resolution process </b></h5>
+                        <div>
+                            <p>Information on how to make a complaint and our external dispute resolution provider is available on our website. </p>
+                        </div>
+                        <h5><b>Our duties</b></h5>
+                        <div>
+                            <p>Marsh and our financial advisers are bound by the following duties to:</p>
+                            <ul>
+                              <li>meet the standards of competence, knowledge and skill set out in the code of professional conduct for financial advice services (“<b>Code of Conduct</b>”);  </li>
+                              <li>give priority to our customers' interests by taking all reasonable steps to ensure that the advice given to you is not materially influenced by our own interests or the interests of any other person connected with the giving of the advice;  </li>
+                              <li>exercise the care, diligence and skill that a prudent person engaged in the occupation of giving regulated financial advice would exercise in the same circumstances; and  </li>
+                              <li>comply with the standards of ethical behaviour, conduct and client care set out in the Code of Conduct. </li>
+                            </ul>
+                            <p>This is only a summary of the duties that we have.  More information is available by contacting us, or by visiting the Financial Markets 
+                            Authority website at https://www.fma.govt.nz.</p>
+                        </div>
+                        <h5><b>Contact details</b></h5>
+                        <div>
+                            <p>Marsh Limited (FSP22364, trading as Marsh, Mercer Marsh Benefits and Marsh JLT Specialty) is the financial advice provider.<br>You can contact us at:</p>
+                            <ul>
+                              <li>Call us on 0800 627 744 between the hours of 8.30am-5pm weekdays. </li>
+                              <li>Mail us at PO Box 2221, Shortland Street, Auckland 1140 </li>
+                            </ul>
+                        </div>
+                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding margin-top-5">
+                        <div class="btn-group w100" style="margin-bottom:50px;" role="group" aria-label="First group">
+                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <button href="#step1" style="width:100%; background-color:#F04E45 !important;color:white;" type="button" class="btn btn-secondary margin-top-10 btn-step w100 btn-back">BACK</button>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                <button href="#step3" style="width:100%; float:right; background-color:#72BF44 !important;color:white;" id="next" type="button" class="btn btn-secondary margin-top-10 btn-step w100">NEXT</button>
+                            </div>
+                            <!--href="#tab1"-->
+                            <!--href="#tab3"-->
+                        </div>
+                        </div>
+
+                  </div>
+                </div>
+
+                <div class="tab-pane fade" id="step3" role="tabpanel" aria-labelledby="step3">
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <h1 style="font-size: 16px;font-weight: 600;font-family: Arial;text-align: center;color: black;padding-bottom: 15px;" id="QuickQuoteText2"> Please provide us with your contact details…</h1>
                             <br>
-                            <h3 hidden><strong>User Information</strong></h3>
+                            <h5 hidden><strong>User Information</strong></h5>
                             <div>
                                 <label style="float:right; color:red;">* = Required</label>
                             </div>
@@ -304,7 +399,6 @@
                                 <tr id="mphonfgroup">
                                     <td class="coastguardformtd1">
                                         <span class="input-group-addon" style="width:200px;height:28px"><label class="cgform-label" style="padding-top:0 !important;" id="">Mobile Phone<p style="color:red; float:right;">&nbsp;*</p></label></span>
-
                                     </td>
                                     <td class="coastguardformtd">
                                         <div class="form-group required">
@@ -314,11 +408,9 @@
                                         </div>
                                     </td>
                                 </tr>
-
                                 <tr id="vownrfgroup">
                                     <td class="coastguardformtd1">
                                         <span class="input-group-addon cgvesselowner col-xs-12"><label class="cgform-label" id="">Vessel Ownership<p style="color:red; float:right;">&nbsp;*</p></label></span>
-
                                     </td>
                                     <td class="coastguardformtd">
                                         <div style="height: 120px; padding-top: 7.5px; padding-bottom: 7.5px;">
@@ -328,66 +420,36 @@
                                             <label class="radio-inline" style="width:90%;"> <input type="radio" name="cgradioselect" id="vown4" value="Partnership" onclick="vesselOwnUpdate()"> Partnership</label>
                                         </div>
                                         <label hidden id="vownr">Private</label>
-
                                     </td>
                                 </tr>
-
-
                             </table>
-
-                            @*<form class="form-horizontal" role="form">*@
-                            @*<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                <div class="form-group required" id="vownrfgroup">
-                                    <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3" style="padding:0; margin:0; min-width:150px;">
-                                        <span class="input-group-addon cgvesselowner col-xs-12" style="border:1px solid #ccc"><label class="cgform-label" id="">Vessel Ownership<p style="color:red; float:right;">&nbsp;*</p></label></span>
-                                    </div>
-
-                                    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8" style="height: 45px; padding-top: 7.5px; padding-bottom: 7.5px;">
-                                        <label class="radio-inline" style="width:19%;"> <input type="radio" name="cgradioselect" id="vown1" value="Private" checked="checked" onclick="vesselOwnUpdate()">Private</label>
-                                        <label class="radio-inline" style="width:24%;"> <input type="radio" name="cgradioselect" id="vown2" value="Company" onclick="vesselOwnUpdate()">Company</label>
-                                        <label class="radio-inline" style="width:15%;"> <input type="radio" name="cgradioselect" id="vown3" value="Trust" onclick="vesselOwnUpdate()">Trust</label>
-                                        <label class="radio-inline" style="width:20%;"> <input type="radio" name="cgradioselect" id="vown4" value="Partnership" onclick="vesselOwnUpdate()">Partnership</label>
-                                    </div>
-                                    <label class="hidden" id="vownr">Private</label>
-                                </div>
-                            </div>*@
-
                             <div hidden>
                                 <label style="font-weight:bold;font-size:1.3em;">Phone (one required)<label style="color:red; float:right;">&nbsp;*</label></label>
                             </div>
-
                             <div class="form-group" id="hphonfgroup" hidden>
                                 <div class="input-group w100">
                                     <span class="input-group-addon" style="width:430px; height:28px"><label class="cgform-label" style="padding-top:0 !important;" id="">Home Phone</label></span>
                                     <input class="form-control input-lg" placeholder="Enter Home" type="text" name="hphon" id="hphon" maxlength="12">
                                 </div>
                             </div>
-
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding margin-top-5">
                                 <div class="btn-group w100" style="margin-bottom:50px;" role="group" aria-label="First group">
                                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                        <a href="#tab1" data-bs-toggle="tab"><button style="width:100%; background-color:#F04E45 !important;color:white;" type="button" class="btn btn-secondary margin-top-10 w100">BACK</button></a>
+                                        <a href="#tab1" data-toggle="tab"><button style="width:100%; background-color:#F04E45 !important;color:white;" type="button" class="btn btn-secondary margin-top-10 w100">BACK</button></a>
                                     </div>
-
                                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="nextsec">
-                                        <a onclick="validationCheck2(); return false;" id="nextButton" data-bs-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white;" id="next" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
+                                        <a onclick="validationCheck2(); return false;" id="nextButton" data-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white;" id="next" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
                                     </div>
-
                                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                        <a onclick="validationCheck2('pleaseCall'); return false;" data-bs-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white; display:none" id="callMeNext" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
+                                        <a onclick="validationCheck2('pleaseCall'); return false;" data-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white; display:none" id="callMeNext" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
                                     </div>
-
-                                    <!--href="#tab1"-->
-                                    <!--href="#tab3"-->
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="tab-pane" id="tab3">
+                <div class="tab-pane fade" id="step4" role="tabpanel" aria-labelledby="step4">
                     <div class="form-group">
-
                         <p class="lead" style="text-align:center">
                             <br />
                             Thank you.
@@ -398,16 +460,12 @@
                         <p class="lead">
                             Please Note - You must complete the insurance proposal form and complete the online process to obtain your insurance cover.
                         </p>
-
                     </div>
-
                     <div class="form-group">
                         <a href="~/Account/Login" style="background-color:#F04E45 !important;color:white;" type="submit" class="btn btn-secondary margin-top-10 w100 ">Sign In</a>
                     </div>
-
                 </div>
-
-                <div class="tab-pane" id="tab4">
+                <div class="tab-pane fade" id="step5" role="tabpanel" aria-labelledby="step5">
                     <br />
                     <div class="row">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -433,10 +491,8 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="tab-pane" id="tab5">
+                <div class="tab-pane fade" id="step6" role="tabpanel" aria-labelledby="step6">
                     <div class="form-group">
-
                         <p class="lead" style="text-align:center">
                             <br />
                             Thank you.
@@ -444,15 +500,11 @@
                         <p class="lead" style="text-align:center">
                             One of our Marine Insurance Specialists will contact you to discuss your requirements
                         </p>
-
                     </div>
-
                     <div class="form-group">
                         <a href="~/Account/Coastguardreg" style="background-color:#F04E45 !important;color:white;" type="submit" class="btn btn-secondary margin-top-10 w100 ">Close</a>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </article>
@@ -477,7 +529,7 @@
 
 @section pagespecific{
     @*<script src="~/twitter-bootstrap/js/bootstrap.min.js"></script>*@
-    @*<script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>*@
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         var qq = document.getElementById("qquotfgroup");
         var n = document.getElementById("mnumbfgroup");
@@ -498,7 +550,6 @@
         var memnum = document.getElementById('mnumb');
         var hphonk = document.getElementById('hphon');
         var mphonk = document.getElementById('mphon');
-
 
         vival.onkeydown = function (e) {
             if (!((e.keyCode > 95 && e.keyCode < 106) || (e.keyCode > 47 && e.keyCode < 58) || (e.keyCode == 8) || (e.keyCode == 9))) {
@@ -536,7 +587,6 @@
                     break;
                 }
             }
-
         }
 
         function saveQuickQuote() {
@@ -602,11 +652,10 @@
         }
 
         function validationCheck(type) {
-            //get boxes
             var indiQuoteSpan = document.getElementById("indiQuoteSpan");
             var quoteInc = document.getElementById("quoteIncludes");
             var next = document.getElementById("next");
-            var j = 0; //counter
+            var j = 0;
             for (i = 0; i < eleArray.length; i++) {
                 if (eleArray[i].hidden == false) {
                     eleVal = eleArray[i].id.substring(0, 5); //eg. vtype,ctype,hcfig etc etc
@@ -641,16 +690,11 @@
                 quoteInc.classList.hidden = true;
                 next.classList.hidden = true;
 
-
-                //indiQuoteSpan.classList.add("hidden");
-                //quoteInc.classList.add("hidden");
-                //next.classList.add("hidden");
                 return false;
             }
         }
 
         function validationCheck2(type) {
-            //for tab2
             var f = document.getElementById("fnamefgroup");
             var s = document.getElementById("snamefgroup");
             var e = document.getElementById("emailfgroup");
@@ -663,14 +707,12 @@
             if (!(/^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(Email.value))) {
                 alert("You have entered an invalid email address!");
                 return (false)
-            }
-	
+            }	
             if (hm.value == "" && mb.value == "") { //if both are empty
                 hm.classList.add("requiredVal");
                 mb.classList.add("requiredVal");
                 z += 1;
             }
-
             for (i = 0; i < eleArray2.length; i++) {
                 eleVal = eleArray2[i].id.substring(0, 5);
                 dropVal = document.getElementById(eleVal);
@@ -684,37 +726,32 @@
                 }
             }
             if (z == 0 && type == 'pleaseCall') {
+                $('#getQuoteModal').show();
                 addCGData();
-                t2.classList.remove("active");
-
                 $.ajax({
                     type: "POST",
-                    url: "/Services/CoastGuardSelfRegCall",
+                    url: '@Url.Action("CoastGuardSelfReg", "Services")',
                     data: { craftType: cgdata[0], membershipNumber: cgdata[1], boatType: cgdata[2], constructionType: cgdata[3], hullConfiguration: cgdata[4], mooredType: cgdata[5], trailered: cgdata[6], boatInsuredValue: cgdata[7], quickQuotePremium: cgdata[8], firstName: cgdata[9], lastName: cgdata[10], email: cgdata[11], orgType: cgdata[12], homePhone: cgdata[13], mobilePhone: cgdata[14] },
-                })
-                    .done(function (data, textStatus, jQxhr) {
-                        SetCurrentTab('Tab5');
-                        t5.classList.add("active");
+                    traditional: true,
+                }).done(function (data, textStatus, jQxhr) {
+                        $('#getQuoteModal').hide();
+                        switchStep("#step6");
                     })
                     .fail(function (jqXhr, textStatus, errorThrown) {
                         console.log(errorThrown);
-                    });
-
+                });
             } else if (z == 0) {
                 addCGData();
-                t2.classList.remove("active");
                 postCGData();
             }
-
         }
+
         function ResetPassword() {
             window.location.href = "/Account/ResetPassword";
         }
 
         function postCGData() {
-              $('#getQuoteModal').show();
-            var datae = {craftType: cgdata[0], membershipNumber: cgdata[1], boatType: cgdata[2], constructionType: cgdata[3], hullConfiguration: cgdata[4], mooredType: cgdata[5], trailered: cgdata[6], boatInsuredValue: cgdata[7], quickQuotePremium: cgdata[8], firstName: cgdata[9], lastName: cgdata[10], email: cgdata[11], orgType: cgdata[12], homePhone: cgdata[13], mobilePhone: cgdata[14] };
-
+            $('#getQuoteModal').show();
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("CoastGuardSelfReg", "Services")',
@@ -723,17 +760,15 @@
             })
                 .done(function (data, textStatus, jQxhr) {
                     $('#getQuoteModal').hide();
-
                     if (data) {
-                        t3.classList.add("active");
+                        switchStep("#step4");
                         $('#response pre').html(data);
                     }
                     else {
-                        t4.classList.add("active");
+                        switchStep("#step5");
                     }
                 })
                 .fail(function (jqXhr, textStatus, errorThrown) {
-                    debugger;
                     console.log(errorThrown);
                 });
         }
@@ -768,8 +803,7 @@
             document.getElementById("hastr").selectedIndex = 0;
             ctselected = ct.options[ct.selectedIndex].text;
             document.getElementById("CraftType").innerHTML = ctselected;
-              $('#qquotfgroup').show();
-            //qq.classList.remove("hidden");
+            $('#qquotfgroup').show();
             reloadForm();
         }
 
@@ -779,47 +813,76 @@
             var c = document.getElementById("ctypefgroup");
             var h = document.getElementById("hcfigfgroup");
             if (ctselected == "Jetski") {
-                //hidden-sm hidden-md
-                //c.style.display === "block";
-                //h.style.display == "none"
                 c.hidden = true;
                 h.hidden = true;
                 $('#ctypefgroup').hide();
                 $('#hcfigfgroup').hide();
             }
             else {
-                 c.hidden = false;
+                c.hidden = false;
                 h.hidden = false;
                 $('#ctypefgroup').show();
                 $('#hcfigfgroup').show();
-                //c.classList.remove("hidden");
-                //h.classList.remove("hidden");
             }
         }
 
-        function SetCurrentTab(tabPaneId) {
-            $('.nav-tabs a[href="#' + tabPaneId + '"]').trigger("click");
-            $('.nav-tabs a[href="#' + tabPaneId + '"]').trigger("reloadGrid");
-        };
-
-        function pleaseCallButton() {
-            //var nextbtn = document.getElementById("nextButton");
-            if (validationCheck()) {
-                SetCurrentTab('tab2');
-                saveQuickQuote();
-               
-
-                $('#nextButton').hide();
-                document.getElementById("nextButton").hidden = true;
-
-                 $('#vownrfgroup').hidden = true;
-                $('#callMeNext').hidden = false;
-                $('#vownrfgroup').hide();
-                $('#callMeNext').show();
-                 $('#nextsec').hide();
-                //document.getElementById("nextButton").hide();
+        $("button.btn-step").on('click', function (e) {
+            var href = $(this).attr('href');
+            var id = $(this).attr('id');
+            var back = $(this).hasClass('btn-back');
+            
+            if (back == true) {
+                switchStep(href);
             }
+
+            if (href == "#step2") {
+                // If quoteResult not hidden & qref hidden
+                if ($("#quoteResult").is(':visible') && $("#qref").not(':visible')) {
+                    // Then its ok to move to step 2, because they have their quote.
+                    if (id == "pleaseCallMe") {
+                        if (validationCheck()) {
+                            saveQuickQuote(); 
+                            
+                            $('#nextButton').hide();
+                            document.getElementById("nextButton").hidden = true;
+                            $('#vownrfgroup').hidden = true;
+                            $('#callMeNext').hidden = false;
+                            $('#vownrfgroup').hide();
+                            $('#callMeNext').show();
+                            $('#nextsec').hide();
+                        }
+                    }
+                    switchStep(href);
+                }
+                else {
+                    return false;
+                }
+            }
+            else if (href == "#step4") {
+                var call = $(this).attr('id');
+                if (call == "callMeNext") {
+                    validationCheck2('pleaseCall');
+                }
+                else {
+                    validationCheck2();
+                }
+            }
+            else {
+                 switchStep(href);
+            }
+        })
+
+        function switchStep(step) {
+            $("div.show.active").removeClass("show active");
+            $("div" + step).addClass("show active");
         }
+
+        // Current Tab Code comment back in for testing
+        //$('#tablist a').on('click', function (e) {
+        //    var x = '#' + $(this).attr('id');
+        //    $("div.show.active").removeClass("show active");
+        //    $("div" + x).addClass("show active");
+        //})
 
         function pleaseCallNext() {
             validationCheck2();
@@ -875,8 +938,6 @@
             }
             quoteRes.hidden = false;
             $('#quoteResult').show();
-            //quoteRes.classList.remove("hidden");
-
             for (i = 0; i < curTypes.length; i++) {
                 if (badTypes.includes(curTypes[i])) {
                     badCount += 1;
@@ -884,16 +945,10 @@
             }
 
             if (badCount > 0 || (craftType == "Roadtrailer" && insVal > 250000) || (craftType == "Stored" && insVal > 250000) || (vtype == "Jetski" && insVal > 100000) || (craftType == "Berthed" && insVal > 500000) || (craftType == "Moored" && insVal > 500000)) {
-                ////qref.classList.remove("hidden");
-                //$('#qref').show();
-                 qref.hidden = false;
+                qref.hidden = false;
                 $('#indiQuoteSpan').hide();
                 $('#quoteInc').hide();
                 $('#next').hide();
-
-                //indiQuoteSpan.classList.add("hidden");
-                //quoteInc.classList.add("hidden");
-                //next.classList.add("hidden");
             }
 
             else {
@@ -913,26 +968,18 @@
                     $('#mtype').attr('disabled', 'true');
                     $('#hastr').attr('readonly', 'readonly');
                     $('#hastr').attr('disabled', 'true');
-
                     $('#newQuote').show();
                     newQuote.hidden = false;
-
-                    //newQuote.classList.remove("hidden");
                     $('#qref').hide();
                     $('#indiQuoteSpan').show();
                     $('#quoteInc').show();
                     $('#next').show();
-                    next.classList.remove("hidden");
+
                     
                     qref.hidden = true;
                     indiQuoteSpan.hidden = false;
                     quoteInc.hidden = false;
                     next.hidden = false;
-
-                    //qref.classList.add("hidden");
-                    //indiQuoteSpan.classList.remove("hidden");
-                    //quoteInc.classList.remove("hidden");
-                    //next.classList.remove("hidden");
                 }
             }
 
@@ -942,7 +989,6 @@
             else if (water.includes(craftType)) {
                 document.getElementById("rate").value = 0.008;
             }
-
             else {
                 document.getElementById("rate").value = 0.0065;
             }
@@ -951,7 +997,6 @@
             var quote = insVal * rate;
 
             if (quote <= minPrem) {
-
                 minPrem = (minPrem / 12) * 1.15; //Convert from p/a to p/m
                 minPrem = Math.round(minPrem * 100) / 100; //round
                 minPrem = addZeroes(minPrem);
@@ -999,39 +1044,22 @@
                 v4.hidden = false;
                 c.hidden = false;
                 h.hidden = false;
-
-                    $('#vtypefgroup').show();
-                    $('#Jetski').show();
-                    $('#ctypefgroup').show();
-                    $('#hcfigfgroup').show();
-
-                //v.classList.remove("hidden");
-                //v4.classList.remove("hidden");
-                //c.classList.remove("hidden");
-                //h.classList.remove("hidden");
-
+                $('#vtypefgroup').show();
+                $('#Jetski').show();
+                $('#ctypefgroup').show();
+                $('#hcfigfgroup').show();
                 m.hidden = true;
                 t.hidden = true;
                 v5.hidden = true;
                 c7.hidden = true;
                 c8.hidden = true;
                 h4.hidden = true;
-
-
-                    $('#mtypefgroup').hide();
-                    $('#hastrfgroup').hide();
-                    $('#VOther').hide();
-                    $('#Cement').hide();
-                    $('#COther').hide();
-                    $('#HOther').hide();
-
-                //m.classList.add("hidden");
-                //t.classList.add("hidden");
-                //v5.classList.add("hidden");
-                //c7.classList.add("hidden");
-                //c8.classList.add("hidden");
-                //h4.classList.add("hidden");
-
+                $('#mtypefgroup').hide();
+                $('#hastrfgroup').hide();
+                $('#VOther').hide();
+                $('#Cement').hide();
+                $('#COther').hide();
+                $('#HOther').hide();
             }
             if (option == "Stored") {
                 banner.src = "https://s3-us-west-1.amazonaws.com/mpak.proposalonline.com/images/CG_Header_MENUNew.jpg";
@@ -1040,84 +1068,46 @@
                 $('#ctypefgroup').show();
                 $('#hcfigfgroup').show();
                 $('#hastrfgroup').show();
-
-                
                 v.hidden = false;
                 v4.hidden = false;
                 c.hidden = false;
                 h.hidden = false;
                 t.hidden = false;
-
-                //v.classList.remove("hidden");
-                //v4.classList.remove("hidden");
-                //c.classList.remove("hidden");
-                //h.classList.remove("hidden");
-
                 m.hidden = true;
-
                 $('#mtypefgroup').hide();
-
-                //m.classList.add("hidden");
-
                 $('#VOther').show();
                 $('#Cement').show();
                 $('#COther').show();
                 $('#HOther').show();
-
                 v5.hidden = false;
                 c7.hidden = false;
                 c8.hidden = false;
                 h4.hidden = false;
-
-                //v5.classList.remove("hidden");
-                //c7.classList.remove("hidden");
-                //c8.classList.remove("hidden");
-                //h4.classList.remove("hidden");
             }
             if (option == "Berthed") {
                 banner.src = "https://s3-us-west-1.amazonaws.com/mpak.proposalonline.com/images/CG_Header_MENUNew.jpg";
                 v.hidden = false;
                 $('#vtypefgroup').show();
-                //v.classList.remove("hidden");
-
                 v4.hidden = true;
                 v5.hidden = true;
-
                 $('#Jetski').hide();
                 $('#VOther').hide();
-
-                //v4.classList.add("hidden");
-                //v5.classList.add("hidden");
                 c.hidden = false;
                 c7.hidden = false;
                 c8.hidden = false;
                 h.hidden = false;
                 h4.hidden = false;
-
                 $('#ctypefgroup').show();
                 $('#Cement').show();
                 $('#COther').show();
                 $('#hcfigfgroup').show();
                 $('#HOther').show();
-
-                //c.classList.remove("hidden");
-                //c7.classList.remove("hidden");
-                //c8.classList.remove("hidden");
-                //h.classList.remove("hidden");
-                //h4.classList.remove("hidden");
-
                 $('#mtypefgroup').hide();
                 $('#Marina').hide();
                 $('#hastrfgroup').hide();
-
                 m.hidden = true;
                 m2.hidden = true;
                 t.hidden = true;
-
-                
-                //m.classList.add("hidden");
-                //m2.classList.add("hidden");
-                //t.classList.add("hidden");
             }
             if (option == "Moored") {
                 banner.src = "https://s3-us-west-1.amazonaws.com/mpak.proposalonline.com/images/CG_Header_MENUNew.jpg";
@@ -1125,64 +1115,34 @@
                 $('#ctypefgroup').show();
                 $('#hcfigfgroup').show();
                 $('#mtypefgroup').show();
-
                 v.hidden = false;
                 c.hidden = false;
                 h.hidden = false;
                 m.hidden = false;
-
-
-                //v.classList.remove("hidden");
-                //c.classList.remove("hidden");
-                //h.classList.remove("hidden");
-                //m.classList.remove("hidden");
-
                 $('#hastrfgroup').hide();
                 $('#VOther').hide();
-
                 t.hidden = true;
                 v5.hidden = true;
-
-                //t.classList.add("hidden");
-                //v5.classList.add("hidden");
-
                 $('#Cement').show();
                 $('#COther').show();
                 $('#HOther').show();
-
                 c7.hidden = false;
                 c8.hidden = false;
                 h4.hidden = false;
-
-                //c7.classList.remove("hidden");
-                //c8.classList.remove("hidden");
-                //h4.classList.remove("hidden");
                 v4.hidden = false;
-
                 $('#Jetski').show();
-                //v4.classList.add("hidden");
             }
             if (option == "Multi") {
                 banner.src = "https://s3-us-west-1.amazonaws.com/mpak.proposalonline.com/images/CG_Header_MENUNew.jpg";
                 cTypeDrop.hidden = false;
-
                 $('#CraftTypeDrop').show();
-
                 cType.hidden = true;
-
                 $('#CraftType').hide();
-
-                //cTypeDrop.classList.remove("hidden");
-                //cType.classList.add("hidden");
             }
         }
 
         //Fill Label with URL and change displayed Select Elements and their sub options when page is ready
         $(document).ready(function () {
-            //var logo = document.getElementById("logo");
-            //logo.removeChild(logo.children[0]);
-            //logo.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" data-name="Layer 1" viewBox="0 0 311.36 46.77"><defs><style>.cls-1a{fill:#85d2e3;}.cls-2a{fill:#0080b2;}.cls-3a{fill:#00afd3;}.cls-4a{fill:#004180;}</style></defs><title>18-1236_CA_Coastguard_Quick_Quote_Site Elements v1</title><polygon class="cls-1a" points="60.76 46.77 40.51 35.08 60.76 23.39 60.76 46.77"/><polygon class="cls-2a" points="20.25 46.77 0 35.08 20.25 23.39 20.25 46.77"/><polygon class="cls-3a" points="40.51 35.08 60.76 23.39 60.76 0 20.25 23.39 40.51 35.08"/><polygon class="cls-2a" points="81.01 35.08 60.76 23.39 81.01 11.7 81.01 35.08"/><polygon class="cls-3a" points="60.76 46.77 81.01 35.08 60.76 23.39 60.76 46.77"/><polygon class="cls-3a" points="20.25 0 0 11.69 0 35.08 20.25 23.39 20.25 0"/><polygon class="cls-4a" points="20.25 23.39 40.51 11.69 20.25 0 20.25 23.39"/><polygon class="cls-1a" points="20.25 46.77 40.51 35.08 20.25 23.39 20.25 46.77"/><polygon class="cls-4a" points="60.76 23.39 81.01 11.69 60.76 0 60.76 23.39"/><path class="cls-3a" d="M219.94,26.51c6.86-.8,11.77-5.38,11.77-12.22,0-4.15-3.06-11.24-13.64-11.24H201.46V43.72H208V8.25h8.43c5.87,0,8.57,2.85,8.57,6.77s-3,6.75-9.43,6.75h-7.05l17.52,22h8.12Z"/><path class="cls-3a" d="M171.83,3.05L155.49,43.72h6.77l4.37-11.34h17.11l4.37,11.34h7L179,3.05h-7.19Zm3.55,7.39,6.38,16.62h-13l6.44-16.62h0.21Z"/><path class="cls-3a" d="M126.59,34.8L113.76,3.06h-9.28V43.72h6.28V12h0.14l12.74,31.77h5.59l13.34-32h0.13v32h6.38V3.06h-9.15L126.79,34.8h-0.2Z"/><path class="cls-3a" d="M239,39.78a25.11,25.11,0,0,0,15,4.69c8.7,0,14.76-4.27,14.76-11.5,0-7-6.78-10.17-12.55-12.87-4.56-2.12-8.83-3.66-8.83-7.09s2.67-5.41,7.26-5.41A18.79,18.79,0,0,1,265.5,11l2.9-5a25.31,25.31,0,0,0-13.59-3.74c-8.69,0-14.32,4.35-14.32,10.92,0,6.78,6.62,9.68,12.13,12.2,5.22,2.4,9.21,4.22,9.21,7.92s-3.24,5.82-8,5.82c-6.19,0-10.82-3.63-11.58-4.15Z"/><path class="cls-3a" d="M304.77,3.05v16.6H283.41V3.05h-6.59V43.72h6.59V25h21.36V43.72h6.59V3.05h-6.59Z"/></svg>';
-
             var option = window.location.search;
             if (option.length != 0) {
                 option = option.substr(1);
@@ -1203,7 +1163,6 @@
             var m = document.getElementById("mtypefgroup");
             var t = document.getElementById("hastrfgroup");
             var banner = document.getElementById("banner");
-
             if (option == "Roadtrailer") {
                 banner.src = "https://s3-us-west-1.amazonaws.com/mpak.proposalonline.com/images/CG_Header_MENUNew.jpg";
                 $('#mtypefgroup').hide();
@@ -1212,25 +1171,17 @@
                 $('#Cement').hide();
                 $('#COther').hide();
                 $('#HOther').hide();
-
                 m.hidden = true;
                 t.hidden = true;
                 v5.hidden = true;
                 c7.hidden = true;
                 c8.hidden = true;
                 h4.hidden = true;
-                //m.classList.add("hidden");
-                //t.classList.add("hidden");
-                //v5.classList.add("hidden");
-                //c7.classList.add("hidden");
-                //c8.classList.add("hidden");
-                //h4.classList.add("hidden");
             }
             if (option == "Stored") {
                 banner.src = "https://s3-us-west-1.amazonaws.com/mpak.proposalonline.com/images/CG_Header_MENUNew.jpg";
                 m.hidden = true;
                 $('#mtypefgroup').hide();
-                //m.classList.add("hidden");
             }
             if (option == "Berthed") {
                 banner.src = "https://s3-us-west-1.amazonaws.com/mpak.proposalonline.com/images/CG_Header_MENUNew.jpg";
@@ -1239,17 +1190,11 @@
                 $('#VOther').hide();
                 $('#Marina').hide();
                 $('#Jetski').hide();
-
                 m.hidden = true;
                 t.hidden = true;
                 v5.hidden = true;
                 m2.hidden = true;
                 v4.hidden = true;
-                //m.classList.add("hidden");
-                //t.classList.add("hidden");
-                //v5.classList.add("hidden");
-                //m2.classList.add("hidden");
-                //v4.classList.add("hidden");
             }
             if (option == "Moored") {
                 banner.src = "https://s3-us-west-1.amazonaws.com/mpak.proposalonline.com/images/CG_Header_MENUNew.jpg";
@@ -1261,17 +1206,10 @@
                 t.hidden = true;
                 v4.hidden = true;
                 v5.hidden = true;
-                //t.classList.add("hidden");
-                //v4.classList.add("hidden");
-                //v5.classList.add("hidden");
-
             }
             if (option == "Multi") {
                 banner.src = "https://s3-us-west-1.amazonaws.com/mpak.proposalonline.com/images/CG_Header_MENUNew.jpg";
-
                 $('#CraftTypeDrop').show();
-                //cTypeDrop.classList.remove("hidden");
-
                 $('#CraftType').hide();
                 $('#vtypefgroup').hide();
                 $('#ctypefgroup').hide();
@@ -1279,7 +1217,6 @@
                 $('#mtypefgroup').hide();
                 $('#hastrfgroup').hide();
                 $('#qquotfgroup').hide();
-
                 cType.hidden = true;
                 v.hidden = true;
                 c.hidden = true;
@@ -1295,11 +1232,9 @@
                 //m.classList.add("hidden");
                 //t.classList.add("hidden");
                 //qq.classList.add("hidden");
-
             }
-
         });
-        
+
         /*
                     // Model i agree button
                     $("#i-agree").click(function () {

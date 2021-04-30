@@ -5,7 +5,7 @@
         <div id="Boattabs">
             <ul id="tab" class="nav nav-tabs">
                 <li class="nav nav-tabs active"> <a href="#boatTabs1"> List All </a> </li>
-                <li class="nav nav-tabs EditButton"> <a href="#boatTabs2"> Edit </a> </li>
+                <li class="nav nav-tabs EditButton hidden" id="EditBoat"> <a href="#boatTabs2"> Edit </a> </li>
                 <li class="nav nav-tabs AddButton"> <a href="#boatTabs3"> Add </a> </li>
                 <li class="nav nav-tabs BoatRemoved"> <a href="#boatTabs4"> List Removed </a> </li>
             </ul>
@@ -24,7 +24,7 @@
                                     colModel: [
                                         {
                                             name: "edit", template: "actions", width: 90, align: 'center', search: false, editable: true, formatter: function (cellvalue, options, rowobject) {
-                                                return ('<button onclick="EditBoat(\'b\', \'' + cellvalue + '\'); SetCurrentTab(\'boatTabs2\');" type="button" class="btn btn-success btn-sm">Edit <i class="fa fa-edit"> </i></button>')
+                                                return ('<button onclick="UnhideEdit(\'EditBoat\');EditBoat(\'b\', \'' + cellvalue + '\'); SetCurrentTab(\'boatTabs2\');" type="button" class="btn btn-success btn-sm" >Edit <i class="fa fa-edit"> </i></button>')
                                             }
                                         },
                                         { name: "BoatName", align: 'center', key: 'true', editable: true },
@@ -568,7 +568,7 @@
                     <div class="row" id="update">
                         <section class="col col-xs-12">
                             <button onclick="ValidateBoatForm(event,'#boatTabs2', '#tblBoat','boatTabs1')" class="btn-sm AddupdateBoat" id="updateBoat">Update</button>
-                            <button onclick="ClearBoats(event,'#boatTabs2','boatTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Cancel Update</button>
+                            <button onclick="HideEdit('EditBoat');ClearBoats(event,'#boatTabs2','boatTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Cancel Update</button>
                         </section>
                         <label style="color:red" hidden id="updaterequired"> Field is Missing.</label>
                     </div>
@@ -1215,7 +1215,8 @@
     </div>
 </div>
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
+        debugger;
         DefaultDateRestore();
     });
 </script>

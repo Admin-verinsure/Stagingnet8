@@ -76,5 +76,7 @@ namespace DealEngine.Domain.Entities
 
         public virtual bool IsPublic { get; protected set; }
 
+        public virtual bool DoNotCheckForRenew { get; set; }
+
     }
 }

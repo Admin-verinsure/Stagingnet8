@@ -7,7 +7,7 @@
         <div id="BoatUsetabs">
             <ul id="tab" class="nav nav-tabs">
                 <li class="nav nav-tabs active"> <a href="#boatUseTabs1"> List All </a> </li>
-                <li class="nav nav-tabs"> <a href="#boatUseTabs2"> Edit </a> </li>
+                <li class="nav nav-tabs hidden" id="VesseluseEdit"> <a href="#boatUseTabs2" > Edit </a> </li>
                 <li class="nav nav-tabs"> <a href="#boatUseTabs3"> Add </a> </li>
                 <li class="nav nav-tabs"> <a href="#boatUseTabs4" Class="UseRemoved"> List Removed </a> </li>
             </ul>
@@ -26,7 +26,7 @@
                                         colModel: [
                                             {
                                                 name: "update", align: 'center', search: false, formatter: function (cellvalue, options, rowobject) {
-                                                    return ('<button onclick="EditBoatUse(\'bu\', \'' + cellvalue + '\'); SetCurrentTab(\'boatUseTabs2\');" type="button" class="btn btn-success btn-sm">Edit <i class="fa fa-edit"></i></button>' );
+                                                    return ('<button onclick="UnhideEdit(\'VesseluseEdit\');EditBoatUse(\'bu\', \'' + cellvalue + '\'); SetCurrentTab(\'boatUseTabs2\');" type="button" class="btn btn-success btn-sm">Edit <i class="fa fa-edit"></i></button>' );
                                                 }
                                             },
                                             { name: "BoatUseCategory", align: 'center' },
@@ -121,8 +121,8 @@
                         </section>
                         <div class="row" id="update">
                             <section class="col col-xs-12">
-                                <button onclick="ValidateBoatUse(event,'#boatUseTabs2', '#tblBoatUse','boatUseTabs1')" class="btn-sm updateBoat" id="updateBoat">Update</button>
-                                <button onclick="ClearBoats(event,'#boatUseTabs2','boatUseTabs1')" class="btn-sm AddClearBoat" id="AddClearBoat">Cancel Update</button>
+                                <button onclick="ValidateBoatUse(event, '#boatUseTabs2', '#tblBoatUse', 'boatUseTabs1');HideEdit('VesseluseEdit');" class="btn-sm updateBoat" id="updateBoat">Update</button>
+                                <button onclick="HideEdit('VesseluseEdit');ClearBoats(event,'#boatUseTabs2','boatUseTabs1')" class="btn-sm AddClearBoat" id="AddClearBoat">Cancel Update</button>
                             </section>
                         </div>
                     </div>

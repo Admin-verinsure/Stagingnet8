@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using AutoMapper;
+using DealEngine.Infrastructure.FluentNHibernate;
 
 namespace DealEngine.Services.Impl
 {
@@ -20,6 +21,7 @@ namespace DealEngine.Services.Impl
         ICloneService _cloneService;
         IMapper _mapper;
         IEmailService _emailService;
+        IMapperSession<Reference> _referenceRepository;
 
         public SubsystemService(
             IEmailService emailService,
@@ -31,7 +33,8 @@ namespace DealEngine.Services.Impl
             IProgrammeService programmeService,            
             IClientInformationService clientInformationService,
             IInformationTemplateService informationTemplateService,
-            IReferenceService referenceService
+            IReferenceService referenceService,
+            IMapperSession<Reference> referenceRepository
             )
         {
             _emailService = emailService;
@@ -44,12 +47,13 @@ namespace DealEngine.Services.Impl
             _programmeService = programmeService;
             _organisationService = organisationService;        
             _clientInformationService = clientInformationService;
+            _referenceRepository = referenceRepository;
         }
 
         public async Task<bool> CreateSubObjects(Guid clientProgrammeId, ClientInformationSheet sheet, User user)
         {
             List<Organisation> principalOrganisations = null;
-            if (sheet.Programme.BaseProgramme.Name == "TripleA Programme")
+            if (sheet.Programme.BaseProgramme.NamedPartyUnitName == "TripleA Programme")
             {
                 principalOrganisations = await _organisationService.GetTripleASubsystemAdvisors(sheet);
             }
@@ -103,7 +107,7 @@ namespace DealEngine.Services.Impl
                     {
                         SubClientProgramme subProg = (SubClientProgramme)subClientSheet.Programme;
                         subClientSheet.DateDeleted = null;
-                        subClientSheet.Programme.DateDeleted = DateTime.Now;
+                        subClientSheet.Programme.DateDeleted = null;
                         subClientSheet.DeletedBy = null;
                         subClientSheet.Programme.DeletedBy = null;
 
@@ -123,7 +127,7 @@ namespace DealEngine.Services.Impl
                         }
                         createdSubSheet.Status = subClientSheet.Status;
                         createdSubSheet.SubmittedBy = subClientSheet.SubmittedBy;
-                        createdSubSheet.SubmitDate = DateTime.Now;
+                        createdSubSheet.SubmitDate = DateTime.UtcNow;
                         subClientSheet = createdSubSheet;
                     }
                 }
@@ -133,7 +137,7 @@ namespace DealEngine.Services.Impl
                     {
                         SubClientProgramme subProg = (SubClientProgramme)subClientSheet.Programme;
                         subClientSheet.DateDeleted = null;
-                        subClientSheet.Programme.DateDeleted = DateTime.Now;
+                        subClientSheet.Programme.DateDeleted = null;
                         subClientSheet.DeletedBy = null;
                         subClientSheet.Programme.DeletedBy = null;
 
@@ -170,6 +174,7 @@ namespace DealEngine.Services.Impl
                 subSheet.Owner = organisation;
                 subSheet.ReferenceId = await _referenceService.GetLatestReferenceId();
                 subClientProgramme.InformationSheet = subSheet;
+                await _referenceRepository.AddAsync(new Reference(subSheet.Id, subSheet.ReferenceId));
 
                 return subSheet;
 
@@ -277,7 +282,7 @@ namespace DealEngine.Services.Impl
 
         public async Task<bool> ValidateProgramme(ClientInformationSheet informationSheet, User user)
         {
-            if (informationSheet.Programme.BaseProgramme.Name == "NZFSG Programme")
+            if (informationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme")
             {
                 var advisors = await _organisationService.GetNZFSGSubsystemAdvisors(informationSheet);
                 await ValidateSubObjects(informationSheet, user, advisors);
@@ -295,7 +300,7 @@ namespace DealEngine.Services.Impl
         {
             try
             {                
-                subsheet.Delete(user, DateTime.Now);                
+                subsheet.Delete(user, DateTime.UtcNow);                
                 informationSheet.Programme.SubClientProgrammes.Clear();
                 informationSheet.SubClientInformationSheets.Remove(subsheet);
             }

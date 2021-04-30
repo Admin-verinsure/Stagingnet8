@@ -112,6 +112,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsProgrammeManager { get; set; }
         public virtual bool IsApproved { get; set; }
         public virtual string Clientmembership { get; set; }
+        public virtual bool OrgBeenMoved { get; set; }
         public virtual IList<InsuranceAttribute> InsuranceAttributes { get; set; }
         //public virtual Organisation CloneForNewSheet(ClientInformationSheet newSheet)
         //{
@@ -233,6 +234,7 @@ namespace DealEngine.Domain.Entities
         //public virtual IList<AuditHistory> AuditHistory { get; set; }
         [Display(Name = "Date of Company Incorporation")]
         public virtual DateTime? DateofIncorportation { get; set; }
+        public virtual IList<Programme> Programmes { get; set; }
 
         #endregion
 

@@ -1,0 +1,191 @@
+﻿@model DealEngine.WebUI.Models.UpdateTypesViewModel
+
+@* New code for add data *@
+<div class="form-group">
+    <div class="card">
+        <div class="card-header">
+            <header>  Update Type <a href="#UpdateTypeModal" aria-hidden="true" data-sub-type="updateType" style="color:green" data-toggle="modal"> <u>  Add New Term </u></a></header>
+
+
+        </div>
+        <div class="card-body">
+            <!-- START MAIN CONTENT -->
+            <table id="tableUpdateType"
+                   class="table table-striped" width="100%"
+                   data-show-columns="true"
+                   data-pagination="true"
+                   data-search="true"
+                   data-show-jump-to="true">
+                <thead>
+                    <tr>
+                        <th data-field="name" data-sortable="true">Name Type</th>
+                        <th data-field="Value" data-sortable="true">Value Type</th>
+                        <th data-field="Role" data-sortable="true">Role</th>
+                        <th data-field="Program" data-sortable="true">Program</th>
+
+                        <th data-sortable="false"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.UpdateTypes != null)
+                    {
+                        @foreach (var item in Model.UpdateTypes)
+                        {
+                    <tr>
+
+
+                        <td>@item.NameType</td>
+                        <td>@item.ValueType </td>
+                        <td>
+                            <ul style="list-style-type: none;padding: 0;">
+                                @if (@item.TypeIsTc is true)
+                                {
+                                    <li style="display:inline-block">TC</li>
+                                }
+                                @if (@item.TypeIsBroker is true)
+                                {
+                                    @if (@item.TypeIsTc is true)
+                                    {
+                                        <li style="display:inline-block">,</li>
+                                    }
+                                    <li style="display:inline-block">Broker</li>
+                                }
+                                @if (@item.TypeIsInsurer is true)
+                                {
+                                    @if (@item.TypeIsTc || @item.TypeIsBroker is true)
+                                    {
+                                        <li style="display:inline-block">,</li>
+                                    }
+                                    <li style="display:inline-block">Insurer</li>
+                                }
+                                @if (@item.TypeIsClient is true)
+                                {
+                                    @if (@item.TypeIsTc || @item.TypeIsBroker || @item.TypeIsInsurer is true)
+                                    {
+                                        <li style="display:inline-block">,</li>
+                                    }
+                                    <li style="display:inline-block">Client</li>
+                                }
+                            </ul>
+                        </td>
+                        <td width="9%">
+                            <a href="#UpdateTypeModal" aria-hidden="true" style="color:forestgreen" data-toggle="modal"
+                               data-sub-nameType="@item.NameType"
+                               data-sub-valueType="@item.ValueType"
+                               data-sub-broker="@item.TypeIsBroker"
+                               data-sub-client="@item.TypeIsClient"
+                               data-sub-insurer="@item.TypeIsInsurer"
+                               data-sub-tc="@item.TypeIsTc"
+                               data-sub-id="@item.Id">
+                                <i class="fa fa-edit"> </i>
+                            </a>
+                            <a href="#updateTypeDelete" aria-hidden="true" style="color:red" data-toggle="modal" data-updateType-id="@item.Id">
+                                <span class="fa fa-trash" id="span"></span>
+                            </a>
+                        </td>
+
+                    </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+@* new modal code *@
+<div id="UpdateTypeModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <!-- Modal content-->
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="color:blue; font-size:22px">Update Type</h4>
+            </div>
+            <div class="modal-body">
+                <form id="ProdForm">
+
+                    <div class="form-group" hidden>
+                        <label for="UpdateTypeId">Update Type Id</label>
+                        <input type="text" class="form-control " id="UpdateTypeId" name="Id" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="NameType">Name Type</label>
+                        <input type="text" class="form-control " id="NameType" name="NameType" />
+                        <p class="validationContainer" id="validateUpdateTypeName"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="ValueType">Value Type</label>
+                        <input type="text" class="form-control " id="ValueType" name="ValueType" />
+                        <p class="validationContainer" id="validateUpdateTypeValue"></p>
+                    </div>
+
+                    <div class="form-group" id="userRole">
+                        <label for="Role">User Role</label>
+                        <div>
+                            <input type="checkbox" id="tc" name="tc"
+                                   checked>
+                            <label for="tc">TC</label>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" id="broker" name="broker">
+                            <label for="broker">Broker</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="insurer" name="insurer">
+                            <label for="insurer">Insurer</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="client" name="client">
+                            <label for="client">Client</label>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <input type="Reset" value="Submit" class="btn btn-success" id="btnUpdateTypeSubmit">
+                <a href="#" class="btn btn-danger" data-dismiss="modal" id="modalCancle">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="updateTypeDelete" role="dialog" aria-labelledby="updateTypeDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p style="color:black;font-size:18px; ">Confirm To Delete This Update Type</p>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control " id="UpdateTypeId_Id" name="updateTypeId" hidden />
+            </div>
+            <div class="form-group">
+            </div>
+            <div class="modal-footer">
+                <button type="Submit" data-dismiss="modal" class="btn btn-success" id="btnUpdateTypeDelete">Confirm </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section pagespecific {
+
+    @await Html.PartialAsync("_AdminScripts")
+
+}
+
+
+
+
+
+
+
+
+

@@ -12,7 +12,7 @@
                 <ul id="tab" class="nav nav-tabs">
                     <li class="nav nav-tabs active"> <a href="#rmvTabs1"> List All </a> </li>
                     <li class="nav nav-tabs"> <a href="#rmvTabs2"> Search </a> </li>
-                    <li class="nav nav-tabs"> <a href="#rmvTabs3"> Edit </a> </li>
+                    <li class="nav nav-tabs hidden" id="MotorEdit"> <a href="#rmvTabs3" > Edit </a> </li>
                     <li class="nav nav-tabs"> <a href="#rmvTabs4"> Add </a> </li>
                     <li class="nav nav-tabs"> <a href="#rmvTabs5" Class="MotorRemoved"> List Removed </a> </li>
 
@@ -33,7 +33,7 @@
                                 colModel: [
                                     {
                                         name: "update", align: 'center',width:60, search: false, formatter: function (cellvalue, options, rowobject) {
-                                            return ('<button onclick="EditRegisteredMotorVehicle(\'rmv\', \'' + cellvalue + '\'); SetCurrentTab(\'rmvTabs3\');" type="button"class="btn btn-success btn-sm">Edit <i class="fa fa-edit"></i></button>');
+                                            return ('<button onclick="UnhideEdit(\'MotorEdit\');EditRegisteredMotorVehicle(\'rmv\', \'' + cellvalue + '\'); SetCurrentTab(\'rmvTabs3\');" type="button"class="btn btn-success btn-sm">Edit <i class="fa fa-edit"></i></button>');
                                         }
                                         //{ return '<button onclick="alert(&quot;'+cellvalue+'&quot;);" type="button">Edit</button>'; }
                                     },
@@ -280,8 +280,8 @@
                             <section class="col col-xs-12">
 
 
-                                <button onclick="ValidateMotorVehicle(event,'#rmvTabs3', '#tblRegisteredMV','rmvTabs1')" class="btn-sm updateBoat" id="updateBoat">Update</button>
-                                <button onclick="ClearBoats(event,'#rmvTabs2','rmvTabs1')" class="btn-sm ClearBoat" id="AddClearBoat">Cancel Update</button>
+                                <button onclick="ValidateMotorVehicle(event, '#rmvTabs3', '#tblRegisteredMV', 'rmvTabs1');HideEdit('MotorEdit');" class="btn-sm updateBoat" id="updateBoat">Update</button>
+                                <button onclick="HideEdit('MotorEdit');ClearBoats(event,'#rmvTabs2','rmvTabs1')" class="btn-sm ClearBoat" id="AddClearBoat">Cancel Update</button>
 
                                 @*@Html.Bootstrap().Button().Text("Update").HtmlAttributes(new { onclick = "ValidateMotorVehicle('#rmvTabs-3', '#tblRegisteredMV','rmvTabs-1');" }).Class("btn-sm updateBoat").Id("updateBoat")
 

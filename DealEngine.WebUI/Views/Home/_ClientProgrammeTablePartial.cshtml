@@ -39,12 +39,12 @@
                         <div class="card">
                             <div class="card-header" id="heading_@item.SubClientProgrammes.FirstOrDefault().Id">
                                 <h2 class="mb-0">
-                                    <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@item.SubClientProgrammes.FirstOrDefault().Id" aria-expanded="false" aria-controls="collapse_@item.SubClientProgrammes.FirstOrDefault().Id">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse_@item.SubClientProgrammes.FirstOrDefault().Id" aria-expanded="false" aria-controls="collapse_@item.SubClientProgrammes.FirstOrDefault().Id">
                                         Subclients
                                     </button>
                                 </h2>
                             </div>
-                            <div id="collapse_@item.SubClientProgrammes.FirstOrDefault().Id" class="collapse accordion-collapse" aria-labelledby="heading_@item.SubClientProgrammes.FirstOrDefault().Id" data-bs-parent="#subsystemAccodion">
+                            <div id="collapse_@item.SubClientProgrammes.FirstOrDefault().Id" class="collapse" aria-labelledby="heading_@item.SubClientProgrammes.FirstOrDefault().Id" data-parent="#subsystemAccodion">
                                 <div class="card-body">
                                     <table class="table table-striped">
                                         <thead class="thead-light">
@@ -142,7 +142,7 @@
                             if (((item.Status == "Bound and invoiced" && Model.Programme.UsesEGlobal) || (item.Status == "Bound" && !Model.Programme.UsesEGlobal)) &&
                                 Model.Programme.AllowUsesChange && item.NextInfoSheet == false)
                             {
-                                <a href="#myChangeModal" aria-hidden="true" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Update</a>
+                                <a href="#myChangeModal" aria-hidden="true" class="btn btn-primary btn-sm" data-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Update</a>
                             }
 
                         }
@@ -160,7 +160,7 @@
                             if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
                             {
                                 @*<a class="btn btn-primary btn-sm" href="/Information/Unlock/@item.Id"><i class="fa fa-unlock"></i> Unlock</a>*@
-                                <a href="#myUnlockModal" aria-hidden="true" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Unlock</a>
+                                <a href="#myUnlockModal" aria-hidden="true" class="btn btn-primary btn-sm" data-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Unlock</a>
 
                             }
                             if (item.SubClientProgrammes.Count > 0)
@@ -205,81 +205,119 @@
 <div id="myChangeModal" class="modal container" role="dialog">
     <div class="modal-content">
         <div class="modal-header">
-            <h3 class="modal-title" style="color:blue; font-size:22px">Change Details</h3>
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <h3 class="modal-title" style="color:blue; font-size:22px">Update Details</h3>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
             <form id="ProdForm" method="post" action="~/Information/UpdateInformation">
                 <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="DealId" name="DealId" placeholder="Vessel Name" value="" required>
+                <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="ProgrammeId" id="ProgrammeId" name="ProgrammeId" value="" required>
+
                 <table class="table table-striped">
                     <tr>
                         <td>
-                            <label for="changeType" class="required">Change Type</label>
+                            <label for="changeType" class="required">Update Type</label>
                         </td>
                         <td>
-                            <select class="form-control b form-select" id="ChangeType" name="ChangeType" title="" required>
+                            <select class="form-control b" id="ChangeType" name="ChangeType" title="" required>
                                 <option selected="selected" value="">-- Select here --</option>
-                                <option Value="TC_addAmendRiskInfo">Add Amend Risk Information</option>
-                                <option Value="TC_newCoverable">Add New Coverable</option>
-                                <option Value="TC_amendExcess">Amend Excess</option>
-                                <option Value="TC_amendLiabilityLimit">Amend Liability Limit</option>
-                                <option Value="TC_amendLocation">Amend Location</option>
-                                <option Value="TC_amendAssetSumInsured">Amend Asset Sum Insured</option>
-                                <option Value="TC_amendTermsCoverage">Amend Terms/Coverage</option>
-                                <option Value="TC_amendAddReinsurance">Amend or Add Reinsurance</option>
-                                <option Value="TC_amendAddInsured">Amend or Add Insured</option>
-                                <option Value="TC_deleteInsured">DeleteInsured</option>
-                                <option Value="TC_amendAddNamedParty">Amend or Add NamedParty</option>
-                                <option Value="TC_deleteNamedParty">deleteNamedParty</option>
-                                <option Value="TC_amendAddEmployees">Amend or Add Employees</option>
-                                <option Value="TC_amendAddCI">Amend or Add Co-insurer</option>
-                                <option Value="TC_changeOfExpiryDate">Change of Expiry Date</option>
-                                <option Value="TC_changeOfBroker">Change of Broker</option>
-                                <option Value="TC_changeOfBizOrOcc">Change of Business or Occupation</option>
-                                <option Value="TC_changeOfActivity">Change of Activity</option>
-                                <option Value="TC_deleteCoverable">Delete Existing Coverable</option>
-                                <option Value="TC_other">Other Amendment</option>
-                                <option Value="TC_amendOneTimeEvents">One Time Event</option>
+
+                                @if (Model.UpdateTypes != null)
+                                {
+                                    @if (Model.CurrentUserIsBroker == "True")
+                                    {
+
+                                        @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsBroker))
+                                        {
+                                            @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
+                                            {
+                                                <option value="@updateType.ValueType"> @updateType.NameType</option>
+                                            }
+                                        }
+                                    }
+                                    @if (Model.CurrentUserIsInsurer == "True")
+                                    {
+
+                                        @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsInsurer))
+                                        {
+                                            @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
+                                            {
+                                                <option value="@updateType.ValueType"> @updateType.NameType</option>
+                                            }
+                                        }
+                                    }
+
+                                    @if (Model.CurrentUserIsTC == "True")
+                                    {
+
+                                        @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsTc))
+                                        {
+                                            @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
+                                            {
+                                                <option value="@updateType.ValueType"> @updateType.NameType</option>
+                                            }
+                                        }
+                                    }
+                                    @if (Model.CurrentUserIsClient == "True")
+                                    {
+
+                                        @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsClient))
+                                        {
+                                            @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
+                                            {
+                                                <option value="@updateType.ValueType"> @updateType.NameType</option>
+                                            }
+                                        }
+                                    }
+
+                                }
                             </select>
                         </td>
                         <td>
                             <p class="validationContainer" id="validateChangeType"></p>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            <label for="Reason" class="required">Reason</label>
-                        </td>
-                        <td>
-                            <select class="form-control form-select" id="ChangeReason" name="Reason" title="" required>
-                                <option selected="selected" value="">-- Select here --</option>
-                                <option Value="TC_cancelbusinessSoldOrClosed_lgi">Business Sold or Closed</option>
-                                <option Value="TC_changeInCoverReq_lgi">Change in cover requirements</option>
-                                <option Value="TC_changeOfBroker_lgi">Change of Broker</option>
-                                <option Value="TC_canceldissatisfiedWithClaims_lgi">Cancel -Dissatisfied with claims</option>
-                                <option Value="TC_Cancel -dissatisfiedWithSvc_lgi">Cancel -Dissatisfied with service</option>
-                                <option Value="TC_goneIntoGlobalAcct_lgi">Gone into Global Account</option>
-                                <option Value="TC_lapsenonpayment">Laspe - Non payment</option>
-                                <option Value="TC_Cancel - policyReplaced_lgi">Policy replaced</option>
-                                <option Value="TC_Declined - premiumtoohigh_lgi">Declined Quote – Premium too high</option>
-                                <option Value="TC_Declined – cover not required_lgi">Declined Quote – Cover Not required</option>
-                            </select>
-                        </td>
-                        <td>
-                            <p class="validationContainer" id="validateChangeReason"></p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <label for="ReasonDesc" class="required">Reason Description</label>
-                        </td>
-                        <td>
-                            @Html.TextAreaFor(m => m.ChangeReason.Description, new { @class = "form-control", @required = "" })
-                        </td>
-                        <td>
-                            <p class="validationContainer" id="validateDescription"></p>
-                        </td>
-                    </tr>
+                    @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                    {
+                        <tr>
+                            <td>
+                                <label for="Reason" class="required">Reason</label>
+                            </td>
+                            <td>
+                                <select class="form-control" id="ChangeReason" name="Reason" title="" required>
+                                    <option selected="selected" value="">-- Select here --</option>
+                                    <option Value="TC_cancelbusinessSoldOrClosed_lgi">Business Sold or Closed</option>
+                                    <option Value="TC_changeInCoverReq_lgi">Change in Cover Requirements</option>
+                                    <option Value="TC_changeOfBroker_lgi">Change of Broker</option>
+                                    <option Value="TC_canceldissatisfiedWithClaims_lgi">Cancel -Dissatisfied with claims</option>
+                                    <option Value="TC_Cancel -dissatisfiedWithSvc_lgi">Cancel -Dissatisfied with service</option>
+                                    <option Value="TC_goneIntoGlobalAcct_lgi">Gone into Global Account</option>
+                                    <option Value="TC_lapsenonpayment">Laspe - Non payment</option>
+                                    <option Value="TC_Cancel - policyReplaced_lgi">Policy replaced</option>
+                                    <option Value="TC_Declined - premiumtoohigh_lgi">Declined Quote – Premium too high</option>
+                                    <option Value="TC_Declined – cover not required_lgi">Declined Quote – Cover Not required</option>
+                                </select>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateChangeReason"></p>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                    {
+                        <tr>
+                            <td>
+                                <label for="ReasonDesc" class="required">Reason Description</label>
+                            </td>
+                            <td>
+                                @Html.TextAreaFor(m => m.ChangeReason.Description, new { @class = "form-control", @required = "" })
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateDescription"></p>
+                            </td>
+                        </tr>
+                    }
                     <tr>
                         <td>
                             <label for="EffectiveDate" class="required">Effective Date</label>
@@ -307,7 +345,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
-            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
             <form id="ProdForm">
@@ -329,7 +367,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
+            <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-toggle="tab">Submit</button>
         </div>
     </div>
 </div>

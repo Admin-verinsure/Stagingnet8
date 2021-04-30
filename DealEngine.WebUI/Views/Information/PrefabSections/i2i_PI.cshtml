@@ -1,0 +1,129 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="PIViewModel" class="is-valid" data-accordianId="Professional Indemnity">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasmedicalservices" class="label required">
+                    Are you involved in the design or construction of products or services for medical or surgical applications?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasmedicalservices" name="PIViewModel.HasMedicalServicesOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasMedicalServicesOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasMedicalServicesOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasmedicalservices" class="label required">
+                        If yes, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.MedicalServicesDetails, new { @class = "form-control", @id = "medicalservicesdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasnavigationindustryoptions" class="label required">
+                    Do you work on, design or construct products or services (whether whole or in part) of aeropace, radar or navigation systems?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasnavigationindustryoptions" name="PIViewModel.HasNavigationIndustryOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasNavigationIndustryOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasNavigationIndustryOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="navigationindustrydetails" class="label required">
+                        If yes, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.NavigationIndustryDetails, new { @class = "form-control", @id = "navigationindustrydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasnetworksecurityoptions" class="label required">
+                    Do you develop, design, manufacture, distribute or supply products or services in Network Security?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasnetworksecurityoptions" name="PIViewModel.HasNetworkSecurityOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasNetworkSecurityOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasNetworkSecurityOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="networksecuritydetails" class="label required">
+                        If yes, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.NetworkSecurityDetails, new { @class = "form-control", @id = "networksecuritydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hastradingindustryoptions" class="label required">
+                    Do you develop, design, manufacture, distribute or supply products or services that support share trading, financial transactions or calculations?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hastradingindustryoptions" name="PIViewModel.HasTradingIndustryOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasTradingIndustryOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasTradingIndustryOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="tradingindustrydetails" class="label required">
+                        If yes, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.TradingIndustryDetails, new { @class = "form-control", @id = "tradingindustrydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>

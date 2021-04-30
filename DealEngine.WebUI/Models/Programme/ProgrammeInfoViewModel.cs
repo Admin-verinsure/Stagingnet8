@@ -73,6 +73,8 @@ namespace DealEngine.WebUI.Models.Programme
         public Guid ProgId { get; set; }
         public IList<Rule> Rules { get; set; }
         public Guid ProductId { get; set; }
+        public List<ProgrammeInfoViewModel> Programmes { get; set; }
+
 
     }
 }

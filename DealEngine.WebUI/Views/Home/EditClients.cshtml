@@ -23,29 +23,31 @@
             </div>
             <div class="card-body">
                 <div class="form-group">
-                    @Html.HiddenFor(Model => Model.Organisation.Id, new { @id = "Organisation.Id" })
-                    @Html.HiddenFor(Model => Model.ClientProgramme.Id, new { @id = "ClientProgramme.Id" })
+                    @Html.HiddenFor(Model => Model.Organisation.Id, new { @id = "organisation.id" })
+                    @Html.HiddenFor(Model => Model.ClientProgramme.Id, new { @id = "clientProgramme.id" })
+                    @Html.HiddenFor(Model => Model.Programme.Id, new { @id = "Programme.Id" })
+
                     <div class="form-group col-md-6">
 
                         <div class="form-group">
                             <label class="label">Name</label>
-                            @Html.TextBoxFor(m => m.Organisation.Name, new { @class = "form-control", @id = "Organisation.Name", @required = "" })
+                            @Html.TextBoxFor(m => m.Organisation.Name, new { @class = "form-control", @id = "organisation.name", @required = "" })
                         </div>
 
                         <div class="form-group">
                             <label class="label">Email</label>
-                            @Html.TextBoxFor(m => m.Organisation.Email, new { @class = "form-control", @id = "Organisation.Email", @required = "" })
+                            @Html.TextBoxFor(m => m.Organisation.Email, new { @class = "form-control", @id = "organisation.email", @required = "" })
                         </div>
-                        @if (Model.Programme.Name == "Apollo Programme")
+                        @if (Model.Programme.NamedPartyUnitName == "Apollo Programme")
                         {
                             <div class="form-group">
                                 <label class="label">EGlobal Number</label>
-                                @Html.TextBoxFor(m => m.ClientProgramme.EGlobalClientNumber, new { @class = "form-control", @id = "ClientProgramme.EGlobalClientNumber", @required = "" })
+                                @Html.TextBoxFor(m => m.ClientProgramme.EGlobalClientNumber, new { @class = "form-control", @id = "clientProgramme.eGlobalClientNumber", @required = "" })
                             </div>
 
                             <div class="form-group">
                                 <label class="label">Tier</label>
-                                @Html.DropDownListFor(m => m.ClientProgramme.Tier, Model.Tiers, new { @class = "form-control b", @id = "ClientProgramme.Tier", @required = "", @size = 1 })
+                                @Html.DropDownListFor(m => m.ClientProgramme.Tier, Model.Tiers, new { @class = "form-control b", @id = "clientProgramme.tier", @required = "", @size = 1 })
                             </div>
                         }
                     </div>
@@ -72,15 +74,17 @@
             debugger;
             var organisationId = document.getElementById('OrganisationId');
             var id = organisationId.options[organisationId.selectedIndex].value;
+            var progid = document.getElementById('ProgrammeId');
             $("#loadModal").show();
             $.ajax({
                 type: 'Post',
                 url: '@Url.Action("GetClient", "Services")',
-                data: { Id: id }
+                data: { Id: id ,ProgId: progid}
             })
-            .done(function (data) {
-                var OutPut = JSON.parse(data);
-                PopulateView(OutPut);
+                .done(function (data) {
+                    debugger;
+                //var OutPut = JSON.parse(data);
+                PopulateView(data);
                 $("#loadModal").hide();         
             })
             .fail(function (jqXhr, textStatus, errorThrown) {

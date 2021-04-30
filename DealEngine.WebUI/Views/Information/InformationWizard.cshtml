@@ -1105,7 +1105,51 @@
                 //$('#advisoryModal').modal('hide');
                 advisoryModal.hide()
             }
-        }
+    }
+
+    /*for active pannel based on update type*/
+    // $(window).on("load", function () {
+    $(document).ready(function () {
+
+         debugger;
+
+        var slectedUpdateType = "@Model.selectedUpdateType.First()";
+    
+         if (slectedUpdateType == "TC_add_edit_remove_location") {
+               // $("#Location").trigger("click");
+             //$("[id='Location']").trigger("click");
+            // var test1 = document.getElementById("Location");
+             //document.getElementById("Location").click();
+             var test1 = document.querySelectorAll('[data-newId="CommonLocation"]');
+             test1[0].click();
+         }
+         if (slectedUpdateType == "TC_add_edit_remove_Vessel") {
+             var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat"]');
+             test1[0].click();
+         }
+      
+         if (slectedUpdateType == "TC_amendInsuredPerson") {
+             var test1 = document.querySelectorAll('[data-newId="AddOrganisation"]');
+             test1[0].click();
+             
+         }
+
+         if (slectedUpdateType == "TC_addNotification") {
+             var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat4"]');
+             test1[0].click();
+         }
+        
+         if (slectedUpdateType == "TC_addEditDeleteRegTrailer") {
+             var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat0"]');
+             test1[0].click();
+         }
+ 
+         if (slectedUpdateType == "TC_addEditDeleteNonRegTrailer") {
+             var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat1"]');
+             test1[0].click();
+         }
+        });
+
 </script>
 
 }

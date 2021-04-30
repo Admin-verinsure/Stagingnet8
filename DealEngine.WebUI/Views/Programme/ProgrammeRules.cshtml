@@ -5,7 +5,7 @@
         <h1 class="page-title txt-color-blueDark">
             <i class="fa-fw fa fa-home"></i>  <span>
                 <a href="~/Programme/TermSheetConfirguration/@Model.Id">Package Term Sheet</a>
-                > Manage Rules
+                > Manage @ViewBag.RuleType Rules
             </span>
         </h1>
     </div>
@@ -19,7 +19,7 @@
         <div class="card">
             <div class="card-header">
                 <span class="widget-icon">                    
-                    <h2><i class="fa fa-comment"></i>Manage Rules </h2>
+                    <h2><i class="fa fa-comment"></i>Manage @ViewBag.RuleType Rules</h2>
                 </span>
             </div>
             <div class="card-body">
@@ -39,13 +39,14 @@
                             <th></th>
                         </tr>
                     </thead>
+                    @if (ViewBag.RuleType == "Notification") { 
 
-                    <tr class="table-light">
-                        <td align="left">
-                            Manage UIS Issue Notification Users
-                        </td>
-                        <td><a class="btn btn-success btn-sm " href="@Url.Action("IssueNotification", "Programme",new { Id = @Model.Id, Title = "Manage UIS Issue Notification Users"})"><i class="fa fa-search"></i>View</a></td>
-                    </tr>
+                        <tr class="table-light">
+                            <td align="left">
+                                Manage UIS Issue Notification Users
+                            </td>
+                            <td><a class="btn btn-success btn-sm " href="@Url.Action("IssueNotification", "Programme",new { Id = @Model.Id, Title = "Manage UIS Issue Notification Users"})"><i class="fa fa-search"></i>View</a></td>
+                        </tr>
 
                     <tr>
                         <td align="left">
@@ -67,16 +68,19 @@
                         </td>
                         <td><a class="btn btn-success btn-sm " href="@Url.Action("IssueNotification", "Programme",new { Id = @Model.Id, Title = "Manage Agreement Bound Notification Users"})"><i class="fa fa-search"></i>View</a></td>
                     </tr>
-
-                    @foreach (var product in Model.Product)
+                    }
+                    @if (ViewBag.RuleType == "UnderWriting")
                     {
-                        <tr>
-                            <td align="left">
-                                New Product Rules for @product.Name
-                            </td>
-                            <td><a class="btn btn-success btn-sm " href="@Url.Action("ProductRules", "Programme",new { Id = @Model.Id, productId = product.Id })"><i class="fa fa-search"></i>View</a></td>
+                        @foreach (var product in Model.Product)
+                        {
+                            <tr>
+                                <td align="left">
+                                    New Product Rules for @product.Name
+                                </td>
+                                <td><a class="btn btn-success btn-sm " href="@Url.Action("ProductRules", "Programme",new { Id = @Model.Id, productId = product.Id })"><i class="fa fa-search"></i>View</a></td>
 
-                        </tr>
+                            </tr>
+                        }
                     }
                 </table>
             </div>

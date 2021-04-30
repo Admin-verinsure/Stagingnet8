@@ -1,0 +1,31 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+    <form id="GeneralViewModel" class="is-valid" data-accordianId="Policy Effective Date">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    @Html.LabelFor(m => m.GeneralViewModel.PolicyStartDate)
+                </div>
+                <div class="col-3">
+                    @*@Html.TextBoxFor(m => m.DAOLIViewModel.FormDate, "{0:yyyy-MM-dd}", new { @class = "dateInput form-control", @id = "formdate", @type = "date", onchange = "OnChange(this.id, this.name)", @required = "" })*@
+                    @Html.TextBoxFor(m => m.GeneralViewModel.PolicyStartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "i2ipolicystartdate", @type = "date", @data_rule = "PolicyStartDate", onfocus = "(this.type='date')", onblur = "(this.type='text')", onchange = "OnChange(this.id, this.name)", @required = "" })
+
+
+                </div>
+            </div>
+           
+        </div>
+
+        <div class="form-group" >
+          
+            <div class="row" id="i2iPolicyEndDateSec">
+                <div class="col-9">
+                    @Html.LabelFor(m => m.GeneralViewModel.PolicyEndDate)
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.GeneralViewModel.PolicyEndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "i2iPolicyEndDate",@type = "date", @data_rule = "PolicyEndDate", onfocus = "(this.type='date')", onblur = "(this.type='text')", onchange = "OnChange(this.id, this.name)", @required = "" })
+
+                </div>
+            </div>
+        </div>
+    </form>

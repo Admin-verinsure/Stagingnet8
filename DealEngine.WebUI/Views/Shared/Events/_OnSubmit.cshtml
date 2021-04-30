@@ -87,6 +87,7 @@
     }
 
     function InformationSheetSubmit(Programme, Status, Forms) {
+        debugger;
         if (Status === "Started") {
             var formIds = [];
             for (var f = 0; f < Forms.length; f++) {
@@ -188,7 +189,7 @@
                         event.stopPropagation();
                         $("#more").trigger("click");
                         $("[id='Insured Details / Named Parties']").trigger("click");
-                        window.alert("Please Add Atleast One Principal with complete information to proceed for policy  ");
+                        window.alert("A Principal Named Party needs to be declared in the Named Parties panel to proceed. ");
                         throw "no principal selected";
                     }
                     else {
@@ -197,7 +198,7 @@
                             event.preventDefault();
                             event.stopPropagation();
                             $("#more").trigger("click");
-                            window.alert("Please Add Atleast One Principal with complete information to proceed for policy  ");
+                            window.alert("A Principal Named Party needs to be declared in the Named Parties panel to proceed.");
                             $("[id='Insured Details / Named Parties']").trigger("click");
                             element.scrollIntoView();
                             throw "no principal selected";

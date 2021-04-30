@@ -39,6 +39,8 @@
 
         $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
             var clientInformationSheet = '@Model.ClientInformationSheet.Id';
+             var informationsheetstatus = '@Model.ClientInformationSheet.Status';
+
             if (stepDirection == "backward") {
                 var stepNumber = stepNumber - 2;
             };
@@ -49,7 +51,71 @@
                 event.preventDefault();
                 if (stepDirection == "forward") {
                     var forms = document.getElementsByClassName('needs-validation');
-                    InformationSheetSubmit('@Model.ClientProgramme.BaseProgramme.Name', '@Model.ClientInformationSheet.Status', forms);
+                    InformationSheetSubmit('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName', '@Model.ClientInformationSheet.Status', forms);
+                    debugger;
+                      var vesselExists = document.getElementById("Vessel");
+                    var Isboatexist = document.querySelector('[aria-describedby="tblBoat_BoatName"]') !== null;
+
+                   var IsboatNamecount = 0;
+                       $('#tblBoat tr').each(function () {
+                       var $tds = $(this).find('td'),
+                           value = $tds.eq(1).text().toString();
+
+                       if (value == false && value != "") {
+                           IsboatNamecount++;
+                       }
+                       });
+
+
+                     //var NamedPartyExists = document.getElementById("Insured Details / Named Parties");
+
+                   var IsPersonnelcount = 0;
+                       $('#tblOrganisation tr').each(function () {
+                       var $tds = $(this).find('td'),
+                           value = $tds.eq(2).text().toString();
+
+                       if ( value == "Personnel") {
+                           IsPersonnelcount++;
+                       }
+                       });
+
+                    var IsIndividualcount = 0;
+                    debugger;
+                       $('#tblOrganisation tr').each(function () {
+                       var $tds = $(this).find('td'),
+                           value = $tds.eq(2).text().toString();
+
+                       if ( value == "Individual") {
+                           IsIndividualcount++;
+                       }
+                       });
+
+
+                       if ((Isboatexist == false || IsboatNamecount == 1) && (informationsheetstatus != "Bound") && vesselExists != null) {
+
+                           window.alert("Please complete the detailed information required for your vessel in the Vessel section in order for us to be able to provide you with a quote.");
+                           $("#Vessel").trigger("click");
+                           return false;
+
+                        } 
+
+                    if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "PMINZ Programme" && IsPersonnelcount == 0) {
+
+                           window.alert("Please add atleast one personnel in order for us to be able to provide you with a quote.");
+                       $("[id='Insured Details / Named Parties']").trigger("click");
+                           return false;
+
+
+                    }
+
+                     if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Technology Contractors Liability Programme" && IsIndividualcount == 0) {
+
+                           window.alert("Please add atleast one individual in order for us to be able to provide you with a quote.");
+                       $("[id='Insured Details / Named Parties']").trigger("click");
+                           return false;
+
+
+                    }
                     if ($('#CompanyName').val() === "AON") {
                         var nextbutton = document.getElementsByClassName("next");
                         $(nextbutton).addClass("hidden");
@@ -2557,7 +2623,8 @@ function UpdateChosen() {
         event.preventDefault();
         $(tabId + " :input").val(""); //Clears form
         if (confirm("I don't want to add.")) {
-            SetCurrentTab(currentTab);
+             //$("#EditBoat").addClass("hidden");
+             SetCurrentTab(currentTab);
         }
         else {
             return false;
@@ -2592,6 +2659,8 @@ function UpdateChosen() {
             $('#tblTransferedBoat').trigger( 'reloadGrid' );
             $(tabId + " :input").val(""); //Clears form
             DefaultDateRestore();
+            $("#EditBoat").addClass("hidden");
+
         })
         .fail(function (jqXHR, textStatus, errorThrown) {
             $('#AddBoatModal').hide();
@@ -2613,6 +2682,7 @@ function UpdateChosen() {
         })
         .done(function (data) {
             debugger;
+
             if (data.boatType1 == "CruisersandLaunches" || data.boatType1 == "YachtsandCatamarans") {
                 $('#VesselUseSection').show('2000');
                 $('#SelectedBoatUse').val(data.boatselectedText).trigger('chosen:updated');
@@ -5729,6 +5799,7 @@ function UpdateChosen() {
             var day = ("0" + date.getDate()).slice(-2);
             var month = ("0" + (date.getMonth() + 1)).slice(-2);
             var year = date.getFullYear();
+            var currentdate = year + "-" + month + "-" + day;
             if (ds == null) {
                 ds = year + "-" + month + "-" + day;
                 ds2 = ds;
@@ -5766,6 +5837,8 @@ function UpdateChosen() {
             if (document.getElementById("RemoveCeaseEffectiveDate") != null) {
                 document.getElementById("RemoveCeaseEffectiveDate").value = ds2;
             }
+
+
         }
     }
 </script>

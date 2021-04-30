@@ -21,6 +21,22 @@
         }
     }
 
+    function UnhideEdit(tabId) {
+                debugger;
+
+        var ele = document.getElementById(tabId);
+        ele.classList.remove('hidden');
+
+    }
+
+     function HideEdit(tabId) {
+                debugger;
+         var ele = document.getElementById(tabId);
+
+        ele.classList.add('hidden');
+
+     }
+
     function EditOrganisation() {
         debugger;
         CloneForm("OrganisationTab3", "OrganisationTab2", "OrganisationSubmitBtn", "OrganisationClearButton");
@@ -66,35 +82,10 @@
     }
 
     function CloneForm(AddTabId, EditTabId, AddButtonId, CancelButtonId) {
-    //function CloneForm(AddTabId, EditTabId, AddButtonId, CancelButtonId, ClaimBrokerReferenceFormGroup, ClaimStatusFormGroup, ClaimInsurerReferenceFormGroup) {
+        debugger;
         var addTabHTML = document.getElementById(AddTabId);
         var editTabHTML = document.getElementById(EditTabId);
         var form = document.getElementById(addTabHTML.firstElementChild.id);
-        var ClaimBrokerReferenceFormGroup = document.getElementById("ClaimBrokerReferenceFormGroup");
-        ClaimBrokerReferenceFormGroup.style.display = "block";
-        var ClaimStatusFormGroup = document.getElementById("ClaimStatusFormGroup");
-        ClaimStatusFormGroup.style.display = "block";
-        var ClaimInsurerReferenceFormGroup = document.getElementById("ClaimInsurerReferenceFormGroup");
-        ClaimInsurerReferenceFormGroup.style.display = "block";
-        var ClaimPaidFormGroup = document.getElementById("ClaimPaidFormGroup");
-        ClaimPaidFormGroup.style.display = "block";
-        var ClaimReserveFormGroup = document.getElementById("ClaimReserveFormGroup");
-        ClaimReserveFormGroup.style.display = "block";
-              //var d1 = document.getElementById('ClaimInsurerReferenceFormGroup');
-        //d1.insertAdjacentHTML('beforeend', '< div class= "form-group" style = "display:none;" id = "ClaimInsurerReferenceFormGroup" > '+
-        //           ' <div class="row">' +
-        //    ' <div class="col-6">' +
-        //    ' <label for="ClaimInsurerReference" class="label form-label">' +
-        //    'Insurer Reference (Read-Only)' +
-        //    ' </label>' +
-        //    '</div>' +
-        //    '<div class="col-6">'
-        //    +
-        //    ' <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimPaid" id="ClaimPaid" name="ClaimPaid" placeholder="$ Paid (Read-Only)" readonly="true" value="">
-
-        //    + '</div>' + ' </div>' + '</div>');
-
-
         editTabHTML.innerHTML = "";
         var obj = $("#" + form.id).clone();
         $("#" + EditTabId).append(obj);
@@ -137,20 +128,7 @@
     }
 
     function Cancel(Form, Tab) {
-        var ClaimBrokerReferenceFormGroup = document.getElementById("ClaimBrokerReferenceFormGroup");
-        ClaimBrokerReferenceFormGroup.style.display = "none";
-        var ClaimStatusFormGroup = document.getElementById("ClaimStatusFormGroup");
-        ClaimStatusFormGroup.style.display = "none";
-        var ClaimInsurerReferenceFormGroup = document.getElementById("ClaimInsurerReferenceFormGroup");
-        ClaimInsurerReferenceFormGroup.style.display = "none";
-        var ClaimPaidFormGroup = document.getElementById("ClaimPaidFormGroup");
-        ClaimPaidFormGroup.style.display = "none";
-        var ClaimReserveFormGroup = document.getElementById("ClaimReserveFormGroup");
-        ClaimReserveFormGroup.style.display = "none";
-
-
-
-
+        debugger;
         document.getElementById(Form).reset();
         SetCurrentTab(Tab);
     }
@@ -196,6 +174,7 @@
     }
 
     function ResetForm(AddTabId, EditTabId, Object, AddButtonId, CancelButtonId) {
+        debugger;
         var editTabHTML = document.getElementById(EditTabId);
         if (editTabHTML.firstElementChild.tagName == "FORM") {
             var form = document.getElementById(editTabHTML.firstElementChild.id);
@@ -266,6 +245,29 @@
                 });
         }
     }
+    function AddUpdateType() {
+        console.log("AddUpdateType console");
+        var form = document.getElementById("updateTypeViewModel");
+        var formValid = TableFormValidation(form , "Update Type");
+        if (formValid) {
+           // sessionStorage.setItem('accordianTrigger', 'Location');
+            $.ajax({
+                url: '@Url.Action("AddUpdateType", "Admin")',
+                type: "POST",
+                data: $("#tab_1 :input").serialize({ json: true }),
+                async: false
+            })
+                .done(function () {
+                    //Save the session and reload
+                    form.reset();
+                    location.reload();
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                });
+        }
+    }
+    
 
     function RemoveLocation(Id) {
         sessionStorage.setItem('accordianTrigger', 'Location');
@@ -349,66 +351,77 @@
         SetCurrentTab("locationtab2");
     }
 
-
-    function enable(id) {
-        var eleman = document.getElementById(id);
-        //eleman.setAttribute("disabled", false);
-        //eleman.setAttribute("editable", true);
-        element.removeAttribute("disabled");
-
+    function AddJob() {
+        debugger;
+        var form = document.getElementById("JobViewModel");
+        var formValid = TableFormValidation(form , "job");
+        if (formValid) {
+            sessionStorage.setItem('accordianTrigger', 'Job');
+            $.ajax({
+                url: '@Url.Action("AddJob", "Services")',
+                type: "POST",
+                data: $("#tab_1 :input").serialize({ json: true }),
+                async: false
+            })
+                .done(function () {
+                    //Save the session and reload
+                    form.reset();
+                    location.reload();
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                });
+        }
     }
 
-    //function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, ClaimStatus, ClaimInsurerReference, ClaimPaid, ClaimReserve)
-    function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, ClaimStatus, ClaimInsurerReference, ClaimReserve, ClaimPaid )
-    {
+    function EditJob(Id, JobDescription, ContractorEmail, FirstName, LastName, JobNumber, IssueDate, StartDate, EndDate, CertRequiredBy, RAClientNamedParty) {
+        debugger;
         event.preventDefault();
-        CloneForm("clTabs3", "clTabs2", "ClaimAddButton", "AddClearBoat");
-        document.getElementById("ClaimId").value = Id;
-        document.getElementById("ClaimTitle").value = ClaimTitle;
-        document.getElementById("ClaimDescription").value = ClaimDescription;
-        document.getElementById("ClaimReference").value = ClaimReference;
-        document.getElementById("ClaimPolicyReference").value = ClaimPolicyReference;
-        document.getElementById("ClaimInsurerName").value = ClaimInsurerName;
-        document.getElementById("ClaimInsuredName").value = ClaimInsuredName;
-        document.getElementById("Claimant").value = Claimant;
-        document.getElementById("ClaimDateOfLoss").value = ClaimDateOfLoss.split(' ')[0];
-        document.getElementById("ClaimNotifiedDate").value = ClaimNotifiedDate.split(' ')[0];
-        document.getElementById("ClaimEstimateInsuredLiability").value = ClaimEstimateInsuredLiability;
-        document.getElementById("PrimaryPolicyprod").value = SelectedClaimProducts;
-        document.getElementById("ResponsiblePrincipal").value = SelectedResponsiblePrincipal;
-        document.getElementById("ClaimNotes").value = ClaimNotes;
-        document.getElementById("ClaimBrokerReference").value = ClaimBrokerReference;
-        document.getElementById("ClaimStatus").value = ClaimStatus;
-        //console.log("ClaimStatus = " + ClaimStatus);
-        //d = d.split(' ')[0];
+        CloneForm("jobtab3", "jobtab2", "JobAddButton", "JobCancelButton");
+        document.getElementById("JobId").value = Id;
+        document.getElementById("jobdescription").value = JobDescription;
+        document.getElementById("contractoremail").value = ContractorEmail;
+        document.getElementById("firstname").value = FirstName;
+        document.getElementById("lastname").value = LastName; 
+        document.getElementById("jobnumber").value = JobNumber;
+        debugger;
+        var test = IssueDate.split(' ')[0];
+        var date = Date.parse(test);
+        var sanitised = sanitiseDate(test);
 
-        document.getElementById("ClaimInsurerReference").value = ClaimInsurerReference;
-        document.getElementById("ClaimReserve").value = ClaimReserve;
+        //console.log(IssueDate);
+        //console.log(StartDate);
+        //console.log(EndDate);
+        //console.log(CertRequiredByDate);
+        
+        document.getElementById("issuedate").value = IssueDate.split(' ')[0];
+        document.getElementById("startdate").value = StartDate.split(' ')[0];
+        document.getElementById("enddate").value = EndDate.split(' ')[0];
+        document.getElementById("certrequiredby").value = CertRequiredBy.split(' ')[0];
+        document.getElementById("raclient").value = RAClientNamedParty;
+        SetCurrentTab("jobtab2");
+    }
 
-        document.getElementById("ClaimPaid").value = ClaimPaid;
-
-
-        var eleman = document.getElementById("ClaimStatus");
-        eleman.setAttribute("disabled", "true");
-
-        var eleman1 = document.getElementById("ClaimBrokerReference");
-        eleman1.setAttribute("disabled", "true");
-
-        var eleman2 = document.getElementById("ClaimInsurerReference");
-        eleman2.setAttribute("disabled", "true");
-
-        var eleman3 = document.getElementById("ClaimReserve");
-        eleman3.setAttribute("disabled", "true");
-
-        var eleman4 = document.getElementById("ClaimPaid");
-        eleman4.setAttribute("disabled", "true");
-
-        SetCurrentTab("clTabs2");
+    function RemoveJob(Id) {
+        debugger;
+        sessionStorage.setItem('accordianTrigger', 'Job');
+        var postData = { JobId: Id };
+        $.ajax({
+            url: '@Url.Action("RemoveJob", "Services")',
+            type: "POST",
+            data: postData
+        })
+            .done(function () {
+                //Save the session and reload
+                location.reload();
+            })
+            .fail(function (a, s, d) {
+                debugger;
+            });
     }
 
     function AddProject(SectionName) {
         var form = document.getElementById("ProjectViewModel");
-
         var formValid = TableFormValidation(form, "project");
         if (formValid) {
             //add section name here
@@ -656,5 +669,32 @@
         return query_string;
     }
 
+    function sanitiseDate(date) {
+        var sanitised = "";
+        var parts = date.split('/');
+        for (i = 0; i < parts.length; i++) {
+            if (parts[i].length == 1) {
+                parts[i] = '0' + parts[i];
+            }
+            if (i == parts.length - 1) {
+                sanitised += parts[i];
+            } else {
+                sanitised += parts[i] + ' / ';
+            }
+            
+        }
+        return sanitised;
+    }
+
+    //function SetPolicyEffectiveDate() {
+    //    debugger;
+    //    var priorDate = new Date().setDate(today.getDate() - 30);
+    //      $('#i2iPolicyStartDate').datepicker({
+    //                  maxDate: 0,
+    //                  dateFormat: "dd/mm/yy",
+    //                  minDate: "-30d"
+    //      });
+
+    //}
 
 </script>

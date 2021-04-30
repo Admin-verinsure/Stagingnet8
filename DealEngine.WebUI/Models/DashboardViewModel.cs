@@ -68,7 +68,19 @@ namespace DealEngine.WebUI.Models
 
 		public string Status { get; set; }
 	}
-
+//	public class UpdateType
+//    {
+//		public string ValueType { get; set; }
+//		public string NameType { get; set; }
+//		public object DateDeleted { get; internal set; }
+//		public Guid Id { get; set; }
+//		public List<UpdateTypesViewModel> UpdateTypes { get; set; }
+//		public List<UpdateTypesViewModel> updateType { get; set; }
+//		public virtual bool TypeIsTc {get; set;}
+//		public virtual bool TypeIsBroker { get; set; }
+//		public virtual bool TypeIsInsurer { get; set; }
+//		public virtual bool TypeIsClient { get; set; }
+//}
 	public class DealItem
 	{
 		public string Name { get; set; }
@@ -114,6 +126,7 @@ namespace DealEngine.WebUI.Models
 	public class ProgrammeItem : BaseViewModel
 	{
 		[Obsolete]
+	
         public ProgrammeItem(Domain.Entities.Programme baseProgramme)
         {
 			OrganisationViewModel = new OrganisationViewModel(null, null);
@@ -127,7 +140,14 @@ namespace DealEngine.WebUI.Models
 			Programme = sheets.FirstOrDefault().Programme.BaseProgramme;
 			BuildDeals(sheets);
         }
+        public ProgrammeItem(Domain.Entities.UpdateType updateType)
+        {
+            updateTypesViewModel = new UpdateTypesViewModel();
+            UpdateType = updateType;
+            updateTypes = new List<UpdateType>();
 
+
+        }
         private void BuildDeals(List<ClientInformationSheet> sheets)
         {
 			Deals = new List<DealItem>();
@@ -156,17 +176,31 @@ namespace DealEngine.WebUI.Models
 				});
 			}
 		}
+		public List<string> SelectedUpdateTypes { get; set; }
 		public IList<string> Languages { get; set; }
 		public IList<DealItem> Deals { get; set; }
+		public IList<UpdateType> updateTypes { get; set; }
+
 		public string CurrentUserIsBroker { get; set; }
 		public string CurrentUserIsInsurer { get; set; }
 		public string CurrentUserIsTC { get; set; }
 		public string CurrentUserIsProgrammeManager { get; set; }
+		public string CurrentUserIsClient { get; set; }
 		public bool IsSubclientEnabled { get; set; }
 		public OrganisationViewModel OrganisationViewModel { get; set; }
-        public Domain.Entities.Programme Programme { get; internal set; }
+		public UpdateTypesViewModel updateTypesViewModel { get; set; }
+
+		public Domain.Entities.Programme Programme { get; internal set; }
+		public Domain.Entities.UpdateType UpdateType { get; internal set; }
+
 		public ChangeReason ChangeReason { get; set; }
-    }
+
+        public List<UpdateTypesViewModel> UpdateTypes { get; internal set; }
+   
+		public bool IsRenewFromProgramme { get; set; }
+
+	}
+
 
 	public class TaskItem : BaseViewModel
 	{

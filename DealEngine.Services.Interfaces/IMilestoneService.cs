@@ -17,5 +17,8 @@ namespace DealEngine.Services.Interfaces
         Task CreateAttachOrganisationTask(User user, Programme programme, Organisation organisation);
         Task CompleteAttachOrganisationTask(User user, Programme programme, Organisation organisation);
         Task RemoveTask(User user, IFormCollection collection);
+
+        Task CreateRenewNotificationTask(User user, ClientProgramme renewFromProgrammeBase, Organisation renewClientOrg, Programme currentProgramm);
+        Task CreateRenewTask(User user, ClientProgramme renewFromProgrammeBase, Organisation renewClientOrg, Programme currentProgramm);
     }   
 }

@@ -9,6 +9,8 @@ namespace DealEngine.WebUI.Models.Programme
         
         public string Name { get; set; }
         public string Email { get; set; }
+        public bool Isselected { get; set; }
+
 
 
     }

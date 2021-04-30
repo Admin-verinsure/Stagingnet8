@@ -7,7 +7,7 @@
 
             <ul id="tab" class="nav nav-tabs">
                 <li class="nav nav-tabs active"> <a href="#buiTabs1"> List All </a> </li>
-                <li class="nav nav-tabs"> <a href="#buiTabs2"> Edit </a> </li>
+                <li class="nav nav-tabs hidden" id="LandlocEdit"> <a href="#buiTabs2" > Edit </a> </li>
                 <li class="nav nav-tabs"> <a href="#buiTabs3"> Add </a> </li>
                 <li class="nav nav-tabs"> <a href="#buiTabs4" Class="LocRemoved"> List Removed </a> </li>
 
@@ -33,7 +33,7 @@
                                     colModel: [
                                         {
                                             name: "update", align: 'center',width:60, search: false, formatter: function (cellvalue, options, rowobject) {
-                                                return ('<button onclick="EditBuilding(\'' + cellvalue + '\', \'#tblBuilding\'); SetCurrentTab(\'buiTabs2\');" type="button" class="btn btn-success btn-sm"><i class="fa fa-edit"></i></button>');
+                                                return ('<button onclick="UnhideEdit(\'LandlocEdit\');EditBuilding(\'' + cellvalue + '\', \'#tblBuilding\'); SetCurrentTab(\'buiTabs2\');" type="button" class="btn btn-success btn-sm"><i class="fa fa-edit"></i></button>');
                                             }
                                         },
                                         { name: "BuildingName", align: 'center', key: 'true' },
@@ -125,8 +125,8 @@
                     <div class="row" id="update">
                         <section class="col col-xs-12">
 
-                            <button onclick="ValidateBuilding(event,'#buiTabs2', '#tblBuilding','buiTabs1')" class="btn-sm updateBoat" id="updateBoat">Update</button>
-                            <button onclick="ClearBoats(event,'#buiTabs2','buiTabs1 ')" class="btn-sm ClearBoat" id="ClearBoat">Cancel Update</button>
+                            <button onclick="ValidateBuilding(event, '#buiTabs2', '#tblBuilding', 'buiTabs1');HideEdit('LandlocEdit');" class="btn-sm updateBoat" id="updateBoat">Update</button>
+                            <button onclick="HideEdit('LandlocEdit');ClearBoats(event,'#buiTabs2','buiTabs1 ')" class="btn-sm ClearBoat" id="ClearBoat">Cancel Update</button>
 
 
                             @*@Html.Bootstrap().Button().Text("Update").HtmlAttributes(new { onclick = "ValidateBuilding('#buiTabs-2', '#tblBuilding','buiTabs-1');" }).Class("btn-sm updateBoat").Id("updateBoat")

@@ -11,7 +11,7 @@ namespace DealEngine.Domain.Entities
     {
         protected ClientAgreementReferral() : base(null) { }
 
-        public ClientAgreementReferral(User createdBy, ClientAgreement clientAgreement, string name, string description, string status, string actionName, int orderNumber)
+        public ClientAgreementReferral(User createdBy, ClientAgreement clientAgreement, string name, string description, string status, string actionName, int orderNumber, bool doNotCheckForRenew)
             : base(createdBy)
         {
             if (clientAgreement == null)
@@ -29,6 +29,7 @@ namespace DealEngine.Domain.Entities
             Status = status;
             ActionName = actionName;
             OrderNumber = orderNumber;
+            DoNotCheckForRenew = doNotCheckForRenew;
         }
 
         public virtual ClientAgreement ClientAgreement
@@ -103,6 +104,10 @@ namespace DealEngine.Domain.Entities
             set;
         }
 
-
+        public virtual bool DoNotCheckForRenew
+        {
+            get;
+            set;
+        }
     }
 }

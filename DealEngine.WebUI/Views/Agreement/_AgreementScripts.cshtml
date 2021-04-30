@@ -57,12 +57,18 @@
     $('#SubTermModal').on('show.bs.modal', function (e) {
         debugger;
         $('.modal').css('width', '600px');
+        var action = $(e.relatedTarget).data('type-id');
         var subSumInsured = $(e.relatedTarget).data('sub-sum');
         var subPremium = $(e.relatedTarget).data('sub-premium');
         var subExcess = $(e.relatedTarget).data('sub-excess');
         var subType = $(e.relatedTarget).data('sub-type');
         var subPremiumDiffer = $(e.relatedTarget).data('sub-premiumdiffer');
         var subId = $(e.relatedTarget).data('sub-id');
+        if (action == "AddTerm")
+             document.getElementById("TermPremiumDiffer").disabled = true;
+        else {
+             document.getElementById("TermPremiumDiffer").disabled = false;
+        }
         $(e.currentTarget).find('input[name="Id"]').val(subId);
         $(e.currentTarget).find('input[name="TermType"]').val(subType);
         $(e.currentTarget).find('input[name="SumInsured"]').val(subSumInsured);
@@ -288,7 +294,7 @@
             var termPremium = $("#TermPremium").val();
             var termSum = $("#TermSumInsured").val();
             var termPremiumDiffer = $("#TermPremiumDiffer").val();
-
+            var istermPremiumDiffer = $('#TermPremiumDiffer').prop('disabled');
             var validation = true;
             if (termExcess == "") {
                 $('#validateTermExcess').html("<font color='red'>Field is required</font>");
@@ -314,7 +320,7 @@
             }else {
                 $('#validateTermSum').html("");
              }
-             if (termPremiumDiffer == "") {
+             if (termPremiumDiffer == "" && istermPremiumDiffer == false) {
                  $('#validateTermPremiumDiffer').html("<font color='red'>Field is required</font>");
                  if (validation) {
                      validation = false;

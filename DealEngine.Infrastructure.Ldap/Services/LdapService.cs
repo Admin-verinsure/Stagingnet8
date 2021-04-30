@@ -29,7 +29,7 @@ namespace DealEngine.Infrastructure.Ldap.Services
 				LdapEntry entry = SearchForSingle (client, "(uid=" + username + ")", "ou=users," + _ldapConfiguration.BaseDn);
 				if (entry != null) {
 					User user = _userMapping.FromLdap (entry);
-					user.Organisations = GetOrganisationsForUser (client, user.UserName);
+					//user.Organisations = GetOrganisationsForUser (client, user.UserName);
 					return user;
 				}
 			}
@@ -42,7 +42,7 @@ namespace DealEngine.Infrastructure.Ldap.Services
 				LdapEntry entry = SearchForSingle (client, "(employeeNumber=" + userId + ")", "ou=users," + _ldapConfiguration.BaseDn);
 				if (entry != null) {
 					User user = _userMapping.FromLdap (entry);
-					user.Organisations = GetOrganisationsForUser (client, user.UserName);
+					//user.Organisations = GetOrganisationsForUser (client, user.UserName);
 					return user;
 				}
 			}
@@ -55,7 +55,7 @@ namespace DealEngine.Infrastructure.Ldap.Services
 				LdapEntry entry = SearchForSingle (client, "(mail=" + email + ")", "ou=users," + _ldapConfiguration.BaseDn);
 				if (entry != null) {
 					User user = _userMapping.FromLdap (entry);
-					user.Organisations = GetOrganisationsForUser (client, user.UserName);
+					//user.Organisations = GetOrganisationsForUser (client, user.UserName);
 					return user;
 				}
 			}

@@ -207,6 +207,22 @@ namespace DealEngine.Services.Impl
             return await _organisationRepository.FindAll().FirstOrDefaultAsync(o => o.Name == organisationName);
         }
 
+        public async Task<Organisation> GetOrganisationByOrganisationalUnitId(Guid organisationalUnitId)
+        {
+            var list = await _organisationRepository.FindAll().ToListAsync();
+            Organisation organisation = new Organisation();
+
+            foreach(Organisation org in list)
+            {
+                var foundIt = org.OrganisationalUnits.FirstOrDefault(u => u.Id == organisationalUnitId);
+                if (foundIt != null){
+                    organisation = org;
+                    break;
+                }
+            }
+            return organisation;
+        }
+
         public async Task<Organisation> GetOrganisationByEmail(string organisationEmail)
         {
             var list = await GetAllOrganisationsByEmail(organisationEmail);
@@ -356,6 +372,11 @@ namespace DealEngine.Services.Impl
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new PlannerUnit(User, Type, OrganisationTypeName, collection));
                 }
+                //if (Type == "Individual")
+                //{
+                //    OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
+                //    OrganisationalUnits.Add(new IndividualInsuredUnit(User, Type, OrganisationTypeName, collection));
+                //}
             }
 
             return OrganisationalUnits;

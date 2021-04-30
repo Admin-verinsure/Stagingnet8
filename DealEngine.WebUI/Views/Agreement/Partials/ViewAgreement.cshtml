@@ -399,32 +399,33 @@ else
                     </tr>
                     @foreach (var item in Model.MultiCoverOptions)
                     {
-                    <tr class="clickable-row">
-                        <td>
-                            <input type="radio" dirname=""
-                                   id="@item.TermId" name="@item.RiskName" @item.isSelected value="@item.TermId">
-                        </td>
-                        <td class="pt-3-half" width="12%" contenteditable="true">
-                            @item.RiskName
-                        </td>
-                        <td class="pt-3-half" width="20%" contenteditable="true">
-                            @item.Inclusion
-                        </td>
-                        <td class="pt-3-half" width="20%" contenteditable="true">
-                            @item.Exclusion
-                        </td>
-                        <td class="pt-3-half" width="20%" contenteditable="true">
-                            @item.TotalPremium
-                        </td>
-                        @if(Model.ClientInformationSheet.Programme.BaseProgramme.EnableMonthlyPremiumDisplay){
-                        <td class="pt-3-half" width="20%" contenteditable="true">
-                            @item.monthlypremium
-                        </td>
-                        }
-                        <td class="pt-3-half" width="12%" contenteditable="true" value="@item.Dependableproduct" hidden>
-                            @item.Dependableproduct
-                        </td>
-                    </tr>
+                        <tr class="clickable-row">
+                            <td>
+                                <input type="radio" dirname=""
+                                       id="@item.TermId" name="@item.RiskName" @item.isSelected value="@item.TermId">
+                            </td>
+                            <td class="pt-3-half" width="12%" contenteditable="true">
+                                @item.RiskName
+                            </td>
+                            <td class="pt-3-half" width="20%" contenteditable="true">
+                                @item.Inclusion
+                            </td>
+                            <td class="pt-3-half" width="20%" contenteditable="true">
+                                @item.Exclusion
+                            </td>
+                            <td class="pt-3-half" width="20%" contenteditable="true">
+                                @item.TotalPremium
+                            </td>
+                            @if (Model.ClientInformationSheet.Programme.BaseProgramme.EnableMonthlyPremiumDisplay)
+                            {
+                                <td class="pt-3-half" width="20%" contenteditable="true">
+                                    @item.monthlypremium
+                                </td>
+                            }
+                            <td class="pt-3-half" width="12%" contenteditable="true" value="@item.Dependableproduct" hidden>
+                                @item.Dependableproduct
+                            </td>
+                        </tr>
                     }
                     @if (Model.IsOptionalProduct)
                     {
@@ -438,7 +439,7 @@ else
                 </table>
             </div>
 
-            @if (!Model.ClientInformationSheet.Programme.BaseProgramme.ProgHideAdminFee)
+            @*@if (!Model.ClientInformationSheet.Programme.BaseProgramme.ProgHideAdminFee)
             {
                 <div class="row">
                     <div class="col-3">
@@ -449,6 +450,92 @@ else
                     </div>
                 </div>
             }
+
+            @if (Model.ClientInformationSheet.Programme.BaseProgramme.DisplayGSTInclusive)
+            {
+                <div class="row">
+                    <div class="col-3">
+                        <strong>GST:</strong>
+                    </div>
+                    <div class="col">
+                        All premiums and fees displayed are inclusive of GST
+                    </div>
+                </div>
+            }
+
+            @if (Model.ClientInformationSheet.Programme.BaseProgramme.DisplayGSTExclusive)
+            {
+                <div class="row">
+                    <div class="col-3">
+                        <strong>GST:</strong>
+                    </div>
+                    <div class="col">
+                        All premiums and fees displayed are exclusive of GST
+                    </div>
+                </div>
+            }*@
+
+
+            <table class="table-hover">
+                <tbody>
+                    @if (!Model.ClientInformationSheet.Programme.BaseProgramme.ProgHideAdminFee)
+                    {
+                        <tr>
+                            <td width="260" height="40">
+                                <strong>@Html.DisplayNameFor(m => m.AdministrationFee):</strong>
+                            </td>
+                            <td width="350" height="40">
+                                @Model.AdministrationFee
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.ClientInformationSheet.Programme.BaseProgramme.ProgHidePlacementFee)
+                    {
+                        <tr>
+                            <td width="260" height="40">
+                                <strong>@Html.DisplayNameFor(m => m.PlacementFee):</strong>
+                            </td>
+                            <td width="350" height="40">
+                                @Model.PlacementFee
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.ClientInformationSheet.Programme.BaseProgramme.ProgHideAdditionalCertFee)
+                    {
+                        <tr>
+                            <td width="260" height="40">
+                                <strong>@Html.DisplayNameFor(m => m.AdditionalCertFee):</strong>
+                            </td>
+                            <td width="350" height="40">
+                                @Model.AdditionalCertFee
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.ClientInformationSheet.Programme.BaseProgramme.DisplayGSTInclusive)
+                    {
+                        <tr>
+                            <td width="260" height="40">
+                                <strong>GST:</strong>
+                            </td>
+                            <td width="350" height="40">
+                                All premiums and fees displayed are inclusive of GST
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.ClientInformationSheet.Programme.BaseProgramme.DisplayGSTExclusive)
+                    {
+                        <tr>
+                            <td width="260" height="40">
+                                <strong>GST:</strong>
+                            </td>
+                            <td width="350" height="40">
+                                All premiums and fees displayed are exclusive of GST
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
 
         </div>
     </fieldset>

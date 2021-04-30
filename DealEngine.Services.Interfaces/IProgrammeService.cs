@@ -13,7 +13,9 @@ namespace DealEngine.Services.Interfaces
         Task<List<Programme>> GetProgrammesByOwner (Guid ownerOrganisationId);
 		Task<ClientProgramme> GetClientProgramme (Guid id);
         Task<List<ClientProgramme>> GetClientProgrammesByOwner (Guid ownerOrganisationId);
-		Task<List<ClientProgramme>> GetClientProgrammesForProgramme (Guid programmeId);
+        Task<List<ClientProgramme>> GetClientProgrammesByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId);
+        Task<List<ClientProgramme>> GetClientProgrammesForProgramme (Guid programmeId);
+        Task<List<ClientProgramme>> GetRenewBaseClientProgrammesForProgramme(Guid programmeId);
         Task<ClientProgramme> CreateClientProgrammeFor (Guid programmeId, User creatingUser, Organisation owner);
         Task<ClientProgramme> CreateClientProgrammeFor (Programme programme, User creatingUser, Organisation owner);
 		Task Update (params ClientProgramme[] clientProgrammes);
@@ -43,6 +45,9 @@ namespace DealEngine.Services.Interfaces
         Task DeveloperTool();
         Task<Programme> PostProgramme(User user, User brokerUser, Programme jsonProgramme, Programme programme);
         Task AttachOrganisationToClientProgramme(IFormCollection collection, ClientProgramme clientProgramme);
+        Task MoveAdvisorsToClientProgramme(IList<string> advisors, ClientProgramme clientProgramme, ClientProgramme sourceClientProgramme, User user);
+        Task<List<ClientAgreement>> CloneAgreementsForUpdate(User createdBy, Guid oldProgrammeId, Guid currentProgrammeId);
+        Task<ClientProgramme> CloneForRenew(User createdBy, Guid renewFromProgrammeBaseId, Guid currentProgrammeId);
     }
 }
 

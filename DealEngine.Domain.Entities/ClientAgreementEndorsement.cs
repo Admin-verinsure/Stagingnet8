@@ -86,5 +86,6 @@ namespace DealEngine.Domain.Entities
             get;
             set;
         }
+
     }
 }

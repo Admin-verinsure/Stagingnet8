@@ -21,5 +21,7 @@ namespace DealEngine.Services.Interfaces
         Task<List<User>> GetAllUserByOrganisation(Organisation org);
         Task<List<User>> GetBrokerUsers();
         Task<User> PostCreateUser(User jsonUser, User currentUser, IFormCollection form);
+        Task<User> GetApplicationUserByEmail(string email);
+
     }
 }

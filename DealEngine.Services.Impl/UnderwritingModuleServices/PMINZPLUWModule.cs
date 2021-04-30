@@ -47,7 +47,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             if (agreement.ClientAgreementReferrals.Count == 0)
             {
                 foreach (var clientagreementreferralrule in agreement.ClientAgreementRules.Where(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null))
-                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, clientagreementreferralrule.Name, clientagreementreferralrule.Description, "", clientagreementreferralrule.Value, clientagreementreferralrule.OrderNumber));
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, clientagreementreferralrule.Name, clientagreementreferralrule.Description, "", clientagreementreferralrule.Value, clientagreementreferralrule.OrderNumber, clientagreementreferralrule.DoNotCheckForRenew));
             }
             else
             {
@@ -60,28 +60,57 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             agreement.QuoteDate = DateTime.UtcNow;
 
-            string strretrodate = "";
-            if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
-            {
-                foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
-                {
-                    if (preRenewOrRefData.DataType == "preterm")
-                    {
-                        if (!string.IsNullOrEmpty(preRenewOrRefData.GLRetro))
-                        {
-                            strretrodate = preRenewOrRefData.GLRetro;
-                        }
+            int coverperiodindays = 0;
+            coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
 
-                    }
-                    if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "GL")
+            int coverperiodindaysforchange = 0;
+            coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+
+            string strretrodate = "";
+            //if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
+            //{
+            //    foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
+            //    {
+            //        if (preRenewOrRefData.DataType == "preterm")
+            //        {
+            //            if (!string.IsNullOrEmpty(preRenewOrRefData.GLRetro))
+            //            {
+            //                strretrodate = preRenewOrRefData.GLRetro;
+            //            }
+
+            //        }
+            //        if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "GL")
+            //        {
+            //            if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
+            //            {
+            //                ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
+            //                agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
+            //            }
+            //        }
+            //    }
+            //}
+
+            if (agreement.ClientInformationSheet.IsRenewawl && agreement.ClientInformationSheet.RenewFromInformationSheet != null)
+            {
+                var renewFromAgreement = agreement.ClientInformationSheet.RenewFromInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PL"));
+
+                if (renewFromAgreement != null)
+                {
+                    strretrodate = renewFromAgreement.RetroactiveDate;
+
+                    foreach (var renewendorsement in renewFromAgreement.ClientAgreementEndorsements)
                     {
-                        if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
+
+                        if (renewendorsement.DateDeleted == null && renewendorsement.Name != "Automatic Policy Extension 3.12 – Punitive or Exemplary Damages")
                         {
-                            ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
-                            agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
+                            ClientAgreementEndorsement newclientendorsement =
+                                new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
+                            agreement.ClientAgreementEndorsements.Add(newclientendorsement);
                         }
                     }
                 }
+
+
             }
 
             int TermLimit2mil = 2000000;
@@ -107,6 +136,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termpl2millimitoption.Brokerage = TermBrokerage2mil;
             termpl2millimitoption.DateDeleted = null;
             termpl2millimitoption.DeletedBy = null;
+            termpl2millimitoption.BasePremium = TermPremium2mil;
 
             ClientAgreementTerm termpl5millimitoption = GetAgreementTerm(underwritingUser, agreement, "PL", TermLimit5mil, TermExcess);
             termpl5millimitoption.TermLimit = TermLimit5mil;
@@ -116,6 +146,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termpl5millimitoption.Brokerage = TermBrokerage5mil;
             termpl5millimitoption.DateDeleted = null;
             termpl5millimitoption.DeletedBy = null;
+            termpl5millimitoption.BasePremium = TermPremium5mil;
 
             ClientAgreementTerm termpl10millimitoption = GetAgreementTerm(underwritingUser, agreement, "PL", TermLimit10mil, TermExcess);
             termpl10millimitoption.TermLimit = TermLimit10mil;
@@ -125,7 +156,73 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termpl10millimitoption.Brokerage = TermBrokerage10mil;
             termpl10millimitoption.DateDeleted = null;
             termpl10millimitoption.DeletedBy = null;
+            termpl10millimitoption.BasePremium = TermPremium10mil;
 
+            //Change policy premium calculation
+            if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
+            {
+                var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PL"));
+                foreach (var term in PreviousAgreement.ClientAgreementTerms)
+                {
+                    if (term.Bound)
+                    {
+                        var PreviousBoundPremium = term.Premium;
+                        if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
+                        {
+                            PreviousBoundPremium = term.BasePremium;
+                        }
+                        termpl2millimitoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        termpl2millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termpl2millimitoption.TermLimit == term.TermLimit && termpl2millimitoption.Excess == term.Excess)
+                        {
+                            termpl2millimitoption.Bound = true;
+                        }
+                        if (termpl2millimitoption.PremiumDiffer < 0)
+                        {
+                            termpl2millimitoption.PremiumDiffer = 0;
+                        }
+                        termpl5millimitoption.PremiumDiffer = (TermPremium5mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        termpl5millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termpl5millimitoption.TermLimit == term.TermLimit && termpl5millimitoption.Excess == term.Excess)
+                        {
+                            termpl5millimitoption.Bound = true;
+                        }
+                        if (termpl5millimitoption.PremiumDiffer < 0)
+                        {
+                            termpl5millimitoption.PremiumDiffer = 0;
+                        }
+                        termpl10millimitoption.PremiumDiffer = (TermPremium10mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        termpl10millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termpl10millimitoption.TermLimit == term.TermLimit && termpl10millimitoption.Excess == term.Excess)
+                        {
+                            termpl10millimitoption.Bound = true;
+                        }
+                        if (termpl10millimitoption.PremiumDiffer < 0)
+                        {
+                            termpl10millimitoption.PremiumDiffer = 0;
+                        }
+
+                    }
+
+                }
+
+
+                if (PreviousAgreement != null)
+                {
+                    strretrodate = PreviousAgreement.RetroactiveDate;
+
+                    foreach (var changeendorsement in PreviousAgreement.ClientAgreementEndorsements)
+                    {
+
+                        if (changeendorsement.DateDeleted == null && changeendorsement.Name != "Automatic Policy Extension 3.12 – Punitive or Exemplary Damages")
+                        {
+                            ClientAgreementEndorsement newclientendorsement =
+                                new ClientAgreementEndorsement(underwritingUser, changeendorsement.Name, changeendorsement.Type, product, changeendorsement.Value, changeendorsement.OrderNumber, agreement);
+                            agreement.ClientAgreementEndorsements.Add(newclientendorsement);
+                        }
+                    }
+                }
+            }
 
             ////Referral points per agreement
 
@@ -161,6 +258,24 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 DateTime inceptionDate = (product.DefaultInceptionDate > DateTime.MinValue) ? product.DefaultInceptionDate : DateTime.UtcNow;
                 DateTime expiryDate = (product.DefaultExpiryDate > DateTime.MinValue) ? product.DefaultExpiryDate : DateTime.UtcNow.AddYears(1);
+
+                //Inception date rule (turned on after implementing change, any remaining policy and new policy will use submission date as inception date)
+                if (informationSheet.IsRenewawl)
+                {
+                    int renewalgraceperiodindays = 0;
+                    renewalgraceperiodindays = programme.BaseProgramme.RenewGracePriodInDays;
+                    if (DateTime.UtcNow > product.DefaultInceptionDate.AddDays(renewalgraceperiodindays))
+                    {
+                        inceptionDate = DateTime.UtcNow;
+                    }
+                }
+                else
+                {
+                    if (DateTime.UtcNow > product.DefaultInceptionDate)
+                    {
+                        inceptionDate = DateTime.UtcNow;
+                    }
+                }
 
                 if (informationSheet.IsChange) //change agreement to keep the original inception date and expiry date
                 {

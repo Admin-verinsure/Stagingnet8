@@ -49,7 +49,7 @@ namespace DealEngine.Domain.Entities
         public virtual int AggregateLimit
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual decimal Excess
@@ -61,7 +61,7 @@ namespace DealEngine.Domain.Entities
         public virtual int HigherExcess
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual decimal Premium
@@ -79,7 +79,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool DefaultTerm
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual int OrderNumber
@@ -109,13 +109,13 @@ namespace DealEngine.Domain.Entities
         public virtual decimal NDBrokerageRate
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual decimal NDBrokerage
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual decimal ReferralLoading
@@ -133,7 +133,7 @@ namespace DealEngine.Domain.Entities
         public virtual decimal ND
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual decimal FSL
@@ -145,7 +145,7 @@ namespace DealEngine.Domain.Entities
         public virtual decimal EQC
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual Product Product
@@ -174,19 +174,19 @@ namespace DealEngine.Domain.Entities
         public virtual int AggregateLimitPre
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual decimal ExcessPre
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual int HigherExcessPre
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual decimal PremiumPre
@@ -204,19 +204,19 @@ namespace DealEngine.Domain.Entities
         public virtual int AggregateLimitDiffer
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual decimal ExcessDiffer
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual int HigherExcessDiffer
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual decimal PremiumDiffer
@@ -254,7 +254,7 @@ namespace DealEngine.Domain.Entities
 
 		public virtual decimal NDPre {
 			get;
-			protected set;
+			set;
 		}
 
 		public virtual decimal FSLPre {
@@ -264,12 +264,12 @@ namespace DealEngine.Domain.Entities
 
 		public virtual decimal EQCPre {
 			get;
-			protected set;
+			set;
 		}
 
 		public virtual decimal NDDiffer {
 			get;
-			protected set;
+			set;
 		}
 
 		public virtual decimal FSLDiffer {
@@ -279,19 +279,19 @@ namespace DealEngine.Domain.Entities
 
 		public virtual decimal EQCDiffer {
 			get;
-			protected set;
+			set;
 		}
 
         public virtual string MergeCode
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual string RiskCode
         {
             get;
-            protected set;
+            set;
         }
 
         public virtual string SubCoverString { get; set; }

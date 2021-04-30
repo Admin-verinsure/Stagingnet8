@@ -1,0 +1,200 @@
+﻿@model DealEngine.WebUI.Models.Information.MoveAdvisorsViewModel
+
+@{ ViewData["Title"] = "Move Advisors"; }
+
+<div id="content" class="container">
+    <div class="card">
+        <div class="card-header">
+            Move Advisors from @Model.SourceClientProgrammeName
+            <input style="display:none" name="MoveAdvisorsViewModel.SourceClientProgrammeId" form="MoveAdvisorsViewModel" value="@Model.id" />
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("MoveAdvisors", "Information", FormMethod.Post, new { @id = "MoveAdvisorsViewModel" }))
+            {
+                <div class="form-group">
+                    <label>Select Advisors to move</label>
+                    @foreach (var advisor in Model.Advisors)
+                    {
+                        <div class="form-check">
+                            <label class="form-check-label">
+                                <input name="MoveAdvisorsViewModel.AdvisorToMove" form="MoveAdvisorsViewModel" type="checkbox" class="form-check-input" value="@advisor.Value">@advisor.Text
+                            </label>
+                        </div>
+                     }
+                </div>
+                <div class="form-group">
+                    <label>Select Target Owner (If the client is not in the list below, then they likely have an open change or unbound policy)</label>
+                    <select id="ownerSelect" name="MoveAdvisorsViewModel.TargetOwner" form="MoveAdvisorsViewModel" class="form-control">
+                        @foreach (var owner in Model.UniqueOwners)
+                        {
+                            <option value="@owner.Value">@owner.Text</option>
+                        }
+                    </select>
+                </div>
+                <div id="currentFAP" class="form-group" style="display:none">
+                    <label>Current isTheFAP for Target Owner's Policy.</label>
+                    <select id="selectedFAP" name="MoveAdvisorsViewModel.TargetOwnerFAP" form="MoveAdvisorsViewModel" class="form-control">
+                    </select>
+                </div> 
+                <div class="form-group" style="display:none">
+                    <label></label>
+                    <select id="multipleFAPOrgs" form="MoveAdvisorsViewModel" class="form-control">
+                    </select>
+                </div>    
+                <div id="FAPLicenseHolderSelect" class="form-group" style="display:none">
+                    <label>There is no Organisation/Advisor on the Target Owner's Policy that is currently set as the FAP License Holder, please Select an Organisation from the Target Owner's Policy that you'd like to set as the FAP License Holder.</label>
+                    <select id="selectedNoFAP" name="MoveAdvisorsViewModel.NewFAP" form="MoveAdvisorsViewModel" class="form-control">
+                    </select>
+                </div>
+                <div id="noFAPLicenseNumberSection" style="display:none; color:red">
+                    <label>There is no Organisation/Advisor on the Target Owner's Policy that currently has a FAP License Number, please go back and update one of the Organisations for the Target Owner's Policy so that it can be selected as the FAP License Holder. Following that you can repeat this process and Select it as the FAP License Holder.</label>
+                </div>
+                <div id="SubmitMoveAdvisors"class="form-group" style="display:none">
+                    <button class="btn btn-success" type="submit">Move Advisors</button>
+                </div>
+             }
+        </div>
+    </div>
+</div>
+
+
+@section pagespecific {
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#ownerSelect").change(function () {
+
+                var ownerId = $("#ownerSelect").val();
+                var ownerIdClientProgrammeId = ownerId.split(" ");
+
+                var ownerId = ownerIdClientProgrammeId[0];
+                var clientProgrammeId = ownerIdClientProgrammeId[1];
+
+                var postData = {
+                    'clientProgrammeId': clientProgrammeId,
+                };
+
+                $.ajax({
+                    url: '@Url.Action("GetFAPOrgsByClientProgrammeId", "Organisation")',
+                    type: "Post",
+                    data: postData,
+                })
+                    .done(function (data) {
+
+                        debugger;
+                        var numOrgs = 0;
+                        var organisations = JSON.parse(data);
+
+                        numOrgs = Object.keys(organisations).length;
+                        if (numOrgs == 0) {
+                            OwnerSelectedNoFAP(clientProgrammeId);
+                        }
+                        else if (numOrgs == 1) {
+                            OwnerSelected(organisations);
+                        }
+                        else {
+                            debugger;
+                            MultipleisTheFAPOrgsExist(organisations);
+                        }
+                    })
+                    .fail(function () {
+                        alert("error");
+                    });
+
+            });
+
+            $("#selectedFAP").change(function () {
+                debugger;
+                var selectedFAP = $('#selectedFAP');
+                if (selectedFAP.is(':disabled')) {
+                    return;
+                }
+                else {
+                    var organisations = new Array();
+                    $('#selectedFAP option').each(function () {
+                        organisations.push($(this).val());
+                    });
+                    PopulateExtraFAPOrgs(organisations);                  
+                }
+            });
+
+            function OwnerSelected(organisations) {
+                $('#currentFAP').show();
+                PopulateFAPOrgs(organisations);
+                $('#selectedFAP').prop('disabled', true);
+                $('#SubmitMoveAdvisors').show();
+                return;
+            }
+
+            function OwnerSelectedNoFAP(clientProgrammeId) {
+                $('#FAPLicenseHolderSelect').show();
+
+                GetFAPLicenseNumOrgsByClientProgrammeId(clientProgrammeId);
+                return;
+            }
+
+            function MultipleisTheFAPOrgsExist(organisations) {
+                debugger;
+                PopulateFAPOrgs(organisations);
+                $('#currentFAP').show();
+                $('#SubmitMoveAdvisors').show();
+                return;
+            }
+
+            function GetFAPLicenseNumOrgsByClientProgrammeId(clientProgrammeId) {
+                var postData = {
+                    'clientProgrammeId': clientProgrammeId,
+                };
+                $.ajax({
+                    url: '@Url.Action("GetFAPLicenseNumOrgsByClientProgrammeId", "Organisation")',
+                    type: "Post",
+                    data: postData,
+                })
+                    .done(function (data) {
+                        var numOrgs = 0;
+                        var organisations = JSON.parse(data);
+                        numOrgs = Object.keys(organisations).length;
+
+                        if (numOrgs == 0) {
+                           $('#FAPLicenseHolderSelect').hide();
+
+                            $('#noFAPLicenseNumberSection').show();
+                        }
+                        else {
+                            $('#noFAPLicenseNumberSection').hide();
+                            PopulateNoFAPOrgs(organisations);
+                        }
+                    })
+                    .fail(function () {
+                        alert("error");
+                    });
+            }
+
+            function PopulateFAPOrgs(organisations) {
+                debugger;
+                for (var orgId in organisations) {
+                    $('#selectedFAP').append($('<option value=\"' + organisations[orgId].Id + '">' + organisations[orgId].Name + '</option>'));
+                }
+                $('#SubmitMoveAdvisors').show();
+                $('#selectedFAP').trigger("change");
+                return;
+            }
+
+            function PopulateNoFAPOrgs(organisations) {
+                for (var orgId in organisations) {
+                    $('#selectedNoFAP').append($('<option value=\"' + organisations[orgId].Id + '">' + organisations[orgId].Name + '</option>'));
+                }
+                $('#SubmitMoveAdvisors').show();
+                return;
+            }
+        
+            function PopulateExtraFAPOrgs(organisations) {
+                for (var i = 0; i < organisations.length; i++) {
+                    $('#multipleFAPOrgs').append($('<input name="MoveAdvisorsViewModel.ExtraFAP" value="' + organisations[i] + '" form="MoveAdvisorsViewModel">' + organisations[i] + '</input>'));
+                }
+                return;
+            }
+        });
+    </script>
+}
