@@ -10,10 +10,9 @@
         @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
         {
     <li class="nav-item">
-        @*<button type="button" class="btn btn-sm pull-right text-white" data-bs-toggle="modal" data-bs-target="#advisoryModal" data-bs-whatever="mdo" style="background-color: #00A8C8">*@
-            <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
-                <i class="fa fa-pencil"></i> Create UIS
-            </a>
+        <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
+            <i class="fa fa-pencil"></i> Create UIS1
+        </a>
     </li>
             <li class="nav-item">
                 <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
@@ -61,6 +60,7 @@
             <li class="nav-item">
                 <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal"><i class="fa fa-pencil"></i> Create UIS</a>
             </li>
+
             <li class="nav-item">
                 <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
             </li>
@@ -187,7 +187,8 @@
                 <div class="modal-header">
                     <h3 class="modal-title" style="color:blue; font-size:22px">Client Details</h3>
                     @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
-                    <button type="button" class="btn-close" id="CreateUISModalClose" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" id="CreateUISModalClose"></button>
+
                 </div>
                 <div class="modal-body">
                     @Html.HiddenFor(m => m.Programme.Id)
@@ -320,7 +321,7 @@
 
         });
 
-        $('#myChangeModal').on('show.bs.modal', function (e) {   
+        $('#myChangeModal').on('show.bs.modal', function (e) {
             debugger;
             $('.modal').css({ "width": "50%", "margin-left": "25%" });
             var dealId = $(e.relatedTarget).data('dealitem-id');
@@ -369,7 +370,46 @@
 
         function CloseModal() {
             $('#CreateUISModal').modal('hide')
+            //$('#CreateUISModal').hide();
         }
+
+        //$("#CreateUISModalClose").click(function () {
+        //    debugger;
+        //    $("#CreateUISModal").hide();
+        //});
+        debugger;
+       // $('#CreateUISModal').show();
+
+
+        //$('#CreateUISModal').on('show.bs.modal', function (e) {
+        //    debugger;
+        //    $('.modal').css({ "width": "50%", "margin-left": "25%" });
+        //});
+
+        //$("#CreateUISModal").click(function () {
+        //    debugger;
+        //    $("#CreateUISModal").show();
+        //});
+
+
+
+
+        $('#exampleModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var recipient = button.data('whatever') // Extract info from data-* attributes
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this)
+            modal.find('.modal-title').text('New message to ' + recipient)
+            modal.find('.modal-body input').val(recipient)
+        })
+
+
+
+
+
+
+
 
 
         function postUnlockData() {
@@ -400,6 +440,7 @@
                 alert("Unable to save.");
             });
         }
+
 
     </script>
 }
