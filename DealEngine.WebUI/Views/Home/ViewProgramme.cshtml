@@ -11,7 +11,7 @@
         {
     <li class="nav-item">
         <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
-            <i class="fa fa-pencil"></i> Create UIS1
+            <i class="fa fa-pencil"></i> Create UIS
         </a>
     </li>
             <li class="nav-item">
@@ -321,10 +321,12 @@
 
         });
 
+         
         $('#myChangeModal').on('show.bs.modal', function (e) {
             debugger;
-            $('.modal').css({ "width": "50%", "margin-left": "25%" });
+           $('.modal').css({ "width": "50%", "margin-left": "25%" });
             var dealId = $(e.relatedTarget).data('dealitem-id');
+            console.log("dealId=" + dealId)
             $(e.currentTarget).find('input[name="DealId"]').val(dealId);
              $(e.currentTarget).find('input[name="ProgrammeId"]').val("@Model.Programme.Id");
         });

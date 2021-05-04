@@ -35,8 +35,9 @@
     var currentDate  = document.getElementsByClassName("currentDate");
     console.log(currentDate);
     if (document.getElementsByClassName("currentDate") != null) {
-
-        document.getElementsByClassName("currentDate")[0].setAttribute("max", d);
+        
+        //document.getElementsByClassName("currentDate")[0].setAttribute("max", d);
+        $(".currentDate").attr("max", d);
     }
 
 

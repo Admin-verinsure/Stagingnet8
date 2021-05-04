@@ -142,7 +142,10 @@
                             if (((item.Status == "Bound and invoiced" && Model.Programme.UsesEGlobal) || (item.Status == "Bound" && !Model.Programme.UsesEGlobal)) &&
                                 Model.Programme.AllowUsesChange && item.NextInfoSheet == false)
                             {
-                                <a href="#myChangeModal" aria-hidden="true" class="btn btn-primary btn-sm" data-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Update</a>
+                                <a href="#myChangeModal" aria-hidden="true" class="btn btn-primary btn-sm" data-toggle="modal" data-dealitem-id="@item.Id">
+                                    <i class="fa fa-edit"></i> Update
+                                </a>
+                                
                             }
 
                         }
@@ -202,11 +205,11 @@
         }
     </tbody>
 </table>
-<div id="myChangeModal" class="modal container" role="dialog">
+<div id="myChangeModal" class="modal container" role="dialog" aria-hidden="true">
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" style="color:blue; font-size:22px">Update Details</h3>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-dismiss="modal"></button>
         </div>
         <div class="modal-body">
             <form id="ProdForm" method="post" action="~/Information/UpdateInformation">
