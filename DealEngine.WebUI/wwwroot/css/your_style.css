@@ -1317,3 +1317,11 @@ ui-datepicker-div {
 .ui-datepicker-calendar {
     width: 100%;
 }
+
+/*for toast message*/
+#toast {
+    position: fixed;
+    top: 10%;
+    right: 0;
+    z-index: 100;
+}

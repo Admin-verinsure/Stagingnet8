@@ -18,19 +18,19 @@
             <div hidden>
                 <ul class="nav nav-tabs d-sm-flex" id="tablist" role="tablist"><!--hidden-->
                     <li class="nav-item">
-                        <a class="nav-link active" id="step1" data-toggle="tab" href="#step1" role="tab" aria-controls="step1" aria-selected="true"> Step 1</a>
+                        <a class="nav-link active" id="step1" data-bs-toggle="tab" href="#step1" role="tab" aria-controls="step1" aria-selected="true"> Step 1</a>
                     </li>
-                    <li data-target="#step2" hidden>
-                        <a href="#tab2" data-toggle="tab"> <span class="step">2</span> <span class="title">Step 2</span> </a>
+                    <li data-bs-target="#step2" hidden>
+                        <a href="#tab2" data-bs-toggle="tab"> <span class="step">2</span> <span class="title">Step 2</span> </a>
                     </li>
-                    <li data-target="#step3" hidden>
-                        <a href="#tab3" data-toggle="tab"> <span class="step">3</span> <span class="title">Step 3</span> </a>
+                    <li data-bs-target="#step3" hidden>
+                        <a href="#tab3" data-bs-toggle="tab"> <span class="step">3</span> <span class="title">Step 3</span> </a>
                     </li>
-                    <li data-target="#step4" hidden>
-                        <a href="#tab4" data-toggle="tab"> <span class="step">4</span> <span class="title">Step 4</span> </a>
+                    <li data-bs-target="#step4" hidden>
+                        <a href="#tab4" data-bs-toggle="tab"> <span class="step">4</span> <span class="title">Step 4</span> </a>
                     </li>
-                    <li data-target="#step5" hidden>
-                        <a href="#tab5" data-toggle="tab"> <span class="step">5</span> <span class="title">Step 5</span> </a>
+                    <li data-bs-target="#step5" hidden>
+                        <a href="#tab5" data-bs-toggle="tab"> <span class="step">5</span> <span class="title">Step 5</span> </a>
                     </li>
 
                 </ul>
@@ -211,12 +211,12 @@
                             <div style="margin-bottom:50px;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <div role="group" aria-label="First group">
                                     <!--<a href="#tab2" data-toggle="tab"><button onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</button></a>-->
-                                    <a href="#tab2" data-toggle="tab" onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</a>
+                                    <a href="#tab2" data-bs-toggle="tab" onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</a>
                                     @*<a href="Coastguardreg" style=" width:100%; background-color:#72BF44 !important;color:white;" id="newQuote" class="btn btn-secondary margin-top-10 " hidden>Get A New Quote</a>*@
                                     <a href="Coastguardreg" style=" width:100%; background-color:#72BF44 !important;color:white;" id="newQuote" class="btn btn-secondary margin-top-10 w100 hidden">Get A New Quote</a>
 
                                     <!--<button type="button" class="btn btn-secondary margin-top-10 w100 hidden">Save for later</button>-->
-                                    <a data-toggle="tab" onclick="pleaseCallButton(); return false;" style="width:100%;background-color:#004280 !important;color:white;" type="submit" class="btn btn-secondary margin-top-10 w100">Please give me a call to discuss</a>
+                                    <a data-bs-toggle="tab" onclick="pleaseCallButton(); return false;" style="width:100%;background-color:#004280 !important;color:white;" type="submit" class="btn btn-secondary margin-top-10 w100">Please give me a call to discuss</a>
 
                                     <a style="width:100%; background-color:#F04E45 !important;color:white;" href="Coastguardreg" class="btn btn-secondary margin-top-10 w100 ">No Thanks, I think I'll leave it</a>
                                 </div>
@@ -435,13 +435,13 @@
                             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding margin-top-5">
                                 <div class="btn-group w100" style="margin-bottom:50px;" role="group" aria-label="First group">
                                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                        <a href="#tab1" data-toggle="tab"><button style="width:100%; background-color:#F04E45 !important;color:white;" type="button" class="btn btn-secondary margin-top-10 w100">BACK</button></a>
+                                        <a href="#tab1" data-bs-toggle="tab"><button style="width:100%; background-color:#F04E45 !important;color:white;" type="button" class="btn btn-secondary margin-top-10 w100">BACK</button></a>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" id="nextsec">
-                                        <a onclick="validationCheck2(); return false;" id="nextButton" data-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white;" id="next" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
+                                        <a onclick="validationCheck2(); return false;" id="nextButton" data-bs-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white;" id="next" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                        <a onclick="validationCheck2('pleaseCall'); return false;" data-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white; display:none" id="callMeNext" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
+                                        <a onclick="validationCheck2('pleaseCall'); return false;" data-bs-toggle="tab"><button style="width:100%; float:right; background-color:#72BF44 !important;color:white; display:none" id="callMeNext" type="button" class="btn btn-secondary margin-top-10 w100">NEXT</button></a>
                                     </div>
                                 </div>
                             </div>
