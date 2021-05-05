@@ -24,7 +24,7 @@
                     {
                         var countNew = 0;
                         <div id="later" class="hidden">
-                            
+
                             @foreach (var Section in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position > 5))
                             {
                                 <h4 style="background-color:#00A8C8; color:white" id="@Section.Name" data-newId="@informationSection.CustomView@countNew">@Section.Name</h4>
@@ -274,26 +274,26 @@
 
     .container {
         /*margin-left: 16% !important;*/
-        /*width: 100%;*/
+        width: 100%;
     }
 </style>
 
 @*@section pagespecific {
-    <link href="~/jqueryui/jquery-ui.css" rel="stylesheet" />
-    <script src="~/jquery/jquery.min.js"></script>
-    <script src="~/jqueryui/jquery-ui.js"></script>
-    <script>
+        <link href="~/jqueryui/jquery-ui.css" rel="stylesheet" />
+        <script src="~/jquery/jquery.min.js"></script>
+        <script src="~/jqueryui/jquery-ui.js"></script>
+        <script>
 
-        $(window).on("load", function () {
-            debugger;
-            var slectedUpdateType = @Model.selectedUpdateType;
-            if (slectedUpdateType == "TC_amendLocation") {
-                $("#CommonLocation").trigger("click");
+            $(window).on("load", function () {
+                debugger;
+                var slectedUpdateType = @Model.selectedUpdateType;
+                if (slectedUpdateType == "TC_amendLocation") {
+                    $("#CommonLocation").trigger("click");
 
-            }
-        });
+                }
+            });
 
 
-    </script>
+        </script>
 
-}*@
+    }*@
