@@ -345,13 +345,13 @@
 
 
 
+
 <div id="myUnlockModal" class="modal" aria-hidden="true">
-    <form id="ProdForm" class="" action="~/Information/UpdateInformation" method="post">
+    <form id="ProdForm" class="" action="" method="post">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
-                    @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" id=""></button>
 
                 </div>
@@ -374,8 +374,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary btn-xs" onclick="postUnlockData();" data-bs-toggle="tab"> Submit</button>
-                    @*<button id="next" type="submit" class="btn btn-success btn-sm">Submit</button>*@
+                    <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
+
                 </div>
             </div>
         </div>
@@ -383,36 +383,37 @@
 </div>
 
 
-@*<div id="myUnlockModal" class="modal container" role="dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
-            <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="ProdForm">
-                <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="UnlockId" name="DealId" required>
-                <table class="table table-striped">
-                    <tr>
-                        <td>
-                            <label for="ReasonDesc" class="required">Unlock Reason Description</label>
-                        </td>
-                        <td>
-                            <textarea class="form-control" data-type="TEXTAREA" id="UnlockDescription" name="ReasonDesc" placeholder="Notes" value=""></textarea>
-                        </td>
-                        <td>
-                            <p class="validationContainer" id="validateDescription"></p>
-                        </td>
-                    </tr>
 
-                </table>
-            </form>
+@*<div id="myUnlockModal" class="modal container" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="ProdForm">
+                    <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="UnlockId" name="DealId" required>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>
+                                <label for="ReasonDesc" class="required">Unlock Reason Description</label>
+                            </td>
+                            <td>
+                                <textarea class="form-control" data-type="TEXTAREA" id="UnlockDescription" name="ReasonDesc" placeholder="Notes" value=""></textarea>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateDescription"></p>
+                            </td>
+                        </tr>
+
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
+            </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
-        </div>
-    </div>
-</div>*@
+    </div>*@
 
 
 <div class="modal overlay" id="CreateUISProcess" tabindex="-1" role="dialog" data-backdrop="static">
