@@ -84,7 +84,109 @@
     </div>
 
 </div>
-<div id="myChangeModal" class="modal container" role="dialog">
+
+
+<div id="myChangeModal" class="modal" aria-hidden="true">
+    <form id="ProdForm" class="" action="~/Information/UpdateInformation" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color:blue; font-size:22px">Change Details</h3>
+                    @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id=""></button>
+
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="DealId" name="DealId" placeholder="Vessel Name" value="" required>
+
+                    <table class="table table-striped">
+                        <tr>
+
+                            <td>
+                                <label for="changeType" class="required">Update Type</label>
+                            </td>
+                            <td>
+                                <select class="form-control b form-select" id="ChangeType" name="ChangeType" title="" required>
+                                    <option selected="selected" value="">-- Select here --</option>
+                                    <option Value="TC_addAmendRiskInfo">Add Amend Risk Information</option>
+                                    <option Value="TC_newCoverable">Add New Coverable</option>
+                                    <option Value="TC_amendExcess">Amend Excess</option>
+                                    <option Value="TC_amendLocation">Amend Location</option>
+                                    <option Value="TC_amendSumInsured">Amend Sum Insured</option>
+                                    <option Value="TC_amendTermsCoverage">Amend Terms/Coverage</option>
+                                    <option Value="TC_amendAddReinsurance">Amend or Add Reinsurance</option>
+                                    <option Value="TC_amendAddInsured">Amend or Add Insured</option>
+                                    <option Value="TC_amendAddCI">Amend or Add Co-insurance</option>
+                                    <option Value="TC_changeOfExpiryDate">Change of Expiry Date</option>
+                                    <option Value="TC_changeOfBroker">Change of Broker</option>
+                                    <option Value="TC_changeOfBizOrOcc">Change of Business or Occupation</option>
+                                    <option Value="TC_deleteCoverable">Delete Existing Coverable</option>
+                                    <option Value="TC_other">Other Amendment</option>
+                                    <option Value="TC_amendOneTimeEvents">One Time Event</option>
+                                </select>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateChangeType"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="Reason" class="required">Reason</label>
+                            </td>
+                            <td>
+                                <select class="form-control form-select" id="ChangeReason" name="Reason" title="" required>
+                                    <option selected="selected" value="">-- Select here --</option>
+                                    <option Value="TC_businessSoldOrClosed_lgi">Business Sold or Closed</option>
+                                    <option Value="TC_changeInCoverReq_lgi">Change in cover requirements</option>
+                                    <option Value="TC_changeOfBroker_lgi">Change of Broker</option>
+                                    <option Value="TC_dissatisfiedWithClaims_lgi">Dissatisfied with claims</option>
+                                    <option Value="TC_dissatisfiedWithSvc_lgi">Dissatisfied with service</option>
+                                    <option Value="TC_goneIntoGlobalAcct_lgi">Gone into Global Account</option>
+                                    <option Value="TC_nonpayment">Non payment</option>
+                                    <option Value="TC_policyReplaced_lgi">Policy replaced</option>
+                                    <option Value="TC_tooDear_lgi">Too dear</option>
+                                </select>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateChangeReason"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="ReasonDesc" class="required">Reason Description</label>
+                            </td>
+                            <td>
+                                <textarea class="form-control" data-type="TEXTAREA" id="Description" name="ReasonDesc" placeholder="Notes" value=""></textarea>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateDescription"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="EffectiveDate" class="required">Effective Date</label>
+                            </td>
+                            <td>
+                                <input name="BoatEffectiveDate" placeholder="Effective Date" class=" form-control" data-dateformat="dd/mm/yy" id="ChangeEffectiveDate" type="text">
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateEffectivedate"></p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-xs" id="btnChangeSubmit"> Update</button>
+                    @*<button id="next" type="submit" class="btn btn-success btn-sm">Submit</button>*@
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<!--<div id="myChangeModal" class="modal container" role="dialog">
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" style="color:blue; font-size:22px">Change Details</h3>
@@ -169,17 +271,25 @@
                         </td>
                     </tr>
                 </table>
-                <div class="modal-footer">
+                <div class="modal-footer">-->
                     @*<button id="next" type="button" class="btn btn-success btn-sm" onclick="validationCheck();" data-dismiss="modal" data-toggle="tab">Submit</button>*@
-                    <button class="btn btn-primary btn-xs" id="ReportView"> Update</button>
+                    <!--<button class="btn btn-primary btn-xs" id="ReportView"> Update</button>-->
 
                     @*<a href="#" class="btn btn-primary btn-xs" type="" id="btnChangeSubmit">Update</a>*@
-                </div>
+                <!--</div>
             </form>
         </div>
 
     </div>
-</div>
+</div>-->
+
+
+
+
+
+
+
+
 <div id="CreateUISModal" class="modal" aria-hidden="true">
     <form id="ProdForm" class="" action="../../Services/IssueUIS" method="post" onsubmit="CloseModal()">
         <div class="modal-dialog" role="document">
@@ -374,6 +484,8 @@
             $('#CreateUISModal').modal('hide')
             //$('#CreateUISModal').hide();
         }
+
+        //ClosemyChangeModal
 
         //$("#CreateUISModalClose").click(function () {
         //    debugger;
