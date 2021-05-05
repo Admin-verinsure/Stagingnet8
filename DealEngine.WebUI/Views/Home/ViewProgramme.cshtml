@@ -9,11 +9,11 @@
         </li>
         @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
         {
-    <li class="nav-item">
-        <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
-            <i class="fa fa-pencil"></i> Create UIS
-        </a>
-    </li>
+            <li class="nav-item">
+                <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
+                    <i class="fa fa-pencil"></i> Create UIS
+                </a>
+            </li>
             <li class="nav-item">
                 <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
             </li>
@@ -47,7 +47,7 @@
                 <a asp-controller="Home" asp-action="ReportView" asp-route-ProgrammeId="@Model.Programme.Id" class="btn btn-primary btn-sm" style="color:white">View Report </a>
             </li>
         }
-         @*for NTU*@
+        @*for NTU*@
         @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsTC == "True" || Model.CurrentUserIsInsurer == "True")
         {
 
@@ -198,7 +198,7 @@
 
                 <table class="table table-striped">
                     <tr>
-                       
+
                         <td>
                             <label for="changeType" class="required">Update Type</label>
                         </td>
@@ -272,21 +272,15 @@
                     </tr>
                 </table>
                 <div class="modal-footer">-->
-                    @*<button id="next" type="button" class="btn btn-success btn-sm" onclick="validationCheck();" data-dismiss="modal" data-toggle="tab">Submit</button>*@
-                    <!--<button class="btn btn-primary btn-xs" id="ReportView"> Update</button>-->
-
-                    @*<a href="#" class="btn btn-primary btn-xs" type="" id="btnChangeSubmit">Update</a>*@
-                <!--</div>
+@*<button id="next" type="button" class="btn btn-success btn-sm" onclick="validationCheck();" data-dismiss="modal" data-toggle="tab">Submit</button>*@
+<!--<button class="btn btn-primary btn-xs" id="ReportView"> Update</button>-->
+@*<a href="#" class="btn btn-primary btn-xs" type="" id="btnChangeSubmit">Update</a>*@
+<!--</div>
             </form>
         </div>
 
     </div>
 </div>-->
-
-
-
-
-
 
 
 
@@ -297,7 +291,7 @@
                 <div class="modal-header">
                     <h3 class="modal-title" style="color:blue; font-size:22px">Client Details</h3>
                     @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
-                <button type="button" class="btn-close" data-bs-dismiss="modal" id="CreateUISModalClose"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="CreateUISModalClose"></button>
 
                 </div>
                 <div class="modal-body">
@@ -349,11 +343,50 @@
 </div>
 
 
-<div id="myUnlockModal" class="modal container" role="dialog">
+
+
+<div id="myUnlockModal" class="modal" aria-hidden="true">
+    <form id="ProdForm" class="" action="~/Information/UpdateInformation" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
+                    @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id=""></button>
+
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="UnlockId" name="DealId" required>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>
+                                <label for="ReasonDesc" class="required">Unlock Reason Description</label>
+                            </td>
+                            <td>
+                                <textarea class="form-control" data-type="TEXTAREA" id="UnlockDescription" name="ReasonDesc" placeholder="Notes" value=""></textarea>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateDescription"></p>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-xs" onclick="postUnlockData();" data-bs-toggle="tab"> Submit</button>
+                    @*<button id="next" type="submit" class="btn btn-success btn-sm">Submit</button>*@
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@*<div id="myUnlockModal" class="modal container" role="dialog">
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
-            @*<button type="button" class="close" data-bs-dismiss="modal">&times;</button>*@
             <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
@@ -379,7 +412,7 @@
             <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
         </div>
     </div>
-</div>
+</div>*@
 
 
 <div class="modal overlay" id="CreateUISProcess" tabindex="-1" role="dialog" data-backdrop="static">
@@ -397,12 +430,13 @@
         <div class="modal-content">
             <div class="modal-body">
                 <p>
-                    <img src="/img/loading.gif" /> Generating Change Information Sheet.  Please wait... </P>
+                    <img src="/img/loading.gif" /> Generating Change Information Sheet.  Please wait...
+                </p>
 
                 <p>  If the Change Information Sheet does not appear after 30 seconds, please refresh the page. </p>
 
                 <p>  If the Change Information sheet is not present on the dashboard please contact technical support. </p>
-                
+
             </div>
         </div>
     </div>
@@ -431,7 +465,7 @@
 
         });
 
-         
+
         $('#myChangeModal').on('show.bs.modal', function (e) {
             debugger;
            $('.modal').css({ "width": "50%", "margin-left": "25%" });
