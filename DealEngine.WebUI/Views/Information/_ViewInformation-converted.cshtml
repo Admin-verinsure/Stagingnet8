@@ -79,127 +79,130 @@
                 </div>
             }
             @*@else
-                {
-                <div class="padding-10">
-                    <div id="proposalcreate-form" class="smart-form" novalidate="novalidate">
-                        <fieldset id="@informationSection.Id">
-                            <div class="row">
-                                @if (informationSection.Items != null)
+            {
+            <div class="padding-10">
+                <div id="proposalcreate-form" class="smart-form" novalidate="novalidate">
+                    <fieldset id="@informationSection.Id">
+                        <div class="row">
+                            @if (informationSection.Items != null)
+                            {
+                                var items = informationSection.Items;
+                                for (int i = 0; i < items.Count(); i++)
                                 {
-                                    var items = informationSection.Items;
-                                    for (int i = 0; i < items.Count(); i++)
+                                    var item = items.ElementAtOrDefault(i);
+                                    if (item.Type != ItemType.SECTIONBREAK)
                                     {
-                                        var item = items.ElementAtOrDefault(i);
-                                        if (item.Type != ItemType.SECTIONBREAK)
-                                        {
-                                            <section class="col col-@item.Width">
+                                        <section class="col col-@item.Width">
 
-                                                @switch (item.Type)
-                                                {
-                                                    case ItemType.TEXTBOX:
-                                                        <label class="label">@item.Label</label>
-                                                        <label class="input">
-                                                            <i class="@item.Icon"></i>
-                                                            <input data-id="@item.Id" data-type="@item.Type" data-name="@item.Name"
-                                                                   id="@item.Name" type="@item.ControlType" name="@item.Name" placeholder="@item.Label" value="@item.Value" data-rule="@item.Rule" />
-                                                        </label>
-                                                        break;
-
-                                                    case ItemType.TEXTAREA:
-                                                        <label class="label">@item.Label</label>
-                                                        <label class="textarea">
-                                                            <textarea data-id="@item.Id" data-type="@item.Type" data-name="@item.Name"
-                                                                      id="@item.Name" type="@item.ControlType" name="@item.Name" placeholder="@item.Label" value="@item.Value"></textarea>
-                                                        </label>
-                                                        break;
-
-                                                    case ItemType.LABEL:
-                                                        <article class="col col-@item.Width col-xs-12">
-                                                            @Html.Raw(@item.Label)
-                                                        </article>
-                                                        break;
-
-                                                    case ItemType.DROPDOWNLIST:
-                                                        <label class="label">@item.Label</label>
-                                                        <label class="input">
-                                                            @Html.DropDownListFor(item => item.Student.StudentId, new SelectList(Model.StudentList, "StudentId", "FirstName"), "--Select--", new { @id = "myid", @class = "myclass" })
-
-                                                            @Html.DropDownList(@item.Name, @item.Options, @item.Value, new { @id = @item.Name }).
-
-
-                                                            @Html.DropDownList(@item.Name, @item.Options,@item.Value, new { @id = @item.Name }).SelectedValue(@item.Value).OptionLabel(@item.DefaultText).Id(@item.Name)
-                                                        </label>
-                                                        break;
-
-                                                    case ItemType.PERCENTAGEBREAKDOWN:
-                                                        <div class="row">
-                                                            <div class="col col-12 col-xs-12"><label class="label">@item.Label</label></div>
-                                                            <div class="col col-10 col-xs-12">
-                                                                @Html.DropDownList(@item.Name, @item.Options, @item.DefaultText, new { @Class = "form-control" }).
-
-                                                                @Html.Bootstrap().DropDownList(@item.Name, @item.Options).OptionLabel(@item.DefaultText).Class("form-control")
-                                                            </div>
-                                                            <div class="col col-2 col-xs-12">
-                                                                <button id="clickMe" onclick="AddBusinessActivity(this, '#@item.Name', '#tableResult');" class="btn btn-sm btn-success" style="width:100px">
-                                                                    Add
-                                                                </button>
-                                                            </div>
-                                                            <div class="col col-12">
-                                                                <table id="tableResult" cellpadding="4" cellspacing="0">
-                                                                    <tbody></tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                        break;
-
-                                                    case ItemType.MULTISELECT:
-                                                        <label class="label">@item.Label</label>
-                                                        <label class="input">
-                                                            @Html.ListBox(@item.Name, @item.Options).Class("cselect").Data(new { placeholder = @item.Label })
-                                                        </label>
-                                                        break;
-
-                                                    case ItemType.JSBUTTON:
-                                                        @Html.Bootstrap().Button().Text(@item.Label).HtmlAttributes(new { onclick = @item.Value }).Class("btn-sm")
-                                                        break;
-
-                                                    case ItemType.SUBMITBUTTON:
-                                                        @Html.Bootstrap().SubmitButton().Text(@item.Label).Class("btn-sm")
-                                                        break;
-
-                                                }
-                                                @if (item.ConditionalList.Count != 0)
-                                                {
-                                                    <label class="label">@item.ConditionalList.FirstOrDefault().Label</label>
+                                            @switch (item.Type)
+                                            {
+                                                case ItemType.TEXTBOX:
+                                                    <label class="label">@item.Label</label>
                                                     <label class="input">
                                                         <i class="@item.Icon"></i>
-                                                        <input data-id="@item.ConditionalList.FirstOrDefault().Id" data-type="@item.ConditionalList.FirstOrDefault().Type" data-name="@item.ConditionalList.FirstOrDefault().Name"
-                                                               id="@item.ConditionalList.FirstOrDefault().Name" type="@item.ConditionalList.FirstOrDefault().ControlType" name="@item.ConditionalList.FirstOrDefault().Name" placeholder="@item.ConditionalList.FirstOrDefault().Label" value="@item.Value" />
+                                                        <input data-id="@item.Id" data-type="@item.Type" data-name="@item.Name"
+                                                               id="@item.Name" type="@item.ControlType" name="@item.Name" placeholder="@item.Label" value="@item.Value" data-rule="@item.Rule" />
                                                     </label>
-                                                }
-                                            </section>
-                                        }
-                                        else
-                                        {
-                                            @Html.Raw("</div><div class=\"row\">")
-                                        }
+                                                    break;
+
+                                                case ItemType.TEXTAREA:
+                                                    <label class="label">@item.Label</label>
+                                                    <label class="textarea">
+                                                        <textarea data-id="@item.Id" data-type="@item.Type" data-name="@item.Name"
+                                                                  id="@item.Name" type="@item.ControlType" name="@item.Name" placeholder="@item.Label" value="@item.Value"></textarea>
+                                                    </label>
+                                                    break;
+
+                                                case ItemType.LABEL:
+                                                    <article class="col col-@item.Width col-xs-12">
+                                                        @Html.Raw(@item.Label)
+                                                    </article>
+                                                    break;
+
+                                                case ItemType.DROPDOWNLIST:
+                                                    <label class="label">@item.Label</label>
+                                                    <label class="input">
+                                                        @Html.DropDownListFor(item => item.Student.StudentId, new SelectList(Model.StudentList, "StudentId", "FirstName"), "--Select--", new { @id = "myid", @class = "myclass" })
+
+                                                        @Html.DropDownList(@item.Name, @item.Options, @item.Value, new { @id = @item.Name }).
+
+
+                                                        @Html.DropDownList(@item.Name, @item.Options,@item.Value, new { @id = @item.Name }).SelectedValue(@item.Value).OptionLabel(@item.DefaultText).Id(@item.Name)
+                                                    </label>
+                                                    break;
+
+                                                case ItemType.PERCENTAGEBREAKDOWN:
+                                                    <div class="row">
+                                                        <div class="col col-12 col-xs-12"><label class="label">@item.Label</label></div>
+                                                        <div class="col col-10 col-xs-12">
+                                                            @Html.DropDownList(@item.Name, @item.Options, @item.DefaultText, new { @Class = "form-control" }).
+
+                                                            @Html.Bootstrap().DropDownList(@item.Name, @item.Options).OptionLabel(@item.DefaultText).Class("form-control")
+                                                        </div>
+                                                        <div class="col col-2 col-xs-12">
+                                                            <button id="clickMe" onclick="AddBusinessActivity(this, '#@item.Name', '#tableResult');" class="btn btn-sm btn-success" style="width:100px">
+                                                                Add
+                                                            </button>
+                                                        </div>
+                                                        <div class="col col-12">
+                                                            <table id="tableResult" cellpadding="4" cellspacing="0">
+                                                                <tbody></tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    break;
+
+                                                case ItemType.MULTISELECT:
+                                                    <label class="label">@item.Label</label>
+                                                    <label class="input">
+                                                        @Html.ListBox(@item.Name, @item.Options).Class("cselect").Data(new { placeholder = @item.Label })
+                                                    </label>
+                                                    break;
+
+                                                case ItemType.JSBUTTON:
+                                                    @Html.Bootstrap().Button().Text(@item.Label).HtmlAttributes(new { onclick = @item.Value }).Class("btn-sm")
+                                                    break;
+
+                                                case ItemType.SUBMITBUTTON:
+                                                    @Html.Bootstrap().SubmitButton().Text(@item.Label).Class("btn-sm")
+                                                    break;
+
+                                            }
+                                            @if (item.ConditionalList.Count != 0)
+                                            {
+                                                <label class="label">@item.ConditionalList.FirstOrDefault().Label</label>
+                                                <label class="input">
+                                                    <i class="@item.Icon"></i>
+                                                    <input data-id="@item.ConditionalList.FirstOrDefault().Id" data-type="@item.ConditionalList.FirstOrDefault().Type" data-name="@item.ConditionalList.FirstOrDefault().Name"
+                                                           id="@item.ConditionalList.FirstOrDefault().Name" type="@item.ConditionalList.FirstOrDefault().ControlType" name="@item.ConditionalList.FirstOrDefault().Name" placeholder="@item.ConditionalList.FirstOrDefault().Label" value="@item.Value" />
+                                                </label>
+                                            }
+                                        </section>
                                     }
-
-                                    <button onclick="AddSection(informationSection.Id)" class="btn-sm AddupdateBoat" id="updateBoat">Add</button>
-                                    <button onclick="ClearBoats(event,'#boatTabs3','boatTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Clear and Cancel</button>
+                                    else
+                                    {
+                                        @Html.Raw("</div><div class=\"row\">")
+                                    }
                                 }
-                            </div>
-                        </fieldset>
-                    </div>
-                </div>
-                }
-                }
-                }*@
 
-            <a onclick=" $('#later').removeClass('hidden');$('#less').removeClass('hidden'); $('#more').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken" id="more">More </a>
-            <a onclick=" $('#later').addClass('hidden'); $('#more').removeClass('hidden');$('#less').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken hidden" id="less">Less </a>
+                                <button onclick="AddSection(informationSection.Id)" class="btn-sm AddupdateBoat" id="updateBoat">Add</button>
+                                <button onclick="ClearBoats(event,'#boatTabs3','boatTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Clear and Cancel</button>
+                            }
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+            }
+            }
+            }*@
+
+            @*<a onclick=" $('#later').removeClass('hidden');$('#less').removeClass('hidden'); $('#more').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken" id="more">More </a>
+            <a onclick=" $('#later').addClass('hidden'); $('#more').removeClass('hidden');$('#less').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken hidden" id="less">Less </a>*@
 
         </div>
+        <a onclick=" $('#later').removeClass('hidden');$('#less').removeClass('hidden'); $('#more').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken" id="more">More </a>
+        <a onclick=" $('#later').addClass('hidden'); $('#more').removeClass('hidden');$('#less').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken hidden" id="less">Less </a>
+
     </div>
 </div>
 
