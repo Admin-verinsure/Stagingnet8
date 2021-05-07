@@ -13,7 +13,7 @@
 
             foreach (var informationSection in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position <= 5))
             {
-                <h4 style="background-color:#00A8C8; color:white" id="@informationSection.Name" data-newId="@informationSection.CustomView">@informationSection.Name</h4>
+                <h4 data-count="@count" style="background-color:#00A8C8; color:white" id="@informationSection.Name" data-newId="@informationSection.CustomView">@informationSection.Name</h4>
                 @if (!string.IsNullOrWhiteSpace(informationSection.CustomView))
                 {
 
@@ -27,13 +27,14 @@
 
                             @foreach (var Section in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position > 5))
                             {
-                                <h4 style="background-color:#00A8C8; color:white" id="@Section.Name" data-newId="@informationSection.CustomView@countNew">@Section.Name</h4>
+                                <h4 data-count="@count" style="background-color:#00A8C8; color:white" id="@Section.Name" data-newId="@informationSection.CustomView@countNew">@Section.Name</h4>
                                 if (!string.IsNullOrWhiteSpace(Section.CustomView))
                                 {
                                     @await Html.PartialAsync("PrefabSections/" + Section.CustomView, Model)
 
                                 }
                                 countNew++;
+                                
                             }
                         </div>
                     }
