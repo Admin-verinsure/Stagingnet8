@@ -133,8 +133,11 @@
         SetCurrentTab(Tab);
     }
 
+    debugger;
     function ResetOrganisation() {
+        debugger;
         var form = document.getElementById("organisationViewModel");
+        console.log(form);
         form.reset();
         document.getElementById("HideOrganisationType").hidden = false;
         document.getElementById("HideInsuranceAttribute").hidden = false;
@@ -195,6 +198,7 @@
         }
         document.getElementById(AddButtonId).innerText = "Add";
         document.getElementById(CancelButtonId).innerText = "Clear and Cancel";
+        debugger;
         ResetOrganisation();
     }
 

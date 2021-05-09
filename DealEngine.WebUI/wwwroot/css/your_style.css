@@ -1328,3 +1328,23 @@ ui-datepicker-div {
 .hidden {
     display: none;
 }
+
+
+/*date picker*/
+
+.new-calendar {
+    right: 5px;
+    padding-left: 3px;
+    border-left-width: 1px;
+    border-left-style: solid;
+}
+
+.new-calendar {
+    position: absolute;
+    top: 5px;
+    width: 22px;
+    height: 22px;
+    font-size: 14px;
+    line-height: 22px;
+    text-align: center;
+}

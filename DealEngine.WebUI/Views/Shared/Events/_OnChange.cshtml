@@ -453,9 +453,10 @@
         }
         return "0";
     }
-
+    debugger
     function OrganisationTypeOnChange(Value) {
         //reset views to default
+        debugger
         ResetOrganisationUnitView();
 
         var List = document.getElementById("Organisation.OrganisationType");
@@ -542,7 +543,9 @@
 
     }
 
+    debugger;
     function ResetOrganisationUnitView() {
+        debugger;
         document.getElementById("Private").hidden = true;
         document.getElementById("Else").hidden = true;
         var IsPrincipal = document.getElementById("HidePrincipal");
