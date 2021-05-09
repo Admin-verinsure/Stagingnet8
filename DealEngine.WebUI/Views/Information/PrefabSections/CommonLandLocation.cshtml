@@ -84,8 +84,8 @@
                     <!-- 1st rows -->
                     <div class="row">
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <label class="label cgmodalLabel required">Storage Type</label>
-                            <label class="input">
+                            <label class="label col-12 cgmodalLabel required">Storage Type</label>
+                            <label class="input col-12">
                                 <select class="form-select form-control bui" id="BuildingCategory" name="BuildingCategory">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="Lockup">Lockup At Address</option>
@@ -97,16 +97,16 @@
 
                         </section>
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <label class="label cgmodalLabel required">Storage Description</label>
-                            <label class="input" style="width:100%;">
+                            <label class="label col-12 cgmodalLabel required">Storage Description</label>
+                            <label class="input col-12" style="width:100%;">
                                 <textarea rows="4" data-name="BuildingName" id="BuildingName" name="BuildingName" placeholder="Storage Description" value="" style="width:100%;"></textarea>
                             </label>
                             <p class="validationContainer" id="validateBuildingName"></p>
 
                         </section>
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <label class="label required">Location</label>
-                            <label class="input">
+                            <label class="label col-12 required">Location</label>
+                            <label class="input col-12">
                                 <select onchange="addLandLoc()" class="form-select form-control bui" id="BuildingLocation" name="BuildingLocation">
                                     <option selected="selected" value="">-- Select --</option>
                                     @foreach (var clloc in Model.LocationViewModel.Locations)
@@ -142,8 +142,8 @@
                     <!-- 1st rows -->
                     <div class="row">
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <label class="label cgmodalLabel required">Storage Type</label>
-                            <label class="input">
+                            <label class="label col-12 cgmodalLabel required">Storage Type</label>
+                            <label class="input col-12">
                                 <select class="form-select form-control bui" id="AddBuildingCategory" name="BuildingCategory">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="Lockup">Lockup At Address</option>
@@ -155,16 +155,16 @@
 
                         </section>
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <label class="label cgmodalLabel required">Storage Description</label>
-                            <label class="input" style="width:100%;">
+                            <label class="label col-12 cgmodalLabel required">Storage Description</label>
+                            <label class="input col-12" style="width:100%;">
                                 <textarea rows="4" data-name="BuildingName" id="AddBuildingName" name="BuildingName" placeholder="Storage Description" value="" style="width:100%;"></textarea>
                             </label>
                             <p class="validationContainer" id="validateAddBuildingName"></p>
 
                         </section>
                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                            <label class="label required">Location</label>
-                            <label class="input">
+                            <label class="label col-12 required">Location</label>
+                            <label class="input col-12">
                                 <select onchange="AddaddLandLoc()" class="form-select form-control bui" id="AddBuildingLocation" name="BuildingLocation">
                                     <option selected="selected" value="">-- Select --</option>
                                     @foreach (var clloc in Model.LocationViewModel.Locations)
