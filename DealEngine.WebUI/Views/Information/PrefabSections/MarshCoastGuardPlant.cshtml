@@ -7,7 +7,7 @@
 
             <ul id="tab" class="nav nav-tabs">
                 <li class="nav nav-tabs active"> <a href="#omvTabs1"> List All </a> </li>
-                <li class="nav nav-tabs hidden" id="TrailerEdit"> <a href="#omvTabs2"  Class="EditButton"> Edit </a> </li>
+                <li class="nav nav-tabs hidden" id="TrailerEdit"> <a href="#omvTabs2" Class="EditButton"> Edit </a> </li>
                 <li class="nav nav-tabs"> <a href="#omvTabs3" Class="AddButton"> Add </a> </li>
                 <li class="nav nav-tabs"> <a href="#omvTabs4" Class="PlantRomoved"> List Removed </a> </li>
 
@@ -177,10 +177,250 @@
                         </section>
                     </div>
 
-        </div>
-        <div id="omvTabs4" class="tab-pane" role="tabpanel">
+                </fieldset>
+            </div>
+            <div id="omvTabs3" class="tab-content">
 
+                <fieldset id="fieldset">
+                    <input id="VehicleId" class="omv" name="VehicleId" type="hidden">
+                    <!-- 1st row -->
+                    <div class="row">
+                        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <label class="label required">Year</label>
+                            <label class="input">
+                                <i></i>
+                                <input class="form-control omv" data-type="TEXTBOX" data-name="Year" id="AddPlantYear" name="Year" placeholder="Year" value="" required>
+                            </label>
+                            <p class="validationContainer" id="validateAddRYear"></p>
+
+                        </section>
+                        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <label class="label required">Make</label>
+                            <label class="input">
+                                <i></i>
+                                <input class="form-control omv" data-type="TEXTBOX" data-name="Make" id="AddMotorMake" name="Make" placeholder="Make" value="" required>
+                            </label>
+                            <p class="validationContainer" id="validateAddRMake"></p>
+
+                        </section>
+                        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <label class="label required">Model</label>
+                            <label class="input">
+                                <i></i>
+                                <input class="form-control omv" data-type="TEXTBOX" data-name="VehicleModel" id="AddMotorModel" name="VehicleModel" placeholder="Model" value="" required>
+                            </label>
+                            <p class="validationContainer" id="validateAddRModel"></p>
+
+                        </section>
+                        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <label class="label required">$ Estimated Market Value</label>
+                            <label class="input">
+                                <i></i>
+                                <input class="form-control omv" data-type="TEXTBOX" data-name="SumInsured" id="AddMotorSumInsured" name="SumInsured" placeholder="$ Estimated Market Value" value="" required>
+                            </label>
+                            <p class="validationContainer" id="validateAddRMarketValue"></p>
+
+                        </section>
+
+
+
+                        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <label class="label required">Location</label>
+                            <label class="input">
+                                <select onchange="AddaddPlantLoc()" class="form-control omv" id="AddMotorLocation" name="VehicleLocation">
+                                    <option selected="selected" value="" required>-- Select --</option>
+                                    @foreach (var utrloc in Model.LocationViewModel.Locations)
+                                    {
+                                        <option value="@utrloc.Id">@string.Join(", ", utrloc.Street, utrloc.Suburb, utrloc.City)</option>
+                                    }
+                                    <option value="add">Add Location</option>
+                                </select>
+                            </label>
+                            <p class="validationContainer" id="validateAddRLocation"></p>
+
+                        </section>
+
+                        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <label class="label required">Effective Date</label>
+                            <label class="input">
+                                <i class="icon-append fa fa-calendar"></i>
+                                <input name="EffectiveDate" placeholder="Effective Date" class="form-control rmv" id="AddPlantEffectiveDate" type="text" required>
+                            </label>
+                            <p class="validationContainer" id="validateAddPlantEffectiveDate"></p>
+                        </section>
+                    </div>
+                    <!-- 4th row -->
+                    @*<section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <label class="label">Interested Parties</label>
+                            <label class="input">
+                                <select class="cselect form-control omv" data-placeholder="Interested Parties" id="InterestedParties2" multiple="multiple" name="InterestedParties" style="display: none;">
+                                    @foreach (var utrip in Model.InterestedParties.Where(o => o.OrganisationType == "financial"))
+                                    {
+                                        <option value="@utrip.ID">@utrip.OrganisationName</option>
+                                    }
+                                </select>
+                            </label>
+                        </section>*@
+
+                    <div class="row">
+                        <!-- 5th row -->
+                        <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <label class="label">Notes</label>
+                            <label class="textarea">
+                                <textarea class="form-control omv" data-type="TEXTAREA" data-name="Notes" id="AddNotes" name="Notes" placeholder="Notes" value=""></textarea>
+                            </label>
+                        </section>
+                    </div>
+
+                    <!-- 6th row -->
+                    <div class="row" id="update">
+                        <section class="col col-xs-12">
+
+                            @*@Html.Bootstrap().Button().Text("Update").HtmlAttributes(new { onclick = "AddMotorVehicle('#omvTabs-2', '#tblUnRegisteredMV'); SetCurrentTab('omvTabs-1');" }).Class("btn-sm")*@
+                            @*@Html.Bootstrap().Button().Text("Add").HtmlAttributes(new { onclick = "ValidateAddNRegisteredMotor('#omvTabs-3', '#tblRegisteredMV','omvTabs-1');" }).Class("btn-sm updateBoat").Id("updateBoat")
+
+                                @Html.Bootstrap().Button().Text("Cancel Update").HtmlAttributes(new { onclick = "ClearBoats('#boatTabs-2','boatTabs-1');" }).Class("btn-sm ClearBoat").Id("ClearBoat")*@
+
+                            <button onclick="ValidateAddNRegisteredMotor(event,'#omvTabs3', '#tblRegisteredMV','omvTabs1')" class="btn-sm AddupdateBoat" id="updateBoat">Add</button>
+                            <button onclick="ClearBoats(event,'#omvTabs2','omvTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Clear and Cancel</button>
+
+                        </section>
+                    </div>
+
+                </fieldset>
+            </div>
+            <div id="omvTabs4" class="tab-content">
+
+                <fieldset>
+                    <div class="row">
+                        <section class="col col-xs-12">
+                            @*<script src="~/jquery/jquery.min.js"></script>*@
+                            <script type="text/javascript">
+                                $(".PlantRomoved").click(function () {
+						    $("#tblRemovedUnRegisteredMV").jqGrid({
+						        url: "/Services/GetVehicles?informationId=@Model.AnswerSheetId&validated=false&removed=true&transfered=false",
+						        datatype: "xml",
+						        mtype: "GET",
+                                async: true,
+								colNames: ["","Make", "Model", "Sum Insured"],
+								colModel: [
+                                    {
+                                        name: "update", align: 'center', search: false, formatter: function (cellvalue, options, rowobject) {
+                                            return '<button onclick="SetVehicleRemovedStatus(\'' + cellvalue + '\', \'false\', \'#tblRemovedUnRegisteredMV\', \'#tblUnRegisteredMV\'); SetCurrentTab(\'omvTabs1\');" type="button" class=" btn btn-success btn-sm" ><i class="fa fa-undo"></i></button>';
+                                        }
+
+                                    },
+
+                                    { name: "Make", align: 'center', key: 'true' },
+						            { name: "VehicleModel", align: 'center' },
+						            { name: "SumInsured", align: 'center' }
+
+								],
+						        autowidth: true,
+
+						        pager: "#pagerRemovedUnRegisteredMV",
+						        rowNum: 10,
+						        rowList: [10, 20, 30],
+
+                                sortname: "Make",
+						        sortorder: "desc",
+						        viewrecords: true,
+						        gridview: true,
+						        autoencode: true
+						    });
+
+
+						    $("#tblRemovedUnRegisteredMV").jqGrid('navGrid',
+						    	'#pagerRemovedUnRegisteredMV',
+						    	{edit: false, add: false, del: false},
+						    	//options
+						    	{height:280,reloadAfterSubmit:false},
+						    	// edit options
+						    	{height:280,reloadAfterSubmit:false},
+						    	// add options
+						    	{reloadAfterSubmit:false},
+						    	// del options
+						    	{sopt:['eq','bw','cn']}
+						    	// search options
+						    );
+						});
+                            </script>
+
+                            <table id="tblRemovedUnRegisteredMV"><tr><td></td></tr></table>
+                            <div id="pagerRemovedUnRegisteredMV"></div>
+                        </section>
+                    </div>
+                </fieldset>
+            </div>
+
+            @*<div id="omvTabs5" class="tab-content">
+
+                    <fieldset>
+                        <div class="row">
+                            <section class="col col-xs-12">
+
+                                <script src="~/jquery/jquery.min.js"></script>
+                                <script type="text/javascript">
+                            $(document).ready(function () {
+
+
+                                $("#tblTransferedUnRegisteredMV").jqGrid({
+                                    url: "/Services/GetVehicles?informationId=@Model.AnswerSheetId&validated=true&removed=false&ceased=false&transfered=true",
+                                    datatype: "xml",
+                                    mtype: "GET",
+
+                                    colNames: ["Make", "Model", "Sum Insured", ""],
+                                    colModel: [
+
+
+                                        { name: "Make", align: 'center', key: 'true' },
+                                        { name: "VehicleModel", align: 'center' },
+                                        { name: "SumInsured", align: 'center' },
+                                        { name: "update", align: 'center', search: false, formatter: function(cellvalue, options, rowobject)
+
+
+
+                                        { return '<button onclick="SetVehicleTransferedStatus(\'' + cellvalue + '\', \'false\', \'#tblTransferedUnRegisteredMV\', \'#tblUnRegisteredMV\');" type="button">Restore</button>'; }
+                                        }
+                                    ],
+                                    autowidth: true,
+
+                                    pager: "#pagerTransferedUnRegisteredMV",
+                                    rowNum: 10,
+                                    rowList: [10, 20, 30],
+
+                                    sortname: "Make",
+                                    sortorder: "desc",
+                                    viewrecords: true,
+                                    gridview: true,
+                                    autoencode: true
+                                });
+
+
+                                $("#tblTransferedUnRegisteredMV").jqGrid('navGrid',
+                                    '#pagerTransferedUnRegisteredMV',
+                                    {edit: false, add: false, del: false},
+                                    //options
+                                    {height:280,reloadAfterSubmit:false},
+                                    // edit options
+                                    {height:280,reloadAfterSubmit:false},
+                                    // add options
+                                    {reloadAfterSubmit:false},
+                                    // del options
+                                    {sopt:['eq','bw','cn']}
+                                    // search options
+                                );
+                            });
+                                </script>
+
+
+                                <table id="tblTransferedUnRegisteredMV"><tr><td></td></tr></table>
+                                <div id="pagerTransferedUnRegisteredMV"></div>
+                            </section>
+                        </div>
+                    </fieldset>
+
+                </div>*@
         </div>
-    </div>
     </div>
 </div>
