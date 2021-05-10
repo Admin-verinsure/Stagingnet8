@@ -1328,7 +1328,10 @@ ui-datepicker-div {
 .hidden {
     display: none;
 }
-
+/*for accordion border*/
+.ui-accordion-header-active + .ui-accordion-content {
+    border-top: 1px solid #ddd;
+}
 
 /*date picker*/
 
