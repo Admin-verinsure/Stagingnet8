@@ -569,6 +569,7 @@ h3 {
 
 .ui-accordion .ui-accordion-header-active {
     border-bottom: 0 !important;
+    margin:0;
 }
 
 .ui-state-default, .ui-state-error, .ui-state-highlight {
@@ -1329,13 +1330,15 @@ ui-datepicker-div {
     display: none;
 }
 /*for accordion border*/
-.ui-accordion-header-active + .ui-accordion-content {
-    border-top: 1px solid #ddd;
+.ui-widget-content.ui-accordion-content-active {
+    border: 1px solid #aaa;
+}
+.ui-accordion .ui-accordion-content {
+    padding: 15px;
 }
 
-/*date picker*/
-
-.new-calendar {
+    /*date picker*/
+    .new-calendar {
     right: 5px;
     padding-left: 3px;
     border-left-width: 1px;
