@@ -1354,3 +1354,13 @@ ui-datepicker-div {
 {
     position:relative;
 }
+
+/*for nav tab hidden*/
+.ui-state-default.hidden {
+    display: none;
+}
+
+/*for button hidden*/
+.btn.hidden {
+    display: none;
+}

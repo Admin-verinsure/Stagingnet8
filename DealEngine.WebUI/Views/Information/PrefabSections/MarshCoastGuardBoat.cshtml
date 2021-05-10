@@ -75,8 +75,8 @@
                         <input id="openModal" class="b" name="openModal" type="hidden">
                         <div class="row">
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">Vessel Name</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Vessel Name</label>
+                                <label class="input form-group col-12">
                                     <i></i>
                                     <input class="form-control b " type="text" data-type="TEXTBOX" data-name="BoatName" id="BoatName" name="BoatName" placeholder="Vessel Name" value="" required>
                                 </label>
@@ -84,8 +84,8 @@
                             </section>
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">Vessel Type</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Vessel Type</label>
+                                <label class="input form-group col-12">
                                     <select onchange="vesselType1Selected()" class="form-control b form-select" id="BoatType1" name="BoatType1" title="" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Powerboats">Powerboats</option>
@@ -100,8 +100,8 @@
                             </section>
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">Vessel status when not in use</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Vessel status when not in use</label>
+                                <label class="input form-group col-12">
                                     <select onchange="vesselType2Selected()" class="form-control b form-select" id="BoatType2" name="BoatType2" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Roadtrailer">Road Trailer</option>
@@ -121,8 +121,8 @@
                                    data-bs-content="Please select the option that best represents the status of the vessel when it is not being used"></i>
                             </section>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">Vessel Skipper</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Vessel Skipper</label>
+                                <label class="input form-group col-12">
                                     <select onchange="addNewSkipper()" class="form-control b form-select" id="BoatOperator" name="BoatOperator" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="@Model.ClientInformationSheet.Owner.Id">@Model.ClientInformationSheet.Owner.Name</option>
@@ -148,8 +148,8 @@
                             </section>
                             <div id="RegistrationSection" class="col-xs-12 col-sm-6 col-md-6 col-lg-6" style="display:none;">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Personal Watercraft Registration Area</label>
-                                    <label class="input form-group">
+                                    <label class="label required col-12">Personal Watercraft Registration Area</label>
+                                    <label class="input form-group col-12">
                                         <select class="form-control b form-select" id="VesselArea" name="VesselArea" title="" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="Auckland">Auckland</option>
@@ -179,8 +179,8 @@
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-6" id="aucklandRegoSection" style="display:none;">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label ">Personal Watercraft (PWC) Registration</label>
-                                    <label class="input form-group">
+                                    <label class="label col-12">Personal Watercraft (PWC) Registration</label>
+                                    <label class="input form-group col-12">
                                         <input class="form-control b" data-type="TEXTBOX" data-name="AucklandRegistration" id="AucklandRegistration" name="AucklandRegistration" placeholder="Personal Watercraft (PWC) Registration" value="">
                                     </label>
                                     <p class="validationContainer" id="validateAucklandRegistration"></p>
@@ -197,8 +197,8 @@
                             </div>
                             <!--hr class="boatAccordianHairline" /-->
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">Is the vessel Professionally built?</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Is the vessel Professionally built?</label>
+                                <label class="input form-group col-12">
                                     <select class="form-control b form-select" id="BuiltProfessionally" name="BuiltProfessionally" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="True">Yes</option>
@@ -216,8 +216,8 @@
                                     data-bs-content="Professionally built is defined as having been primarily constructed by a person or persons professionally engaged in the construction of watercraft"></i>
                             </section>
                             <section class="col col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">Vessel Year of Manufacture</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Vessel Year of Manufacture</label>
+                                <label class="input form-group col-12">
                                     <i></i>
                                     <input class="form-control b" data-type="TEXTBOX" data-name="YearOfManufacture" id="YearOfManufacture" name="YearOfManufacture" placeholder="Vessel Year of Manufacture" value="" required>
                                 </label>
@@ -225,8 +225,8 @@
                             </section>
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">Vessel Make</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Vessel Make</label>
+                                <label class="input form-group col-12">
                                     <i></i>
                                     <input class="form-control b" data-type="TEXTBOX" data-name="BoatMake" id="BoatMake" name="BoatMake" placeholder="Vessel Make" value="" required>
                                 </label>
@@ -234,8 +234,8 @@
                             </section>
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required form-group">Vessel Model</label>
-                                <label class="input form-group">
+                                <label class="label required form-group col-12">Vessel Model</label>
+                                <label class="input form-group col-12">
                                     <i></i>
                                     <input class="form-control b" data-type="TEXTBOX" data-name="BoatModel" id="BoatModel" name="BoatModel" placeholder="Vessel Model" value="" required>
                                 </label>
@@ -243,8 +243,8 @@
                             </section>
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="HullConstructSection">
-                                <label class="label required">Construction Type</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Construction Type</label>
+                                <label class="input form-group col-12">
                                     <select onchange="hideShowHullConstructionOther()" class="form-control b form-select" id="HullConstruction" name="HullConstruction" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Aluminium">Aluminium</option>
@@ -269,8 +269,8 @@
                             </section>
                             <div class="hidden col-sm-6 col-md-6 col-lg-6" id="HullConstructOtherSection">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10 ">
-                                    <label class="label required">Other Construction Type</label>
-                                    <label class="input ">
+                                    <label class="label required col-12">Other Construction Type</label>
+                                    <label class="input col-12">
                                         <i></i>
                                         <input class="form-control b form-group" type="text" data-type="TEXTBOX" data-name="otherhullconstruction" id="OtherConstructionType" name="otherhullconstruction" placeholder="Other Construction Type" required>
                                     </label>
@@ -279,8 +279,8 @@
                                 <section class="col col-sm-2 col-md-2 col-lg-2"></section>
                             </div>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="HullConfigSection">
-                                <label class="label required">Hull Configuration</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Hull Configuration</label>
+                                <label class="input form-group col-12">
                                     <select onchange="hideShowHullConfigurationOther()" class="form-control b form-select" id="HullConfiguration" name="HullConfiguration" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Mono">Mono</option>
@@ -294,8 +294,8 @@
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <div class="hidden col-sm-6 col-md-6 col-lg-6" id="HullConfigurationOtherSection">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Other Hull Configuration</label>
-                                    <label class="input">
+                                    <label class="label required col-12">Other Hull Configuration</label>
+                                    <label class="input col-12">
                                         <input class="form-control b form-group" type="text" data-type="TEXTBOX" data-name="OtherHullConfiguration" id="OtherHullConfiguration" name="OtherHullConfiguration" placeholder="Other Hull Configuration" value="" required>
                                     </label>
                                     <p class="validationContainer" id="validateOtherHullConfiguration"></p>
@@ -303,8 +303,8 @@
                                 <section class="col col-sm-2 col-md-2 col-lg-2"></section>
                             </div>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">Motor Type</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Motor Type</label>
+                                <label class="input form-group col-12">
                                     <select onchange="updateExcess()" class="form-control b form-select" id="MotorType" name="MotorType" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option id="MotorTypeInboardPetrol" value="InboardPetrol">Inboard – Petrol</option>
@@ -320,8 +320,8 @@
                             </section>
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="ModifiedMotorSection">
-                                <label class="label required">Has the motor been modified?</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Has the motor been modified?</label>
+                                <label class="input form-group col-12">
                                     <select class="form-control b form-select" id="ModifiedMotor" name="ModifiedMotor" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="True">Yes</option>
@@ -332,8 +332,8 @@
                             </section>
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">What is the maximum rated speed of the vessel?</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">What is the maximum rated speed of the vessel?</label>
+                                <label class="input form-group col-12">
                                     <select class="form-control b form-select" id="MaxRatedSpeed" name="MaxRatedSpeed" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Upto20Knots">Up to 20 Knots</option>
@@ -347,8 +347,8 @@
                             <!--hr class="boatAccordianHairline" /-->
                             <div class="col-sm-6 col-md-6 col-lg-6" id="RiggingTypeSection">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Rigging Type</label>
-                                    <label class="input form-group">
+                                    <label class="label required col-12">Rigging Type</label>
+                                    <label class="input form-group col-12">
                                         <select class="form-control b form-select" id="RiggingType" name="RiggingType" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="StainlessSteelWire">Stainless Steel Wire</option>
@@ -360,10 +360,10 @@
                                 </section>
                                 <section class="col col-sm-2 col-md-2 col-lg-2"></section>
                             </div>
-                            <div class="col-sm-6 col-md-6 col-lg-6" id="MastTypeSection">
+                            <div class="col-sm-6 col-md-6 col-lg-6 d-flex" id="MastTypeSection">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Mast Type</label>
-                                    <label class="input form-group">
+                                    <label class="label required col-12">Mast Type</label>
+                                    <label class="input form-group col-12">
                                         <select class="form-control b form-select" id="MastType" name="MastType" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="Aluminium">Aluminium</option>
@@ -377,6 +377,7 @@
                                 </section>
                                 <section class="col col-xs-2 col-sm-2 col-md-2 col-lg-2">
                                     <i id="elem" href="#"
+                                       style="margin-left: 2em;"
                                         class="fa fa-question-circle cgpopover"
                                         data-bs-placement="bottom"
                                         data-bs-container="body"
@@ -385,16 +386,16 @@
                                 </section>
                             </div>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">$ Vessel Insured Value (Please exclude trailer value)</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">$ Vessel Insured Value (Please exclude trailer value)</label>
+                                <label class="input form-group col-12">
                                     <input onchange="updateExcess()" class="form-control b" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" data-type="currency" data-name="MaxSumInsured" id="MaxSumInsured" name="MaxSumInsured" placeholder="$ Vessel Insured Value" value="" required>
                                 </label>
                                 <p class="validationContainer" id="validateMaxSumInsured"></p>
                             </section>
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                <label class="label required">$ Excess</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">$ Excess</label>
+                                <label class="input form-group col-12">
                                     <select class="form-control b form-select" id="excess" name="BoatQuoteExcessOption" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option id="excess250" value="250">$250</option>
@@ -408,8 +409,8 @@
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <!--hr class="boatAccordianHairline" /-->
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="VesselTrailer">
-                                <label class="label required">Does this Vessel have a Trailer?</label>
-                                <label class="input form-group">
+                                <label class="label required col-12">Does this Vessel have a Trailer?</label>
+                                <label class="input form-group col-12">
                                     <select onchange="hasTrailer()" class="form-control b form-select" id="BoatIsTrailered" name="BoatIsTrailered" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="True">Yes</option>
@@ -421,8 +422,8 @@
                             <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                             <div class="col-sm-6 col-md-6 col-lg-6" id="SelectTrailerSection" style="display:none">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Vessel Trailer</label>
-                                    <label class="input form-group">
+                                    <label class="label required col-12">Vessel Trailer</label>
+                                    <label class="input form-group col-12">
                                         <select onchange="addNewTrailer()" class="form-control b form-select" id="BoatTrailer" name="BoatTrailer" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             @foreach (var trailer in Model.ClientInformationSheet.Vehicles.Where(t => t.Removed == false))
@@ -445,8 +446,8 @@
                             </section>
                             <div class="col-sm-6 col-md-6 col-lg-6" id="BoatLandLocationSection">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Land Storage Location</label>
-                                    <label class="input form-group">
+                                    <label class="label required col-12">Land Storage Location</label>
+                                    <label class="input form-group col-12">
                                         <select onchange="addNewLandLoc()" class="form-control b form-select" id="BoatLandLocation" name="BoatLandLocation" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             @foreach (var building in Model.ClientInformationSheet.Buildings)
@@ -462,8 +463,8 @@
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-6 hidden" id="BoatWaterLocationSection">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Vessel Water Location</label>
-                                    <label class="input form-group">
+                                    <label class="label required col-12">Vessel Water Location</label>
+                                    <label class="input form-group col-12">
                                         <select onchange="addNewWaterLoc()" class="form-control b form-select" id="BoatWaterLocation" name="BoatWaterLocation" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             @foreach (var marina in Model.ClientInformationSheet.WaterLocations)
@@ -479,8 +480,8 @@
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-6 hidden" id="othermarinSection">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Other Marina Name</label>
-                                    <label class="input form-group">
+                                    <label class="label required col-12">Other Marina Name</label>
+                                    <label class="input form-group col-12">
                                         <i></i>
                                         <input class="form-control b " type="text" data-type="TEXTBOX" id="OtherBoatWaterLocation" name="OtherMarinaName" placeholder="Other Marina Name" value="" required>
                                     </label>
@@ -490,8 +491,8 @@
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-6 hidden" id="BoatMooredTypeSection">
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Moored Type</label>
-                                    <label class="input form-group">                                        
+                                    <label class="label required col-12">Moored Type</label>
+                                    <label class="input form-group col-12">                                        
                                         <select class="form-control b form-select" id="MooredType" name="WaterLocationMooringType">
                                             <option selected="selected" value="">-- Select --</option>
                                             <option id="BerthedMooringType"value="Berthed">Berthed</option>
@@ -505,8 +506,8 @@
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-6" id="VesselUseSection" style="display:none">
                                 <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Select Vessel Use</label>
-                                    <label class="input form-group">
+                                    <label class="label required col-12">Select Vessel Use</label>
+                                    <label class="input form-group col-12">
                                         <select onchange="addNewBoatUse()" id="SelectedBoatUse" name="SelectedBoatUse" class="form-select form-control b" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="add">Add Vessel Use</option>
@@ -517,16 +518,17 @@
                                 <section class="col col-sm-2 col-md-2 col-lg-2"></section>
                             </div>
                             <!--hr class="boatAccordianHairline" /-->
-                            <div class="col-sm-6 col-md-6 col-lg-6">
+                            <div class="col-sm-6 col-md-6 col-lg-6 d-flex">
                                 <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label required">Effective Date for cover for this vessel</label>
-                                    <label class="input ">
-                                        <i class="icon-append fa fa-calendar"></i>
+                                    <label class="label required col-12">Effective Date for cover for this vessel</label>
+                                    <label class="input calender-relative col-12">
+                                        <i class="icon-append fa fa-calendar new-calendar"></i>
                                         <input name="BoatEffectiveDate" placeholder="Effective Date" class="form-control b" id="BoatEffectiveDate" type="text" required>
                                     </label>
                                 </section>
                                 <section class="col col-xs-2 col-sm-2 col-md-2 col-lg-2">
                                     <i id="elem" href="#"
+                                       style="margin-left: 2em;"
                                        class="fa fa-question-circle cgpopover"
                                        data-bs-placement="bottom"
                                        data-bs-html="true"
@@ -539,8 +541,8 @@
                             <!--hr class="boatAccordianHairline" /-->
                             <div class="col-sm-6 col-md-6 col-lg-6">
                                 <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label">Interested Parties</label>
-                                    <label class="input form-group">
+                                    <label class="label col-12">Interested Parties</label>
+                                    <label class="input form-group col-12">
                                         <select data-placeholder="Choose Interested Parties..." id="SelectedInterestedParty" name="SelectedInterestedParty" multiple class="chosen-select form-control b form-select">
                                             @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Financial" || i.Name == "Co Owner")).ToList())
                                             {
@@ -871,7 +873,7 @@
                             </div>
                             <div class="col-sm-6 col-md-6 col-lg-6" id="AddMastTypeSection">
 
-                                <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                                <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10 d-flex">
                                     <label class="label required col-12">Mast Type</label>
                                     <label class="input form-group col-12">
                                         <select class="form-control b form-select" id="AddMastType" name="MastType" required>
@@ -887,6 +889,7 @@
                                 </section>
                                 <section class="col col-xs-2 col-sm-2 col-md-2 col-lg-2">
                                     <i id="elem" href="#"
+                                       style="margin-left: 2em;"
                                        class="fa fa-question-circle cgpopover"
                                        data-bs-placement="bottom"
                                        data-bs-container="body"
@@ -1030,16 +1033,17 @@
                                 <section class="col col-sm-2 col-md-2 col-lg-2"></section>
                             </div>
                             <!--hr class="boatAccordianHairline" /-->
-                            <div class="col-sm-6 col-md-6 col-lg-6">
+                            <div class="col-sm-6 col-md-6 col-lg-6 d-flex">
                                 <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Effective Date for cover for this vessel</label>
-                                    <label class="input col-12">
-                                        <i class="icon-append fa fa-calendar"></i>
+                                    <label class="input col-12 calender-relative">
+                                        <i class="icon-append fa fa-calendar new-calendar"></i>
                                         <input name="BoatEffectiveDate" placeholder="Effective Date" class="form-control b" id="AddBoatEffectiveDate" type="text">
                                     </label>
                                 </section>
                                 <section class="col col-xs-2 col-sm-2 col-md-2 col-lg-2">
                                     <i id="elem" href="#"
+                                       style="margin-left: 2em;"
                                        class="fa fa-question-circle cgpopover"
                                        data-bs-placement="bottom"
                                        data-bs-html="true"
