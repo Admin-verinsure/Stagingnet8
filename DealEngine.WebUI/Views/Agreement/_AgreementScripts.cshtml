@@ -36,7 +36,7 @@
 
     });
     $('#VesselModal').on('show.bs.modal', function (e) {
-        $('.modal').css('width', '600px');
+        $('.modal').css({ "position": "absolute", "float": "left", "left": "25%", "width": "50%", "transform": "translate(-50 %, -50 %)" });
         var MotorMake = $(e.relatedTarget).data('motor-make');
         var MotorRego = $(e.relatedTarget).data('motor-registration');
         var SumInsured = $(e.relatedTarget).data('motor-sum');
