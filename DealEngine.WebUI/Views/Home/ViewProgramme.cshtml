@@ -469,6 +469,7 @@
 
         $('#myChangeModal').on('show.bs.modal', function (e) {
             debugger;
+
            $('.modal').css({ "width": "50%", "margin-left": "25%" });
             var dealId = $(e.relatedTarget).data('dealitem-id');
             console.log("dealId=" + dealId)
