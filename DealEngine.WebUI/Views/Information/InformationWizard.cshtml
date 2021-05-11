@@ -1058,9 +1058,9 @@
                 }
             }*@
 
-        @*var advisoryModal = new bootstrap.Modal(document.getElementById('advisoryModal'));
+    @*var advisoryModal = new bootstrap.Modal(document.getElementById('advisoryModal'));
             advisoryModal.show()
-            
+
             if ("@Model.Status" === "Not Started") {
                 console.log('test1');
                 if ("@Model.Advisory" !== "") {
@@ -1069,6 +1069,18 @@
 
                 }
             }*@
+
+
+
+         advisoryModal = document.getElementById('advisoryModal');
+            if ("@Model.Status" === "Not Started") {
+                if ("@Model.Advisory" !== "") {
+                    $("#advisoryModal").modal('show');
+                }
+            }
+
+
+
         //var advisoryModal = document.getElementById('advisoryModal');
         //advisoryModal.addEventListener('show.bs.modal');
 
@@ -1114,7 +1126,7 @@
          debugger;
 
         var slectedUpdateType = "@Model.selectedUpdateType.First()";
-    
+
          if (slectedUpdateType == "TC_add_edit_remove_location") {
                // $("#Location").trigger("click");
              //$("[id='Location']").trigger("click");
@@ -1127,23 +1139,23 @@
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat"]');
              test1[0].click();
          }
-      
+
          if (slectedUpdateType == "TC_amendInsuredPerson") {
              var test1 = document.querySelectorAll('[data-newId="AddOrganisation"]');
              test1[0].click();
-             
+
          }
 
          if (slectedUpdateType == "TC_addNotification") {
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat4"]');
              test1[0].click();
          }
-        
+
          if (slectedUpdateType == "TC_addEditDeleteRegTrailer") {
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat0"]');
              test1[0].click();
          }
- 
+
          if (slectedUpdateType == "TC_addEditDeleteNonRegTrailer") {
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat1"]');
              test1[0].click();
