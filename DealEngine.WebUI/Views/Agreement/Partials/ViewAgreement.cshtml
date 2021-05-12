@@ -224,7 +224,7 @@
                 </div>
             }
             <div class="row">
-                <table class="table text-center" style="border:1px;" id="vehicleTable">
+                <table class="table text-center" style="border-top: 1px solid #dee2e6;" id="vehicleTable">
                     <tr>
                         <th class="text-center" width="25%"></th>
                         <th class="text-center" width="25%"></th>
@@ -233,7 +233,7 @@
                     </tr>
                     @foreach (var item in Model.Inclusions)
                     {
-                        <tr class="clickable-row">
+                        <tr class="clickable-row" style="border-color: #dee2e6">
                             <td class="pt-3-half" width="13%" contenteditable="true">
                                 Total Sum Insured
                             </td>
@@ -244,7 +244,7 @@
                             </td>
                         </tr>
                     }
-                    <tr>
+                    <tr style="border: 1px solid white;">
                         <td></td>
                         <td></td>
                         <td></td>
@@ -318,7 +318,7 @@
                     </tr>
                     @foreach (var item in Model.RiskPremiums)
                     {
-                        <tr class="clickable-row">
+                        <tr class="clickable-row" style="border-color: #dee2e6;">
                             <td class="pt-3-half" width="13%" contenteditable="true">
                                 Total Premiums
                             </td>
@@ -329,7 +329,7 @@
                             </td>
                         </tr>
                     }
-                    <tr class="clickable-row">
+                    <tr class="clickable-row" style="border-color: #dee2e6;">
                         <td class="pt-3-half" width="13%" contenteditable="true">
                             Broker Service Fee
                         </td>
@@ -342,7 +342,7 @@
 
                     @foreach (var item in Model.RiskPremiums)
                     {
-                        <tr class="clickable-row">
+                        <tr class="clickable-row" style="border-color: #dee2e6;">
                             <td class="pt-3-half" width="13%" contenteditable="true">
                                 GST
                             </td>
@@ -356,7 +356,7 @@
 
                     @foreach (var item in Model.RiskPremiums)
                     {
-                        <tr class="clickable-row">
+                        <tr class="clickable-row" style=" border: 0px solid white;">
                             <td class="pt-3-half" width="13%" contenteditable="true">
                                 <strong>Total Amount Due</strong>
                             </td>
