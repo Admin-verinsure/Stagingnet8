@@ -47,7 +47,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="alert alert-info alert-dismissible" role="alert">
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><span aria-hidden="true"></span></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="width: 0em; height: 0em;"><span aria-hidden="true"></span></button>
                                     There are currently no upcoming tasks.
                                 </div>
                             </div>
@@ -66,9 +66,9 @@
                             <div class="card-body">
                                 @if (Model.UserTasks.Count == 0)
                                 {
-                                    <div class="hidden">
+                                    <div class="">
                                         <div class="alert alert-info alert-dismissible" role="alert">
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="width: 0em; height: 0em;">
                                             @*<span aria-hidden="true">&times;</span>*@
                                             </button>
                                             There are currently no pending tasks.
