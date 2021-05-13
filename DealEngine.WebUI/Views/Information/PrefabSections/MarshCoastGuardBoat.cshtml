@@ -86,7 +86,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Vessel Type</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="vesselType1Selected()" class="form-select" id="BoatType1" name="BoatType1" title="" required>
+                                    <select onchange="vesselType1Selected()" class="form-control b form-select" id="BoatType1" name="BoatType1" title="" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Powerboats">Powerboats</option>
                                         <option value="CruisersandLaunches">Cruisers and Launches</option>
@@ -102,7 +102,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Vessel status when not in use</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="vesselType2Selected()" class="form-select" id="BoatType2" name="BoatType2" required>
+                                    <select onchange="vesselType2Selected()" class="form-control b form-select" id="BoatType2" name="BoatType2" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Roadtrailer">Road Trailer</option>
                                         <option value="Stored">Stored</option>
@@ -123,7 +123,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Vessel Skipper</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="addNewSkipper()" class="form-select" id="BoatOperator" name="BoatOperator" required>
+                                    <select onchange="addNewSkipper()" class="form-control b form-select" id="BoatOperator" name="BoatOperator" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="@Model.ClientInformationSheet.Owner.Id">@Model.ClientInformationSheet.Owner.Name</option>
                                         @foreach (var skipper in Model.OrganisationViewModel.Organisations.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Skipper")).ToList())
@@ -150,7 +150,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Personal Watercraft Registration Area</label>
                                     <label class="input form-group col-12">
-                                        <select class="form-select" id="VesselArea" name="VesselArea" title="" required>
+                                        <select class="form-control b form-select" id="VesselArea" name="VesselArea" title="" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="Auckland">Auckland</option>
                                             <option value="Bay Of Plenty">Bay Of Plenty</option>
@@ -199,7 +199,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Is the vessel Professionally built?</label>
                                 <label class="input form-group col-12">
-                                    <select class="form-select" id="BuiltProfessionally" name="BuiltProfessionally" required>
+                                    <select class="form-control b form-select" id="BuiltProfessionally" name="BuiltProfessionally" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="True">Yes</option>
                                         <option value="False">No</option>
@@ -245,7 +245,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="HullConstructSection">
                                 <label class="label required col-12">Construction Type</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="hideShowHullConstructionOther()" class="form-select" id="HullConstruction" name="HullConstruction" required>
+                                    <select onchange="hideShowHullConstructionOther()" class="form-control b form-select" id="HullConstruction" name="HullConstruction" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Aluminium">Aluminium</option>
                                         <option value="Steel">Steel</option>
@@ -281,7 +281,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="HullConfigSection">
                                 <label class="label required col-12">Hull Configuration</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="hideShowHullConfigurationOther()" class="form-select" id="HullConfiguration" name="HullConfiguration" required>
+                                    <select onchange="hideShowHullConfigurationOther()" class="form-control b form-select" id="HullConfiguration" name="HullConfiguration" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Mono">Mono</option>
                                         <option id="HullConfigurationCatamaran" value="Catamaran">Catamaran</option>
@@ -305,7 +305,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Motor Type</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="updateExcess()" class="form-select" id="MotorType" name="MotorType" required>
+                                    <select onchange="updateExcess()" class="form-control b form-select" id="MotorType" name="MotorType" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option id="MotorTypeInboardPetrol" value="InboardPetrol">Inboard – Petrol</option>
                                         <option id="MotorTypeInboardDiesel" value="InboardDiesel">Inboard – Diesel</option>
@@ -322,7 +322,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="ModifiedMotorSection">
                                 <label class="label required col-12">Has the motor been modified?</label>
                                 <label class="input form-group col-12">
-                                    <select class="form-select" id="ModifiedMotor" name="ModifiedMotor" required>
+                                    <select class="form-control b form-select" id="ModifiedMotor" name="ModifiedMotor" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="True">Yes</option>
                                         <option value="False">No</option>
@@ -334,7 +334,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">What is the maximum rated speed of the vessel?</label>
                                 <label class="input form-group col-12">
-                                    <select class="form-select" id="MaxRatedSpeed" name="MaxRatedSpeed" required>
+                                    <select class="form-control b form-select" id="MaxRatedSpeed" name="MaxRatedSpeed" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Upto20Knots">Up to 20 Knots</option>
                                         <option value="Between20and60Knots">Between 20 and 60 Knots</option>
@@ -349,7 +349,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Rigging Type</label>
                                     <label class="input form-group col-12">
-                                        <select class="form-select" id="RiggingType" name="RiggingType" required>
+                                        <select class="form-control b form-select" id="RiggingType" name="RiggingType" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="StainlessSteelWire">Stainless Steel Wire</option>
                                             <option value="Rod">Rod</option>
@@ -364,7 +364,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Mast Type</label>
                                     <label class="input form-group col-12">
-                                        <select class="form-select" id="MastType" name="MastType" required>
+                                        <select class="form-control b form-select" id="MastType" name="MastType" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="Aluminium">Aluminium</option>
                                             <option value="Steel">Steel</option>
@@ -396,7 +396,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">$ Excess</label>
                                 <label class="input form-group col-12">
-                                    <select class="form-select" id="excess" name="BoatQuoteExcessOption" required>
+                                    <select class="form-control b form-select" id="excess" name="BoatQuoteExcessOption" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option id="excess250" value="250">$250</option>
                                         <option id="excess500" value="500">$500</option>
@@ -411,7 +411,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="VesselTrailer">
                                 <label class="label required col-12">Does this Vessel have a Trailer?</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="hasTrailer()" class="form-select" id="BoatIsTrailered" name="BoatIsTrailered" required>
+                                    <select onchange="hasTrailer()" class="form-control b form-select" id="BoatIsTrailered" name="BoatIsTrailered" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="True">Yes</option>
                                         <option value="False">No</option>
@@ -424,7 +424,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Vessel Trailer</label>
                                     <label class="input form-group col-12">
-                                        <select onchange="addNewTrailer()" class="form-select" id="BoatTrailer" name="BoatTrailer" required>
+                                        <select onchange="addNewTrailer()" class="form-control b form-select" id="BoatTrailer" name="BoatTrailer" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             @foreach (var trailer in Model.ClientInformationSheet.Vehicles.Where(t => t.Removed == false))
                                             {
@@ -448,7 +448,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Land Storage Location</label>
                                     <label class="input form-group col-12">
-                                        <select onchange="addNewLandLoc()" class="form-select" id="BoatLandLocation" name="BoatLandLocation" required>
+                                        <select onchange="addNewLandLoc()" class="form-control b form-select" id="BoatLandLocation" name="BoatLandLocation" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             @foreach (var building in Model.ClientInformationSheet.Buildings)
                                             {
@@ -465,7 +465,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Vessel Water Location</label>
                                     <label class="input form-group col-12">
-                                        <select onchange="addNewWaterLoc()" class="form-select" id="BoatWaterLocation" name="BoatWaterLocation" required>
+                                        <select onchange="addNewWaterLoc()" class="form-control b form-select" id="BoatWaterLocation" name="BoatWaterLocation" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             @foreach (var marina in Model.ClientInformationSheet.WaterLocations)
                                             {
@@ -493,7 +493,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Moored Type</label>
                                     <label class="input form-group col-12">                                        
-                                        <select class="form-select" id="MooredType" name="WaterLocationMooringType">
+                                        <select class="form-control b form-select" id="MooredType" name="WaterLocationMooringType">
                                             <option selected="selected" value="">-- Select --</option>
                                             <option id="BerthedMooringType"value="Berthed">Berthed</option>
                                             <option id="PileMooringType" value="Pile">Pile</option>
@@ -508,7 +508,7 @@
                                 <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Select Vessel Use</label>
                                     <label class="input form-group col-12">
-                                        <select onchange="addNewBoatUse()" id="SelectedBoatUse" name="SelectedBoatUse" class="form-select form-control" required>
+                                        <select onchange="addNewBoatUse()" id="SelectedBoatUse" name="SelectedBoatUse" class="form-select form-control b" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="add">Add Vessel Use</option>
                                         </select>
@@ -543,7 +543,7 @@
                                 <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label col-12">Interested Parties</label>
                                     <label class="input form-group col-12">
-                                        <select data-placeholder="Choose Interested Parties..." id="SelectedInterestedParty" name="SelectedInterestedParty" multiple class="chosen-select form-select">
+                                        <select data-placeholder="Choose Interested Parties..." id="SelectedInterestedParty" name="SelectedInterestedParty" multiple class="chosen-select form-control b form-select">
                                             @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Financial" || i.Name == "Co Owner")).ToList())
                                             {
                                                 <option value="@organisation.Id"> @organisation.Name</option>
@@ -595,7 +595,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Vessel Type</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="AddvesselType1Selected()" class="form-select" id="AddBoatType1" name="BoatType1" title="" required>
+                                    <select onchange="AddvesselType1Selected()" class="form-control b form-select" id="AddBoatType1" name="BoatType1" title="" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Powerboats">Powerboats</option>
                                         <option value="CruisersandLaunches">Cruisers and Launches</option>
@@ -611,7 +611,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Vessel status when not in use</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="AddvesselType2Selected()" class="form-select" id="AddBoatType2" name="BoatType2" required>
+                                    <select onchange="AddvesselType2Selected()" class="form-control b form-select" id="AddBoatType2" name="BoatType2" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Roadtrailer">Road Trailer</option>
                                         <option value="Stored">Stored</option>
@@ -632,7 +632,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Vessel Skipper</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="AddaddNewSkipper()" class="form-select" id="AddBoatOperator" name="BoatOperator" required>
+                                    <select onchange="AddaddNewSkipper()" class="form-control b form-select" id="AddBoatOperator" name="BoatOperator" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="@Model.ClientInformationSheet.Owner.Id">@Model.ClientInformationSheet.Owner.Name</option>
                                         @foreach (var skipper in Model.OrganisationViewModel.Organisations.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Skipper")).ToList())
@@ -659,7 +659,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Personal Watercraft Registration Area</label>
                                     <label class="input form-group col-12">
-                                        <select class="form-select" id="AddVesselArea" name="VesselArea" title="" required>
+                                        <select class="form-control b form-select" id="AddVesselArea" name="VesselArea" title="" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="Auckland">Auckland</option>
                                             <option value="Bay Of Plenty">Bay Of Plenty</option>
@@ -710,7 +710,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Is the vessel Professionally built?</label>
                                 <label class="input form-group col-12">
-                                    <select class="form-select" id="AddBuiltProfessionally" name="BuiltProfessionally" required>
+                                    <select class="form-control b form-select" id="AddBuiltProfessionally" name="BuiltProfessionally" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="True">Yes</option>
                                         <option value="False">No</option>
@@ -755,7 +755,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="AddHullConstructSection">
                                 <label class="label required col-12">Construction Type</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="AddhideShowHullConstructionOther()" class="form-select" id="AddHullConstruction" name="HullConstruction" required>
+                                    <select onchange="AddhideShowHullConstructionOther()" class="form-control b form-select" id="AddHullConstruction" name="HullConstruction" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Aluminium">Aluminium</option>
                                         <option value="Steel">Steel</option>
@@ -791,7 +791,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="AddHullConfigSection">
                                 <label class="label required col-12">Hull Configuration</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="AddhideShowHullConfigurationOther()" class="form-select" id="AddHullConfiguration" name="HullConfiguration" required>
+                                    <select onchange="AddhideShowHullConfigurationOther()" class="form-control b form-select" id="AddHullConfiguration" name="HullConfiguration" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Mono">Mono</option>
                                         <option id="AddHullConfigurationCatamaran" value="Catamaran">Catamaran</option>
@@ -816,7 +816,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">Motor Type</label>
                                 <label class="input form-group col-12">
-                                    <select onchange="AddupdateExcess()" class="form-select" id="AddMotorType" name="MotorType" required>
+                                    <select onchange="AddupdateExcess()" class="form-control b form-select" id="AddMotorType" name="MotorType" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option id="AddMotorTypeInboardPetrol" value="InboardPetrol">Inboard – Petrol</option>
                                         <option id="AddMotorTypeInboardDiesel" value="InboardDiesel">Inboard – Diesel</option>
@@ -833,7 +833,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="AddModifiedMotorSection">
                                 <label class="label required col-12">Has the motor been modified?</label>
                                 <label class="input form-group col-12">
-                                    <select class="form-select" id="AddModifiedMotor" name="ModifiedMotor" required>
+                                    <select class="form-control b form-select" id="AddModifiedMotor" name="ModifiedMotor" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="True">Yes</option>
                                         <option value="False">No</option>
@@ -845,7 +845,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">What is the maximum rated speed of the vessel?</label>
                                 <label class="input form-group col-12">
-                                    <select class="form-select" id="AddMaxRatedSpeed" name="MaxRatedSpeed" required>
+                                    <select class="form-control b form-select" id="AddMaxRatedSpeed" name="MaxRatedSpeed" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option value="Upto20Knots">Up to 20 Knots</option>
                                         <option value="Between20and60Knots">Between 20 and 60 Knots</option>
@@ -860,7 +860,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Rigging Type</label>
                                     <label class="input form-group col-12">
-                                        <select class="form-select" id="AddRiggingType" name="RiggingType" required>
+                                        <select class="form-control b form-select" id="AddRiggingType" name="RiggingType" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="StainlessSteelWire">Stainless Steel Wire</option>
                                             <option value="Rod">Rod</option>
@@ -876,7 +876,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10 ">
                                     <label class="label required col-12">Mast Type</label>
                                     <label class="input form-group col-12">
-                                        <select class="form-select" id="AddMastType" name="MastType" required>
+                                        <select class="form-control b form-select" id="AddMastType" name="MastType" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="Aluminium">Aluminium</option>
                                             <option value="Steel">Steel</option>
@@ -909,7 +909,7 @@
                             <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
                                 <label class="label required col-12">$ Excess</label>
                                 <label class="input form-group col-12">
-                                    <select class="form-select" id="Addexcess" name="BoatQuoteExcessOption" required>
+                                    <select class="form-control b form-select" id="Addexcess" name="BoatQuoteExcessOption" required>
                                         <option selected="selected" value="">-- Select --</option>
                                         <option id="Addexcess250" value="250">$250</option>
                                         <option id="Addexcess500" value="500">$500</option>
@@ -925,7 +925,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Does this Vessel have a Trailer?</label>
                                     <label class="input form-group col-12">
-                                        <select onchange="AddhasTrailer()" class="form-select" id="AddBoatIsTrailered" name="BoatIsTrailered" required>
+                                        <select onchange="AddhasTrailer()" class="form-control b form-select" id="AddBoatIsTrailered" name="BoatIsTrailered" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="True">Yes</option>
                                             <option value="False">No</option>
@@ -939,7 +939,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Vessel Trailer</label>
                                     <label class="input form-group col-12">
-                                        <select onchange="AddaddNewTrailer()" class="form-select" id="AddBoatTrailer" name="BoatTrailer" required>
+                                        <select onchange="AddaddNewTrailer()" class="form-control b form-select" id="AddBoatTrailer" name="BoatTrailer" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             @foreach (var trailer in Model.ClientInformationSheet.Vehicles.Where(t => t.Removed == false))
                                             {
@@ -963,7 +963,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Land Storage Location</label>
                                     <label class="input form-group col-12">
-                                        <select onchange="AddaddNewLandLoc()" class="form-select" id="AddBoatLandLocation" name="BoatLandLocation" required>
+                                        <select onchange="AddaddNewLandLoc()" class="form-control b form-select" id="AddBoatLandLocation" name="BoatLandLocation" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             @foreach (var building in Model.ClientInformationSheet.Buildings)
                                             {
@@ -980,7 +980,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Vessel Water Location</label>
                                     <label class="input form-group col-12">
-                                        <select onchange="AddaddNewWaterLoc()" class="form-select" id="AddBoatWaterLocation" name="BoatWaterLocation" required>
+                                        <select onchange="AddaddNewWaterLoc()" class="form-control b form-select" id="AddBoatWaterLocation" name="BoatWaterLocation" required>
                                             <option selected="selected" value="">-- Select --</option>   
                                             @foreach (var marina in Model.ClientInformationSheet.WaterLocations)
                                                 {
@@ -1008,7 +1008,7 @@
                                 <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Moored Type</label>
                                     <label class="input form-group col-12">
-                                        <select class="form-select" id="AddMooredType" name="WaterLocationMooringType">
+                                        <select class="form-control b form-select" id="AddMooredType" name="WaterLocationMooringType">
                                             <option selected="selected" value="">-- Select --</option>
                                             <option id="AddBerthedMooringType"value="Berthed">Berthed</option>
                                             <option id="AddPileMooringType" value="Pile">Pile</option>
@@ -1023,7 +1023,7 @@
                                 <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label required col-12">Select Vessel Use</label>
                                     <label class="input form-group col-12">
-                                        <select onchange="addNewBoatUse()" id="AddSelectedBoatUse" name="SelectedBoatUse" class="form-select" required>
+                                        <select onchange="addNewBoatUse()" id="AddSelectedBoatUse" name="SelectedBoatUse" class="form-control b form-select" required>
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="add">Add Vessel Use</option>
                                         </select>
@@ -1084,7 +1084,7 @@
                                 <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
                                     <label class="label col-12">Interested Parties</label>
                                     <label class="input form-group col-12">
-                                        <select data-placeholder="Choose Interested Parties..." id="AddSelectedInterestedParty" name="SelectedInterestedParty" multiple class="chosen-select form-control bform-select">
+                                        <select data-placeholder="Choose Interested Parties..." id="AddSelectedInterestedParty" name="SelectedInterestedParty" multiple class="chosen-select form-control b form-select">
                                             @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Financial" || i.Name == "Co Owner")).ToList())
                                             {
                                                 <option value="@organisation.Id"> @organisation.Name</option>
