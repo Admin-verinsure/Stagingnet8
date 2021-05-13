@@ -203,7 +203,7 @@
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-6">
-                                        <label for="ClaimEstimateInsuredLiability form-label" class="label required">
+                                        <label for="ClaimEstimateInsuredLiability form-label" class="label">
                                             $ Estimate of Liability
                                         </label>
                                     </div>
@@ -216,13 +216,13 @@
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-6">
-                                        <label for="PrimaryPolicyprod form-label" class="label required">
+                                        <label for="PrimaryPolicyprod form-label" class="label">
                                             Primary Policy Product
                                         </label>
                                     </div>
                                     <div class="col-6">
 
-                                        <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select" form="ClaimViewModel">
+                                        <select style="background-color: #fff;" data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select" form="ClaimViewModel">
                                             <option selected="selected" value="">-- Select here --</option>
 
                                             @foreach (var product in Model.ClientProgramme.BaseProgramme.Products)
@@ -237,12 +237,12 @@
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-6">
-                                        <label for="locationtypeoptions form-label" class="label required">
+                                        <label for="locationtypeoptions form-label" class="label">
                                             Responsible Principal
                                         </label>
                                     </div>
                                     <div class="col-6">
-                                        <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
+                                        <select style="background-color: #fff;" data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
                                             <option selected="selected" value="">-- Select here --</option>
                                             @foreach (var org in Model.OrganisationViewModel.Organisations)
                                             {
@@ -256,12 +256,12 @@
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-6">
-                                        <label for="ClaimNotes form-label" class="label required">
+                                        <label for="ClaimNotes form-label" class="label">
                                             Notes
                                         </label>
                                     </div>
                                     <div class="col-6">
-                                        @Html.TextAreaFor(m => m.ClaimViewModel.ClaimNotes, new { id = "ClaimNotes", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                                        @Html.TextAreaFor(m => m.ClaimViewModel.ClaimNotes, new { id = "ClaimNotes", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
 
                                     </div>
                                 </div>
@@ -277,7 +277,7 @@
                                     </div>
                                     <div class="col-6">
 
-                                        <select data-placeholder="Choose Primary Policy Product..." id="ClaimStatus" name="ClaimStatus" class="form-control b form-select" form="ClaimViewModel" readonly>
+                                        <select style="background-color: #fff;" data-placeholder="Choose Primary Policy Product..." id="ClaimStatus" name="ClaimStatus" class="form-control b form-select" form="ClaimViewModel" readonly>
                                             <option selected="selected" value="PrecautionaryNotificationOnly">Precautionary notification only</option>
                                             <option value="Withdrawnbyinsured">Withdrawn by insured</option>
                                             <option value="Formalclaimfiled">Formal claim filed</option>
