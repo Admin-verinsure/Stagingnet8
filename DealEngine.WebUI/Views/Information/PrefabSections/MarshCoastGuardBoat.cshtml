@@ -5,7 +5,7 @@
 
         <div id="Boattabs" class="container-fluid  " style="">
 
-            <input id="LocationId" name="LocationViewModel.LocationId" hidden form="LocationViewModel" />
+            @*<input id="LocationId" name="LocationViewModel.LocationId" hidden form="LocationViewModel" />*@
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item" id="tab1">
                     <a class="nav-link active" href="#boatTabs1" data-toggle="tab" onclick="ResetForm('boatTabs3', 'boatTabs2', 'Boat', 'BoatAddButton', 'BoatCancelButton')"> List All </a>
@@ -22,8 +22,7 @@
             </ul>
             <div class="tab-content">
                 <div id="boatTabs1" class="tab-pane active" role="tabpanel">
-                    <div id="locationtab1" class="tab-pane active" role="tabpanel">
-                        <table id="tblLocation"
+                        <table id="tblBoat"
                                class="table table-striped" width="100%"
                                @*data-show-columns="true"*@
                                data-pagination="true"
@@ -59,13 +58,12 @@
                                         </td>
                                        
                                         <td>
-                                            <button type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+                                            <button onclick="RemoveVessel('@boat.Id', 'true', '#tblBoat', '#tblRemovedBoat','Started')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
-                    </div>
                 </div>
                 <div id="boatTabs2" class="tab-pane" role="tabpanel">
                     <div class="form-group">

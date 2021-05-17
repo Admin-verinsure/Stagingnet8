@@ -271,7 +271,7 @@
                 });
         }
     }
-    
+
 
     function RemoveLocation(Id) {
         sessionStorage.setItem('accordianTrigger', 'Location');
@@ -289,6 +289,51 @@
                 debugger;
             });
     }
+
+
+    function RemoveVessel(boatId, status, sourceTable, destTable, Modelstatus) {
+        debugger;
+        sessionStorage.setItem('accordianTrigger', 'Vessel');
+        //var postData = { boatId: boatId };
+
+        var _sheetId = $('#AnswerSheetId').val();
+        var postData = {
+            'boatId': boatId,
+            'answerSheetId': _sheetId
+        };
+        $.ajax({
+            url: '@Url.Action("GetOriginalBoat", "Services")',
+            type: "POST",
+            data: postData
+        })
+        //.done(function () {
+        //        location.reload();
+               
+        //  })
+            .done(function (data) {
+                debugger;
+                if (data.originalBoatId != "00000000-0000-0000-0000-000000000000") {
+                    if (Modelstatus != "Submitted") {
+                        $('#BoatRemoveModal').show();
+                        $('.modal').css({ "width": "600px", "margin-left": "600px" });
+                        $('#boatID').val(boatId);
+                        $('#status').val(status);
+                        //$('#sourceTable').val(sourceTable);
+                        //$('#destTable').val(destTable);
+                    }
+                    else {
+                        alert("Information Sheet has already been submitted, and cannot be updated.");
+                    }
+                }
+                else {
+                    SetBoatRemovedStatus(boatId, status, sourceTable, destTable);
+                }
+            })
+            .fail(function (a, s, d) {
+                debugger;
+            });
+    }
+
 
     function RemoveClaimNotification(Id) {
         sessionStorage.setItem('accordianTrigger', 'Notifications');
@@ -391,7 +436,7 @@
         var eleman1 = document.getElementById("ClaimBrokerReference");
         eleman1.setAttribute("disabled", "true");
         document.getElementById("ClaimBrokerReferenceFormGroup").style.display = "block";
-        
+
 
         var eleman2 = document.getElementById("ClaimInsurerReference");
         eleman2.setAttribute("disabled", "true");
@@ -439,7 +484,7 @@
         document.getElementById("jobdescription").value = JobDescription;
         document.getElementById("contractoremail").value = ContractorEmail;
         document.getElementById("firstname").value = FirstName;
-        document.getElementById("lastname").value = LastName; 
+        document.getElementById("lastname").value = LastName;
         document.getElementById("jobnumber").value = JobNumber;
         debugger;
         var test = IssueDate.split(' ')[0];
@@ -450,7 +495,7 @@
         //console.log(StartDate);
         //console.log(EndDate);
         //console.log(CertRequiredByDate);
-        
+
         document.getElementById("issuedate").value = IssueDate.split(' ')[0];
         document.getElementById("startdate").value = StartDate.split(' ')[0];
         document.getElementById("enddate").value = EndDate.split(' ')[0];
@@ -738,7 +783,7 @@
             } else {
                 sanitised += parts[i] + ' / ';
             }
-            
+
         }
         return sanitised;
     }
