@@ -74,7 +74,42 @@
 
                 </div>
                 <div id="boatTabs4" class="tab-pane" role="tabpanel">
-
+                    <table id="tblRemovedBoat"
+                           class="table table-striped" width="100%"
+                           @*data-show-columns="true"*@
+                           data-pagination="true"
+                           data-search="true"
+                           data-show-jump-to="true">
+                        <thead>
+                            <tr>
+                                <th data-field="editButton" data-sortable="false"></th>
+                                <th data-field="jqgh_tblBoat_BoatName" data-sortable="true">Boat Name</th>
+                                <th data-field="jqgh_tblBoat_YearOfManufacture" data-sortable="true">Year</th>
+                                <th data-field="jqgh_tblBoat_MaxSumInsured" data-sortable="true">Sum Insured</th>
+                                <th data-field="deleteButton" data-sortable="false"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var boat in Model.ClientInformationSheet.Boats.Where(l => l.Removed == true).ToList())
+                            {
+                                <tr id="@boat.Id">
+                                    <td>
+                                        <button class="btn btn-success btn-sm" onclick="SetBoatRemovedStatus('@boat.Id', 'false', '#tblRemovedBoat', '#tblBoat');SetCurrentTab('boatTabs1');"><i class="fa fa-undo"></i></button>
+                                    </td>
+                                    <td>
+                                        @boat.BoatName
+                                    </td>
+                                    <td>
+                                        @boat.YearOfManufacture
+                                    </td>
+                                    <td>
+                                        @boat.MaxSumInsured
+                                    </td>
+                                   
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
