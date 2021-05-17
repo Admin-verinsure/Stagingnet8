@@ -774,6 +774,7 @@
     }
 
     function RemoveBoat(boatId, status, sourceTable, destTable, Modelstatus) {
+        debugger;
         var _sheetId = $('#AnswerSheetId').val();
         var postData = {
             'boatId': boatId,
@@ -2668,7 +2669,8 @@ function UpdateChosen() {
         });
     };
 
-    function EditBoat(classId, boatId) {        
+    function EditBoat(classId, boatId) {
+        debugger
         var _sheetId = $('#AnswerSheetId').val();
         $('#getDetailsModal').show();
         var postData = {
@@ -2886,6 +2888,7 @@ function UpdateChosen() {
     }
 
     function SetBoatRemovedStatus(boatId, status, sourceTable, destTable) {
+        debugger;
         var postData = {
             'boatId': boatId,
             'status': status
@@ -3664,6 +3667,7 @@ function UpdateChosen() {
     };
 
     function EditBoatUse(classId, boatUseId) {
+        debugger;
         event.preventDefault();
         var _sheetId = $('#AnswerSheetId').val();
         $('#getDetailsModal').show();
