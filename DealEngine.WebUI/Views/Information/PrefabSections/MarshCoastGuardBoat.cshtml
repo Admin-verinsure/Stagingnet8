@@ -72,55 +72,6 @@
                     </div>
                 </div>
                 <div id="boatTabs3" class="tab-pane" role="tabpanel">
-                    @*<form class="" id="BoatViewModel">
-
-
-                <input id="AddBoatId" class="b" name="BoatId" type="hidden">
-                <input id="openModal" class="b" name="openModal" type="hidden">*@
-
-
-
-                    @*<div class="form-group">
-                    <div class="row">
-                        <div class="col-6">
-                            <label for="streetdetails" class="label required">
-                                Vessel Name
-                            </label>
-                        </div>
-                        <div class="col-6">
-                            @Html.TextBoxFor(m => m.BoatViewModel.BoatName, new { id = "AddBoatName", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "BoatViewModel" })
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-6">
-                            <label for="streetdetails" class="label required">
-                                Vessel Type
-                            </label>
-                        </div>
-                        <div class="col-6">
-                            <select style="background-color: #fff;" onchange="AddvesselType1Selected()" class="form-control b form-select" id="AddBoatType1" name="BoatType1" title="" required>
-                                <option selected="selected" value="">-- Select --</option>
-                                <option value="Powerboats">Powerboats</option>
-                                <option value="CruisersandLaunches">Cruisers and Launches</option>
-                                <option value="YachtsandCatamarans">Yachts and Catamarans</option>
-                                <option value="Jetski" id="AddBoatType1Jetski">Jetski</option>
-                                <option value="Jetboat">Jetboat</option>
-                                <option value="Other">Other Personal Watercraft</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>*@
-
-                    @*<div class="form-group">
-                        <button class="btn btn-sm btn-success text-light" id="updateBoat" onclick="AddVessel()" form="BoatViewModel"> Add </button>
-                        <button class="btn btn-sm btn-danger text-light" id="ClearBoat" onclick="Cancel('BoatViewModel','boatTabs1')" form="BoatViewModel"> Clear and Cancel </button>
-                    </div>
-                </form>*@
-
-
 
                     <fieldset id="fieldset">
                         <form id="BoatViewModel">
@@ -280,8 +231,10 @@
                                     <label class="label required col-12" for="YearOfManufacture">Vessel Year of Manufacture</label>
                                     <label class="input form-group col-12">
                                         <i></i>
-                                        @Html.TextBoxFor(m => m.BoatViewModel.YearOfManufacture, new { id = "AddYearOfManufacture", @class = "form-control b", @onchange = "OnChange(this.id, this.name)", @form = "BoatViewModel", @placeholder = "Vessel Year of Manufacture", @required="" })
-                                       @* <input class="form-control b" data-type="TEXTBOX" data-name="YearOfManufacture" id="AddYearOfManufacture" name="YearOfManufacture" placeholder="Vessel Year of Manufacture" value="" required>*@
+                                        @Html.TextBoxFor(m => m.BoatViewModel.YearOfManufacture, new { id = "AddYearOfManufacture", @class = "form-control b", @onchange = "OnChange(this.id, this.name)", @form = "BoatViewModel", @placeholder = "Vessel Year of Manufacture", @required = "" })
+
+                                        @*@Html.TextBoxFor(m => m.BoatViewModel.YearOfManufacture, new { id = "AddYearOfManufacture", @class = "form-control b", @onchange = "OnChange(this.id, this.name)", @form = "BoatViewModel", @placeholder = "Vessel Year of Manufacture", @value = "", @required ="" })*@
+                                        @* <input class="form-control b" data-type="TEXTBOX" data-name="YearOfManufacture" id="AddYearOfManufacture" name="YearOfManufacture" placeholder="Vessel Year of Manufacture" value="" required>*@
                                     </label>
                                     @*<p class="validationContainer" id="validateAddYearOfManufacture"></p>*@
                                 </section>

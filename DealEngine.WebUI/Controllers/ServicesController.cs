@@ -2116,6 +2116,30 @@ namespace DealEngine.WebUI.Controllers
                 Boat boat = null;
                 var BoatViewModel = collection.Keys.Where(s => s.StartsWith("BoatViewModel", StringComparison.CurrentCulture));
                 var id = collection["BoatViewModel.BoatId"];
+
+                var BoatType1 = collection.Keys.Where(s => s.StartsWith("BoatType1", StringComparison.CurrentCulture));
+                var BoatType2 = collection.Keys.Where(s => s.StartsWith("BoatType2", StringComparison.CurrentCulture));
+                var VesselArea = collection.Keys.Where(s => s.StartsWith("VesselArea", StringComparison.CurrentCulture));
+                var BuiltProfessionally = collection.Keys.Where(s => s.StartsWith("BuiltProfessionally", StringComparison.CurrentCulture));
+                var HullConstruction = collection.Keys.Where(s => s.StartsWith("HullConstruction", StringComparison.CurrentCulture));
+                var HullConfiguration = collection.Keys.Where(s => s.StartsWith("HullConfiguration", StringComparison.CurrentCulture));
+                var MotorType = collection.Keys.Where(s => s.StartsWith("MotorType", StringComparison.CurrentCulture));
+                var ModifiedMotor = collection.Keys.Where(s => s.StartsWith("ModifiedMotor", StringComparison.CurrentCulture));
+                var MaxRatedSpeed = collection.Keys.Where(s => s.StartsWith("MaxRatedSpeed", StringComparison.CurrentCulture));
+                var RiggingType = collection.Keys.Where(s => s.StartsWith("RiggingType", StringComparison.CurrentCulture));
+                var MastType = collection.Keys.Where(s => s.StartsWith("MastType", StringComparison.CurrentCulture));
+                var BoatQuoteExcessOption = collection.Keys.Where(s => s.StartsWith("BoatQuoteExcessOption", StringComparison.CurrentCulture));
+                var BoatIsTrailered = collection.Keys.Where(s => s.StartsWith("BoatIsTrailered", StringComparison.CurrentCulture));
+                var BoatTrailer = collection.Keys.Where(s => s.StartsWith("BoatTrailer", StringComparison.CurrentCulture));
+                var WaterLocationMooringType = collection.Keys.Where(s => s.StartsWith("WaterLocationMooringType", StringComparison.CurrentCulture));
+                var SelectedBoatUse = collection.Keys.Where(s => s.StartsWith("SelectedBoatUse", StringComparison.CurrentCulture));
+
+
+
+
+
+
+
                 if (collection == null)
                     throw new ArgumentNullException(nameof(collection));
 
@@ -2133,6 +2157,9 @@ namespace DealEngine.WebUI.Controllers
                 {
                      boat = await _boatRepository.GetByIdAsync(Guid.Parse(collection["BoatId"]));
                 }
+
+               
+
 
                 //var BoatLandLocation = collection["BoatLandLocation"];
                 //if (BoatLandLocation != "") 
@@ -2158,7 +2185,7 @@ namespace DealEngine.WebUI.Controllers
                 //    boat.BoatUses.Clear();
                 //    boat.BoatUses.Add(BoatUse);
                 //}
-                
+
                 //boat.BoatOperator = await _organisationService.GetOrganisation(Guid.Parse(collection["BoatOperator"]));
 
                 //var BoatWaterLocation = collection["BoatWaterLocation"];
@@ -2198,7 +2225,7 @@ namespace DealEngine.WebUI.Controllers
                 //    }
                 //}
 
-         
+
 
                 var type = boat.GetType();
                 foreach (var keyField in BoatViewModel)
@@ -2238,6 +2265,437 @@ namespace DealEngine.WebUI.Controllers
                     }
 
                 }
+
+
+                //for boatType1
+                foreach (var keyField in BoatType1)
+                {
+                    if (keyField == "BoatType1")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for boatType2
+                foreach (var keyField in BoatType2)
+                {
+                    if (keyField == "BoatType2")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for VesselArea
+                foreach (var keyField in VesselArea)
+                {
+                    if (keyField == "VesselArea")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for BuiltProfessionally
+                foreach (var keyField in BuiltProfessionally)
+                {
+                    if (keyField == "BuiltProfessionally")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for HullConstruction
+                foreach (var keyField in HullConstruction)
+                {
+                    if (keyField == "HullConstruction")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for HullConfiguration
+                foreach (var keyField in HullConfiguration)
+                {
+                    if (keyField == "HullConfiguration")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for MotorType
+                foreach (var keyField in MotorType)
+                {
+                    if (keyField == "MotorType")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for ModifiedMotor
+                foreach (var keyField in ModifiedMotor)
+                {
+                    if (keyField == "ModifiedMotor")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for MaxRatedSpeed 
+                foreach (var keyField in MaxRatedSpeed)
+                {
+                    if (keyField == "MaxRatedSpeed")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for RiggingType  
+                foreach (var keyField in RiggingType)
+                {
+                    if (keyField == "RiggingType")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for MastType 
+                foreach (var keyField in MastType)
+                {
+                    if (keyField == "MastType")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for BoatQuoteExcessOption  
+                foreach (var keyField in BoatQuoteExcessOption)
+                {
+                    if (keyField == "BoatQuoteExcessOption")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for BoatIsTrailered  
+                foreach (var keyField in BoatIsTrailered)
+                {
+                    if (keyField == "BoatIsTrailered")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for BoatTrailer  
+                foreach (var keyField in BoatTrailer)
+                {
+                    if (keyField == "BoatTrailer")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for WaterLocationMooringType  
+                foreach (var keyField in WaterLocationMooringType)
+                {
+                    if (keyField == "WaterLocationMooringType")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for SelectedBoatUse   
+                foreach (var keyField in SelectedBoatUse)
+                {
+                    if (keyField == "SelectedBoatUse")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 if (sheet.Boats.Contains(boat))
                 {
