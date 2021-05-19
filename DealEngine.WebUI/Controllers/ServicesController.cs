@@ -2011,95 +2011,294 @@ namespace DealEngine.WebUI.Controllers
 
         #region Boat
 
+        //[HttpPost]
+        //public async Task<IActionResult> AddBoat(BoatViewModel model)
+        //{
+        //    User user = null;
+
+        //    try
+        //    {
+        //        user = await CurrentUser();
+        //        if (model == null)
+        //            throw new ArgumentNullException(nameof(model));
+
+        //        ClientInformationSheet sheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+        //        if (sheet == null)
+        //            throw new Exception("Unable to save Boat - No Client information for " + model.AnswerSheetId);
+        //        // get existing boat (if any)
+        //        Boat boat = await _boatRepository.GetByIdAsync(model.BoatId);
+        //        // no boat, so create new
+        //        if (boat == null)
+        //            boat = model.ToEntity(user);
+        //        model.UpdateEntity(boat);
+
+        //        if (model.BoatLandLocation != Guid.Empty)
+        //            boat.BoatLandLocation = await _buildingRepository.GetByIdAsync(model.BoatLandLocation);
+
+        //        if (model.BoatOperator != Guid.Empty)
+        //            boat.BoatOperator = await _organisationService.GetOrganisation(model.BoatOperator);
+        //        boat.BoatWaterLocation = null;
+
+
+        //        if (model.BoatTrailer != Guid.Empty)
+        //        {
+        //            boat.BoatTrailers.Clear();
+        //            Vehicle trailer = await _vehicleService.GetVehicleById(model.BoatTrailer);
+        //            boat.BoatTrailers.Add(trailer);
+        //        }
+
+        //        if (model.SelectedBoatUse != Guid.Empty)
+        //        {
+        //            var BoatUse = await _boatUseService.GetBoatUse(model.SelectedBoatUse);
+        //            boat.BoatUses.Clear();
+        //            boat.BoatUses.Add(BoatUse);
+        //        }
+        //        boat.BoatOperator = await _organisationService.GetOrganisation(model.BoatOperator);
+
+        //        if (model.BoatWaterLocation != Guid.Empty)
+        //        {
+        //            var waterLocation = await _waterLocationRepository.GetByIdAsync(model.BoatWaterLocation);
+        //            boat.BoatWaterLocation = await _organisationService.GetMarina(waterLocation);
+        //        }
+
+        //        if (model.OtherMarinaName != null)
+        //        {
+        //            boat.OtherMarinaName = model.OtherMarinaName;
+        //            boat.OtherMarina = true;
+        //        }
+        //        else
+        //        {
+        //            boat.OtherMarina = false;
+        //        }
+
+        //        if (model.SelectedInterestedParty != null)
+        //        {
+
+        //            List<string> interestedpartylist = new List<string>();
+
+        //            boat.InterestedParties = new List<Organisation>();
+
+        //            //string strArray = model.SelectedBoatUse.Substring(0, model.SelectedBoatUse.Length - 1);
+        //            string[] interestedParty = model.SelectedInterestedParty.Split(',');
+
+        //            model.InterestedParties = new List<Organisation>();
+
+        //            foreach (var useid in interestedParty)
+        //            {
+        //                boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));
+        //            }
+        //        }
+
+        //        using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+        //        {
+        //            sheet.Boats.Add(boat);
+        //            await uow.Commit();
+        //        }
+
+        //        return Json(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        //        return RedirectToAction("Error500", "Error");
+        //    }
+
+        //}
+
+
         [HttpPost]
-        public async Task<IActionResult> AddBoat(BoatViewModel model)
+        public async Task<IActionResult> AddBoat(IFormCollection collection)
         {
             User user = null;
-
             try
             {
                 user = await CurrentUser();
-                if (model == null)
-                    throw new ArgumentNullException(nameof(model));
+                Boat boat = null;
+                var BoatViewModel = collection.Keys.Where(s => s.StartsWith("BoatViewModel", StringComparison.CurrentCulture));
+                var id = collection["BoatViewModel.BoatId"];
+                if (collection == null)
+                    throw new ArgumentNullException(nameof(collection));
 
-                ClientInformationSheet sheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+                ClientInformationSheet sheet = await _clientInformationService.GetInformation(Guid.Parse(collection["AnswerSheetId"]));
+
                 if (sheet == null)
-                    throw new Exception("Unable to save Boat - No Client information for " + model.AnswerSheetId);
+                    throw new Exception("Unable to save Boat - No Client information for " + (collection["AnswerSheetId"]));
+
                 // get existing boat (if any)
-                Boat boat = await _boatRepository.GetByIdAsync(model.BoatId);
-                // no boat, so create new
-                if (boat == null)
-                    boat = model.ToEntity(user);
-                model.UpdateEntity(boat);
-                if (model.BoatLandLocation != Guid.Empty)
-                    boat.BoatLandLocation = await _buildingRepository.GetByIdAsync(model.BoatLandLocation);
-
-                if (model.BoatOperator != Guid.Empty)
-                    boat.BoatOperator = await _organisationService.GetOrganisation(model.BoatOperator);
-                boat.BoatWaterLocation = null;
-                if (model.BoatTrailer != Guid.Empty)
+                if (string.IsNullOrWhiteSpace(id))
                 {
-                    boat.BoatTrailers.Clear();
-                    Vehicle trailer = await _vehicleService.GetVehicleById(model.BoatTrailer);
-                    boat.BoatTrailers.Add(trailer);
-                }
-                if (model.SelectedBoatUse != Guid.Empty)
-                {
-                    var BoatUse = await _boatUseService.GetBoatUse(model.SelectedBoatUse);
-                    boat.BoatUses.Clear();
-                    boat.BoatUses.Add(BoatUse);                                        
-                }
-                boat.BoatOperator = await _organisationService.GetOrganisation(model.BoatOperator);
-
-                if (model.BoatWaterLocation != Guid.Empty)
-                {
-                    var waterLocation = await _waterLocationRepository.GetByIdAsync(model.BoatWaterLocation);
-                    boat.BoatWaterLocation = await _organisationService.GetMarina(waterLocation);
-                }
-                    
-                if (model.OtherMarinaName != null)
-                {
-                    boat.OtherMarinaName = model.OtherMarinaName;
-                    boat.OtherMarina = true;
+                    boat = new Boat(user);
                 }
                 else
                 {
-                    boat.OtherMarina = false;
+                     boat = await _boatRepository.GetByIdAsync(Guid.Parse(collection["BoatId"]));
                 }
 
-                if (model.SelectedInterestedParty != null)
+                //var BoatLandLocation = collection["BoatLandLocation"];
+                //if (BoatLandLocation != "") 
+                //    boat.BoatLandLocation = await _buildingRepository.GetByIdAsync(Guid.Parse(collection["BoatLandLocation"]));
+
+                //var BoatOperator = collection["BoatOperator"];
+                //if (BoatOperator != "")
+                //    boat.BoatOperator = await _organisationService.GetOrganisation(Guid.Parse(collection["BoatOperator"]));
+                //boat.BoatWaterLocation = null;
+
+                //var BoatTrailer = collection["BoatTrailer"];
+                //if (BoatTrailer != "")
+                //{
+                //    boat.BoatTrailers.Clear();
+                //    Vehicle trailer = await _vehicleService.GetVehicleById(Guid.Parse(collection["BoatTrailer"]));
+                //    boat.BoatTrailers.Add(trailer);
+                //}
+
+                //var SelectedBoatUse = collection["SelectedBoatUse"];
+                //if (SelectedBoatUse != "")
+                //{
+                //    var BoatUse = await _boatUseService.GetBoatUse(Guid.Parse(collection["SelectedBoatUse"]));
+                //    boat.BoatUses.Clear();
+                //    boat.BoatUses.Add(BoatUse);
+                //}
+                
+                //boat.BoatOperator = await _organisationService.GetOrganisation(Guid.Parse(collection["BoatOperator"]));
+
+                //var BoatWaterLocation = collection["BoatWaterLocation"];
+                //if (BoatWaterLocation != "")
+                //{
+                //    var waterLocation = await _waterLocationRepository.GetByIdAsync(Guid.Parse(collection["BoatWaterLocation"]));
+                //    boat.BoatWaterLocation = await _organisationService.GetMarina(waterLocation);
+                //}
+
+                //var OtherMarinaName = collection["OtherMarinaName"];
+                //if (OtherMarinaName != "")
+                //{
+                //    boat.OtherMarinaName = collection["OtherMarinaName"];
+                //    boat.OtherMarina = true;
+                //}
+                //else
+                //{
+                //    boat.OtherMarina = false;
+                //}
+
+                //var SelectedInterestedParty = collection["collection.SelectedInterestedParty"];
+                //if (SelectedInterestedParty != "")
+                //{
+
+                //    List<string> interestedpartylist = new List<string>();
+
+                //    boat.InterestedParties = new List<Organisation>();
+
+                //    //string strArray = model.SelectedBoatUse.Substring(0, model.SelectedBoatUse.Length - 1);
+                //    string[] interestedParty = model.SelectedInterestedParty.Split(',');
+
+                //    model.InterestedParties = new List<Organisation>();
+
+                //    foreach (var useid in interestedParty)
+                //    {
+                //        boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));
+                //    }
+                //}
+
+         
+
+                var type = boat.GetType();
+                foreach (var keyField in BoatViewModel)
                 {
-
-                    List<string> interestedpartylist = new List<string>();
-
-                    boat.InterestedParties = new List<Organisation>();
-
-                    //string strArray = model.SelectedBoatUse.Substring(0, model.SelectedBoatUse.Length - 1);
-                    string[] interestedParty = model.SelectedInterestedParty.Split(',');
-
-                    model.InterestedParties = new List<Organisation>();
-
-                    foreach (var useid in interestedParty)
+                    if (keyField != "BoatViewModel.BoatId" && keyField != "BoatViewModel.openModal")
                     {
-                        boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+                        //property.SetValue(boat, collection[keyField].ToString());
+
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        else if (typeof(DateTime) == property.PropertyType)
+                        {
+                            //collection.Value.ToString("dd-MM-yyyy");
+                            //var dateStr = string.Format("{0:dd-MM-yyyy}", collection[keyField]);
+                            //property.SetValue(claimNotification, collection[keyField].string.Format("{0:dd-MM-yyyy}", collection[keyField]));
+                            property.SetValue(boat, DateTime.Parse(collection[keyField].ToString()));
+                        }
+                        else if (typeof(decimal) == property.PropertyType)
+                        {
+                            var fieldValue = collection[keyField];
+                            if (string.IsNullOrWhiteSpace(collection[keyField]))
+                            {
+                                fieldValue = "0";
+                            }
+                            else
+                            {
+                                property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                            }
+
+
+                        }
+
+                    }
+
+                }
+
+                if (sheet.Boats.Contains(boat))
+                {
+                    //await _locationService.UpdateLocation(location);
+                }
+                else
+                {
+                    //sheet.Boats.Add(boat);
+                    using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        sheet.Boats.Add(boat);
+                        await uow.Commit();
                     }
                 }
 
-                using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
-                {
-                    sheet.Boats.Add(boat);
-                    await uow.Commit();
-                }
 
-                return Json(model);
+                //Location location = null;
+                //ClientInformationSheet sheet = await _clientInformationService.GetInformation(Guid.Parse(collection["AnswerSheetId"]));
+                //var locationForm = collection.Keys.Where(s => s.StartsWith("LocationViewModel", StringComparison.CurrentCulture));
+                //var id = collection["LocationViewModel.LocationId"];
+                //if (string.IsNullOrWhiteSpace(id))
+                //{
+                //    location = new Location(user);
+                //}
+                //else
+                //{
+                //    location = await _locationService.GetLocationById(Guid.Parse(id));
+                //}
+                //var type = location.GetType();
+                //foreach (var keyField in locationForm)
+                //{
+                //    if (keyField != "LocationViewModel.LocationId")
+                //    {
+                //        var propertyName = keyField.Split('.').ToList();
+                //        var property = type.GetProperty(propertyName.LastOrDefault());
+                //        property.SetValue(location, collection[keyField].ToString());
+                //    }
+                //}
+
+                //if (sheet.Locations.Contains(location))
+                //{
+                //    await _locationService.UpdateLocation(location);
+                //}
+                //else
+                //{
+                //    sheet.Locations.Add(location);
+                //    await _clientInformationService.UpdateInformation(sheet);
+                //}
+
+                return new JsonResult(boat.Id);
+
             }
             catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
-
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> GetOriginalVehicle(Guid answerSheetId, Guid vehicleId)

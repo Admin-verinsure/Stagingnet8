@@ -563,12 +563,14 @@
     });
 
     $('#boatForm').submit(function (event) {
+        debugger;
         if (!this.checkValidity()) {
             event.preventDefault();
         }
     });
 
     $("#btnRemoveSubmit").click(function () {
+        debugger;
         var valid = Validateremove();
         if (valid) {
             debugger;
@@ -596,6 +598,7 @@
     });
 
     $("#btnPanelSubmit").click(function () {
+        debugger;
         var PanelId = $("#PanelId").val();
         var PanelName = $("#PanelName2").val();
         var PanelPosition = $("#PanelPosition2").val();
@@ -807,6 +810,7 @@
     };
 
     function validateClaimDetails(Claim) {
+        debugger;
         var claim = document.getElementById(Claim);
         if (claim.options[claim.selectedIndex].value == "true") {
             $("#" + Claim + "Sec").removeClass('hidden');
@@ -817,6 +821,7 @@
     }
 
     function validatePMINZPI(PMINZPI) {
+        debugger;
         var pMINZPI = document.getElementById(PMINZPI);
         var sec = "#" + PMINZPI + "Sec";
         if (pMINZPI.options[pMINZPI.selectedIndex].value == "true" ) {
@@ -828,7 +833,8 @@
         }
     }
 
-     function Unlock() {
+    function Unlock() {
+        debugger;
          var ProgrammeId = $('#Id').val();
          var AnswerSheetId = $('#AnswerSheetId').val();
          $.ajax({
@@ -843,6 +849,7 @@
     }
 
     function AuthoriseReferrals() {
+        debugger;
         var clientAgreementId = $('#ClientAgreementId').val();
          $.ajax({
             url: '@Url.Action("AuthorisedReferrals", "Agreement")',
@@ -856,6 +863,7 @@
     }
 
     function ReadOnly() {
+        debugger;
         if (document.getElementById("fieldset") != null) {
             document.getElementById("fieldset").disabled = true;
         }
@@ -1487,17 +1495,20 @@
     }
 
     function validateInt(value) {
+        debugger;
         var r = /^-?[0-9]*[1-9][0-9]*$/;
         var result = r.test(value);
         return result;
     }
 
     function SetCurrentTab(tabPaneId) {
+        debugger;
         $('.nav-tabs a[href="#' + tabPaneId + '"]').trigger("click");
         $('.nav-tabs a[href="#' + tabPaneId + '"]').trigger("reloadGrid");
 };
 
-function UpdateChosen() {
+    function UpdateChosen() {
+        debugger;
     // find all multiselect items and apply Chosen
     $('.cselect').each(function() {
         $('#'+this.id).trigger("chosen:updated");
@@ -1505,6 +1516,7 @@ function UpdateChosen() {
 }
 
     function ValidateAddNRegisteredMotor(event, tabId, tableId, currenttab) {
+        debugger;
         event.preventDefault();
         var make = $('#AddMotorMake').val();
         var vehicleModel = $('#AddMotorModel').val();
@@ -1584,7 +1596,8 @@ function UpdateChosen() {
         }
     }
 
-    function ValidateNRegisteredMotor(event,tabId, tableId, currenttab) {
+    function ValidateNRegisteredMotor(event, tabId, tableId, currenttab) {
+        debugger;
         event.preventDefault();
         var make = $('#MotorMake').val();
         var vehicleModel = $('#MotorModel').val();
@@ -1756,6 +1769,7 @@ function UpdateChosen() {
     };
 
     function SetVehicleCeasedStatus(vehicleId, status, sourceTable, destTable) {
+        debugger;
         var CeaseDate =  $('#RemoveVehicleCeaseEffectiveDate').val();
         var ceaseReason = $('#VehicleCeaseReason').val();
         var postData = {
@@ -1777,7 +1791,8 @@ function UpdateChosen() {
         });
     };
 
-    function SetVehicleTransferedStatus(event,vehicleId, status, sourceTable, destTable) {
+    function SetVehicleTransferedStatus(event, vehicleId, status, sourceTable, destTable) {
+        debugger;
         event.preventDefault();
         $.ajax({
             url: '@Url.Action("SetVehicleTransferedStatus", "Services")',
@@ -1793,7 +1808,8 @@ function UpdateChosen() {
         });
     };
 
-    function GetOUDetails(event,elementBaseName) {
+    function GetOUDetails(event, elementBaseName) {
+        debugger;
         var _sheetId = $('#AnswerSheetId').val();
         var _unitName = $(elementBaseName).val();
         event.preventDefault();
@@ -1812,6 +1828,7 @@ function UpdateChosen() {
     };
 
     function GetLocationDetails(elementBaseName) {
+        debugger;
         var _sheetId = $('#AnswerSheetId').val();
         var streetname = $(elementBaseName).val();
         event.preventDefault();
@@ -1830,6 +1847,7 @@ function UpdateChosen() {
     };
 
     function toggleVisible(id, visible, sender) {
+        debugger;
         var section = $(id);
         if (visible) {
             section.removeClass('hidden');
@@ -1840,14 +1858,17 @@ function UpdateChosen() {
     };
 
     function showAccordionPanel(id, panelNo) {
+        debugger;
         $(id).accordion('option', 'active', panelNo);
     };
 
     function wholeNumberCheck(n) {
+        debugger;
         return (n % 1) === 0;
     }
 
     function AddBusinessInterruption(tabId, tableId) {
+        debugger;
         var informationId = $('#AnswerSheetId').serialize();
         var biloc = $('#SelectedLocation').serialize();
         $.ajax({
@@ -1866,6 +1887,7 @@ function UpdateChosen() {
     };
 
     function EditBusinessInterruption(businessInterruptionId, tableId) {
+        debugger;
         var _sheetId = $('#AnswerSheetId').val();
         $.ajax({
             url: '@Url.Action("GetBusinessInterruption", "Services")',
@@ -1891,6 +1913,7 @@ function UpdateChosen() {
     };
 
     function SetBusinessInterruptionRemovedStatus(businessInterruptionId, status, sourceTable, destTable) {
+        debugger;
         $.ajax({
             url: '@Url.Action("SetBusinessInterruptionRemovedStatus", "Services")',
             type: "Post",
@@ -1906,6 +1929,7 @@ function UpdateChosen() {
     };
 
     function AddMaterialDamage(tabId, tableId) {
+        debugger;
         var informationId = $('#AnswerSheetId').serialize();
         var mdloc = $('#SelectedLocation').serialize();
         $.ajax({
@@ -1924,6 +1948,7 @@ function UpdateChosen() {
     };
 
     function EditMaterialDamage(materialDamageId, tableId) {
+        debugger;
         var _sheetId = $('#AnswerSheetId').val();
         $.ajax({
             url: '@Url.Action("GetMaterialDamage", "Services")',
@@ -1954,6 +1979,7 @@ function UpdateChosen() {
     };
 
     function SetMaterialDamageRemovedStatus(materialDamageId, status, sourceTable, destTable) {
+        debugger;
         $.ajax({
             url: '@Url.Action("SetMaterialDamageRemovedStatus", "Services")',
             type: "Post",
@@ -1968,7 +1994,8 @@ function UpdateChosen() {
         });
     };
 
-    function ValidateClaim(event,tabId, tableId, currenttab) {
+    function ValidateClaim(event, tabId, tableId, currenttab) {
+        debugger;
         event.preventDefault();
         var claimTitle = $('#ClaimTitle').val();
         var claimDescription = $('#ClaimDescription').val();
@@ -2044,6 +2071,7 @@ function UpdateChosen() {
     }
 
     function ValidateAddClaim(event, tabId, tableId, currenttab) {
+        debugger;
         event.preventDefault();
         var claimTitle = $('#AddClaimTitle').val();
         var claimDescription = $('#AddClaimDescription').val();
@@ -2136,6 +2164,7 @@ function UpdateChosen() {
     };*@
 
     function EditClaim(claimId, tableId) {
+        debugger;
         var _sheetId = $('#AnswerSheetId').val();
         event.preventDefault();
         var postData = {
@@ -2179,6 +2208,7 @@ function UpdateChosen() {
     };
 
     function SetClaimRemovedStatus(claimId, status, sourceTable, destTable) {
+        debugger;
         var postData = {
 		    'claimId': claimId,
 		    'status': status
@@ -2198,6 +2228,7 @@ function UpdateChosen() {
     };
 
     function validateOperator(tabId, tableId, currenttab) {
+        debugger;
         var operatorFirstName = $('#OperatorFirstName').val();
         var operatorLastName = $('#OperatorLastName').val();
         var operatorYearsOfExp = $('#OperatorYearsOfExp').val();
@@ -2240,6 +2271,7 @@ function UpdateChosen() {
 
 
     function validateAddOperator(tabId, tableId, currenttab) {
+        debugger;
         var operatorAddFirstName = $('#AddOperatorFirstName').val();
         var operatorAddLastName = $('#AddOperatorLastName').val();
         var result = true;
@@ -2272,6 +2304,7 @@ function UpdateChosen() {
 
 
     function AddOperator(event, tabId, tableId) {
+        debugger;
         event.preventDefault();
         var informationId = $('#AnswerSheetId').serialize();
         var test = $.grep([$(tabId + " :input").serialize(), informationId], Boolean).join("&")
@@ -2290,6 +2323,7 @@ function UpdateChosen() {
         };
 
     function validateOperatorModal(firstName, lastName, yearsXP, Email) {
+        debugger;
         if (!(document.getElementById("OperatorFirstNameModal").validity.valueMissing) && !(document.getElementById("OperatorLastNameModal").validity.valueMissing)
              && !(document.getElementById("organisationEmail").validity.valueMissing)) {
             AddOperatorModal(event,firstName, lastName, yearsXP, Email);
@@ -2297,7 +2331,8 @@ function UpdateChosen() {
         }
     }
 
-    function AddOperatorModal(event,firstName, lastName, yearsXP, Email) {
+    function AddOperatorModal(event, firstName, lastName, yearsXP, Email) {
+        debugger;
         event.preventDefault();
         var operatorFirstName = $(firstName).serialize();
         var operatorLastName = $(lastName).serialize();
@@ -2333,6 +2368,7 @@ function UpdateChosen() {
     };
 
     function ValidateAddLandLocModal(storageType, storageDescription, location) {
+        debugger;
          if (!(document.getElementById("BuildingLocationModal").validity.valueMissing) && !(document.getElementById("BuildingCategoryModal").validity.valueMissing)
              && !(document.getElementById("BuildingNameModal").validity.valueMissing)) {
              AddLandLocModal(event,storageType, storageDescription, location);
@@ -2341,6 +2377,7 @@ function UpdateChosen() {
     }
 
     function AddLandLocModal(event, storageType, storageDescription, location) {
+        debugger;
         event.preventDefault();
         var buildingCategory = $(storageType).serialize();
         var buildingName = $(storageDescription).serialize();
@@ -2372,7 +2409,8 @@ function UpdateChosen() {
         });
     };
 
-    function AddMarinaLocModal(event,marinaName) {
+    function AddMarinaLocModal(event, marinaName) {
+        debugger;
         event.preventDefault();
         var MarinaName = $(marinaName).serialize();
         var AnswerSheetId = $('#AnswerSheetId').serialize();
@@ -2397,6 +2435,7 @@ function UpdateChosen() {
     };
 
     function AddWaterLocModal(event,waterLocName, waterLocLat, waterLocLong, waterLocLoc, waterLocMarinaLoc, mooredType, orgunit) {
+        debugger;
         event.preventDefault();
         var WaterLocationMooringType = $(mooredType).serialize(); //TBC
         var informationId = $('#AnswerSheetId').serialize();
@@ -2429,7 +2468,8 @@ function UpdateChosen() {
     };
 
     function validateLocModal(streetLoc, suburbLoc, postcodeLoc, cityLoc, countryLoc, cnameLoc, loctype) {
-         if (!(document.getElementById("LocationTypeModal").validity.valueMissing) && !(document.getElementById("StreetModal").validity.valueMissing)
+        debugger;
+        if (!(document.getElementById("LocationTypeModal").validity.valueMissing) && !(document.getElementById("StreetModal").validity.valueMissing)
              && !(document.getElementById("SuburbModal").validity.valueMissing) && !(document.getElementById("CityModal").validity.valueMissing)) {
              var locationTypeValue = document.getElementById(loctype).value;
              var cmonValue = document.getElementById(cnameLoc).value;
@@ -2462,6 +2502,7 @@ function UpdateChosen() {
     }
 
     function AddLocModal(streetLoc, suburbLoc, postcodeLoc, cityLoc, countryLoc, cnameLoc, loctype, locationId) {
+        debugger;
         var street = streetLoc;
         var suburb = suburbLoc;
         var postcode = postcodeLoc;
@@ -2580,7 +2621,8 @@ function UpdateChosen() {
         }
     };
 
-    function EditOperator(event,operatorId, tableId) {
+    function EditOperator(event, operatorId, tableId) {
+        debugger;
         event.preventDefault();
         var _sheetId = $('#AnswerSheetId').val();
         $.ajax({
@@ -2604,7 +2646,8 @@ function UpdateChosen() {
         });
     };
 
-    function SetOperatorRemovedStatus(event,operatorId, status, sourceTable, destTable) {
+    function SetOperatorRemovedStatus(event, operatorId, status, sourceTable, destTable) {
+        debugger;
         event.preventDefault();
         $.ajax({
             url: '@Url.Action("SetOperatorRemovedStatus", "Services")',
@@ -2632,7 +2675,8 @@ function UpdateChosen() {
             return false;
         }
     }
-    function AddBoat(event,tabId, boatusess, tableId, interestedParty, maxSumInsured, builtProf, Motortype, hullconfig, OtherBoatWaterLocation) {
+    function AddBoat(event, tabId, boatusess, tableId, interestedParty, maxSumInsured, builtProf, Motortype, hullconfig, OtherBoatWaterLocation) {
+        debugger;
         $('#AddBoatModal').show();
         var informationId = $('#AnswerSheetId').serialize();
         var data = $.grep([$(tabId + " :input").serialize(), informationId], Boolean).join("&");
@@ -2804,10 +2848,12 @@ function UpdateChosen() {
     }
 
     function updateTrailer() {
+        debugger;
         $('#BoatTrailer').removeClass("hidden");
     }
 
     function setCeasedata(boatId, status, sourceTable, destTable) {
+        debugger;
         $('#BoatRemoveModal').show();
         $('.modal').css('width', '600px');
         $('#boatID').val(boatId);
@@ -2817,6 +2863,7 @@ function UpdateChosen() {
     }
 
     function Validateremove() {
+        debugger;
         var ceaseDate = $("#RemoveCeaseEffectiveDate").val();
         var ceaseReason = $("#RemoveCeaseReason").val();
         var validation = true;
@@ -2844,6 +2891,7 @@ function UpdateChosen() {
     }
 
     function ValidateVehicleremove() {
+        debugger;
         var ceaseDate = $("#RemoveVehicleCeaseEffectiveDate").val();
         var ceaseReason = $("#VehicleCeaseReason").val();
         var validation = true;
@@ -2869,6 +2917,7 @@ function UpdateChosen() {
     }
 
     function UndoBoatRemovedStatus(boatId, status, sourceTable, destTable) {
+        debugger;
         event.preventDefault();
         var postData = {
             'BoatId': boatId,
@@ -2914,6 +2963,7 @@ function UpdateChosen() {
     }
 
     function SetBoatCeasedStatus(boatId, status, sourceTable, destTable) {
+        debugger;
         event.preventDefault();
         var CeaseDate =  $('#RemoveCeaseEffectiveDate').val();
         var ceaseReason = $('#RemoveCeaseReason').val();
@@ -2939,6 +2989,7 @@ function UpdateChosen() {
     };
 
     function SetBoatTransferedStatus(boatId, status, sourceTable, destTable) {
+        debugger;
         event.preventDefault();
         var postData = {
             'boatIdboatId': locationId,
@@ -2959,6 +3010,7 @@ function UpdateChosen() {
     };
 
     function ValidateBoatUse(event, tabId, tableId, currenttab) {
+        debugger;
         event.preventDefault();
         var boatUseCategory = $('#BoatUseCategory').val();
         var boatUseRaceCategory = $('#BoatUseRaceCategory').val();
@@ -3003,6 +3055,7 @@ function UpdateChosen() {
     }
 
     function ValidateAddNamedParty(tabId, tableId, currenttab) {
+        debugger;
         var partyIA = $('#InsuranceAttributes').val();
         var partyOrgType = $('#AddOrganisationType').val();
         var partyName = $('#AddNPOrgName').val();
@@ -3118,6 +3171,7 @@ function UpdateChosen() {
     }
 
     function AddAddNamedParty(event, tabId, tableId) {
+        debugger;
         event.preventDefault();
         $('#getPartyModal').show();
         var informationId = $('#AnswerSheetId').val();
@@ -3222,6 +3276,7 @@ function UpdateChosen() {
     }
 
     function ValidateNamedParty(tabId, tableId, currenttab) {
+        debugger;
         var partyName = $('#NPOrgName').val();
         var partyPhone = $('#NPOrgPhone').val();
         var PartyEmail = $('#NPOrgEmail').val();
@@ -3264,7 +3319,8 @@ function UpdateChosen() {
     }
 
 
-     function AddNamedParty(event,tabId, tableId) {
+    function AddNamedParty(event, tabId, tableId) {
+        debugger;
         event.preventDefault();
         var informationId = $('#AnswerSheetId').val();
         var name = $('#NPOrgName').val();
@@ -3296,6 +3352,7 @@ function UpdateChosen() {
     }
 
     function ValidateAddBoatUse(event, tabId, tableId, currenttab) {
+        debugger;
         event.preventDefault();
         var boatUseCategory = $('#AddBoatUseCategory').val();
         var boatUseRaceCategory = $('#AddBoatUseRaceCategory').val();
@@ -3338,6 +3395,7 @@ function UpdateChosen() {
     }
 
     function AddBoatUse(tabId, tableId) {
+        debugger;
         var informationId = $('#AnswerSheetId').serialize();
         $('#getBoatUseModal').show();
         $.ajax({
@@ -3360,6 +3418,7 @@ function UpdateChosen() {
     };
 
     function validateIP() {
+        debugger;
         if (!(document.getElementById("OrganisationTypeName").validity.valueMissing) && !(document.getElementById("organisationName").validity.valueMissing)
             && !(document.getElementById("organisationPhone").validity.valueMissing)) {
             addInterestedParty(event);
@@ -3368,6 +3427,7 @@ function UpdateChosen() {
     }
 
     function addInterestedParty(event) {
+        debugger;
         event.preventDefault();
         $('#getPartyModal').show();
         selectedInterestedParty = $('input[name=InsuranceAttribute]:checked').val();
@@ -3436,6 +3496,7 @@ function UpdateChosen() {
     }
 
     function ValidateBoatUseModal() {
+        debugger
         selectedBoatUseCategory = $('input[name=BoatUseCategory]:checked').val();
         if (selectedBoatUseCategory == "Race" || selectedBoatUseCategory == "Both") {
             if (!(document.getElementById("BoatUseRaceCategoryModal").validity.valueMissing) && !(document.getElementById("BoatUseRaceUseSpinnakersModal").validity.valueMissing)) {
@@ -3450,6 +3511,7 @@ function UpdateChosen() {
     };
 
     function addBoatUseModal(event) {
+        debugger;
         event.preventDefault();
         $('#getBoatUseModal').show();
         selectedBoatUseCategory = $('input[name=BoatUseCategory]:checked').val();
@@ -3607,12 +3669,14 @@ function UpdateChosen() {
     }
 
     function done() {
+        debugger;
         var updatebutton = document.getElementById("update");
         $(updatebutton).addClass("hidden");
         $(updatebutton).hide();
     }
 
     function SectionBuilder(templateId) {
+        debugger;
         $.ajax({
             url: '@Url.Action("GetNamedParty", "InformationController")',
             type: "Post",
@@ -3638,12 +3702,14 @@ function UpdateChosen() {
     }
 
     function AddSection(SectionId) {
+        debugger;
         var elements = document.getElementById(formId).elements;
         var elemenhjts = document.getElementsByClassName("input");
         var element11s = document.querySelectorAll("#my-form input[type=text][value='']");
     }
 
     function EditNamedParties(classId, boatUseId) {
+        debugger;
         event.preventDefault();
         var _sheetId = $('#AnswerSheetId').val();
         $('#getDetailsModal').show();
@@ -3703,6 +3769,7 @@ function UpdateChosen() {
     };
 
     function EditRegisteredMotorVehicle(classId, vehicleId) {
+        debugger;
         event.preventDefault();
         var _sheetId = $('#AnswerSheetId').val();
         var postData = {
@@ -3753,12 +3820,14 @@ function UpdateChosen() {
     };
 
     function UpdateChosen() {
+        debugger;
         $('.cselect').each(function() {
             $('#'+this.id).trigger("chosen:updated");
         });
     };
 
     function SetVehicleRemovedStatus(vehicleId, status, sourceTable, destTable) {
+        debugger;
         var postData = {
 		    'vehicleId': vehicleId,
 		    'status': status
@@ -3792,6 +3861,7 @@ function UpdateChosen() {
     };
 
     function CreateProgramme() {
+        debugger;
         event.preventDefault();
         var programmeName = $("#ProgName").val();
         $.ajax({
@@ -3808,6 +3878,7 @@ function UpdateChosen() {
     }
 
     function GetUser(email) {
+        debugger;
         var UserEmail = $(email).val();
         event.preventDefault();
         $.ajax({
@@ -3844,6 +3915,7 @@ function UpdateChosen() {
     };
 
     function AddGetUser(email) {
+        debugger;
         event.preventDefault();
         var UserEmail = $(email).val();
         $('#getExistingUser').show();
@@ -3880,6 +3952,7 @@ function UpdateChosen() {
     };
 
     function GetRegisteredMVDetails(elementBaseName) {
+        debugger;
         event.preventDefault();
         var TrailerModal = false;
         if (elementBaseName == "#RegistrationModal") {
@@ -3986,6 +4059,7 @@ function UpdateChosen() {
     }
 
     function ValidateAddMotorVehicle(event, tabId, tableId, currenttab) {
+        debugger;
         event.preventDefault();
         var sumInsured = $('#AddSumInsured').val();
         var vehicleLocation = $('#AddVehicleLocation').val();
@@ -4094,6 +4168,7 @@ function UpdateChosen() {
     };
 
     function SetBoatUseRemovedStatus(boatUseId, status, sourceTable, destTable) {
+        debugger;
         var postData = {
 		'boatUseId': boatUseId,
 		'status': status
@@ -4113,6 +4188,7 @@ function UpdateChosen() {
     };
 
     function SetBoatUseCeasedStatus(boatUseId, status, sourceTable, destTable) {
+        debugger;
         var postData = {
 		    'boatUseId': boatUseId,
 		    'status': status
@@ -4133,6 +4209,8 @@ function UpdateChosen() {
 
     //Vessel & Vessel Use Prefab Section's Javascript GLOBAL VARIABLES
     //Add Boat
+
+    debugger;
     var AddboatType1 = document.getElementById("AddBoatType1");
     var AddboatType1Jetski = document.getElementById("AddBoatType1Jetski");
     // BoatType 2
@@ -4193,6 +4271,7 @@ function UpdateChosen() {
     var AddvesselUseAdditionalNotes = '#AddboatUseAdditionalNotesModal';
 
     function AddvesselType1Selected() {
+        debugger;
         var AddboatType1Selected = AddboatType1.options[AddboatType1.selectedIndex].value;
         $('#Addexcess').val('');
         $('#AddMaxSumInsured').val('');
@@ -4464,6 +4543,7 @@ function UpdateChosen() {
     }
 
     function InsuranceAttributeSelected() {
+        debugger;
         var InsuranceAttribute = document.getElementById("InsuranceAttributes");
         var IA = InsuranceAttribute.options[InsuranceAttribute.selectedIndex].value;
         $('#useremailSec').addClass("hidden");
@@ -4515,8 +4595,19 @@ function UpdateChosen() {
             }
             $("#AddBoatIsTrailered").val("True");
             $('#AddBoatWaterLocationSection').addClass("hidden");
+
+            var WaterLocation = document.getElementById("WaterLocation");
+            WaterLocation.classList.remove("required");
+            document.getElementById("AddBoatWaterLocation").required = false;
+
+
             $('#AddothermarinSection').addClass("hidden");
             $('#AddBoatMooredTypeSection').addClass("hidden");
+
+            var MooredType = document.getElementById("MooredType");
+            MooredType.classList.remove("othermarin");
+            document.getElementById("AddMooredType").required = false;
+
             $('#AddBoatLandLocationSection').removeClass("hidden");
             AddhasTrailer();
         }
@@ -4525,8 +4616,22 @@ function UpdateChosen() {
             AddboatType1Jetski.classList.remove("hidden");
             $("#AddBoatIsTrailered").val("");
             $('#AddBoatWaterLocationSection').addClass("hidden");
+
+            var WaterLocation = document.getElementById("WaterLocation");
+            WaterLocation.classList.remove("required");
+            document.getElementById("AddBoatWaterLocation").required = false;
+
             $('#AddothermarinSection').addClass("hidden");
+            var othermarin = document.getElementById("othermarin");
+            othermarin.classList.remove("othermarin");
+            document.getElementById("AddOtherBoatWaterLocation").required = false;
+
+
             $('#AddBoatMooredTypeSection').addClass("hidden");
+            var MooredType = document.getElementById("MooredType");
+            MooredType.classList.remove("othermarin");
+            document.getElementById("AddMooredType").required = false;
+
             $('#AddBoatLandLocationSection').removeClass("hidden");
             AddhasTrailer();
         }
@@ -4536,6 +4641,13 @@ function UpdateChosen() {
             $("#AddBoatIsTrailered").val("");
             $('#AddBoatWaterLocationSection').removeClass("hidden");
             $('#AddBoatMooredTypeSection').removeClass("hidden");
+
+            var MooredType = document.getElementById("MooredType");
+            MooredType.classList.add("required");
+            document.getElementById("AddMooredType").required = true;
+
+
+
             $('#AddBoatLandLocationSection').addClass("hidden");
             $('#AddMooredType').val("Berthed");
             $('#AddBerthedMooringType').removeClass("hidden");
@@ -4543,6 +4655,11 @@ function UpdateChosen() {
             $('#AddSwingMooringType').addClass("hidden");
             if ($('#AddBoatWaterLocation').val() == "add") {
                 $('#AddothermarinSection').removeClass("hidden");
+
+                var othermarin = document.getElementById("othermarin");
+                othermarin.classList.add("required");
+                document.getElementById("AddOtherBoatWaterLocation").required = true;
+
             }
             AddhasTrailer();
 
@@ -4554,6 +4671,11 @@ function UpdateChosen() {
             $('#AddBoatWaterLocationSection').removeClass("hidden");
             $('#AddBoatLandLocationSection').addClass("hidden");
             $('#AddBoatMooredTypeSection').removeClass("hidden");
+
+            var MooredType = document.getElementById("MooredType");
+            MooredType.classList.add("required");
+            document.getElementById("AddMooredType").required = true;
+
             $('#AddMooredType').val("");
             $('#AddBerthedMooringType').addClass("hidden");
             $('#AddPileMooringType').removeClass("hidden");
@@ -4573,6 +4695,7 @@ function UpdateChosen() {
     }
 
     function AddupdateExcess() {
+        debugger;
         var boatType1Selected = AddboatType1.options[AddboatType1.selectedIndex].value;
         var boatType2Selected = AddboatType2.options[AddboatType2.selectedIndex].value;
         var MotorType = $('#AddMotorType').val();
@@ -4636,6 +4759,7 @@ function UpdateChosen() {
     }
 
     function AddhasTrailer() {
+        debugger;
         var hasT = $('#AddBoatIsTrailered').val();
         if (hasT == "True") {
             $('#AddSelectTrailerSection').show('2000');
@@ -4661,28 +4785,51 @@ function UpdateChosen() {
         }
     }
     function AddhideShowHullConstructionOther() {
+        debugger;
         var hullConstructionSelected = AddconstructionType.options[AddconstructionType.selectedIndex].value;
         if (hullConstructionSelected == "Other") {
             AddhullConstructOther.classList.remove("hidden");
+
+            var ConstructionTypeLable = document.getElementById("ConstructionTypeLable");
+            ConstructionTypeLable.classList.add("required");
+            document.getElementById("AddOtherConstructionType").required = true;
+
         }
         else {
-            hullConstructOther.classList.add("hidden");
+            //hullConstructOther.classList.add("hidden");
+            AddhullConstructOther.classList.add("hidden");
             AddotherConstructionType.value = '';
+
+            var ConstructionTypeLable = document.getElementById("ConstructionTypeLable");
+            ConstructionTypeLable.classList.remove("required");
+            document.getElementById("AddOtherConstructionType").required = false;
+
         }
     }
 
     function AddhideShowHullConfigurationOther() {
+        debugger;
         var hullConfigurationSelected = AddhullConfiguration.options[AddhullConfiguration.selectedIndex].value;
         if (hullConfigurationSelected == "Other") {
             AddhullConfigurationOther.classList.remove("hidden");
+            var OtherHullConfiguration = document.getElementById("OtherHullConfiguration");
+            OtherHullConfiguration.classList.add("required");
+            document.getElementById("AddOtherHullConfiguration").required = true;
+
+
         }
         else {
-            hullConfigurationOther.classList.add("hidden");
+            //hullConfigurationOther.classList.add("hidden");
+            AddhullConfigurationOther.classList.add("hidden");
             AddotherConfigurationType.value = '';
+            var OtherHullConfiguration = document.getElementById("OtherHullConfiguration");
+            OtherHullConfiguration.classList.remove("required");
+            document.getElementById("AddOtherHullConfiguration").required = false;
         }
     }
 
     function AddaddNewSkipper() {
+        debugger;
         var selectedBoatOperator = AddboatOperator.options[AddboatOperator.selectedIndex].value;
         if (selectedBoatOperator == "add") {
             $('#addOperatorModal').show();
@@ -4692,6 +4839,7 @@ function UpdateChosen() {
     }
 
     function AddaddNewTrailer() {
+        debugger;
         var selectedTrailer = AddboatTrailer.options[AddboatTrailer.selectedIndex].value;
         if (selectedTrailer == "add") {
             $('#addTrailerModal').show();
@@ -4702,6 +4850,7 @@ function UpdateChosen() {
     }
 
     function AddaddNewLandLoc() {
+        debugger;
         var selectedLandLoc = AddboatLandLoc.options[AddboatLandLoc.selectedIndex].value;
         if (selectedLandLoc == "add") {
             $('#addLandLocModal').show();
@@ -4712,6 +4861,7 @@ function UpdateChosen() {
     }
 
     function ModalOUSelected() {
+        debugger;
         var oUselect = OrgUnitModal.options[OrgUnitModal.selectedIndex].value;
         $.ajax({
             url: '@Url.Action("OUSelected", "Services")',
@@ -4735,6 +4885,7 @@ function UpdateChosen() {
     };
 
     function MarinaLocSelected() {
+        debugger;
         var MarinaLocation = document.getElementById("WaterLocationMarinaLocation");
         var marinaLocation = MarinaLocation.options[MarinaLocation.selectedIndex].value;
         if (marinaLocation == "add") {
@@ -4745,7 +4896,8 @@ function UpdateChosen() {
         }
     }
 
-   function GetOU(marinaloc) {
+    function GetOU(marinaloc) {
+        debugger;
        var orgId = marinaloc;
         $.ajax({
              url: '@Url.Action("GetOU", "Services")',
@@ -4776,6 +4928,7 @@ function UpdateChosen() {
     };
 
     function OUSelected() {
+        debugger;
         var oUselect = OrgUnit.options[OrgUnit.selectedIndex].value;
         $.ajax({
              url: '@Url.Action("OUSelected", "Services")',
@@ -4799,6 +4952,7 @@ function UpdateChosen() {
     };
 
     function AddOUSelected() {
+        debugger;
         var oUselect = AddOrgUnit.options[AddOrgUnit.selectedIndex].value;
         $("#AddWaterLocationLocation").empty();
         $('#AddWaterLocationLocation').append("<option selected value=\"\"> --Select-- </option>")
@@ -4822,6 +4976,7 @@ function UpdateChosen() {
     };
 
     function AddMarinaLocSelected() {
+        debugger;
         var MarinaLocation = document.getElementById("AddWaterLocationMarinaLocation");
         var marinaLocation = MarinaLocation.options[MarinaLocation.selectedIndex].value;
         if (marinaLocation == "add") {
@@ -4833,6 +4988,7 @@ function UpdateChosen() {
     }
 
     function AddaddNewLoc() {
+        debugger;
         var selectedLoc = BuildingLocationModal.options[BuildingLocationModal.selectedIndex].value;
         var selectedLoc2 = AddboatLoc2.options[AddboatLoc2.selectedIndex].value;
         var selectedLoc3 = AddboatLoc3.options[AddboatLoc3.selectedIndex].value;
@@ -4856,6 +5012,7 @@ function UpdateChosen() {
         selectedLoc3 == "";
     }
 
+    debugger;
     var boatType1 = document.getElementById("BoatType1");
     var boatType1Jetski = document.getElementById("BoatType1Jetski");
     // BoatType 2
@@ -4932,6 +5089,7 @@ function UpdateChosen() {
     var adminUser = '#AdminUser';
 
     function vesselType1Selected() {
+        debugger;
         var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
         $('#excess').val('');
         $('#MaxSumInsured').val('');
@@ -5264,6 +5422,7 @@ function UpdateChosen() {
     }
 
     function updateExcess() {
+        debugger;
         var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
         var boatType2Selected = boatType2.options[boatType2.selectedIndex].value;
         var MotorType = $('#MotorType').val();
@@ -5326,6 +5485,7 @@ function UpdateChosen() {
     }
 
     function hideShowHullConstructionOther() {
+        debugger;
         var hullConstructionSelected = constructionType.options[constructionType.selectedIndex].value;
         if (hullConstructionSelected == "Other") {
             hullConstructOther.classList.remove("hidden");
@@ -5337,6 +5497,7 @@ function UpdateChosen() {
     }
 
     function hideShowHullConfigurationOther() {
+        debugger;
         var hullConfigurationSelected = hullConfiguration.options[hullConfiguration.selectedIndex].value;
         if (hullConfigurationSelected == "Other") {
             hullConfigurationOther.classList.remove("hidden");
@@ -5348,6 +5509,7 @@ function UpdateChosen() {
     }
 
     function addNewSkipper() {
+        debugger;
         var selectedBoatOperator = boatOperator.options[boatOperator.selectedIndex].value;
         if (selectedBoatOperator == "add") {
             $('#addOperatorModal').show();
@@ -5357,6 +5519,7 @@ function UpdateChosen() {
     }
 
     function addNewTrailer() {
+        debugger;
         var selectedTrailer = boatTrailer.options[boatTrailer.selectedIndex].value;
         if (selectedTrailer == "add") {
             $('#addTrailerModal').show();
@@ -5367,6 +5530,7 @@ function UpdateChosen() {
     }
 
     function clearAddRegTrailerModal() {
+        debugger;
         $(vesselTrailerVIN).hide();
         $(vesselTrailerChassis).hide();
         $(vesselTrailerEffective).hide();
@@ -5387,6 +5551,7 @@ function UpdateChosen() {
     }
 
     function addNewLandLoc() {
+        debugger;
         var selectedLandLoc = boatLandLoc.options[boatLandLoc.selectedIndex].value;
         if (selectedLandLoc == "add") {
             $('#addLandLocModal').show();
@@ -5397,6 +5562,7 @@ function UpdateChosen() {
     }
 
     function addNewWaterLoc() {
+        debugger;
         var selectedWaterLoc = boatWaterLoc.options[boatWaterLoc.selectedIndex].value;
         if (selectedWaterLoc == "add") {
             $('#othermarinSection').removeClass('hidden');
@@ -5407,17 +5573,24 @@ function UpdateChosen() {
         }
     }
 
-     function AddaddNewWaterLoc() {
+    function AddaddNewWaterLoc() {
+        debugger;
         var AddSelectedWaterLoc = AddboatWaterLoc.options[AddboatWaterLoc.selectedIndex].value;;
          if (AddSelectedWaterLoc == "add") {
              $('#AddothermarinSection').removeClass('hidden');
              $('#AddBoatMooredTypeSection').removeClass('hidden');
+
+             var MooredType = document.getElementById("MooredType");
+             MooredType.classList.add("required");
+             document.getElementById("AddMooredType").required = true;
+
          } else {
              $('#AddothermarinSection').addClass('hidden');
          }
     }
 
     function addNewLoc() {
+        debugger;
         var selectedLoc2 = boatLoc2.options[boatLoc2.selectedIndex].value;
         if (selectedLoc2 == "add") {
             $('#addLocModal').show();
@@ -5428,6 +5601,7 @@ function UpdateChosen() {
     }
 
     function addNewTrailerLoc() {
+        debugger;
         var selectedLoc3 = boatLoc3.options[boatLoc3.selectedIndex].value;
         if (selectedLoc3 =="add") {
             $('#addLocModal').show();
@@ -5437,7 +5611,8 @@ function UpdateChosen() {
         selectedLoc3 == "";
     }
 
-     function addTrailerLoc() {
+    function addTrailerLoc() {
+        debugger;
         var VehicleLocation =  document.getElementById("VehicleLocation");
         var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
         if (selectedLoc3 =="add") {
@@ -5448,6 +5623,7 @@ function UpdateChosen() {
     }
 
     function AddaddTrailerLoc() {
+        debugger;
         var VehicleLocation =  document.getElementById("AddVehicleLocation");
         var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
         if (selectedLoc3 =="add") {
@@ -5458,6 +5634,7 @@ function UpdateChosen() {
     }
 
     function addLandLoc() {
+        debugger;
         var VehicleLocation =  document.getElementById("BuildingLocation");
         var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
         if (selectedLoc3 =="add") {
@@ -5468,6 +5645,7 @@ function UpdateChosen() {
     }
 
     function AddaddLandLoc() {
+        debugger;
         var VehicleLocation =  document.getElementById("AddBuildingLocation");
         var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
         if (selectedLoc3 =="add") {
@@ -5478,6 +5656,7 @@ function UpdateChosen() {
     }
 
     function addPlantLoc() {
+        debugger;
         var VehicleLocation = document.getElementById("MotorLocation");
         var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
         if (selectedLoc3 =="add") {
@@ -5489,6 +5668,7 @@ function UpdateChosen() {
     }
 
     function AddaddPlantLoc() {
+        debugger;
         var VehicleLocation =  document.getElementById("AddMotorLocation");
         var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
         if (selectedLoc3 =="add") {
@@ -5499,16 +5679,19 @@ function UpdateChosen() {
     }
 
     function closeLocModal() {
+        debugger;
         var opMod = $(openModal).val();
         $(opMod).show();
     }
 
     function addNewInterestedParties() {
+        debugger;
         $('#addInterestedParties').show();
         selectedBoatUse = "";
     }
 
     function addNewBoatUse() {
+        debugger;
         var BoatUse = document.getElementById("AddSelectedBoatUse");
         var BoatUse2 = document.getElementById("SelectedBoatUse");
         var selectedBoatUse = BoatUse.options[BoatUse.selectedIndex].value;
@@ -5537,12 +5720,14 @@ function UpdateChosen() {
     }
 
     function addNewParty() {
+        debugger;
         $('#addInterestedPartyModal').show();
         InterestedPartyUpdated();
         selectedBoatUse = "";
     }
 
     function vesselUseCategory() {
+        debugger;
         var boatusecategory = document.getElementById("BoatUseCategory");
         var selectedBoatUseCategory = boatusecategory.options[boatusecategory.selectedIndex].value;
         var boatUseLiveNotesSection = document.getElementById("BoatUseLiveNotesSection");
@@ -5565,6 +5750,7 @@ function UpdateChosen() {
     }
 
     function AddBoatUseCategory() {
+        debugger;
         var boatusecategory = document.getElementById("AddBoatUseCategory");
         var selectedBoatUseCategory = boatusecategory.options[boatusecategory.selectedIndex].value;
         var boatUseLiveNotesSection = document.getElementById("AddBoatUseLiveNotesSection");
@@ -5592,6 +5778,7 @@ function UpdateChosen() {
     }
 
     function AdminUpdated() {
+        debugger;
         var AdminUser = $('#AdminSection');
         var selectedIsAdmin = $('input[name=IsAdmin]:checked').val();
         if (selectedIsAdmin == "Yes") {
@@ -5604,6 +5791,7 @@ function UpdateChosen() {
     }
 
     function AddAdminUpdated() {
+        debugger;
         var AdminUser = $('#AdminSectionAdd');
         var selectedIsAdmin = $('input[name=AddIsAdmin]:checked').val();
         if (selectedIsAdmin == "Yes") {
@@ -5618,6 +5806,7 @@ function UpdateChosen() {
     }
 
     function InterestedPartyUpdated() {
+        debugger;
         var interestedPartyFinancial = $('#FinancialSection');
         var interestedPartyPrivate = $('#PrivateSection');
         var selectedBoatUseCategory = $('input[name=InsuranceAttribute]:checked').val();
@@ -5645,6 +5834,7 @@ function UpdateChosen() {
     }
 
     function boutUseCategoryUpdated() {
+        debugger;
         var selectedBoatUseCategory = $('input[name=BoatUseCategory]:checked').val();
         if (selectedBoatUseCategory == "LiveOnBoard") {
             $(vesselUseSectionLive).show('2000');
@@ -5681,6 +5871,7 @@ function UpdateChosen() {
     }
 
     function hasTrailer() {
+        debugger;
         var hasT = $('#BoatIsTrailered').val();
         if (hasT == "True") {
             $('#SelectTrailerSection').show('2000');
@@ -5707,6 +5898,7 @@ function UpdateChosen() {
     }
 
     function trailerSelectionUpdate() {
+        debugger;
         var selectedTrailerChoice = $('input[name=TrailerSelection]:checked').val();
         if (selectedTrailerChoice == "registered") {
             $('#addSection').addClass('hidden');
@@ -5743,6 +5935,7 @@ function UpdateChosen() {
     }
 
     function submitPayment() {
+        debugger;
          event.preventDefault();
         if (!$('#paymentCreditCard').is(":checked") && !$('#paymentEGlobal').is(":checked"))
             return false;
@@ -5781,6 +5974,7 @@ function UpdateChosen() {
     }
 
     function bypassPayment() {
+        debugger;
         event.preventDefault();
         $('#getDocumentsModal').show();
         $.ajax({
@@ -5797,6 +5991,7 @@ function UpdateChosen() {
     }
 
     function DefaultDateRestore() {
+        debugger;
         if (document.getElementById("dateselected") != null) {
             var ds = document.getElementById("dateselected").value;
             var ds2 = "";

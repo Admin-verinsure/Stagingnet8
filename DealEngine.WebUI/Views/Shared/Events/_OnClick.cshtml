@@ -228,6 +228,30 @@
         }
     }
 
+    function AddVessel() {
+        debugger;
+        var form = document.getElementById("BoatViewModel");
+        var formValid = TableFormValidation(form , "Vessel");
+        if (formValid) {
+            sessionStorage.setItem('accordianTrigger', 'Vessel');
+            $.ajax({
+                url: '@Url.Action("AddBoat", "Services")',
+                type: "POST",
+                data: $("#tab_1 :input").serialize({ json: true }),
+                async: false
+            })
+                .done(function () {
+                    //Save the session and reload
+                    form.reset();
+                    location.reload();
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                });
+        }
+    }
+
+
     function AddLocation() {
         var form = document.getElementById("LocationViewModel");
         var formValid = TableFormValidation(form , "location");
@@ -308,7 +332,7 @@
         })
         //.done(function () {
         //        location.reload();
-               
+
         //  })
             .done(function (data) {
                 debugger;
@@ -645,6 +669,7 @@
     }
 
     function TableFormValidation(Form, SectionName) {
+        debugger;
         for (var e = 0; e < Form.length; e++) {
             var element = null;
             try {
