@@ -9,13 +9,13 @@
             @*<input id="LocationId" name="LocationViewModel.LocationId" hidden form="LocationViewModel" />*@
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item" id="tab1">
-                    <a class="nav-link active" href="#boatTabs1" data-toggle="tab" onclick="ResetForm('boatTabs3', 'boatTabs2', 'Boat', 'BoatAddButton', 'BoatCancelButton')"> List All </a>
+                    <a class="nav-link active" href="#boatTabs1" data-toggle="tab" onclick="ResetForm('boatTabs3', 'boatTabs2', 'Boat', 'updateBoat', 'ClearBoat')"> List All </a>
                 </li>
                 <li class="nav-item" id="tab2">
                     <a class="nav-link" href="#boatTabs2" data-toggle="tab"> Edit </a>
                 </li>
                 <li class="nav-item" id="tab2">
-                    <a class="nav-link" href="#boatTabs3" data-toggle="tab" onclick="ResetForm('boatTabs3', 'boatTabs2', 'Boat', 'BoatAddButton', 'BoatCancelButton')"> Add </a>
+                    <a class="nav-link" href="#boatTabs3" data-toggle="tab" onclick="ResetForm('boatTabs3', 'boatTabs2', 'Boat', 'updateBoat', 'ClearBoat')"> Add </a>
                 </li>
                 <li class="nav-item" id="tab3">
                     <a class="nav-link" href="#boatTabs4" data-toggle="tab"> List Removed </a>
@@ -252,7 +252,7 @@
                                     <label class="label required form-group col-12" for="VesselModel">Vessel Model</label>
                                     <label class="input form-group col-12">
                                         <i></i>
-                                        @Html.TextBoxFor(m => m.BoatViewModel.BoatModel, new { id = "BoatModel", @class = "form-control b", @onchange = "OnChange(this.id, this.name)", @form = "BoatViewModel", @placeholder = "Vessel Model", @required = "" })
+                                        @Html.TextBoxFor(m => m.BoatViewModel.BoatModel, new { id = "AddBoatModel", @class = "form-control b", @onchange = "OnChange(this.id, this.name)", @form = "BoatViewModel", @placeholder = "Vessel Model", @required = "" })
 
                                         @*<input class="form-control b" data-type="TEXTBOX" data-name="BoatModel" id="AddBoatModel" name="BoatModel" placeholder="Vessel Model" value="" required>*@
                                     </label>
@@ -380,7 +380,7 @@
                                     </section>
                                     <section class="col col-sm-2 col-md-2 col-lg-2"></section>
                                 </div>
-                                <div class="col-sm-6 col-md-6 col-lg-6 d-flex" id="AddMastTypeSection">
+                                <div class="col-sm-6 col-md-6 col-lg-6" id="AddMastTypeSection">
 
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10 ">
                                         <label class="label required col-12" for="MastType">Mast Type</label>

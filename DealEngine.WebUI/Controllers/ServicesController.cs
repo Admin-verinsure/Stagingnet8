@@ -2130,9 +2130,13 @@ namespace DealEngine.WebUI.Controllers
                 var MastType = collection.Keys.Where(s => s.StartsWith("MastType", StringComparison.CurrentCulture));
                 var BoatQuoteExcessOption = collection.Keys.Where(s => s.StartsWith("BoatQuoteExcessOption", StringComparison.CurrentCulture));
                 var BoatIsTrailered = collection.Keys.Where(s => s.StartsWith("BoatIsTrailered", StringComparison.CurrentCulture));
-                var BoatTrailer = collection.Keys.Where(s => s.StartsWith("BoatTrailer", StringComparison.CurrentCulture));
+                //var BoatTrailer = collection.Keys.Where(s => s.StartsWith("BoatTrailer", StringComparison.CurrentCulture));
                 var WaterLocationMooringType = collection.Keys.Where(s => s.StartsWith("WaterLocationMooringType", StringComparison.CurrentCulture));
                 var SelectedBoatUse = collection.Keys.Where(s => s.StartsWith("SelectedBoatUse", StringComparison.CurrentCulture));
+
+
+                var BoatOperator = collection.Keys.Where(s => s.StartsWith("BoatOperator", StringComparison.CurrentCulture));
+                var BoatOperatorID = collection["BoatOperator"];
 
 
 
@@ -2158,7 +2162,22 @@ namespace DealEngine.WebUI.Controllers
                      boat = await _boatRepository.GetByIdAsync(Guid.Parse(collection["BoatId"]));
                 }
 
-               
+
+
+                //for boatOperator
+                if (string.IsNullOrWhiteSpace(BoatOperatorID))
+                {
+
+                    boat.BoatOperators = new List<Organisation>();
+                    List<SelectListItem> BoatOperators = new List<SelectListItem>();
+
+                }
+                else
+                {
+                    //var productList = await _productService.GetAllProducts();
+                    var  BoatOperatorList = await _organisationService.GetOrganisation(Guid.Parse(collection["BoatOperator"]));
+                }
+
 
 
                 //var BoatLandLocation = collection["BoatLandLocation"];
@@ -2234,7 +2253,6 @@ namespace DealEngine.WebUI.Controllers
                     {
                         var propertyName = keyField.Split('.').ToList();
                         var property = type.GetProperty(propertyName.LastOrDefault());
-                        //property.SetValue(boat, collection[keyField].ToString());
 
                         if (typeof(string) == property.PropertyType)
                         {
@@ -2242,9 +2260,6 @@ namespace DealEngine.WebUI.Controllers
                         }
                         else if (typeof(DateTime) == property.PropertyType)
                         {
-                            //collection.Value.ToString("dd-MM-yyyy");
-                            //var dateStr = string.Format("{0:dd-MM-yyyy}", collection[keyField]);
-                            //property.SetValue(claimNotification, collection[keyField].string.Format("{0:dd-MM-yyyy}", collection[keyField]));
                             property.SetValue(boat, DateTime.Parse(collection[keyField].ToString()));
                         }
                         else if (typeof(decimal) == property.PropertyType)
@@ -2261,11 +2276,43 @@ namespace DealEngine.WebUI.Controllers
 
 
                         }
+                        else if (typeof(Int32) == property.PropertyType)
+                        {
+                            var fieldValue = collection[keyField];
+                            if (string.IsNullOrWhiteSpace(collection[keyField]))
+                            {
+                                fieldValue = "0";
+                            }
+                            else
+                            {
+                               // property.SetValue(boat, Int32.Parse(collection[keyField].ToString()));
+                            }
+                        }
 
                     }
 
                 }
 
+                //for BoatOperator
+
+                foreach (var keyField in BoatOperator)
+                {
+                    if (keyField == "BoatOperator")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+                    }
+
+                }
 
                 //for boatType1
                 foreach (var keyField in BoatType1)
@@ -2593,29 +2640,29 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 //for BoatTrailer  
-                foreach (var keyField in BoatTrailer)
-                {
-                    if (keyField == "BoatTrailer")
-                    {
-                        var propertyName = keyField.Split('.').ToList();
-                        var property = type.GetProperty(propertyName.LastOrDefault());
+                //foreach (var keyField in BoatTrailer)
+                //{
+                //    if (keyField == "BoatTrailer")
+                //    {
+                //        var propertyName = keyField.Split('.').ToList();
+                //        var property = type.GetProperty(propertyName.LastOrDefault());
 
-                        if (property == null)
-                        {
-                            //property = "String";
-                        }
-                        if (typeof(string) == property.PropertyType)
-                        {
-                            property.SetValue(boat, collection[keyField].ToString());
-                        }
-                        if (typeof(decimal) == property.PropertyType)
-                        {
-                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
-                        }
+                //        if (property == null)
+                //        {
+                //            //property = "String";
+                //        }
+                //        if (typeof(string) == property.PropertyType)
+                //        {
+                //            property.SetValue(boat, collection[keyField].ToString());
+                //        }
+                //        if (typeof(decimal) == property.PropertyType)
+                //        {
+                //            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                //        }
 
-                    }
+                //    }
 
-                }
+                //}
 
                 //for WaterLocationMooringType  
                 foreach (var keyField in WaterLocationMooringType)
