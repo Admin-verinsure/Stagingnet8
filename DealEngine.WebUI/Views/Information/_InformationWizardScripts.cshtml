@@ -1680,17 +1680,59 @@
     function ValidateMotorVehicleModal(event) {
         debugger;
         event.preventDefault();
-        if (!(document.getElementById("YearModal").validity.valueMissing) && !(document.getElementById("MakeModal").validity.valueMissing)
-            && !(document.getElementById("ModelModal").validity.valueMissing) && !(document.getElementById("VehicleLocationModal").validity.valueMissing)
-            && !(document.getElementById("SumInsuredModal").validity.valueMissing) && !(document.getElementById("TrailerEffectiveDateModal").validity.valueMissing)) {
+        var test1 = document.getElementById("YearModal").validity.valueMissing;
+        console.log("test1=" + test1);
+        var test2 = document.getElementById("MakeModal").validity.valueMissing;
+        console.log("test2=" + test2);
+        var test3 = document.getElementById("ModelModal").validity.valueMissing;
+        console.log("test3=" + test3);
+        var test4 = document.getElementById("VehicleLocationModal").validity.valueMissing;
+        console.log("test4=" + test4);
+        var test5 = document.getElementById("SumInsuredModal").validity.valueMissing;
+        var test6 = document.getElementById("TrailerEffectiveDateModal").validity.valueMissing;
+        var date = document.getElementById("TrailerEffectiveDateModal").value;
 
-            AddMotorVehicleModal(event);
-            $('#addTrailerModal').hide();
+
+        if (document.getElementById("TrailerEffectiveDateModal").value != "")
+        {
+            debugger;
+            if (!(document.getElementById("YearModal").validity.valueMissing)
+                && !(document.getElementById("MakeModal").validity.valueMissing)
+                && !(document.getElementById("ModelModal").validity.valueMissing)
+                && !(document.getElementById("VehicleLocationModal").validity.valueMissing)
+                && !(document.getElementById("SumInsuredModal").validity.valueMissing)
+                && !(document.getElementById("TrailerEffectiveDateModal").validity.valueMissing))
+                {
+                    AddMotorVehicleModal(event);
+                    $('#addTrailerModal').hide();
+                }
+                else
+                {
+                    txt = "Please provide required values";
+                    document.getElementById("trailerdemo").innerHTML = txt;
+                }
         }
-        else {
-            txt = "Please provide required values";
-              document.getElementById("trailerdemo").innerHTML = txt;
+        else
+        {
+            debugger;
+            if (!(document.getElementById("YearModal").validity.valueMissing)
+                && !(document.getElementById("MakeModal").validity.valueMissing)
+                && !(document.getElementById("ModelModal").validity.valueMissing)
+                && !(document.getElementById("VehicleLocationModal").validity.valueMissing)
+                && !(document.getElementById("SumInsuredModal").validity.valueMissing))
+                {
+                    AddMotorVehicleModal(event);
+                    $('#addTrailerModal').hide();
+                }
+                else
+                {
+                    txt = "Please provide required values";
+                    document.getElementById("trailerdemo").innerHTML = txt;
+                }
         }
+
+
+   
     }
 
     function AddMotorVehicleModal(event) {
