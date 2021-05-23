@@ -2139,6 +2139,7 @@ namespace DealEngine.WebUI.Controllers
                 var BoatTrailer = collection.Keys.Where(s => s.StartsWith("BoatTrailer", StringComparison.CurrentCulture));
                 var BoatTrailerID = collection["BoatTrailer"];
 
+                BoatUse boatuse = null;
                 var SelectedBoatUse = collection.Keys.Where(s => s.StartsWith("SelectedBoatUse", StringComparison.CurrentCulture));
                 var SelectedBoatUseID = collection["SelectedBoatUse"];
 
@@ -2222,41 +2223,44 @@ namespace DealEngine.WebUI.Controllers
                 if (string.IsNullOrWhiteSpace(BoatOperatorID))
                 {
 
-                    boat.BoatOperators = new List<Organisation>();
-                    List<SelectListItem> BoatOperators = new List<SelectListItem>();
+                    //boat.BoatOperators = new List<Organisation>();
+                    // List<SelectListItem> BoatOperators = new List<SelectListItem>();
+                    //boat.BoatOperator = new Organisation();
+                    boat.BoatOperator = null;
 
                 }
                 else
                 {
                     //var productList = await _productService.GetAllProducts();
-                    var BoatOperatorList = await _organisationService.GetOrganisation(Guid.Parse(collection["BoatOperator"]));
+                    // var BoatOperatorList = await _organisationService.GetOrganisation(Guid.Parse(collection["BoatOperator"]));
+                    boat.BoatOperator = await _organisationService.GetOrganisation(Guid.Parse(collection["BoatOperator"]));
                 }
 
                 //for BoatOperator
 
 
-                foreach (var keyField in BoatOperator)
-                {
-                    if (keyField == "BoatOperator")
-                    {
-                        var propertyName = keyField.Split('.').ToList();
-                        var property = type.GetProperty(propertyName.LastOrDefault());
+                //foreach (var keyField in BoatOperator)
+                //{
+                //    if (keyField == "BoatOperator")
+                //    {
+                //        var propertyName = keyField.Split('.').ToList();
+                //        var property = type.GetProperty(propertyName.LastOrDefault());
 
-                        if (typeof(string) == property.PropertyType)
-                        {
-                            property.SetValue(boat, collection[keyField].ToString());
-                        }
-                        if (typeof(decimal) == property.PropertyType)
-                        {
-                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
-                        }
-                        if (typeof(Guid) == property.PropertyType)
-                        {
-                            property.SetValue(boat, Guid.Parse(collection[keyField].ToString()));
-                        }
-                    }
+                //        if (typeof(string) == property.PropertyType)
+                //        {
+                //            property.SetValue(boat, collection[keyField].ToString());
+                //        }
+                //        if (typeof(decimal) == property.PropertyType)
+                //        {
+                //            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                //        }
+                //        if (typeof(Guid) == property.PropertyType)
+                //        {
+                //            property.SetValue(boat, Guid.Parse(collection[keyField].ToString()));
+                //        }
+                //    }
 
-                }
+                //}
 
                 //for boatType1
                 foreach (var keyField in BoatType1)
@@ -2671,7 +2675,7 @@ namespace DealEngine.WebUI.Controllers
                 else
                 {
                     //var productList = await _productService.GetAllProducts();
-                    var BoatTrailerList = await _boatUseService.GetBoatUse(Guid.Parse(collection["SelectedBoatUse"]));
+                    var SelectedBoatUseList = await _boatUseService.GetBoatUse(Guid.Parse(collection["SelectedBoatUse"]));
                 }
                 //for SelectedBoatUse   
                 foreach (var keyField in SelectedBoatUse)
@@ -2687,15 +2691,15 @@ namespace DealEngine.WebUI.Controllers
                         }
                         if (typeof(string) == property.PropertyType)
                         {
-                            property.SetValue(boat, collection[keyField].ToString());
+                            property.SetValue(boatuse, collection[keyField].ToString());
                         }
                         if (typeof(decimal) == property.PropertyType)
                         {
-                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                            property.SetValue(boatuse, decimal.Parse(collection[keyField].ToString()));
                         }
                         if (typeof(Guid) == property.PropertyType)
                         {
-                            property.SetValue(boat, Guid.Parse(collection[keyField].ToString()));
+                            property.SetValue(boatuse, Guid.Parse(collection[keyField].ToString()));
                         }
 
                     }
@@ -2714,6 +2718,7 @@ namespace DealEngine.WebUI.Controllers
                     using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
                     {
                         sheet.Boats.Add(boat);
+                        boat.BoatUses.Add(boatuse);
                         await uow.Commit();
                     }
                 }
