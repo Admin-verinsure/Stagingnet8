@@ -231,7 +231,7 @@
     function AddVessel() {
         debugger;
         var form = document.getElementById("BoatViewModel");
-        var formValid = TableFormValidation(form , "Vessel");
+       var formValid = TableFormValidation(form , "Vessel");
         if (formValid) {
             sessionStorage.setItem('accordianTrigger', 'Vessel');
             $.ajax({
@@ -689,18 +689,18 @@
                     return false;
                 }
 
-                if (element.required == true && element.hidden == false) {
-                    if (element.value == "") {
-                       var  IdElement = element.id;
-                        var element = document.getElementById(IdElement);
-                        element.classList.add("is-invalid");
-                        element.classList.remove("is-valid");
-                        event.preventDefault();
-                      event.stopPropagation();
-                       window.alert("Please complete " + SectionName + " details");
-                        return false;
-                    }
-                }
+                //if (element.required == true && element.hidden == false) {
+                //    if (element.value == "") {
+                //       var  IdElement = element.id;
+                //        var element = document.getElementById(IdElement);
+                //        element.classList.add("is-invalid");
+                //        element.classList.remove("is-valid");
+                //        event.preventDefault();
+                //      event.stopPropagation();
+                //       window.alert("Please complete " + SectionName + " details");
+                //        return false;
+                //    }
+                //}
                
             }
         }

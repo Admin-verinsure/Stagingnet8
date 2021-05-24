@@ -37,6 +37,7 @@
     });
 
     function OnChange(Id, Name) {
+        debugger;
         var obj = document.getElementById(Id);
         var value = obj.value;
         var dataRule = obj.getAttribute('data-rule');
@@ -90,26 +91,27 @@
         }
     }
 
-    function SelectValidation(obj, value) {
+    function SelectValidation(obj, value)
+    {
+        debugger
 
-        if (!obj.multiple) {
-            if (value != "0") {
-                obj.classList.add("is-valid");
-                obj.classList.remove("is-invalid");
-            }
-            else {
+        if (!obj.multiple)
+        {
+            if (value == "0") {
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
+
+                
             }
-        }
-        else {
-            if (value != "") {
-                obj.classList.add("is-valid");
-                obj.classList.remove("is-invalid");
-            }
-            else {
+            else if (value == "") {
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
+
+
+            }
+            else {
+                obj.classList.add("is-valid");
+                obj.classList.remove("is-invalid");
             }
         }
     }
