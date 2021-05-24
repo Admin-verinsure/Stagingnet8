@@ -689,14 +689,18 @@
                     return false;
                 }
 
-                //if (element.attributes.name == "require" && element.hidden == false) {
-                //    if (element.value == "") {
-                //        event.preventDefault();
-                //        event.stopPropagation();
-                //        window.alert("Please complete " + SectionName + " details");
-                //        return false;
-                //    }
-                //}
+                if (element.required == true && element.hidden == false) {
+                    if (element.value == "") {
+                       var  IdElement = element.id;
+                        var element = document.getElementById(IdElement);
+                        element.classList.add("is-invalid");
+                        element.classList.remove("is-valid");
+                        event.preventDefault();
+                      event.stopPropagation();
+                       window.alert("Please complete " + SectionName + " details");
+                        return false;
+                    }
+                }
                
             }
         }
