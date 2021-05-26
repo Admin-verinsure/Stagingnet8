@@ -477,6 +477,91 @@
         SetCurrentTab("clTabs2");
     }
 
+
+
+    function EditVessel(BoatId, BoatName, BoatType1, BoatType2, BoatOperator, VesselArea, AucklandRegistration, BuiltProfessionally, YearOfManufacture, MaxRatedSpeed, RiggingType, BoatMake, BoatModel, HullConstruction, OtherHullConstruction, HullConfiguration, OtherHullConfiguration, MotorType, ModifiedMotor, MastType, MaxSumInsured, BoatQuoteExcessOption, BoatIsTrailered, BoatLandLocation, BoatWaterLocation, OtherMarinaName, WaterLocationMooringType, BoatEffectiveDate, InterestedParties, BoatNotes, BoatIsTrailered) {
+        debugger;
+        event.preventDefault();
+        CloneForm("boatTabs3", "boatTabs2", "updateBoat", "ClearBoat");
+        document.getElementById("AddBoatId").value = BoatId;
+        document.getElementById("AddBoatName").value = BoatName;
+        document.getElementById("AddBoatType1").value = BoatType1;
+        document.getElementById("AddBoatType2").value = BoatType2;
+        document.getElementById("AddBoatOperator").value = BoatOperator;
+        document.getElementById("AddVesselArea").value = VesselArea;
+        document.getElementById("AddAucklandRegistration").value = AucklandRegistration;
+        document.getElementById("AddBuiltProfessionally").value = BuiltProfessionally;
+        document.getElementById("AddYearOfManufacture").value = YearOfManufacture;
+        document.getElementById("AddBoatMake").value = BoatMake;
+        document.getElementById("AddBoatModel").value = BoatModel;
+        document.getElementById("AddHullConstruction").value = HullConstruction;
+        document.getElementById("AddOtherConstructionType").value = OtherHullConstruction;
+        document.getElementById("AddHullConfiguration").value = HullConfiguration;
+        document.getElementById("AddOtherHullConfiguration").value = OtherHullConfiguration;
+        document.getElementById("AddMotorType").value = MotorType;
+        document.getElementById("AddModifiedMotor").value = ModifiedMotor;
+        document.getElementById("AddMaxRatedSpeed").value = MaxRatedSpeed;
+        document.getElementById("AddRiggingType").value = RiggingType;
+        document.getElementById("AddMastType").value = MastType;
+        document.getElementById("AddMaxSumInsured").value = MaxSumInsured;
+        document.getElementById("Addexcess").value = BoatQuoteExcessOption;
+        document.getElementById("AddBoatIsTrailered").value = BoatIsTrailered;
+        document.getElementById("AddBoatLandLocation").value = BoatLandLocation;
+        document.getElementById("AddBoatWaterLocation").value = BoatWaterLocation;
+        document.getElementById("AddOtherBoatWaterLocation").value = OtherMarinaName;
+        document.getElementById("AddMooredType").value = WaterLocationMooringType;
+        document.getElementById("AddBoatEffectiveDate").value = BoatEffectiveDate.split(' ')[0];
+        document.getElementById("AddSelectedInterestedParty").value = InterestedParties;
+        document.getElementById("AddBoatNotes").value = BoatNotes;
+
+
+        //document.getElementById("AddBoatTrailer").value = BoatTrailer;
+        //document.getElementById("AddSelectedBoatUse").value = MaxRatedSpeed;
+
+
+
+
+
+
+
+
+       // document.getElementById("ClaimNotifiedDate").value = ClaimNotifiedDate.split(' ')[0];
+
+       
+        //console.log("ClaimStatus = " + ClaimStatus);
+        //d = d.split(' ')[0];
+
+       
+
+
+        //var eleman = document.getElementById("ClaimStatus");
+        //eleman.setAttribute("disabled", "true");
+        //document.getElementById("ClaimStatusFormGroup").style.display = "block";
+
+        //var eleman1 = document.getElementById("ClaimBrokerReference");
+        //eleman1.setAttribute("disabled", "true");
+        //document.getElementById("ClaimBrokerReferenceFormGroup").style.display = "block";
+
+
+        //var eleman2 = document.getElementById("ClaimInsurerReference");
+        //eleman2.setAttribute("disabled", "true");
+        //document.getElementById("ClaimInsurerReferenceFormGroup").style.display = "block";
+
+        //var eleman3 = document.getElementById("ClaimReserve");
+        //eleman3.setAttribute("disabled", "true");
+        //document.getElementById("ClaimReserveFormGroup").style.display = "block";
+
+        //var eleman4 = document.getElementById("ClaimPaid");
+        //eleman4.setAttribute("disabled", "true");
+        //document.getElementById("ClaimPaidFormGroup").style.display = "block";
+
+        SetCurrentTab("boatTabs2");
+    }
+
+
+
+
+
     function AddJob() {
         debugger;
         var form = document.getElementById("JobViewModel");

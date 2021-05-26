@@ -14,10 +14,10 @@
                 <li class="nav-item" id="tab2">
                     <a class="nav-link" href="#boatTabs2" data-toggle="tab"> Edit </a>
                 </li>
-                <li class="nav-item" id="tab2">
+                <li class="nav-item" id="tab3">
                     <a class="nav-link" href="#boatTabs3" data-toggle="tab" onclick="ResetForm('boatTabs3', 'boatTabs2', 'Boat', 'updateBoat', 'ClearBoat')"> Add </a>
                 </li>
-                <li class="nav-item" id="tab3">
+                <li class="nav-item" id="tab4">
                     <a class="nav-link" href="#boatTabs4" data-toggle="tab"> List Removed </a>
                 </li>
             </ul>
@@ -46,7 +46,11 @@
                             {
                                 <tr id="@boat.Id">
                                     <td>
-                                        <button class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit</button>
+                                        @*<button class="btn btn-success btn-sm" ><i class="fa fa-edit"></i> Edit</button>*@
+                                        <button class="btn btn-success btn-sm" onclick="EditVessel('@boat.Id', '@boat.BoatName', '@boat.BoatType1', '@boat.BoatType2', '@boat.BoatOperator', '@boat.VesselArea', '@boat.AucklandRegistration', '@boat.BuiltProfessionally', '@boat.YearOfManufacture', '@boat.MaxRatedSpeed', '@boat.RiggingType', '@boat.BoatMake', '@boat.BoatModel', '@boat.HullConstruction', '@boat.OtherHullConstruction', '@boat.HullConfiguration', '@boat.OtherHullConfiguration', '@boat.MotorType', '@boat.ModifiedMotor', '@boat.MastType', '@boat.MaxSumInsured', '@boat.BoatQuoteExcessOption', '@boat.BoatIsTrailered', '@boat.BoatLandLocation', '@boat.BoatWaterLocation', '@boat.OtherMarinaName', '@boat.WaterLocationMooringType', '@boat.BoatEffectiveDate', '@boat.InterestedParties', '@boat.BoatNotes', '@boat.BoatIsTrailered')">
+                                            <i class="fa fa-edit"></i> 
+                                            Edit
+                                        </button>
                                     </td>
                                     <td>
                                         @boat.BoatName
