@@ -2314,6 +2314,14 @@ namespace DealEngine.WebUI.Controllers
                     foreach (var useid in interestedParty)
                     {
                         boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));
+
+                        //using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                        //{
+                        //    //sheet.Boats.Add(boat);
+                        //    boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));
+
+                        //    await uow.Commit();
+                        //}
                     }
                 }
 

@@ -72,6 +72,7 @@
     }
 
     function InputValidation(obj, value) {
+        debugger
         if (obj.type == "number") {
             if (value >= 0) {
                 obj.classList.add("is-valid");
@@ -80,7 +81,9 @@
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
             }
-        } else {
+        }
+        else
+        {
             if (value != "") {
                 obj.classList.add("is-valid");
                 obj.classList.remove("is-invalid");

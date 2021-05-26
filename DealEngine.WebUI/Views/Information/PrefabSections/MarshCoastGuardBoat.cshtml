@@ -161,7 +161,7 @@
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10" id="PersonalWatercraftRegistrationAreaFormGroup">
                                         <label class="label required col-12" for="PersonalWatercraftRegistrationArea">Personal Watercraft Registration Area</label>
                                         <label class="input form-group col-12">
-                                            <select style="" class="b form-select" id="AddVesselArea" name="VesselArea" title="" required form="BoatViewModel">
+                                            <select style="" class="b form-select" id="AddVesselArea" name="VesselArea" title="" form="BoatViewModel">
                                                 <option selected="selected" value="">-- Select --</option>
                                                 <option value="Auckland">Auckland</option>
                                                 <option value="Bay Of Plenty">Bay Of Plenty</option>
@@ -344,7 +344,7 @@
                                 <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5" id="AddModifiedMotorSection">
                                     <label class="label required col-12" for="ModifiedMotor">Has the motor been modified?</label>
                                     <label class="input form-group col-12">
-                                        <select style="" class="b form-select" id="AddModifiedMotor" name="ModifiedMotor" form="BoatViewModel" required>
+                                        <select style="" class="b form-select" id="AddModifiedMotor" name="ModifiedMotor" form="BoatViewModel">
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="True">Yes</option>
                                             <option value="False">No</option>
@@ -371,7 +371,7 @@
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                         <label class="label required col-12" for="RiggingType">Rigging Type</label>
                                         <label class="input form-group col-12">
-                                            <select style="" class="b form-select" id="AddRiggingType" name="RiggingType" form="BoatViewModel" required>
+                                            <select style="" class="b form-select" id="AddRiggingType" name="RiggingType" form="BoatViewModel">
                                                 <option selected="selected" value="">-- Select --</option>
                                                 <option value="StainlessSteelWire">Stainless Steel Wire</option>
                                                 <option value="Rod">Rod</option>
@@ -387,7 +387,7 @@
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10 ">
                                         <label class="label required col-12" for="MastType">Mast Type</label>
                                         <label class="input form-group col-12">
-                                            <select style="" class="b form-select" id="AddMastType" name="MastType" form="BoatViewModel" required>
+                                            <select style="" class="b form-select" id="AddMastType" name="MastType" form="BoatViewModel">
                                                 <option selected="selected" value="">-- Select --</option>
                                                 <option value="Aluminium">Aluminium</option>
                                                 <option value="Steel">Steel</option>
@@ -412,8 +412,10 @@
                                     <label class="label required col-12" for="MaxSumInsured">$ Vessel Insured Value (Please exclude trailer value)</label>
                                     <label class="input form-group col-12">
                                         <i></i>
-                                        @Html.TextBoxFor(m => m.BoatViewModel.MaxSumInsured, new { id = "AddMaxSumInsured", @class = "form-control b", @onchange = "AddupdateExcess()", @form = "BoatViewModel", @placeholder = "$ Vessel Insured Value" , @required=""})
+                                        @Html.TextBoxFor(m => m.BoatViewModel.MaxSumInsured, "{0:C}", new { id = "AddMaxSumInsured", @class = "form-control b", @onchange = "AddupdateExcess()", @Type = "currency", @form = "BoatViewModel", @placeholder = "$ Vessel Insured Value", @required = "", })
 
+                                        @*"{0:C}"*@
+                                        @* {^\\$\\d{1,3}(,\\d{3})*(\\.\\d+)?$} *@
                                         @*<input onchange="AddupdateExcess()" class="form-control b" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" data-type="currency" data-name="MaxSumInsured" id="AddMaxSumInsured" name="MaxSumInsured" placeholder="$ Vessel Insured Value" value="" required>*@
                                     </label>
                                     @*<p class="validationContainer" id="validateAddMaxSumInsured"></p>*@
@@ -438,7 +440,7 @@
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                         <label class="label required col-12" for="BoatIsTrailered">Does this Vessel have a Trailer?</label>
                                         <label class="input form-group col-12">
-                                            <select style="" onchange="AddhasTrailer()" class="b form-select" id="AddBoatIsTrailered" name="BoatIsTrailered" form="BoatViewModel" required>
+                                            <select style="" onchange="AddhasTrailer()" class="b form-select" id="AddBoatIsTrailered" name="BoatIsTrailered" form="BoatViewModel">
                                                 <option selected="selected" value="">-- Select --</option>
                                                 <option value="True">Yes</option>
                                                 <option value="False">No</option>
@@ -452,7 +454,7 @@
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                         <label class="label required col-12" for="Vessel Trailer">Vessel Trailer</label>
                                         <label class="input form-group col-12">
-                                            <select style="" onchange="AddaddNewTrailer()" class="b form-select" id="AddBoatTrailer" name="BoatTrailer" form="BoatViewModel" required>
+                                            <select style="" onchange="AddaddNewTrailer()" class="b form-select" id="AddBoatTrailer" name="BoatTrailer" form="BoatViewModel">
                                                 <option selected="selected" value="">-- Select --</option>
                                                 @foreach (var trailer in Model.ClientInformationSheet.Vehicles.Where(t => t.Removed == false))
                                                 {
@@ -476,7 +478,7 @@
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                         <label class="label required col-12" for="LandLocation">Land Storage Location</label>
                                         <label class="input form-group col-12">
-                                            <select style="" onchange="AddaddNewLandLoc()" class="b form-select" id="AddBoatLandLocation" name="BoatLandLocation" form="BoatViewModel" required>
+                                            <select style="" onchange="AddaddNewLandLoc()" class="b form-select" id="AddBoatLandLocation" name="BoatLandLocation" form="BoatViewModel">
                                                 <option selected="selected" value="">-- Select --</option>
                                                 @foreach (var building in Model.ClientInformationSheet.Buildings)
                                                 {
@@ -538,7 +540,7 @@
                                     <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
                                         <label class="label required col-12" for="SelectedBoatUse">Select Vessel Use</label>
                                         <label class="input form-group col-12">
-                                            <select style="" onchange="addNewBoatUse()" id="AddSelectedBoatUse" name="SelectedBoatUse" class="b form-select" form="BoatViewModel" required>
+                                            <select style="" onchange="addNewBoatUse()" id="AddSelectedBoatUse" name="SelectedBoatUse" class="b form-select" form="BoatViewModel" >
                                                 <option selected="selected" value="">-- Select --</option>
                                                 <option value="add">Add Vessel Use</option>
                                             </select>

@@ -1732,7 +1732,7 @@
         }
 
 
-   
+
     }
 
     function AddMotorVehicleModal(event) {
@@ -3003,6 +3003,7 @@
             if (data.hasTrailer === true) {
                 alert("You have removed a trailered vessel. Please go to trailer section to remove trailer associated with this boat if needed.");
             }
+            location.reload();
         });
     }
 
@@ -4324,6 +4325,7 @@
     var AddvesselUseHairline2 = '#AddboutUseCategoryHairline2';
     var AddvesselUseAdditionalNotes = '#AddboatUseAdditionalNotesModal';
 
+    //++++++++++++++++++++++++
     function AddvesselType1Selected() {
         debugger;
         var AddboatType1Selected = AddboatType1.options[AddboatType1.selectedIndex].value;
@@ -4331,12 +4333,32 @@
         $('#AddMaxSumInsured').val('');
         var adminUser = '#AdminUser';
         var AddboatType1Selected = AddboatType1.options[AddboatType1.selectedIndex].value;
-        if (AddboatType1Selected == "Powerboats") {
+
+        if (AddboatType1Selected == "Powerboats")
+        {
             $('#AddRiggingTypeSection').hide('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.remove("required");
+            document.getElementById("AddRiggingType").required = false;
+
             $('#AddMastTypeSection').hide('2000');
+            var AddMastType1 = document.getElementById("AddMastType");
+            AddMastType1.classList.remove("required");
+            document.getElementById("AddMastType").required = false;
+
+
+
             AddconstructionTypeCement.classList.add("hidden");
+
             $('#AddRegistrationSection').hide('2000');
+            var AddVesselArea1 = document.getElementById("AddVesselArea");
+            AddVesselArea1.classList.remove("required");
+            document.getElementById("AddVesselArea").required = false;
+
             $('#AddaucklandRegoSection').hide('2000');
+            //AddAucklandRegistration dont have require
+
+
             AddconstructionTypeRigidHi.classList.remove("hidden");
             AddconstructionTypeWood.classList.remove("hidden");
             AddconstructionTypeOther.classList.remove("hidden");
@@ -4368,14 +4390,37 @@
             //$('#AddMotorType').val("").trigger('chosen:updated');
             $('#AddHullConfiguration').val("").trigger('chosen:updated');
             //$('#AddHullConfiguration').val("").trigger('chosen:updated');
+
+
             $('#AddVesselUseSection').hide('2000');
             //$('#AddVesselUseSection').hide('2000');
+            var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+            AddSelectedBoatUse1.classList.remove("required");
+            document.getElementById("AddSelectedBoatUse").required = false;
+
+
         }
-        else if (AddboatType1Selected == "CruisersandLaunches") {
+        else if (AddboatType1Selected == "CruisersandLaunches")
+        {
             $('#AddRiggingTypeSection').hide('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.remove("required");
+            document.getElementById("AddRiggingType").required = false;
+
+
             $('#AddMastTypeSection').hide('2000');
+            var AddMastType1 = document.getElementById("AddMastType");
+            AddMastType1.classList.remove("required");
+            document.getElementById("AddMastType").required = false;
+
             $('#AddRegistrationSection').hide('2000');
+            var AddVesselArea1 = document.getElementById("AddVesselArea");
+            AddVesselArea1.classList.remove("required");
+            document.getElementById("AddVesselArea").required = false;
+
             $('#AddaucklandRegoSection').hide('2000');
+            //not require
+
             AddconstructionTypeCement.classList.add("hidden");
             AddconstructionTypeRigidHi.classList.remove("hidden");
             AddconstructionTypeWood.classList.remove("hidden");
@@ -4399,8 +4444,15 @@
             //$('#AddMotorType').prop("disabled", false);
             $('#AddHullConfiguration').prop("disabled", false);
             //$('#AddHullConfiguration').prop("disabled", false);
+
+
             $('#AddVesselUseSection').show('2000');
             //$('#VesselUseSection').show('2000');
+            var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+            AddSelectedBoatUse1.classList.add("required");
+            document.getElementById("AddSelectedBoatUse").required = true;
+
+
             $('#AddBuiltProfessionally').val("").trigger('chosen:updated');
             //$('#AddBuiltProfessionally').val("").trigger('chosen:updated');
             $('#AddMotorType').val("").trigger('chosen:updated');
@@ -4409,11 +4461,27 @@
             //$('#AddHullConfiguration').val("").trigger('chosen:updated');
 
         }
-        else if (AddboatType1Selected == "YachtsandCatamarans") {
+        else if (AddboatType1Selected == "YachtsandCatamarans")
+        {
             $('#AddRiggingTypeSection').show('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.add("required");
+            document.getElementById("AddRiggingType").required = true;
+
             $('#AddMastTypeSection').show('2000');
+            var AddMastType1 = document.getElementById("AddMastType");
+            AddMastType1.classList.add("required");
+            document.getElementById("AddMastType").required = true;
+
             $('#AddRegistrationSection').hide('2000');
+            var AddVesselArea1 = document.getElementById("AddVesselArea");
+            AddVesselArea1.classList.remove("required");
+            document.getElementById("AddVesselArea").required = false;
+
             $('#AddaucklandRegoSection').hide('2000');
+            //not require
+
+
             AddconstructionTypeCement.classList.remove("hidden");
             AddboatType2Berthed.classList.remove("hidden");
             AddboatType2Moored.classList.remove("hidden");
@@ -4434,7 +4502,12 @@
             //$('#AddMotorType').prop("disabled", false);
             $('#AddHullConfiguration').prop("disabled", false);
             //$('#AddHullConfiguration').prop("disabled", false);
+
             $('#AddVesselUseSection').show('2000');
+            var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+            AddSelectedBoatUse1.classList.add("required");
+            document.getElementById("AddSelectedBoatUse").required = true;
+
             //$('#VesselUseSection').show('2000');
             $('#AddBuiltProfessionally').val("").trigger('chosen:updated');
             //$('#AddBuiltProfessionally').val("").trigger('chosen:updated');
@@ -4443,11 +4516,26 @@
             $('#AddHullConfiguration').val("").trigger('chosen:updated');
             //$('#AddHullConfiguration').val("").trigger('chosen:updated');
         }
-        else if (AddboatType1Selected == "Jetski") {
+        else if (AddboatType1Selected == "Jetski")
+        {
             $('#AddRiggingTypeSection').hide('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.remove("required");
+            document.getElementById("AddRiggingType").required = false;
+
             $('#AddMastTypeSection').hide('2000');
+            var AddMastType1 = document.getElementById("AddMastType");
+            AddMastType1.classList.remove("required");
+            document.getElementById("AddMastType").required = false;
+
             $('#AddRegistrationSection').show('2000');
+            var AddVesselArea1 = document.getElementById("AddVesselArea");
+            AddVesselArea1.classList.add("required");
+            document.getElementById("AddVesselArea").required = true;
+
             $('#AddaucklandRegoSection').show('2000');
+            // not require
+
             AddboatType2Berthed.classList.add("hidden");
             AddboatType2Moored.classList.add("hidden");
             AddconstructionTypeCement.classList.add("hidden");
@@ -4481,11 +4569,18 @@
             //$('#AddMotorType').prop("disabled", "disabled");
             $('#AddHullConfiguration').prop("disabled", "disabled");
             //$('#AddHullConfiguration').prop("disabled", "disabled");
+
+
             $('#AddVesselUseSection').hide('2000');
             //$('#VesselUseSection').hide('2000');
+            //AddSelectedBoatUse
+            var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+            AddSelectedBoatUse1.classList.remove("required");
+            document.getElementById("AddSelectedBoatUse").required = false;
 
         }
-        else if (AddboatType1Selected == "Jetboat") {
+        else if (AddboatType1Selected == "Jetboat")
+        {
             AddconstructionTypeCement.classList.add("hidden");
             AddmotorTypeInboardPetrol.classList.add("hidden");
             AddmotorTypeInboardDiesel.classList.add("hidden");
@@ -4493,10 +4588,25 @@
             AddmotorTypeOutboard.classList.add("hidden");
             AddmotorTypeNA.classList.add("hidden");
             AddMotorTypeJetSkiJet.classList.add("hidden");
+
             $('#AddRiggingTypeSection').hide('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.remove("required");
+            document.getElementById("AddRiggingType").required = false;
+
             $('#AddMastTypeSection').hide('2000');
+            var AddMastType1 = document.getElementById("AddMastType");
+            AddMastType1.classList.remove("required");
+            document.getElementById("AddMastType").required = false;
+
             $('#AddRegistrationSection').hide('2000');
+            var AddVesselArea1 = document.getElementById("AddVesselArea");
+            AddVesselArea1.classList.remove("required");
+            document.getElementById("AddVesselArea").required = false;
+
             $('#AddaucklandRegoSection').hide('2000');
+            //not require
+
             AddboatType2Berthed.classList.add("hidden");
             AddboatType2Moored.classList.add("hidden");
             AddconstructionTypeRigidHi.classList.remove("hidden");
@@ -4520,15 +4630,37 @@
             //$('#AddMotorType').val("").trigger('chosen:updated');
             $('#AddHullConfiguration').val("").trigger('chosen:updated');
             //$('#AddHullConfiguration').val("").trigger('chosen:updated');
+
+
             $('#AddVesselUseSection').hide('2000');
             //$('#VesselUseSection').hide('2000');
+            var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+            AddSelectedBoatUse1.classList.remove("required");
+            document.getElementById("AddSelectedBoatUse").required = false;
+
         }
         else if (AddboatType1Selected == "Other") {
             AddconstructionTypeCement.classList.add("hidden");
+
             $('#AddRiggingTypeSection').show('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.add("required");
+            document.getElementById("AddRiggingType").required = true;
+
+
             $('#AddMastTypeSection').show('2000');
+            var AddMastType1 = document.getElementById("AddMastType");
+            AddMastType1.classList.add("required");
+            document.getElementById("AddMastType").required = true;
+
             $('#AddRegistrationSection').hide('2000');
+            var AddVesselArea1 = document.getElementById("AddVesselArea");
+            AddVesselArea1.classList.remove("required");
+            document.getElementById("AddVesselArea").required = false;
+
             $('#AddaucklandRegoSection').hide('2000');
+            //not require
+
             AddconstructionTypeRigidHi.classList.remove("hidden");
             AddconstructionTypeWood.classList.remove("hidden");
             AddconstructionTypeOther.classList.remove("hidden");
@@ -4555,13 +4687,29 @@
             //$('#AddMotorType').val("").trigger('chosen:updated');
             $('#AddHullConfiguration').val("").trigger('chosen:updated');
             //$('#AddHullConfiguration').val("").trigger('chosen:updated');
+
+
             $('#AddVesselUseSection').hide('2000');
             //$('#VesselUseSection').hide('2000');
+            var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+            AddSelectedBoatUse1.classList.remove("required");
+            document.getElementById("AddSelectedBoatUse").required = false;
+
         }
         else {
             $('#AddaucklandRegoSection').show('2000');
+
             $('#AddRiggingTypeSection').show('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.add("required");
+            document.getElementById("AddRiggingType").required = true;
+
             $('#AddMastTypeSection').show('2000');
+            var AddMastType1 = document.getElementById("AddMastType");
+            AddMastType1.classList.add("required");
+            document.getElementById("AddMastType").required = true;
+
+
             AddboatType2Berthed.classList.remove("hidden");
             AddboatType2Moored.classList.remove("hidden");
             AddconstructionTypeRigidHi.classList.remove("hidden");
@@ -4590,12 +4738,20 @@
             //$('#AddMotorType').val("").trigger('chosen:updated');
             $('#AddHullConfiguration').val("").trigger('chosen:updated');
             //$('#AddHullConfiguration').val("").trigger('chosen:updated');
+
+
             $('#AddVesselUseSection').hide('2000');
             //$('#VesselUseSection').hide('2000');
+            var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+            AddSelectedBoatUse1.classList.remove("required");
+            document.getElementById("AddSelectedBoatUse").required = false;
+
+
+
         }
         excess.selectedIndex = 0;
     }
-
+    //++++++++++++++++++++++++++
     function InsuranceAttributeSelected() {
         debugger;
         var InsuranceAttribute = document.getElementById("InsuranceAttributes");
@@ -4633,45 +4789,65 @@
             }
         }
     }
-
+    //+++++++++++++++++++++++
     function AddvesselType2Selected() {
         debugger;
         var boatType2Selected = AddboatType2.options[AddboatType2.selectedIndex].value;
         var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
         $('#Addexcess').val('');
         $('#AddMaxSumInsured').val('');
-        if (boatType2Selected == "Roadtrailer") {
+        if (boatType2Selected == "Roadtrailer")
+        {
             $('#AddVesselTrailer').hide('2000');
+            var AddBoatIsTrailered1 = document.getElementById("AddBoatIsTrailered");
+            AddBoatIsTrailered1.classList.remove("required");
+            document.getElementById("AddBoatIsTrailered").required = false;
+
+
             AddboatType1Jetski.classList.remove("hidden");
             AddconstructionType.selectedIndex = 0;
-            if (boatType1Selected == "Jetski") {
+            if (boatType1Selected == "Jetski")
+            {
                 //AddhullConfiguration.selectedIndex = 0;
                 AddhullConfiguration.selectedIndex = 1;
             }
-            $("#AddBoatIsTrailered").val("True");
-            $('#AddBoatWaterLocationSection').addClass("hidden");
 
-            var WaterLocation = document.getElementById("AddBoatWaterLocation");
-            WaterLocation.classList.remove("required");
+            $("#AddBoatIsTrailered").val("True");
+
+            $('#AddBoatWaterLocationSection').addClass("hidden");
+            var AddBoatWaterLocation1 = document.getElementById("AddBoatWaterLocation");
+            AddBoatWaterLocation1.classList.remove("required");
             document.getElementById("AddBoatWaterLocation").required = false;
 
 
             $('#AddothermarinSection').addClass("hidden");
-            $('#AddBoatMooredTypeSection').addClass("hidden");
+            var AddOtherBoatWaterLocation1 = document.getElementById("AddOtherBoatWaterLocation");
+            AddOtherBoatWaterLocation1.classList.remove("required");
+            document.getElementById("AddOtherBoatWaterLocation").required = false;
 
+
+            $('#AddBoatMooredTypeSection').addClass("hidden");
             var MooredType = document.getElementById("AddMooredType");
             MooredType.classList.remove("othermarin");
             document.getElementById("AddMooredType").required = false;
 
             $('#AddBoatLandLocationSection').removeClass("hidden");
+            var AddBoatLandLocation1 = document.getElementById("AddBoatLandLocation");
+            AddBoatLandLocation1.classList.add("required");
+            document.getElementById("AddBoatLandLocation").required = true;
+
             AddhasTrailer();
         }
         else if (boatType2Selected == "Stored") {
             $('#AddVesselTrailer').show('2000');
+            var AddBoatIsTrailered1 = document.getElementById("AddBoatIsTrailered");
+            AddBoatIsTrailered1.classList.add("required");
+            document.getElementById("AddBoatIsTrailered").required = true;
+
             AddboatType1Jetski.classList.remove("hidden");
             $("#AddBoatIsTrailered").val("");
-            $('#AddBoatWaterLocationSection').addClass("hidden");
 
+            $('#AddBoatWaterLocationSection').addClass("hidden");
             var WaterLocation = document.getElementById("AddBoatWaterLocation");
             WaterLocation.classList.remove("required");
             document.getElementById("AddBoatWaterLocation").required = false;
@@ -4693,11 +4869,19 @@
         }
         else if (boatType2Selected == "Berthed") {
             $('#AddVesselTrailer').show('2000');
+            var AddBoatIsTrailered1 = document.getElementById("AddBoatIsTrailered");
+            AddBoatIsTrailered1.classList.add("required");
+            document.getElementById("AddBoatIsTrailered").required = true;
+
             AddboatType1Jetski.classList.add("hidden");
             $("#AddBoatIsTrailered").val("");
-            $('#AddBoatWaterLocationSection').removeClass("hidden");
-            $('#AddBoatMooredTypeSection').removeClass("hidden");
 
+            $('#AddBoatWaterLocationSection').removeClass("hidden");
+            var WaterLocation = document.getElementById("AddBoatWaterLocation");
+            WaterLocation.classList.add("required");
+            document.getElementById("AddBoatWaterLocation").required = true;
+
+            $('#AddBoatMooredTypeSection').removeClass("hidden");
             var MooredType = document.getElementById("AddMooredType");
             MooredType.classList.add("required");
             document.getElementById("AddMooredType").required = true;
@@ -4705,13 +4889,22 @@
 
 
             $('#AddBoatLandLocationSection').addClass("hidden");
-            $('#AddMooredType').val("Berthed");
-            $('#AddBerthedMooringType').removeClass("hidden");
-            $('#AddPileMooringType').addClass("hidden");
-            $('#AddSwingMooringType').addClass("hidden");
-            if ($('#AddBoatWaterLocation').val() == "add") {
-                $('#AddothermarinSection').removeClass("hidden");
+            var AddBoatLandLocation1 = document.getElementById("AddBoatLandLocation");
+            AddBoatLandLocation1.classList.remove("required");
+            document.getElementById("AddBoatLandLocation").required = false;
 
+            $('#AddMooredType').val("Berthed");
+
+            $('#AddBerthedMooringType').removeClass("hidden");
+
+            $('#AddPileMooringType').addClass("hidden");
+
+            $('#AddSwingMooringType').addClass("hidden");
+
+
+            if ($('#AddBoatWaterLocation').val() == "add")
+            {
+                $('#AddothermarinSection').removeClass("hidden");
                 var othermarin = document.getElementById("othermarin");
                 othermarin.classList.add("required");
                 document.getElementById("AddOtherBoatWaterLocation").required = true;
@@ -4720,14 +4913,28 @@
             AddhasTrailer();
 
         }
-        else if (boatType2Selected == "Moored") {
+        else if (boatType2Selected == "Moored")
+        {
             $('#AddVesselTrailer').show('2000');
-            AddboatType1Jetski.classList.add("hidden");
-            $("#AddBoatIsTrailered").val("");
-            $('#AddBoatWaterLocationSection').removeClass("hidden");
-            $('#AddBoatLandLocationSection').addClass("hidden");
-            $('#AddBoatMooredTypeSection').removeClass("hidden");
+            var AddBoatIsTrailered1 = document.getElementById("AddBoatIsTrailered");
+            AddBoatIsTrailered1.classList.add("required");
+            document.getElementById("AddBoatIsTrailered").required = true;
 
+            AddboatType1Jetski.classList.add("hidden");
+
+            $("#AddBoatIsTrailered").val("");
+
+            $('#AddBoatWaterLocationSection').removeClass("hidden");
+            var AddBoatWaterLocation1 = document.getElementById("AddBoatWaterLocation");
+            AddBoatWaterLocation1.classList.add("required");
+            document.getElementById("AddBoatWaterLocation").required = true;
+
+            $('#AddBoatLandLocationSection').addClass("hidden");
+            var AddBoatLandLocation1 = document.getElementById("AddBoatLandLocation");
+            AddBoatLandLocation1.classList.remove("required");
+            document.getElementById("AddBoatLandLocation").required = false;
+
+            $('#AddBoatMooredTypeSection').removeClass("hidden");
             var MooredType = document.getElementById("AddMooredType");
             MooredType.classList.add("required");
             document.getElementById("AddMooredType").required = true;
@@ -4736,20 +4943,28 @@
             $('#AddBerthedMooringType').addClass("hidden");
             $('#AddPileMooringType').removeClass("hidden");
             $('#AddSwingMooringType').removeClass("hidden");
-            if ($('#AddBoatWaterLocation').val() == "add") {
+            if ($('#AddBoatWaterLocation').val() == "add")
+            {
                 $('#AddothermarinSection').removeClass("hidden");
+                var AddOtherBoatWaterLocation1 = document.getElementById("AddOtherBoatWaterLocation");
+                AddOtherBoatWaterLocation1.classList.add("required");
+                document.getElementById("AddOtherBoatWaterLocation").required = true;
             }
             AddhasTrailer();
         }
         else {
             $('#AddVesselTrailer').show('2000');
+            var AddBoatIsTrailered1 = document.getElementById("AddBoatIsTrailered");
+            AddBoatIsTrailered1.classList.add("required");
+            document.getElementById("AddBoatIsTrailered").required = true;
+
             AddboatType1Jetski.classList.remove("hidden");
             $("#AddBoatIsTrailered").val("");
             AddhasTrailer();
         }
         excess.selectedIndex = 0;
     }
-
+    //++++++++++++++++
     function AddupdateExcess() {
         debugger;
         var boatType1Selected = AddboatType1.options[AddboatType1.selectedIndex].value;
@@ -4764,6 +4979,9 @@
         var exc2000 = document.getElementById("Addexcess2000");
         if (MotorType == "NA") {
             $('#AddModifiedMotorSection').addClass("hidden");
+            var AddModifiedMotor1 = document.getElementById("AddModifiedMotor");
+            AddModifiedMotor1.classList.remove("required");
+            document.getElementById("AddModifiedMotor").required = false;
         }
         else {
             $('#AddModifiedMotorSection').removeClass("hidden");
@@ -4813,7 +5031,7 @@
             }
         }
     }
-
+    //++++++++++++++++++
     function AddhasTrailer() {
         debugger;
         var hasT = $('#AddBoatIsTrailered').val();
@@ -4824,22 +5042,34 @@
              if ($('#AddBoatType2').val() == "Roadtrailer") {
                 if (confirm("Vessel Status will be changed from Road Trailer to Stored!")) {
                    $('#AddBoatType2').val('Stored');
-                   $('#AddSelectTrailerSection').hide('2000');
+                    $('#AddSelectTrailerSection').hide('2000');
+                    var AddBoatTrailer1 = document.getElementById("AddBoatTrailer");
+                    AddBoatTrailer1.classList.remove("required");
+                    document.getElementById("AddBoatTrailer").required = false;
                 }
                 else {
                     $('#AddBoatIsTrailered').val("True")
                     $('#AddSelectTrailerSection').show('2000');
+                    var AddBoatTrailer1 = document.getElementById("AddBoatTrailer");
+                    AddBoatTrailer1.classList.add("required");
+                    document.getElementById("AddBoatTrailer").required = true;
                 }
              }
              else {
                    $('#AddSelectTrailerSection').hide('2000');
-
+                 var AddBoatTrailer1 = document.getElementById("AddBoatTrailer");
+                 AddBoatTrailer1.classList.remove("required");
+                 document.getElementById("AddBoatTrailer").required = false;
               }
         }
         else {
             $('#AddSelectTrailerSection').hide('2000');
+            var AddBoatTrailer1 = document.getElementById("AddBoatTrailer");
+            AddBoatTrailer1.classList.remove("required");
+            document.getElementById("AddBoatTrailer").required = false;
         }
     }
+    //++++++++++++++++++
     function AddhideShowHullConstructionOther() {
         debugger;
         var hullConstructionSelected = AddconstructionType.options[AddconstructionType.selectedIndex].value;
@@ -4862,7 +5092,7 @@
 
         }
     }
-
+    //++++++++++++++++++
     function AddhideShowHullConfigurationOther() {
         debugger;
         var hullConfigurationSelected = AddhullConfiguration.options[AddhullConfiguration.selectedIndex].value;
@@ -4883,7 +5113,7 @@
             document.getElementById("AddOtherHullConfiguration").required = false;
         }
     }
-
+    //+++++++++++++++++
     function AddaddNewSkipper() {
         debugger;
         var selectedBoatOperator = AddboatOperator.options[AddboatOperator.selectedIndex].value;
@@ -4893,7 +5123,7 @@
         }
         selectedBoatOperator = "";
     }
-
+    //+++++++++++++++++
     function AddaddNewTrailer() {
         debugger;
         var selectedTrailer = AddboatTrailer.options[AddboatTrailer.selectedIndex].value;
@@ -4904,7 +5134,7 @@
         }
         selectedTrailer = "";
     }
-
+    //+++++++++++++++++
     function AddaddNewLandLoc() {
         debugger;
         var selectedLandLoc = AddboatLandLoc.options[AddboatLandLoc.selectedIndex].value;
@@ -4915,7 +5145,7 @@
         }
         selectedLandLoc = "";
     }
-
+    //XXXXXXXXXXXXXXX
     function ModalOUSelected() {
         debugger;
         var oUselect = OrgUnitModal.options[OrgUnitModal.selectedIndex].value;
@@ -4939,7 +5169,7 @@
             alert("There was an error while trying to save the Building.");
         });
     };
-
+    //XXXXXXXXXXXXXXX
     function MarinaLocSelected() {
         debugger;
         var MarinaLocation = document.getElementById("WaterLocationMarinaLocation");
@@ -4951,7 +5181,7 @@
             GetOU(marinaLocation);
         }
     }
-
+    //XXXXXXXXXXXXXXX
     function GetOU(marinaloc) {
         debugger;
        var orgId = marinaloc;
@@ -4982,7 +5212,7 @@
             alert("There was an error while trying to save the Building.");
         });
     };
-
+    //XXXXXXXXXXXXXXX
     function OUSelected() {
         debugger;
         var oUselect = OrgUnit.options[OrgUnit.selectedIndex].value;
@@ -5006,7 +5236,7 @@
             alert("There was an error while trying to save the Building.");
         });
     };
-
+    //XXXXXXXXXXXXXXX
     function AddOUSelected() {
         debugger;
         var oUselect = AddOrgUnit.options[AddOrgUnit.selectedIndex].value;
@@ -5030,7 +5260,7 @@
             alert("There was an error while trying to save the Building.");
         });
     };
-
+    //XXXXXXXXXXXXXXX
     function AddMarinaLocSelected() {
         debugger;
         var MarinaLocation = document.getElementById("AddWaterLocationMarinaLocation");
@@ -5042,7 +5272,7 @@
             GetOU(marinaLocation);
         }
     }
-
+    //XXXXXXXXXXXXXXX
     function AddaddNewLoc() {
         debugger;
         var selectedLoc = BuildingLocationModal.options[BuildingLocationModal.selectedIndex].value;
@@ -5070,11 +5300,11 @@
 
     debugger;
     var boatType1 = document.getElementById("AddBoatType1");
-    var boatType1Jetski = document.getElementById("BoatType1Jetski");
+    var boatType1Jetski = document.getElementById("AddBoatType1Jetski");
     // BoatType 2
     var boatType2 = document.getElementById("AddBoatType2");
-    var boatType2Berthed = document.getElementById("BoatType2Berthed");
-    var boatType2Moored = document.getElementById("BoatType2Moored");
+    var boatType2Berthed = document.getElementById("AddBoatType2Berthed");
+    var boatType2Moored = document.getElementById("AddBoatType2Moored");
     // Construction Type & Options
     var constructionType = document.getElementById("AddHullConstruction");
     var constructionTypeRigidHi = document.getElementById("AddHullConstructionRigidHi");
@@ -5143,18 +5373,35 @@
     var vesselTrailerIP = '#VesselTrailerIP';
     var vesselTrailerNotes = '#VesselTrailerNotes';
     var adminUser = '#AdminUser';
-
+    //##############
     function vesselType1Selected() {
         debugger;
         var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
         $('#Addexcess').val('');
         $('#AddMaxSumInsured').val('');
-        if (boatType1Selected == "Powerboats") {
+        if (boatType1Selected == "Powerboats")
+        {
             $('#AddRiggingTypeSection').hide('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.remove("required");
+            document.getElementById("AddRiggingType").required = false;
+
+
             $('#AddMastTypeSection').hide('2000');
+            var AddMastType1 = document.getElementById("AddMastType");
+            AddMastType1.classList.remove("required");
+            document.getElementById("AddMastType").required = false;
+
             constructionTypeCement.classList.add("hidden");
-            $('#RegistrationSection').hide('2000');
+
+            $('#AddRegistrationSection').hide('2000');
+            var AddVesselArea1 = document.getElementById("AddVesselArea");
+            AddVesselArea1.classList.remove("required");
+            document.getElementById("AddVesselArea").required = false;
+
             $('#aucklandRegoSection').hide('2000');
+
+
             constructionTypeRigidHi.classList.remove("hidden");
             constructionTypeWood.classList.remove("hidden");
             constructionTypeOther.classList.remove("hidden");
@@ -5188,9 +5435,18 @@
         }
         else if (boatType1Selected == "CruisersandLaunches") {
             $('#AddRiggingTypeSection').hide('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.remove("required");
+            document.getElementById("AddRiggingType").required = false;
+
             $('#AddMastTypeSection').hide('2000');
-            $('#RegistrationSection').hide('2000');
-            $('#aucklandRegoSection').hide('2000');
+
+            $('#AddRegistrationSection').hide('2000');
+
+            $('#AddaucklandRegoSection').hide('2000');
+
+
+
             constructionTypeCement.classList.add("hidden");
             constructionTypeRigidHi.classList.remove("hidden");
             constructionTypeWood.classList.remove("hidden");
@@ -5225,9 +5481,14 @@
         }
         else if (boatType1Selected == "YachtsandCatamarans") {
             $('#AddRiggingTypeSection').show('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.add("required");
+            document.getElementById("AddRiggingType").required = true;
+
+
             $('#AddMastTypeSection').show('2000');
-            $('#RegistrationSection').hide('2000');
-            $('#aucklandRegoSection').hide('2000');
+            $('#AddRegistrationSection').hide('2000');
+            $('#AddaucklandRegoSection').hide('2000');
             constructionTypeCement.classList.remove("hidden");
             boatType2Berthed.classList.remove("hidden");
             boatType2Moored.classList.remove("hidden");
@@ -5259,9 +5520,13 @@
         }
         else if (boatType1Selected == "Jetski") {
             $('#AddRiggingTypeSection').hide('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.remove("required");
+            document.getElementById("AddRiggingType").required = false;
+
             $('#AddMastTypeSection').hide('2000');
-            $('#RegistrationSection').show('2000');
-            $('#aucklandRegoSection').show('2000');
+            $('#AddRegistrationSection').show('2000');
+            $('#AddaucklandRegoSection').show('2000');
             boatType2Berthed.classList.add("hidden");
             boatType2Moored.classList.add("hidden");
             constructionTypeCement.classList.add("hidden");
@@ -5306,10 +5571,16 @@
             motorTypeOutboard.classList.add("hidden");
             motorTypeNA.classList.add("hidden");
             motorTypeJetskiJet.classList.add("hidden");
+
             $('#AddRiggingTypeSection').hide('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.remove("required");
+            document.getElementById("AddRiggingType").required = false;
+
+
             $('#AddMastTypeSection').hide('2000');
-            $('#RegistrationSection').hide('2000');
-            $('#aucklandRegoSection').hide('2000');
+            $('#AddRegistrationSection').hide('2000');
+            $('#AddaucklandRegoSection').hide('2000');
             boatType2Berthed.classList.add("hidden");
             boatType2Moored.classList.add("hidden");
             constructionTypeRigidHi.classList.remove("hidden");
@@ -5339,9 +5610,14 @@
         else if (boatType1Selected == "Other") {
             constructionTypeCement.classList.add("hidden");
             $('#AddRiggingTypeSection').show('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.add("required");
+            document.getElementById("AddRiggingType").required = true;
+
+
             $('#AddMastTypeSection').show('2000');
-            $('#RegistrationSection').hide('2000');
-            $('#aucklandRegoSection').hide('2000');
+            $('#AddRegistrationSection').hide('2000');
+            $('#AddaucklandRegoSection').hide('2000');
             constructionTypeRigidHi.classList.remove("hidden");
             constructionTypeWood.classList.remove("hidden");
             constructionTypeOther.classList.remove("hidden");
@@ -5372,8 +5648,13 @@
             //$('#VesselUseSection').hide('2000');
         }
         else {
-            $('#aucklandRegoSection').show('2000');
+            $('#AddaucklandRegoSection').show('2000');
             $('#AddRiggingTypeSection').show('2000');
+            var AddRiggingType1 = document.getElementById("AddRiggingType");
+            AddRiggingType1.classList.add("required");
+            document.getElementById("AddRiggingType").required = true;
+
+
             $('#AddMastTypeSection').show('2000');
             boatType2Berthed.classList.remove("hidden");
             boatType2Moored.classList.remove("hidden");
@@ -5409,7 +5690,7 @@
         }
         excess.selectedIndex = 0;
     }
-
+    //#############
     function vesselType2Selected() {
         debugger;
         var boatType2Selected = boatType2.options[boatType2.selectedIndex].value;
@@ -5476,7 +5757,7 @@
         }
         excess.selectedIndex = 0;
     }
-
+    //#############
     function updateExcess() {
         debugger;
         var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
@@ -5539,7 +5820,7 @@
             }
         }
     }
-
+    //#############
     function hideShowHullConstructionOther() {
         debugger;
         var hullConstructionSelected = constructionType.options[constructionType.selectedIndex].value;
@@ -5551,7 +5832,7 @@
             otherConstructionType.value = '';
         }
     }
-
+    //############
     function hideShowHullConfigurationOther() {
         debugger;
         var hullConfigurationSelected = hullConfiguration.options[hullConfiguration.selectedIndex].value;
@@ -5563,7 +5844,7 @@
             otherConfigurationType.value = '';
         }
     }
-
+    //##################
     function addNewSkipper() {
         debugger;
         var selectedBoatOperator = boatOperator.options[boatOperator.selectedIndex].value;
@@ -5573,7 +5854,7 @@
         }
         selectedBoatOperator = "";
     }
-
+    //##################
     function addNewTrailer() {
         debugger;
         var selectedTrailer = boatTrailer.options[boatTrailer.selectedIndex].value;
@@ -5584,7 +5865,7 @@
         }
         selectedTrailer = "";
     }
-
+    //XXXXXXXXXXXXXXXXX
     function clearAddRegTrailerModal() {
         debugger;
         $(vesselTrailerVIN).hide();
@@ -5605,7 +5886,7 @@
         $('#MakeModal').attr("readonly", true);
         $('#VehicleModelModal').attr("readonly", true);
     }
-
+    //##################
     function addNewLandLoc() {
         debugger;
         var selectedLandLoc = boatLandLoc.options[boatLandLoc.selectedIndex].value;
@@ -5616,7 +5897,7 @@
         }
         selectedLandLoc = "";
     }
-
+    //#################
     function addNewWaterLoc() {
         debugger;
         var selectedWaterLoc = boatWaterLoc.options[boatWaterLoc.selectedIndex].value;
@@ -5629,22 +5910,32 @@
         }
     }
 
+
+
+
+    //+++++++++++++++++++++
     function AddaddNewWaterLoc() {
         debugger;
         var AddSelectedWaterLoc = AddboatWaterLoc.options[AddboatWaterLoc.selectedIndex].value;;
          if (AddSelectedWaterLoc == "add") {
              $('#AddothermarinSection').removeClass('hidden');
-             $('#AddBoatMooredTypeSection').removeClass('hidden');
+             var AddOtherBoatWaterLocation1 = document.getElementById("AddOtherBoatWaterLocation");
+             AddOtherBoatWaterLocation1.classList.add("AddOtherBoatWaterLocation");
+             document.getElementById("AddOtherBoatWaterLocation").required = true;
 
+             $('#AddBoatMooredTypeSection').removeClass('hidden');
              var MooredType = document.getElementById("AddMooredType");
              MooredType.classList.add("required");
              document.getElementById("AddMooredType").required = true;
 
          } else {
              $('#AddothermarinSection').addClass('hidden');
+             var AddOtherBoatWaterLocation1 = document.getElementById("AddOtherBoatWaterLocation");
+             AddOtherBoatWaterLocation1.classList.remove("AddOtherBoatWaterLocation");
+             document.getElementById("AddOtherBoatWaterLocation").required = false;
          }
     }
-
+    //XXXXXXXXXXXXXXXXX
     function addNewLoc() {
         debugger;
         var selectedLoc2 = boatLoc2.options[boatLoc2.selectedIndex].value;
@@ -5655,7 +5946,7 @@
         }
         selectedLoc2 == "";
     }
-
+    //XXXXXXXXXXXXXXXXX
     function addNewTrailerLoc() {
         debugger;
         var selectedLoc3 = boatLoc3.options[boatLoc3.selectedIndex].value;
@@ -5666,7 +5957,7 @@
         }
         selectedLoc3 == "";
     }
-
+    //XXXXXXXXXXXXXXXXX
     function addTrailerLoc() {
         debugger;
         var VehicleLocation =  document.getElementById("VehicleLocation");
@@ -5677,7 +5968,7 @@
             $('#openModal').val('Trailer');
         }
     }
-
+    //XXXXXXXXXXXXXXXXX
     function AddaddTrailerLoc() {
         debugger;
         var VehicleLocation =  document.getElementById("AddVehicleLocation");
@@ -5688,7 +5979,7 @@
                         $('#openModal').val('addTrailer');
         }
     }
-
+    //XXXXXXXXXXXXXXXXX
     function addLandLoc() {
         debugger;
         var VehicleLocation =  document.getElementById("BuildingLocation");
@@ -5699,7 +5990,7 @@
             $('#openModal').val('Land');
         }
     }
-
+    //XXXXXXXXXXXXXXXXX
     function AddaddLandLoc() {
         debugger;
         var VehicleLocation =  document.getElementById("AddBuildingLocation");
@@ -5710,7 +6001,7 @@
             $('#openModal').val('addLand');
         }
     }
-
+    //XXXXXXXXXXXXXXXXX
     function addPlantLoc() {
         debugger;
         var VehicleLocation = document.getElementById("MotorLocation");
@@ -5722,7 +6013,7 @@
 
         }
     }
-
+    //XXXXXXXXXXXXXXXXX
     function AddaddPlantLoc() {
         debugger;
         var VehicleLocation =  document.getElementById("AddMotorLocation");
@@ -5733,19 +6024,24 @@
             $('#openModal').val('addPlant');
         }
     }
-
+    //XXXXXXXXXXXXXXXXX
     function closeLocModal() {
         debugger;
         var opMod = $(openModal).val();
         $(opMod).show();
     }
-
+    //XXXXXXXXXXXXXXXXX
     function addNewInterestedParties() {
         debugger;
         $('#addInterestedParties').show();
         selectedBoatUse = "";
     }
 
+
+
+
+
+    //++++++++++++++
     function addNewBoatUse() {
         debugger;
         var BoatUse = document.getElementById("AddSelectedBoatUse");
@@ -5774,7 +6070,7 @@
             boutUseCategoryUpdated();
         }
     }
-
+    //++++++++++++++++++
     function addNewParty() {
         debugger;
         $('#addInterestedPartyModal').show();
@@ -5782,6 +6078,8 @@
         selectedBoatUse = "";
     }
 
+
+    //XXXXXXXXXXXXXXXXXXX
     function vesselUseCategory() {
         debugger;
         var boatusecategory = document.getElementById("BoatUseCategory");
@@ -5804,7 +6102,7 @@
             $(boatUseLiveNotesSection).hide();
         }
     }
-
+    //XXXXXXXXXXXXXXXXXXX
     function AddBoatUseCategory() {
         debugger;
         var boatusecategory = document.getElementById("AddBoatUseCategory");
@@ -5832,7 +6130,7 @@
             $(boatUseRaceNotesSection).hide();
         }
     }
-
+    //XXXXXXXXXXXXXXXXXXX
     function AdminUpdated() {
         debugger;
         var AdminUser = $('#AdminSection');
@@ -5845,7 +6143,7 @@
             AdminUser.removeClass('hidden');
         }
     }
-
+    //XXXXXXXXXXXXXXXXXXX
     function AddAdminUpdated() {
         debugger;
         var AdminUser = $('#AdminSectionAdd');
@@ -5860,7 +6158,7 @@
             AdminUser.removeClass('hidden');
         }
     }
-
+    //XXXXXXXXXXXXXXXXXXX
     function InterestedPartyUpdated() {
         debugger;
         var interestedPartyFinancial = $('#FinancialSection');
@@ -5888,7 +6186,7 @@
             debugger;
         }
     }
-
+    //XXXXXXXXXXXXXXXXXXX
     function boutUseCategoryUpdated() {
         debugger;
         var selectedBoatUseCategory = $('input[name=BoatUseCategory]:checked').val();
@@ -5925,7 +6223,7 @@
         }
         selectedBoatUseCategory = "";
     }
-
+    //#################
     function hasTrailer() {
         debugger;
         var hasT = $('#AddBoatIsTrailered').val();
@@ -5952,7 +6250,7 @@
             $('#AddSelectTrailerSection').hide('2000');
         }
     }
-
+     //XXXXXXXXXXXXXXXXXXX
     function trailerSelectionUpdate() {
         debugger;
         var selectedTrailerChoice = $('input[name=TrailerSelection]:checked').val();
@@ -5989,7 +6287,7 @@
         }
         selectedTrailerChoice = "";
     }
-
+     //XXXXXXXXXXXXXXXXXXX
     function submitPayment() {
         debugger;
          event.preventDefault();
@@ -6028,7 +6326,7 @@
             });
         }
     }
-
+    //XXXXXXXXXXXXXXXXXXX
     function bypassPayment() {
         debugger;
         event.preventDefault();
@@ -6045,7 +6343,7 @@
             $('#getDocumentsModal').hide();
         });
     }
-
+    //XXXXXXXXXXXX
     function DefaultDateRestore() {
         debugger;
         if (document.getElementById("dateselected") != null) {
