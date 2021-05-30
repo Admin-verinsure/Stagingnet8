@@ -479,7 +479,7 @@
 
 
 
-    function EditVessel(BoatId, BoatName, BoatType1, BoatType2, BoatOperator, VesselArea, AucklandRegistration, BuiltProfessionally, YearOfManufacture, MaxRatedSpeed, RiggingType, BoatMake, BoatModel, HullConstruction, OtherHullConstruction, HullConfiguration, OtherHullConfiguration, MotorType, ModifiedMotor, MastType, MaxSumInsured, BoatQuoteExcessOption, BoatIsTrailered, BoatLandLocation, BoatWaterLocation, OtherMarinaName, WaterLocationMooringType, BoatEffectiveDate, InterestedParties, BoatNotes, BoatIsTrailered) {
+    function EditVessel(BoatId, BoatName, BoatType1, BoatType2, BoatOperator, VesselArea, AucklandRegistration, BuiltProfessionally, YearOfManufacture, MaxRatedSpeed, RiggingType, BoatMake, BoatModel, HullConstruction, OtherHullConstruction, HullConfiguration, OtherHullConfiguration, MotorType, ModifiedMotor, MastType, MaxSumInsured, BoatQuoteExcessOption, BoatIsTrailered, BoatLandLocation, BoatWaterLocation, OtherMarinaName, WaterLocationMooringType, BoatEffectiveDate, InterestedParties, BoatNotes, BoatIsTrailered, BoatTrailer, SelectedBoatUse) {
         debugger;
         event.preventDefault();
         CloneForm("boatTabs3", "boatTabs2", "updateBoat", "ClearBoat");
@@ -512,49 +512,89 @@
         document.getElementById("AddMooredType").value = WaterLocationMooringType;
         document.getElementById("AddBoatEffectiveDate").value = BoatEffectiveDate.split(' ')[0];
         document.getElementById("AddSelectedInterestedParty").value = InterestedParties;
+        console.log("InterestedParties=" + InterestedParties);
         document.getElementById("AddBoatNotes").value = BoatNotes;
 
 
-        //document.getElementById("AddBoatTrailer").value = BoatTrailer;
-        //document.getElementById("AddSelectedBoatUse").value = MaxRatedSpeed;
+        //document.getElementById("AddBoatTrailer").value = BoatTrailer;// check bottom
+        document.getElementById("AddSelectedBoatUse").value = SelectedBoatUse;
 
 
+        //boat is trailer saw vessel trailer
+        if (BoatIsTrailered == "True")
+        {
+            //AddSelectTrailerSection
+            $('#AddSelectTrailerSection').show('2000');
+            var AddBoatIsTrailered1 = document.getElementById("AddBoatIsTrailered");
+            AddBoatIsTrailered1.classList.add("required");
+            document.getElementById("AddBoatIsTrailered").required = true;
+        }
 
 
+        //from EditBoat
+        if (BoatType1 == "CruisersandLaunches" || BoatType1 == "YachtsandCatamarans") {
+            $('#AddVesselUseSection').show('2000');
+            var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+            AddSelectedBoatUse1.classList.add("required");
+            document.getElementById("AddSelectedBoatUse").required = true;
 
+            //$('#AddSelectedBoatUse').val(data.boatselectedText).trigger('chosen:updated');
+        }
+            var _sheetId = $('#AnswerSheetId').val();
+            var postData =
+            {
+                'boatId': BoatId,
+                'answerSheetId': _sheetId
+	        };
+            $.ajax({
+                url: '@Url.Action("GetBoat", "Services")',
+                type: "Post",
+                data: postData
+            })
+            .done(function (data) {
+                    debugger;
+               // $('#AddSelectedInterestedParty').val(data).trigger('chosen:updated');
+                var AddSelectedInterestedParty = document.getElementById('AddSelectedInterestedParty');
+
+                //for (var i = 0; i < AddSelectedInterestedParty.options.length; i++) {
+                //    if (AddSelectedInterestedParty.options[i].value == data) {
+                //        AddSelectedInterestedParty.options[i].selected = true;
+                //    }
+                //}
+
+                //for (var i = 0; i < data.length; i++) {
+                //    $('#AddSelectedInterestedParty').val(data[i]).trigger('chosen:updated');
+                //}
+
+                $('#AddSelectedInterestedParty').val(data.boatpartyText).trigger('chosen:updated');
+                $('#AddBoatTrailer').val(data.boatTrailer);
+                if (data.boatType1 == "CruisersandLaunches" || data.boatType1 == "YachtsandCatamarans") {
+                    $('#AddVesselUseSection').show('2000');
+                    var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+                    AddSelectedBoatUse1.classList.add("required");
+                    document.getElementById("AddSelectedBoatUse").required = true;
+
+                    $('#AddSelectedBoatUse').val(data.boatselectedText).trigger('chosen:updated');
+                }
+
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                 debugger;
+                 alert("There was an error while trying to save the Boat Use.");
+            });
 
 
 
        // document.getElementById("ClaimNotifiedDate").value = ClaimNotifiedDate.split(' ')[0];
 
-       
+
         //console.log("ClaimStatus = " + ClaimStatus);
         //d = d.split(' ')[0];
 
-       
+
 
 
         //var eleman = document.getElementById("ClaimStatus");
-        //eleman.setAttribute("disabled", "true");
-        //document.getElementById("ClaimStatusFormGroup").style.display = "block";
-
-        //var eleman1 = document.getElementById("ClaimBrokerReference");
-        //eleman1.setAttribute("disabled", "true");
-        //document.getElementById("ClaimBrokerReferenceFormGroup").style.display = "block";
-
-
-        //var eleman2 = document.getElementById("ClaimInsurerReference");
-        //eleman2.setAttribute("disabled", "true");
-        //document.getElementById("ClaimInsurerReferenceFormGroup").style.display = "block";
-
-        //var eleman3 = document.getElementById("ClaimReserve");
-        //eleman3.setAttribute("disabled", "true");
-        //document.getElementById("ClaimReserveFormGroup").style.display = "block";
-
-        //var eleman4 = document.getElementById("ClaimPaid");
-        //eleman4.setAttribute("disabled", "true");
-        //document.getElementById("ClaimPaidFormGroup").style.display = "block";
-
         SetCurrentTab("boatTabs2");
     }
 
@@ -786,7 +826,7 @@
                 //        return false;
                 //    }
                 //}
-               
+
             }
         }
         return true;

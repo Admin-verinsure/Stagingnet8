@@ -2172,7 +2172,9 @@ namespace DealEngine.WebUI.Controllers
                 }
                 else
                 {
-                     boat = await _boatRepository.GetByIdAsync(Guid.Parse(collection["BoatId"]));
+                     //boat = await _boatRepository.GetByIdAsync(Guid.Parse(collection["BoatId"]));
+                    boat = await _boatRepository.GetByIdAsync(Guid.Parse(id));
+
                 }
 
 
@@ -2228,7 +2230,8 @@ namespace DealEngine.WebUI.Controllers
                 //for BoatLandLocation list dynamic
                 if (string.IsNullOrWhiteSpace(BoatLandLocationID))
                 {
-                    boat.BoatLandLocation = null;
+                    //boat.BoatLandLocation = null;
+                    boat.BoatLandLocation = new Building(user);
 
                 }
                 else
@@ -2239,7 +2242,9 @@ namespace DealEngine.WebUI.Controllers
                 //for BoatWaterLocation list dynamic
                 if (string.IsNullOrWhiteSpace(BoatWaterLocationID))
                 {
-                    boat.BoatWaterLocation = null;
+                    //boat.BoatWaterLocation = null;
+                    //BoatViewModel model = new BoatViewModel();
+                    boat.BoatWaterLocation = new Organisation();
 
                 }
                 else
@@ -2256,8 +2261,8 @@ namespace DealEngine.WebUI.Controllers
 
                     //boat.BoatOperators = new List<Organisation>();
                     // List<SelectListItem> BoatOperators = new List<SelectListItem>();
-                    //boat.BoatOperator = new Organisation();
-                    boat.BoatOperator = null;
+                    boat.BoatOperator = new Organisation();
+                    //boat.BoatOperator = null;
 
                 }
                 else
@@ -2296,8 +2301,10 @@ namespace DealEngine.WebUI.Controllers
                 //for SelectedInterestedParty
                 if (string.IsNullOrWhiteSpace(SelectedInterestedPartyID))
                 {
+                    List<string> interestedpartylist = new List<string>();
 
-                  
+                    boat.InterestedParties = new List<Organisation>();
+
                 }
                 else
                 {
@@ -2313,15 +2320,7 @@ namespace DealEngine.WebUI.Controllers
 
                     foreach (var useid in interestedParty)
                     {
-                        boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));
-
-                        //using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
-                        //{
-                        //    //sheet.Boats.Add(boat);
-                        //    boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));
-
-                        //    await uow.Commit();
-                        //}
+                        boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));//add to organisation
                     }
                 }
 
@@ -2660,50 +2659,24 @@ namespace DealEngine.WebUI.Controllers
                 if (string.IsNullOrWhiteSpace(BoatTrailerID))
                 {
 
-                    boat.BoatTrailers = new List<Vehicle>();
-                    List<SelectListItem> BoatTrailers = new List<SelectListItem>();
+                    // boat.BoatTrailers = new List<Vehicle>();
+                    // List<SelectListItem> BoatTrailers = new List<SelectListItem>();
+                    Vehicle trailer = new Vehicle();
+                    boat.BoatTrailers.Add(trailer);
 
                 }
                 else
                 {
                     boat.BoatTrailers.Clear();
                     //var BoatTrailerList = await _vehicleService.GetVehicleById(Guid.Parse(collection["BoatTrailer"]));
+                   // boat.BoatTrailers.Clear();
+                    //            Vehicle trailer = await _vehicleService.GetVehicleById(model.BoatTrailer);
+                    //            boat.BoatTrailers.Add(trailer);
 
-                    
                     Vehicle trailer = await _vehicleService.GetVehicleById(Guid.Parse(collection["BoatTrailer"]));
-                    boat.BoatTrailers.Add(trailer);
+                    boat.BoatTrailers.Add(trailer);//add to vehicle
                 }
-                //for BoatTrailer  
-                //foreach (var keyField in BoatTrailer)
-                //{
-                //    if (keyField == "BoatTrailer")
-                //    {
-                //        var propertyName = keyField.Split('.').ToList();
-                //        var property = type.GetProperty(propertyName.LastOrDefault());
-
-                //        if (property == null)
-                //        {
-                //            //property = "String";
-                //        }
-                //        else
-                //        {
-                //            if (typeof(string) == property.PropertyType)
-                //            {
-                //                property.SetValue(boat, collection[keyField].ToString());
-                //            }
-                //            if (typeof(decimal) == property.PropertyType)
-                //            {
-                //                property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
-                //            }
-
-                //            if (typeof(Guid) == property.PropertyType)
-                //            {
-                //                property.SetValue(boat, Guid.Parse(collection[keyField].ToString()));
-                //            }
-                //        }
-                //    }
-
-                //}
+                
 
                 //for WaterLocationMooringType  
                 foreach (var keyField in WaterLocationMooringType)
@@ -2716,6 +2689,7 @@ namespace DealEngine.WebUI.Controllers
                         if (property == null)
                         {
                             //property = "String";
+                            boat.WaterLocationMooringType = "";
                         }
                         if (typeof(string) == property.PropertyType)
                         {
@@ -2747,40 +2721,26 @@ namespace DealEngine.WebUI.Controllers
                     boat.BoatUses.Clear();
                     boat.BoatUses.Add(BoatUse);
                 }
-                //for SelectedBoatUse   
-                //foreach (var keyField in SelectedBoatUse)
-                //{
-                //    if (keyField == "SelectedBoatUse")
-                //    {
-                //        var propertyName = keyField.Split('.').ToList();
-                //        var property = type.GetProperty(propertyName.LastOrDefault());
-
-                //        if (property == null)
-                //        {
-                //            //property = "String";
-                //        }
-                //        if (typeof(string) == property.PropertyType)
-                //        {
-                //            property.SetValue(boatuse, collection[keyField].ToString());
-                //        }
-                //        if (typeof(decimal) == property.PropertyType)
-                //        {
-                //            property.SetValue(boatuse, decimal.Parse(collection[keyField].ToString()));
-                //        }
-                //        if (typeof(Guid) == property.PropertyType)
-                //        {
-                //            property.SetValue(boatuse, Guid.Parse(collection[keyField].ToString()));
-                //        }
-
-                //    }
-
-                //}
+            
 
 
 
                 if (sheet.Boats.Contains(boat))
                 {
                     //await _locationService.UpdateLocation(location);
+                    //await _boatUseService.UpdateBoatUse(boatuse);
+                    //using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                    //{
+                    //    sheet.Boats.Add(boat);
+                    //    boat.BoatUses.Add(boatuse);
+                    //    await uow.Commit();
+                    //}
+                    await _boatRepository.UpdateAsync(boat);
+
+                    //if (string.IsNullOrWhiteSpace(boatuse))
+                    //{
+                    //    await _boatUseService.UpdateBoatUse(boatuse);
+                    //}
                 }
                 else
                 {
@@ -2788,7 +2748,8 @@ namespace DealEngine.WebUI.Controllers
                     using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
                     {
                         sheet.Boats.Add(boat);
-                        boat.BoatUses.Add(boatuse);
+                        //boat.BoatUses.Add(boatuse);
+
                         await uow.Commit();
                     }
                 }
@@ -2847,6 +2808,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetOriginalBoat(Guid answerSheetId, Guid boatId)
         {
+
             BoatViewModel model = new BoatViewModel();
             User user = null;
 
@@ -2894,7 +2856,7 @@ namespace DealEngine.WebUI.Controllers
                     model.AnswerSheetId = answerSheetId;
                     if (boat.BoatLandLocation != null)
                         model.BoatLandLocation = boat.BoatLandLocation.Id;
-                    if (boat.BoatWaterLocation != null)
+                    if (boat.BoatWaterLocation != null && boat.BoatWaterLocation.Id != Guid.Parse("00000000-0000-0000-0000-000000000000"))
                     {
                         var unit = (MarinaUnit)boat.BoatWaterLocation.OrganisationalUnits.FirstOrDefault();
                         model.BoatWaterLocation = unit.WaterLocation.Id;
@@ -2903,9 +2865,10 @@ namespace DealEngine.WebUI.Controllers
                     // Workaround - if multiple trailers are added by the user, the wrong one could be selected on EDIT. Which one is the right one? Probably the last one added?
                     if (boat.BoatTrailers.Any())
                         model.BoatTrailer = boat.BoatTrailers.LastOrDefault().Id;
-                        // model.BoatTrailer = sheet.Vehicles.FirstOrDefault().Id;
+
                     if (boat.OtherMarinaName != null)
                         model.OtherMarinaName = boat.OtherMarinaName;
+
                     if (boat.BoatUses != null)
                         model.BoatselectedVal = new List<String>();
 
