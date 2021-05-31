@@ -464,7 +464,8 @@ namespace DealEngine.Services.Impl
             foreach (var Financial in FinancialList)
             {
                 // var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault();
-                var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial"); //|| i.Name == "CoOwner"
+                //var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial"); //|| i.Name == "CoOwner"
+                var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.Where(i => i.Name == "Financial").FirstOrDefault(); //|| i.Name == "CoOwner"
 
                 //Name = "Financial"
                 if (unit != null)
@@ -480,22 +481,23 @@ namespace DealEngine.Services.Impl
             }
 
 
-            //var CoOwnerList = await GetCoOwnerInstitutes();
-            //foreach (var CoOwner in CoOwnerList)
-            //{
-            //    var unit1 = (InterestedPartyUnit)CoOwner.OrganisationalUnits.FirstOrDefault(i => i.Name == "CoOwner"); //|| i.Name == "CoOwner"
+            var CoOwnerList = await GetCoOwnerInstitutes();
+            foreach (var CoOwner in CoOwnerList)
+            {
+                //var unit1 = (InterestedPartyUnit)CoOwner.OrganisationalUnits.FirstOrDefault(i => i.Name == "CoOwner"); //|| i.Name == "CoOwner"
+                var unit1 = (InterestedPartyUnit)CoOwner.OrganisationalUnits.Where(i => i.Name == "CoOwner").FirstOrDefault(); //|| i.Name == "CoOwner"
 
-            //    if (unit1 != null)
-            //    {
-            //        if (unit1.Location != null)
-            //        {
-            //            if (unit1.Location.IsPublic)
-            //            {
-            //                organisations.Add(CoOwner);
-            //            }
-            //        }
-            //    }
-            //}
+                if (unit1 != null)
+                {
+                    //if (unit1.Location != null)
+                    //{
+                    //    if (unit1.Location.IsPublic)
+                    //    {
+                            organisations.Add(CoOwner);
+                       // }
+                    //}
+                }
+            }
 
 
             return organisations;

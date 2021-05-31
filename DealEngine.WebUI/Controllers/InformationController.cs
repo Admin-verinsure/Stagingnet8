@@ -1676,10 +1676,21 @@ namespace DealEngine.WebUI.Controllers
                 {
                     foreach (var Institute in DefaultInstitutes)
                     {
-                        InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault();
-                        if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
+                        InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial");
+                        //InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault();
+
+                        if(unit != null)
                         {
-                            //model.ClientInformationSheet.Locations.Add(unit.Location);
+                            if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
+                            {
+                                //model.ClientInformationSheet.Locations.Add(unit.Location);
+                                model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                            }
+                        }
+                        InterestedPartyUnit unit1 = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "CoOwner");
+
+                        if(unit1 != null)
+                        {
                             model.OrganisationViewModel.PublicOrganisations.Add(Institute);
                         }
                     }
