@@ -138,9 +138,19 @@
         AddSelectedInterestedParty.selectedIndex = 0;  
 
         //AddBoatId
-        var AddSelectedInterestedParty = document.getElementById('AddBoatId');
-        AddSelectedInterestedParty.removeAttribute("value");  
+        var AddBoatIdClear = document.getElementById('AddBoatId');
+        AddBoatIdClear.removeAttribute("value");  
         //#AddSelectedInterestedParty_chosen .chosen-choices
+        SetCurrentTab(Tab);
+    }
+
+    function CancelClaim(Form, Tab) {
+        debugger;
+        document.getElementById(Form).reset();
+
+        var ClaimIdClear = document.getElementById('AddBoatId');
+        ClaimIdClear.removeAttribute("value");
+
         SetCurrentTab(Tab);
     }
 
