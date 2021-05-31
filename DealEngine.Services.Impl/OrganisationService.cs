@@ -463,7 +463,10 @@ namespace DealEngine.Services.Impl
             var FinancialList = await GetFinancialInstitutes();
             foreach (var Financial in FinancialList)
             {
-                var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault();
+               // var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault();
+                var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial");
+
+                //Name = "Financial"
                 if (unit != null)
                 {
                     if (unit.Location != null)

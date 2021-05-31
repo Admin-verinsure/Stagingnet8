@@ -17,7 +17,7 @@
                 <li class="nav-item" id="tab2">
                     <a class="nav-link" href="#boatTabs3" data-toggle="tab" onclick="ResetForm('boatTabs3', 'boatTabs2', 'Boat', 'updateBoat', 'ClearBoat')"> Add </a>
                 </li>
-                <li class="nav-item" id="tab4">
+                <li class="nav-item" id="tab3">
                     <a class="nav-link" href="#boatTabs4" data-toggle="tab"> List Removed </a>
                 </li>
             </ul>
@@ -684,7 +684,7 @@
                             <button onclick="ClearBoats(event,'#boatTabs3','boatTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Clear and Cancel</button>*@
 
                                 <button class="btn btn-sm btn-success text-light" id="updateBoat" onclick="AddVessel()" form="BoatViewModel"> Add </button>
-                                <button class="btn btn-sm btn-danger text-light" id="ClearBoat" onclick="Cancel('BoatViewModel','boatTabs1')" form="BoatViewModel"> Clear and Cancel </button>
+                                <button class="btn btn-sm btn-danger text-light" id="ClearBoat" onclick="CancelBoat('BoatViewModel','boatTabs1')" form="BoatViewModel"> Clear and Cancel </button>
                             </section>
                             <label style="color:red" hidden id="updaterequired"> Field is Missing.</label>
                         </div>

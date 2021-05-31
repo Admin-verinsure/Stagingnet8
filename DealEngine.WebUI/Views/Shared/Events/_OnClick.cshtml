@@ -127,9 +127,23 @@
         }
     }
 
+    function CancelBoat(Form, Tab) {
+        debugger;
+        document.getElementById(Form).reset();
+        //AddSelectedBoatUse
+        var AddSelectedBoatUse = document.getElementById('AddSelectedBoatUse');
+        AddSelectedBoatUse.selectedIndex = 0;  
+
+        var AddSelectedInterestedParty = document.getElementById('AddSelectedInterestedParty');
+        AddSelectedInterestedParty.selectedIndex = 0;  
+
+        SetCurrentTab(Tab);
+    }
+
     function Cancel(Form, Tab) {
         debugger;
         document.getElementById(Form).reset();
+
         SetCurrentTab(Tab);
     }
 
