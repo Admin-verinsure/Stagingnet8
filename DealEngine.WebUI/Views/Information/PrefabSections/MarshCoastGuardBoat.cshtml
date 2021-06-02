@@ -27,8 +27,8 @@
                            class="table table-striped" width="100%"
                            @*data-show-columns="true"*@
                            data-pagination="true"
-                           data-search="true"
-                           data-show-jump-to="true">
+                               data-search="true"
+                               data-show-jump-to="true">
                         <thead>
                             <tr>
                                 <th data-field="editButton" data-sortable="false"></th>
@@ -611,7 +611,7 @@
                                         <label class="label col-12" for="InterestedParty">Interested Parties</label>
                                         <label class="input form-group col-12">
                                             <select style="" data-placeholder="Choose Interested Parties..." id="AddSelectedInterestedParty" name="SelectedInterestedParty" multiple class="b form-select chosen-select " form="BoatViewModel">
-                                                @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Financial" || i.Name == "Co Owner")).ToList())
+                                                @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Financial" || i.Name == "CoOwner")).ToList())
                                                 {
                                                     <option value="@organisation.Id"> @organisation.Name</option>
                                                 }

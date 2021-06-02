@@ -137,11 +137,13 @@
         var AddSelectedInterestedParty = document.getElementById('AddSelectedInterestedParty');
         AddSelectedInterestedParty.selectedIndex = 0;  
 
-        //AddBoatId
         var AddBoatIdClear = document.getElementById('AddBoatId');
         AddBoatIdClear.removeAttribute("value");  
-        //#AddSelectedInterestedParty_chosen .chosen-choices 
-        //AddSelectedInterestedParty_chosen
+        
+        //$("#AddSelectedInterestedParty_chosen .chosen-choices .search-choice").remove();
+        //AddSelectedInterestedParty
+        $("#AddSelectedInterestedParty option:selected").removeAttr("selected");
+
         SetCurrentTab(Tab);
     }
 
