@@ -481,23 +481,18 @@ namespace DealEngine.Services.Impl
             }
 
 
-            var CoOwnerList = await GetCoOwnerInstitutes();
-            foreach (var CoOwner in CoOwnerList)
-            {
-                //var unit1 = (InterestedPartyUnit)CoOwner.OrganisationalUnits.FirstOrDefault(i => i.Name == "CoOwner"); //|| i.Name == "CoOwner"
-                var unit1 = (InterestedPartyUnit)CoOwner.OrganisationalUnits.Where(i => i.Name == "CoOwner").FirstOrDefault(); //|| i.Name == "CoOwner"
+            //var CoOwnerList = await GetCoOwnerInstitutes();
+            //foreach (var CoOwner in CoOwnerList)
+            //{
+            //    var unit1 = (InterestedPartyUnit)CoOwner.OrganisationalUnits.Where(i => i.Name == "CoOwner").FirstOrDefault(); //|| i.Name == "CoOwner"
 
-                if (unit1 != null)
-                {
-                    //if (unit1.Location != null)
-                    //{
-                    //    if (unit1.Location.IsPublic)
-                    //    {
-                            organisations.Add(CoOwner);
-                       // }
-                    //}
-                }
-            }
+            //    if (unit1 != null)
+            //    {
+                 
+            //                organisations.Add(CoOwner);
+                
+            //    }
+            //}
 
 
             return organisations;

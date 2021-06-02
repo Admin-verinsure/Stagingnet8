@@ -123,7 +123,8 @@
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                             <label class="label required col-12">Location</label>
                             <label class="input col-12">
-                                <select style="background-color: #fff;" onchange="addPlantLoc()" class="form-control omv" id="MotorLocation" name="VehicleLocation">
+                                @*<select style="" onchange="addPlantLoc()" class="form-control omv" id="MotorLocation" name="VehicleLocation">*@
+                                <select style="" onchange="addPlantLoc()" class="form-select omv" id="MotorLocation" name="VehicleLocation">
                                     <option selected="selected" value="" required>-- Select --</option>
                                     @foreach (var utrloc in Model.LocationViewModel.Locations)
                                     {
@@ -149,7 +150,7 @@
                         @*<section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                 <label class="label">Interested Parties</label>
                                 <label class="input">
-                                    <select style="background-color: #fff;" class="cselect form-control omv" data-placeholder="Interested Parties" id="InterestedParties2" multiple="multiple" name="InterestedParties" style="display: none;">
+                                    <select style="" class="cselect form-control omv" data-placeholder="Interested Parties" id="InterestedParties2" multiple="multiple" name="InterestedParties" style="display: none;">
                                         @foreach (var utrip in Model.InterestedParties.Where(o => o.OrganisationType == "financial"))
                                         {
                                             <option value="@utrip.ID">@utrip.OrganisationName</option>
@@ -227,7 +228,8 @@
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                             <label class="label required col-12">Location</label>
                             <label class="input col-12">
-                                <select style="background-color: #fff;" onchange="AddaddPlantLoc()" class="form-control omv" id="AddMotorLocation" name="VehicleLocation">
+                                @*<select style="" onchange="AddaddPlantLoc()" class="form-control omv" id="AddMotorLocation" name="VehicleLocation">*@
+                                <select style="" onchange="AddaddPlantLoc()" class="form-select omv" id="AddMotorLocation" name="VehicleLocation">
                                     <option selected="selected" value="" required>-- Select --</option>
                                     @foreach (var utrloc in Model.LocationViewModel.Locations)
                                     {
@@ -253,7 +255,7 @@
                     @*<section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                             <label class="label">Interested Parties</label>
                             <label class="input">
-                                <select style="background-color: #fff;" class="cselect form-control omv" data-placeholder="Interested Parties" id="InterestedParties2" multiple="multiple" name="InterestedParties" style="display: none;">
+                                <select style="" class="cselect form-control omv" data-placeholder="Interested Parties" id="InterestedParties2" multiple="multiple" name="InterestedParties" style="display: none;">
                                     @foreach (var utrip in Model.InterestedParties.Where(o => o.OrganisationType == "financial"))
                                     {
                                         <option value="@utrip.ID">@utrip.OrganisationName</option>

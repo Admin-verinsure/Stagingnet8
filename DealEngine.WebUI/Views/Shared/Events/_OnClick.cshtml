@@ -149,8 +149,29 @@
         debugger;
         document.getElementById(Form).reset();
 
-        var ClaimIdClear = document.getElementById('AddBoatId');
+        var ClaimIdClear = document.getElementById('ClaimId');
         ClaimIdClear.removeAttribute("value");
+
+        var eleman = document.getElementById("ClaimStatus");
+        ///eleman.setAttribute("disabled", "true");
+        document.getElementById("ClaimStatusFormGroup").style.display = "none";
+
+        var eleman1 = document.getElementById("ClaimBrokerReference");
+        //eleman1.setAttribute("disabled", "true");
+        document.getElementById("ClaimBrokerReferenceFormGroup").style.display = "none";
+
+
+        var eleman2 = document.getElementById("ClaimInsurerReference");
+        //eleman2.setAttribute("disabled", "true");
+        document.getElementById("ClaimInsurerReferenceFormGroup").style.display = "none";
+
+        var eleman3 = document.getElementById("ClaimReserve");
+        //eleman3.setAttribute("disabled", "true");
+        document.getElementById("ClaimReserveFormGroup").style.display = "none";
+
+        var eleman4 = document.getElementById("ClaimPaid");
+        //eleman4.setAttribute("disabled", "true");
+        document.getElementById("ClaimPaidFormGroup").style.display = "none";
 
         SetCurrentTab(Tab);
     }

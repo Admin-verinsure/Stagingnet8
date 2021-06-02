@@ -1687,12 +1687,12 @@ namespace DealEngine.WebUI.Controllers
                                 model.OrganisationViewModel.PublicOrganisations.Add(Institute);
                             }
                         }
-                        InterestedPartyUnit unit1 = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "CoOwner");
+                        //InterestedPartyUnit unit1 = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "CoOwner");
 
-                        if(unit1 != null)
-                        {
-                            model.OrganisationViewModel.PublicOrganisations.Add(Institute);
-                        }
+                        //if(unit1 != null)
+                        //{
+                        //    model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                        //}
                     }
                 }
                 model.Name = programme.Name;

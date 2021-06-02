@@ -222,7 +222,7 @@
                                     </div>
                                     <div class="col-6">
 
-                                        <select style="background-color: #fff;" data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b form-select" form="ClaimViewModel">
+                                        <select style="" data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="b form-select" form="ClaimViewModel">
                                             <option selected="selected" value="">-- Select here --</option>
 
                                             @foreach (var product in Model.ClientProgramme.BaseProgramme.Products)
@@ -242,7 +242,7 @@
                                         </label>
                                     </div>
                                     <div class="col-6">
-                                        <select style="background-color: #fff;" data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select form-control b">
+                                        <select style="" data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select b">
                                             <option selected="selected" value="">-- Select here --</option>
                                             @foreach (var org in Model.OrganisationViewModel.Organisations)
                                             {
