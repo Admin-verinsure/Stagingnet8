@@ -140,9 +140,49 @@
         var AddBoatIdClear = document.getElementById('AddBoatId');
         AddBoatIdClear.removeAttribute("value");  
         
-        //$("#AddSelectedInterestedParty_chosen .chosen-choices .search-choice").remove();
-        //AddSelectedInterestedParty
-        $("#AddSelectedInterestedParty option:selected").removeAttr("selected");
+        $('#AddSelectedInterestedParty').val('');
+        $('#AddSelectedInterestedParty').trigger('chosen:updated');
+
+
+        $('#AddSelectTrailerSection').hide('2000');
+        var AddBoatTrailer1 = document.getElementById("AddBoatTrailer");
+        AddBoatTrailer1.classList.remove("required");
+        document.getElementById("AddBoatTrailer").required = false;
+
+        $('#AddHullConstructOtherSection').hide('2000');
+        var AddOtherConstructionType1 = document.getElementById("AddOtherConstructionType");
+        AddOtherConstructionType1.classList.remove("required");
+        document.getElementById("AddOtherConstructionType").required = false;
+
+        $('#AddHullConfigurationOtherSection').hide('2000');
+        var AddOtherHullConfiguration1 = document.getElementById("AddOtherHullConfiguration");
+        AddOtherHullConfiguration1.classList.remove("required");
+        document.getElementById("AddOtherHullConfiguration").required = false;
+
+        $('#AddBoatWaterLocationSection').hide('2000');
+        var AddBoatWaterLocation1 = document.getElementById("AddBoatWaterLocation");
+        AddBoatWaterLocation1.classList.remove("required");
+        document.getElementById("AddBoatWaterLocation").required = false;
+
+        $('#AddothermarinSection').hide('2000');
+        var AddMooredType1 = document.getElementById("AddMooredType");
+        AddMooredType1.classList.remove("required");
+        document.getElementById("AddMooredType").required = false;
+        
+        $('#AddRegistrationSection').hide('2000');
+        var AddVesselArea1 = document.getElementById("AddVesselArea");
+        AddVesselArea1.classList.remove("required");
+        document.getElementById("AddVesselArea").required = false;
+
+        $('#AddaucklandRegoSection').hide('2000');
+        var AddAucklandRegistration1 = document.getElementById("AddAucklandRegistration");
+        AddAucklandRegistration1.classList.remove("required");
+        document.getElementById("AddAucklandRegistration").required = false;
+
+        $('#AddVesselUseSection').hide('2000');
+        var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+        AddSelectedBoatUse1.classList.remove("required");
+        document.getElementById("AddSelectedBoatUse").required = false;
 
         SetCurrentTab(Tab);
     }
