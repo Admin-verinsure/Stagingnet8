@@ -326,6 +326,10 @@
        var formValid = TableFormValidation(form , "Vessel");
         if (formValid) {
             sessionStorage.setItem('accordianTrigger', 'Vessel');
+
+            //var sumInsured = document.getElementById("AddMaxSumInsured").value;
+            //var sumInsured = sumInsured.replace(/[^0-9\.-]+/g, "");
+        
             $.ajax({
                 url: '@Url.Action("AddBoat", "Services")',
                 type: "POST",

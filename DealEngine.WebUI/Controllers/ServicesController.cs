@@ -2181,7 +2181,7 @@ namespace DealEngine.WebUI.Controllers
                 var type = boat.GetType();
                 foreach (var keyField in BoatViewModel)
                 {
-                    if (keyField != "BoatViewModel.BoatId" && keyField != "BoatViewModel.openModal")
+                    if (keyField != "BoatViewModel.BoatId" && keyField != "BoatViewModel.openModal" && keyField != "BoatViewModel.MaxSumInsured")
                     {
                         var propertyName = keyField.Split('.').ToList();
                         var property = type.GetProperty(propertyName.LastOrDefault());
@@ -2223,6 +2223,39 @@ namespace DealEngine.WebUI.Controllers
 
                     }
 
+                    if(keyField == "BoatViewModel.MaxSumInsured")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        else if (typeof(DateTime) == property.PropertyType)
+                        {
+                            property.SetValue(boat, DateTime.Parse(collection[keyField].ToString()));
+                        }
+                        else if (typeof(Int32) == property.PropertyType)
+                        {
+                            var fieldValue = collection[keyField];
+                            if (string.IsNullOrWhiteSpace(collection[keyField]))
+                            {
+                                fieldValue = "0";
+                            }
+                            else
+                            {
+                                var MaxSumInsured = collection[keyField].ToString().Replace("$", "").Replace(",", "").Replace(".00","");
+
+                                var NewMaxSumInsured = Int32.Parse(MaxSumInsured);
+                                //var NewMaxSumInsured = MaxSumInsured.ConvertTo(/[^0 - 9\.-] +/ g, "");
+                                    //replace(/[^0 - 9\.-] +/ g, "");
+                                //property.SetValue(boat, Int32.Parse(collection[keyField].ToString()));
+                                property.SetValue(boat, NewMaxSumInsured);
+                            }
+                        }
+
+                    }
                 }
 
 
