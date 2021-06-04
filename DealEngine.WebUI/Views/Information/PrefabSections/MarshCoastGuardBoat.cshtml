@@ -419,10 +419,12 @@
                                     <label class="label required col-12" for="MaxSumInsured">$ Vessel Insured Value (Please exclude trailer value)</label>
                                     <label class="input form-group col-12">
                                         <i></i>
-                                        @Html.TextBoxFor(m => m.BoatViewModel.MaxSumInsured, "{0:C}", new { id = "AddMaxSumInsured", @class = "form-control b", @onchange = "AddupdateExcess()", @Type = "currency", @form = "BoatViewModel", @placeholder = "$ Vessel Insured Value", @required = "", })
+                                        @Html.TextBoxFor(m => m.BoatViewModel.MaxSumInsured, new { id = "AddMaxSumInsured", @class = "form-control b", @onchange = "AddupdateExcess()", @type = "currency", @form = "BoatViewModel", @required = "", })
+                                        @*@Html.TextBoxFor(m => m.BoatViewModel.MaxSumInsured, "{0:C}", new { id = "AddMaxSumInsured", @class = "form-control b", @onchange = "AddupdateExcess()", @type = "currency", @form = "BoatViewModel", @placeholder = "$ Vessel Insured Value", @required = "", })*@
 
                                         @*"{0:C}"*@
                                         @* {^\\$\\d{1,3}(,\\d{3})*(\\.\\d+)?$} *@
+                                        @*  pattern = @"^\$\d{1,3}(,\d{3})*(\.\d+)?$" *@
                                         @*<input onchange="AddupdateExcess()" class="form-control b" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" data-type="currency" data-name="MaxSumInsured" id="AddMaxSumInsured" name="MaxSumInsured" placeholder="$ Vessel Insured Value" value="" required>*@
                                     </label>
                                     @*<p class="validationContainer" id="validateAddMaxSumInsured"></p>*@
