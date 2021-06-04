@@ -2777,6 +2777,7 @@
         })
             .done(function (data) {
                 debugger;
+                CloneForm("boatTabs3", "boatTabs2", "updateBoat", "ClearBoat");
 
                 if (data.boatType1 == "CruisersandLaunches" || data.boatType1 == "YachtsandCatamarans")
                 {
@@ -2872,8 +2873,8 @@
                 updateEditBoat(data);//done
                 UpdateChosen();//done
                 $('#getDetailsModal').hide();
-                SetCurrentTab("boatTabs3");
-                //SetCurrentTab("boatTabs2");
+                //SetCurrentTab("boatTabs3");
+                SetCurrentTab("boatTabs2");
             });
         //.done(function (data) {
         //    debugger;

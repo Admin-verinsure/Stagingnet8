@@ -80,7 +80,7 @@
                 </div>
                 <div id="boatTabs3" class="tab-pane" role="tabpanel">
 
-                    <fieldset id="fieldset">
+                    @*<fieldset id="fieldset">*@
                         <form id="BoatViewModel">
 
                             <div class="row">
@@ -105,15 +105,15 @@
                                         @*<select style="" onchange="AddvesselType1Selected()" class="form-control b form-select" id="AddBoatType1" name="BoatType1" title="" required form="BoatViewModel">*@
                                         <select style="" onchange="AddvesselType1Selected(); " class="b form-select" id="AddBoatType1" name="BoatType1" title="" form="BoatViewModel" required>
 
-                                                <option selected="selected" value="">-- Select --</option>
-                                                <option value="Powerboats">Powerboats</option>
-                                                <option value="CruisersandLaunches">Cruisers and Launches</option>
-                                                <option value="YachtsandCatamarans">Yachts and Catamarans</option>
-                                                <option value="Jetski" id="AddBoatType1Jetski">Jetski</option>
-                                                <option value="Jetboat">Jetboat</option>
-                                                <option value="Other">Other Personal Watercraft</option>
-                                            </select>
-</label>
+                                            <option selected="selected" value="">-- Select --</option>
+                                            <option value="Powerboats">Powerboats</option>
+                                            <option value="CruisersandLaunches">Cruisers and Launches</option>
+                                            <option value="YachtsandCatamarans">Yachts and Catamarans</option>
+                                            <option value="Jetski" id="AddBoatType1Jetski">Jetski</option>
+                                            <option value="Jetboat">Jetboat</option>
+                                            <option value="Other">Other Personal Watercraft</option>
+                                        </select>
+                                    </label>
                                     @*<p class="validationContainer" id="validateAddBoatType"></p>*@
                                 </section>
                                 <section class="col col-sm-1 col-md-1 col-lg-1" id="VesselstatusFormGroup"></section>
@@ -549,7 +549,7 @@
                                     <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
                                         <label class="label required col-12" for="SelectedBoatUse">Select Vessel Use</label>
                                         <label class="input form-group col-12">
-                                            <select style="" onchange="addNewBoatUse()" id="AddSelectedBoatUse" name="SelectedBoatUse" class="b form-select" form="BoatViewModel" >
+                                            <select style="" onchange="addNewBoatUse()" id="AddSelectedBoatUse" name="SelectedBoatUse" class="b form-select" form="BoatViewModel">
                                                 <option selected="selected" value="">-- Select --</option>
                                                 <option value="add">Add Vessel Use</option>
                                             </select>
@@ -582,31 +582,31 @@
                                     @*<p class="validationContainer" id="validateAddboateffectivedate"></p>*@
                                 </div>
                                 @*  LEGACY CEASE DATE LOGIC - Leave commented encase cause for reuse later
-                                @if (Model.ClientInformationSheet.IsChange)
-                            {
-                                <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5 ">
-                                    <label class="label">Cease Date</label>
-                                    <label class="input">
-                                        <i class="icon-append fa fa-calendar"></i>
-                                        <input name="BoatCeaseDate" placeholder="Cease Date" class="datepicker form-control b" data-dateformat="dd/mm/yy" id="AddBoatCeaseDate" type="text">
-                                    </label>
-                                </section>
-                                <section class="col col-sm-1 col-md-1 col-lg-1"></section>
-                                <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
-                                    <label class="label">Cease Reason</label>
-                                    <label class="input">
-                                        <select style="" class="form-control b" id="AddBoatCeaseReason" name="BoatCeaseReason">
-                                            <option selected="selected" value="">-- Select --</option>
-                                            <option value="1">Sold</option>
-                                            <option value="2">Decommision</option>
-                                            <option value="3">Writen off</option>
-                                            <option value="4">Transfered</option>
-                                            <option value="9">Other</option>
-                                        </select>
-                                    </label>
-                                </section>
-                                <section class="col col-sm-1 col-md-1 col-lg-1"></section>
-                            }*@
+                @if (Model.ClientInformationSheet.IsChange)
+            {
+                <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5 ">
+                    <label class="label">Cease Date</label>
+                    <label class="input">
+                        <i class="icon-append fa fa-calendar"></i>
+                        <input name="BoatCeaseDate" placeholder="Cease Date" class="datepicker form-control b" data-dateformat="dd/mm/yy" id="AddBoatCeaseDate" type="text">
+                    </label>
+                </section>
+                <section class="col col-sm-1 col-md-1 col-lg-1"></section>
+                <section class="col col-xs-12 col-sm-5 col-md-5 col-lg-5">
+                    <label class="label">Cease Reason</label>
+                    <label class="input">
+                        <select style="" class="form-control b" id="AddBoatCeaseReason" name="BoatCeaseReason">
+                            <option selected="selected" value="">-- Select --</option>
+                            <option value="1">Sold</option>
+                            <option value="2">Decommision</option>
+                            <option value="3">Writen off</option>
+                            <option value="4">Transfered</option>
+                            <option value="9">Other</option>
+                        </select>
+                    </label>
+                </section>
+                <section class="col col-sm-1 col-md-1 col-lg-1"></section>
+            }*@
                                 <!--hr class="boatAccordianHairline" /-->
                                 <section class="col-sm-6 col-md-6 col-lg-6 d-flex" id="InterestedPartyFormGroup">
                                     <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
@@ -629,47 +629,47 @@
                                     </section>
                                 </section>
                                 @*<div class="col col-sm-6 col-md-6 col-lg-6 hidden" id="Addipeffectivedatesection">
-                                <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
-                                    <label class="label">Interested Parties Effective Date</label>
-                                    <label class="input ">
-                                        <i class="icon-append fa fa-calendar"></i>
-                                        <input name="BoatIPEffectiveDate" placeholder="Effective Date" class="datepicker form-control b" data-mindate="new Date();" data-dateformat="dd/mm/yy" id="AddBoatIPEffectiveDate" type="text">
-                                    </label>
-                                </section>
-                                <section class="col col-xs-2 col-sm-2 col-md-2 col-lg-2">
-                                    <i id="elem" href="#"
-                                        class="fa fa-question-circle cgpopover"
-                                        data-placement="bottom"
-                                        data-html="true"
-                                        data-container="body"
-                                        data-toggle="popover"
-                                        data-content="Pick the date from which you require Interested Parties to be added for certificate"></i>
-                                </section>
-                            </div>*@
+                <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
+                    <label class="label">Interested Parties Effective Date</label>
+                    <label class="input ">
+                        <i class="icon-append fa fa-calendar"></i>
+                        <input name="BoatIPEffectiveDate" placeholder="Effective Date" class="datepicker form-control b" data-mindate="new Date();" data-dateformat="dd/mm/yy" id="AddBoatIPEffectiveDate" type="text">
+                    </label>
+                </section>
+                <section class="col col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                    <i id="elem" href="#"
+                        class="fa fa-question-circle cgpopover"
+                        data-placement="bottom"
+                        data-html="true"
+                        data-container="body"
+                        data-toggle="popover"
+                        data-content="Pick the date from which you require Interested Parties to be added for certificate"></i>
+                </section>
+            </div>*@
                                 @* LEGACY CEASE DATE LOGIC - Leave commented encase cause for reuse later
-                            @if (Model.ClientInformationSheet.IsChange)
-                            {
-                                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
-                                    <label class="label">Cease Date</label>
-                                    <label class="input">
-                                        <i class="icon-append fa fa-calendar"></i>
-                                        <input name="BoatCeaseDate" placeholder="Cease Date" class="datepicker form-control b" data-dateformat="dd/mm/yy" id="AddBoatCeaseDate" type="text">
-                                    </label>
-                                </section>
-                                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                    <label class="label">Cease Reason</label>
-                                    <label class="input">
-                                        <select style="" class="form-control b" id="AddBoatCeaseReason" name="BoatCeaseReason">
-                                            <option selected="selected" value="">-- Select --</option>
-                                            <option value="1">Sold</option>
-                                            <option value="2">Decommision</option>
-                                            <option value="3">Writen off</option>
-                                            <option value="4">Transfered</option>
-                                            <option value="9">Other</option>
-                                        </select>
-                                    </label>
-                                </section>
-                            }*@
+            @if (Model.ClientInformationSheet.IsChange)
+            {
+                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 ">
+                    <label class="label">Cease Date</label>
+                    <label class="input">
+                        <i class="icon-append fa fa-calendar"></i>
+                        <input name="BoatCeaseDate" placeholder="Cease Date" class="datepicker form-control b" data-dateformat="dd/mm/yy" id="AddBoatCeaseDate" type="text">
+                    </label>
+                </section>
+                <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <label class="label">Cease Reason</label>
+                    <label class="input">
+                        <select style="" class="form-control b" id="AddBoatCeaseReason" name="BoatCeaseReason">
+                            <option selected="selected" value="">-- Select --</option>
+                            <option value="1">Sold</option>
+                            <option value="2">Decommision</option>
+                            <option value="3">Writen off</option>
+                            <option value="4">Transfered</option>
+                            <option value="9">Other</option>
+                        </select>
+                    </label>
+                </section>
+            }*@
                                 <section class="col col-xs-12 col-md-12 col-lg-12">
                                     <label class="label col-12">It is a condition of the policy that you provide the underwriters with any additional information that may be material in them making the decision to provide you with cover. If there is anything else they think you should know, please provide details here.</label>
                                     <label class="textarea">
@@ -679,18 +679,27 @@
                                     </label>
                                 </section>
                             </div>
-                        </form>
-                        <div class="row" id="update">
-                            <section class="col col-xs-12">
-                                @*<button onclick="ValidateAddBoatViewModel('#boatTabs3', '#tblBoat','boatTabs1')" class="btn-sm AddupdateBoat" id="updateBoat">Add</button>
-                            <button onclick="ClearBoats(event,'#boatTabs3','boatTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Clear and Cancel</button>*@
 
+                            <div class="row" id="update">
+                                <section class="col col-xs-12">
+                                    @*<button onclick="ValidateAddBoatViewModel('#boatTabs3', '#tblBoat','boatTabs1')" class="btn-sm AddupdateBoat" id="updateBoat">Add</button>
+                <button onclick="ClearBoats(event,'#boatTabs3','boatTabs1')" class="btn-sm AddClearBoat" id="ClearBoat">Clear and Cancel</button>*@
+
+                                    <button class="btn btn-sm btn-success text-light" id="updateBoat" onclick="AddVessel()" form="BoatViewModel"> Add </button>
+                                    <button class="btn btn-sm btn-danger text-light" id="ClearBoat" onclick="CancelBoat('BoatViewModel','boatTabs1')" form="BoatViewModel"> Clear and Cancel </button>
+                                </section>
+                                <label style="color:red" hidden id="updaterequired"> Field is Missing.</label>
+                            </div>
+                        </form>
+                        @*<div class="row" id="update">
+                            <section class="col col-xs-12">
+                            
                                 <button class="btn btn-sm btn-success text-light" id="updateBoat" onclick="AddVessel()" form="BoatViewModel"> Add </button>
                                 <button class="btn btn-sm btn-danger text-light" id="ClearBoat" onclick="CancelBoat('BoatViewModel','boatTabs1')" form="BoatViewModel"> Clear and Cancel </button>
                             </section>
                             <label style="color:red" hidden id="updaterequired"> Field is Missing.</label>
-                        </div>
-                    </fieldset>
+                        </div>*@
+                    @*</fieldset>*@
 
 
 
