@@ -2869,12 +2869,16 @@
                         document.getElementById("AddOtherBoatWaterLocation").required = false;
                     }
                 }
-                //vesselType1Selected();//done
-                AddvesselType1Selected();
+                vesselType1Selected(data);//done
+                //AddvesselType1Selected();
                 $('#AddBoatType2.b').val(data.boatType2);
-                vesselType2Selected();//done
+                vesselType2Selected(data);//done
+
+
                 $('#AddMooredType').val(data.waterLocationMooringType);
-                updateExcess();//done
+
+
+                updateExcess(data);//done
                 updateEditBoat(data);//done
                 UpdateChosen();//done
                 $('#getDetailsModal').hide();
@@ -5585,9 +5589,11 @@
     var vesselTrailerNotes = '#VesselTrailerNotes';
     var adminUser = '#AdminUser';
     //##############
-    function vesselType1Selected() {
+    function vesselType1Selected(data) {
         debugger;
-        var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
+        //var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
+        var boatType1Selected = data.boatType1;
+
         $('#Addexcess').val('');
         $('#AddMaxSumInsured').val('');
         if (boatType1Selected == "Powerboats")
@@ -5973,10 +5979,12 @@
         excess.selectedIndex = 0;
     }
     //#############
-    function vesselType2Selected() {
+    function vesselType2Selected(data) {
         debugger;
-        var boatType2Selected = boatType2.options[boatType2.selectedIndex].value;
-        var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
+        //var boatType2Selected = boatType2.options[boatType2.selectedIndex].value;
+        //var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
+        var boatType2Selected = data.boatType2;
+        var boatType1Selected = data.boatType1;
         $('#excess').val('');
         $('#AddMaxSumInsured').val('');
         if (boatType2Selected == "Roadtrailer") {
@@ -6131,10 +6139,10 @@
         excess.selectedIndex = 0;
     }
     //#############
-    function updateExcess() {
+    function updateExcess(data) {
         debugger;
-        var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
-        var boatType2Selected = boatType2.options[boatType2.selectedIndex].value;
+        var boatType1Selected = data.boatType1;
+        var boatType2Selected = data.boatType2;
         var MotorType = $('#AddMotorType').val();
         $('#Addexcess').val('');
         var sumInsured = document.getElementById("AddMaxSumInsured").value;

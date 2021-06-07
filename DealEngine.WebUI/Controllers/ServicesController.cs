@@ -3607,6 +3607,7 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 //return Json(claimNotification);
+
                 return new JsonResult(claimNotification.Id);
             }
             catch (Exception ex)
