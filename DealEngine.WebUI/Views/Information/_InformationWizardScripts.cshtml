@@ -2817,6 +2817,8 @@
                 $('#AddModifiedMotor').val(data.modifiedMotor);
                 $('#AddMaxRatedSpeed').val(data.maxRatedSpeed);
                 $('#AddAucklandRegistration').val(data.aucklandRegistration);
+            
+
                 $('#chooseBoat_chosen').val(data.boatUseslist);
                 $('#AddBoatIsTrailered').val(data.boatIsTrailered);
                 $('#AddBoatTrailer').val(data.boatTrailer);
@@ -2834,6 +2836,8 @@
                 $('#InterestedParties3').val(data.interestedParties3);
                 $('#AddBoatNotes').val(data.boatNotes);
                 $('#AddVesselArea').val(data.vesselArea);
+               
+
                 if (data.boatWaterLocation != null && data.boatWaterLocation != "00000000-0000-0000-0000-000000000000")
                 {
                     var marinas = document.getElementById('AddBoatWaterLocation');
@@ -2865,7 +2869,8 @@
                         document.getElementById("AddOtherBoatWaterLocation").required = false;
                     }
                 }
-                vesselType1Selected();//done
+                //vesselType1Selected();//done
+                AddvesselType1Selected();
                 $('#AddBoatType2.b').val(data.boatType2);
                 vesselType2Selected();//done
                 $('#AddMooredType').val(data.waterLocationMooringType);
@@ -2874,6 +2879,52 @@
                 UpdateChosen();//done
                 $('#getDetailsModal').hide();
                 //SetCurrentTab("boatTabs3");
+
+                $('#AddRiggingType').val(data.riggingType);
+
+                //for AddRiggingTypeSection if AddRiggingType is null
+                if (data.riggingType == "") {
+                    $('#AddRiggingTypeSection').addClass("hidden");
+                    var AddRiggingType1 = document.getElementById("AddRiggingType");
+                    AddRiggingType1.classList.remove("required");
+                    document.getElementById("AddRiggingType").required = false;
+                }
+                else {
+                    $('#AddRiggingTypeSection').removeClass("hidden");
+                    var AddRiggingType1 = document.getElementById("AddRiggingType");
+                    AddRiggingType1.classList.add("required");
+                    document.getElementById("AddRiggingType").required = true;
+                }
+                // for AddMastType
+                $('#AddMastType').val(data.mastType);
+
+                if (data.mastType == "") {
+                    $('#AddMastTypeSection').addClass("hidden");
+                    var AddMastType1 = document.getElementById("AddMastType");
+                    AddMastType1.classList.remove("required");
+                    document.getElementById("AddMastType").required = false;
+                }
+                else {
+                    $('#AddMastTypeSection').removeClass("hidden");
+                    var AddMastType1 = document.getElementById("AddMastType");
+                    AddMastType1.classList.add("required");
+                    document.getElementById("AddMastType").required = true;
+                }
+                //add code to hide  AddAucklandRegistration
+                if (data.aucklandRegistration == "") {
+
+                    $('#AddaucklandRegoSection').addClass("hidden");
+                    var AddAucklandRegistration1 = document.getElementById("AddAucklandRegistration");
+                    AddAucklandRegistration1.classList.remove("required");
+                    document.getElementById("AddAucklandRegistration").required = false;
+                } else {
+                    $('#AddaucklandRegoSection').removeClass("hidden");
+                    //var AddAucklandRegistration1 = document.getElementById("AddAucklandRegistration");
+                    //AddAucklandRegistration1.classList.remove("required");
+                    //document.getElementById("AddAucklandRegistration").required = false;
+                }
+
+
                 SetCurrentTab("boatTabs2");
             });
         //.done(function (data) {
@@ -3004,7 +3055,7 @@
         //    $('#BoatIsTrailered').val("True");
         //}else
         $('#AddBoatIsTrailered.b').val(data.boatIsTrailered);
-        if (data.MotorType == "NA") {
+        if (data.motorType == "NA") {
             $('#AddModifiedMotorSection').addClass("hidden");
             var AddModifiedMotor1 = document.getElementById("AddModifiedMotor");
             AddModifiedMotor1.classList.remove("required");
