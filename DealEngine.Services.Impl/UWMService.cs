@@ -224,6 +224,9 @@ namespace DealEngine.Services.Impl
                 new AbbottOTUWModule(),
                 new AbbottLPDUWModule(),
                 new AbbottFIDUWModule(),
+                new I2IITCPIUWModule(),
+                new I2IITCPLUWModule(),
+                new I2IITCSLUWModule(),
 
             };
             return modules;

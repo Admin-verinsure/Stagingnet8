@@ -21,7 +21,7 @@ namespace DealEngine.Services.Impl
             _clientAgreementRepository = clientAgreementRepository;
         }
 
-		public async Task AddClientAgreementRule (User createdBy, Rule rule, string name, string description, Product product, string value, int orderNumber, string ruleCategory, string ruleRoleType, bool isPublic, ClientAgreement clientAgreement)
+		public async Task AddClientAgreementRule (User createdBy, Rule rule, string name, string description, Product product, string value, int orderNumber, string ruleCategory, string ruleRoleType, bool isPublic, ClientAgreement clientAgreement, bool doNotCheckForRenew)
 		{
 			if (string.IsNullOrWhiteSpace (name))
 				throw new ArgumentNullException (nameof (name));
@@ -36,7 +36,7 @@ namespace DealEngine.Services.Impl
 			if (clientAgreement == null)
 				throw new ArgumentNullException (nameof (clientAgreement));
 
-            ClientAgreementRule clientAgreementRule = new ClientAgreementRule(createdBy, rule, rule.Name, rule.Description, rule.Product, rule.Value, rule.OrderNumber, rule.RuleCategory, rule.RuleRoleType, rule.IsPublic, clientAgreement);
+            ClientAgreementRule clientAgreementRule = new ClientAgreementRule(createdBy, rule, rule.Name, rule.Description, rule.Product, rule.Value, rule.OrderNumber, rule.RuleCategory, rule.RuleRoleType, rule.IsPublic, clientAgreement, rule.DoNotCheckForRenew);
             clientAgreement.ClientAgreementRules.Add(clientAgreementRule);
             await _clientAgreementRuleRepository.AddAsync(clientAgreementRule);
             await _clientAgreementRepository.UpdateAsync(clientAgreement);
@@ -44,7 +44,7 @@ namespace DealEngine.Services.Impl
 
         public async Task AddClientAgreementRule(User createdBy, Rule rule, ClientAgreement clientAgreement)
         {
-			await AddClientAgreementRule(createdBy, rule, rule.Name, rule.Description, rule.Product, rule.Value, rule.OrderNumber, rule.RuleCategory, rule.RuleRoleType, rule.IsPublic, clientAgreement);
+			await AddClientAgreementRule(createdBy, rule, rule.Name, rule.Description, rule.Product, rule.Value, rule.OrderNumber, rule.RuleCategory, rule.RuleRoleType, rule.IsPublic, clientAgreement, rule.DoNotCheckForRenew);
         }
 
 

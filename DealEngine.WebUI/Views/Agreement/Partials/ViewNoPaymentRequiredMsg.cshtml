@@ -1,7 +1,7 @@
 ﻿@model DealEngine.WebUI.Models.Agreement.ViewAgreementViewModel
 
 @Html.Raw(Model.NoPaymentRequiredMessage)
-@if (Model.ClientInformationSheet.Programme.BaseProgramme.Name == "Apollo Programme")
+@if (Model.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme")
 {
     @if (string.IsNullOrWhiteSpace(Model.ClientInformationSheet.Programme.PaymentType))
     {
@@ -20,7 +20,7 @@
     @Html.HiddenFor(m => m.ClientInformationSheet.Programme.Id, new { @id = "Programme.Id" })
     @Html.DropDownListFor(m => m.ClientInformationSheet.Programme.PaymentType, Model.PaymentMethodOptions, new { @required = "", @class = "form-control b", onchange = "SavePaymentOption(this.id)" })
 }
-@if (Model.ClientInformationSheet.Programme.BaseProgramme.Name == "Abbott Financial Advisor Liability Programme")
+@if (Model.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
 {
     @if (string.IsNullOrWhiteSpace(Model.ClientInformationSheet.Programme.PaymentFrequency))
     {

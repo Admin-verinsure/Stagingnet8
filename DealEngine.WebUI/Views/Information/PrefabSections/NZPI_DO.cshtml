@@ -1,7 +1,7 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
 <form id="DAOLIViewModel" class="is-valid" data-accordianId="Directors and Officers Liability Insurance">
-    @if (Model.ClientInformationSheet.Owner.OrganisationType.Name == "Person - Individual" && Model.Programme.Name == "NZPI Programme")
+    @if (Model.ClientInformationSheet.Owner.OrganisationType.Name == "Person - Individual" && Model.Programme.NamedPartyUnitName == "NZPI Programme")
     {
         <div class="form-group">
             <div class="row">

@@ -294,6 +294,7 @@ namespace DealEngine.WebUI.Controllers
                 model.ClientAgreementId = agreementId;
                 model.ClientProgrammeId = agreement.ClientInformationSheet.Programme.Id;
                 model.ProgrammeName = programme.Name;
+                model.ProgrammeNamedPartyName = programme.NamedPartyUnitName;
 
                 if (!string.IsNullOrEmpty(agreement.issuetobrokercomment))
                 {
@@ -494,7 +495,7 @@ namespace DealEngine.WebUI.Controllers
                         //}
                     }
 
-                    if (agreement.Status != "Quoted" || agreement.Status != "Authorised")
+                    if (agreement.Status == "Referred")
                     {
                         agreement.Status = "Authorised";
                         await _milestoneService.CompleteMilestoneFor("Agreement Status – Referred", user, sheet);
@@ -1219,8 +1220,210 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> EditTerms(Guid id)
+        //{
+        //    User user = null;
+        //    ViewAgreementViewModel model = new ViewAgreementViewModel();
+        //    try
+        //    {
+        //        ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
+        //        ClientAgreementTerm term = agreement.ClientAgreementTerms.FirstOrDefault(t => t.SubTermType == "BV" && t.DateDeleted == null);
+        //        model.ClientAgreementId = id;
+        //        model.ClientProgrammeId = agreement.ClientInformationSheet.Programme.Id;
+        //        foreach (var terms in agreement.ClientAgreementTerms)
+        //        {
+        //            if (terms.BoatTerms.Where(bvt => bvt.DateDeleted == null).Count() > 0)
+        //            {
+        //                var boats = new List<EditTermsViewModel>();
+        //                foreach (var boat in terms.BoatTerms)
+        //                {
+        //                    boats.Add(new EditTermsViewModel
+        //                    {
+        //                        VesselId = boat.Id,
+        //                        BoatName = boat.BoatName,
+        //                        BoatMake = boat.BoatMake,
+        //                        BoatModel = boat.BoatModel,
+        //                        TermLimit = boat.TermLimit,
+        //                        Excess = Convert.ToInt32(boat.Excess),
+        //                        Premium = boat.Premium,
+        //                        FSL = boat.FSL
+        //                    });
+        //                }
+        //                model.BVTerms = boats;
+        //            }
+
+        //            if (terms.MotorTerms.Where(mvt => mvt.DateDeleted == null).Count() > 0)
+        //            {
+        //                var motors = new List<EditTermsViewModel>();
+        //                foreach (var motor in terms.MotorTerms)
+        //                {
+        //                    motors.Add(new EditTermsViewModel
+        //                    {
+        //                        VesselId = motor.Id,
+        //                        Registration = motor.Registration,
+        //                        Make = motor.Make,
+        //                        Model = motor.Model,
+        //                        TermLimit = motor.TermLimit,
+        //                        Excess = Convert.ToInt32(motor.Excess),
+        //                        Premium = motor.Premium,
+        //                        FSL = motor.FSL
+        //                    });
+        //                }
+        //                model.MVTerms = motors;
+        //            }
+
+        //            if (terms.MotorTerms.Where(mvt => mvt.DateDeleted == null).Count() > 0)
+        //            {
+        //                var motors = new List<EditTermsViewModel>();
+        //                foreach (var motor in terms.MotorTerms)
+        //                {
+        //                    motors.Add(new EditTermsViewModel
+        //                    {
+        //                        VesselId = motor.Id,
+        //                        Registration = motor.Registration,
+        //                        Make = motor.Make,
+        //                        Model = motor.Model,
+        //                        TermLimit = motor.TermLimit,
+        //                        Excess = Convert.ToInt32(motor.Excess),
+        //                        Premium = motor.Premium,
+        //                        FSL = motor.FSL
+        //                    });
+        //                }
+        //                model.MVTerms = motors;
+        //            }
+        //        }
+        //        var plterms = new List<EditTermsViewModel>();
+        //        var edterms = new List<EditTermsViewModel>();
+        //        var piterms = new List<EditTermsViewModel>();
+        //        var elterms = new List<EditTermsViewModel>();
+        //        var clterms = new List<EditTermsViewModel>();
+        //        var slterms = new List<EditTermsViewModel>();
+        //        var doterms = new List<EditTermsViewModel>();
+
+        //        foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "PL" && t.DateDeleted == null))
+        //        {
+        //            plterms.Add(new EditTermsViewModel
+        //            {
+        //                TermId = plterm.Id,
+        //                TermType = plterm.SubTermType,
+        //                TermLimit = plterm.TermLimit,
+        //                Excess = Convert.ToInt32(plterm.Excess),
+        //                Premium = plterm.Premium,
+        //                BasePremium = plterm.BasePremium,
+        //                PremiumDiffer = plterm.PremiumDiffer
+        //            });
+        //        }
+        //        foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "ED" && t.DateDeleted == null))
+        //        {
+        //            edterms.Add(new EditTermsViewModel
+        //            {
+        //                TermId = plterm.Id,
+        //                TermType = plterm.SubTermType,
+        //                TermLimit = plterm.TermLimit,
+        //                Excess = Convert.ToInt32(plterm.Excess),
+        //                Premium = plterm.Premium,
+        //                BasePremium = plterm.BasePremium,
+        //                PremiumDiffer = plterm.PremiumDiffer
+        //            });
+
+
+        //        }
+        //        foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "PI" && t.DateDeleted == null))
+        //        {
+        //            piterms.Add(new EditTermsViewModel
+        //            {
+        //                TermId = plterm.Id,
+        //                TermType = plterm.SubTermType,
+        //                TermLimit = plterm.TermLimit,
+        //                Excess = Convert.ToInt32(plterm.Excess),
+        //                Premium = plterm.Premium,
+        //                BasePremium = plterm.BasePremium,
+        //                PremiumDiffer = plterm.PremiumDiffer
+        //            });
+
+
+        //        }
+        //        foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "EL" && t.DateDeleted == null))
+        //        {
+        //            elterms.Add(new EditTermsViewModel
+        //            {
+        //                TermId = plterm.Id,
+        //                TermType = plterm.SubTermType,
+        //                TermLimit = plterm.TermLimit,
+        //                Excess = Convert.ToInt32(plterm.Excess),
+        //                Premium = plterm.Premium,
+        //                BasePremium = plterm.BasePremium,
+        //                PremiumDiffer = plterm.PremiumDiffer
+        //            });
+
+
+        //        }
+        //        foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "CL" && t.DateDeleted == null))
+        //        {
+        //            clterms.Add(new EditTermsViewModel
+        //            {
+        //                TermId = plterm.Id,
+        //                TermType = plterm.SubTermType,
+        //                TermLimit = plterm.TermLimit,
+        //                Excess = Convert.ToInt32(plterm.Excess),
+        //                Premium = plterm.Premium,
+        //                BasePremium = plterm.BasePremium,
+        //                PremiumDiffer = plterm.PremiumDiffer
+        //            });
+
+
+        //        }
+        //        foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "SL" && t.DateDeleted == null))
+        //        {
+        //            slterms.Add(new EditTermsViewModel
+        //            {
+        //                TermId = plterm.Id,
+        //                TermType = plterm.SubTermType,
+        //                TermLimit = plterm.TermLimit,
+        //                Excess = Convert.ToInt32(plterm.Excess),
+        //                Premium = plterm.Premium,
+        //                BasePremium = plterm.BasePremium,
+        //                PremiumDiffer = plterm.PremiumDiffer
+        //            });
+
+
+        //        }
+        //        foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "DO" && t.DateDeleted == null))
+        //        {
+        //            doterms.Add(new EditTermsViewModel
+        //            {
+        //                TermId = plterm.Id,
+        //                TermType = plterm.SubTermType,
+        //                TermLimit = plterm.TermLimit,
+        //                Excess = Convert.ToInt32(plterm.Excess),
+        //                Premium = plterm.Premium,
+        //                BasePremium = plterm.BasePremium,
+        //                PremiumDiffer = plterm.PremiumDiffer
+        //            });
+        //        }
+        //        model.PLTerms = plterms.OrderBy(acat => acat.TermLimit).ToList();
+        //        model.EDTerms = edterms.OrderBy(acat => acat.TermLimit).ToList();
+        //        model.PITerms = piterms.OrderBy(acat => acat.TermLimit).ToList();
+        //        model.ELTerms = elterms.OrderBy(acat => acat.TermLimit).ToList();
+        //        model.CLTerms = clterms.OrderBy(acat => acat.TermLimit).ToList();
+        //        model.SLTerms = slterms.OrderBy(acat => acat.TermLimit).ToList();
+        //        model.DOTerms = doterms.OrderBy(acat => acat.TermLimit).ToList();
+        //        ViewBag.Title = "Edit Terms ";
+
+        //        return View("EditTerms", model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        //        return RedirectToAction("Error500", "Error");
+        //    }
+        //}
+
+
+
         [HttpGet]
-        public async Task<IActionResult> EditTerms(Guid id)
+        public async Task<IActionResult> EditTerms(Guid id , String productname = null)
         {
             User user = null;
             ViewAgreementViewModel model = new ViewAgreementViewModel();
@@ -1292,122 +1495,31 @@ namespace DealEngine.WebUI.Controllers
                         model.MVTerms = motors;
                     }
                 }
-                var plterms = new List<EditTermsViewModel>();
-                var edterms = new List<EditTermsViewModel>();
-                var piterms = new List<EditTermsViewModel>();
-                var elterms = new List<EditTermsViewModel>();
-                var clterms = new List<EditTermsViewModel>();
-                var slterms = new List<EditTermsViewModel>();
-                var doterms = new List<EditTermsViewModel>();
+                var subtypeterms = new List<EditTermsViewModel>();
+               
 
-                foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "PL" && t.DateDeleted == null))
+                foreach (var subtypeterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == productname && t.DateDeleted == null))
                 {
-                    plterms.Add(new EditTermsViewModel
+                    subtypeterms.Add(new EditTermsViewModel
                     {
-                        TermId = plterm.Id,
-                        TermType = plterm.SubTermType,
-                        TermLimit = plterm.TermLimit,
-                        Excess = Convert.ToInt32(plterm.Excess),
-                        Premium = plterm.Premium,
-                        BasePremium = plterm.BasePremium,
-                        PremiumDiffer = plterm.PremiumDiffer
+                        TermId = subtypeterm.Id,
+                        TermType = subtypeterm.SubTermType,
+                        TermLimit = subtypeterm.TermLimit,
+                        Excess = Convert.ToInt32(subtypeterm.Excess),
+                        Premium = subtypeterm.Premium,
+                        BasePremium = subtypeterm.BasePremium,
+                        PremiumDiffer = subtypeterm.PremiumDiffer
                     });
                 }
-                foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "ED" && t.DateDeleted == null))
-                {
-                    edterms.Add(new EditTermsViewModel
-                    {
-                        TermId = plterm.Id,
-                        TermType = plterm.SubTermType,
-                        TermLimit = plterm.TermLimit,
-                        Excess = Convert.ToInt32(plterm.Excess),
-                        Premium = plterm.Premium,
-                        BasePremium = plterm.BasePremium,
-                        PremiumDiffer = plterm.PremiumDiffer
-                    });
-
-
-                }
-                foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "PI" && t.DateDeleted == null))
-                {
-                    piterms.Add(new EditTermsViewModel
-                    {
-                        TermId = plterm.Id,
-                        TermType = plterm.SubTermType,
-                        TermLimit = plterm.TermLimit,
-                        Excess = Convert.ToInt32(plterm.Excess),
-                        Premium = plterm.Premium,
-                        BasePremium = plterm.BasePremium,
-                        PremiumDiffer = plterm.PremiumDiffer
-                    });
-
-
-                }
-                foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "EL" && t.DateDeleted == null))
-                {
-                    elterms.Add(new EditTermsViewModel
-                    {
-                        TermId = plterm.Id,
-                        TermType = plterm.SubTermType,
-                        TermLimit = plterm.TermLimit,
-                        Excess = Convert.ToInt32(plterm.Excess),
-                        Premium = plterm.Premium,
-                        BasePremium = plterm.BasePremium,
-                        PremiumDiffer = plterm.PremiumDiffer
-                    });
-
-
-                }
-                foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "CL" && t.DateDeleted == null))
-                {
-                    clterms.Add(new EditTermsViewModel
-                    {
-                        TermId = plterm.Id,
-                        TermType = plterm.SubTermType,
-                        TermLimit = plterm.TermLimit,
-                        Excess = Convert.ToInt32(plterm.Excess),
-                        Premium = plterm.Premium,
-                        BasePremium = plterm.BasePremium,
-                        PremiumDiffer = plterm.PremiumDiffer
-                    });
-
-
-                }
-                foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "SL" && t.DateDeleted == null))
-                {
-                    slterms.Add(new EditTermsViewModel
-                    {
-                        TermId = plterm.Id,
-                        TermType = plterm.SubTermType,
-                        TermLimit = plterm.TermLimit,
-                        Excess = Convert.ToInt32(plterm.Excess),
-                        Premium = plterm.Premium,
-                        BasePremium = plterm.BasePremium,
-                        PremiumDiffer = plterm.PremiumDiffer
-                    });
-
-
-                }
-                foreach (var plterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == "DO" && t.DateDeleted == null))
-                {
-                    doterms.Add(new EditTermsViewModel
-                    {
-                        TermId = plterm.Id,
-                        TermType = plterm.SubTermType,
-                        TermLimit = plterm.TermLimit,
-                        Excess = Convert.ToInt32(plterm.Excess),
-                        Premium = plterm.Premium,
-                        BasePremium = plterm.BasePremium,
-                        PremiumDiffer = plterm.PremiumDiffer
-                    });
-                }
-                model.PLTerms = plterms.OrderBy(acat => acat.TermLimit).ToList();
-                model.EDTerms = edterms.OrderBy(acat => acat.TermLimit).ToList();
-                model.PITerms = piterms.OrderBy(acat => acat.TermLimit).ToList();
-                model.ELTerms = elterms.OrderBy(acat => acat.TermLimit).ToList();
-                model.CLTerms = clterms.OrderBy(acat => acat.TermLimit).ToList();
-                model.SLTerms = slterms.OrderBy(acat => acat.TermLimit).ToList();
-                model.DOTerms = doterms.OrderBy(acat => acat.TermLimit).ToList();
+               
+                model.SubtypeTerms = subtypeterms.OrderBy(acat => acat.TermLimit).ToList();
+                model.ProductName = productname;
+                //model.EDTerms = edterms.OrderBy(acat => acat.TermLimit).ToList();
+                //model.PITerms = piterms.OrderBy(acat => acat.TermLimit).ToList();
+                //model.ELTerms = elterms.OrderBy(acat => acat.TermLimit).ToList();
+                //model.CLTerms = clterms.OrderBy(acat => acat.TermLimit).ToList();
+                //model.SLTerms = slterms.OrderBy(acat => acat.TermLimit).ToList();
+                //model.DOTerms = doterms.OrderBy(acat => acat.TermLimit).ToList();
                 ViewBag.Title = "Edit Terms ";
 
                 return View("EditTerms", model);
@@ -1628,6 +1740,7 @@ namespace DealEngine.WebUI.Controllers
                     model.ProgrammeId = agreement.ClientInformationSheet.Programme.BaseProgramme.Id;
                     model.InsuranceRoles = insuranceRoles;
                     model.ProductName = agreement.Product.Name;
+                    model.ProductCode = agreement.Product.UnderwritingModuleCode.Substring(agreement.Product.UnderwritingModuleCode.IndexOf("_") + 1);
                     model.IsMultipleOption = agreement.Product.IsMultipleOption;
                     model.IsOptionalProduct = agreement.Product.IsOptionalProduct;
                     model.Status = agreement.Status;
@@ -1653,6 +1766,8 @@ namespace DealEngine.WebUI.Controllers
                     model.EndDate = LocalizeTimeDate(agreement.ExpiryDate, "dd-mm-yyyy");
                     model.AdministrationFee = agreement.BrokerFee.ToString("C", UserCulture);
                     model.BrokerageRate = (agreement.Brokerage / 100).ToString("P2", UserCulture);
+                    model.AdditionalCertFee = agreement.AdditionalCertFee.ToString("C", UserCulture);
+                    model.PlacementFee = agreement.PlacementFee.ToString("C", UserCulture);
                     model.CurrencySymbol = "fa fa-dollar";
                     model.ClientInformationSheet = sheet;
                     if (sheet.Programme.BaseProgramme.UsesEGlobal &&
@@ -2520,73 +2635,103 @@ namespace DealEngine.WebUI.Controllers
                 }
                 foreach (ClientAgreement agreement in programme.Agreements)
                 {
-                    if (Action == "BindAgreement")
+                    if (agreement.Status == "Quoted")
                     {
-                        agreement.BindNotes = HttpContext.Request.Form["BindNotes"];
-                        agreement.BindByUserID = user;
-                    }
-
-                    if (agreement.ClientAgreementTerms.Where(acagreement => acagreement.DateDeleted == null && acagreement.Bound).Count() > 0)
-                    {
-                        var allDocs = await _fileService.GetDocumentByOwner(programme.Owner);
-                        var documents = new List<SystemDocument>();
-                        var documentspremiumadvice = new List<SystemDocument>();
-                        var agreeTemplateList = agreement.Product.Documents;
-                        var agreeDocList = agreement.GetDocuments();
-                        
-                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                        if (Action == "BindAgreement")
                         {
-                            if (agreement.Status != status)
+                            agreement.BindNotes = HttpContext.Request.Form["BindNotes"];
+                            agreement.BindByUserID = user;
+                        }
+
+                        if (agreement.ClientAgreementTerms.Where(acagreement => acagreement.DateDeleted == null && acagreement.Bound).Count() > 0)
+                        {
+                            var allDocs = await _fileService.GetDocumentByOwner(programme.Owner);
+                            var documents = new List<SystemDocument>();
+                            var documentspremiumadvice = new List<SystemDocument>();
+                            var agreeTemplateList = agreement.Product.Documents;
+                            var agreeDocList = agreement.GetDocuments();
+
+                            using (var uow = _unitOfWork.BeginUnitOfWork())
                             {
-                                agreement.Status = status;
-                                agreement.BoundDate = DateTime.Now;
-                                if (programme.BaseProgramme.PolicyNumberPrefixString != null)
+                                if (agreement.Status != status)
                                 {
-                                    agreement.PolicyNumber = programme.BaseProgramme.PolicyNumberPrefixString + "-0" + agreement.ReferenceId;
-                                }
-                                await uow.Commit();
-                            }
-                        }
-
-                        agreement.Status = status;
-
-                        foreach (SystemDocument doc in agreeDocList)
-                        {
-                            // The PDF document will skip rendering so we don't delete it here but all others are getting regenerated so we delete the old ones
-                            if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
-                            {
-                                doc.Delete(user);
-                            }
-                        }
-
-                        //tripleA DO use case, remove when all client set as company
-                        if (agreement.Product.Id == new Guid("bdbdda02-ee4e-44f5-84a8-dd18d17287c1") &&
-                            agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDAOLIOptions").First().Value == "2")
-                        {
-
-                        }
-                        else
-                        {
-
-                            if (!agreement.Product.IsOptionalCombinedProduct)
-                            {
-                                foreach (SystemDocument template in agreeTemplateList)
-                                {
-                                    if (template.ContentType == MediaTypeNames.Application.Pdf)
+                                    agreement.Status = status;
+                                    agreement.BoundDate = DateTime.Now;
+                                    if (programme.BaseProgramme.PolicyNumberPrefixString != null)
                                     {
-                                        SystemDocument notRenderedDoc = await _fileService.GetDocumentByID(template.Id);
-                                        agreement.Documents.Add(notRenderedDoc);
-                                        documents.Add(notRenderedDoc);
+                                        agreement.PolicyNumber = programme.BaseProgramme.PolicyNumberPrefixString + "-0" + agreement.ReferenceId;
                                     }
-                                    else
+                                    await uow.Commit();
+                                }
+                            }
+
+                            agreement.Status = status;
+
+                            foreach (SystemDocument doc in agreeDocList)
+                            {
+                                // The PDF document will skip rendering so we don't delete it here but all others are getting regenerated so we delete the old ones
+                                if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
+                                {
+                                    doc.Delete(user);
+                                }
+                            }
+
+                            //tripleA DO use case, remove when all client set as company
+                            if (agreement.Product.Id == new Guid("bdbdda02-ee4e-44f5-84a8-dd18d17287c1") &&
+                                agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDAOLIOptions").First().Value == "2")
+                            {
+
+                            }
+                            else
+                            {
+
+                                if (!agreement.Product.IsOptionalCombinedProduct)
+                                {
+                                    foreach (SystemDocument template in agreeTemplateList)
                                     {
-                                        //render docs except invoice
-                                        if (template.DocumentType != 4 && template.DocumentType != 6)
+                                        if (template.ContentType == MediaTypeNames.Application.Pdf)
                                         {
-                                            if (template.Name == "TripleA Individual TL Certificate")
+                                            SystemDocument notRenderedDoc = await _fileService.GetDocumentByID(template.Id);
+                                            agreement.Documents.Add(notRenderedDoc);
+                                            documents.Add(notRenderedDoc);
+                                        }
+                                        else
+                                        {
+                                            //render docs except invoice
+                                            if (template.DocumentType != 4 && template.DocumentType != 6)
                                             {
-                                                if (agreement.Product.IsOptionalProductBasedSub &&
-                                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                                                if (template.Name == "TripleA Individual TL Certificate")
+                                                {
+                                                    if (agreement.Product.IsOptionalProductBasedSub &&
+                                                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                                                    {
+                                                        SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null);
+                                                        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                                        agreement.Documents.Add(renderedDoc);
+                                                        documents.Add(renderedDoc);
+                                                        await _fileService.UploadFile(renderedDoc);
+                                                    }
+                                                }
+                                                else if (template.DocumentType == 7)
+                                                {
+                                                    SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null);
+                                                    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                                    agreement.Documents.Add(renderedDoc);
+                                                    //documents.Add(renderedDoc);
+                                                    documentspremiumadvice.Add(renderedDoc);
+                                                    await _fileService.UploadFile(renderedDoc);
+                                                }
+                                                else if (template.DocumentType == 8)
+                                                {
+                                                    SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null);
+
+                                                    SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                                                    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                                    agreement.Documents.Add(renderedDoc1);
+                                                    documents.Add(renderedDoc);
+                                                    await _fileService.UploadFile(renderedDoc);
+                                                }
+                                                else
                                                 {
                                                     SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null);
                                                     renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
@@ -2594,112 +2739,87 @@ namespace DealEngine.WebUI.Controllers
                                                     documents.Add(renderedDoc);
                                                     await _fileService.UploadFile(renderedDoc);
                                                 }
-                                            }
-                                            else if (template.DocumentType == 7)
-                                            {
-                                                SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null);
-                                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                agreement.Documents.Add(renderedDoc);
-                                                //documents.Add(renderedDoc);
-                                                documentspremiumadvice.Add(renderedDoc);
-                                                await _fileService.UploadFile(renderedDoc);
-                                            }
-                                            else if (template.DocumentType == 8)
-                                            {
-                                                SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null);
 
-                                                SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
-                                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                agreement.Documents.Add(renderedDoc1);
-                                                documents.Add(renderedDoc);
-                                                await _fileService.UploadFile(renderedDoc);
-                                            }
-                                            else
-                                            {
-                                                SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null);
-                                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                agreement.Documents.Add(renderedDoc);
-                                                documents.Add(renderedDoc);
-                                                await _fileService.UploadFile(renderedDoc);
                                             }
 
-                                        }
-
-                                        //render all subsystem
-                                        if (template.DocumentType == 6)
-                                        {
-                                            foreach (var subSystemClient in sheet.SubClientInformationSheets)
+                                            //render all subsystem
+                                            if (template.DocumentType == 6)
                                             {
-                                                if (agreement.Product.IsOptionalProductBasedSub)
+                                                foreach (var subSystemClient in sheet.SubClientInformationSheets)
                                                 {
-                                                    if (subSystemClient.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                                                    if (agreement.Product.IsOptionalProductBasedSub)
                                                     {
-                                                        SystemDocument renderedDocSub = await _fileService.RenderDocument(user, template, agreement, subSystemClient);
-                                                        renderedDocSub.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                        agreement.Documents.Add(renderedDocSub);
-                                                        documents.Add(renderedDocSub);
-                                                        await _fileService.UploadFile(renderedDocSub);
+                                                        if (subSystemClient.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                                                        {
+                                                            SystemDocument renderedDocSub = await _fileService.RenderDocument(user, template, agreement, subSystemClient);
+                                                            renderedDocSub.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                                            agreement.Documents.Add(renderedDocSub);
+                                                            documents.Add(renderedDocSub);
+                                                            await _fileService.UploadFile(renderedDocSub);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, subSystemClient);
+                                                        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                                        agreement.Documents.Add(renderedDoc);
+                                                        documents.Add(renderedDoc);
+                                                        await _fileService.UploadFile(renderedDoc);
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                    }
+
+
+
+                                    if (programme.BaseProgramme.ProgEnableEmail)
+                                    {
+                                        if (!programme.BaseProgramme.ProgStopPolicyDocAutoRelease)
+                                        {
+                                            //send out policy document email
+                                            EmailTemplate emailTemplate = programme.BaseProgramme.EmailTemplates.FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+                                            if (emailTemplate != null)
+                                            {
+                                                await _emailService.SendEmailViaEmailTemplate(programme.Owner.Email, emailTemplate, documents, agreement.ClientInformationSheet, agreement);
+
+                                                using (var uow = _unitOfWork.BeginUnitOfWork())
+                                                {
+                                                    if (!agreement.IsPolicyDocSend)
+                                                    {
+                                                        agreement.IsPolicyDocSend = true;
+                                                        agreement.DocIssueDate = DateTime.Now;
+                                                        await uow.Commit();
                                                     }
                                                 }
-                                                else
-                                                {
-                                                    SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, subSystemClient);
-                                                    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                    agreement.Documents.Add(renderedDoc);
-                                                    documents.Add(renderedDoc);
-                                                    await _fileService.UploadFile(renderedDoc);
-                                                }
-
                                             }
                                         }
-                                    }
-                                }
 
-
-
-                                if (programme.BaseProgramme.ProgEnableEmail)
-                                {
-                                    if (!programme.BaseProgramme.ProgStopPolicyDocAutoRelease)
-                                    {
-                                        //send out policy document email
-                                        EmailTemplate emailTemplate = programme.BaseProgramme.EmailTemplates.FirstOrDefault(et => et.Type == "SendPolicyDocuments");
-                                        if (emailTemplate != null)
+                                        //send out premium advice
+                                        if (programme.BaseProgramme.ProgEnableSendPremiumAdvice && !string.IsNullOrEmpty(programme.BaseProgramme.PremiumAdviceRecipent) &&
+                                            agreement.Product.ProductEnablePremiumAdvice)
                                         {
-                                            await _emailService.SendEmailViaEmailTemplate(programme.Owner.Email, emailTemplate, documents, agreement.ClientInformationSheet, agreement);
-
-                                            using (var uow = _unitOfWork.BeginUnitOfWork())
-                                            {
-                                                if (!agreement.IsPolicyDocSend)
-                                                {
-                                                    agreement.IsPolicyDocSend = true;
-                                                    agreement.DocIssueDate = DateTime.Now;
-                                                    await uow.Commit();
-                                                }
-                                            }
+                                            await _emailService.SendPremiumAdviceEmail(programme.BaseProgramme.PremiumAdviceRecipent, documentspremiumadvice, agreement.ClientInformationSheet, agreement, programme.BaseProgramme.PremiumAdviceRecipentCC);
                                         }
+
+                                        //send out agreement bound notification email
+                                        await _emailService.SendSystemEmailAgreementBoundNotify(programme.BrokerContactUser, programme.BaseProgramme, agreement, programme.Owner);
                                     }
 
-                                    //send out premium advice
-                                    if (programme.BaseProgramme.ProgEnableSendPremiumAdvice && !string.IsNullOrEmpty(programme.BaseProgramme.PremiumAdviceRecipent) &&
-                                        agreement.Product.ProductEnablePremiumAdvice)
-                                    {
-                                        await _emailService.SendPremiumAdviceEmail(programme.BaseProgramme.PremiumAdviceRecipent, documentspremiumadvice, agreement.ClientInformationSheet, agreement, programme.BaseProgramme.PremiumAdviceRecipentCC);
-                                    }
-
-                                    //send out agreement bound notification email
-                                    await _emailService.SendSystemEmailAgreementBoundNotify(programme.BrokerContactUser, programme.BaseProgramme, agreement, programme.Owner);
                                 }
 
                             }
 
                         }
 
+                        else
+                        {
+                            agreement.DateDeleted = DateTime.Now;
+                        }
+
                     }
-                    
-                    else
-                    {
-                        agreement.DateDeleted = DateTime.Now;
-                    }
+
 
                 }
 
@@ -3836,6 +3956,7 @@ namespace DealEngine.WebUI.Controllers
                     model.ClientInformationSheet = programme.InformationSheet;
                     model.InformationSheetId = programme.InformationSheet.Id;
                     model.ProgrammeName = programme.BaseProgramme.Name;
+                    model.ProgrammeNamedPartyName = programme.BaseProgramme.NamedPartyUnitName;
                     ViewBag.Ispdfenable = "" + programme.BaseProgramme.EnableFullProposalReport;
                     model.ClientProgrammeId = id;
                     foreach (ClientAgreement agreement in programme.Agreements.Where(a => a.DateDeleted == null))

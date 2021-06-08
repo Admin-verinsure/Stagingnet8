@@ -120,7 +120,8 @@ namespace DealEngine.Domain.Entities
         public virtual User BindByUserID { get; set; }
         public virtual bool IsPDFgenerated { get; set; }
         public virtual bool IsFullProposalDocSend { get; set; }
-
+        public virtual decimal PlacementFee { get; set; }
+        public virtual decimal AdditionalCertFee { get; set; }
         public virtual List<Document> GetDocuments()
         {
             return Documents.Where(d => d.DateDeleted == null).ToList();                        

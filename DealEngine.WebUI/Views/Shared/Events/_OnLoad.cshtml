@@ -5,13 +5,42 @@
     var currMonth = d.getMonth();
     var currYear = d.getFullYear();
     var currDate = d.getDate();
-
+    var todaydate = new Date(currYear, currMonth, currDate);
     if (currMonth < 8) {
         currMonth = 8;
         var startDate = new Date(currYear, currMonth, 1);
     } else {
         var startDate = new Date(currYear, currMonth, currDate);
     }
+
+
+  
+
+
+    var mm = d.getMonth() + 1; //January is 0 so need to add 1 to make it 1!
+    if (currDate < 10) {
+        currDate = '0' + currDate
+    }
+    if (mm < 10) {
+        mm = '0' + mm
+    }
+
+    d = currYear + '-' + mm + '-' + currDate;
+    if (document.getElementById("dateselected") != null) {
+        document.getElementById("dateselected").setAttribute("min", d);
+    }
+
+    debugger;
+
+    var currentDate  = document.getElementsByClassName("currentDate");
+    console.log(currentDate);
+    if (document.getElementsByClassName("currentDate") != null) {
+        
+        //document.getElementsByClassName("currentDate")[0].setAttribute("max", d);
+        $(".currentDate").attr("max", d);
+    }
+
+
 
     $('#FAPCoverStartDate').datepicker({
         dateFormat: "dd/mm/yy",
@@ -22,6 +51,8 @@
     //if (document.getElementById("FAPCoverStartDate") != null) {
     //    document.getElementById("FAPCoverStartDate").setAttribute("min", startDate.toISOString().split('T')[0]);
     //}
+
+    //currentDate
 
     $('#AddBoatEffectiveDate').datepicker({
         dateFormat: "yy-mm-dd",
@@ -50,6 +81,9 @@
     $('#RemoveVehicleCeaseEffectiveDate').datepicker({
         dateFormat: "yy-mm-dd",
     });
+ 
+    
+
 
     function LocationTableRefreshAPI(streetVal, suburbVal, postCodeVal, cityVal, countryVal, cmonValue, locationTypeValue, locationId) {
         var editbuttonstring = "<button class=\"btn btn-success btn - sm\" onclick=\"EditLocation('" + locationId + "', '" + locationTypeValue + "', '" + cmonValue + "', '" + streetVal + "', '" + cityVal + "', '" + countryVal + "', '" + suburbVal + "', '" + postCodeVal + "')\"><i class=\"fa fa-edit\"></i> Edit</button>";
@@ -75,6 +109,7 @@
     }
 
     function NamedPartyTableRefreshAPI(data, type) {
+        debugger;
         var editbuttonstring = "<button class=\"btn btn-success btn-sm\" onclick=\"OnClick('', 'Organisation', '" + data.id + "', '" + data.id + "')\"><i class=\"fa fa- dit\"></i> Edit</button>";
         var deletebuttonstring = "<button onclick=\"RemoveOrganisation('" + data.id + "', 'Insured Details / Named Parties')\" type=\"button\" class=\" btn btn-danger btn-sm\" id=\"trash\"><span class=\"fa fa-trash\"></span></button>";
         var table = document.getElementById("tblOrganisation");
@@ -109,6 +144,7 @@
     }
 
     function PopulateView(Output) {        
+        debugger;
         for (obj in Output) {
             var modelObj = Output[obj];
             for (var Field in modelObj) {

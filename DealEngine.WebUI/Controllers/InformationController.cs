@@ -15,6 +15,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System.Linq.Dynamic;
 using DocumentFormat.OpenXml.Bibliography;
+using DealEngine.WebUI.Models.Information;
+using NHibernate.Linq;
+using SystemDocument = DealEngine.Domain.Entities.Document;
+using Document = DealEngine.Domain.Entities.Document;
+using System.Net.Mime;
+using NReco.PdfGenerator;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -57,7 +63,9 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<ClientProgramme> _clientProgrammeRepository;
         IMapperSession<WaterLocation> _waterLocation;
         ISubsystemService _subsystemService;
-
+        IChangeProcessService _changeProcessService;
+        IMapperSession<OrganisationalUnit> _organisationalUnitRepository;
+        IMapperSession<Organisation> _organisationRepository;
 
         public InformationController(
             ISubsystemService subsystemService,
@@ -96,6 +104,9 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<DropdownListItem> dropdownListItem,
             IMapperSession<ClientProgramme> clientProgrammeRepository,
             IMapperSession<WaterLocation> waterLocation,
+            IChangeProcessService changeProcessService,
+            IMapperSession<OrganisationalUnit> organisationalUnitRepository,
+            IMapperSession<Organisation> organisationRepository,
             //IGeneratePdf generatePdf,
 
             IMapper mapper
@@ -139,11 +150,11 @@ namespace DealEngine.WebUI.Controllers
             _mapper = mapper;
             _emailService = emailService;
             _clientProgrammeRepository = clientProgrammeRepository;
+            _changeProcessService = changeProcessService;
+            _organisationalUnitRepository = organisationalUnitRepository;
+            _organisationRepository = organisationRepository;
             //_generatePdf = generatePdf;
-
         }
-
-
 
         [HttpGet]
         public async Task<IActionResult> GetProgrammeSections(Guid informationTemplateID)
@@ -763,7 +774,8 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditInformation(Guid id)
+        // public async Task<IActionResult> EditInformation(Guid id)
+        public async Task<IActionResult> EditInformation(Guid id, string updateType)
         {
             User user = null;
 
@@ -807,8 +819,27 @@ namespace DealEngine.WebUI.Controllers
                     claims.Add(ClaimViewModel.FromEntity(sheet.ClaimNotifications.ElementAtOrDefault(i)));
                 }               
 
+
                 model.Claims = claims;
-                
+
+                //if(updateType == "")
+                if(string.IsNullOrWhiteSpace(updateType))
+                {
+                    updateType = "common_you";
+                }
+               
+                model.selectedUpdateType = new List<string>();
+
+                using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    if (model.selectedUpdateType != null)
+                    {
+                        //const string v = "TC_amendLocation";
+                        model.selectedUpdateType.Add(updateType);
+                    }
+                    await uow.Commit();
+                }
+                //model.UpdateTypesViewModel.ValueType = "TC_amendLocation";
 
                 return View("InformationWizard", model);
             }
@@ -1211,19 +1242,351 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> UpdateInformation(IFormCollection formCollection)
         {
             User createdBy = null;
+            if (formCollection != null)
+            {
+                var changeType = formCollection["ChangeType"];
 
+                if (changeType == "TC_AdminUpdateMoveAdvisor")
+                {
+                    createdBy = await CurrentUser();
+                    ChangeReason changeReason = new ChangeReason(createdBy, formCollection);
+                    // Usually changeReason is saved by linking to the newProgramme and saving, but in this instance we aren't creating a newProgramme...
+                    await _changeProcessService.Add(changeReason);
+
+                    return Redirect("/Information/MoveAdvisors/" + Guid.Parse(formCollection["DealId"]));
+                }            
+            }
+        
             try
             {
                 createdBy = await CurrentUser();
                 ClientProgramme CloneProgramme = await _programmeService.CloneForUpdate(createdBy, formCollection, null);
 
-                return Redirect("/Information/EditInformation/" + CloneProgramme.Id);
+                var updateType = formCollection["ChangeType"];
+
+                return (RedirectToAction("EditInformation", new { id = CloneProgramme.Id, updateType = updateType }));
+
+
+                //return Redirect("/Information/EditInformation/" + CloneProgramme.Id );
             }
             catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, createdBy, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
+        }
+
+        [HttpGet]
+        public async Task<ViewResult> MoveAdvisors(Guid id)
+        {
+            ClientProgramme clientProgramme = await _clientProgrammeRepository.GetByIdAsync(id);
+            Programme programme = clientProgramme.BaseProgramme;
+            ClientInformationSheet lastInformationSheet = clientProgramme.InformationSheet;
+
+            while (lastInformationSheet.NextInformationSheet != null)
+            {
+                lastInformationSheet = lastInformationSheet.NextInformationSheet;
+            }
+
+            IList<Organisation> organisations = lastInformationSheet.Organisation;
+            IList<Organisation> advisors = new List<Organisation>();
+            IList<ClientProgramme> allClientProgrammes = programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null && o.InformationSheet.Status == "Bound").ToList();
+
+            foreach (Organisation org in organisations)
+            {
+                var principleAdvisorUnit = (AdvisorUnit)org.OrganisationalUnits.FirstOrDefault(u => (u.Name == "Advisor") && (u.DateDeleted == null));
+                if (principleAdvisorUnit != null)
+                {
+                    advisors.Add(org);
+                }
+            }
+
+            MoveAdvisorsViewModel model = new MoveAdvisorsViewModel(id, clientProgramme.Owner.Name, advisors, allClientProgrammes);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MoveAdvisors(IFormCollection collection)
+        {
+            User user = await CurrentUser();
+            IList<string> advisors = collection["MoveAdvisorsViewModel.AdvisorToMove"].ToList<string>();
+            string newFAPKey = collection["MoveAdvisorsViewModel.NewFAP"];
+            Guid.TryParse(newFAPKey, out Guid newIsTheFAPOrganisationId);
+            string ownerandCPIds = collection["MoveAdvisorsViewModel.TargetOwner"];
+            string[] ownerandCPIdsArray = ownerandCPIds.Split(' ');
+            //Guid.TryParse(ownerandCPIdsArray[0], out Guid targetOwnerId); // not used
+            Guid.TryParse(ownerandCPIdsArray[1], out Guid targetClientProgrammeId);
+            string sourceClientProgrammeStr = collection["MoveAdvisorsViewModel.SourceClientProgrammeId"];
+            string targetOwnerFAP = collection["MoveAdvisorsViewModel.TargetOwnerFAP"];
+            Guid.TryParse(sourceClientProgrammeStr, out Guid sourceClientProgrammeId);
+            ClientProgramme clientProgramme = await _clientProgrammeRepository.GetByIdAsync(targetClientProgrammeId);
+            ClientProgramme sourceClientProgramme = await _clientProgrammeRepository.GetByIdAsync(sourceClientProgrammeId);
+            Programme programme = sourceClientProgramme.BaseProgramme;
+            EmailTemplate moveAdvisorsPrevOwner = programme.EmailTemplates.FirstOrDefault(et => et.Name == "Advice Of Removal Of An Advisor From Policy");
+            EmailTemplate moveAdvisorsNewOwner = programme.EmailTemplates.FirstOrDefault(et => et.Name == "Advice Of Addition Of An Advisor From Policy");
+
+            // Fix Extra isTheFAPs and set current isTheFAP (Use case 0 & 2)
+            try
+            {
+                
+                // Attach the Advisors
+                await _programmeService.MoveAdvisorsToClientProgramme(advisors, clientProgramme, sourceClientProgramme, user);
+
+                //Clone or create sub uis
+                IList<SubClientProgramme> SubClientProgrammes;
+                if (clientProgramme.InformationSheet.NextInformationSheet.IsChange)
+                {
+                    SubClientProgrammes = clientProgramme.SubClientProgrammes;
+                    if (!SubClientProgrammes.Any())
+                    {
+                        SubClientProgrammes = clientProgramme.InformationSheet.NextInformationSheet.Programme.SubClientProgrammes;
+                    }
+                }
+                else
+                {
+                    SubClientProgrammes = clientProgramme.InformationSheet.NextInformationSheet.Programme.SubClientProgrammes;
+                }
+                if (SubClientProgrammes.Any())
+                {
+                    await _subsystemService.ValidateProgramme(clientProgramme.InformationSheet.NextInformationSheet, user);
+                }
+                else
+                {
+                    await _subsystemService.CreateSubObjects(clientProgramme.InformationSheet.NextInformationSheet.Programme.Id, clientProgramme.InformationSheet.NextInformationSheet, user);
+                }
+
+                //render new clientagreement doc
+                if (clientProgramme.InformationSheet.NextInformationSheet != null)
+                {
+                    clientProgramme.InformationSheet.NextInformationSheet.Status = "Bound";
+
+                    foreach (ClientAgreement newclientAgreement in clientProgramme.InformationSheet.NextInformationSheet.Programme.Agreements.Where(nca => nca.DateDeleted == null))
+                    {
+                        //Render Documents
+                        var documents = new List<SystemDocument>();
+                        var documentspremiumadvice = new List<SystemDocument>();
+                        var agreeTemplateList = newclientAgreement.Product.Documents;
+                        var agreeDocList = newclientAgreement.GetDocuments();
+
+
+                        //tripleA DO use case, remove when all client set as company
+                        if (newclientAgreement.Product.Id == new Guid("bdbdda02-ee4e-44f5-84a8-dd18d17287c1") &&
+                            newclientAgreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDAOLIOptions").First().Value == "2")
+                        {
+
+                        }
+                        else
+                        {
+
+                            if (!newclientAgreement.Product.IsOptionalCombinedProduct)
+                            {
+                                foreach (SystemDocument template in agreeTemplateList)
+                                {
+                                    if (template.ContentType == MediaTypeNames.Application.Pdf)
+                                    {
+                                        SystemDocument notRenderedDoc = await _fileService.GetDocumentByID(template.Id);
+                                        newclientAgreement.Documents.Add(notRenderedDoc);
+                                        documents.Add(notRenderedDoc);
+                                    }
+                                    else
+                                    {
+                                        //render docs except invoice
+                                        if (template.DocumentType != 4 && template.DocumentType != 6)
+                                        {
+                                            if (template.Name == "TripleA Individual TL Certificate")
+                                            {
+                                                if (newclientAgreement.Product.IsOptionalProductBasedSub &&
+                                                    newclientAgreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == newclientAgreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                                                {
+                                                    SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, newclientAgreement, null);
+                                                    renderedDoc.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
+                                                    newclientAgreement.Documents.Add(renderedDoc);
+                                                    documents.Add(renderedDoc);
+                                                    await _fileService.UploadFile(renderedDoc);
+                                                }
+                                            }
+                                            else if (template.DocumentType == 7)
+                                            {
+                                                SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, newclientAgreement, null);
+                                                renderedDoc.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
+                                                newclientAgreement.Documents.Add(renderedDoc);
+                                                //documents.Add(renderedDoc);
+                                                documentspremiumadvice.Add(renderedDoc);
+                                                await _fileService.UploadFile(renderedDoc);
+                                            }
+                                            else if (template.DocumentType == 8)
+                                            {
+                                                SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, newclientAgreement, null);
+
+                                                SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                                                renderedDoc.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
+                                                newclientAgreement.Documents.Add(renderedDoc1);
+                                                documents.Add(renderedDoc);
+                                                await _fileService.UploadFile(renderedDoc);
+                                            }
+                                            else
+                                            {
+                                                SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, newclientAgreement, null);
+                                                renderedDoc.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
+                                                newclientAgreement.Documents.Add(renderedDoc);
+                                                documents.Add(renderedDoc);
+                                                await _fileService.UploadFile(renderedDoc);
+                                            }
+
+                                        }
+
+                                        //render all subsystem
+                                        if (template.DocumentType == 6)
+                                        {
+                                            foreach (var subSystemClient in clientProgramme.InformationSheet.NextInformationSheet.SubClientInformationSheets)
+                                            {
+                                                if (newclientAgreement.Product.IsOptionalProductBasedSub)
+                                                {
+                                                    if (subSystemClient.Answers.Where(sa => sa.ItemName == newclientAgreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                                                    {
+                                                        SystemDocument renderedDocSub = await _fileService.RenderDocument(user, template, newclientAgreement, subSystemClient);
+                                                        renderedDocSub.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
+                                                        newclientAgreement.Documents.Add(renderedDocSub);
+                                                        documents.Add(renderedDocSub);
+                                                        await _fileService.UploadFile(renderedDocSub);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, newclientAgreement, subSystemClient);
+                                                    renderedDoc.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
+                                                    newclientAgreement.Documents.Add(renderedDoc);
+                                                    documents.Add(renderedDoc);
+                                                    await _fileService.UploadFile(renderedDoc);
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            #region Old Email Templates code
+            //EmailTemplate moveAdvisorsAdvisor = programme.EmailTemplates.FirstOrDefault(et => et.Type == "MoveAdvisorsAdvisor");
+            //IList<string> advisorNames = new List<string>();
+            //ClientInformationSheet lastSheetTargetProgramme = clientProgramme.InformationSheet;
+            //while (lastSheetTargetProgramme.NextInformationSheet != null)
+            //{
+            //    lastSheetTargetProgramme = lastSheetTargetProgramme.NextInformationSheet;
+            //}
+            #endregion
+            
+            // Send the Emails
+            try
+            {
+                if (moveAdvisorsPrevOwner != null && moveAdvisorsNewOwner != null)
+                {
+                    foreach (string advisorId in advisors)
+                    {
+                        Guid.TryParse(advisorId, out Guid AdvisorOrganisationId);
+
+                        if (AdvisorOrganisationId != Guid.Empty)
+                        {
+                            var Organisation = await _organisationRepository.GetByIdAsync(AdvisorOrganisationId);
+                            if (Organisation != null)
+                            {
+                                #region Old Email Templates code
+                                //advisorNames.Add(Organisation.Name);
+                                //moveAdvisorsAdvisor.Subject = Organisation.Name + " you have been Added to the following Policy: " + lastSheetTargetProgramme.ReferenceId;
+                                //var moveAdvisorsAdvisorBody = moveAdvisorsAdvisor.Body;     // Default Body (providing broker doesn't change template) =  "Dear ADVISOR, You have been added to CLIENTINFORMATIONSHEETREFERENCEID.";
+                                //moveAdvisorsAdvisorBody = moveAdvisorsAdvisorBody.Replace("ADVISOR", Organisation.Name);
+                                //moveAdvisorsAdvisorBody = moveAdvisorsAdvisorBody.Replace("CLIENTINFORMATIONSHEETREFERENCEID", lastSheetTargetProgramme.ReferenceId);
+                                //moveAdvisorsAdvisor.Body = moveAdvisorsAdvisorBody;
+                                #endregion
+                                var moveAdvisorsAdvisorRecipient = Organisation.Email;
+                                await _emailService.SendEmailViaEmailTemplate(moveAdvisorsAdvisorRecipient, moveAdvisorsNewOwner, null, null, null);
+                            }
+                        }
+                    }
+
+                    #region Old Email Templates code
+                    //// Prep Advisor List for the emails to owners.
+                    //string advisorNamesString = "";
+                    //string last = advisorNames.Last();
+                    //foreach (string name in advisorNames)
+                    //{
+                    //    if (name.Equals(last))
+                    //    {
+                    //        advisorNamesString += name;
+                    //    }
+                    //    else
+                    //    {
+                    //        advisorNamesString = advisorNamesString + name + ", ";
+                    //    }                   
+                    //}
+                    //moveAdvisorsPrevOwner.Subject = sourceClientProgramme.Owner.Name + " advisors  have been removed from your Policy";
+                    //var moveAdvisorsPrevOwnerBody = moveAdvisorsPrevOwner.Body;     // Default Body (providing broker doesn't change template) = "Dear PREVOWNER, The following Advisors have been removed from your Policy ADVISORLIST.";
+                    //moveAdvisorsPrevOwnerBody = moveAdvisorsPrevOwnerBody.Replace("PREVOWNER", sourceClientProgramme.Owner.Name);
+                    //moveAdvisorsPrevOwnerBody = moveAdvisorsPrevOwnerBody.Replace("ADVISORLIST", advisorNamesString);
+                    //moveAdvisorsPrevOwner.Body = moveAdvisorsPrevOwnerBody;
+                    #endregion
+                    var moveAdvisorsPrevOwnerRecipient = sourceClientProgramme.Owner.Email;
+                    await _emailService.SendEmailViaEmailTemplate(moveAdvisorsPrevOwnerRecipient, moveAdvisorsPrevOwner, null, null, null);
+
+                    #region Old Email Templates code
+                    //moveAdvisorsNewOwner.Subject = clientProgramme.Owner.Name + " advisors have been added to your Policy";
+                    //var moveAdvisorsNewOwnerBody = moveAdvisorsNewOwner.Body;       // Default Body (providing broker doesn't change template) = "Dear NEXTOWNER, The following Advisors have been added to your Policy ADVISORLIST.";
+                    //moveAdvisorsNewOwnerBody = moveAdvisorsNewOwnerBody.Replace("NEXTOWNER", clientProgramme.Owner.Name);
+                    //moveAdvisorsNewOwnerBody = moveAdvisorsNewOwnerBody.Replace("ADVISORLIST", advisorNamesString);
+                    //moveAdvisorsNewOwner.Body = moveAdvisorsNewOwnerBody;
+                    #endregion
+                    var moveAdvisorsNewOwnerRecipient = clientProgramme.Owner.Email;
+                    await _emailService.SendEmailViaEmailTemplate(moveAdvisorsNewOwnerRecipient, moveAdvisorsNewOwner, null, null, null);
+                } 
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public async Task<Document> GetInvoicePDF(SystemDocument renderedDoc, string invoicename)
+        {
+            User user = null;
+
+            //SystemDocument doc = await _documentRepository.GetByIdAsync(Id);
+
+
+            var docContents = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+            // DOCX & HTML
+            string html = _fileService.FromBytes(renderedDoc.Contents);
+            var htmlToPdfConv = new NReco.PdfGenerator.HtmlToPdfConverter();
+            htmlToPdfConv.License.SetLicenseKey(
+               _appSettingService.NRecoUserName,
+               _appSettingService.NRecoLicense
+           );            // for Linux/OS-X: "wkhtmltopdf"
+            htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
+            htmlToPdfConv.PdfToolPath = _appSettingService.NRecoPdfToolPath;
+            var margins = new PageMargins();
+            margins.Bottom = 10;
+            margins.Top = 10;
+            margins.Left = 30;
+            margins.Right = 10;
+            htmlToPdfConv.Margins = margins;
+
+            htmlToPdfConv.PageFooterHtml = "</br>" + $@"page <span class=""page""></span> of <span class=""topage""></span>";
+            var pdfBytes = htmlToPdfConv.GeneratePdf(html);
+            Document document = new Document(user, invoicename, "application/pdf", 99);
+            document.Contents = pdfBytes;
+            return document;
         }
 
         [HttpGet]
@@ -1291,12 +1654,13 @@ namespace DealEngine.WebUI.Controllers
                 var isSubsystem = await _programmeService.IsBaseClass(clientProgramme);
                 var OrgUser = await _userService.GetUserByEmail(clientProgramme.InformationSheet.Owner.Email);
                 List<Organisation> DefaultMarinas = await _organisationService.GetPublicMarinas();
-                List<Organisation> DefaultInstitutes = await _organisationService.GetPublicFinancialInstitutes();
+                List<Organisation> DefaultInstitutes = await _organisationService.GetPublicFinancialInstitutes(); //??error
                 
                 Programme programme = clientProgramme.BaseProgramme;
                 InformationViewModel model = new InformationViewModel(clientProgramme.InformationSheet, OrgUser, user)
                 {
                     Name = programme.Name,
+                    ProgNamedPartyName = programme.NamedPartyUnitName,
                     Sections = new List<InformationSectionViewModel>()
                 };
                 if (DefaultMarinas.Any())
@@ -1312,15 +1676,27 @@ namespace DealEngine.WebUI.Controllers
                 {
                     foreach (var Institute in DefaultInstitutes)
                     {
-                        InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault();
-                        if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
+                        InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial");
+                        //InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault();
+
+                        if(unit != null)
                         {
-                            //model.ClientInformationSheet.Locations.Add(unit.Location);
-                            model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                            if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
+                            {
+                                //model.ClientInformationSheet.Locations.Add(unit.Location);
+                                model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                            }
                         }
+                        //InterestedPartyUnit unit1 = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "CoOwner");
+
+                        //if(unit1 != null)
+                        //{
+                        //    model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                        //}
                     }
                 }
-                model.Name = programme.Name;                
+                model.Name = programme.Name;
+                model.ProgNamedPartyName = programme.NamedPartyUnitName;
                 Product product = null;
                 if (programme.Products.Count > 1)
                 {
@@ -1415,6 +1791,8 @@ namespace DealEngine.WebUI.Controllers
                 {
                     //send out agreement online acceptance instruction email
                     await _emailService.SendEmailViaEmailTemplate(clientAgreement.ClientInformationSheet.Programme.Owner.Email, emailTemplate, null, null, null);
+                    //send out login instruction email
+                    await _emailService.SendSystemEmailLogin(clientAgreement.ClientInformationSheet.Programme.Owner.Email);
                     clientAgreement.SentOnlineAcceptance = true;
                     await _clientAgreementService.UpdateClientAgreement(clientAgreement);
                 }

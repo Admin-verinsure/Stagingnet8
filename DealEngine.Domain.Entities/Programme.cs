@@ -21,6 +21,8 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsPublic { get; set; }
         public virtual IList<Organisation> Parties { get; set; }
         public virtual IList<User> UISIssueNotifyUsers { get; set; }
+       public virtual IList<UpdateType> UpdateTypes { get; set; }
+
         public virtual IList<User> UISSubmissionNotifyUsers { get; set; }
         public virtual IList<User> AgreementReferNotifyUsers { get; set; }
         public virtual IList<User> AgreementIssueNotifyUsers { get; set; }
@@ -64,6 +66,20 @@ namespace DealEngine.Domain.Entities
         public virtual string FullProposalReportRecipent { get; set; }
         public virtual bool EnableMonthlyPremiumDisplay { get; set; }
         public virtual int MonthlyInstalmentNumber { get; set; }
+        public virtual bool EnablePIReport { get; set; }
+        public virtual bool EnableEDReport { get; set; }
+        public virtual bool EnableCLReport { get; set; }
+        public virtual bool EnableCyberReport { get; set; }
+        public virtual bool EnableFAPReport { get; set; }
+        public virtual bool EnableRevenueActivity { get; set; }
+        public virtual string NamedPartyUnitName { get; set; }
+        public virtual Programme RenewFromProgramme { get; set; }
+        public virtual bool RenewWithOutRevenue { get; set; }
+        public virtual bool DisplayGSTInclusive { get; set; }
+        public virtual bool DisplayGSTExclusive { get; set; }
+        public virtual bool ProgHidePlacementFee { get; set; }
+        public virtual bool ProgHideAdditionalCertFee { get; set; }
+        public virtual int RenewGracePriodInDays { get; set; }
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)
@@ -77,6 +93,7 @@ namespace DealEngine.Domain.Entities
             Merchants = new List<Merchant>();
             Parties = new List<Organisation>();
             UISIssueNotifyUsers = new List<User>();
+            UpdateTypes = new List<UpdateType>();
             UISSubmissionNotifyUsers = new List<User>();
             AgreementReferNotifyUsers = new List<User>();
             AgreementIssueNotifyUsers = new List<User>();

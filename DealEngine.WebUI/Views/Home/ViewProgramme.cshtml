@@ -9,12 +9,11 @@
         </li>
         @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
         {
-    <li class="nav-item">
-        @*<button type="button" class="btn btn-sm pull-right text-white" data-bs-toggle="modal" data-bs-target="#advisoryModal" data-bs-whatever="mdo" style="background-color: #00A8C8">*@
-            <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
-                <i class="fa fa-pencil"></i> Create UIS
-            </a>
-    </li>
+            <li class="nav-item">
+                <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
+                    <i class="fa fa-pencil"></i> Create UIS
+                </a>
+            </li>
             <li class="nav-item">
                 <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
             </li>
@@ -26,6 +25,14 @@
                 </li>
             }
 
+            if (Model.IsRenewFromProgramme)
+            {
+                <li class="nav-item">
+                    <a onclick="location.href='@Url.Action("IssueRenewal", "Home", new { ProgrammeId = @Model.Programme.Id})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue Renewal Notification </a>
+                </li>
+            }
+
+
             <li class="nav-item">
                 <a class="btn btn-primary btn-sm" href="~/Home/IssueReminder?ProgrammeId=@Model.Programme.Id"><i class="fa fa-pencil"></i>Issue Reminder</a>
             </li>
@@ -36,15 +43,24 @@
             <li class="nav-item">
                 @*<a class="btn btn-primary btn-sm" href="~/Home/GetBreakdown?ProgrammeId=@Model.ProgrammeId"><i class="fa fa-pencil"></i>Breakdown</a>*@
             </li>
-            @*<li class="nav-item">
-                    <a asp-controller="Home" asp-action="ReportView" asp-route-ProgrammeId="@Model.Programme.Id" class="btn btn-primary btn-sm" style="color:white">View Report </a>
-                </li>*@
+            <li class="nav-item">
+                <a asp-controller="Home" asp-action="ReportView" asp-route-ProgrammeId="@Model.Programme.Id" class="btn btn-primary btn-sm" style="color:white">View Report </a>
+            </li>
+        }
+        @*for NTU*@
+        @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsTC == "True" || Model.CurrentUserIsInsurer == "True")
+        {
+
+            <li class="nav-item">
+                <a onclick="location.href='@Url.Action("NTUcreate", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="NTUcreate"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> NTU UIS </a>
+            </li>
         }
         else if (Model.CurrentUserIsProgrammeManager == "True")
         {
             <li class="nav-item">
                 <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal"><i class="fa fa-pencil"></i> Create UIS</a>
             </li>
+
             <li class="nav-item">
                 <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
             </li>
@@ -68,21 +84,123 @@
     </div>
 
 </div>
-<div id="myChangeModal" class="modal container" role="dialog">
+
+
+<div id="myChangeModal" class="modal" aria-hidden="true">
+    <form id="ProdForm" class="" action="~/Information/UpdateInformation" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color:blue; font-size:22px">Change Details</h3>
+                    @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id=""></button>
+
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="DealId" name="DealId" placeholder="Vessel Name" value="" required>
+
+                    <table class="table table-striped">
+                        <tr>
+
+                            <td>
+                                <label for="changeType" class="required">Update Type</label>
+                            </td>
+                            <td>
+                                <select class="form-control b form-select" id="ChangeType" name="ChangeType" title="" required>
+                                    <option selected="selected" value="">-- Select here --</option>
+                                    <option Value="TC_addAmendRiskInfo">Add Amend Risk Information</option>
+                                    <option Value="TC_newCoverable">Add New Coverable</option>
+                                    <option Value="TC_amendExcess">Amend Excess</option>
+                                    <option Value="TC_amendLocation">Amend Location</option>
+                                    <option Value="TC_amendSumInsured">Amend Sum Insured</option>
+                                    <option Value="TC_amendTermsCoverage">Amend Terms/Coverage</option>
+                                    <option Value="TC_amendAddReinsurance">Amend or Add Reinsurance</option>
+                                    <option Value="TC_amendAddInsured">Amend or Add Insured</option>
+                                    <option Value="TC_amendAddCI">Amend or Add Co-insurance</option>
+                                    <option Value="TC_changeOfExpiryDate">Change of Expiry Date</option>
+                                    <option Value="TC_changeOfBroker">Change of Broker</option>
+                                    <option Value="TC_changeOfBizOrOcc">Change of Business or Occupation</option>
+                                    <option Value="TC_deleteCoverable">Delete Existing Coverable</option>
+                                    <option Value="TC_other">Other Amendment</option>
+                                    <option Value="TC_amendOneTimeEvents">One Time Event</option>
+                                </select>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateChangeType"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="Reason" class="required">Reason</label>
+                            </td>
+                            <td>
+                                <select class="form-control form-select" id="ChangeReason" name="Reason" title="" required>
+                                    <option selected="selected" value="">-- Select here --</option>
+                                    <option Value="TC_businessSoldOrClosed_lgi">Business Sold or Closed</option>
+                                    <option Value="TC_changeInCoverReq_lgi">Change in cover requirements</option>
+                                    <option Value="TC_changeOfBroker_lgi">Change of Broker</option>
+                                    <option Value="TC_dissatisfiedWithClaims_lgi">Dissatisfied with claims</option>
+                                    <option Value="TC_dissatisfiedWithSvc_lgi">Dissatisfied with service</option>
+                                    <option Value="TC_goneIntoGlobalAcct_lgi">Gone into Global Account</option>
+                                    <option Value="TC_nonpayment">Non payment</option>
+                                    <option Value="TC_policyReplaced_lgi">Policy replaced</option>
+                                    <option Value="TC_tooDear_lgi">Too dear</option>
+                                </select>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateChangeReason"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="ReasonDesc" class="required">Reason Description</label>
+                            </td>
+                            <td>
+                                <textarea class="form-control" data-type="TEXTAREA" id="Description" name="ReasonDesc" placeholder="Notes" value=""></textarea>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateDescription"></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="EffectiveDate" class="required">Effective Date</label>
+                            </td>
+                            <td>
+                                <input name="BoatEffectiveDate" placeholder="Effective Date" class=" form-control" data-dateformat="dd/mm/yy" id="ChangeEffectiveDate" type="text">
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateEffectivedate"></p>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-xs" id="btnChangeSubmit"> Update</button>
+                    @*<button id="next" type="submit" class="btn btn-success btn-sm">Submit</button>*@
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<!--<div id="myChangeModal" class="modal container" role="dialog">
     <div class="modal-content">
         <div class="modal-header">
             <h3 class="modal-title" style="color:blue; font-size:22px">Change Details</h3>
-            @*<button type="button" class="close" data-bs-dismiss="modal">&times;</button>*@
-            <button type="button" class="btn-close" data-bs-dismiss="modal">
-            </button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
         </div>
         <div class="modal-body">
             <form id="ProdForm" method="post" action="~/Information/UpdateInformation">
                 <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="DealId" name="DealId" placeholder="Vessel Name" value="" required>
+
                 <table class="table table-striped">
                     <tr>
+
                         <td>
-                            <label for="changeType" class="required">Change Type</label>
+                            <label for="changeType" class="required">Update Type</label>
                         </td>
                         <td>
                             <select class="form-control b form-select" id="ChangeType" name="ChangeType" title="" required>
@@ -153,17 +271,19 @@
                         </td>
                     </tr>
                 </table>
-                <div class="modal-footer">
-                    @*<button id="next" type="button" class="btn btn-success btn-sm" onclick="validationCheck();" data-dismiss="modal" data-toggle="tab">Submit</button>*@
-                    <button class="btn btn-primary btn-xs" id="ReportView"> Update</button>
-
-                    @*<a href="#" class="btn btn-primary btn-xs" type="" id="btnChangeSubmit">Update</a>*@
-                </div>
+                <div class="modal-footer">-->
+@*<button id="next" type="button" class="btn btn-success btn-sm" onclick="validationCheck();" data-dismiss="modal" data-toggle="tab">Submit</button>*@
+<!--<button class="btn btn-primary btn-xs" id="ReportView"> Update</button>-->
+@*<a href="#" class="btn btn-primary btn-xs" type="" id="btnChangeSubmit">Update</a>*@
+<!--</div>
             </form>
         </div>
 
     </div>
-</div>
+</div>-->
+
+
+
 <div id="CreateUISModal" class="modal" aria-hidden="true">
     <form id="ProdForm" class="" action="../../Services/IssueUIS" method="post" onsubmit="CloseModal()">
         <div class="modal-dialog" role="document">
@@ -171,7 +291,8 @@
                 <div class="modal-header">
                     <h3 class="modal-title" style="color:blue; font-size:22px">Client Details</h3>
                     @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
-                    <button type="button" class="btn-close" id="CreateUISModalClose" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id="CreateUISModalClose"></button>
+
                 </div>
                 <div class="modal-body">
                     @Html.HiddenFor(m => m.Programme.Id)
@@ -222,37 +343,77 @@
 </div>
 
 
-<div id="myUnlockModal" class="modal container" role="dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
-            @*<button type="button" class="close" data-bs-dismiss="modal">&times;</button>*@
-            <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <form id="ProdForm">
-                <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="UnlockId" name="DealId" required>
-                <table class="table table-striped">
-                    <tr>
-                        <td>
-                            <label for="ReasonDesc" class="required">Unlock Reason Description</label>
-                        </td>
-                        <td>
-                            <textarea class="form-control" data-type="TEXTAREA" id="UnlockDescription" name="ReasonDesc" placeholder="Notes" value=""></textarea>
-                        </td>
-                        <td>
-                            <p class="validationContainer" id="validateDescription"></p>
-                        </td>
-                    </tr>
 
-                </table>
-            </form>
+
+
+<div id="myUnlockModal" class="modal" aria-hidden="true">
+    <form id="ProdForm" class="" action="" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id=""></button>
+
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="UnlockId" name="DealId" required>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>
+                                <label for="ReasonDesc" class="required">Unlock Reason Description</label>
+                            </td>
+                            <td>
+                                <textarea class="form-control" data-type="TEXTAREA" id="UnlockDescription" name="ReasonDesc" placeholder="Notes" value=""></textarea>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateDescription"></p>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
+
+                </div>
+            </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
-        </div>
-    </div>
+    </form>
 </div>
+
+
+
+@*<div id="myUnlockModal" class="modal container" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="ProdForm">
+                    <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="UnlockId" name="DealId" required>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>
+                                <label for="ReasonDesc" class="required">Unlock Reason Description</label>
+                            </td>
+                            <td>
+                                <textarea class="form-control" data-type="TEXTAREA" id="UnlockDescription" name="ReasonDesc" placeholder="Notes" value=""></textarea>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateDescription"></p>
+                            </td>
+                        </tr>
+
+                    </table>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
+            </div>
+        </div>
+    </div>*@
 
 
 <div class="modal overlay" id="CreateUISProcess" tabindex="-1" role="dialog" data-backdrop="static">
@@ -265,24 +426,55 @@
     </div>
 </div>
 
+<div class="modal overlay" id="ChangeProcess" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>
+                    <img src="/img/loading.gif" /> Generating Change Information Sheet.  Please wait...
+                </p>
 
+                <p>  If the Change Information Sheet does not appear after 30 seconds, please refresh the page. </p>
+
+                <p>  If the Change Information sheet is not present on the dashboard please contact technical support. </p>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 @section pagespecific {
-   <script type="text/javascript">
 
+    <script type="text/javascript">
+         $(window).on("load", function () {
+           $("#ChangeProcess").hide();
+
+         });
         $(document).ready(function () {
             //$.noConflict();
             $('#tableProgrammeItems').bootstrapTable();
             $('#subsystemAccodion').accordion;
             $('#ChangeEffectiveDate').datepicker({
                dateFormat: "dd/mm/yy"
-             });
+            });
+
+
+            $("#ReportView").click(function () {
+                debugger;
+            $("#ChangeProcess").show();
+            });
+
         });
 
+
         $('#myChangeModal').on('show.bs.modal', function (e) {
-            $('.modal').css({ "width": "50%", "margin-left": "25%" });
+            debugger;
+
+           $('.modal').css({ "width": "50%", "margin-left": "25%" });
             var dealId = $(e.relatedTarget).data('dealitem-id');
+            console.log("dealId=" + dealId)
             $(e.currentTarget).find('input[name="DealId"]').val(dealId);
+             $(e.currentTarget).find('input[name="ProgrammeId"]').val("@Model.Programme.Id");
         });
 
           $('#myUnlockModal').on('show.bs.modal', function (e) {
@@ -326,7 +518,29 @@
 
         function CloseModal() {
             $('#CreateUISModal').modal('hide')
+            //$('#CreateUISModal').hide();
         }
+
+        //ClosemyChangeModal
+
+        //$("#CreateUISModalClose").click(function () {
+        //    debugger;
+        //    $("#CreateUISModal").hide();
+        //});
+        debugger;
+       // $('#CreateUISModal').show();
+
+
+        //$('#CreateUISModal').on('show.bs.modal', function (e) {
+        //    debugger;
+        //    $('.modal').css({ "width": "50%", "margin-left": "25%" });
+        //});
+
+        //$("#CreateUISModal").click(function () {
+        //    debugger;
+        //    $("#CreateUISModal").show();
+        //});
+
 
 
         function postUnlockData() {
@@ -357,6 +571,7 @@
                 alert("Unable to save.");
             });
         }
+
 
     </script>
 }

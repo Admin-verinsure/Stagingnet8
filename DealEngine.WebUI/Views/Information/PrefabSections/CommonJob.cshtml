@@ -1,0 +1,271 @@
+﻿
+@model DealEngine.WebUI.Models.InformationViewModel
+
+<div id="CommonJob" class="container-fluid">
+    <input id="JobId" name="JobViewModel.JobId" hidden form="JobViewModel" />
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" id="tab1">
+            <a class="nav-link active" href="#jobtab1" data-toggle="tab" onclick="ResetForm('jobtab3', 'jobtab2', 'Job', 'JobAddButton', 'JobCancelButton')"> List All </a>
+        </li>
+        <li class="nav-item" id="tab2">
+            <a class="nav-link" href="#jobtab2" data-toggle="tab"> Edit </a>
+        </li>
+        <li class="nav-item" id="tab2">
+            <a class="nav-link" href="#jobtab3" data-toggle="tab" onclick="ResetForm('jobtab3', 'jobtab2', 'Job', 'JobAddButton', 'JobCancelButton')"> Add </a>
+        </li>
+        <li class="nav-item" id="tab3">
+            <a class="nav-link" href="#jobtab4" data-toggle="tab"> List Removed </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="jobtab1" class="tab-pane active" role="tabpanel">
+            <table id="tblJob"
+                   class="table table-striped" width="100%"
+                   @*data-show-columns="true"*@
+                   data-pagination="true"
+                   data-search="true"
+                   data-show-jump-to="true">
+                <thead>
+                    <tr>
+                        <th data-field="editButton" data-sortable="false"></th>
+                        <th data-field="jobDescription" data-sortable="true">Job Description</th>
+                        <th data-field="contractorEmail" data-sortable="true">Contractor Email</th>
+                        <th data-field="firstName" data-sortable="true">First Name</th>
+                        <th data-field="lastName" data-sortable="true">Last Name</th>
+                        <th data-field="jobNumber" data-sortable="true">Job Number</th>
+                        <th data-field="issueDate" data-sortable="true">Issue Date</th>
+                        <th data-field="startDate" data-sortable="true">Start Date</th>
+                        <th data-field="endDate" data-sortable="true">End Date</th>
+                        <th data-field="certRequiredBy" data-sortable="true">Cert Required By</th>
+                        <th data-field="namedParty" data-sortable="true">RA Client Named Party</th>
+                        <th data-field="deleteButton" data-sortable="false"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var job in Model.JobViewModel.Jobs.Where(l => l.Removed == false).ToList())
+                    {
+                        <tr id="@job.Id">
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="EditJob('@job.Id', '@job.JobDescription', '@job.ContractorEmail', '@job.FirstName', '@job.LastName', '@job.JobNumber', '@job.IssueDate', '@job.StartDate', '@job.EndDate', '@job.CertRequiredBy', '@job.RACLientNamedParty')"><i class="fa fa-edit"></i> Edit</button>
+                            </td>
+                            <td>
+                                @job.JobDescription
+                            </td>
+                            <td>
+                                @job.ContractorEmail
+                            </td>
+                            <td>
+                                @job.FirstName
+                            </td>
+                            <td>
+                                @job.LastName
+                            </td>
+                            <td>
+                                @job.JobNumber
+                            </td>
+                          
+                            <td>
+                                <button onclick="RemoveJob('@job.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div id="jobtab2" class="tab-pane" role="tabpanel">
+            <div class="form-group">
+                <label>Select a Job from the 'List All' Tab and Click Edit Button</label>
+            </div>
+        </div>
+        <div id="jobtab3" class="tab-pane" role="tabpanel">
+            <form class="" id="JobViewModel">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="jodescription" class="label required">
+                                Job Description:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.JobDescription, new { id = "jobdescription", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "JobViewModel" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="contractoremail" class="label required">
+                                Contractor's email:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.ContractorEmail, new { id = "contractoremail", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "JobViewModel" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="firstname" class="label required">
+                                First Name:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.FirstName, new { id = "firstname", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "JobViewModel" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="lastname" class="label required">
+                                Last Name:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.LastName, new { id = "lastname", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "JobViewModel" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="jobnumber" class="label">
+                                Job Number:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.JobNumber, new { id = "jobnumber", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "JobViewModel" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="issuedate" class="label">
+                                Issue Date:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.IssueDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "issuedate", onfocus = "(this.type='date')", onchange = "OnChange(this.id, this.name)", @required = "" })
+                            @*@Html.TextBoxFor(m => m.JobViewModel.IssueDate, "{0:yyyy-MM-dd}", new { @class = "dateInput form-control", @id = "issuedate", @type = "date", onchange = "OnChange(this.id, this.name)", @required = "" })*@
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="startdate" class="label">
+                                Start Date:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.StartDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "startdate", onfocus = "(this.type='date')", onchange = "OnChange(this.id, this.name)", @required = "" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="enddate" class="label">
+                                End Date:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.EndDate, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "enddate", onfocus = "(this.type='date')", onchange = "OnChange(this.id, this.name)", @required = "" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="certrequiredby" class="label">
+                                Cert Required By:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.CertRequiredBy, "{0:yyyy-MM-dd}", new { @class = "form-control", @id = "certrequiredby", onfocus = "(this.type='date')", onchange = "OnChange(this.id, this.name)", @required = "" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="raclient" class="label">
+                                RA Client Named Party:
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            @Html.TextBoxFor(m => m.JobViewModel.RACLientNamedParty, new { id = "raclient", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "JobViewModel" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button class="btn btn-sm btn-success text-light" id="JobAddButton" onclick="AddJob()" form="JobViewModel"> Add </button>
+                    <button class="btn btn-sm btn-danger text-light" id="JobCancelButton" onclick="Cancel('JobViewModel','jobtab1')" form="JobViewModel"> Clear and Cancel </button>
+                </div>
+            </form>
+        </div>
+        <div id="jobtab4" class="tab-pane" role="tabpanel">
+            <table id="tblRemovedJob"
+                   class="table table-striped" width="100%"
+                   @*data-show-columns="true"*@
+                   data-pagination="true"
+                   data-search="true"
+                   data-show-jump-to="true">
+                <thead>
+                    <tr>
+                        <th data-field="editButton" data-sortable="false"></th>
+                        <th data-field="contractorEmail" data-sortable="true">Contractor Email</th>
+                        <th data-field="firstName" data-sortable="true">FirstName</th>
+                        <th data-field="lastName" data-sortable="true">Last Name</th>
+                        <th data-field="jobNumber" data-sortable="true">Job Number</th>
+                        <th data-field="issueDate" data-sortable="true">Issue Date</th>
+                        <th data-field="startDate" data-sortable="true">Start Date</th>
+                        <th data-field="endDate" data-sortable="true">End Date</th>
+                        <th data-field="certRequiredBy" data-sortable="true">Cert Required By</th>
+                        <th data-field="namedParty" data-sortable="true">RA Client Named Party</th>
+                        <th data-field="deleteButton" data-sortable="false"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var job in Model.JobViewModel.Jobs.Where(l => l.Removed == true).ToList())
+                    {
+                        <tr id="@job.Id">
+                            <td>
+                                @job.ContractorEmail
+                            </td>
+                            <td>
+                                @job.FirstName
+                            </td>
+                            <td>
+                                @job.LastName
+                            </td>
+                            <td>
+                                @job.JobNumber
+                            </td>
+                            <td>
+                                @job.IssueDate
+                            </td>
+                            <td>
+                                @job.StartDate
+                            </td>
+                            <td>
+                                @job.EndDate
+                            </td>
+                            <td>
+                                @job.CertRequiredBy
+                            </td>
+                            <td>
+                                @job.RACLientNamedParty
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

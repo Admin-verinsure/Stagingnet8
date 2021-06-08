@@ -32,6 +32,7 @@ namespace DealEngine.WebUI.Controllers
         IClientAgreementService _clientAgreementService;
         IOrganisationalUnitService _organisationalUnitService;
         ILocationService _locationService;
+        IJobService _jobService;
         IMapperSession<WaterLocation> _waterLocationRepository;
         IMapperSession<Boat> _boatRepository;
         IMapperSession<Vehicle> _vehicleRepository;
@@ -73,6 +74,7 @@ namespace DealEngine.WebUI.Controllers
             IClientInformationService clientInformationService,
             IOrganisationalUnitService organisationalUnitService,
             ILocationService locationService,
+            IJobService jobService,
             IMapperSession<WaterLocation> waterLocationRepository,
             IMapperSession<Vehicle> vehicleRepository,
             IMapperSession<Building> buildingRepository,
@@ -106,6 +108,7 @@ namespace DealEngine.WebUI.Controllers
             _organisationalUnitService = organisationalUnitService;
             _vehicleService = vehicleService;
             _locationService = locationService;
+            _jobService = jobService;
             _waterLocationRepository = waterLocationRepository;
             _boatRepository = boatRepository;
             _organisationService = organisationService;
@@ -128,24 +131,29 @@ namespace DealEngine.WebUI.Controllers
         #region Vehicle
 
         [HttpPost]
-        public async Task<IActionResult> GetClient(IFormCollection Collection)
+        public async Task<IActionResult> GetClient(IFormCollection Collection , Guid ProgId)
         {
             User user = null;
             try
             {
                 Guid.TryParse(Collection["Id"], out Guid OrganisationId);
                 Organisation organisation = await _organisationService.GetOrganisation(OrganisationId);
-                Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+                //EditClientsViewModel EditClientsViewModel = new EditClientsViewModel();
+                Programme programme = await _programmeService.GetProgrammeById(ProgId);
+                EditClientsViewModel model = new EditClientsViewModel(programme);
+               
+
+                     Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
                 if (organisation != null)
                 {
                     var ClientProgrammes = await _programmeService.GetClientProgrammesByOwner(organisation.Id);
                     if (ClientProgrammes.Any())
                     {
-                        JsonObjects.Add("Organisation", organisation);
-                        JsonObjects.Add("ClientProgramme", ClientProgrammes.FirstOrDefault());
-                        var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
-                        return Json(jsonObj);
-                    }
+                        model.ClientProgramme = ClientProgrammes.FirstOrDefault();
+                        model.Organisation = organisation;
+                      
+                        return Json(model);
+                    } 
                 }
                 return NoContent();
             }
@@ -1140,6 +1148,89 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> AddJob(IFormCollection collection)
+        {
+            User user = null;
+            try
+            {
+                if (collection == null)
+                    throw new ArgumentNullException(nameof(collection));
+                user = await CurrentUser();
+                Job job = null;
+                ClientInformationSheet sheet = await _clientInformationService.GetInformation(Guid.Parse(collection["AnswerSheetId"]));
+                var jobForm = collection.Keys.Where(s => s.StartsWith("JobViewModel", StringComparison.CurrentCulture));
+                var id = collection["JobViewModel.JobId"];
+                if (string.IsNullOrWhiteSpace(id))
+                {
+                    job = new Job(user);
+                }
+                else
+                {
+                    job = await _jobService.GetJobById(Guid.Parse(id));
+                }
+                var type = job.GetType();
+                foreach (var keyField in jobForm)
+                {
+                    if (keyField != "JobViewModel.JobId")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+                        if (propertyName[1] == "IssueDate" ||
+                            propertyName[1] == "StartDate" ||
+                            propertyName[1] == "EndDate" || 
+                            propertyName[1] == "CertRequiredBy")
+                        {
+                            property.SetValue(job, DateTime.Parse(collection[keyField].ToString(),System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ")));
+                        }
+                        else
+                        {
+                            property.SetValue(job, collection[keyField].ToString());
+                        }
+                        
+                    }
+                }
+
+                if (sheet.Jobs.Contains(job))
+                {
+                    await _jobService.UpdateJob(job);
+                }
+                else
+                {
+                    sheet.Jobs.Add(job);
+                    await _clientInformationService.UpdateInformation(sheet);
+                }
+
+                return new JsonResult(job.Id);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveJob(string jobId)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                Job job = await _jobService.GetJobById(Guid.Parse(jobId));
+                job.Removed = true;
+                await _jobService.UpdateJob(job);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+
+        }
+
+        [HttpPost]
         public async Task<IActionResult> SetPrincipalRemovedStatus(Guid answersheetId, Guid principalId, bool status)
         {
             User user = null;
@@ -1920,95 +2011,744 @@ namespace DealEngine.WebUI.Controllers
 
         #region Boat
 
+        //[HttpPost]
+        //public async Task<IActionResult> AddBoat(BoatViewModel model)
+        //{
+        //    User user = null;
+
+        //    try
+        //    {
+        //        user = await CurrentUser();
+        //        if (model == null)
+        //            throw new ArgumentNullException(nameof(model));
+
+        //        ClientInformationSheet sheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+        //        if (sheet == null)
+        //            throw new Exception("Unable to save Boat - No Client information for " + model.AnswerSheetId);
+        //        // get existing boat (if any)
+        //        Boat boat = await _boatRepository.GetByIdAsync(model.BoatId);
+        //        // no boat, so create new
+        //        if (boat == null)
+        //            boat = model.ToEntity(user);
+        //        model.UpdateEntity(boat);
+
+        //        if (model.BoatLandLocation != Guid.Empty)
+        //            boat.BoatLandLocation = await _buildingRepository.GetByIdAsync(model.BoatLandLocation);
+
+        //        if (model.BoatOperator != Guid.Empty)
+        //            boat.BoatOperator = await _organisationService.GetOrganisation(model.BoatOperator);
+        //        boat.BoatWaterLocation = null;
+
+
+        //        if (model.BoatTrailer != Guid.Empty)
+        //        {
+        //            boat.BoatTrailers.Clear();
+        //            Vehicle trailer = await _vehicleService.GetVehicleById(model.BoatTrailer);
+        //            boat.BoatTrailers.Add(trailer);
+        //        }
+
+        //        if (model.SelectedBoatUse != Guid.Empty)
+        //        {
+        //            var BoatUse = await _boatUseService.GetBoatUse(model.SelectedBoatUse);
+        //            boat.BoatUses.Clear();
+        //            boat.BoatUses.Add(BoatUse);
+        //        }
+        //        boat.BoatOperator = await _organisationService.GetOrganisation(model.BoatOperator);
+
+        //        if (model.BoatWaterLocation != Guid.Empty)
+        //        {
+        //            var waterLocation = await _waterLocationRepository.GetByIdAsync(model.BoatWaterLocation);
+        //            boat.BoatWaterLocation = await _organisationService.GetMarina(waterLocation);
+        //        }
+
+        //        if (model.OtherMarinaName != null)
+        //        {
+        //            boat.OtherMarinaName = model.OtherMarinaName;
+        //            boat.OtherMarina = true;
+        //        }
+        //        else
+        //        {
+        //            boat.OtherMarina = false;
+        //        }
+
+        //        if (model.SelectedInterestedParty != null)
+        //        {
+
+        //            List<string> interestedpartylist = new List<string>();
+
+        //            boat.InterestedParties = new List<Organisation>();
+
+        //            //string strArray = model.SelectedBoatUse.Substring(0, model.SelectedBoatUse.Length - 1);
+        //            string[] interestedParty = model.SelectedInterestedParty.Split(',');
+
+        //            model.InterestedParties = new List<Organisation>();
+
+        //            foreach (var useid in interestedParty)
+        //            {
+        //                boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));
+        //            }
+        //        }
+
+        //        using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+        //        {
+        //            sheet.Boats.Add(boat);
+        //            await uow.Commit();
+        //        }
+
+        //        return Json(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        //        return RedirectToAction("Error500", "Error");
+        //    }
+
+        //}
+
+
         [HttpPost]
-        public async Task<IActionResult> AddBoat(BoatViewModel model)
+        public async Task<IActionResult> AddBoat(IFormCollection collection)
         {
             User user = null;
-
             try
             {
                 user = await CurrentUser();
-                if (model == null)
-                    throw new ArgumentNullException(nameof(model));
+                Boat boat = null;
+                var BoatViewModel = collection.Keys.Where(s => s.StartsWith("BoatViewModel", StringComparison.CurrentCulture));
+                var id = collection["BoatViewModel.BoatId"];
 
-                ClientInformationSheet sheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+                var BoatType1 = collection.Keys.Where(s => s.StartsWith("BoatType1", StringComparison.CurrentCulture));
+                var BoatType2 = collection.Keys.Where(s => s.StartsWith("BoatType2", StringComparison.CurrentCulture));
+                var VesselArea = collection.Keys.Where(s => s.StartsWith("VesselArea", StringComparison.CurrentCulture));
+                var BuiltProfessionally = collection.Keys.Where(s => s.StartsWith("BuiltProfessionally", StringComparison.CurrentCulture));
+                var HullConstruction = collection.Keys.Where(s => s.StartsWith("HullConstruction", StringComparison.CurrentCulture));
+                var HullConfiguration = collection.Keys.Where(s => s.StartsWith("HullConfiguration", StringComparison.CurrentCulture));
+                var MotorType = collection.Keys.Where(s => s.StartsWith("MotorType", StringComparison.CurrentCulture));
+                var ModifiedMotor = collection.Keys.Where(s => s.StartsWith("ModifiedMotor", StringComparison.CurrentCulture));
+                var MaxRatedSpeed = collection.Keys.Where(s => s.StartsWith("MaxRatedSpeed", StringComparison.CurrentCulture));
+                var RiggingType = collection.Keys.Where(s => s.StartsWith("RiggingType", StringComparison.CurrentCulture));
+                var MastType = collection.Keys.Where(s => s.StartsWith("MastType", StringComparison.CurrentCulture));
+                var BoatQuoteExcessOption = collection.Keys.Where(s => s.StartsWith("BoatQuoteExcessOption", StringComparison.CurrentCulture));
+                var BoatIsTrailered = collection.Keys.Where(s => s.StartsWith("BoatIsTrailered", StringComparison.CurrentCulture));
+                var WaterLocationMooringType = collection.Keys.Where(s => s.StartsWith("WaterLocationMooringType", StringComparison.CurrentCulture));
+
+
+                var BoatOperator = collection.Keys.Where(s => s.StartsWith("BoatOperator", StringComparison.CurrentCulture));
+                var BoatOperatorID = collection["BoatOperator"];
+
+                var BoatTrailer = collection.Keys.Where(s => s.StartsWith("BoatTrailer", StringComparison.CurrentCulture));
+                var BoatTrailerID = collection["BoatTrailer"];
+
+                BoatUse boatuse = null;
+                var SelectedBoatUse = collection.Keys.Where(s => s.StartsWith("SelectedBoatUse", StringComparison.CurrentCulture));
+                var SelectedBoatUseID = collection["SelectedBoatUse"];
+
+                var BoatLandLocation = collection.Keys.Where(s => s.StartsWith("BoatLandLocation", StringComparison.CurrentCulture));
+                var BoatLandLocationID = collection["BoatLandLocation"];
+
+                var BoatWaterLocation = collection.Keys.Where(s => s.StartsWith("BoatWaterLocation", StringComparison.CurrentCulture));
+                var BoatWaterLocationID = collection["BoatWaterLocation"];
+
+                var SelectedInterestedParty = collection.Keys.Where(s => s.StartsWith("SelectedInterestedParty", StringComparison.CurrentCulture));
+                var SelectedInterestedPartyID = collection["SelectedInterestedParty"];
+
+
+
+
+
+
+                if (collection == null)
+                    throw new ArgumentNullException(nameof(collection));
+
+                ClientInformationSheet sheet = await _clientInformationService.GetInformation(Guid.Parse(collection["AnswerSheetId"]));
+
                 if (sheet == null)
-                    throw new Exception("Unable to save Boat - No Client information for " + model.AnswerSheetId);
+                    throw new Exception("Unable to save Boat - No Client information for " + (collection["AnswerSheetId"]));
+
                 // get existing boat (if any)
-                Boat boat = await _boatRepository.GetByIdAsync(model.BoatId);
-                // no boat, so create new
-                if (boat == null)
-                    boat = model.ToEntity(user);
-                model.UpdateEntity(boat);
-                if (model.BoatLandLocation != Guid.Empty)
-                    boat.BoatLandLocation = await _buildingRepository.GetByIdAsync(model.BoatLandLocation);
-
-                if (model.BoatOperator != Guid.Empty)
-                    boat.BoatOperator = await _organisationService.GetOrganisation(model.BoatOperator);
-                boat.BoatWaterLocation = null;
-                if (model.BoatTrailer != Guid.Empty)
+                if (string.IsNullOrWhiteSpace(id))
                 {
-                    boat.BoatTrailers.Clear();
-                    Vehicle trailer = await _vehicleService.GetVehicleById(model.BoatTrailer);
-                    boat.BoatTrailers.Add(trailer);
-                }
-                if (model.SelectedBoatUse != Guid.Empty)
-                {
-                    var BoatUse = await _boatUseService.GetBoatUse(model.SelectedBoatUse);
-                    boat.BoatUses.Clear();
-                    boat.BoatUses.Add(BoatUse);                                        
-                }
-                boat.BoatOperator = await _organisationService.GetOrganisation(model.BoatOperator);
-
-                if (model.BoatWaterLocation != Guid.Empty)
-                {
-                    var waterLocation = await _waterLocationRepository.GetByIdAsync(model.BoatWaterLocation);
-                    boat.BoatWaterLocation = await _organisationService.GetMarina(waterLocation);
-                }
-                    
-                if (model.OtherMarinaName != null)
-                {
-                    boat.OtherMarinaName = model.OtherMarinaName;
-                    boat.OtherMarina = true;
+                    boat = new Boat(user);
                 }
                 else
                 {
-                    boat.OtherMarina = false;
+                     //boat = await _boatRepository.GetByIdAsync(Guid.Parse(collection["BoatId"]));
+                    boat = await _boatRepository.GetByIdAsync(Guid.Parse(id));
+
                 }
 
-                if (model.SelectedInterestedParty != null)
+
+                var type = boat.GetType();
+                foreach (var keyField in BoatViewModel)
+                {
+                    if (keyField != "BoatViewModel.BoatId" && keyField != "BoatViewModel.openModal" && keyField != "BoatViewModel.MaxSumInsured")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        else if (typeof(DateTime) == property.PropertyType)
+                        {
+                            property.SetValue(boat, DateTime.Parse(collection[keyField].ToString()));
+                        }
+                        else if (typeof(decimal) == property.PropertyType)
+                        {
+                            var fieldValue = collection[keyField];
+                            if (string.IsNullOrWhiteSpace(collection[keyField]))
+                            {
+                                fieldValue = "0";
+                            }
+                            else
+                            {
+                                property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                            }
+
+
+                        }
+                        else if (typeof(Int32) == property.PropertyType)
+                        {
+                            var fieldValue = collection[keyField];
+                            if (string.IsNullOrWhiteSpace(collection[keyField]))
+                            {
+                                fieldValue = "0";
+                            }
+                            else
+                            {
+                                property.SetValue(boat, Int32.Parse(collection[keyField].ToString()));
+                            }
+                        }
+
+                    }
+
+                    if(keyField == "BoatViewModel.MaxSumInsured")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        else if (typeof(DateTime) == property.PropertyType)
+                        {
+                            property.SetValue(boat, DateTime.Parse(collection[keyField].ToString()));
+                        }
+                        else if (typeof(Int32) == property.PropertyType)
+                        {
+                            var fieldValue = collection[keyField];
+                            if (string.IsNullOrWhiteSpace(collection[keyField]))
+                            {
+                                fieldValue = "0";
+                            }
+                            else
+                            {
+                                var MaxSumInsured = collection[keyField].ToString().Replace("$", "").Replace(",", "").Replace(".00","");
+
+                                var NewMaxSumInsured = Int32.Parse(MaxSumInsured);
+                           
+                                property.SetValue(boat, NewMaxSumInsured);
+                            }
+                        }
+
+                    }
+                }
+
+
+
+                //for BoatLandLocation list dynamic
+                if (string.IsNullOrWhiteSpace(BoatLandLocationID))
+                {
+                    //boat.BoatLandLocation = null;
+                    boat.BoatLandLocation = new Building(user);
+
+                }
+                else
+                {
+                    boat.BoatLandLocation = await _buildingRepository.GetByIdAsync(Guid.Parse(collection["BoatLandLocation"]));
+                }
+
+                //for BoatWaterLocation list dynamic
+                if (string.IsNullOrWhiteSpace(BoatWaterLocationID))
+                {
+                    //boat.BoatWaterLocation = null;
+                    //BoatViewModel model = new BoatViewModel();
+                    boat.BoatWaterLocation = new Organisation();
+
+                }
+                else
+                {
+                    var waterLocation = await _waterLocationRepository.GetByIdAsync(Guid.Parse(collection["BoatWaterLocation"]));
+                    boat.BoatWaterLocation = await _organisationService.GetMarina(waterLocation);
+                }
+
+
+
+                //for boatOperator list dynamic
+                if (string.IsNullOrWhiteSpace(BoatOperatorID))
                 {
 
+                    //boat.BoatOperators = new List<Organisation>();
+                    // List<SelectListItem> BoatOperators = new List<SelectListItem>();
+                    boat.BoatOperator = new Organisation();
+                    //boat.BoatOperator = null;
+
+                }
+                else
+                {
+                    //var productList = await _productService.GetAllProducts();
+                    // var BoatOperatorList = await _organisationService.GetOrganisation(Guid.Parse(collection["BoatOperator"]));
+                    boat.BoatOperator = await _organisationService.GetOrganisation(Guid.Parse(collection["BoatOperator"]));
+                }
+
+              
+
+                //for SelectedInterestedParty
+                if (string.IsNullOrWhiteSpace(SelectedInterestedPartyID))
+                {
                     List<string> interestedpartylist = new List<string>();
 
                     boat.InterestedParties = new List<Organisation>();
 
-                    //string strArray = model.SelectedBoatUse.Substring(0, model.SelectedBoatUse.Length - 1);
-                    string[] interestedParty = model.SelectedInterestedParty.Split(',');
+                }
+                else
+                {
+                    List<string> interestedpartylist = new List<string>();
 
-                    model.InterestedParties = new List<Organisation>();
+                    boat.InterestedParties = new List<Organisation>();
+                    string[] interestedParty = SelectedInterestedPartyID;
+
+                    //model.InterestedParties = new List<Organisation>();
 
                     foreach (var useid in interestedParty)
                     {
-                        boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));
+                        boat.InterestedParties.Add(await _organisationService.GetOrganisation(Guid.Parse(useid)));//add to organisation
                     }
                 }
 
-                using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                //for boatType1
+                foreach (var keyField in BoatType1)
                 {
-                    sheet.Boats.Add(boat);
-                    await uow.Commit();
+                    if (keyField == "BoatType1")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
                 }
 
-                return Json(model);
+                //for boatType2
+                foreach (var keyField in BoatType2)
+                {
+                    if (keyField == "BoatType2")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for VesselArea
+                foreach (var keyField in VesselArea)
+                {
+                    if (keyField == "VesselArea")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for BuiltProfessionally
+                foreach (var keyField in BuiltProfessionally)
+                {
+                    if (keyField == "BuiltProfessionally")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for HullConstruction
+                foreach (var keyField in HullConstruction)
+                {
+                    if (keyField == "HullConstruction")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for HullConfiguration
+                foreach (var keyField in HullConfiguration)
+                {
+                    if (keyField == "HullConfiguration")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for MotorType
+                foreach (var keyField in MotorType)
+                {
+                    if (keyField == "MotorType")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for ModifiedMotor
+                foreach (var keyField in ModifiedMotor)
+                {
+                    if (keyField == "ModifiedMotor")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for MaxRatedSpeed 
+                foreach (var keyField in MaxRatedSpeed)
+                {
+                    if (keyField == "MaxRatedSpeed")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for RiggingType  
+                foreach (var keyField in RiggingType)
+                {
+                    if (keyField == "RiggingType")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for MastType 
+                foreach (var keyField in MastType)
+                {
+                    if (keyField == "MastType")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for BoatQuoteExcessOption  
+                foreach (var keyField in BoatQuoteExcessOption)
+                {
+                    if (keyField == "BoatQuoteExcessOption")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+                        if (typeof(int) == property.PropertyType)
+                        {
+                            property.SetValue(boat, int.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+                //for BoatIsTrailered  
+                foreach (var keyField in BoatIsTrailered)
+                {
+                    if (keyField == "BoatIsTrailered")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+
+
+                //for BoatTrailer list dynamic
+                if (string.IsNullOrWhiteSpace(BoatTrailerID))
+                {
+                    Vehicle trailer = new Vehicle();
+                    boat.BoatTrailers.Add(trailer);
+
+                }
+                else
+                {
+                    boat.BoatTrailers.Clear();
+
+                    Vehicle trailer = await _vehicleService.GetVehicleById(Guid.Parse(collection["BoatTrailer"]));
+                    boat.BoatTrailers.Add(trailer);//add to vehicle
+                }
+                
+
+                //for WaterLocationMooringType  
+                foreach (var keyField in WaterLocationMooringType)
+                {
+                    if (keyField == "WaterLocationMooringType")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
+
+                        if (property == null)
+                        {
+                            //property = "String";
+                            boat.WaterLocationMooringType = "";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(boat, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(boat, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                }
+
+
+                //for SelectedBoatUse list dynamic
+                if (string.IsNullOrWhiteSpace(SelectedBoatUseID))
+                {
+
+                    boat.BoatUses = new List<BoatUse>();
+                    List<SelectListItem> BoatUse = new List<SelectListItem>();
+
+                }
+                else
+                {
+                    var BoatUse = await _boatUseService.GetBoatUse(Guid.Parse(collection["SelectedBoatUse"]));
+                    boat.BoatUses.Clear();
+                    boat.BoatUses.Add(BoatUse);
+                }
+            
+
+
+
+                if (sheet.Boats.Contains(boat))
+                {
+                    await _boatRepository.UpdateAsync(boat);
+                }
+                else
+                {
+                    //sheet.Boats.Add(boat);
+                    using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        sheet.Boats.Add(boat);
+                        //boat.BoatUses.Add(boatuse);
+
+                        await uow.Commit();
+                    }
+                }
+
+
+                return new JsonResult(boat.Id);
+
             }
             catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
-
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> GetOriginalVehicle(Guid answerSheetId, Guid vehicleId)
@@ -2039,6 +2779,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetOriginalBoat(Guid answerSheetId, Guid boatId)
         {
+
             BoatViewModel model = new BoatViewModel();
             User user = null;
 
@@ -2086,7 +2827,7 @@ namespace DealEngine.WebUI.Controllers
                     model.AnswerSheetId = answerSheetId;
                     if (boat.BoatLandLocation != null)
                         model.BoatLandLocation = boat.BoatLandLocation.Id;
-                    if (boat.BoatWaterLocation != null)
+                    if (boat.BoatWaterLocation != null && boat.BoatWaterLocation.Id != Guid.Parse("00000000-0000-0000-0000-000000000000"))
                     {
                         var unit = (MarinaUnit)boat.BoatWaterLocation.OrganisationalUnits.FirstOrDefault();
                         model.BoatWaterLocation = unit.WaterLocation.Id;
@@ -2095,9 +2836,10 @@ namespace DealEngine.WebUI.Controllers
                     // Workaround - if multiple trailers are added by the user, the wrong one could be selected on EDIT. Which one is the right one? Probably the last one added?
                     if (boat.BoatTrailers.Any())
                         model.BoatTrailer = boat.BoatTrailers.LastOrDefault().Id;
-                        // model.BoatTrailer = sheet.Vehicles.FirstOrDefault().Id;
+
                     if (boat.OtherMarinaName != null)
                         model.OtherMarinaName = boat.OtherMarinaName;
+
                     if (boat.BoatUses != null)
                         model.BoatselectedVal = new List<String>();
 
@@ -2697,14 +3439,17 @@ namespace DealEngine.WebUI.Controllers
                 //ClaimNotification claimNotification = await _claimNotificationService.GetClaimNotificationById(model["ClaimId"]);
                 var claimNotificationForm = collection.Keys.Where(s => s.StartsWith("ClaimViewModel", StringComparison.CurrentCulture));
                 var ClaimId = collection["ClaimViewModel.ClaimId"];
-
-               
+              
 
                 var SelectedClaimProducts = collection.Keys.Where(s => s.StartsWith("SelectedClaimProducts", StringComparison.CurrentCulture));
                 var claimProductID = collection["SelectedClaimProducts"];
 
+                var ClaimStatus = collection.Keys.Where(s => s.StartsWith("ClaimStatus", StringComparison.CurrentCulture));
+                
+
                 var SelectedResponsiblePrincipal = collection.Keys.Where(s => s.StartsWith("SelectedResponsiblePrincipal", StringComparison.CurrentCulture));
                 var SelectedResponsiblePrincipalID = collection["SelectedResponsiblePrincipal"];
+
 
                 // no claim, so create new
                 if (string.IsNullOrWhiteSpace(ClaimId))
@@ -2770,7 +3515,17 @@ namespace DealEngine.WebUI.Controllers
                         }
                         else if (typeof(decimal) == property.PropertyType)
                         {
-                            property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
+                            var fieldValue = collection[keyField];
+                            if (string.IsNullOrWhiteSpace(collection[keyField]))
+                            {
+                                fieldValue = "0";
+                            }
+                            else
+                            {
+                                property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
+                            }
+                                
+                           
                         }
                     }
 
@@ -2793,8 +3548,31 @@ namespace DealEngine.WebUI.Controllers
                     }
 
                 }
+                foreach (var keyField in ClaimStatus)
+                {
+                    if (keyField == "ClaimStatus")
+                    {
+                        var propertyName = keyField.Split('.').ToList();
+                        var property = type.GetProperty(propertyName.LastOrDefault());
 
-                foreach (var keyField in SelectedResponsiblePrincipal)
+                        if (property == null)
+                        {
+                            //property = "String";
+                        }
+                        if (typeof(string) == property.PropertyType)
+                        {
+                            property.SetValue(claimNotification, collection[keyField].ToString());
+                        }
+                        if (typeof(decimal) == property.PropertyType)
+                        {
+                            property.SetValue(claimNotification, decimal.Parse(collection[keyField].ToString()));
+                        }
+
+                    }
+
+                    }
+
+                    foreach (var keyField in SelectedResponsiblePrincipal)
                 {
                     if (keyField == "SelectedResponsiblePrincipal")
                     {
@@ -2829,6 +3607,7 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 //return Json(claimNotification);
+
                 return new JsonResult(claimNotification.Id);
             }
             catch (Exception ex)
@@ -3013,7 +3792,7 @@ namespace DealEngine.WebUI.Controllers
 
 
 
-        //RemoveClaimNotification np code
+        //RemoveClaimNotification
 
         [HttpPost]
         public async Task<IActionResult> RemoveClaimNotification(string claimId)
@@ -3737,9 +4516,9 @@ namespace DealEngine.WebUI.Controllers
 
                 if (hasAccount)
                 {
-
                     return new JsonResult(true);
                 }
+
                 else
                 {
                     return new JsonResult(false);

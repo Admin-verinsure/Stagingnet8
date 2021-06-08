@@ -51,7 +51,14 @@ namespace DealEngine.WebUI.Models
                 .ForMember(dest => dest.Name, map => map.Ignore())
                 .ForMember(dest => dest.Type, map => map.Ignore())
                 .ForMember(dest => dest.CreatedBy, map => map.Ignore());
-            
+
+            CreateMap<IndividualInsuredUnit, IndividualInsuredUnit>()
+                .ForMember(dest => dest.Id, map => map.Ignore())
+                .ForMember(dest => dest.DateCreated, map => map.Ignore())
+                .ForMember(dest => dest.Name, map => map.Ignore())
+                .ForMember(dest => dest.Type, map => map.Ignore())
+                .ForMember(dest => dest.CreatedBy, map => map.Ignore());
+
             CreateMap<PlannerUnit, PlannerUnit>()
                 .ForMember(dest => dest.Id, map => map.Ignore())
                 .ForMember(dest => dest.DateCreated, map => map.Ignore())

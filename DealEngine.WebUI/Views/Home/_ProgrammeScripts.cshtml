@@ -163,6 +163,7 @@
         return validation;
     }
 
+
     function ReasonSubmit() {
         debugger;
         var dealId = $("#DealId").val();
@@ -177,13 +178,14 @@
             "ReasonDesc": description,
             "EffectiveDate": changeEffectiveDate,
         };
-
+        $('#ChangeProcess').show();
         $.ajax({
             type: "Post",
             data: prodData,
             url: "/Information/UpdateInformation",
             success: function (data) {
                 $("#myChangeModal").hide();
+                $('#ChangeProcess').hide();
                 alert("Saved Successfully!");
                 window.location.href = data.url;
             }

@@ -1,8 +1,10 @@
 ﻿@model IssueUISViewModel
 
 <div class="container">
-    <form id="ReportForm"    method="POST" action="~/Home/GetReportView" novalidate>
-        <input type="text" class="form-control" value="@Model.ProgrammeId" id="programmeId" name="ProgrammeId" hidden>
+    <form id="ReportForm" method="POST" action="~/Home/GetReportView" novalidate>
+        <input type="text" class="form-control" value="@Model.programme.Id" id="programmeId" name="ProgrammeId" hidden>
+        <input type="text" class="form-control" value="@Model.programme.Name" id="programmeName" name="ProgrammeName" hidden>
+        <input type="text" class="form-control" value="@Model.programme.NamedPartyUnitName" id="programmeNamedPartyUnitName" name="ProgrammeNamedPartyUnitName" hidden>
         <div class="card">
             <div class="card-header">
                 <h5>
@@ -21,25 +23,35 @@
                         </tr>
                     </thread>
                     <tbody>
-
                         <tr>
 
                             <td>
                                 <select class="form-control b form-select" id="ClientProg" name="queryselect">
                                     <option selected="selected" value="">-- Select --</option>
-                                    <option value="PI">PI Cover Limit and Premium Selected</option>
-                                    <option value="ED">ED Premium</option>
-                                    <option value="CL">Cyber Premium</option>
-                                    <option value="Ed">Limit and Premium Breakdown</option>
-                                    <option value="Cyber">Investment Defence and Settlement Costs Sub-Limit Premium and Limits</option>
+                                    @foreach (var product in Model.programme.Products)
+                                    {
+                                        <option value=@product.UnderwritingModuleCode.Substring(@product.UnderwritingModuleCode.IndexOf("_")+1)>@product.Name  Premium report</option>
+
+                                    }
+
                                     @{
-                                        if (Model.ProgrammeName == "NZFSG Programme")
+                                        if (Model.programme.EnableFAPReport)
                                         {
-                                            <option value="NZFSGFAP">NZFG FAP Report</option>
+                                            <option value="FAP">FAP Report</option>
 
                                         }
 
                                     }
+                                    @{
+                                        if (Model.programme.EnableRevenueActivity)
+                                        {
+                                            <option value="RevenueActivity">RevenueActivity Report</option>
+
+                                        }
+
+                                    }
+
+
 
                                 </select>
 
@@ -67,12 +79,40 @@
     </div>
 </div>
 
+<div class="modal overlay" id="RevenueReportModal" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p><img src="/img/loading.gif" /> This report has a large number of columns and is not suitable for viewing on screen.  It will download automatically once generated.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
-        debugger;
         $("#submit").click(function () {
-            $("#AddReportModal").show();
-            
+                    debugger;
+            var selectedreport = $("#ClientProg option:selected").text();
+
+            if (selectedreport == "RevenueActivity Report") {
+               $("#RevenueReportModal").show();
+            } else {
+                $("#AddReportModal").show();
+            }
+
+            $('#ReportForm').submit();
+
+            setTimeout(function () {
+
+                $('#RevenueReportModal').hide();
+            }, 40000);
         });
+
+       
+      
     })
+
+
+
 </script>

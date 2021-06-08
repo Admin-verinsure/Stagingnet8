@@ -1,0 +1,9 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<div class="form-group col-md-6">
+    <div class="form-group">
+        @Html.LabelFor(m => m.OrganisationViewModel.IndividualInsuredUnit.Phone, new { @class = "label required" })
+        @Html.TextBoxFor(m => m.OrganisationViewModel.IndividualInsuredUnit.Phone, new { @class = "form-control", @id = "IndividualInsuredUnit.Phone", @required = "", @onchange = "OnChange(this.id, this.name)" })
+    </div>
+    
+</div>

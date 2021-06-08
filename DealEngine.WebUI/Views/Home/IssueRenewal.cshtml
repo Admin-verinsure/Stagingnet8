@@ -1,0 +1,81 @@
+﻿@model IssueUISViewModel
+
+<div class="container">
+    <form method="POST" action="~/Home/IssueRenewal" novalidate>
+        <input type="text" class="form-control" value="@Model.ProgrammeId" id="programmeId" name="ProgrammeId" hidden>
+        <div class="card">
+            <div class="card-header">
+                <h5>
+                    This page lists the clients from the renew programme. Please select the client and click on Send to issue the information sheet renew notification, this will send out the task and a notification email.
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="container">
+                    <thread>
+                        <tr>
+
+                            <th>
+                                <input type="checkbox" id="select-all" aria-label="checkbox button for following text input">
+                                Name
+                            </th>
+                            <th>
+                                Email
+                            </th>
+                            <th>
+                                Renew Notification Date
+                            </th>
+                        </tr>
+                    </thread>
+                    <tbody>
+                        @foreach (var clientProg in Model.ClientProgrammes)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <input type="checkbox" aria-label="checkbox button for following text input" name="@clientProg.Owner.Email" value="@clientProg.Id">
+                                            </div>
+                                        </div>
+                                        <input type="text" class="form-control" aria-label="Text input with radio button" value="@clientProg.Owner.Name" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" value="@clientProg.Owner.Email" readonly>
+                                </td>
+                                <td>
+                                    @*<input type="text" class="dateInput form-control" value="@clientProg.RenewNotificationDate" readonly>*@
+                                    @*for windows, to do: need to work out how to check IsLinux*@
+                                    @*<input type="text" class="dateInput form-control" value="@TimeZoneInfo.ConvertTimeFromUtc(clientProg.RenewNotificationDate, TimeZoneInfo.FindSystemTimeZoneById("New Zealand Standard Time")).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" readonly>*@
+                                    @*for linux, to do: need to work out how to check IsLinux*@
+                                    <input type="text" class="dateInput form-control" value="@TimeZoneInfo.ConvertTimeFromUtc(clientProg.RenewNotificationDate, TimeZoneInfo.FindSystemTimeZoneById("NZ")).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" readonly>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary btn-xs" type="submit">Send</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section pagespecific {
+    <script type="text/javascript">
+
+
+        $('#select-all').on('click', function () {
+            debugger;
+            // Get all rows with search applied
+            // Check/uncheck checkboxes for all rows in the table
+            $('input[type="checkbox"]').prop('checked', this.checked);
+
+
+        });
+
+    </script>
+
+}

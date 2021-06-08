@@ -18,6 +18,8 @@ namespace DealEngine.WebUI.Models
                 Programme = programme;
             }            
             ClientProgramme = new ClientProgramme(null, null, null);
+            Organisation = new Domain.Entities.Organisation();
+
             GetTiers();
         }
 

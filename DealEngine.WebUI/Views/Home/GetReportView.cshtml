@@ -11,7 +11,7 @@
     <form method="post" novalidate id="ReportForm">
 
         <div class="card-footer">
-            <button class="btn btn-primary btn-xs" id="ReportView" onclick="getReport()">Export to Excel</button>
+            <button class="btn btn-primary btn-xs" id="ReportView" @*onclick="getReport()"*@>Export to Excel</button>
         </div>
         <input type="text" class="form-control" value="@ViewBag.reportName" name="queryselect" hidden>
 
@@ -57,7 +57,7 @@
 
     </form>
 </div>
-<div class="modal overlay" id="AddReportModal" tabindex="-1" role="dialog" data-backdrop="static">
+<div class="modal overlay" id="GetReportModal" tabindex="-1" role="dialog" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
@@ -67,52 +67,66 @@
     </div>
 </div>
 
+
 <script type="text/javascript">
-       $(window).on("load", function () {
-                        $("#AddReportModal").hide();
+    $(window).on("load", function () {
+        $("#AddReportModal").hide();
 
-       });
+        setTimeout(function(){
+    $('#ads').modal('hide')
+    }, 10000);})
+    });
 
-        $("#ReportView").click(function () {
-            $("#AddReportModal").delay(5000).fadeOut(1000);
-            
-        });
-    
+    $("#ReportView").click(function () {
+        debugger;
+
+        getReport();
+        $("#GetReportModal").hide();
+
+    });
+   
+
     function getReport() {
         debugger;
+
+        $("#GetReportModal").show();
         $('#IsReport').val("True");
-        //$("#AddReportModal").delay(5000).fadeOut(1000);
         $('#ReportForm').submit();
+        debugger;
+                $("#GetReportModal").hide();
 
     };
 
-      function viewreport() {
-          debugger;
-                var TableData = new Array();
-               $('#ReportAnalysis tr').each(function (row, tr) {
-                   TableData = TableData + $(tr).find('td:eq(0)').text() + "-" + $(tr).find('td:eq(1)').text() + ",";                    
-               });
-               var postData = { values: TableData };                
-               
-               $.ajax({
-                   url: "/Home/ExportExcel",
-                   type : "POST",
-                   data : postData,
-                  
-                   success: function (data) {
- 
-                       // perform your save call here
- 
-                       if (data.status == "Success") {
-                           $("#AddReportModal").delay(5000).fadeOut(1000);
-                       } else {
-                           alert("Error occurs on the Database level!");
-                       }
-                   },
-                   error: function () {
-                       //alert("An error has occured!!!");					   
-                   }
-               });
+      //function viewreport() {
+      //    debugger;
+      //                                       alert("33333");
 
-            }
+      //          var TableData = new Array();
+      //         $('#ReportAnalysis tr').each(function (row, tr) {
+      //             TableData = TableData + $(tr).find('td:eq(0)').text() + "-" + $(tr).find('td:eq(1)').text() + ",";
+      //         });
+      //         var postData = { values: TableData };
+
+      //         $.ajax({
+      //             url: "/Home/ExportExcel",
+      //             type : "POST",
+      //             data : postData,
+
+      //             success: function (data) {
+      //                              alert("44444");
+
+      //                 // perform your save call here
+
+      //                 if (data.status == "Success") {
+      //                     $("#AddReportModal").delay(5000).fadeOut(1000);
+      //                 } else {
+      //                     alert("Error occurs on the Database level!");
+      //                 }
+      //             },
+      //             error: function () {
+      //                 //alert("An error has occured!!!");
+      //             }
+      //         });
+
+      //      }
 </script>

@@ -5,6 +5,8 @@ namespace DealEngine.Services.Interfaces
 {
 	public interface IChangeProcessService
     {
+        Task<ChangeReason> Add(ChangeReason changeReason);
+
     }
 }
 

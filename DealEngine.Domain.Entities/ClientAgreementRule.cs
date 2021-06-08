@@ -12,10 +12,10 @@ namespace DealEngine.Domain.Entities
         protected ClientAgreementRule() : base (null) { }
 
 		public ClientAgreementRule (User createdBy, Rule parentRule, ClientAgreement clientAgreement)
-			: this (createdBy, parentRule, parentRule.Name, parentRule.Description, parentRule.Product, parentRule.Value, parentRule.OrderNumber, parentRule.RuleCategory, parentRule.RuleRoleType, parentRule.IsPublic, clientAgreement)
+			: this (createdBy, parentRule, parentRule.Name, parentRule.Description, parentRule.Product, parentRule.Value, parentRule.OrderNumber, parentRule.RuleCategory, parentRule.RuleRoleType, parentRule.IsPublic, clientAgreement, parentRule.DoNotCheckForRenew)
 		{ }
 
-        public ClientAgreementRule(User createdBy, Rule parentRule, string name, string description, Product product, string value, int orderNumber, string ruleCategory, string ruleRoleType, bool isPublic, ClientAgreement clientAgreement)
+        public ClientAgreementRule(User createdBy, Rule parentRule, string name, string description, Product product, string value, int orderNumber, string ruleCategory, string ruleRoleType, bool isPublic, ClientAgreement clientAgreement, bool doNotCheckForRenew)
 			: base (createdBy)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -40,6 +40,7 @@ namespace DealEngine.Domain.Entities
             RuleRoleType = ruleRoleType;
             IsPublic = isPublic;
             ClientAgreement = clientAgreement;
+            DoNotCheckForRenew = doNotCheckForRenew;
         }
 
         public virtual string Name
@@ -103,6 +104,8 @@ namespace DealEngine.Domain.Entities
         }
 
         public virtual bool IsPublic { get; protected set; }
+
+        public virtual bool DoNotCheckForRenew { get; set; }
 
     }
 }

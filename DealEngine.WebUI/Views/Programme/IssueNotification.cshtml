@@ -34,9 +34,9 @@
                     <div class="form-group">
                         <select onchange="selectorgUser()" class="form-select form-control b" id="selectParty" name="selectedparty">
                             <option selected="selected" value="">-- Select Party --</option>
-                            @foreach (var blloc in Model.Programme.ClientProgrammes)
+                            @foreach (var blloc in Model.Programme.Parties)
                             {
-                                <option value="@blloc.Owner.Id"> @blloc.Owner.Name</option>
+                                <option value="@blloc.Id"> @blloc.Name</option>
                             }
                         </select>
                     </div>

@@ -1,0 +1,165 @@
+﻿
+<script type="text/javascript">
+    /*add data*/
+    $('#updateTypeDelete').on('show.bs.modal', function (e) {
+        $('.modal .modal-body').css('height', 'auto');
+        var updateTypeId = $(e.relatedTarget).data('updateType-id');
+        $(e.currentTarget).find('input[name="UpdateTypeId"]').val(updateTypeId);
+    });
+
+    $("#btnUpdateTypeSubmit").click(function () {
+        var valid = ValidateUpdateType();
+        if (valid) {
+            updateTypeSubmit();
+        }
+
+    });
+
+
+
+    function ValidateUpdateType() {
+        var updateTypeName = $("#NameType").val();
+        var updateTypeValue = $("#ValueType").val();
+        var validation = true;
+    
+        if (updateTypeName == "") {
+            $('#validateUpdateTypeName').html("<font color='red'>Field is required</font>");
+            if (validation) {
+                validation = false;
+            }
+        } else {
+            $('#validateUpdateTypeName').html("");
+        }
+        if (updateTypeValue == "") {
+            $('#validateUpdateTypeValue').html("<font color='red'>Field is required</font>");
+            if (validation) {
+                validation = false;
+            }
+        } else {
+            $('#validateUpdateTypeValue').html("");
+        }
+     
+        return validation;
+    }
+
+
+    function updateTypeSubmit() {
+        var nameType = $("#NameType").val();
+        var valueType = $("#ValueType").val();
+
+        var TcCheckbox = document.getElementById("tc");
+        var Tc = TcCheckbox.checked;
+        var BrokerCheckbox = document.getElementById("broker");
+        var Broker = BrokerCheckbox.checked;
+        var InsurerCheckbox = document.getElementById("insurer");
+        var Insurer = InsurerCheckbox.checked;
+        var ClientCheckbox = document.getElementById("client");
+        var Client = ClientCheckbox.checked;    
+
+       
+
+        var id = $("#UpdateTypeId").val();
+        var postData = {
+            "Id": id,
+            "NameType": nameType,
+            "ValueType": valueType,
+            "TypeIsTc": Tc,
+            "TypeIsBroker": Broker,
+            "TypeIsInsurer": Insurer,
+            "TypeIsClient": Client,
+        };
+        $.ajax({
+            type: "Post",
+            url: "/Admin/EditUpdateType",
+            data: postData,
+            async: true,
+            success: function () {
+                $("#UpdateTypeModal").modal("hide");
+                alert("Saved Successfully!");
+                location.reload(true);
+
+            }
+        });
+
+
+    }
+
+
+
+    /*edit data*/
+    $('#UpdateTypeModal').on('show.bs.modal', function (e) {
+        $('.modal').css('width', '600px');
+        var nameType = $(e.relatedTarget).data('subNametype');
+
+
+        var valueType = $(e.relatedTarget).data('subValuetype');
+        var broker = $(e.relatedTarget).data('subBroker');
+        var client = $(e.relatedTarget).data('subClient');
+        var insurer = $(e.relatedTarget).data('subInsurer');
+        var tc = $(e.relatedTarget).data('subTc');
+        var UpdateTypeId = $(e.relatedTarget).data('subId');
+
+        $(e.currentTarget).find('input[name="Id"]').val(UpdateTypeId);
+        $(e.currentTarget).find('input[name="NameType"]').val(nameType);
+        $(e.currentTarget).find('input[name="ValueType"]').val(valueType);
+        $(e.currentTarget).find('input[name="tc"]').val(tc);
+        $(e.currentTarget).find('input[name="broker"]').val(broker);
+        $(e.currentTarget).find('input[name="insurer"]').val(insurer);
+        $(e.currentTarget).find('input[name="client"]').val(client);
+
+        if (client == "True") {
+           // document.getElementById("client").checked = "true";
+            document.getElementById('client').checked = "checked";
+        }
+        if (broker == "True") {
+            document.getElementById('broker').checked = "checked";
+        }
+        if (insurer == "True") {
+            document.getElementById('insurer').checked = "checked";
+        }
+        if (tc == "True") {
+            document.getElementById('tc').checked = "checked";
+        }
+        if(tc == "False")
+        {
+            $("#tc").removeAttr('checked');
+        }
+
+
+    });
+    //modal clear data on cancle
+    $("#modalCancle").click(function (e) {
+        $('#UpdateTypeModal').find('form').trigger('reset');
+       
+    });
+
+    /*delete data*/
+    $('#updateTypeDelete').on('show.bs.modal', function (e) {
+        debugger;
+        var updateTypeId = $(e.relatedTarget).data('updatetypeId');
+        $(e.currentTarget).find('input[name="updateTypeId"]').val(updateTypeId);
+        $('.modal .modal-body').css('height', 'auto');
+       
+    });
+
+    $("#btnUpdateTypeDelete").click(function () {
+        var updateTypeId = $("#UpdateTypeId_Id").val();
+        var prodData = {
+            "Id": updateTypeId
+
+        };
+        $.ajax({
+            type: "Post",
+            data: prodData,
+            url: "/Admin/DeleteUpdateType",
+            success: function () {
+                $("#myModal").modal("hide");
+                location.reload(true);
+                alert("Deleted Successfully!");
+
+            }
+        });
+    });
+
+
+</script>

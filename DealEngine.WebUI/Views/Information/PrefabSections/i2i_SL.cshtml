@@ -1,0 +1,23 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="SLViewModel" class="is-valid" data-accordianId="Statutory Liability Insurance">
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="HasSL" class="label">
+                    Would you like Statutory Liability Insurance?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasSL" name="SLViewModel.HasSLOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.SLViewModel.HasSLOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+</form>

@@ -347,8 +347,10 @@
 
      function getseletedorgUser() {
         debugger;
-        var InformationId = $('#Id').val();
-        var postdata = { informationId: InformationId};
+         var InformationId = $('#Id').val();
+                 var Title= $('#Name').val();
+
+        var postdata = { informationId: InformationId , title : Title};
          $.ajax({
              url: '@Url.Action("getselectedParty", "Programme")',
              type: "Post",
@@ -392,8 +394,9 @@
                 };
 
                 $.each(data, function (i, item) {
+                    debugger;
                     $('#div1').append("<div class=\"input-group\"><div class=\"input-group-prepend\"> " +
-                        "<div class=\"input-group-text\"><input type=\"checkbox\" name=\"selectedEmail\" value=\"" + item.email + "\"> " +
+                        "<div class=\"input-group-text\"><input type=\"checkbox\" name=\"selectedEmail\"  value=" + item.email + "> " +
                         "</div ></div > <input type=\"text\" class=\"form-control\" name=\"PartyOrg\" value=" + item.name + ">" +
                             "</div ></div >");
                 });
@@ -473,6 +476,49 @@
                 url: '@Url.Action("EditRule", "Programme")',
               type: "Post",
               data: prodData
+
+            })
+                .done(function (data) {
+                    debugger;
+                    alert("success");
+                    $("#myModalId").click();
+                    location.reload(true);
+
+                })
+              .fail(function (jqXHR, textStatus, errorThrown) {
+                  debugger;
+                    alert("There was an error while trying to save the Boat Use.");
+            });
+
+
+    }
+
+
+
+
+    // for updateType modal
+    $("#updateTypeSubmit").click(function () {
+        updateTypeSubmit();
+    });
+
+    function updateTypeSubmit() {
+        debugger;
+        //var productId = $("#ProductId").val();
+        //var ID = $("#Id").val();
+
+        //var RuleId = $("#RuleId").val();
+        var UpdateTypeName = $("#updateTypeName").val();
+        
+
+        var updateTypeData = {
+            "Name": UpdateTypeName,
+         
+        };
+
+          $.ajax({
+                url: '@Url.Action("AddUpdateType", "Admin")',
+              type: "Post",
+              data: updateTypeData
 
             })
                 .done(function (data) {

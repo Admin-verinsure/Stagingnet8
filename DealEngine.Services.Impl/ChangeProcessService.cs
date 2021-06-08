@@ -7,12 +7,19 @@ namespace DealEngine.Services.Impl
 {
     public class ChangeProcessService : IChangeProcessService
     {
-        IMapperSession<ChangeReason> _changeReason;
+        IMapperSession<ChangeReason> _changeReasonRepository;
 
-        public ChangeProcessService(IMapperSession<ChangeReason> changeReason)
+        public ChangeProcessService(
+            IMapperSession<ChangeReason> changeReasonRepository
+            )
         {
-            _changeReason = changeReason;
+            _changeReasonRepository = changeReasonRepository;
         }
 
+        public async Task<ChangeReason> Add(ChangeReason changeReason)
+        {
+            await _changeReasonRepository.AddAsync(changeReason);
+            return changeReason;
+        }
     }
 }

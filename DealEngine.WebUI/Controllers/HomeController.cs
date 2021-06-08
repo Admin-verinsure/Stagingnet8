@@ -36,12 +36,17 @@ namespace DealEngine.WebUI.Controllers
         IAppSettingService _appSettingService;
         IEmailService _emailService;
         IProgrammeService _programmeService;
+        IUpdateTypeService _updateTypeService;
         IProductService _productService;
         ILogger<HomeController> _logger;
         IApplicationLoggingService _applicationLoggingService;
         IOrganisationService _organisationService;
         IClientInformationAnswerService _clientInformationAnswer;
         IUnitOfWork _unitOfWork;
+
+        IUpdateTypeService _updateTypeServices;
+        IMilestoneService _milestoneService;
+
 
         public HomeController(
             UserManager<IdentityUser> userManager,
@@ -61,13 +66,15 @@ namespace DealEngine.WebUI.Controllers
             IClientAgreementService clientAgreementService,
             IClientInformationService clientInformationService,
             IUnitOfWork unitOfWork,
-            IClientInformationAnswerService clientInformationAnswer
-
+            IClientInformationAnswerService clientInformationAnswer,
+            IUpdateTypeService updateTypeService,
+            IMilestoneService milestoneService
 
             )
 
             : base(userRepository)
         {
+           
             _userManager = userManager;
             _organisationService = organisationService;
             _appSettingService = appSettingService;
@@ -85,6 +92,8 @@ namespace DealEngine.WebUI.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _clientInformationAnswer = clientInformationAnswer;
+            _updateTypeServices = updateTypeService;
+            _milestoneService = milestoneService;
 
         }
 
@@ -133,10 +142,10 @@ namespace DealEngine.WebUI.Controllers
                 model.ProgrammeItems = new List<ProgrammeItem>();
                 if (model.CurrentUserType == "Client")
                 {
-                    var clientProgList = _programmeService.GetClientProgrammesByOwner(user.PrimaryOrganisation.Id).Result.GroupBy(bp => bp.BaseProgramme);
+                    var clientProgList = _programmeService.GetClientProgrammesByOwner(user.PrimaryOrganisation.Id).Result.GroupBy(bp => bp.BaseProgramme.Name).Select(bp => bp.FirstOrDefault());
                     foreach (var clientProgramme in clientProgList)
                     {
-                        programmeList.Add(clientProgramme.Key);
+                        programmeList.Add(clientProgramme.BaseProgramme);
                     }
                 }
                 else
@@ -144,7 +153,7 @@ namespace DealEngine.WebUI.Controllers
                     programmeList = await _programmeService.GetAllProgrammes();
                 }
 
-                foreach (Programme programme in programmeList)
+                foreach (Programme programme in programmeList.Distinct())
                 {
                     model.ProgrammeItems.Add(new ProgrammeItem(programme)
                     {
@@ -500,7 +509,7 @@ namespace DealEngine.WebUI.Controllers
             }
             else
             {
-                clientList = await _programmeService.GetClientProgrammesByOwner(user.PrimaryOrganisation.Id);
+                clientList = await _programmeService.GetClientProgrammesByOwnerByProgramme(user.PrimaryOrganisation.Id, programme.Id);
                 foreach (ClientProgramme client in clientList.OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
                 {
                     string status = client.InformationSheet.Status;
@@ -528,7 +537,7 @@ namespace DealEngine.WebUI.Controllers
                         programmeUseEglobal = true;
                     }
 
-                    if (null != client.InformationSheet.PreviousInformationSheet)
+                    if (null != client.InformationSheet.NextInformationSheet)
                     {
                         nextInfoSheet = true;
                     }
@@ -555,9 +564,13 @@ namespace DealEngine.WebUI.Controllers
                     }); ;
                 }
             }
+
+
+            model.CurrentUserIsClient = "True";
             if (user.PrimaryOrganisation.IsBroker)
             {
                 model.CurrentUserIsBroker = "True";
+                model.CurrentUserIsClient = "False";
             }
             else
             {
@@ -566,6 +579,7 @@ namespace DealEngine.WebUI.Controllers
             if (user.PrimaryOrganisation.IsInsurer)
             {
                 model.CurrentUserIsInsurer = "True";
+                model.CurrentUserIsClient = "False";
             }
             else
             {
@@ -574,6 +588,7 @@ namespace DealEngine.WebUI.Controllers
             if (user.PrimaryOrganisation.IsTC)
             {
                 model.CurrentUserIsTC = "True";
+                model.CurrentUserIsClient = "False";
             }
             else
             {
@@ -582,11 +597,20 @@ namespace DealEngine.WebUI.Controllers
             if (user.PrimaryOrganisation.IsProgrammeManager)
             {
                 model.CurrentUserIsProgrammeManager = "True";
+                model.CurrentUserIsClient = "False";
             }
             else
             {
                 model.CurrentUserIsProgrammeManager = "False";
             }
+            //if (user.PrimaryOrganisation.IsClient)
+            //{
+            //    model.CurrentUserIsClient = "True";
+            //}
+            //else
+            //{
+            //    model.CurrentUserIsClient = "False";
+            //}
 
             return model;
         }
@@ -628,9 +652,50 @@ namespace DealEngine.WebUI.Controllers
                 }
                 //ProgrammeItem model = new ProgrammeItem(clientList.FirstOrDefault().BaseProgramme);
                 ProgrammeItem model = new ProgrammeItem(programme);
+
                 model = await GetClientProgrammeListModel(user, clientList, programme);
                 model.IsSubclientEnabled = programme.HasSubsystemEnabled;
+                var dbUpdatemodelTypes = await _updateTypeServices.GetAllUpdateTypes();
+                var updateTypeModel = new List<UpdateTypesViewModel>();
 
+
+                foreach (var updateType in dbUpdatemodelTypes.Where(t => t.DateDeleted == null))
+                {
+                    updateTypeModel.Add(new UpdateTypesViewModel
+                    {
+                        Id = updateType.Id,
+                        NameType = updateType.TypeName,
+                        ValueType = updateType.TypeValue,
+                        TypeIsBroker = updateType.TypeIsBroker,
+                        TypeIsClient = updateType.TypeIsClient,
+                        TypeIsInsurer = updateType.TypeIsInsurer,
+                        TypeIsTc = updateType.TypeIsTc
+                    });
+
+
+                }
+                model.SelectedUpdateTypes = new List<string>();
+                
+                if (programme.RenewFromProgramme != null)
+                {
+                    model.IsRenewFromProgramme = true;
+                } else
+                {
+                    model.IsRenewFromProgramme = false;
+                }
+
+                foreach (var updateType in programme.UpdateTypes)
+                {
+                    using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        if (model.SelectedUpdateTypes != null)
+                        {
+                            model.SelectedUpdateTypes.Add(updateType.TypeValue);
+                        }
+                        await uow.Commit();
+                    }
+                }
+                model.UpdateTypes = updateTypeModel.OrderBy(acat => acat.UpdateTypes).ToList();
                 return View(model);
             }
             catch (Exception ex)
@@ -639,6 +704,88 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+        /*for NTU*/
+        [HttpGet]
+        public async Task<IActionResult> NTUcreate(string ProgrammeId, string actionname)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                NTUcreateViewModel model = new NTUcreateViewModel();
+                var clientProgrammes = new List<ClientProgramme>();
+                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+                List<ClientProgramme> mainClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
+                List<ClientProgramme> subClientProgrammes = await _programmeService.GetSubClientProgrammesForProgramme(programme.Id);
+                foreach (var client in mainClientProgrammes.OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                {
+                    if (client.DateDeleted == null && (client.InformationSheet.Status == "Started" || client.InformationSheet.Status == "Submitted" || client.InformationSheet.Status == "Not Started" ) && client.InformationSheet.Status != "Bound")
+                    {
+                        clientProgrammes.Add(client);
+                    }
+                }
+                model.ClientProgrammes = clientProgrammes;
+                model.ProgrammeId = ProgrammeId;
+                if (actionname == "NTUcreate")
+                {
+                    return View(model);
+                }
+                else
+                {
+                    return View("EditClient", model);
+                }
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> NTUcreate(IFormCollection formCollection)
+        {
+            User user = null;
+            Programme programme = null;
+
+            try
+            {
+                user = await CurrentUser();
+                programme = await _programmeService.GetProgramme(Guid.Parse(formCollection["ProgrammeId"]));
+                foreach (var key in formCollection.Keys)
+                {
+                    var keyCheck = key;
+                    if (keyCheck != "__RequestVerificationToken" && keyCheck != "Status")
+                    { 
+                    var informationSheet = await _clientInformationService.GetInformation(Guid.Parse(formCollection[key]));
+
+                    if (informationSheet != null)
+                    {
+                        informationSheet.Status = "Not Taken Up By Broker";
+                        await _customerInformationService.UpdateInformation(informationSheet);
+                    }
+               
+                    }
+
+                }
+
+                //return await RedirectToLocal();
+                return Redirect("/Home/ViewProgramme/" + formCollection["ProgrammeId"]);
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> IssueUIS(string ProgrammeId, string actionname)
@@ -714,6 +861,38 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> IssueRenewal(string ProgrammeId)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                IssueUISViewModel model = new IssueUISViewModel();
+                var clientProgrammes = new List<ClientProgramme>();
+                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+                List<ClientProgramme> renewClientProgrammes = await _programmeService.GetRenewBaseClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
+
+                foreach (var client in renewClientProgrammes.OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                {
+                    if (client.DateDeleted == null && client.InformationSheet != null)
+                    {
+                        clientProgrammes.Add(client);
+                    }
+                }
+                model.ClientProgrammes = clientProgrammes;
+                model.ProgrammeId = ProgrammeId;
+                model.IsSubUIS = "false";
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> IssueReminder(string ProgrammeId)
         {
             User user = null;
@@ -769,10 +948,8 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
                 IssueUISViewModel model = new IssueUISViewModel();
-                model.ProgrammeId = ProgrammeId;
                 Programme programme = await _programmeService.GetProgrammeById(new Guid(ProgrammeId));
-
-                model.ProgrammeName = programme.Name;
+                model.programme = programme;
                 return View(model);
             }
             catch (Exception ex)
@@ -782,38 +959,10 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-        [HttpGet]
-        public PropertyDescriptorCollection generatequeryField(string Query)
+      
+        public async Task<List<List<string>>> GetNZFGReportSet(Guid programmeId, string reportName)
         {
-            PropertyDescriptorCollection props = null ;
-
-            if (Query == "PI Cover Limit")
-            {
-                props = TypeDescriptor.GetProperties(typeof(PIReport));
-            }
-            if (Query == "ED Premium")
-            {
-                props = TypeDescriptor.GetProperties(typeof(PIReport));
-            }
-            if (Query == "Cyber Premium")
-            {
-                props = TypeDescriptor.GetProperties(typeof(PIReport));
-            }
-            if (Query == "Limit and Premium Breakdown")
-            {
-                props = TypeDescriptor.GetProperties(typeof(PIReport));
-            }
-            if (Query == "FAP")
-            {
-                props = TypeDescriptor.GetProperties(typeof(FAPReport));
-            }
-
-            return props;
-        }
-
-        public async Task<List<List<string>>> GetNZFGReportSet(Guid programmeId , string reportName)
-        {
-            Programme programme =  await _programmeService.GetProgrammeById(programmeId);
+            Programme programme = await _programmeService.GetProgrammeById(programmeId);
             List<List<string>> ListReportSet = new List<List<string>>();
             List<String> ListReport = new List<String>();
             ListReport.Add("Member Name");
@@ -825,17 +974,17 @@ namespace DealEngine.WebUI.Controllers
             ListReport.Add("Please select from the following options (if selected no)");
             ListReportSet.Add(ListReport);
 
-            foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o =>  o.InformationSheet.DateDeleted == null))
+            foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null))
             {
                 try
                 {
-                    if (reportName == "NZFSGFAP")
+                    if (reportName == "FAP")
                     {
                         ListReport = new List<String>();
 
                         Organisation organisation = cp.InformationSheet.Owner;
                         ////adding collumns to ListReport
-                        
+
 
                         ListReport.Add(organisation.Name);
                         ListReport.Add(cp.InformationSheet.Status);
@@ -846,114 +995,77 @@ namespace DealEngine.WebUI.Controllers
                         {
                             ListReport.Add(user.FullName);
                         }
-                        else{
+                        else
+                        {
                             ListReport.Add(organisation.Name);
 
                         }
 
-                        //if(programme.Name == "NZFSG Programme")
+                        //if(programme.NamedPartyUnitName == "NZFSG Programme")
                         //{
-                            if(cp.BaseProgramme.Id == programme.Id)
-                            {
-                                clientInformationSheetID = cp.InformationSheet.Id;
+                        if (cp.BaseProgramme.Id == programme.Id)
+                        {
+                            clientInformationSheetID = cp.InformationSheet.Id;
 
-                            }
-                            ClientInformationAnswer TraditionalLicenceOptionsAnswers = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.HasTraditionalLicenceOptions" , clientInformationSheetID);
-                            ClientInformationAnswer AdvisersOptionsAnswers = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.HasAdvisersOptions", clientInformationSheetID);
-                            ClientInformationAnswer AdditionalTraditionalLicenceOptionsAnswers = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.HasAdditionalTraditionalLicenceOptions", clientInformationSheetID);
-                            //TraditionalLicenceOptionsAnswers.Value == "0" ? ListReport.Add("Not Selected") : (TraditionalLicenceOptionsAnswers.Value == "1") ? ListReport.Add("Yes") : (TraditionalLicenceOptionsAnswers.Value == "2") ? ListReport.Add("No") ;
-                            if (TraditionalLicenceOptionsAnswers.Value == "0" )
-                            {
-                                ListReport.Add("Not Selected");
-                            } else if (TraditionalLicenceOptionsAnswers.Value == "1")
-                            {
-                                ListReport.Add("Yes");
-                            }
-                            else if (TraditionalLicenceOptionsAnswers.Value == "2")
-                            {
-                                ListReport.Add("No");
-                            }
-
-
-
-                            if (AdvisersOptionsAnswers.Value == "0")
-                            {
-                                ListReport.Add("Not Selected");
-                            }
-                            else if (AdvisersOptionsAnswers.Value == "1")
-                            {
-                                ListReport.Add("I do not have any other advisers working under my license");
-                            }
-                            else if (AdvisersOptionsAnswers.Value == "2")
-                            {
-                                ListReport.Add("I do have other advisers working under my license");
-                            }
+                        }
+                        ClientInformationAnswer TraditionalLicenceOptionsAnswers = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.HasTraditionalLicenceOptions", clientInformationSheetID);
+                        ClientInformationAnswer AdvisersOptionsAnswers = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.HasAdvisersOptions", clientInformationSheetID);
+                        ClientInformationAnswer AdditionalTraditionalLicenceOptionsAnswers = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.HasAdditionalTraditionalLicenceOptions", clientInformationSheetID);
+                        //TraditionalLicenceOptionsAnswers.Value == "0" ? ListReport.Add("Not Selected") : (TraditionalLicenceOptionsAnswers.Value == "1") ? ListReport.Add("Yes") : (TraditionalLicenceOptionsAnswers.Value == "2") ? ListReport.Add("No") ;
+                        if (TraditionalLicenceOptionsAnswers.Value == "0")
+                        {
+                            ListReport.Add("Not Selected");
+                        }
+                        else if (TraditionalLicenceOptionsAnswers.Value == "1")
+                        {
+                            ListReport.Add("Yes");
+                        }
+                        else if (TraditionalLicenceOptionsAnswers.Value == "2")
+                        {
+                            ListReport.Add("No");
+                        }
 
 
 
+                        if (AdvisersOptionsAnswers.Value == "0")
+                        {
+                            ListReport.Add("Not Selected");
+                        }
+                        else if (AdvisersOptionsAnswers.Value == "1")
+                        {
+                            ListReport.Add("I do not have any other advisers working under my license");
+                        }
+                        else if (AdvisersOptionsAnswers.Value == "2")
+                        {
+                            ListReport.Add("I do have other advisers working under my license");
+                        }
 
-                            if (AdditionalTraditionalLicenceOptionsAnswers.Value == "0")
-                            {
-                                ListReport.Add("Not Selected");
-                            }
-                            else if (AdditionalTraditionalLicenceOptionsAnswers.Value == "1")
-                            {
-                                ListReport.Add("I am taking my own Transitional Licence with no other advisers working under my license");
-                            }
-                            else if (AdditionalTraditionalLicenceOptionsAnswers.Value == "2")
-                            {
-                                ListReport.Add("I will be coming under someone elses Transitional Licence");
-                            }
-                            else if (AdditionalTraditionalLicenceOptionsAnswers.Value == "3")
-                            {
-                                ListReport.Add("Undecided");
-                            }
-                       // }
+
+
+
+                        if (AdditionalTraditionalLicenceOptionsAnswers.Value == "0")
+                        {
+                            ListReport.Add("Not Selected");
+                        }
+                        else if (AdditionalTraditionalLicenceOptionsAnswers.Value == "1")
+                        {
+                            ListReport.Add("I am taking my own Transitional Licence with no other advisers working under my license");
+                        }
+                        else if (AdditionalTraditionalLicenceOptionsAnswers.Value == "2")
+                        {
+                            ListReport.Add("I will be coming under someone elses Transitional Licence");
+                        }
+                        else if (AdditionalTraditionalLicenceOptionsAnswers.Value == "3")
+                        {
+                            ListReport.Add("Undecided");
+                        }
+                        // }
 
                         ListReportSet.Add(ListReport);
 
 
                     }
-                   // if (reportName == "PI")
-                   // {
-                    //PIReport report = new PIReport();
-                    //report.ReferenceID = cp.InformationSheet.ReferenceId;
-                    //report.IndividualName = cp.Owner.Name;
-                    //report.CompanyName = cp.Owner.Name;
-
-                    //if (cp.Agreements.Count > 0)
-                    //{
-                    //    foreach (ClientAgreement agreement in cp.Agreements)
-                    //    {
-                    //        var term = agreement.ClientAgreementTerms.FirstOrDefault(ter => ter.SubTermType == queryselect && ter.Bound == true);
-                    //        if (term != null)
-                    //        {
-                    //            report.selectedlimit = term.TermLimit.ToString();
-                    //            report.Premium = term.Premium.ToString();
-                    //            report.Inceptiondate = agreement.InceptionDate.ToString();
-                    //            break;
-                    //        }
-                    //        else
-                    //        {
-                    //            report.selectedlimit = "0";
-                    //            report.Premium = "0";
-                    //            report.Inceptiondate = agreement.InceptionDate.ToString();
-                    //            break;
-                    //        }
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    report.selectedlimit = "0";
-                    //    report.Premium = "0";
-                    //    report.Inceptiondate = "0";
-                    //}
-                    //ListReport.Add(report);
-                    // }
-                   // else
-                    //{
-
-                   // }
+                   
 
                 }
                 catch (Exception ex)
@@ -962,26 +1074,480 @@ namespace DealEngine.WebUI.Controllers
             return ListReportSet;
         }
 
+        public async Task<List<List<string>>> GetPremiumLimitReportSet(Guid programmeId , string reportName)
+        {
+            Programme programme =  await _programmeService.GetProgrammeById(programmeId);
+            List<List<string>> ListReportSet = new List<List<string>>();
+            List<String> ListReport = new List<String>();
+           
+            ListReport.Add("Insured");
+            ListReport.Add("Is Change");
+            ListReport.Add("Reference Id");
+            ListReport.Add("Email");
+            ListReport.Add("Agreement Status");
+            //ListReport.Add("Advisor Names");
+            ListReport.Add("Limit");
+            ListReport.Add("Excess");
+            ListReport.Add("Premium");
+            ListReport.Add("Premium Difference");
+
+
+
+            ListReportSet.Add(ListReport);
+
+              foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null  && o.InformationSheet.Status == "Bound"))
+            { 
+                try
+                {
+                        Guid clientInformationSheetID = Guid.NewGuid();
+                        if (cp.BaseProgramme.Id == programme.Id)
+                        {
+                            clientInformationSheetID = cp.InformationSheet.Id;
+
+                        }
+                        ListReportSet.Add(await CreatePremiumLimitReport( cp, clientInformationSheetID, true, false, reportName));
+
+                }
+                catch (Exception ex)
+                { }
+            }
+            return ListReportSet;
+        }
+
+        public async Task<List<string>> CreatePremiumLimitReport( ClientProgramme cp, Guid clientInformationSheetID, Boolean IsprincipalAdvisor, Boolean isSubClient,string reportName)
+        {
+
+            List<String> ListReport = new List<String>();
+
+
+            ListReport = new List<String>();
+
+            Organisation organisation = cp.InformationSheet.Owner;
+            ////adding collumns to ListReport
+
+
+            ListReport.Add(cp.InformationSheet.Owner.Name);
+            ListReport.Add((cp.InformationSheet.IsChange).ToString());
+
+
+
+            //ListReport.Add(cp.InformationSheet.Status);
+            ListReport.Add(cp.InformationSheet.ReferenceId);
+
+
+            ListReport.Add(organisation.Email);
+            User user = await _userService.GetApplicationUserByEmail(organisation.Email);
+           
+
+            if (cp.Agreements.Count > 0)
+            {
+                foreach (ClientAgreement agreement in cp.Agreements)
+                {
+                    var term = agreement.ClientAgreementTerms.FirstOrDefault(ter => ter.SubTermType == reportName && ter.Bound == true);
+                    if (term != null)
+                    {
+                        ListReport.Add(agreement.Status);
+
+                        ListReport.Add(term.TermLimit.ToString());
+                        ListReport.Add(term.Excess.ToString("N0"));
+                        ListReport.Add(term.Premium.ToString("N2"));
+                        ListReport.Add(term.PremiumDiffer.ToString("N2"));
+
+                        break;
+                    }
+                  
+                }
+            }
+            else
+            {
+                ListReport.Add("0");
+                ListReport.Add("0");
+                ListReport.Add("0");
+            }
+
+
+            return ListReport;
+
+        }
+
+        public async Task<List<string>> CreateListReport(ClientProgramme supercp, ClientProgramme cp , Guid clientInformationSheetID,Boolean IsprincipalAdvisor ,Boolean isSubClient )
+        {
+
+            List<String> ListReport = new List<String>();
+           
+           
+                ListReport = new List<String>();
+
+                Organisation organisation = cp.InformationSheet.Owner;
+                ////adding collumns to ListReport
+
+                 if(isSubClient)
+                 {
+                ListReport.Add(supercp.InformationSheet.Owner.Name);
+                  }
+                 else
+
+                 {
+                    ListReport.Add(cp.InformationSheet.Owner.Name);
+
+                  
+                  }
+                ListReport.Add(cp.InformationSheet.Status);
+                ListReport.Add(cp.InformationSheet.ReferenceId);
+                ListReport.Add((cp.InformationSheet.IsChange).ToString());
+
+
+            ListReport.Add(organisation.Email);
+                User user = await _userService.GetApplicationUserByEmail(organisation.Email);
+                if (isSubClient)
+                 {
+                    if (user != null)
+                    {
+                       if(user.FullName != null)
+                       {
+                        ListReport.Add(user.FullName);
+  
+                       }
+                        else
+                        {
+                         ListReport.Add(user.FirstName +" "+user.LastName);
+
+                        }
+                }
+                    else
+                    {
+                       ListReport.Add(organisation.Name);
+
+                     }
+                }
+                else
+                 {
+                  foreach (var org in cp.InformationSheet.Organisation)
+                  {
+                    var principleadvisorunit = (AdvisorUnit)org.OrganisationalUnits.FirstOrDefault(u => (u.Name == "Advisor") && u.DateDeleted == null);
+                        if (principleadvisorunit != null)
+                        {
+                            if (principleadvisorunit.IsPrincipalAdvisor)
+                            {
+                                ListReport.Add(org.Name);
+                            }
+                        }
+                  }
+                }
+                
+
+                if(cp.InformationSheet.Status != "Not Started" && cp.InformationSheet.Status != "Started")
+                {
+                
+                ClientInformationAnswer CoverStartDate = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.CoverStartDate", clientInformationSheetID);
+                ClientInformationAnswer TraditionalLicenceOptionsAnswers = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.HasTraditionalLicenceOptions", clientInformationSheetID);
+                ClientInformationAnswer AdvisersOptionsAnswers = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.HasAdvisersOptions", clientInformationSheetID);
+                ClientInformationAnswer TransitionalLicenseNum = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.TransitionalLicenseNum", clientInformationSheetID);
+                ClientInformationAnswer AdditionalTraditionalLicenceOptionsAnswers = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.HasAdditionalTraditionalLicenceOptions", clientInformationSheetID);
+                //TraditionalLicenceOptionsAnswers.Value == "0" ? ListReport.Add("Not Selected") : (TraditionalLicenceOptionsAnswers.Value == "1") ? ListReport.Add("Yes") : (TraditionalLicenceOptionsAnswers.Value == "2") ? ListReport.Add("No") ;
+                if (CoverStartDate.Value != "")
+                {
+                    ListReport.Add(CoverStartDate.Value);
+                }
+                else if (CoverStartDate.Value == "")
+                {
+                    ListReport.Add("Not Selected");
+                }
+
+                if (TraditionalLicenceOptionsAnswers.Value == "0")
+                {
+                    ListReport.Add("Not Selected");
+                }
+                else if (TraditionalLicenceOptionsAnswers.Value == "1")
+                {
+                    ListReport.Add("Yes");
+                }
+                else if (TraditionalLicenceOptionsAnswers.Value == "2")
+                {
+                    ListReport.Add("No");
+                }
+
+
+                if (AdvisersOptionsAnswers.Value == "0")
+                {
+                    ListReport.Add("Not Selected");
+                }
+                else if (AdvisersOptionsAnswers.Value == "1")
+                {
+                    ListReport.Add("I do not have any other advisers working under my license");
+                }
+                else if (AdvisersOptionsAnswers.Value == "2")
+                {
+                    ListReport.Add("I do have other advisers working under my license");
+                }
+
+                if (null != TransitionalLicenseNum )
+                {
+                    ListReport.Add(TransitionalLicenseNum.Value);
+                }
+                else
+                {
+                    ListReport.Add("Not Selected");
+                }
+
+
+
+
+
+                if (AdditionalTraditionalLicenceOptionsAnswers.Value == "0")
+                {
+                    ListReport.Add("Not Selected");
+                }
+                else if (AdditionalTraditionalLicenceOptionsAnswers.Value == "1")
+                {
+                    ListReport.Add("I am taking my own Transitional Licence with no other advisers working under my license");
+                }
+                else if (AdditionalTraditionalLicenceOptionsAnswers.Value == "2")
+                {
+                    ListReport.Add("I will be coming under someone elses Transitional Licence");
+                }
+                else if (AdditionalTraditionalLicenceOptionsAnswers.Value == "3")
+                {
+                    ListReport.Add("Undecided");
+                }
+
+                ListReport.Add(IsprincipalAdvisor.ToString());
+
+
+            }
+            else
+            {
+                ListReport.Add("Not Selected");
+                ListReport.Add("Not Selected");
+                ListReport.Add("Not Selected");
+                ListReport.Add("Not Selected");
+                ListReport.Add("Not Selected");
+
+            }
+
+
+
+
+
+
+            return ListReport;
+
+        }
+        public async Task<List<List<string>>> GetAAAReportSet(Guid programmeId, string reportName)
+        {
+            Programme programme = await _programmeService.GetProgrammeById(programmeId);
+            List<List<string>> ListReportSet = new List<List<string>>();
+            List<String> ListReport = new List<String>();
+            ListReport.Add("Insured");
+            ListReport.Add("Status");
+            ListReport.Add("Reference Id");
+            ListReport.Add("Is Change");
+            ListReport.Add("Email");
+            ListReport.Add("Advisor Names");
+            ListReport.Add("If not 15 March 2021, when do you want this cover to start?");
+            ListReport.Add("Are you coming under your own Transitional Licence?");
+            ListReport.Add("Please select from the following options");
+            ListReport.Add("If you have you transitional license number available please enter it here");
+            ListReport.Add("Please select from the following options. ");
+            ListReport.Add("Is Principal");
+
+            ListReportSet.Add(ListReport);
+
+            foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null && o.InformationSheet.NextInformationSheet == null))
+            {
+                try
+                {
+                    if (reportName == "FAP" || programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
+                    {
+                        Guid clientInformationSheetID = Guid.NewGuid();
+                        if (cp.BaseProgramme.Id == programme.Id)
+                        {
+                            clientInformationSheetID = cp.InformationSheet.Id;
+
+                        }
+                        ListReportSet.Add(await CreateListReport(null,cp, clientInformationSheetID,true,false));
+
+                        if (cp.SubClientProgrammes.Any())
+                        {
+                            foreach (var subclient in cp.SubClientProgrammes)
+                            {
+                                ListReportSet.Add(await CreateListReport(cp,subclient, clientInformationSheetID, false,true));
+                            }
+                        }
+                    }
+                    
+
+                }
+                catch (Exception ex)
+                { }
+            }
+            return ListReportSet;
+        }
+
+
+        public async Task<List<List<string>>> GetRevenueReportSet(Guid programmeId, string reportName)
+        {
+            Programme programme = await _programmeService.GetProgrammeById(programmeId);
+            List<List<string>> ListReportSet = new List<List<string>>();
+            List<String> ListCol = new List<String>();
+
+            ListCol.Add("Insured");
+            ListCol.Add("Status");
+            ListCol.Add("Reference Id");
+            ListCol.Add("Email");
+
+            foreach (var template in programme.TerritoryTemplates)
+            {
+                ListCol.Add(template.Location);
+            }
+
+            ListCol.Add("LastFinancialYearTotal");
+            ListCol.Add("CurrentYearTotal");
+            ListCol.Add("NextFinancialYearTotal");
+
+            foreach (var template in programme.BusinessActivityTemplates)
+            {
+                ListCol.Add(template.Description.Trim());
+
+            }
+            ListReportSet.Add(ListCol);
+
+            foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null && o.InformationSheet.NextInformationSheet == null ))
+            {
+                try
+                {
+                   
+                        Guid clientInformationSheetID = Guid.NewGuid();
+                        if (cp.BaseProgramme.Id == programme.Id)
+                        {
+                            clientInformationSheetID = cp.InformationSheet.Id;
+
+                        }
+                        ListReportSet.Add(await CreateRevenueListReport(null, cp, clientInformationSheetID, true, false, ListCol));
+
+                        if (cp.SubClientProgrammes.Any())
+                        {
+                            foreach (var subclient in cp.SubClientProgrammes)
+                            {
+                                ListReportSet.Add(await CreateRevenueListReport(cp, subclient, clientInformationSheetID, false, true, ListCol));
+                            }
+                        }
+
+                }
+                catch (Exception ex)
+                { }
+            }
+            return ListReportSet;
+        }
+
+        public async Task<List<string>> CreateRevenueListReport(ClientProgramme supercp, ClientProgramme cp, Guid clientInformationSheetID, Boolean IsprincipalAdvisor, Boolean isSubClient,List<String> ListCol)
+        {
+            ClientInformationSheet sheet = null;
+            List<String> ListReport = new List<String>(new String[ListCol.Count]);
+            Organisation organisation = cp.InformationSheet.Owner;
+           
+            if (isSubClient)
+            {
+                ListReport.Insert(ListCol.IndexOf("Insured"), supercp.InformationSheet.Owner.Name);
+            }
+            else
+
+            {
+                ListReport.Insert(ListCol.IndexOf("Insured"), cp.InformationSheet.Owner.Name);
+            }
+            ListReport.Insert(ListCol.IndexOf("Status"), cp.InformationSheet.Status);
+            ListReport.Insert(ListCol.IndexOf("Reference Id"), cp.InformationSheet.ReferenceId);
+            ListReport.Insert(ListCol.IndexOf("Email"), organisation.Email);
+              
+          
+               sheet = cp.InformationSheet;
+            if (sheet.RevenueData != null)
+            {
+                foreach (var territory in sheet.RevenueData.Territories)
+                {
+                    if (territory.Selected)
+                    {
+                        ListReport.Insert(ListCol.IndexOf(territory.Location), territory.Percentage.ToString("N0"));
+                    }
+                    else
+                    {
+                        ListReport.Insert(ListCol.IndexOf(territory.Location), "0");
+
+                    }
+                }
+
+                ListReport.Insert(ListCol.IndexOf("LastFinancialYearTotal"), (sheet.RevenueData.LastFinancialYearTotal.ToString("N2") != null ? sheet.RevenueData.LastFinancialYearTotal.ToString("N2") : "null"));
+                ListReport.Insert(ListCol.IndexOf("CurrentYearTotal"), (sheet.RevenueData.CurrentYearTotal.ToString("N2") != null ? sheet.RevenueData.CurrentYearTotal.ToString("N2") : "null"));
+
+                ListReport.Insert(ListCol.IndexOf("NextFinancialYearTotal"), (sheet.RevenueData.NextFinancialYearTotal.ToString("N2") != null ? sheet.RevenueData.NextFinancialYearTotal.ToString("N2") : "null"));
+
+                foreach (var activity in sheet.RevenueData.Activities)
+                {
+                    if (activity.Selected)
+                    {
+                        //ListReport.Insert(ListCol.IndexOf(activity.Description), activity.Percentage.ToString("N0"));
+                        ListReport[ListCol.IndexOf(activity.Description)] = activity.Percentage.ToString("N0");
+                    }
+                    else
+                    {
+                        ListReport[ListCol.IndexOf(activity.Description)] = "0";
+
+                        //ListReport.Insert(ListCol.IndexOf(activity.Description), "0");
+
+                    }
+
+                }
+            }
+            return ListReport;
+
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> GetReportView(IFormCollection formCollection , string IsReport)
         {
+
             User user = null;
-            try
+            user = await CurrentUser();
+            if (user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer)
+            {
+         
+                try
             {
                 Guid ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
+                Programme programme = await _programmeService.GetProgrammeById(ProgrammeId);
+
                 string queryselect = formCollection["queryselect"];
                 ViewBag.reportName = queryselect;
                 ViewBag.ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
-                ViewBag.Title = queryselect + " Report";
-                PropertyDescriptorCollection props = generatequeryField(queryselect);
+                //PropertyDescriptorCollection props = generatequeryField(queryselect);
 
                 List<PIReport> reportset = new List<PIReport>();
                 DataTable table = new DataTable();
                 //List<String> ListReport = new List<String>();
                 List<List<string>> Lreportset = new List<List<string>>();
-                if (queryselect  == "NZFSGFAP")
+                if (programme.NamedPartyUnitName == "NZFSG Programme" && queryselect == "FAP")
                 {
-                   Lreportset = await GetNZFGReportSet(ProgrammeId, queryselect);
+                    ViewBag.Title = "Financial Advice Provider(FAP)";
+
+                    Lreportset = await GetNZFGReportSet(ProgrammeId, queryselect);
+
+                }
+                else if ((programme.NamedPartyUnitName == "TripleA Programme" || programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" )&& queryselect == "FAP")
+                {
+                    ViewBag.Title = "Financial Advice Provider(FAP)";
+
+                    Lreportset = await GetAAAReportSet(ProgrammeId, queryselect);
+
+                }else if (queryselect == "RevenueActivity")
+                {
+                        Lreportset = await GetRevenueReportSet(ProgrammeId, queryselect);
+                }
+                else
+                {
+                    ViewBag.Title = "Bound " + queryselect + " Premium and Limits";
+
+                    Lreportset = await GetPremiumLimitReportSet(ProgrammeId, queryselect);
 
                 }
 
@@ -1003,7 +1569,7 @@ namespace DealEngine.WebUI.Controllers
                 //object[] values = new object[props.Count];
                 object[] values1 = new object[table.Columns.Count];
 
-                for (int i = 1; i < Lreportset.Count-1; i++)
+                for (int i = 1; i <= Lreportset.Count-1; i++)
                 {
                     try
                     {
@@ -1034,7 +1600,7 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 
-                if (IsReport != "True")
+                if (IsReport != "True" && queryselect != "RevenueActivity")
                 {
                     return View(table);
                 }
@@ -1078,6 +1644,12 @@ namespace DealEngine.WebUI.Controllers
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
+            }
+
+            }
+            else
+            {
+                return RedirectToAction("Error404", "Error");
             }
         }
 
@@ -1139,6 +1711,77 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> IssueRenewal(IFormCollection formCollection)
+        {
+            User user = null;
+            Programme programme = null;
+            string email = null;
+
+            try
+            {
+                user = await CurrentUser();
+                programme = await _programmeService.GetProgramme(Guid.Parse(formCollection["ProgrammeId"]));
+
+                foreach (var key in formCollection.Keys)
+                {
+
+                    email = key;
+                    var correctEmail = await _userService.GetUserByEmail(email);
+                    if (correctEmail != null)
+                    {
+                        if (programme.ProgEnableEmail)
+                        {
+                            var renewfromClientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(formCollection[key]));
+                            renewfromClientProgramme.RenewNotificationDate = DateTime.UtcNow;
+                            await _programmeService.Update(renewfromClientProgramme);
+
+                            //create renew task
+                            await _milestoneService.CreateRenewNotificationTask(user, renewfromClientProgramme, renewfromClientProgramme.Owner, programme);
+
+                            //send out renew notification email
+                            EmailTemplate emailTemplate = null;
+                            emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == "SendInformationSheetInstructionRenew");
+                            if (emailTemplate != null)
+                            {
+                                await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, null, null, null);
+                            }
+                            //send out login instruction email
+                            await _emailService.SendSystemEmailLogin(email);
+
+                            //send out uis issue notification email
+                            //await _emailService.SendSystemEmailUISIssueNotify(programme.BrokerContactUser, programme, sheet, programme.Owner);
+                        }
+                    }
+
+                }
+
+                return await RedirectToLocal();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RenewNotification(Guid renewFromProgrammeBaseId, Guid OrganisationId, Guid ProgrammeId)
+        {
+            User user = await CurrentUser();
+            Programme currentProgramme = await _programmeService.GetProgramme(ProgrammeId);
+            ClientProgramme renewFromProgrammeBase = await _programmeService.GetClientProgramme(renewFromProgrammeBaseId);
+            Organisation renewClientOrg = await _organisationService.GetOrganisation(OrganisationId);
+
+            //Complete the renew notification task
+            await _milestoneService.CreateRenewTask(user, renewFromProgrammeBase, renewClientOrg, currentProgramme);
+
+            //Create a renew
+            ClientProgramme CloneProgramme = await _programmeService.CloneForRenew(user, renewFromProgrammeBase.Id, currentProgramme.Id);
+
+            return Redirect("/Information/EditInformation/" + CloneProgramme.Id);
+
+        }
 
         [HttpGet]
         public async Task<IActionResult> EditClients(string ProgrammeId)

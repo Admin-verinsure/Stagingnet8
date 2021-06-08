@@ -1,0 +1,73 @@
+﻿@model NTUcreateViewModel
+
+<div class="container">
+    <form method="POST" action="~/Home/NTUcreate" novalidate>
+        <input type="text" class="form-control" value="@Model.ProgrammeId" id="programmeId" name="ProgrammeId" hidden>
+        <div class="card">
+            <div class="card-header">
+                <h5>
+                    This page lists the clients from this programme. Please select the client update status with Not Taken Up. 
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="container">
+                    <thread>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="select-all" aria-label="checkbox button for following text input">
+                                Client Name
+                            </th>
+                           <th>
+                                Status
+                            </th>
+                        </tr>
+                    </thread>
+                    <tbody>
+                        @foreach (var client in Model.ClientProgrammes)
+                        @*@foreach (var clientInformationSheet in Model.ClientInformationSheets.Where(t => t.Status == "Started"))*@
+                        {
+                            <tr>
+                                <td>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <input type="checkbox" aria-label="checkbox button for following text input" name="@client.InformationSheet.Id" value="@client.InformationSheet.Id" readonly>
+                                            </div>
+                                        </div>
+                     
+                                        <input type="text" class="form-control" aria-label="Text input with radio button" value="@client.Owner.Name ( Reference: @client.InformationSheet.ReferenceId )" readonly>
+                                    </div>
+                                </td>
+                              
+                                <td>
+                                    <input type="text" class="form-control" value="@client.InformationSheet.Status" name="Status" readonly>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary btn-xs" type="submit">Send</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section pagespecific {
+    <script type="text/javascript">
+
+
+        $('#select-all').on('click', function () {
+            debugger;
+        // Get all rows with search applied
+       // Check/uncheck checkboxes for all rows in the table
+            $('input[type="checkbox"]').prop('checked', this.checked);
+
+
+     });
+
+    </script>
+
+}

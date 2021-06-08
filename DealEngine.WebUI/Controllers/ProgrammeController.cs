@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SystemDocument = DealEngine.Domain.Entities.Document;
+using UpdateType = DealEngine.Domain.Entities.UpdateType;
+
 //using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace DealEngine.WebUI.Controllers
@@ -45,7 +47,7 @@ namespace DealEngine.WebUI.Controllers
         IImportService _importService;
         IClaimService _claimService;
         ISerializerationService _serializerationService;
-
+        IUpdateTypeService _updateTypeServices;
         public ProgrammeController(
             ISerializerationService serializerationService,
             IClaimService claimService,
@@ -68,7 +70,8 @@ namespace DealEngine.WebUI.Controllers
             IEmailService emailService,
             IMapper mapper,
             IHttpClientService httpClientService,
-            IEGlobalSubmissionService eGlobalSubmissionService
+            IEGlobalSubmissionService eGlobalSubmissionService,
+                    IUpdateTypeService updateTypeService
             )
             : base(userRepository)
         {
@@ -94,6 +97,7 @@ namespace DealEngine.WebUI.Controllers
             _mapper = mapper;
             _httpClientService = httpClientService;
             _eGlobalSubmissionService = eGlobalSubmissionService;
+            _updateTypeServices = updateTypeService;
         }
 
         [HttpGet]
@@ -782,6 +786,151 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> UpdateType(Guid ProgrammeId)
+        {
+            User user = null;
+            UpdateTypesViewModel model = new UpdateTypesViewModel();
+
+            try
+            {
+                user = await CurrentUser();
+                var dbUpdatemodelTypes = await _updateTypeServices.GetAllUpdateTypes();
+                var updateTypeModel = new List<UpdateTypesViewModel>();
+
+
+
+                model.Id = ProgrammeId;
+               Programme Programme = await _programmeService.GetProgrammeById(ProgrammeId);
+               
+
+
+
+                model.CurrentUserType = "Client";
+                if (user.PrimaryOrganisation.IsBroker)
+                {
+                    model.CurrentUserType = "Broker";
+                }
+                if (user.PrimaryOrganisation.IsInsurer)
+                {
+                    model.CurrentUserType = "Insurer";
+                }
+                if (user.PrimaryOrganisation.IsTC)
+                {
+                    model.CurrentUserType = "TC";
+                }
+                if (user.PrimaryOrganisation.IsProgrammeManager)
+                {
+                    model.CurrentUserType = "ProgrammeManager";
+                }
+
+                model.SelectedUpdateTypes = new List<string>();
+
+                foreach (var updateType in Programme.UpdateTypes)
+                {
+                    using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        if (model.SelectedUpdateTypes != null)
+                        { 
+                            model.SelectedUpdateTypes.Add(updateType.TypeValue);
+                        }
+                        await uow.Commit();
+                    }
+                }
+
+
+                foreach (var updateType in dbUpdatemodelTypes.Where(t => t.DateDeleted == null))
+                {
+                    updateTypeModel.Add(new UpdateTypesViewModel
+                    {
+                        Id = updateType.Id,
+                        NameType = updateType.TypeName,
+                        ValueType = updateType.TypeValue,
+                        TypeIsBroker = updateType.TypeIsBroker,
+                        TypeIsClient = updateType.TypeIsClient,
+                        TypeIsInsurer = updateType.TypeIsInsurer,
+                        TypeIsTc = updateType.TypeIsTc
+                    });
+
+
+                }
+                model.UpdateTypes = updateTypeModel.OrderBy(acat => acat.UpdateTypes).ToList();
+
+
+
+                return View(model);
+            }
+
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateType(IFormCollection formCollection)
+        {
+            User user = null;
+
+            try
+            {
+                Programme programme = null;
+               UpdateType updateType = null;
+                Programme UpdateTypes = null;
+                user = await CurrentUser();
+                programme = await _programmeService.GetProgramme(Guid.Parse(formCollection["ProgrammeId"]));
+                
+
+                using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    programme.UpdateTypes.Clear();
+                    await uow.Commit();
+                }
+
+                var updateTypes = new List<UpdateType>();
+
+                foreach (var key in formCollection.Keys)
+                {
+                
+                   var keyCheck = key;
+                    if (keyCheck != "__RequestVerificationToken")
+                   {
+                        updateType = await _updateTypeServices.GetUpdateType(Guid.Parse(formCollection[key]));
+                        if (updateType != null)
+                       {
+                            using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                            {
+                                programme.UpdateTypes.Add(updateType);
+
+                               // programme.UpdateTypes = updateTypes;
+                                await uow.Commit();
+                            }
+
+                        }
+                    }
+                }
+
+
+                // await _updateTypeServices.Update(updateType);
+
+                 return RedirectToAction("UpdateType", new { ProgrammeId = programme.Id });
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+
+
+
+
+        [HttpGet]
         public async Task<IActionResult> TermSheetTemplate(Guid Id)
         {
             ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
@@ -837,16 +986,14 @@ namespace DealEngine.WebUI.Controllers
                 Programme programme = await _programmeService.GetProgramme(Id);
                 model.Id = Id;
 
-                foreach (var programmeProduct in programme.Products)
-                {
-                    var product = await _productService.GetProductById(programmeProduct.Id);
+               
+                    var product = await _productService.GetProductById(productId);
 
                     foreach (var rule in product.Rules)
                     {
                         rules.Add(rule);
                     }
-                }
-
+               
                 model.Rules = rules;
                 model.ProductId = productId;
 
@@ -904,7 +1051,7 @@ namespace DealEngine.WebUI.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> ManageRules(Guid Id)
+        public async Task<IActionResult> ManageRules(Guid Id,string RuleType)
         {
             ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
             var product = new List<ProductInfoViewModel>();
@@ -932,6 +1079,7 @@ namespace DealEngine.WebUI.Controllers
                 model.Product = product;
 
                 ViewBag.Title = "Add/Edit Programme Email Template";
+                ViewBag.RuleType = RuleType;
 
                 return View("ProgrammeRules", model);
             }
@@ -941,6 +1089,8 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> EditProgramme(Guid Id)
@@ -1123,6 +1273,55 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> getselectedParty(Guid informationId, string title)
+        {
+            List<string> userEmail = new List<string>();
+            PartyUserViewModel model = new PartyUserViewModel();
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                Programme programme = await _programmeService.GetProgrammeById(informationId);
+                IList<User> users = null;
+
+                if (title == "Manage UIS Issue Notification Users")
+                {
+                    users = programme.UISIssueNotifyUsers;
+                }
+                else if (title == "Manage UIS Submission Notification Users")
+                {
+                    users = programme.UISSubmissionNotifyUsers;
+                }
+                else if (title == "Manage Agreement Refer Notification Users")
+                {
+                    users = programme.AgreementReferNotifyUsers;
+                }
+                else if (title == "Manage Agreement Issue Notification Users")
+                {
+                    users = programme.AgreementIssueNotifyUsers;
+                }
+                else if (title == "Manage Agreement Bound Notification Users")
+                {
+                    users = programme.AgreementBoundNotifyUsers;
+                }
+
+
+
+                foreach (var selecteduser in users)
+                {
+                    userEmail.Add(selecteduser.Email);
+                }
+
+                return Json(userEmail);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
 
 
         [HttpPost]
@@ -1137,7 +1336,7 @@ namespace DealEngine.WebUI.Controllers
                 user = await CurrentUser();
                 Programme programme = await _programmeService.GetProgrammeById(informationId);
                 Organisation organisation = await _organisationService.GetOrganisation(selectedParty);
-
+               
                 if ("organisation" != null)
                 {
                     var userList = await _userService.GetAllUserByOrganisation(organisation);
@@ -1267,10 +1466,11 @@ namespace DealEngine.WebUI.Controllers
                 user = await CurrentUser();
                 Programme programme = await _programmeService.GetProgrammeById(Id);
                 model.Id = Id;
-                model.Name = Title;
                 model.Programme = programme;
                 model = new ProgrammeInfoViewModel(null, programme, null);
                 List<SelectListItem> usrlist = new List<SelectListItem>();
+                model.Name = Title;
+
                 //foreach(var org in programme.ClientProgrammes)
                 //{
 
@@ -1365,6 +1565,11 @@ namespace DealEngine.WebUI.Controllers
                             emailtemplatename = "Information Sheet Instruction";
                             break;
                         }
+                    case "SendInformationSheetInstructionRenew":
+                        {
+                            emailtemplatename = "Information Sheet Instruction for Renew";
+                            break;
+                        }
                     case "SendSubInformationSheetInstruction":
                         {
                             emailtemplatename = "SubInformation Sheet Instruction";
@@ -1418,6 +1623,16 @@ namespace DealEngine.WebUI.Controllers
                     case "SendPDFReport":
                         {
                             emailtemplatename = "PDF Report";
+                            break;
+                        }
+                    case "SendAdviceAdvisorRemoval":
+                        {
+                            emailtemplatename = "Advice Of Removal Of An Advisor From Policy";
+                            break;
+                        }
+                    case "SendAdviceAdvisorAddition":
+                        {
+                            emailtemplatename = "Advice Of Addition Of An Advisor From Policy";
                             break;
                         }
                     default:
