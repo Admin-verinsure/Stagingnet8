@@ -321,7 +321,7 @@
                                 <section class="col col-sm-1 col-md-1 col-lg-1"></section>
                                 <div class="hidden col-sm-6 col-md-6 col-lg-6" id="AddHullConfigurationOtherSection">
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
-                                        <label class="label  col-12" for="OtherHullConfiguration" id="OtherHullConfiguration">Other Hull Configuration</label>
+                                        <label class="label required col-12" for="OtherHullConfiguration" id="OtherHullConfiguration">Other Hull Configuration</label>
                                         <label class="input col-12">
                                             <i></i>
                                             @Html.TextBoxFor(m => m.BoatViewModel.OtherHullConfiguration, new { id = "AddOtherHullConfiguration", @class = "form-control b", @onchange = "OnChange(this.id, this.name)", @form = "BoatViewModel", @placeholder = "Other Hull Configuration" })
