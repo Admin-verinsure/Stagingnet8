@@ -5173,8 +5173,10 @@
         //$("#AddMaxSumInsured").mask("^\$\d{1,3}(,\d{3})*(\.\d+)?$",
         //    { completed: function () { alert("You typed the following: " + this.val()); } });
 
-        var boatType1Selected = AddboatType1.options[AddboatType1.selectedIndex].value;
-        var boatType2Selected = AddboatType2.options[AddboatType2.selectedIndex].value;
+        //var boatType1Selected = AddboatType1.options[AddboatType1.selectedIndex].value;
+        var boatType1Selected = $('#AddBoatType1').val();
+        //var boatType2Selected = AddboatType2.options[AddboatType2.selectedIndex].value;
+        var boatType2Selected = $('#AddBoatType2').val();
         var MotorType = $('#AddMotorType').val();
         $('#Addexcess').val('');
         var sumInsured = document.getElementById("AddMaxSumInsured").value;
@@ -5289,7 +5291,10 @@
     //++++++++++++++++++
     function AddhideShowHullConstructionOther() {
         debugger;
-        var hullConstructionSelected = AddconstructionType.options[AddconstructionType.selectedIndex].value;
+        //AddHullConstruction
+        var hullConstructionSelected = $('#AddHullConstruction').val();
+
+        //var hullConstructionSelected = AddconstructionType.options[AddconstructionType.selectedIndex].value;
         if (hullConstructionSelected == "Other") {
             AddhullConstructOther.classList.remove("hidden");
 
@@ -5312,9 +5317,11 @@
     //++++++++++++++++++
     function AddhideShowHullConfigurationOther() {
         debugger;
-        var hullConfigurationSelected = AddhullConfiguration.options[AddhullConfiguration.selectedIndex].value;
+        //var hullConfigurationSelected = AddhullConfiguration.options[AddhullConfiguration.selectedIndex].value;
+        var hullConfigurationSelected = $('#AddHullConfiguration').val();
         if (hullConfigurationSelected == "Other") {
-            AddhullConfigurationOther.classList.remove("hidden");
+           // AddhullConfigurationOther.classList.remove("hidden");
+            AddhullConfigurationOther.removeClass("hidden");
             var OtherHullConfiguration = document.getElementById("AddOtherHullConfiguration");
             OtherHullConfiguration.classList.add("required");
             document.getElementById("AddOtherHullConfiguration").required = true;
@@ -6219,7 +6226,10 @@
     //#############
     function hideShowHullConstructionOther() {
         debugger;
-        var hullConstructionSelected = constructionType.options[constructionType.selectedIndex].value;
+        //var hullConstructionSelected = constructionType.options[constructionType.selectedIndex].value;
+        
+        var hullConstructionSelected = $('#AddHullConstruction').val();
+
         if (hullConstructionSelected == "Other") {
             hullConstructOther.classList.remove("hidden");
         }
@@ -6231,7 +6241,8 @@
     //############
     function hideShowHullConfigurationOther() {
         debugger;
-        var hullConfigurationSelected = hullConfiguration.options[hullConfiguration.selectedIndex].value;
+        //var hullConfigurationSelected = hullConfiguration.options[hullConfiguration.selectedIndex].value;
+        var hullConfigurationSelected = $('#AddHullConfiguration').val();
         if (hullConfigurationSelected == "Other") {
             hullConfigurationOther.classList.remove("hidden");
         }
@@ -6243,7 +6254,8 @@
     //##################
     function addNewSkipper() {
         debugger;
-        var selectedBoatOperator = boatOperator.options[boatOperator.selectedIndex].value;
+        //var selectedBoatOperator = boatOperator.options[boatOperator.selectedIndex].value;
+        var selectedBoatOperator = $('#AddBoatOperator').val();
         if (selectedBoatOperator == "add") {
             $('#addOperatorModal').show();
             boatOperator.selectedIndex = 0;
@@ -6253,7 +6265,8 @@
     //##################
     function addNewTrailer() {
         debugger;
-        var selectedTrailer = boatTrailer.options[boatTrailer.selectedIndex].value;
+        //var selectedTrailer = boatTrailer.options[boatTrailer.selectedIndex].value;
+        var selectedTrailer = $('#AddBoatTrailer').val();
         if (selectedTrailer == "add") {
             $('#addTrailerModal').show();
             boatTrailer.selectedIndex = 0;
@@ -6285,7 +6298,8 @@
     //##################
     function addNewLandLoc() {
         debugger;
-        var selectedLandLoc = boatLandLoc.options[boatLandLoc.selectedIndex].value;
+        //var selectedLandLoc = boatLandLoc.options[boatLandLoc.selectedIndex].value;
+        var selectedLandLoc = $('#AddBoatLandLocation').val();
         if (selectedLandLoc == "add") {
             $('#addLandLocModal').show();
             boatLandLoc.selectedIndex = 0;
@@ -6296,7 +6310,8 @@
     //#################
     function addNewWaterLoc() {
         debugger;
-        var selectedWaterLoc = boatWaterLoc.options[boatWaterLoc.selectedIndex].value;
+        //var selectedWaterLoc = boatWaterLoc.options[boatWaterLoc.selectedIndex].value;
+        var selectedWaterLoc = $('#AddBoatWaterLocation').val();
         if (selectedWaterLoc == "add") {
             $('#AddothermarinSection').removeClass('hidden');
             $('#AddBoatMooredTypeSection').removeClass('hidden');
@@ -6312,7 +6327,8 @@
     //+++++++++++++++++++++
     function AddaddNewWaterLoc() {
         debugger;
-        var AddSelectedWaterLoc = AddboatWaterLoc.options[AddboatWaterLoc.selectedIndex].value;;
+       // var AddSelectedWaterLoc = AddboatWaterLoc.options[AddboatWaterLoc.selectedIndex].value;
+        var AddSelectedWaterLoc = $('#AddBoatWaterLocation').val();
          if (AddSelectedWaterLoc == "add") {
              $('#AddothermarinSection').removeClass('hidden');
              var AddOtherBoatWaterLocation1 = document.getElementById("AddOtherBoatWaterLocation");
@@ -6334,7 +6350,8 @@
     //XXXXXXXXXXXXXXXXX
     function addNewLoc() {
         debugger;
-        var selectedLoc2 = boatLoc2.options[boatLoc2.selectedIndex].value;
+        //var selectedLoc2 = boatLoc2.options[boatLoc2.selectedIndex].value;
+        var selectedLoc2 = $('#BuildingLocationModal').val();
         if (selectedLoc2 == "add") {
             $('#addLocModal').show();
             $('#addLandLocModal').hide();
@@ -6345,7 +6362,9 @@
     //XXXXXXXXXXXXXXXXX
     function addNewTrailerLoc() {
         debugger;
-        var selectedLoc3 = boatLoc3.options[boatLoc3.selectedIndex].value;
+        //var selectedLoc3 = boatLoc3.options[boatLoc3.selectedIndex].value;
+        var selectedLoc3 = $('#VehicleLocationModal').val();
+
         if (selectedLoc3 =="add") {
             $('#addLocModal').show();
             $('#addTrailerModal').hide();
@@ -6356,8 +6375,9 @@
     //XXXXXXXXXXXXXXXXX
     function addTrailerLoc() {
         debugger;
-        var VehicleLocation =  document.getElementById("VehicleLocation");
-        var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+       // var VehicleLocation =  document.getElementById("VehicleLocation");
+        //var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+        var selectedLoc3 = $('#AddVehicleLocation').val();
         if (selectedLoc3 =="add") {
             $('#addLocModal').show();
             VehicleLocation.selectedIndex = 0;
@@ -6367,8 +6387,9 @@
     //XXXXXXXXXXXXXXXXX
     function AddaddTrailerLoc() {
         debugger;
-        var VehicleLocation =  document.getElementById("AddVehicleLocation");
-        var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+        //var VehicleLocation =  document.getElementById("AddVehicleLocation");
+        //var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+        var selectedLoc3 = $('#AddVehicleLocation').val();
         if (selectedLoc3 =="add") {
             $('#addLocModal').show();
             VehicleLocation.selectedIndex = 0;
@@ -6378,8 +6399,9 @@
     //XXXXXXXXXXXXXXXXX
     function addLandLoc() {
         debugger;
-        var VehicleLocation =  document.getElementById("BuildingLocation");
-        var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+       // var VehicleLocation =  document.getElementById("BuildingLocation");
+       // var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+        var selectedLoc3 = $('#AddBuildingLocation').val();
         if (selectedLoc3 =="add") {
             $('#addLocModal').show();
             VehicleLocation.selectedIndex = 0;
@@ -6389,8 +6411,9 @@
     //XXXXXXXXXXXXXXXXX
     function AddaddLandLoc() {
         debugger;
-        var VehicleLocation =  document.getElementById("AddBuildingLocation");
-        var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+       // var VehicleLocation =  document.getElementById("AddBuildingLocation");
+       // var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+        var selectedLoc3 = $('#AddBuildingLocation').val();
         if (selectedLoc3 =="add") {
             $('#addLocModal').show();
             VehicleLocation.selectedIndex = 0;
@@ -6400,8 +6423,9 @@
     //XXXXXXXXXXXXXXXXX
     function addPlantLoc() {
         debugger;
-        var VehicleLocation = document.getElementById("MotorLocation");
-        var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+        //var VehicleLocation = document.getElementById("MotorLocation");
+        //var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+        var selectedLoc3 = $('#AddMotorLocation').val();
         if (selectedLoc3 =="add") {
             $('#addLocModal').show();
             VehicleLocation.selectedIndex = 0;
@@ -6412,8 +6436,9 @@
     //XXXXXXXXXXXXXXXXX
     function AddaddPlantLoc() {
         debugger;
-        var VehicleLocation =  document.getElementById("AddMotorLocation");
-        var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+        //var VehicleLocation =  document.getElementById("AddMotorLocation");
+        //var selectedLoc3 = VehicleLocation.options[VehicleLocation.selectedIndex].value;
+        var selectedLoc3 = $('#AddMotorLocation').val();
         if (selectedLoc3 =="add") {
             $('#addLocModal').show();
             VehicleLocation.selectedIndex = 0;
@@ -6442,13 +6467,18 @@
         debugger;
         var BoatUse = document.getElementById("AddSelectedBoatUse");
         var BoatUse2 = document.getElementById("AddSelectedBoatUse");
-        var selectedBoatUse = BoatUse.options[BoatUse.selectedIndex].value;
-        var selectedBoatUse2 = BoatUse2.options[BoatUse2.selectedIndex].value;
+        //var selectedBoatUse = BoatUse.options[BoatUse.selectedIndex].value;
+        //var selectedBoatUse2 = BoatUse2.options[BoatUse2.selectedIndex].value;
+        var selectedBoatUse = $('#AddSelectedBoatUse').val();
+        var selectedBoatUse2 = $('#AddSelectedBoatUse').val();
         if (selectedBoatUse == "add" || selectedBoatUse2 == "add") {
             BoatUse.selectedIndex = 0;
             BoatUse2.selectedIndex = 0;
-            var AddboatType1Selected = AddboatType1.options[AddboatType1.selectedIndex].value;
-            var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
+           // var AddboatType1Selected = AddboatType1.options[AddboatType1.selectedIndex].value;
+            var AddboatType1Selected = $('#AddBoatType1').val();
+           // var boatType1Selected = boatType1.options[boatType1.selectedIndex].value;
+            var boatType1Selected = $('#AddBoatType1').val();
+
             if (AddboatType1Selected == "YachtsandCatamarans" || boatType1Selected == "YachtsandCatamarans") {
                 $('#addBoatUseModal').show();
                 $('#Race').removeClass("hidden");
@@ -6478,8 +6508,9 @@
     //XXXXXXXXXXXXXXXXXXX
     function vesselUseCategory() {
         debugger;
-        var boatusecategory = document.getElementById("BoatUseCategory");
-        var selectedBoatUseCategory = boatusecategory.options[boatusecategory.selectedIndex].value;
+        //var boatusecategory = document.getElementById("BoatUseCategory");
+       // var selectedBoatUseCategory = boatusecategory.options[boatusecategory.selectedIndex].value;
+        var selectedBoatUseCategory = $('#BoatUseCategory').val();
         var boatUseLiveNotesSection = document.getElementById("BoatUseLiveNotesSection");
         var SpinnakersSection = document.getElementById("spinnakersSection");
         var raceCategorySection = document.getElementById("RaceCategorySection");
@@ -6501,8 +6532,9 @@
     //XXXXXXXXXXXXXXXXXXX
     function AddBoatUseCategory() {
         debugger;
-        var boatusecategory = document.getElementById("AddBoatUseCategory");
-        var selectedBoatUseCategory = boatusecategory.options[boatusecategory.selectedIndex].value;
+        //var boatusecategory = document.getElementById("AddBoatUseCategory");
+       // var selectedBoatUseCategory = boatusecategory.options[boatusecategory.selectedIndex].value;
+        var selectedBoatUseCategory = $('#AddBoatUseCategory').val();
         var boatUseLiveNotesSection = document.getElementById("AddBoatUseLiveNotesSection");
         var SpinnakersSection = document.getElementById("AddspinnakersSection");
         var raceCategorySection = document.getElementById("AddRaceCategorySection");

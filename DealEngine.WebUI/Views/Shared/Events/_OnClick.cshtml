@@ -143,46 +143,98 @@
         $('#AddSelectedInterestedParty').val('');
         $('#AddSelectedInterestedParty').trigger('chosen:updated');
 
+        //AddBoatLandLocationSection, AddBoatLandLocation
+       
+        var AddBoatLandLocationSection1 = document.getElementById("AddBoatLandLocationSection");
+        AddBoatLandLocationSection1.classList.remove("hidden");
+        var AddBoatLandLocation1 = document.getElementById("AddBoatLandLocation");
+        AddBoatLandLocation1.classList.add("required");
+        document.getElementById("AddBoatLandLocation").required = true;
 
-        $('#AddSelectTrailerSection').hide('2000');
+        //AddVesselUseSection
+       // var AddVesselUseSection1 = document.getElementById('AddVesselUseSection');
+        //AddVesselUseSection1.classList.add("hidden");
+        document.getElementById("AddVesselUseSection").style.display = "none";
+        var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+        AddSelectedBoatUse1.classList.remove("required");
+        document.getElementById("AddSelectedBoatUse").required = false;
+
+
+        //$('#AddSelectTrailerSection').hide('2000');
+        var AddSelectTrailerSection1 = document.getElementById('AddSelectTrailerSection');
+        AddSelectTrailerSection1.style.display = 'none';
         var AddBoatTrailer1 = document.getElementById("AddBoatTrailer");
         AddBoatTrailer1.classList.remove("required");
         document.getElementById("AddBoatTrailer").required = false;
 
-        $('#AddHullConstructOtherSection').hide('2000');
+        
+        var AddHullConstructOtherSection1 = document.getElementById("AddHullConstructOtherSection");
+        AddHullConstructOtherSection1.classList.add("hidden");
         var AddOtherConstructionType1 = document.getElementById("AddOtherConstructionType");
         AddOtherConstructionType1.classList.remove("required");
         document.getElementById("AddOtherConstructionType").required = false;
 
-        $('#AddHullConfigurationOtherSection').hide('2000');
+     
+        var AddHullConfigurationOtherSection1 = document.getElementById("AddHullConfigurationOtherSection");
+        AddHullConfigurationOtherSection1.classList.add("hidden");
         var AddOtherHullConfiguration1 = document.getElementById("AddOtherHullConfiguration");
         AddOtherHullConfiguration1.classList.remove("required");
         document.getElementById("AddOtherHullConfiguration").required = false;
 
-        $('#AddBoatWaterLocationSection').hide('2000');
+        //$('#AddBoatWaterLocationSection').hide('2000');
+        //var AddBoatWaterLocationSection1 = document.getElementById('AddBoatWaterLocationSection');
+        //AddBoatWaterLocationSection1.style.display = 'none';
+        var AddBoatWaterLocationSection1 = document.getElementById("AddBoatWaterLocationSection");
+        AddBoatWaterLocationSection1.classList.add("hidden");
         var AddBoatWaterLocation1 = document.getElementById("AddBoatWaterLocation");
         AddBoatWaterLocation1.classList.remove("required");
         document.getElementById("AddBoatWaterLocation").required = false;
 
-        $('#AddothermarinSection').hide('2000');
+        //$('#AddothermarinSection').hide('2000');
+        var AddothermarinSection1 = document.getElementById('AddothermarinSection');
+        AddothermarinSection1.classList.add("hidden");
+        //AddothermarinSection1.style.display = 'none';
         var AddMooredType1 = document.getElementById("AddMooredType");
         AddMooredType1.classList.remove("required");
         document.getElementById("AddMooredType").required = false;
         
-        $('#AddRegistrationSection').hide('2000');
+        //$('#AddRegistrationSection').hide('2000');
+        var AddRegistrationSection1 = document.getElementById('AddRegistrationSection');
+        AddRegistrationSection1.style.display = 'none';
         var AddVesselArea1 = document.getElementById("AddVesselArea");
         AddVesselArea1.classList.remove("required");
         document.getElementById("AddVesselArea").required = false;
 
-        $('#AddaucklandRegoSection').hide('2000');
+        //$('#AddaucklandRegoSection').hide('2000');
+        var AddaucklandRegoSection1 = document.getElementById('AddaucklandRegoSection');
+        AddaucklandRegoSection1.style.display = 'none';
         var AddAucklandRegistration1 = document.getElementById("AddAucklandRegistration");
         AddAucklandRegistration1.classList.remove("required");
         document.getElementById("AddAucklandRegistration").required = false;
 
-        $('#AddVesselUseSection').hide('2000');
+        //$('#AddVesselUseSection').hide('2000');
+        var AddVesselUseSection1 = document.getElementById('AddVesselUseSection');
+        AddVesselUseSection1.style.display = 'none';
         var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
         AddSelectedBoatUse1.classList.remove("required");
         document.getElementById("AddSelectedBoatUse").required = false;
+
+        //AddBoatMooredTypeSection
+        var AddBoatMooredTypeSection1 = document.getElementById('AddBoatMooredTypeSection');
+        AddBoatMooredTypeSection1.classList.add("hidden");
+        //AddBoatMooredTypeSection1.style.display = 'none';
+        var AddMooredType1 = document.getElementById("AddMooredType");
+        AddMooredType1.classList.remove("required");
+        document.getElementById("AddMooredType").required = false;
+
+        //remove disabled AddBuiltProfessionally,
+        document.getElementById('AddBuiltProfessionally').disabled = false;
+
+      //remove disabled AddHullConfiguration,
+        document.getElementById('AddHullConfiguration').disabled = false;
+
+        //remove disabled  AddMotorType
+        document.getElementById('AddMotorType').disabled = false;
 
         SetCurrentTab(Tab);
     }
