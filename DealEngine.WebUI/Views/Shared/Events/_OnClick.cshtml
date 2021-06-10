@@ -154,7 +154,8 @@
         //AddVesselUseSection
        // var AddVesselUseSection1 = document.getElementById('AddVesselUseSection');
         //AddVesselUseSection1.classList.add("hidden");
-        document.getElementById("AddVesselUseSection").style.display = "none";
+        $("#AddVesselUseSection").addClass("hidden");
+       // document.getElementById("AddVesselUseSection").style.display = "none";
         var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
         AddSelectedBoatUse1.classList.remove("required");
         document.getElementById("AddSelectedBoatUse").required = false;
@@ -168,15 +169,18 @@
         document.getElementById("AddBoatTrailer").required = false;
 
         
-        var AddHullConstructOtherSection1 = document.getElementById("AddHullConstructOtherSection");
-        AddHullConstructOtherSection1.classList.add("hidden");
+        //var AddHullConstructOtherSection1 = document.getElementById("AddHullConstructOtherSection");
+        //AddHullConstructOtherSection1.classList.add("hidden");
+        $("#AddHullConstructOtherSection").addClass("hidden");
+
         var AddOtherConstructionType1 = document.getElementById("AddOtherConstructionType");
         AddOtherConstructionType1.classList.remove("required");
         document.getElementById("AddOtherConstructionType").required = false;
 
      
-        var AddHullConfigurationOtherSection1 = document.getElementById("AddHullConfigurationOtherSection");
-        AddHullConfigurationOtherSection1.classList.add("hidden");
+        //var AddHullConfigurationOtherSection1 = document.getElementById("AddHullConfigurationOtherSection");
+        //AddHullConfigurationOtherSection1.classList.add("hidden");
+        $("#AddHullConfigurationOtherSection").addClass("hidden");
         var AddOtherHullConfiguration1 = document.getElementById("AddOtherHullConfiguration");
         AddOtherHullConfiguration1.classList.remove("required");
         document.getElementById("AddOtherHullConfiguration").required = false;
@@ -184,15 +188,18 @@
         //$('#AddBoatWaterLocationSection').hide('2000');
         //var AddBoatWaterLocationSection1 = document.getElementById('AddBoatWaterLocationSection');
         //AddBoatWaterLocationSection1.style.display = 'none';
-        var AddBoatWaterLocationSection1 = document.getElementById("AddBoatWaterLocationSection");
-        AddBoatWaterLocationSection1.classList.add("hidden");
+        //var AddBoatWaterLocationSection1 = document.getElementById("AddBoatWaterLocationSection");
+        //AddBoatWaterLocationSection1.classList.add("hidden");
+        $("#AddBoatWaterLocationSection").addClass("hidden");
+
         var AddBoatWaterLocation1 = document.getElementById("AddBoatWaterLocation");
         AddBoatWaterLocation1.classList.remove("required");
         document.getElementById("AddBoatWaterLocation").required = false;
 
         //$('#AddothermarinSection').hide('2000');
-        var AddothermarinSection1 = document.getElementById('AddothermarinSection');
-        AddothermarinSection1.classList.add("hidden");
+       // var AddothermarinSection1 = document.getElementById('AddothermarinSection');
+        //AddothermarinSection1.classList.add("hidden");
+        $("#AddothermarinSection").addClass("hidden");
         //AddothermarinSection1.style.display = 'none';
         var AddMooredType1 = document.getElementById("AddMooredType");
         AddMooredType1.classList.remove("required");
@@ -220,8 +227,9 @@
         document.getElementById("AddSelectedBoatUse").required = false;
 
         //AddBoatMooredTypeSection
-        var AddBoatMooredTypeSection1 = document.getElementById('AddBoatMooredTypeSection');
-        AddBoatMooredTypeSection1.classList.add("hidden");
+        //var AddBoatMooredTypeSection1 = document.getElementById('AddBoatMooredTypeSection');
+        //AddBoatMooredTypeSection1.classList.add("hidden");
+        $("#AddBoatMooredTypeSection").addClass("hidden");
         //AddBoatMooredTypeSection1.style.display = 'none';
         var AddMooredType1 = document.getElementById("AddMooredType");
         AddMooredType1.classList.remove("required");
