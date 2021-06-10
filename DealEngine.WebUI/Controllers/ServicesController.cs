@@ -2245,11 +2245,16 @@ namespace DealEngine.WebUI.Controllers
                             }
                             else
                             {
+                                //String.Format("{0:C}", decimalMoneyValue);
+                                //int intPart = (int)collection[keyField].ToString();
+
                                 var MaxSumInsured = collection[keyField].ToString().Replace("$", "").Replace(",", "").Replace(".00","");
 
-                                var NewMaxSumInsured = Int32.Parse(MaxSumInsured);
-                           
-                                property.SetValue(boat, NewMaxSumInsured);
+                                var NewMaxSumInsured = float.Parse(MaxSumInsured);
+                                var intPart = (int)NewMaxSumInsured;
+
+
+                                property.SetValue(boat, intPart);
                             }
                         }
 

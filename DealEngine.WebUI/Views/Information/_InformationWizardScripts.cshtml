@@ -53,8 +53,9 @@
                     var forms = document.getElementsByClassName('needs-validation');
                     InformationSheetSubmit('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName', '@Model.ClientInformationSheet.Status', forms);
                     debugger;
-                      var vesselExists = document.getElementById("Vessel");
-                    var Isboatexist = document.querySelector('[aria-describedby="tblBoat_BoatName"]') !== null;
+                    var vesselExists = document.getElementById("Vessel");//tblBoat
+                    //var Isboatexist = document.querySelector('[aria-describedby="tblBoat_BoatName"]') !== null;
+                    var Isboatexist = document.querySelector('[id="tblBoat"]') !== null;
 
                    var IsboatNamecount = 0;
                        $('#tblBoat tr').each(function () {
@@ -5281,7 +5282,7 @@
         $('#Addexcess').val('');
         var sumInsured = document.getElementById("AddMaxSumInsured").value;
         var sumInsured = sumInsured.replace(/[^0-9\.-]+/g, "");
-
+        //var sumInsured1 = sumInsured.replace(/[^0-9\-]+/g, "");
         //var formatter = new Intl.NumberFormat('de-DE', {
         //    style: 'currency',
         //    currency: 'NZD',
