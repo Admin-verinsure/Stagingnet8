@@ -562,9 +562,12 @@
                                 <div class="col-sm-6 col-md-6 col-lg-6 d-flex">
                                     <section class="col col-xs-10 col-sm-10 col-md-10 col-lg-10">
                                         <label class="label required col-12">Effective Date for cover for this vessel</label>
-                                        <label class="input col-12 calender-relative">
-                                            <i class="icon-append fa fa-calendar new-calendar"></i>
-                                            @Html.TextBoxFor(m => m.BoatViewModel.BoatEffectiveDate, new { id = "AddBoatEffectiveDate", @class = "form-control b", @onchange = "OnChange(this.id, this.name)", @form = "BoatViewModel", @placeholder = "Effective Date" })
+                                        <label class="input col-12">
+                                        @*<label class="input col-12 calender-relative">*@
+                                            @*<i class="icon-append fa fa-calendar new-calendar"></i>*@
+                                            @*@Html.TextBoxFor(m => m.BoatViewModel.BoatEffectiveDate, new { id = "AddBoatEffectiveDate", @class = "form-control b", @onchange = "OnChange(this.id, this.name)", @form = "BoatViewModel", @placeholder = "Effective Date" })*@
+                                            @Html.TextBoxFor(m => m.BoatViewModel.BoatEffectiveDate, new { id = "AddBoatEffectiveDate", @class = "form-control currentDate", onfocus = "(this.type='date')", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "BoatViewModel" })
+                                            @*@Html.TextBoxFor(m => m.ClaimViewModel.ClaimDateOfLoss, new { id = "ClaimDateOfLoss", @class = "form-control currentDate", onfocus = "(this.type='date')", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })*@
 
                                             @*<input name="BoatEffectiveDate" placeholder="Effective Date" class="form-control b" id="AddBoatEffectiveDate" type="text">*@
                                         </label>
