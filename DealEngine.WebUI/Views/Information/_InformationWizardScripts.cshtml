@@ -2930,6 +2930,12 @@
                 //    //document.getElementById("AddAucklandRegistration").required = false;
                 //}
 
+                //$(function () {
+                //$('#AddMaxSumInsured').maskMoney();
+                $("#AddMaxSumInsured").maskMoney({ thousands: ',', decimal: '.', allowZero: true, prefix: ' $' });
+
+
+                //})
 
                 SetCurrentTab("boatTabs2");
             });

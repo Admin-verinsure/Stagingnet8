@@ -244,6 +244,18 @@
         //remove disabled  AddMotorType
         document.getElementById('AddMotorType').disabled = false;
 
+
+        //for currency validation
+
+        //$(function () {
+            //$('#AddMaxSumInsured').maskMoney();
+            $("#AddMaxSumInsured").maskMoney({ thousands: ',', decimal: '.', allowZero: true, prefix: ' $' });
+
+
+        //})
+
+
+
         SetCurrentTab(Tab);
     }
 
@@ -350,6 +362,12 @@
         }
         document.getElementById(AddButtonId).innerText = "Add";
         document.getElementById(CancelButtonId).innerText = "Clear and Cancel";
+
+        if (document.getElementById("AddMaxSumInsured") !== null) {
+            $("#AddMaxSumInsured").maskMoney({ thousands: ',', decimal: '.', allowZero: true, prefix: ' $' });
+
+        }
+
         debugger;
         ResetOrganisation();
     }
@@ -360,7 +378,7 @@
         var formValid = TableFormValidation(form , "claim");
         if (formValid) {
             debugger;
-            sessionStorage.setItem('accordianTrigger', 'ClaimNotification');
+            sessionStorage.setItem('accordianTrigger', "New Notification");
             $.ajax({
                 url: '@Url.Action("AddClaim", "Services")',
                 type: "POST",
@@ -383,7 +401,15 @@
     function AddVessel() {
         debugger;
         var form = document.getElementById("BoatViewModel");
-       var formValid = TableFormValidation(form , "Vessel");
+        var formValid = TableFormValidation(form, "Vessel");
+        //$(function () {
+        //$('#AddMaxSumInsured').maskMoney();
+        $("#AddMaxSumInsured").maskMoney({ thousands: ',', decimal: '.', allowZero: true, prefix: ' $' });
+
+
+         //})
+
+
         if (formValid) {
             sessionStorage.setItem('accordianTrigger', 'Vessel');
 
@@ -516,7 +542,7 @@
 
 
     function RemoveClaimNotification(Id) {
-        sessionStorage.setItem('accordianTrigger', 'Notifications');
+        sessionStorage.setItem('accordianTrigger', "New Notification");
         var postData = { claimId: Id };
         $.ajax({
             url: '@Url.Action("RemoveClaimNotification", "Services")',
@@ -533,7 +559,7 @@
     }
 
     function RestoreCommonClaim(Id) {
-        sessionStorage.setItem('accordianTrigger', 'Notifications');
+        sessionStorage.setItem('accordianTrigger', "New Notification");
         var postData = { claimId: Id };
         $.ajax({
             url: '@Url.Action("RestoreClaimNotification", "Services")',
