@@ -244,6 +244,20 @@
         //remove disabled  AddMotorType
         document.getElementById('AddMotorType').disabled = false;
 
+        //AddRiggingTypeSection
+        var AddRiggingTypeSection1 = document.getElementById("AddRiggingTypeSection");
+        AddRiggingTypeSection1.classList.remove("hidden");
+        var AddRiggingType1 = document.getElementById("AddRiggingType");
+        AddRiggingType1.classList.add("required");
+        document.getElementById("AddRiggingType").required = true;
+
+        //AddMastTypeSection
+        var AddMastTypeSection1 = document.getElementById("AddMastTypeSection");
+        AddMastTypeSection1.classList.remove("hidden");
+        var AddMastType1 = document.getElementById("AddMastType");
+        AddMastType1.classList.add("required");
+        document.getElementById("AddMastType").required = true;
+
 
         //for currency validation
 
