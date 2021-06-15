@@ -96,16 +96,21 @@
 
 
     function SelectValidation(obj, value) {
+        debugger;
         if (!obj.multiple) {
-            if (value != "0") {
-                obj.classList.add("is-valid");
-                obj.classList.remove("is-invalid");
+            //if (value != "0") {
+            //    obj.classList.add("is-valid");
+            //    obj.classList.remove("is-invalid");
+
+            //}
+              if (value == "0") {
+                obj.classList.remove("is-valid");
+                obj.classList.add("is-invalid");
 
             }
             else if (value == "") {
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
-
 
             }
             else {
