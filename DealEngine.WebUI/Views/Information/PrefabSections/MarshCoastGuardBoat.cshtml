@@ -449,7 +449,7 @@
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                         <label class="label required col-12" for="BoatIsTrailered">Does this Vessel have a Trailer?</label>
                                         <label class="input form-group col-12">
-                                            <select style="" onchange="AddhasTrailer()" class="b form-select" id="AddBoatIsTrailered" name="BoatIsTrailered" form="BoatViewModel">
+                                            <select style="" onchange="AddhasTrailer()" class="b form-select" id="AddBoatIsTrailered" name="BoatIsTrailered" form="BoatViewModel" required>
                                                 <option selected="selected" value="">-- Select --</option>
                                                 <option value="True">Yes</option>
                                                 <option value="False">No</option>
@@ -487,7 +487,7 @@
                                     <section class="col col-xs-12 col-sm-10 col-md-10 col-lg-10">
                                         <label class="label required col-12" for="LandLocation">Land Storage Location</label>
                                         <label class="input form-group col-12">
-                                            <select style="" onchange="AddaddNewLandLoc()" class="b form-select" id="AddBoatLandLocation" name="BoatLandLocation" form="BoatViewModel">
+                                            <select style="" onchange="AddaddNewLandLoc()" class="b form-select" id="AddBoatLandLocation" name="BoatLandLocation" form="BoatViewModel" required>
                                                 <option selected="selected" value="">-- Select --</option>
                                                 @foreach (var building in Model.ClientInformationSheet.Buildings)
                                                 {

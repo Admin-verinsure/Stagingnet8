@@ -5387,6 +5387,9 @@
         var hasT = $('#AddBoatIsTrailered').val();
         if (hasT == "True") {
             $('#AddSelectTrailerSection').show('2000');
+            var AddBoatTrailer1 = document.getElementById("AddBoatTrailer");
+            AddBoatTrailer1.classList.add("required");
+            document.getElementById("AddBoatTrailer").required = true;
         }
         else if (hasT == "False") {
              if ($('#AddBoatType2').val() == "Roadtrailer") {
@@ -6255,8 +6258,8 @@
 
             $('#AddBoatLandLocationSection').removeClass("hidden");
             var AddBoatLandLocation1 = document.getElementById("AddBoatLandLocation");
-            AddBoatLandLocation1.classList.remove("required");
-            document.getElementById("AddBoatLandLocation").required = false;
+            AddBoatLandLocation1.classList.add("required");
+            document.getElementById("AddBoatLandLocation").required = true;
 
 
             hasTrailer();
@@ -6264,8 +6267,8 @@
         else if (boatType2Selected == "Stored") {
             $('#AddVesselTrailer').show('2000');
             var AddBoatIsTrailered1 = document.getElementById("AddBoatIsTrailered");
-            AddBoatIsTrailered1.classList.remove("required");
-            document.getElementById("AddBoatIsTrailered").required = false;
+            AddBoatIsTrailered1.classList.add("required");
+            document.getElementById("AddBoatIsTrailered").required = true;
 
             //boatType1Jetski.classList.remove("hidden");//
             $("#AddBoatType1Jetski").removeClass("hidden");
@@ -6288,8 +6291,8 @@
 
             $('#AddBoatLandLocationSection').removeClass("hidden");
             var AddBoatLandLocation1 = document.getElementById("AddBoatLandLocation");
-            AddBoatLandLocation1.classList.remove("required");
-            document.getElementById("AddBoatLandLocation").required = false;
+            AddBoatLandLocation1.classList.add("required");
+            document.getElementById("AddBoatLandLocation").required = true;
 
 
             hasTrailer();
@@ -6297,8 +6300,8 @@
         else if (boatType2Selected == "Berthed") {
             $('#AddVesselTrailer').show('2000');
             var AddBoatIsTrailered1 = document.getElementById("AddBoatIsTrailered");
-            AddBoatIsTrailered1.classList.remove("required");
-            document.getElementById("AddBoatIsTrailered").required = false;
+            AddBoatIsTrailered1.classList.add("required");
+            document.getElementById("AddBoatIsTrailered").required = true;
 
             //boatType1Jetski.classList.add("hidden");//
             $("#AddBoatType1Jetski").addClass("hidden");
