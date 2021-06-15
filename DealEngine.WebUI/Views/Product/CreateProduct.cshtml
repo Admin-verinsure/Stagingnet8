@@ -38,7 +38,7 @@
                                     <label><strong>Select Base Product</strong></label>
                                 </td>
                                 <td>
-                                    @Html.DropDownListFor(m => m.Description.SelectedBaseProduct, Model.Description.BaseProducts, new { @class = "form-control", @required = "required" })
+                                    @Html.DropDownListFor(m => m.Description.SelectedBaseProduct, Model.Description.BaseProducts, new { @class = "form-control form-select", @required = "required" })
                                 </td>
                             </tr>
                             <tr>
@@ -46,7 +46,7 @@
                                     <label><strong>Select Languages</strong></label>
                                 </td>
                                 <td>
-                                    @Html.DropDownListFor(m => m.Description.SelectedLanguages, Model.Description.Languages, new { @class = "form-control", @required = "required" })
+                                    @Html.DropDownListFor(m => m.Description.SelectedLanguages, Model.Description.Languages, new { @class = "form-control form-select", @required = "required" })
                                 </td>
                             </tr>
                         </tbody>
@@ -94,12 +94,12 @@
                     @Html.ListBoxFor(m => m.Settings.SelectedDocuments, Model.Settings.Documents, new { @class = "form-control" })
                 </div>
                 <div class="form-group">
-                    @Html.DropDownListFor(m => m.Settings.SelectedOwnerOrganisation, Model.Settings.PossibleOwnerOrganisations, new { @class = "form-control", @required = "required" })
+                    @Html.DropDownListFor(m => m.Settings.SelectedOwnerOrganisation, Model.Settings.PossibleOwnerOrganisations, new { @class = "form-contro form-selectl", @required = "required" })
                 </div>
                 @if (Model.Settings.SelectedInsuranceProgramme != null)
                 {
                     <div class="form-group">
-                        @Html.DropDownListFor(m => m.Settings.SelectedInsuranceProgramme, Model.Settings.InsuranceProgrammes, new { @class = "form-control", @required = "required" })
+                        @Html.DropDownListFor(m => m.Settings.SelectedInsuranceProgramme, Model.Settings.InsuranceProgrammes, new { @class = "form-control form-select", @required = "required" })
                     </div>
                 }
             </form>

@@ -65,6 +65,7 @@ namespace DealEngine.WebUI.Models
         public List<SelectListItem> BoatUseslist { get; set; }
         public IEnumerable<OrganisationViewModel> MarinaLocations { get; set; }
         public IEnumerable<ClaimViewModel> Claims { get; set; }
+        public ClaimViewModel ClaimViewModel { get; set; }
         public string Advisory { get; set; }
         public RevenueDataViewModel RevenueDataViewModel { get; set; }
         public RoleDataViewModel RoleDataViewModel { get; set; }

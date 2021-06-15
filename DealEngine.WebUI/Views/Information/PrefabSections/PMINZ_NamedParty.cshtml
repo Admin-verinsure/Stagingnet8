@@ -95,7 +95,7 @@
                     <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 nonOwnerSec">
                         <label class=" label required">Type</label>
                         <label class="input">
-                            <select id="PMINZType" onchange="EditPMINZTypeSelected('PMINZType')" class="form-control b" name="Type">
+                            <select id="PMINZType" onchange="EditPMINZTypeSelected('PMINZType')" class="form-control b form-select" name="Type">
                                 <option selected="selected" value="">-- Select --</option>
                                 <option value="project management personnel">Project Personnel</option>
                                 <option value="Subsidiary">Subsidiary</option>
@@ -114,7 +114,7 @@
                     <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 EditNonProjectPersonnel PMINZOrganisationTypesec">
                         <label class=" label required nonOwnerSec ">Organisation Type</label>
                         <label class="input">
-                            <select id="PMINZOrganisationType" onchange="EditPMINZOrgTyprselected('PMINZOrganisationType')" class="form-control b" name="OrganisationTypeName">
+                            <select id="PMINZOrganisationType" onchange="EditPMINZOrgTyprselected('PMINZOrganisationType')" class="form-control b form-select" name="OrganisationTypeName">
                                 <option selected="selected" value="">-- Select --</option>
                                 <option value="Person - Individual">Private/Soletrader</option>
                                 <option value="Corporation – Limited liability">Limited Liability Company</option>
@@ -209,7 +209,7 @@
                             <label class="label required">Relation to insured entity:</label>
 
                             <label class="input w100">
-                                <select class="form-control oper" onchange="EditInsuredEntity('PMINZInsuredEntity')" id="PMINZInsuredEntity" name="InsuredEntityRelation" required>
+                                <select class="form-control oper form-select" onchange="EditInsuredEntity('PMINZInsuredEntity')" id="PMINZInsuredEntity" name="InsuredEntityRelation" required>
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="Director">Director</option>
                                     <option value="Employee">Employee</option>
@@ -224,7 +224,7 @@
                             <label class="label required">Does this contractor carry their own insurance ? </label>
 
                             <label class="input w100">
-                                <select class="form-control oper" onchange="ContractorInsuredSelected('PMINZIsContractorInsured')" id="PMINZIsContractorInsured" name="IsContractorInsured" required>
+                                <select class="form-control oper form-select" onchange="ContractorInsuredSelected('PMINZIsContractorInsured')" id="PMINZIsContractorInsured" name="IsContractorInsured" required>
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
@@ -237,7 +237,7 @@
                             <label class="label required">Does this contractor require to be insured under this policy ? </label>
 
                             <label class="input w100">
-                                <select class="form-control oper" id="PMINZIsInsuredRequired" name="IsInsuredRequired" required>
+                                <select class="form-control oper form-select" id="PMINZIsInsuredRequired" name="IsInsuredRequired" required>
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
@@ -251,7 +251,7 @@
                             <label class="label required">Do you have a current membership (i.e. not expired)? :</label>
 
                             <label class="input w100">
-                                <select class="form-control oper" onchange="EditCurrentmembership('PMINZCurrentMembership')" id="PMINZCurrentMembership" name="IsCurrentMembership" required>
+                                <select class="form-control oper form-select" onchange="EditCurrentmembership('PMINZCurrentMembership')" id="PMINZCurrentMembership" name="IsCurrentMembership" required>
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
@@ -276,7 +276,7 @@
                             <label class="label required">Certification Type: </label>
 
                             <label class="input w100">
-                                <select class="form-control oper" id="PMINZCertType" name="CertType" required>
+                                <select class="form-control oper form-select" id="PMINZCertType" name="CertType" required>
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="Ordinary">Ordinary/Non Member</option>
                                     <option value="PMP">PMP</option>
@@ -327,7 +327,7 @@
                     <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                         <label class=" label required">Type</label>
                         <label class="input">
-                            <select id="AddPMINZType" onchange="AddPMINZTypeSelected('AddPMINZType')" class="form-control b" name="Type">
+                            <select id="AddPMINZType" onchange="AddPMINZTypeSelected('AddPMINZType')" class="form-control b form-select" name="Type">
                                 <option selected="selected" value="">-- Select --</option>
                                 <option value="project management personnel">Project Personnel</option>
                                 <option value="Subsidiary">Subsidiary</option>
@@ -346,7 +346,7 @@
                     <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 NonProjectPersonnelSec">
                         <label class=" label required">Organisation Type</label>
                         <label class="input">
-                            <select id="AddPMINZOrgTypeName" onchange="AddOrgTypeSelected('AddPMINZOrgTypeName')" class="form-control b" name="OrganisationTypeName">
+                            <select id="AddPMINZOrgTypeName" onchange="AddOrgTypeSelected('AddPMINZOrgTypeName')" class="form-control b form-select" name="OrganisationTypeName">
                                 <option selected="selected" value="">-- Select --</option>
                                 <option value="Person - Individual">Private/Soletrader</option>
                                 <option value="Corporation – Limited liability">Limited Liability Company</option>
@@ -446,7 +446,7 @@
                             <label class="label required">Relation to insured entity:</label>
 
                             <label class="input w100" required>
-                                <select class="form-control oper" onchange="AddEditInsuredEntity('AddPMINZInsuredEntity')" id="AddPMINZInsuredEntity" name="InsuredEntityRelation">
+                                <select class="form-control oper form-select" onchange="AddEditInsuredEntity('AddPMINZInsuredEntity')" id="AddPMINZInsuredEntity" name="InsuredEntityRelation">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="Director">Director</option>
                                     <option value="Employee">Employee</option>
@@ -461,7 +461,7 @@
                             <label class="label required">Does this contractor carry their own insurance ? </label>
 
                             <label class="input w100" required>
-                                <select class="form-control oper" onchange="AddContractorInsuredSelected('AddPMINZIsContractorInsured')" id="AddPMINZIsContractorInsured" name="IsContractorInsured">
+                                <select class="form-control oper form-select" onchange="AddContractorInsuredSelected('AddPMINZIsContractorInsured')" id="AddPMINZIsContractorInsured" name="IsContractorInsured">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
@@ -474,7 +474,7 @@
                             <label class="label required">Does this contractor require to be insured under this policy ? </label>
 
                             <label class="input w100" required>
-                                <select class="form-control oper" id="AddPMINZIsInsuredRequired" name="IsInsuredRequired">
+                                <select class="form-control oper form-select" id="AddPMINZIsInsuredRequired" name="IsInsuredRequired">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
@@ -488,7 +488,7 @@
 
                             <label class="input w100" required>
 
-                                <select class="form-control oper" onchange="Currenmembership('AddPMINZIsCurrentMembership')" id="AddPMINZIsCurrentMembership" name="IsCurrentMembership">
+                                <select class="form-control oper form-select" onchange="Currenmembership('AddPMINZIsCurrentMembership')" id="AddPMINZIsCurrentMembership" name="IsCurrentMembership">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
@@ -513,7 +513,7 @@
                             <label class="label required">PMI Certification Type: </label>
 
                             <label class="input w100" required>
-                                <select class="form-control oper" id="AddPMINZCertType" name="CertType">
+                                <select class="form-control oper form-select" id="AddPMINZCertType" name="CertType">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="Ordinary">Ordinary/Non Member</option>
                                     <option value="PMP">PMP</option>

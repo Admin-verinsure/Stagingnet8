@@ -1,22 +1,23 @@
 @model DealEngine.WebUI.Models.InformationViewModel
 
+
 <div id="content" style="background-color: #A6E2EF">
     <!-- widget grid -->
     <section id="widget-grid" class="">
         <!-- row -->
         <div class="row">
-            <!-- NEW WIDGET START -->
+            <!-- NEW WIDGET START Info -->
             <article class="container">
                 <!-- Widget ID (each widget will need unique ID)-->
                 <div id="container" class="container-fluid">
                     <div aria-live="polite" aria-atomic="true">
-                        <div class="toast" id="toast" style="position: fixed; top: 0; right: 0;" data-delay="3000">
+                        <div class="toast" id="toast" style="position: fixed; top: 0; right: 0; z-index: 100;" data-delay="3000">
                             <div class="toast-header">
                                 <i class="fa fa-globe">
                                     <strong class="mr-auto"> Success </strong>
                                     <small class="text-muted"> just now </small>
-                                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
+                                    <button type="button" class="ml-2 mb-1 btn-close" data-bs-dismiss="toast" aria-label="Close">
+                                        @*<span aria-hidden="true">&times;</span>*@
                                     </button>
                                 </i>
                             </div>
@@ -66,11 +67,14 @@
                                         <div id="tab_1" class="tab-pane step-content" style="display: block;">
                                             <h3>
                                                 <strong> @Model.Wizardsteps.ElementAt(0) </strong> - Complete Information
-                                                <button type="button" class="btn btn-sm pull-right text-white" data-toggle="modal" data-target="#advisoryModal" style="background-color: #00A8C8">
+                                                @*<button type="button" class="btn btn-sm pull-right text-white" data-toggle="modal" data-target="#advisoryModal" style="background-color: #00A8C8">
                                                     <i class="bi bi-node-plus"></i>Advisory
-                                                </button>
+                                                </button>*@
+                                            <button type="button" class="btn btn-sm pull-right text-white" data-bs-toggle="modal" data-bs-target="#advisoryModal" data-bs-whatever="mdo" style="background-color: #00A8C8">
+                                                Advisory
+                                            </button>
                                             </h3>
-                                            <div id="form-step-0" role="form" data-toggle="validator">
+                                            <div id="form-step-0" role="form" data-bs-toggle="validator">
                                                 <div class="form-group">
                                                     <div class="row">
                                                         @{ await Html.RenderPartialAsync("_ViewInformation"); }
@@ -131,12 +135,12 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Marina Location</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="ModalMarinaLocSelected()" class="form-control b" id="WaterLocationMarinaLocationModal" name="WaterLocationMarinaLocation" required>
+                                                                                    <select style="" onchange="ModalMarinaLocSelected()" class="form-select b" id="WaterLocationMarinaLocationModal" name="WaterLocationMarinaLocation" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         @*@foreach (var bwloc in Model.MarinaLocations)
-                                                                                        {
-                                                                                            <option value="@bwloc.ID">@string.Join(", ", bwloc.Organisation.Name)</option>
-                                                                                        }*@
+                                                                                            {
+                                                                                                <option value="@bwloc.ID">@string.Join(", ", bwloc.Organisation.Name)</option>
+                                                                                            }*@
                                                                                         <option value="add">Add Marina Location</option>
                                                                                     </select>
                                                                                 </label>
@@ -145,7 +149,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Organisational Unit</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="ModalOUSelected()" class="form-control b" id="OrgUnitModal" name="OrganisationalUnit" required>
+                                                                                    <select style="" onchange="ModalOUSelected()" class="form-select b" id="OrgUnitModal" name="OrganisationalUnit" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                     </select>
                                                                                 </label>
@@ -154,7 +158,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12" style="border-bottom:.5px solid #e5e5e5; padding-bottom:18px; margin-bottom:20px;">
                                                                                 <label class="label cgmodalLabel">Location</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="addNewLoc()" class="form-control b" id="WaterLocationLocationModal" name="WaterLocationLocation">
+                                                                                    <select style="" onchange="addNewLoc()" class="form-select b" id="WaterLocationLocationModal" name="WaterLocationLocation">
                                                                                         <option selected="selected" value="00000000-0000-0000-0000-000000000000">-- Select --</option>
                                                                                         @foreach (var wloc in Model.LocationViewModel.Locations)
                                                                                         {
@@ -175,7 +179,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Moored Type</label>
                                                                                 <label class="input w100">
-                                                                                    <select class="form-control b" data-name="WaterLocationMooringType" id="MooredTypeModal" name="WaterLocationMooringType">
+                                                                                    <select style="" class="form-select b" data-name="WaterLocationMooringType" id="MooredTypeModal" name="WaterLocationMooringType">
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         <option value="Pile">Pile</option>
                                                                                         <option id="MooredTypeMarina" value="Marina">Marina</option>
@@ -206,20 +210,20 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12" style="border-bottom:.5px solid #e5e5e5; padding-bottom:18px; margin-bottom:20px;">
                                                                                 <label class="label cgmodalLabel required">Location</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="addNewLoc()" class="form-control b" id="BuildingLocationModal" name="BuildingLocation" required>
-                                                                                            <option selected="selected" value="">-- Select --</option>
-                                                                                            @foreach (var wloc in Model.LocationViewModel.Locations)
-                                                                                            {
-                                                                                                <option value="@wloc.Id">@string.Join(", ", wloc.Street, wloc.Suburb, wloc.City)</option>
-                                                                                            }
-                                                                                            <option value="add">Add Location</option>
+                                                                                    <select style="" onchange="addNewLoc()" class="form-select b" id="BuildingLocationModal" name="BuildingLocation" required>
+                                                                                        <option selected="selected" value="">-- Select --</option>
+                                                                                        @foreach (var wloc in Model.LocationViewModel.Locations)
+                                                                                        {
+                                                                                            <option value="@wloc.Id">@string.Join(", ", wloc.Street, wloc.Suburb, wloc.City)</option>
+                                                                                        }
+                                                                                        <option value="add">Add Location</option>
                                                                                     </select>
                                                                                 </label>
                                                                             </section>
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel required">Storage Type</label>
                                                                                 <label class="input w100">
-                                                                                    <select class="form-control b" data-name="BuildingCategory" id="BuildingCategoryModal" name="BuildingCategory" required>
+                                                                                    <select style="" class="form-select b" data-name="BuildingCategory" id="BuildingCategoryModal" name="BuildingCategory" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         <option value="Lockup">Lockup At Address</option>
                                                                                         <option value="Open Park">Open Park At Address</option>
@@ -286,7 +290,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Interested Party</label>
                                                                                 <label class="input cgmodalInput" style="padding:10px 25px 0px 25px" id="IPList">
-                                                                                    <label class="radio-inline" style="width:25%;" id="Financial"><input onclick="InterestedPartyUpdated()" type="radio" name="InsuranceAttribute" value="Financial">    Financial</label>                                                                                    
+                                                                                    <label class="radio-inline" style="width:25%;" id="Financial"><input onclick="InterestedPartyUpdated()" type="radio" name="InsuranceAttribute" value="Financial">    Financial</label>
                                                                                     <label class="radio-inline " style="width:22%;" id="CoOwner"><input onclick="InterestedPartyUpdated()" type="radio" name="InsuranceAttribute" value="CoOwner">    Co Owner</label>
                                                                                 </label>
                                                                             </section>
@@ -300,7 +304,7 @@
                                                                                         <label>Organisation Type</label>
                                                                                     </section>
                                                                                     <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                                                        <select class="form-control" data-name="organisationType" id="OrganisationTypeName" name="OrganisationTypeName" value="" required>
+                                                                                        <select style="" class="form-select" data-name="organisationType" id="OrganisationTypeName" name="OrganisationTypeName" value="" style="color:#fff" required>
                                                                                             <option selected>--Select---</option>
                                                                                             <option>Person - Individual</option>
                                                                                             <option>Corporation – Limited liability</option>
@@ -338,73 +342,73 @@
                                                                             </div>
                                                                         </div>
                                                                         @*<div id="PrivateSection" class="hidden">
-                                                                            <div class="row">
-                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                                                    <label class="label " style="padding-top:5px;padding-bottom:15px;color:lightskyblue !important;font-size:115% !important;">Private Interested Party</label>
-                                                                                </section>
-                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12"></section>
-                                                                                <hr id="boutUseCategoryHairline" style="display:none;" />
-                                                                                <div id="AdminUser">
-                                                                                    <div class="row">
-                                                                                        <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                                                            <label class="label cgmodalLabel">Who will Administer this Interested Party Details?</label>
-                                                                                            <label class="input cgmodalInput" style="padding:10px 25px 0px 25px">
-                                                                                                <label class="radio-inline" style="width:28%;"><input onclick="AdminUpdated()" type="radio" name="IsAdmin" value="Yes">Me</label>
-                                                                                                <label class="radio-inline" style="width:28%;"><input onclick="AdminUpdated()" type="radio" name="IsAdmin" value="No">SomeoneElse</label>
-                                                                                            </label>
-                                                                                        </section>
-                                                                                    </div>
-                                                                                    <div id="AdminSection" class="hidden">
+                                                                                <div class="row">
+                                                                                    <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                                                        <label class="label " style="padding-top:5px;padding-bottom:15px;color:lightskyblue !important;font-size:115% !important;">Private Interested Party</label>
+                                                                                    </section>
+                                                                                    <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12"></section>
+                                                                                    <hr id="boutUseCategoryHairline" style="display:none;" />
+                                                                                    <div id="AdminUser">
                                                                                         <div class="row">
                                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                                                                <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                                                                                    <label>Email</label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9" style="margin-top:5px;">
-                                                                                                    <label class="input">
-                                                                                                        <input data-type="TEXTBOX" data-name="Email" id="Email" name="Email" placeholder="Admin User Email">
-                                                                                                    </label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-12 col-sm-3 col-md-3 col-lg-3" style="margin-top:25px;" id="UserSearchSec">
-                                                                                                    <button onclick="GetUser('#Email')" class="btn-sm w100">Search</button>
-                                                                                                </section>
-                                                                                            </section>
-                                                                                            <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" style="margin-top:5px;" id="firstnameSec">
-                                                                                                <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                                                                                    <label>FirstName</label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
-                                                                                                    <label class="input">
-                                                                                                        <input data-type="TEXTBOX" data-name="FirstName" id="FirstName" name="FirstName" placeholder="Admin User FirstName">
-                                                                                                    </label>
-                                                                                                </section>
-                                                                                            </section>
-                                                                                            <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" id="LastnameSec">
-                                                                                                <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                                                                                    <label>LastName</label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
-                                                                                                    <label class="input">
-                                                                                                        <input data-type="TEXTBOX" data-name="LastName" id="LastName" name="LastName" placeholder="Admin User LastName">
-                                                                                                    </label>
-                                                                                                </section>
-                                                                                            </section>
-                                                                                            <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" id="PhoneSec">
-                                                                                                <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
-                                                                                                    <label>Phone</label>
-                                                                                                </section>
-                                                                                                <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
-                                                                                                    <label class="input">
-                                                                                                        <input data-type="TEXTBOX" data-name="Phone" id="Phone" name="Phone" placeholder="Admin User Phone">
-                                                                                                    </label>
-                                                                                                </section>
+                                                                                                <label class="label cgmodalLabel">Who will Administer this Interested Party Details?</label>
+                                                                                                <label class="input cgmodalInput" style="padding:10px 25px 0px 25px">
+                                                                                                    <label class="radio-inline" style="width:28%;"><input onclick="AdminUpdated()" type="radio" name="IsAdmin" value="Yes">Me</label>
+                                                                                                    <label class="radio-inline" style="width:28%;"><input onclick="AdminUpdated()" type="radio" name="IsAdmin" value="No">SomeoneElse</label>
+                                                                                                </label>
                                                                                             </section>
                                                                                         </div>
+                                                                                        <div id="AdminSection" class="hidden">
+                                                                                            <div class="row">
+                                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                                                                                    <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                                                                                        <label>Email</label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9" style="margin-top:5px;">
+                                                                                                        <label class="input">
+                                                                                                            <input data-type="TEXTBOX" data-name="Email" id="Email" name="Email" placeholder="Admin User Email">
+                                                                                                        </label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-12 col-sm-3 col-md-3 col-lg-3" style="margin-top:25px;" id="UserSearchSec">
+                                                                                                        <button onclick="GetUser('#Email')" class="btn-sm w100">Search</button>
+                                                                                                    </section>
+                                                                                                </section>
+                                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" style="margin-top:5px;" id="firstnameSec">
+                                                                                                    <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                                                                                        <label>FirstName</label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                                                                                                        <label class="input">
+                                                                                                            <input data-type="TEXTBOX" data-name="FirstName" id="FirstName" name="FirstName" placeholder="Admin User FirstName">
+                                                                                                        </label>
+                                                                                                    </section>
+                                                                                                </section>
+                                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" id="LastnameSec">
+                                                                                                    <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                                                                                        <label>LastName</label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                                                                                                        <label class="input">
+                                                                                                            <input data-type="TEXTBOX" data-name="LastName" id="LastName" name="LastName" placeholder="Admin User LastName">
+                                                                                                        </label>
+                                                                                                    </section>
+                                                                                                </section>
+                                                                                                <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden" id="PhoneSec">
+                                                                                                    <section class="col col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                                                                                                        <label>Phone</label>
+                                                                                                    </section>
+                                                                                                    <section class="col col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                                                                                                        <label class="input">
+                                                                                                            <input data-type="TEXTBOX" data-name="Phone" id="Phone" name="Phone" placeholder="Admin User Phone">
+                                                                                                        </label>
+                                                                                                    </section>
+                                                                                                </section>
+                                                                                            </div>
+                                                                                        </div>
                                                                                     </div>
+                                                                                    <hr />
                                                                                 </div>
-                                                                                <hr />
-                                                                            </div>
-                                                                        </div>*@
+                                                                            </div>*@
                                                                     </div>
                                                                     <div class="modal-footer">
                                                                         <section class="col col-xs-12">
@@ -462,7 +466,7 @@
                                                                                 <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                     <label class="label cgmodalLabel required ">Race Category</label>
                                                                                     <label class="input cgmodalInput">
-                                                                                        <select class="form-control b" id="BoatUseRaceCategoryModal" name="BoatUseRaceCategory" required>
+                                                                                        <select style="" class="form-select b" id="BoatUseRaceCategoryModal" name="BoatUseRaceCategory" required>
                                                                                             <option selected="selected" value="">-- Select --</option>
                                                                                             <option value="YachtClubSocialRacingupto50nm">Yacht Club Social Racing up to 50nm</option>
                                                                                             <option value="Yachtracingupto200nm">Yacht racing up to 200nm</option>
@@ -474,7 +478,7 @@
                                                                                 <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                     <label class="label cgmodalLabel required">Do you use spinnakers and/or extras?</label>
                                                                                     <label class="input cgmodalInput">
-                                                                                        <select class="form-control b" id="BoatUseRaceUseSpinnakersModal" name="BoatUseRaceUseSpinnakers" required>
+                                                                                        <select style="" class="form-select b" id="BoatUseRaceUseSpinnakersModal" name="BoatUseRaceUseSpinnakers" required>
                                                                                             <option selected="selected" value="">-- Select --</option>
                                                                                             <option value="True">Yes</option>
                                                                                             <option value="False">No</option>
@@ -581,7 +585,7 @@
                                                                                 <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12" id="VesselTrailerLoc" style="display:none;">
                                                                                     <label class="label cgmodalLabel required">Location</label>
                                                                                     <label class="input cgmodalInput">
-                                                                                        <select onchange="addNewTrailerLoc()" class="form-control b" id="VehicleLocationModal" name="VehicleLocation" required>
+                                                                                        <select style="" onchange="addNewTrailerLoc()" class="form-select b" id="VehicleLocationModal" name="VehicleLocation" required>
                                                                                             <option selected="selected" value="">-- Select --</option>
                                                                                             @foreach (var tloc in Model.LocationViewModel.Locations)
                                                                                             {
@@ -660,7 +664,7 @@
                                                                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden ">
                                                                             <input class="form-control b " type="text" data-type="TEXTBOX" id="vehicledestTable" name="destTable" value="" required>
                                                                         </section>
-                                                                        
+
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label class="label cgmodalLabel required" for="CeaseDate">Cease Date</label>
                                                                             <label class="input cgmodalInput">
@@ -668,11 +672,11 @@
                                                                                 <input name="BoatEffectiveDate" placeholder="Cease Date" class="form-control b" id="RemoveVehicleCeaseEffectiveDate" type="text">
                                                                             </label>
                                                                             <p class="validationContainer" id="validateVehicleCeasedate"></p>
-                                                                        </section>                                                                        
+                                                                        </section>
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label for="CeaseReason" class="label cgmodalLabel required" style="color:black; font-size:100%;">Cease Reason</label>
                                                                             <label class="input cgmodalInput">
-                                                                                <select class="form-control b" id="VehicleCeaseReason" name="VehicleCeaseReason">
+                                                                                <select style="" class="form-select b" id="VehicleCeaseReason" name="VehicleCeaseReason">
                                                                                     <option selected="selected" value="">-- Select --</option>
                                                                                     <option value="1">Sold</option>
                                                                                     <option value="2">Decommision</option>
@@ -680,7 +684,7 @@
                                                                                     <option value="4">Transfered</option>
                                                                                     <option value="9">Other</option>
                                                                                 </select>
-                                                                            </label>                                                                            
+                                                                            </label>
                                                                             <p class="validationContainer" id="validateVehicleDescription"></p>
                                                                         </section>
                                                                     </div>
@@ -712,7 +716,7 @@
                                                                         <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12 hidden">
                                                                             <input class="form-control b " type="text" data-type="TEXTBOX" id="destTable" name="destTable" value="" required>
                                                                         </section>
-                                                                        
+
                                                                         <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6" style="">
                                                                             <label class="label cgmodalLabel required" for="CeaseDate">Cease Date</label>
                                                                             <label class="input cgmodalInput">
@@ -720,11 +724,11 @@
                                                                                 <input name="BoatEffectiveDate" placeholder="Cease Date" class="form-control b" id="RemoveCeaseEffectiveDate" type="text">
                                                                             </label>
                                                                             <p class="validationContainer" id="validateBoatCeasedate"></p>
-                                                                        </section>                                                                      
+                                                                        </section>
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label for="CeaseReason" class="label cgmodalLabel required" style="color:black; font-size:100%;">Cease Reason</label>
                                                                             <label class="input cgmodalInput">
-                                                                                <select class="form-control b" id="RemoveCeaseReason" name="BoatCeaseReason" required>
+                                                                                <select style="" class="form-select b" id="RemoveCeaseReason" name="BoatCeaseReason" required>
                                                                                     <option selected="selected" value="">-- Select --</option>
                                                                                     <option value="1">Sold</option>
                                                                                     <option value="2">Decommision</option>
@@ -742,17 +746,19 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="modal" id="advisoryModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-                                                            <div class="modal-dialog" role="document">
+                                                        <div class="modal fade" id="advisoryModal" aria-labelledby="advisoryModalLabel" tabindex="-1" role="dialog" aria-hidden="true" >
+                                                            <div class="modal-dialog" >
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title">Advisory</h5>
+                                                                        <h5 class="modal-title" id="advisoryModalLabel">Advisory</h5>
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         @Html.Raw(Model.Advisory)
                                                                     </div>
                                                                     <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                                                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">ok</button>
+
+                                                                        @*<button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>*@
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -770,7 +776,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel required">Location Type</label>
                                                                                 <label class="input w100">
-                                                                                    <select class="form-control b" id="LocationTypeModal" name="LocationType" required>
+                                                                                    <select style="" class="form-select b" id="LocationTypeModal" name="LocationType" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         <option value="Residential">Residential</option>
                                                                                         <option value="Commercial">Commercial</option>
@@ -839,23 +845,24 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="tab_2" class="tab-pane step-content">
+                                        <div id="tab_2" class="tab-pane step-content" style="display:none">
                                             <h3><strong> @Model.Wizardsteps.ElementAt(1) </strong></h3>
-                                            <div id="agreementView" class="row">
+                                            <div id="agreementView" class="row test">
+                                                @*  for test-1 tab-2*@
                                             </div>
                                         </div>
                                         @if (Model.Wizardsteps.Count > 2)
                                         {
-                                            <div id="tab_3" class="tab-pane step-content">
+                                            <div id="tab_3" class="tab-pane step-content" style="display:none">
                                                 <h3><strong> @Model.Wizardsteps.ElementAt(2) </strong></h3>
                                                 <div id="agreementDeclarationView" class="row">
                                                 </div>
                                             </div>
-                                            <div id="tab_4" class="tab-pane step-content">
+                                            <div id="tab_4" class="tab-pane step-content" style="display:none">
                                                 <h3><strong> @Model.Wizardsteps.ElementAt(3)</strong></h3>
                                                 <div id="pxpaymentView"></div>
                                             </div>
-                                            <div id="tab_5" class="tab-pane step-content">
+                                            <div id="tab_5" class="tab-pane step-content" style="display:none">
                                                 <h3><strong> @Model.Wizardsteps.ElementAt(4) </strong></h3>
                                                 <div class="row">
                                                     <div class="col-sm-12">
@@ -1000,29 +1007,82 @@
     </section>
 </div>
 
+
+
+
 @section pagespecific {
-    <link rel="stylesheet" href="~/css/smartadmin-production.min.css">
+    @*<link rel="stylesheet" href="~/css/smartadmin-production.min.css">*@
 
     @await Html.PartialAsync("_InformationWizardScripts")
     @await Html.PartialAsync("_DataTableScripts")
 <script>
-        $(document).ready(function () {
-            var accordianPanel = sessionStorage.getItem("accordianTrigger");
-            if (accordianPanel != null) {
-                var section = document.getElementById(accordianPanel);
-                if (section.parentElement.id == "later") {
-                    $("#more").trigger("click");
-                }
-                $("[id='" + accordianPanel + "']").trigger("click");
-                sessionStorage.removeItem("accordianTrigger");
-            }
 
-            advisoryModal = document.getElementById('advisoryModal');
+
+
+        //var exampleModal = document.getElementById('exampleModal')
+        //exampleModal.addEventListener('show.bs.modal', function (event) {
+        //    // Button that triggered the modal
+        //    var button = event.relatedTarget
+        //    // Extract info from data-bs-* attributes
+        //    var recipient = button.getAttribute('data-bs-whatever')
+        //    // If necessary, you could initiate an AJAX request here
+        //    // and then do the updating in a callback.
+        //    //
+        //    // Update the modal's content.
+        //    var modalTitle = exampleModal.querySelector('.modal-title')
+        //    var modalBodyInput = exampleModal.querySelector('.modal-body input')
+
+        //    modalTitle.textContent = 'New message to ' + recipient
+        //    modalBodyInput.value = recipient
+        //})
+
+
+
+    $(document).ready(function () {
+        var accordianPanel = sessionStorage.getItem("accordianTrigger");
+        if (accordianPanel != null) {
+            var section = document.getElementById(accordianPanel);
+            if (section.parentElement.id == "later") {
+                $("#more").trigger("click");
+            }
+            $("[id='" + accordianPanel + "']").trigger("click");
+            sessionStorage.removeItem("accordianTrigger");
+        }
+
+            @*advisoryModal = document.getElementById('advisoryModal');
+            if ("@Model.Status" === "Not Started") {
+                if ("@Model.Advisory" !== "") {
+                    $("#advisoryModal").modal('show');
+                   // modal.show();
+
+                }
+            }*@
+
+    @*var advisoryModal = new bootstrap.Modal(document.getElementById('advisoryModal'));
+            advisoryModal.show()
+
+            if ("@Model.Status" === "Not Started") {
+                console.log('test1');
+                if ("@Model.Advisory" !== "") {
+                    console.log('test2');
+                    advisoryModal.show()
+
+                }
+            }*@
+
+
+
+         advisoryModal = document.getElementById('advisoryModal');
             if ("@Model.Status" === "Not Started") {
                 if ("@Model.Advisory" !== "") {
                     $("#advisoryModal").modal('show');
                 }
             }
+
+
+
+        //var advisoryModal = document.getElementById('advisoryModal');
+        //advisoryModal.addEventListener('show.bs.modal');
 
             if ("@Model.Status" == "Submitted") {
                 if (document.getElementById('fieldset') != null) {
@@ -1053,7 +1113,9 @@
                     });
             }
             else {
-                $('#advisoryModal').modal('hide');
+                //var advisoryModal = new bootstrap.Modal(document.getElementById('advisoryModal'));
+                //$('#advisoryModal').modal('hide');
+                advisoryModal.hide()
             }
     }
 
@@ -1064,7 +1126,7 @@
          debugger;
 
         var slectedUpdateType = "@Model.selectedUpdateType.First()";
-    
+
          if (slectedUpdateType == "TC_add_edit_remove_location") {
                // $("#Location").trigger("click");
              //$("[id='Location']").trigger("click");
@@ -1077,23 +1139,23 @@
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat"]');
              test1[0].click();
          }
-      
+
          if (slectedUpdateType == "TC_amendInsuredPerson") {
              var test1 = document.querySelectorAll('[data-newId="AddOrganisation"]');
              test1[0].click();
-             
+
          }
 
          if (slectedUpdateType == "TC_addNotification") {
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat4"]');
              test1[0].click();
          }
-        
+
          if (slectedUpdateType == "TC_addEditDeleteRegTrailer") {
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat0"]');
              test1[0].click();
          }
- 
+
          if (slectedUpdateType == "TC_addEditDeleteNonRegTrailer") {
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat1"]');
              test1[0].click();

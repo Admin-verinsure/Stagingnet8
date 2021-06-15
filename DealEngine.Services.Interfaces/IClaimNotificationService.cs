@@ -7,5 +7,9 @@ namespace DealEngine.Services.Interfaces
     public interface IClaimNotificationService
     {
         Task<ClaimNotification> GetClaimNotificationById(Guid claimId);
+        // Task UpdateClaimNotification(ClaimNotification claim);
+        //np code
+        Task UpdateClaimNotification(ClaimNotification claimNotification);
+
     }
 }

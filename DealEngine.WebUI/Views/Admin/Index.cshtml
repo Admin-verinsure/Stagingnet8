@@ -202,7 +202,7 @@
                                     </td>
                                     <td>
 
-                                        <select data-placeholder="Click here to search locked users" id="unlockUser" name="unlockUser" multiple class="col-6 chosen-select form-control b">
+                                        <select data-placeholder="Click here to search locked users" id="unlockUser" name="unlockUser" multiple class="col-6 chosen-select form-control b form-select">
                                             @foreach (var user in Model.LockedUsers)
                                             {
                                                 <option value="@user.Value">@user.Text</option>

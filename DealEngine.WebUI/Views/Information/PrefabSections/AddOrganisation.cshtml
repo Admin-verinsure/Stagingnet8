@@ -4,23 +4,23 @@
 <div id="AddOrganisation">
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" id="tab1">
-            <a class="nav-link active" href="#OrganisationTab1" data-toggle="tab" onclick="ResetForm('OrganisationTab3','OrganisationTab2', 'Organisation', 'OrganisationSubmitBtn', 'OrganisationClearButton')"> List All </a>
+            <a class="nav-link active" href="#OrganisationTab1" data-bs-toggle="tab" onclick="ResetForm('OrganisationTab3','OrganisationTab2', 'Organisation', 'OrganisationSubmitBtn', 'OrganisationClearButton')"> List All </a>
         </li>
         <li class="nav-item" id="tab2">
-            <a class="nav-link" href="#OrganisationTab2" data-toggle="tab"> Edit </a>
+            <a class="nav-link" href="#OrganisationTab2" data-bs-toggle="tab"> Edit </a>
         </li>
         <li class="nav-item" id="tab3">
-            <a class="nav-link" href="#OrganisationTab3" data-toggle="tab" onclick="ResetForm('OrganisationTab3','OrganisationTab2', 'Organisation', 'OrganisationSubmitBtn', 'OrganisationClearButton')"> Add </a>
+            <a class="nav-link" href="#OrganisationTab3" data-bs-toggle="tab" onclick="ResetForm('OrganisationTab3','OrganisationTab2', 'Organisation', 'OrganisationSubmitBtn', 'OrganisationClearButton')"> Add </a>
         </li>
         <li class="nav-item" id="tab4">
-            <a class="nav-link" href="#OrganisationTab4" data-toggle="tab"> Removed </a>
+            <a class="nav-link" href="#OrganisationTab4" data-bs-toggle="tab"> Removed </a>
         </li>
     </ul>
     <div class="tab-content">
         <div id="OrganisationTab1" class="tab-pane active" role="tabpanel">
             <table id="tblOrganisation"
                    class="table table-striped" width="100%"
-                   data-show-columns="true"
+                   @*data-show-columns="true"*@
                    data-pagination="true"
                    data-search="true"
                    data-show-jump-to="true">
@@ -213,6 +213,7 @@
 
                     @Html.Hidden("Unit", Model.OrganisationViewModel.InterestedPartyUnit.GetType().AssemblyQualifiedName, new { @id = "InterestedPartyUnit" })
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/FMC_AddOrganisation", Model)
+              
                 }
                 else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice New Zealand Inc Programme")
@@ -235,7 +236,7 @@
         <div id="OrganisationTab4" class="tab-pane" role="tabpanel">
             <table id="tblorgremoved"
                    class="table table-striped" width="100%"
-                   data-show-columns="true"
+                   @*data-show-columns="true"*@
                    data-pagination="true"
                    data-search="true"
                    data-show-jump-to="true">

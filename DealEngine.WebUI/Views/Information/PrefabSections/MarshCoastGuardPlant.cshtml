@@ -7,7 +7,7 @@
 
             <ul id="tab" class="nav nav-tabs">
                 <li class="nav nav-tabs active"> <a href="#omvTabs1"> List All </a> </li>
-                <li class="nav nav-tabs hidden" id="TrailerEdit"> <a href="#omvTabs2"  Class="EditButton"> Edit </a> </li>
+                <li class="nav nav-tabs " id="TrailerEdit"> <a href="#omvTabs2" Class="EditButton"> Edit </a> </li>
                 <li class="nav nav-tabs"> <a href="#omvTabs3" Class="AddButton"> Add </a> </li>
                 <li class="nav nav-tabs"> <a href="#omvTabs4" Class="PlantRomoved"> List Removed </a> </li>
 
@@ -82,8 +82,8 @@
                     <!-- 1st row -->
                     <div class="row">
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Year</label>
-                            <label class="input">
+                            <label class="label required col-12">Year</label>
+                            <label class="input col-12">
                                 <i></i>
                                 <input class="form-control omv" data-type="TEXTBOX" data-name="Year" id="MotorYear" name="Year" placeholder="Year" value="" required>
                             </label>
@@ -91,8 +91,8 @@
 
                         </section>
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Make</label>
-                            <label class="input">
+                            <label class="label required col-12">Make</label>
+                            <label class="input col-12">
                                 <i></i>
                                 <input class="form-control omv" data-type="TEXTBOX" data-name="Make" id="MotorMake" name="Make" placeholder="Make" value="" required>
                             </label>
@@ -100,8 +100,8 @@
 
                         </section>
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Model</label>
-                            <label class="input">
+                            <label class="label required col-12">Model</label>
+                            <label class="input col-12">
                                 <i></i>
                                 <input class="form-control omv" data-type="TEXTBOX" data-name="VehicleModel" id="MotorModel" name="VehicleModel" placeholder="Model" value="" required>
                             </label>
@@ -109,8 +109,8 @@
 
                         </section>
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">$ Estimated Market Value</label>
-                            <label class="input">
+                            <label class="label required col-12">$ Estimated Market Value</label>
+                            <label class="input col-12">
                                 <i></i>
                                 <input class="form-control omv" data-type="TEXTBOX" data-name="SumInsured" id="MotorSumInsured" name="SumInsured" placeholder="$ Estimated Market Value" value="" required>
                             </label>
@@ -121,9 +121,10 @@
 
 
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Location</label>
-                            <label class="input">
-                                <select onchange="addPlantLoc()" class="form-control omv" id="MotorLocation" name="VehicleLocation">
+                            <label class="label required col-12">Location</label>
+                            <label class="input col-12">
+                                @*<select style="" onchange="addPlantLoc()" class="form-control omv" id="MotorLocation" name="VehicleLocation">*@
+                                <select style="" onchange="addPlantLoc()" class="form-select omv" id="MotorLocation" name="VehicleLocation">
                                     <option selected="selected" value="" required>-- Select --</option>
                                     @foreach (var utrloc in Model.LocationViewModel.Locations)
                                     {
@@ -137,9 +138,9 @@
                         </section>
 
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Effective Date</label>
-                            <label class="input">
-                                <i class="icon-append fa fa-calendar"></i>
+                            <label class="label required col-12">Effective Date</label>
+                            <label class="input col-12 calender-relative">
+                                <i class="icon-append fa fa-calendar new-calendar"></i>
                                 <input name="EffectiveDate" placeholder="Effective Date" class="form-control omv" id="MotorEffectiveDate" type="text" required>
                             </label>
                             <p class="validationContainer" id="validatePlantEffectiveDate"></p>
@@ -149,7 +150,7 @@
                         @*<section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                 <label class="label">Interested Parties</label>
                                 <label class="input">
-                                    <select class="cselect form-control omv" data-placeholder="Interested Parties" id="InterestedParties2" multiple="multiple" name="InterestedParties" style="display: none;">
+                                    <select style="" class="cselect form-control omv" data-placeholder="Interested Parties" id="InterestedParties2" multiple="multiple" name="InterestedParties" style="display: none;">
                                         @foreach (var utrip in Model.InterestedParties.Where(o => o.OrganisationType == "financial"))
                                         {
                                             <option value="@utrip.ID">@utrip.OrganisationName</option>
@@ -161,8 +162,8 @@
                     <div class="row">
                         <!-- 5th row -->
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label">Notes</label>
-                            <label class="textarea">
+                            <label class="label col-12">Notes</label>
+                            <label class="textarea col-12">
                                 <textarea class="form-control omv" data-type="TEXTAREA" data-name="Notes" id="Notes" name="Notes" placeholder="Notes" value=""></textarea>
                             </label>
                         </section>
@@ -186,8 +187,8 @@
                     <!-- 1st row -->
                     <div class="row">
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Year</label>
-                            <label class="input">
+                            <label class="label required col-12">Year</label>
+                            <label class="input col-12">
                                 <i></i>
                                 <input class="form-control omv" data-type="TEXTBOX" data-name="Year" id="AddPlantYear" name="Year" placeholder="Year" value="" required>
                             </label>
@@ -195,8 +196,8 @@
 
                         </section>
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Make</label>
-                            <label class="input">
+                            <label class="label required col-12">Make</label>
+                            <label class="input col-12">
                                 <i></i>
                                 <input class="form-control omv" data-type="TEXTBOX" data-name="Make" id="AddMotorMake" name="Make" placeholder="Make" value="" required>
                             </label>
@@ -204,8 +205,8 @@
 
                         </section>
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Model</label>
-                            <label class="input">
+                            <label class="label required col-12">Model</label>
+                            <label class="input col-12">
                                 <i></i>
                                 <input class="form-control omv" data-type="TEXTBOX" data-name="VehicleModel" id="AddMotorModel" name="VehicleModel" placeholder="Model" value="" required>
                             </label>
@@ -213,8 +214,8 @@
 
                         </section>
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">$ Estimated Market Value</label>
-                            <label class="input">
+                            <label class="label required col-12">$ Estimated Market Value</label>
+                            <label class="input col-12">
                                 <i></i>
                                 <input class="form-control omv" data-type="TEXTBOX" data-name="SumInsured" id="AddMotorSumInsured" name="SumInsured" placeholder="$ Estimated Market Value" value="" required>
                             </label>
@@ -225,9 +226,10 @@
 
 
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Location</label>
-                            <label class="input">
-                                <select onchange="AddaddPlantLoc()" class="form-control omv" id="AddMotorLocation" name="VehicleLocation">
+                            <label class="label required col-12">Location</label>
+                            <label class="input col-12">
+                                @*<select style="" onchange="AddaddPlantLoc()" class="form-control omv" id="AddMotorLocation" name="VehicleLocation">*@
+                                <select style="" onchange="AddaddPlantLoc()" class="form-select omv" id="AddMotorLocation" name="VehicleLocation">
                                     <option selected="selected" value="" required>-- Select --</option>
                                     @foreach (var utrloc in Model.LocationViewModel.Locations)
                                     {
@@ -241,9 +243,9 @@
                         </section>
 
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label required">Effective Date</label>
-                            <label class="input">
-                                <i class="icon-append fa fa-calendar"></i>
+                            <label class="label required col-12">Effective Date</label>
+                            <label class="input col-12 calender-relative">
+                                <i class="icon-append fa fa-calendar new-calendar"></i>
                                 <input name="EffectiveDate" placeholder="Effective Date" class="form-control rmv" id="AddPlantEffectiveDate" type="text" required>
                             </label>
                             <p class="validationContainer" id="validateAddPlantEffectiveDate"></p>
@@ -253,7 +255,7 @@
                     @*<section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                             <label class="label">Interested Parties</label>
                             <label class="input">
-                                <select class="cselect form-control omv" data-placeholder="Interested Parties" id="InterestedParties2" multiple="multiple" name="InterestedParties" style="display: none;">
+                                <select style="" class="cselect form-control omv" data-placeholder="Interested Parties" id="InterestedParties2" multiple="multiple" name="InterestedParties" style="display: none;">
                                     @foreach (var utrip in Model.InterestedParties.Where(o => o.OrganisationType == "financial"))
                                     {
                                         <option value="@utrip.ID">@utrip.OrganisationName</option>
@@ -265,8 +267,8 @@
                     <div class="row">
                         <!-- 5th row -->
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <label class="label">Notes</label>
-                            <label class="textarea">
+                            <label class="label col-12">Notes</label>
+                            <label class="textarea col-12">
                                 <textarea class="form-control omv" data-type="TEXTAREA" data-name="Notes" id="AddNotes" name="Notes" placeholder="Notes" value=""></textarea>
                             </label>
                         </section>

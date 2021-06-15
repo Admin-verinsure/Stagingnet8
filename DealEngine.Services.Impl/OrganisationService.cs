@@ -147,7 +147,7 @@ namespace DealEngine.Services.Impl
             Type UnitType = Type.GetType(UnitName);
             try
             {
-                var jsonUnit = (OrganisationalUnit) await _serializerationService.GetDeserializedObject(UnitType, collection);
+                var jsonUnit = (OrganisationalUnit)await _serializerationService.GetDeserializedObject(UnitType, collection);
                 var unit = organisation.OrganisationalUnits.FirstOrDefault(ou => ou.GetType() == jsonUnit.GetType());
                 if (unit != null)
                 {
@@ -162,7 +162,7 @@ namespace DealEngine.Services.Impl
                     organisation.OrganisationalUnits.Add(unit);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 new Exception("Failed to add Organisational Unit " + ex.Message);
             }
@@ -170,7 +170,7 @@ namespace DealEngine.Services.Impl
 
         private async Task<User> UpdateOrganisationUser(IFormCollection collection, Organisation organisation)
         {
-            var jsonUser = (User) await _serializerationService.GetDeserializedObject(typeof(User), collection);
+            var jsonUser = (User)await _serializerationService.GetDeserializedObject(typeof(User), collection);
 
             Guid.TryParse(collection["OrganisationViewModel.User.Id"], out Guid UserId);
             if (UserId != Guid.Empty)
@@ -183,7 +183,7 @@ namespace DealEngine.Services.Impl
                         user = _mapper.Map(jsonUser, user);
                         await _userService.Update(user);
                         return user;
-                    }                    
+                    }
                 }
             }
             return null;
@@ -191,7 +191,7 @@ namespace DealEngine.Services.Impl
 
         private async Task<Organisation> UpdateOrganisation(IFormCollection collection, Organisation organisation)
         {
-            var jsonOrganisation = (Organisation) await _serializerationService.GetDeserializedObject(typeof(Organisation), collection);
+            var jsonOrganisation = (Organisation)await _serializerationService.GetDeserializedObject(typeof(Organisation), collection);
             var OrganisationType = collection["OrganisationViewModel.OrganisationType"];
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             var user = await UpdateOrganisationUser(collection, organisation);
@@ -199,7 +199,7 @@ namespace DealEngine.Services.Impl
 
             if (user != null)
             {
-                if(organisation.Id != user.PrimaryOrganisation.Id && organisation.Email == user.Email)
+                if (organisation.Id != user.PrimaryOrganisation.Id && organisation.Email == user.Email)
                 {
                     organisation.Name = user.FirstName + " " + user.LastName;
                 }
@@ -223,8 +223,8 @@ namespace DealEngine.Services.Impl
 
             if (!string.IsNullOrWhiteSpace(OrganisationType))
             {
-                organisation.OrganisationType.Name = OrganisationType;                
-            }           
+                organisation.OrganisationType.Name = OrganisationType;
+            }
 
             return organisation;
         }
@@ -239,10 +239,10 @@ namespace DealEngine.Services.Impl
             var list = await _organisationRepository.FindAll().ToListAsync();
             Organisation organisation = new Organisation();
 
-            foreach(Organisation org in list)
+            foreach (Organisation org in list)
             {
                 var foundIt = org.OrganisationalUnits.FirstOrDefault(u => u.Id == organisationalUnitId);
-                if (foundIt != null){
+                if (foundIt != null) {
                     organisation = org;
                     break;
                 }
@@ -324,7 +324,7 @@ namespace DealEngine.Services.Impl
                     }
                     else
                     {
-                        if(!string.IsNullOrWhiteSpace(FirstName) || !string.IsNullOrWhiteSpace(LastName))
+                        if (!string.IsNullOrWhiteSpace(FirstName) || !string.IsNullOrWhiteSpace(LastName))
                             User = new User(Creator, Guid.NewGuid(), collection);
                     }
                 }
@@ -334,14 +334,19 @@ namespace DealEngine.Services.Impl
                 foundOrg = CreateNewOrganisation(Creator, Email, OrganisationName, OrganisationType, OrganisationalUnits, InsuranceAttribute);
                 if (User != null)
                 {
-                    if(!User.Organisations.Any(o=>o.InsuranceAttributes.Any(i=>i.Name == Type) && o.Name == OrganisationName))
+                    if (!User.Organisations.Any(o => o.InsuranceAttributes.Any(i => i.Name == Type) && o.Name == OrganisationName))
                         User.Organisations.Add(foundOrg);
 
-                    if(Type != "Administrator" && User.PrimaryOrganisation == null)
+                    if (Type != "Administrator" && User.PrimaryOrganisation == null)
+
+                    //if (!User.Organisations.Any(o => o.InsuranceAttributes.Any(i => i.Name == Type)))
+                    //    User.Organisations.Add(foundOrg);
+
+                    //if (User.PrimaryOrganisation == null)
                     {
                         User.SetPrimaryOrganisation(foundOrg);
                     }
-                    
+
                     await _userService.Create(User);
                 }
             }
@@ -448,16 +453,16 @@ namespace DealEngine.Services.Impl
             var guids = collection["OrganisationId"].ToString().Split(',');
             var DODates = collection["DORetroactiveDate"].ToString().Split(',');
             var PIDates = collection["PIRetroactiveDate"].ToString().Split(',');
-            for (int i = 0; i < guids.Count(); i++) 
+            for (int i = 0; i < guids.Count(); i++)
             {
                 Guid.TryParse(guids[i], out Guid OrganisationId);
                 if (OrganisationId != Guid.Empty)
                 {
                     var organisation = await GetOrganisation(OrganisationId);
-                    if(organisation != null)
+                    if (organisation != null)
                     {
                         var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor");
-                        if(unit != null)
+                        if (unit != null)
                         {
                             unit.DORetroactivedate = DODates[i];
                             unit.PIRetroactivedate = PIDates[i];
@@ -468,14 +473,14 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async  Task<List<Organisation>> GetPublicMarinas()
+        public async Task<List<Organisation>> GetPublicMarinas()
         {
             List<Organisation> organisations = new List<Organisation>();
             var marinas = await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "Marina")).ToListAsync();
-            foreach(var marina in marinas)
+            foreach (var marina in marinas)
             {
                 var unit = (MarinaUnit)marina.OrganisationalUnits.FirstOrDefault();
-                if(unit != null)
+                if (unit != null)
                 {
                     if (unit.WaterLocation != null)
                     {
@@ -497,7 +502,11 @@ namespace DealEngine.Services.Impl
             var FinancialList = await GetFinancialInstitutes();
             foreach (var Financial in FinancialList)
             {
-                var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault();
+                // var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault();
+                //var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial"); //|| i.Name == "CoOwner"
+                var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.Where(i => i.Name == "Financial").FirstOrDefault(); //|| i.Name == "CoOwner"
+
+                //Name = "Financial"
                 if (unit != null)
                 {
                     if (unit.Location != null)
@@ -510,6 +519,21 @@ namespace DealEngine.Services.Impl
                 }
             }
 
+
+            //var CoOwnerList = await GetCoOwnerInstitutes();
+            //foreach (var CoOwner in CoOwnerList)
+            //{
+            //    var unit1 = (InterestedPartyUnit)CoOwner.OrganisationalUnits.Where(i => i.Name == "CoOwner").FirstOrDefault(); //|| i.Name == "CoOwner"
+
+            //    if (unit1 != null)
+            //    {
+                 
+            //                organisations.Add(CoOwner);
+                
+            //    }
+            //}
+
+
             return organisations;
         }
 
@@ -517,7 +541,7 @@ namespace DealEngine.Services.Impl
         {
             var marinas = await GetAllMarinas();
             foreach (var marina in marinas)
-            {                
+            {
                 var unit = (MarinaUnit)marina.OrganisationalUnits.FirstOrDefault();
                 if (unit != null)
                 {
@@ -532,12 +556,17 @@ namespace DealEngine.Services.Impl
 
         public async Task<List<Organisation>> GetAllMarinas()
         {
-            return  await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "Marina")).ToListAsync();
+            return await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "Marina")).ToListAsync();
         }
 
         public async Task<List<Organisation>> GetFinancialInstitutes()
         {
             return await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "Financial")).ToListAsync();
+        }
+
+        public async Task<List<Organisation>> GetCoOwnerInstitutes()
+        {
+            return await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "CoOwner")).ToListAsync();
         }
 
         public async Task PostMarina(IFormCollection model)

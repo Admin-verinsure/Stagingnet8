@@ -1,688 +1,420 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
-    @*
-        form conversion later
-        <div id="AddClaimNotification">
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item" id="tab1">
-                <a class="nav-link active" href="#ClaimNotification1" data-toggle="tab" onclick="ResetForm('ClaimNotification3','ClaimNotification2', 'Organisation', 'OrganisationSubmitBtn', 'OrganisationClearButton')"> List All </a>
-            </li>
-            <li class="nav-item" id="tab2">
-                <a class="nav-link" href="#ClaimNotification2" data-toggle="tab"> Edit </a>
-            </li>
-            <li class="nav-item" id="tab3">
-                <a class="nav-link" href="#ClaimNotification3" data-toggle="tab" onclick="ResetForm('ClaimNotification3','ClaimNotification2', 'Organisation', 'OrganisationSubmitBtn', 'OrganisationClearButton')"> Add </a>
-            </li>
-            <li class="nav-item" id="tab4">
-                <a class="nav-link" href="#ClaimNotification3" data-toggle="tab"> Removed </a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div id="ClaimNotification1" class="tab-pane active" role="tabpanel">
-                <table id="tblClaimNotification"
-                       class="table table-striped" width="100%"
-                       data-show-columns="true"
-                       data-pagination="true"
-                       data-search="true"
-                       data-show-jump-to="true">
-                    <thead>
-                        <tr>
-                            <th data-field="editButton" data-sortable="false"></th>
-                            <th data-field="OrganisationName" data-sortable="true">Claim Title</th>
-                            <th data-field="OrganisationType" data-sortable="true">Claim Description</th>
-                            <th data-field="IsPrincipal" data-sortable="true">Claim Reference</th>
-                            <th data-field="IsPrincipal" data-sortable="true">Name of Claimant</th>
-                            <th data-field="deleteButton" data-sortable="false"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var ClaimNotification in Model.ClientInformationSheet.ClaimNotifications.Where(c => c.Removed != true).ToList())
-                        {
-                        <tr id="@ClaimNotification.Id">
-                            <td>
-                                <button class="btn btn-success btn-sm" onclick="OnClick('', 'ClaimNotification', '@ClaimNotification.Id', '@Model.ClientInformationSheet.Id')"><i class="fa fa-edit"></i> Edit</button>
-                            </td>
-                            <td>
-                                @ClaimNotification.ClaimTitle
-                            </td>
-                            <td>
-                                @ClaimNotification.ClaimDescription
-                            </td>
-                            <td>
-                                @ClaimNotification.ClaimReference
-                            </td>
-                            <td>
-                                @ClaimNotification.ClaimInsuredName
-                            </td>
-                            <td>
-                                <button onclick="RemoveClaimNotification('@ClaimNotification.Id', 'Insured Details / Named Parties')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
-                            </td>
-                        </tr>
-                            }
-                    </tbody>
-                </table>
-            </div>
-            <div id="ClaimNotification2" class="tab-pane" role="tabpanel">
-                <div class="form-group">
-                    <label>Select a Claim from the 'List All' Tab and Click Edit Button</label>
-                </div>
-            </div>
-            <div id="ClaimNotification3" class="tab-pane" role="tabpanel">
-                @using (Html.BeginForm("AddClaimNotification", "ClaimNotification", FormMethod.Post, new { @id = "claimNotificationViewModel", @name = "ClaimNotificationViewModel" }))
-                {
-                    
-                    <div class="form-group">
-                        <button class="btn btn-success" type="submit" id="ClaimNotificationSubmitBtn" onclick="OnClaimNotificationSubmit('claimNotificationViewModel', 'Insured Details / Named Parties')">Add</button>
-                        <button class="btn btn-danger" id="ClaimNotificationClearButton" onclick="ResetClaimNotification('claimNotificationViewModel')"> Clear</button>
-                    </div>
-                }
-
-            </div>
-            <div id="ClaimNotification3" class="tab-pane" role="tabpanel">
-                <table id="tblclaimnotificationremoved"
-                       class="table table-striped" width="100%"
-                       data-show-columns="true"
-                       data-pagination="true"
-                       data-search="true"
-                       data-show-jump-to="true">
-                    <thead>
-                        <tr>
-                            <th data-field="editButton" data-sortable="false"></th>
-                            <th data-field="OrganisationName" data-sortable="true">Organisation Name</th>
-                            <th data-field="OrganisationType" data-sortable="true">Organisation Type</th>
-                            <th data-field="deleteButton" data-sortable="false"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.Id != Model.ClientInformationSheet.Owner.Id && o.Removed == true).ToList())
-                        {
-                            <tr id="@organisation.Id">
-                                <td>
-                                    <button class="btn btn-success btn-sm" onclick="RestoreOrganisation('@organisation.Id', 'Insured Details / Named Parties')"><i class="fa fa-undo"></i> Restore</button>
-                                </td>
-                                <td>
-                                    @organisation.Name
-                                </td>
-                                <td>
-                                    @organisation.InsuranceAttributes.FirstOrDefault().Name
-                                </td>
-                                <td>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>*@
 
     <div class="padding-10">
         <div id="proposalcreate-form" class="smart-form" novalidate="novalidate">
-
-            @*@tabs.Tab("List All")
-            @tabs.Tab("Edit")
-            @tabs.Tab("Add")
-
-            @tabs.Tab("List Removed").Class("ClaimRemoved")*@
             <div id="Claimtabs">
-
-                <ul id="tab" class="nav nav-tabs">
-                    <li class="nav nav-tabs active"> <a href="#clTabs1"> List All </a> </li>
-                    <li class="nav nav-tabs hidden" id="NotificationEdit" > <a href="#clTabs2"> Edit </a> </li>
-                    <li class="nav nav-tabs"> <a href="#clTabs3"> Add </a> </li>
-                    <li class="nav nav-tabs"> <a href="#clTabs4" Class="ClaimRemoved"> List Removed </a> </li>
+                <input id="ClaimId" name="ClaimViewModel.ClaimId" type="hidden" form="ClaimViewModel" />
+                @*<input id="OrganisationId" name="ClaimViewModel.OrganisationId" type="hidden" form="ClaimViewModel" />*@
+                <input id="ProductId" name="ClientProgramme.BaseProgramme.Products.product.Id" type="hidden" form="ClaimViewModel" />
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" id="tab1">
+                        <a class="nav-link active" href="#clTabs1" data-bs-toggle="tab" onclick="ResetForm('clTabs3','clTabs2', 'ClaimNotification', 'ClaimAddButton', 'AddClearBoat')"> List All </a>
+                    </li>
+                    <li class="nav-item" id="tab2">
+                        <a class="nav-link" href="#clTabs2" data-bs-toggle="tab"> Edit </a>
+                    </li>
+                    <li class="nav-item" id="tab2">
+                        <a class="nav-link" href="#clTabs3" data-bs-toggle="tab" onclick="ResetForm('clTabs3','clTabs2', 'ClaimNotification', 'ClaimAddButton', 'AddClearBoat')"> Add </a>
+                    </li>
+                    <li class="nav-item" id="tab4">
+                        <a class="nav-link" href="#clTabs4" data-bs-toggle="tab"> List Removed </a>
+                    </li>
 
                 </ul>
+                <div class="tab-content">
+                    <div id="clTabs1" class="tab-pane" role="tabpanel">
+                        <table id="tblClaimNotification"
+                               class="table table-striped" width="100%"
+                               @*data-show-columns="true"*@
+                               data-pagination="true"
+                               data-search="true"
+                               data-show-jump-to="true">
+                            <thead>
+                                <tr>
+                                    <th data-field="editButton" data-sortable="false"></th>
+                                    <th data-field="claimTitle" data-sortable="true">ClaimTitle</th>
+                                    <th data-field="claimDescription" data-sortable="true">Claim Description</th>
+                                    <th data-field="claimReference" data-sortable="true">Claim Reference</th>
+                                    <th data-field="nameofClaimant" data-sortable="true">Name of Claimant</th>
+                                    <th data-field="deleteButton" data-sortable="false"></th>
+                                </tr>
+                            </thead>
 
-                <div id="clTabs1" class="tab-content">
+                            <tbody>
 
-                    <fieldset class="listclaimreport">
-                        <div class="row">
-                            <section class="col col-xs-12">
-                                @*<script src="~/jquery/jquery.min.js"></script>*@
-                                <script type="text/javascript">
-                                $(window).on('load',function () {
-							    $("#tblClaim").jqGrid({
-							        url: "/Services/GetClaims?informationId=@Model.ClientInformationSheet.Id&removed=false",
-							        datatype: "xml",
-                                    mtype: "GET",
-                                    async: true,
-							        colNames: ["","Claim Title", "Claim Description", "Claim Reference", "Name of Claimant", ""],
-                                    colModel: [
-                                        {
-                                            name: "update", align: 'center', search: false, formatter: function (cellvalue, options, rowobject) {
-                                                return ('<button onclick="UnhideEdit(\'NotificationEdit\');EditClaim(\'' + cellvalue + '\', \'#tblClaim\'); SetCurrentTab(\'clTabs2\');" type="button"class="btn btn-success btn-sm"><i class="fa fa-edit"></i></button>');
+                                @foreach (var claim in Model.ClientInformationSheet.ClaimNotifications.Where(l => l.Removed == false).ToList())
+                                {
+                                    <tr id="@claim.Id">
+                                        <td>
+                                            @*<button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle', '@claim.ClaimDescription', '@claim.ClaimReference', '@claim.ClaimPolicyReference', '@claim.ClaimInsurerName', '@claim.ClaimInsuredName', '@claim.Claimant', '@claim.ClaimDateOfLoss', '@claim.ClaimNotifiedDate', '@claim.ClaimEstimateInsuredLiability', '@claim.SelectedClaimProducts', '@claim.SelectedResponsiblePrincipal', '@claim.ClaimNotes', '@claim.ClaimBrokerReference', '@claim.ClaimStatus', '@claim.ClaimInsurerReference', '@claim.ClaimPaid', '@claim.ClaimReserve')">*@
+                                            <button class="btn btn-success btn-sm" onclick="EditClaim('@claim.Id', '@claim.ClaimTitle', '@claim.ClaimDescription', '@claim.ClaimReference', '@claim.ClaimPolicyReference', '@claim.ClaimInsurerName', '@claim.ClaimInsuredName', '@claim.Claimant', '@claim.ClaimDateOfLoss', '@claim.ClaimNotifiedDate', '@claim.ClaimEstimateInsuredLiability', '@claim.SelectedClaimProducts', '@claim.SelectedResponsiblePrincipal', '@claim.ClaimNotes', '@claim.ClaimBrokerReference', '@claim.ClaimStatus', '@claim.ClaimInsurerReference','@claim.ClaimReserve', '@claim.ClaimPaid')">
+                                                <i class="fa fa-edit"></i>
+                                                Edit
+                                            </button>
+                                        </td>
+                                        <td>
+                                            @claim.ClaimTitle
+                                        </td>
+                                        <td>
+                                            @claim.ClaimDescription
+                                        </td>
+                                        <td>
+                                            @claim.ClaimReference
+                                        </td>
+                                        <td>
+                                            @claim.Claimant
+                                        </td>
+                                        <td>
+                                            @*<button onclick="SetClaimRemovedStatus('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>*@
+                                            <button onclick="RemoveClaimNotification('@claim.Id')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="clTabs2" class="tab-pane" role="tabpanel">
+                        <div class="form-group">
+                            <label>Select a Location from the 'List All' Tab and Click Edit Button</label>
+                        </div>
+
+                    </div>
+                    <div id="clTabs3" class="tab-pane" role="tabpanel">
+
+                        <form class="" id="ClaimViewModel">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimTitle form-label" class="label required">
+                                            Claim Title:
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimTitle, new { id = "ClaimTitle", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimDescription form-label" class="label required">
+                                            Claim Description:
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextAreaFor(m => m.ClaimViewModel.ClaimDescription, new { id = "ClaimDescription", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
+
+
+
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimReference" class="label form-label">
+                                            Claim Reference
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimReference, new { id = "ClaimReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimPolicyReference" class="label form-label">
+                                            Policy Reference
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimPolicyReference, new { id = "ClaimPolicyReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimInsurerName" class="label form-label">
+                                            Policy Insurer Name
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimInsurerName, new { id = "ClaimInsurerName", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimInsuredName" class="label form-label">
+                                            Policy Insured Name
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimInsuredName, new { id = "ClaimInsuredName", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="Claimant form-label" class="label required">
+                                            Name of Claimant
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.Claimant, new { id = "Claimant", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimDateOfLoss form-label" class="label required">
+                                            Approx Date of Loss
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimDateOfLoss, new { id = "ClaimDateOfLoss", @class = "form-control currentDate", onfocus = "(this.type='date')", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimNotifiedDate form-label" class="label required">
+                                            Notification Date
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @*@Html.TextBoxFor(m => m.ClaimViewModel.ClaimNotifiedDate, new { id = "ClaimNotifiedDate", @class = "form-control Startdate", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })*@
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimNotifiedDate, new { id = "ClaimNotifiedDate", @class = "form-control currentDate", onfocus = "(this.type='date')", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimEstimateInsuredLiability form-label" class="label">
+                                            $ Estimate of Liability
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimEstimateInsuredLiability, new { id = "ClaimEstimateInsuredLiability", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="PrimaryPolicyprod form-label" class="label">
+                                            Primary Policy Product
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+
+                                        <select style="" data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="b form-select" form="ClaimViewModel">
+                                            <option selected="selected" value="">-- Select here --</option>
+
+                                            @foreach (var product in Model.ClientProgramme.BaseProgramme.Products)
+                                            {
+                                                <option value="@product.Id"> @product.Name</option>
                                             }
-                                        },
-							            { name: "ClaimTitle", align: 'center', key: 'true' },
-                                        { name: "ClaimDescription", align: 'center' },
-							            { name: "ClaimReference", align: 'center' },
-							            { name: "Claimant", align: 'center' },
-							            { name: "update", align: 'center', search: false, formatter: function(cellvalue, options, rowobject)
-                                        {
-                                            return ('<button onclick="SetClaimRemovedStatus(\'' + cellvalue + '\', \'true\', \'#tblClaim\', \'#tblRemovedClaim\');" type="button"class=" btn btn-danger btn-sm"><span class="fa fa-trash" id="span"></span></button>');
-							            }
-										}
-									],
-							        autowidth: true,
-							        pager: "#pagerClaim",
-							        rowNum: 10,
-							        rowList: [10, 20, 30],
-							        sortname: "ClaimTitle",
-							        sortorder: "desc",
-							        viewrecords: true,
-							        gridview: true,
-							        autoencode: true
-							    });
-                                $("#tblClaim").jqGrid('navGrid',
-							    	'#pagerClaim',
-							    	{edit: false, add: false, del: false},
-							    	//options
-							    	{height:280,reloadAfterSubmit:false},
-							    	// edit options
-							    	{height:280,reloadAfterSubmit:false},
-							    	// add options
-							    	{reloadAfterSubmit:false},
-							    	// del options
-						    		{sopt:['eq','bw','cn']}
-							    	// search options
-							    );
-							});
-                                </script>
-                                <table id="tblClaim"><tr><td></td></tr></table>
-                                <div id="pagerClaim"></div>
-                            </section>
-                        </div>
-                    </fieldset>
-                </div>
-                <div id="clTabs2" class="tab-content">
 
-                    <fieldset id="fieldset">
-                        <input id="ClaimId" name="ClaimId" type="hidden" />
-                        <input id="OrganisationId" name="OrganisationId" type="hidden" />
-                        <!-- 1st rows -->
-                        <div class="row">
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Claim Title</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimTitle" id="ClaimTitle" name="ClaimTitle" placeholder="Claim Title" value="">
-                                </label>
-                                <p class="validationContainer" id="validateClaimTitle"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Claim Description</label>
-                                <label class="textarea">
-                                    <textarea class="form-control cl" data-type="TEXTAREA" data-name="ClaimDescription" id="ClaimDescription" name="ClaimDescription" placeholder="Claim Description" value=""></textarea>
-                                </label>
-                                <p class="validationContainer" id="validateClaimDescription"></p>
-
-                            </section>
-                            @*<section class="col col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                                <label class="label">Product</label>
-                                <label class="input">
-                                    <select class="cselect form-control cl" data-placeholder="Product" id="ClaimProducts" multiple="multiple" name="ClaimProducts" style="display: none;">
-                                        @foreach (var pro in Model.AvailableProducts)
-                                        {
-                                            //<option value="@pro.ID">@pro.Name</option>
-                                        }
-                                    </select>
-                                </label>
-                            </section>*@
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 hidden" id="EditClaimStatus">
-                                <label class="label required">Claim Status</label>
-                                <label class="input">
-                                    <select class="form-control bui" id="ClaimStatus" name="ClaimStatus" disabled>
-                                        <option selected="selected" value="Precautionary notification only">Precautionary notification only</option>
-                                        <option value="Withdrawn by insured">Withdrawn by insured</option>
-                                        <option value="Formal claim filed">Formal claim filed</option>
-                                        <option value="Information request to insured">Information request to insured</option>
-                                        <option value="Third party has made formal demand">Third party has made formal demand</option>
-                                        <option value="Solicitors instructed for claimant">Solicitors instructed for claimant</option>
-                                        <option value="Subrogated to insurer">Subrogated to insurer</option>
-                                        <option value="In discussions">In discussions</option>
-                                        <option value="In agreed alternative process">In agreed alternative process</option>
-                                        <option value="Proceedings issued">Proceedings issued</option>
-                                        <option value="Part Settled">Part Settled</option>
-                                        <option value="Settled">Settled</option>
-                                        <option value="Closed">Closed</option>
-                                        <option value="Open">Open</option>
-
-                                    </select>
-                                </label>
-                                <p class="validationContainer" id="validateClaimStatus"></p>
-
-                            </section>
-
-                        </div>
-
-                        <!-- 2nd rows -->
-                        <div class="row">
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Claim Reference</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimReference" id="ClaimReference" name="ClaimReference" placeholder="Claim Reference" value="">
-                                </label>
-                                <p class="validationContainer" id="validateClaimReference"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Policy Reference</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimPolicyReference" id="ClaimPolicyReference" name="ClaimPolicyReference" placeholder="Policy Reference" value="">
-                                </label>
-                                <p class="validationContainer" id="validateClaimPolicyReference"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Policy Insurer Name</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimInsurerName" id="ClaimInsurerName" name="ClaimInsurerName" placeholder="Policy Insurer Name" value="">
-                                </label>
-                                <p class="validationContainer" id="validateClaimInsurerName"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Policy Insured Name</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimInsuredName" id="ClaimInsuredName" name="ClaimInsuredName" placeholder="Policy Insured Name" value="">
-                                </label>
-                                <p class="validationContainer" id="validateClaimInsuredName"></p>
-
-                            </section>
-
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Name of Claimant</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="Claimant" id="Claimant" name="Claimant" placeholder="Name of Claimant" value="">
-                                </label>
-                                <p class="validationContainer" id="validateClaimant"></p>
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Approx Date of Loss</label>
-                                <label class="input">
-                                    <i class="icon-append fa fa-calendar"></i>
-                                    <input name="ClaimDateOfLoss" placeholder="Date of Loss" class="Startdate form-control cl" data-dateformat="dd/mm/yy" id="ClaimDateOfLoss" type="text">
-                                </label>
-                                <p class="validationContainer" id="validateClaimDateOfLoss"></p>
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Notification Date</label>
-                                <label class="input">
-                                    <i class="icon-append fa fa-calendar"></i>
-                                    <input name="ClaimNotifiedDate" placeholder="Notification Date" class="Startdate form-control cl" id="ClaimNotifiedDate" type="text">
-                                </label>
-                                <p class="validationContainer" id="validateClaimNotifiedDate"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">$ Estimate of Liability</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimEstimateInsuredLiability" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="ClaimEstimateInsuredLiability" name="ClaimEstimateInsuredLiability" placeholder="$ Estimate of Liability" value="">
-                                </label>
-                                <p class="validationContainer" id="validateClaimEstimateInsuredLiability"></p>
-
-                            </section>
-
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Broker Reference (Read-Only)</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimBrokerReference" id="ClaimBrokerReference" name="ClaimBrokerReference" placeholder="Broker Reference (Read-Only)" readonly="true" value="">
-                                </label>
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Insurer Reference (Read-Only)</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimInsurerReference" id="ClaimInsurerReference" name="ClaimInsurerReference" placeholder="Insurer Reference (Read-Only)" readonly="true" value="">
-                                </label>
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">$ Paid (Read-Only)</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimPaid" id="ClaimPaid" name="ClaimPaid" placeholder="$ Paid (Read-Only)" readonly="true" value="">
-                                </label>
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">$ Reserve (Read-Only)</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" type="text" data-type="TEXTBOX" data-name="ClaimReserve" id="ClaimReserve" name="ClaimReserve" placeholder="$ Reserve (Read-Only)" readonly="true" value="">
-                                </label>
-                            </section>
-
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Primary Policy Product</label>
-                                <label class="input form-group">
-
-                                    <select data-placeholder="Choose Primary Policy Product..." id="PrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b">
-                                        <option selected="selected" value="">-- Select here --</option>
-
-                                        @foreach (var product in Model.ClientProgramme.BaseProgramme.Products)
-                                        {
-                                            <option value="@product.Id"> @product.Name</option>
-                                        }
-
-                                    </select>
-                                </label>
-                                <p class="validationContainer" id="validatePrimaryPolicyprod"></p>
-
-
-                            </section>
-
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Responsible Principal</label>
-                                <label class="input form-group">
-
-                                    <select data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-control b">
-                                        <option selected="selected" value="">-- Select here --</option>
-                                        @foreach (var org in Model.OrganisationViewModel.Organisations)
-                                        {
-                                            <option value="@org.Id"> @org.Name</option>
-                                        }
-
-                                    </select>
-                                </label>
-                                <p class="validationContainer" id="validateResponsiblePrincipal"></p>
-
-
-                            </section>
-
-                        </div>
-
-                        <!-- 3rd row -->
-                        <div class="row">
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Notes</label>
-                                <label class="textarea">
-                                    <textarea class="form-control cl" data-type="TEXTAREA" data-name="ClaimNotes" id="ClaimNotes" name="ClaimNotes" placeholder="Notes" value=""></textarea>
-                                </label>
-                            </section>
-                        </div>
-
-                        <div class="row" id="update">
-                            <section class="col col-xs-12">
-                                @*@Html.Bootstrap().Button().Text("Update").HtmlAttributes(new { onclick = "ValidateClaim('#clTabs-2', '#tblClaim','clTabs-1');" }).Class("btn-sm updateBoat").Id("updateBoat")
-
-                                @Html.Bootstrap().Button().Text("Cancel Update").HtmlAttributes(new { onclick = "ClearBoats('#clTabs-2','clTabs-1');" }).Class("btn-sm ClearBoat").Id("ClearBoat")*@
-
-                                <button onclick="ValidateClaim(event, '#clTabs2', '#tblClaim', 'clTabs1');HideEdit('NotificationEdit');" class="btn-sm updateBoat" id="ClaimUpdate">Update</button>
-                                <button onclick="HideEdit('NotificationEdit');ClearBoats(event,'#clTabs2','clTabs1 ')" class="btn-sm ClearBoat" id="ClearBoat">Cancel Update</button>
-
-                            </section>
-                        </div>
-                    </fieldset>
-                </div>
-                <div id="clTabs3" class="tab-content">
-
-                    <fieldset id="fieldset">
-                        <input id="ClaimId" name="ClaimId" type="hidden" />
-                        <input id="OrganisationId" name="OrganisationId" type="hidden" />
-                        <!-- 1st rows -->
-                        <div class="row">
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Claim Title</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimTitle" id="AddClaimTitle" name="ClaimTitle" placeholder="Claim Title" value="">
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimTitle"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Claim Description</label>
-                                <label class="textarea">
-                                    <textarea class="form-control cl" data-type="TEXTAREA" data-name="ClaimDescription" id="AddClaimDescription" name="ClaimDescription" placeholder="Claim Description" value=""></textarea>
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimDescription"></p>
-
-                            </section>
-                            @*<section class="col col-xs-12 col-sm-6 col-md-4 col-lg-3">
-                                <label class="label">Product</label>
-                                <label class="input">
-                                    <select class="cselect form-control cl" data-placeholder="Product" id="ClaimProducts" multiple="multiple" name="ClaimProducts" style="display: none;">
-                                        @foreach (var pro in Model.AvailableProducts)
-                                        {
-                                            //<option value="@pro.ID">@pro.Name</option>
-                                        }
-                                    </select>
-                                </label>
-                            </section>*@
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 hidden ClaimStatus">
-                                <label class="label required">Claim Status</label>
-                                <label class="input">
-                                    <select class="form-control bui" id="AddClaimStatus" name="ClaimStatus">
-                                        <option selected="selected" value="Precautionary notification only">Precautionary notification only</option>
-                                        <option value="Withdrawn by insured">Withdrawn by insured</option>
-                                        <option value="Formal claim filed">Formal claim filed</option>
-                                        <option value="Information request to insured">Information request to insured</option>
-                                        <option value="Third party has made formal demand">Third party has made formal demand</option>
-                                        <option value="Solicitors instructed for claimant">Solicitors instructed for claimant</option>
-                                        <option value="Subrogated to insurer">Subrogated to insurer</option>
-                                        <option value="In discussions">In discussions</option>
-                                        <option value="In agreed alternative process">In agreed alternative process</option>
-                                        <option value="Proceedings issued">Proceedings issued</option>
-                                        <option value="Part Settled">Part Settled</option>
-                                        <option value="Settled">Settled</option>
-                                        <option value="Closed">Closed</option>
-                                        <option value="Open">Open</option>
-
-                                    </select>
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimStatus"></p>
-
-                            </section>
-
-                        </div>
-
-                        <!-- 2nd rows -->
-                        <div class="row">
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Claim Reference</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimReference" id="AddClaimReference" name="ClaimReference" placeholder="Claim Reference" value="">
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimReference"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Policy Reference</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimPolicyReference" id="AddClaimPolicyReference" name="ClaimPolicyReference" placeholder="Policy Reference" value="">
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimPolicyReference"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Policy Insurer Name</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimInsurerName" id="AddClaimInsurerName" name="ClaimInsurerName" placeholder="Policy Insurer Name" value="">
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimInsurerName"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label ">Policy Insured Name</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimInsuredName" id="AddClaimInsuredName" name="ClaimInsuredName" placeholder="Policy Insured Name" value="">
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimInsuredName"></p>
-
-                            </section>
-
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Name of Claimant</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="Claimant" id="AddClaimant" name="Claimant" placeholder="Name of Claimant" value="">
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimant"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Approx Date of Loss</label>
-                                <label class="input">
-                                    <i class="icon-append fa fa-calendar"></i>
-                                    <input name="ClaimDateOfLoss" placeholder="Date of Loss" class="Startdate form-control cl" id="AddClaimDateOfLoss" type="text">
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimDateOfLoss"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Notification Date</label>
-                                <label class="input">
-                                    <i class="icon-append fa fa-calendar"></i>
-                                    <input name="ClaimNotifiedDate" placeholder="Notification Date" class=" Startdate form-control cl" id="AddClaimNotifiedDate" type="text">
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimNotifiedDate"></p>
-
-                            </section>
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">$ Estimate of Liability</label>
-                                <label class="input">
-                                    <i></i>
-                                    <input class="form-control cl" data-type="TEXTBOX" data-name="ClaimEstimateInsuredLiability" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="AddClaimEstimateInsuredLiability" name="ClaimEstimateInsuredLiability" placeholder="$ Estimate of Liability" value="">
-                                </label>
-                                <p class="validationContainer" id="AddvalidateClaimEstimateInsuredLiability"></p>
-
-                            </section>
-
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Primary Policy Product</label>
-                                <label class="input form-group">
-
-                                    <select data-placeholder="Choose Primary Policy Product..." id="AddPrimaryPolicyprod" name="SelectedClaimProducts" class="form-control b">
-
-                                        <option selected="selected" value="">-- Select here --</option>
-
-                                        @foreach (var Product in Model.ClientProgramme.BaseProgramme.Products)
-                                        {
-                                            <option value="@Product.Id"> @Product.Name</option>
-                                        }
-
-                                    </select>
-                                </label>
-                                <p class="validationContainer" id="AddvalidatePrimaryPolicyprod"></p>
-
-
-                            </section>
-
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Responsible Principal</label>
-                                <label class="input form-group">
-
-                                    <select data-placeholder="Choose Responsible Principal..." id="AddResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-control b">
-
-                                        <option selected="selected" value="">-- Select here --</option>
-
-                                        @foreach (var org in Model.OrganisationViewModel.Organisations)
-                                        {
-                                            <option value="@org.Id"> @org.Name</option>
-                                        }
-
-                                    </select>
-                                </label>
-                                <p class="validationContainer" id="AddvalidateResponsiblePrincipal"></p>
-
-
-                            </section>
-
-
-                        </div>
-
-                        <!-- 3rd row -->
-                        <div class="row">
-                            <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Notes</label>
-                                <label class="textarea">
-                                    <textarea class="form-control cl" data-type="TEXTAREA" data-name="ClaimNotes" id="AddClaimNotes" name="ClaimNotes" placeholder="Notes" value=""></textarea>
-                                </label>
-                            </section>
-                        </div>
-
-                        <div class="row" id="update">
-                            <section class="col col-xs-12">
-                                <button onclick="ValidateAddClaim(event,'#clTabs3', '#tblClaim','clTabs1')" class="btn-sm AddupdateBoat" id="AddupdateBoat">Add</button>
-                                <button onclick="ClearBoats(event,'#clTabs3','clTabs1')" class="btn-sm AddClearBoat" id="AddClearBoat">Clear and Cancel</button>
-
-
-                                @*@Html.Bootstrap().Button().Text("Add").HtmlAttributes(new { onclick = "ValidateAddClaim('#clTabs-3', '#tblClaim','clTabs-1');" }).Class("btn-sm AddupdateBoat").Id("AddupdateBoat")
-
-                                @Html.Bootstrap().Button().Text("Clear and Cancel").HtmlAttributes(new { onclick = "ClearBoats('#clTabs-3','clTabs-1');" }).Class("btn-sm AddClearBoat").Id("AddClearBoat")*@
-
-                            </section>
-                        </div>
-                    </fieldset>
-                </div>
-                <div id="clTabs4" class="tab-content">
-
-                    <fieldset>
-                        <div class="row">
-                            <section class="col col-xs-12">
-                                @*<script src="~/jquery/jquery.min.js"></script>*@
-                                <script type="text/javascript">
-                                $(".ClaimRemoved").click(function () {
-						    $("#tblRemovedClaim").jqGrid({
-						        url: "/Services/GetClaims?informationId=@Model.ClientInformationSheet.Id&removed=true",
-						        datatype: "xml",
-                                mtype: "GET",
-                                async: true,
-						        colNames: ["","Claim Title", "Claim Description", "Claim Reference", "Name of Claimant"],
-                                colModel: [
-                                    {
-                                        name: "update", align: 'center', search: false, formatter: function (cellvalue, options, rowobject) { return '<button onclick="SetClaimRemovedStatus(\'' + cellvalue + '\', \'false\', \'#tblRemovedClaim\', \'#tblClaim\');" type="button"class=" btn btn-success btn-sm" ><i class="fa fa-undo"></i></button>'; }
-                                    },
-                                    { name: "ClaimTitle", align: 'center', key: 'true' },
-                                    { name: "ClaimDescription", align: 'center' },
-                                    { name: "ClaimReference", align: 'center' },
-                                    { name: "Claimant", align: 'center' }
-
-								],
-						        autowidth: true,
-						        pager: "#pagerRemovedClaim",
-						        rowNum: 10,
-						        rowList: [10, 20, 30],
-						        sortname: "ClaimTitle",
-						        sortorder: "desc",
-						        viewrecords: true,
-						        gridview: true,
-						        autoencode: true
-						    });
-						    $("#tblRemovedClaim").jqGrid('navGrid',
-						    	'#pagerRemovedClaim',
-						    	{edit: false, add: false, del: false},
-						    	//options
-						    	{height:280,reloadAfterSubmit:false},
-						    	// edit options
-						    	{height:280,reloadAfterSubmit:false},
-						    	// add options
-						    	{reloadAfterSubmit:false},
-						    	// del options
-						    	{sopt:['eq','bw','cn']}
-						    	// search options
-						    );
-						});
-                                </script>
-                                <table id="tblRemovedClaim"><tr><td></td></tr></table>
-                                <div id="pagerRemovedClaim"></div>
-                            </section>
-                        </div>
-                    </fieldset>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="locationtypeoptions form-label" class="label">
+                                            Responsible Principal
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        <select style="" data-placeholder="Choose Responsible Principal..." id="ResponsiblePrincipal" name="SelectedResponsiblePrincipal" class="form-select b">
+                                            <option selected="selected" value="">-- Select here --</option>
+                                            @foreach (var org in Model.OrganisationViewModel.Organisations)
+                                            {
+                                                <option value="@org.Id"> @org.Name</option>
+                                            }
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimNotes form-label" class="label">
+                                            Notes
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextAreaFor(m => m.ClaimViewModel.ClaimNotes, new { id = "ClaimNotes", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel" })
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="display:none;" id="ClaimStatusFormGroup">
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimReference form-label" class="label required">
+                                            Claim Status
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+
+                                        <select data-placeholder="Choose Primary Policy Product..." id="ClaimStatus" name="ClaimStatus" class="form-control b form-select" form="ClaimViewModel" readonly>
+                                            <option selected="selected" value="PrecautionaryNotificationOnly">Precautionary notification only</option>
+                                            <option value="Withdrawnbyinsured">Withdrawn by insured</option>
+                                            <option value="Formalclaimfiled">Formal claim filed</option>
+                                            <option value="Informationrequesttoinsured">Information request to insured</option>
+                                            <option value="Thirdpartyhasmadeformaldemand">Third party has made formal demand</option>
+                                            <option value="Solicitorsinstructedforclaimant">Solicitors instructed for claimant</option>
+                                            <option value="Subrogatedtoinsurer">Subrogated to insurer</option>
+                                            <option value="Indiscussions">In discussions</option>
+                                            <option value="Inagreedalternativeprocess">In agreed alternative process</option>
+                                            <option value="Proceedingsissued">Proceedings issued</option>
+                                            <option value="PartSettled">Part Settled</option>
+                                            <option value="Settled">Settled</option>
+                                            <option value="Closed">Closed</option>
+                                            <option value="Open">Open</option>
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group" style="display:none;" id="ClaimBrokerReferenceFormGroup">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimReference" class="label form-label">
+                                            Broker Reference (Read-Only)
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimBrokerReference, new { id = "ClaimBrokerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="display:none;" id="ClaimInsurerReferenceFormGroup">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimInsurerReference" class="label form-label">
+                                            Insurer Reference (Read-Only)
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimInsurerReference, new { id = "ClaimInsurerReference", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group" style="display:none;" id="ClaimReserveFormGroup">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimReserve" class="label form-label">
+                                            $ Reserve (Read-Only)
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimReserve, new { id = "ClaimReserve", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @readonly = "true" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group" style="display:none;" id="ClaimPaidFormGroup">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ClaimPaid" class="label form-label">
+                                            $ Paid (Read-Only)
+                                        </label>
+                                    </div>
+                                    <div class="col-6">
+
+                                        @Html.TextBoxFor(m => m.ClaimViewModel.ClaimPaid, new { id = "ClaimPaid", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @form = "ClaimViewModel", @value = "", @readonly = "true" })
+                                        @*, disabled = "disabled"*@
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <button class="btn btn-sm btn-success text-light" id="ClaimAddButton" onclick="AddClaim('claim')" form="ClaimViewModel"> Add </button>
+                                <button class="btn btn-sm btn-danger text-light" id="AddClearBoat" onclick="CancelClaim('ClaimViewModel','clTabs1')" form="ClaimViewModel"> Clear and Cancel </button>
+                            </div>
+                        </form>
+
+
+
+                    </div>
+                    <div id="clTabs4" class="tab-pane" role="tabpanel">
+                        <table id="tblRemovedClaimNotification"
+                               class="table table-striped" width="100%"
+                               @*data-show-columns="true"*@
+                               data-pagination="true"
+                               data-search="true"
+                               data-show-jump-to="true">
+                            <thead>
+                                <tr>
+                                    <th data-field="editButton" data-sortable="false"></th>
+                                    <th data-field="claimTitle" data-sortable="true">ClaimTitle</th>
+                                    <th data-field="claimDescription" data-sortable="true">Claim Description</th>
+                                    <th data-field="claimReference" data-sortable="true">Claim Reference</th>
+                                    <th data-field="nameofClaimant" data-sortable="true">Name of Claimant</th>
+                                    <th data-field="deleteButton" data-sortable="false"></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var claim in Model.ClientInformationSheet.ClaimNotifications.Where(l => l.Removed == true).ToList())
+                                {
+                                    <tr id="@claim.Id">
+                                        <td>
+                                            <button class="btn btn-success btn-sm" onclick="RestoreCommonClaim('@claim.Id')">
+                                                <i class="fa fa-undo"></i>
+
+                                            </button>
+                                        </td>
+                                        <td>
+                                            @claim.ClaimTitle
+                                        </td>
+                                        <td>
+                                            @claim.ClaimDescription
+                                        </td>
+                                        <td>
+                                            @claim.ClaimReference
+                                        </td>
+                                        <td>
+                                            @claim.Claimant
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
                 </div>
 
             </div>
-        </div>
 
+        </div>
     </div>
+    @*</div>
+
+        </div>*@

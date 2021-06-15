@@ -18,7 +18,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="HasEL" name="ELViewModel.HasELOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="HasEL" name="ELViewModel.HasELOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.ELViewModel.HasELOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -36,7 +36,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            <select id="hasexistingELpolicy" name="ELViewModel.HasExistingPolicyOptions" class="custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                            <select id="hasexistingELpolicy" name="ELViewModel.HasExistingPolicyOptions" class="form-select custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
                                 @foreach (var option in Model.ELViewModel.HasExistingPolicyOptions)
                                 {
                                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>

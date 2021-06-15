@@ -7,23 +7,23 @@
         <input id="ProjectId" name="ProjectViewModel.ProjectId" hidden />
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" id="tab1">
-                <a class="nav-link active" href="#projecttab1" data-toggle="tab" onclick="ResetForm('projecttab3','projecttab2', 'Project', 'ProjectAddButton', 'ProjectCancelButton')"> List All </a>
+                <a class="nav-link active" href="#projecttab1" data-bs-toggle="tab" onclick="ResetForm('projecttab3','projecttab2', 'Project', 'ProjectAddButton', 'ProjectCancelButton')"> List All </a>
             </li>
             <li class="nav-item" id="tab2">
-                <a class="nav-link" href="#projecttab2" data-toggle="tab"> Edit </a>
+                <a class="nav-link" href="#projecttab2" data-bs-toggle="tab"> Edit </a>
             </li>
             <li class="nav-item" id="tab3">
-                <a class="nav-link" href="#projecttab3" data-toggle="tab" onclick="ResetForm('projecttab3','projecttab2', 'Project', 'ProjectAddButton', 'ProjectCancelButton')"> Add </a>
+                <a class="nav-link" href="#projecttab3" data-bs-toggle="tab" onclick="ResetForm('projecttab3','projecttab2', 'Project', 'ProjectAddButton', 'ProjectCancelButton')"> Add </a>
             </li>
             <li class="nav-item" id="tab4">
-                <a class="nav-link" href="#projecttab4" data-toggle="tab"> List Removed </a>
+                <a class="nav-link" href="#projecttab4" data-bs-toggle="tab"> List Removed </a>
             </li>
         </ul>
         <div class="tab-content">
             <div id="projecttab1" class="tab-pane active" role="tabpanel">
                 <table id="tblProject"
                        class="table table-striped" width="100%"
-                       data-show-columns="true"
+                       @*data-show-columns="true"*@
                        data-pagination="true"
                        data-search="true"
                        data-show-jump-to="true">
@@ -95,7 +95,7 @@
                                 </label>
                             </div>
                             <div class="col-6">
-                                <select id="projectcountry" name="ProjectViewModel.Country" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                <select id="projectcountry" name="ProjectViewModel.Country" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.ProjectViewModel.Territories)
                                     {
                                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -162,7 +162,7 @@
             <div id="projecttab4" class="tab-pane" role="tabpanel">
                 <table id="tblRemovedProject"
                        class="table table-striped" width="100%"
-                       data-show-columns="true"
+                       @*data-show-columns="true"*@
                        data-pagination="true"
                        data-search="true"
                        data-show-jump-to="true">
@@ -308,7 +308,7 @@
                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                             <label class=" label required">Country/Territories</label>
                             <label class="input">
-                                <select id="EditCEASProjectCountry" class="form-control b" name="Country">
+                                <select id="EditCEASProjectCountry" class="form-select form-control b" name="Country">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="NewZealand"> New Zealand</option>
                                     <option value="Australia">Australia</option>

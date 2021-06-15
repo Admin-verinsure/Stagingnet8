@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using DealEngine.Domain.Entities;
 
@@ -7,6 +8,86 @@ namespace DealEngine.WebUI.Models
 {
     public class ClaimViewModel
     {
+
+        //public ClaimViewModel(ClientProgramme ClientProgramme)
+        //{
+        //     ClaimProducts = GetProducts(ClientProgramme);
+        //    ClaimProductType = GetProductTypes();
+
+        // }
+
+        // private IList<Product> GetProducts(ClientProgramme ClientProgramme)
+        // {
+        //     ClaimProducts = new List<Product>();
+        //     foreach (var ClaimProduct in ClientProgramme.Products)
+        //     {
+        //         //ClientProgramme.Add(ClaimProduct);
+        //         ClaimProducts.Add(ClaimProduct);
+        //     }
+        //     return ClaimProducts;
+        // }
+
+
+        // private IList<SelectListItem> GetProductTypes()
+        // {
+        //     return new List<SelectListItem>()
+        //     {
+        //         new SelectListItem()
+        //         {
+        //             Value="0",
+        //             Text="--Select--"
+        //         },
+        //         new SelectListItem()
+        //         {
+        //             Value="ProfessionalIndemnity",
+        //             Text=" Professional Indemnity"
+        //         },
+        //         new SelectListItem()
+        //         {
+        //             Value="GeneralPublicLiability",
+        //             Text=" General or Public Liability"
+        //         },
+        //         new SelectListItem()
+        //         {
+        //             Value="EmployersGeneral",
+        //             Text=" Employers - General"
+        //         },
+        //         new SelectListItem()
+        //         {
+        //             Value="DirectorsOfficers",
+        //             Text=" Directors & Officers"
+        //         },
+        //         new SelectListItem()
+        //         {
+        //             Value="EmployersPractices",
+        //             Text=" Employers Practices"
+        //         },
+        //         new SelectListItem()
+        //         {
+        //             Value="OutsideTrustees",
+        //             Text="Outside Trustees"
+        //         },
+        //         new SelectListItem()
+        //         {
+        //             Value="StatutoryLiabilities",
+        //             Text=" Statutory Liabilities"
+        //         },
+        //          new SelectListItem()
+        //         {
+        //             Value="LegalProsecutionDefence",
+        //             Text=" Legal Prosecution Defence"
+        //         },
+        //            new SelectListItem()
+        //         {
+        //             Value="CyberLiability",
+        //             Text="  Cyber Liability"
+        //         }
+        //     };
+        // }
+
+
+        // public IList<Product> ClaimProducts { get; set; }
+        // public IList<SelectListItem> ClaimProductType { get; set; }
         public Guid AnswerSheetId { get; set; }
 
         public Guid ClaimId { get; set; }
@@ -49,8 +130,14 @@ namespace DealEngine.WebUI.Models
 
         public Guid OrganisationId { get; set; }
 
-        public Guid[] ClaimProducts { get; set; }
+       public Guid[] ClaimProducts { get; set; }
 
+        //public ClaimViewModel(ClientInformationSheet ClientInformationSheet)
+        //{
+        //    claim = GetLocations(ClientInformationSheet);
+        //    LocationType = GetLocationTypes();
+
+        //}
         public ClaimNotification ToEntity(User creatingUser)
         {
             ClaimNotification claim = new ClaimNotification(creatingUser);
