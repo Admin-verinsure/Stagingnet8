@@ -66,7 +66,7 @@
                                 <label class="label"><strong>Broker user email: </strong></label>
                             </div>
                             <div class="col-8">
-                                <select id="brokers" name="BrokerContactUser" class="form-select custom-select">
+                                <select id="brokers" name="BrokerContactUser" class="form-select ">
                                     @foreach (var option in Model.Brokers)
                                     {
                                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -91,7 +91,7 @@
                                 <label class="label"><strong>I want this programme to use EGlobal API: </strong></label>
                             </div>
                             <div class="col-8">
-                                @Html.DropDownListFor(m => m.Programme.UsesEGlobal, Model.BooleanOptions, new { @class = "custom-select form-select", @onChange = "OnChange(this.id, this.name)" })
+                                @Html.DropDownListFor(m => m.Programme.UsesEGlobal, Model.BooleanOptions, new { @class = "form-select", @onChange = "OnChange(this.id, this.name)" })
                             </div>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                                 <label class="label"><strong>I want this programme to be publicly available. </strong></label>
                             </div>
                             <div class="col-8">
-                                @Html.DropDownListFor(m => m.Programme.IsPublic, Model.BooleanOptions, new { @class = "custom-select form-select", @onChange = "OnChange(this.id, this.name)" })
+                                @Html.DropDownListFor(m => m.Programme.IsPublic, Model.BooleanOptions, new { @class = "form-select", @onChange = "OnChange(this.id, this.name)" })
                             </div>
                         </div>
                     </div>
@@ -111,7 +111,7 @@
                                 <label class="label"><strong>I want to enable programme emails. </strong></label>
                             </div>
                             <div class="col-8">
-                                @Html.DropDownListFor(m => m.Programme.ProgEnableEmail, Model.BooleanOptions, new { @class = "custom-select form-select", @onChange = "OnChange(this.id, this.name)" })
+                                @Html.DropDownListFor(m => m.Programme.ProgEnableEmail, Model.BooleanOptions, new { @class = "form-select", @onChange = "OnChange(this.id, this.name)" })
                             </div>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                                 <label class="label"><strong>I want this programme to suspend all agreements.</strong></label>
                             </div>
                             <div class="col-8">
-                                @Html.DropDownListFor(m => m.Programme.StopAgreement, Model.BooleanOptions, new { @class = "form-select custom-select form-select", @onChange = "OnChange(this.id, this.name)" })
+                                @Html.DropDownListFor(m => m.Programme.StopAgreement, Model.BooleanOptions, new { @class = "form-select form-select", @onChange = "OnChange(this.id, this.name)" })
                             </div>
                         </div>
                     </div>
@@ -147,7 +147,7 @@
                                 </label>
                             </div>
                             <div class="col-8">
-                                @Html.DropDownListFor(m => m.Programme.HasSubsystemEnabled, Model.BooleanOptions, new { @class = "form-select custom-select", @onChange = "OnChange(this.id, this.name)" })
+                                @Html.DropDownListFor(m => m.Programme.HasSubsystemEnabled, Model.BooleanOptions, new { @class = "form-select ", @onChange = "OnChange(this.id, this.name)" })
                             </div>
                         </div>
                     </div>

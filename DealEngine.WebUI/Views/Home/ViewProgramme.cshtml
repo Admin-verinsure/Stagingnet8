@@ -301,7 +301,7 @@
                     @Html.HiddenFor(m => m.Programme.Id)
                     <div class="form-group">
                         @Html.LabelFor(m => m.OrganisationViewModel.OrganisationTypes, new { @class = "label required" })
-                        <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="custom-select form-select" onclick="OrganisationTypeChange(this.value)" required>
+                        <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="form-select" onclick="OrganisationTypeChange(this.value)" required>
                             @foreach (var option in Model.OrganisationViewModel.OrganisationTypes)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>

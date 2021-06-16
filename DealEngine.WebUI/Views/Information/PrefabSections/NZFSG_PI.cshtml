@@ -9,7 +9,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasmortage" name="PIViewModel.HasMortageOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                    <select id="hasmortage" name="PIViewModel.HasMortageOptions" class="form-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
                         @foreach (var option in Model.PIViewModel.HasMortageOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -40,7 +40,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasbusinesschanges" name="PIViewModel.HasBusinessChangesOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasbusinesschanges" name="PIViewModel.HasBusinessChangesOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasBusinessChangesOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -71,7 +71,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasexistingpolicy" name="PIViewModel.HasExistingPolicyOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                    <select id="hasexistingpolicy" name="PIViewModel.HasExistingPolicyOptions" class="form-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
                         @foreach (var option in Model.PIViewModel.HasExistingPolicyOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>

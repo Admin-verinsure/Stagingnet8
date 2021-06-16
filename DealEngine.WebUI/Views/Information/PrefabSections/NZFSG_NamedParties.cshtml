@@ -213,7 +213,7 @@
                     <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                         <label class=" label required">Type</label>
                         <label class="input">
-                            <select id="types" name="Type" class="custom-select form-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
+                            <select id="types" name="Type" class="form-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
                                 @foreach (var option in Model.OrganisationViewModel.InsuranceAttributes)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>

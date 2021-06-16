@@ -8,7 +8,7 @@
                 <label for="hasEPLI" class="label required">Would you like Employment Practices Liability Insurance?</label>
             </div>
             <div class="col-3">
-                <select id="hasEPLI" name="EPLViewModel.HasEPLIOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)">
+                <select id="hasEPLI" name="EPLViewModel.HasEPLIOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                     @foreach (var option in Model.EPLViewModel.HasEPLIOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -34,7 +34,7 @@
                     <label for="iscovered" class="label required">Are all employees covered by written employment contract?</label>
                 </div>
                 <div class="col-3">
-                    <select id="iscovered" name="EPLViewModel.CoveredOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)">
+                    <select id="iscovered" name="EPLViewModel.CoveredOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                         @foreach (var option in Model.EPLViewModel.CoveredOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -50,7 +50,7 @@
                         <label for="islegaladvisor" class="label required">You have answered "Yes" above, were these contracts drawn up by a legal advisor or suitably qualified employment specialist?</label>
                     </div>
                     <div class="col-3">
-                        <select id="islegaladvisor" name="EPLViewModel.LegalAdvisorOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)">
+                        <select id="islegaladvisor" name="EPLViewModel.LegalAdvisorOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                             @foreach (var option in Model.EPLViewModel.LegalAdvisorOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -66,7 +66,7 @@
                     <label for="iscasualbasis" class="label required">Do you utilise staff on a casual basis?</label>
                 </div>
                 <div class="col-3">
-                    <select id="iscasualbasis" name="EPLViewModel.CasualBasisOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)">
+                    <select id="iscasualbasis" name="EPLViewModel.CasualBasisOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                         @foreach (var option in Model.EPLViewModel.CasualBasisOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -82,7 +82,7 @@
                         <label for="isdefined" class="label required">You have answered "Yes" above, are such casual employees employed pursuant to a written contract clearly defining the temporary nature of their role?</label>
                     </div>
                     <div class="col-3">
-                        <select id="isdefined" name="EPLViewModel.DefinedOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)">
+                        <select id="isdefined" name="EPLViewModel.DefinedOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                             @foreach (var option in Model.EPLViewModel.DefinedOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -98,7 +98,7 @@
                     <label for="hasmanual" class="label required">Do you have a written human resources manual or equivalent written management guidelines?</label>
                 </div>
                 <div class="col-3">
-                    <select id="hasmanual" name="EPLViewModel.ManualOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)">
+                    <select id="hasmanual" name="EPLViewModel.ManualOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                         @foreach (var option in Model.EPLViewModel.ManualOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -113,7 +113,7 @@
                     <label for="ispostingnotices" class="label required">Do you post all notices required by law in places conspicuous to all employees including potential employees?</label>
                 </div>
                 <div class="col-3">
-                    <select id="ispostingnotices" name="EPLViewModel.PostingNoticesOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)">
+                    <select id="ispostingnotices" name="EPLViewModel.PostingNoticesOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                         @foreach (var option in Model.EPLViewModel.PostingNoticesOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -128,7 +128,7 @@
                     <label for="isconsulting" class="label required">Do you consult with your legal advisor and/or a suitable qualified employment consultant prior to undertaking staff restructures or redundancies?</label>
                 </div>
                 <div class="col-3">
-                    <select id="isconsulting" name="EPLViewModel.StaffRedundancyOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)">
+                    <select id="isconsulting" name="EPLViewModel.StaffRedundancyOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                         @foreach (var option in Model.EPLViewModel.StaffRedundancyOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -143,7 +143,7 @@
                     <label for="isinsuredclaim" class="label required"><strong>After enquiry,</strong> are you aware of any workplace incidents that have resulted in claims and/or complaints made against during the last 5 years whether insured or uninsured?</label>
                 </div>
                 <div class="col-3">
-                    <select id="isinsuredclaim" name="EPLViewModel.IsInsuredClaimOptions" class="custom-select form-select" onchange="OnChange(this.id, this.name)">
+                    <select id="isinsuredclaim" name="EPLViewModel.IsInsuredClaimOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                         @foreach (var option in Model.EPLViewModel.IsInsuredClaimOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>

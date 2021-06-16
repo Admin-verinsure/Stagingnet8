@@ -10,7 +10,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasbusinesschanges" name="PIViewModel.HasBusinessChangesOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasbusinesschanges" name="PIViewModel.HasBusinessChangesOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.PIViewModel.HasBusinessChangesOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -43,7 +43,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasexistingpolicy" name="PIViewModel.HasPartyMembers" class="custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                <select id="hasexistingpolicy" name="PIViewModel.HasPartyMembers" class="form-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
                     @foreach (var option in Model.PIViewModel.HasPartyMembers)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -60,7 +60,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasexistingpolicy" name="PIViewModel.HasOtherPIinsurances" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasexistingpolicy" name="PIViewModel.HasOtherPIinsurances" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.PIViewModel.HasOtherPIinsurances)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -79,7 +79,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasexistingpolicy" name="PIViewModel.HasClassOfLicense" class="custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                <select id="hasexistingpolicy" name="PIViewModel.HasClassOfLicense" class="form-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
                     @foreach (var option in Model.PIViewModel.HasClassOfLicense)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>

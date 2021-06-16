@@ -18,7 +18,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="HasGL" name="GLViewModel.HasGLOptions" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="HasGL" name="GLViewModel.HasGLOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.GLViewModel.HasGLOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -91,7 +91,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            <select id="hasassumeliability" name="GLViewModel.HasAssumeLiabilityOptions" class="form-select custom-select" onchange="OnChange(this.id, this.name)" required>
+                            <select id="hasassumeliability" name="GLViewModel.HasAssumeLiabilityOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                                 @foreach (var option in Model.GLViewModel.HasAssumeLiabilityOptions)
                                 {
                                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -122,7 +122,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            <select id="hasexistingGLpolicy" name="GLViewModel.HasExistingPolicyOptions" class="form-select custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                            <select id="hasexistingGLpolicy" name="GLViewModel.HasExistingPolicyOptions" class="form-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
                                 @foreach (var option in Model.GLViewModel.HasExistingPolicyOptions)
                                 {
                                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>

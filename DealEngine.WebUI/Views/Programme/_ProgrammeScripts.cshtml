@@ -163,7 +163,7 @@
                 }
                 select.id = 'triggeranswer';
                 select.name = 'triggeranswer';
-                select.classList.add("custom-select");
+                select.classList.add("form-select");
                 return select;
             }
             else {
@@ -181,7 +181,7 @@
                 select.options.add(option);
                 select.id = 'triggeranswer';
                 select.name = 'triggeranswer';
-                select.classList.add("custom-select");
+                select.classList.add("form-select");
                 return select;
             }
             return
@@ -251,7 +251,7 @@
             }
             else {
                 obj = document.createElement("select");
-                obj.setAttribute("class", "custom-select");
+                obj.setAttribute("class", "form-select");
                 var opt = document.createElement('option');
                 // create text node to add to option element (opt)
                 opt.appendChild(document.createTextNode(questiontext));

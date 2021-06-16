@@ -22,7 +22,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasotherBusinessActivity" name="PIViewModel.HasotherBusinessActivity" class="custom-select form-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasotherBusinessActivity" name="PIViewModel.HasotherBusinessActivity" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasotherBusinessActivity)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>

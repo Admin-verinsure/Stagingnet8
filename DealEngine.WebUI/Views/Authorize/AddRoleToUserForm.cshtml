@@ -2,7 +2,7 @@
 
 <form>
     <div class="form-group col-6">
-        <select class="custom-select form-control form-select" id="AddUser" data-placeholder="Select User">
+        <select class="form-control form-select" id="AddUser" data-placeholder="Select User">
             @foreach (var user in Model.UserList)
             {
                 <option value="@user.Id">@user.UserName</option>
