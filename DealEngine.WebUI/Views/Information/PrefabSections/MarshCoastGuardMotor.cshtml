@@ -44,7 +44,7 @@
 						            { name: "SumInsured", align: 'center' },
 						            { name: "update", align: 'center', width:60, search: false, formatter: function(cellvalue, options, rowobject)
                                     {
-                                        return ('<button onclick="RemoveVehicle(\'' + cellvalue + '\', \'true\', \'#tblRegisteredMV\', \'#tblRemovedRegisteredMV\',\'@Model.ClientInformationSheet.Status\');" type="button"class=" btn btn-danger btn-sm"><span class="fa fa-trash"></span></button>');
+                                        return ('<button onclick="RemoveVehicle(\'' + cellvalue + '\', \'true\', \'#tblRegisteredMV\', \'#tblRemovedRegisteredMV\',\'@Model.ClientInformationSheet.Status\');" type="button"class=" btn btn-danger "><span class="fa fa-trash"></span></button>');
 										}
 										//{ return '<button onclick="alert(&quot;'+cellvalue+'&quot;);" type="button">Edit</button>'; }
 									}
