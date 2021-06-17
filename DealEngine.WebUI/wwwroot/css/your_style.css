@@ -1378,3 +1378,9 @@ ui-datepicker-div {
 .btn.hidden {
     display: none;
 }
+
+/*for AON Quote*/
+
+.font-md {
+    font-size: 130% !important;
+}
