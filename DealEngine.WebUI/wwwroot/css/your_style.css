@@ -1384,3 +1384,16 @@ ui-datepicker-div {
 .font-md {
     font-size: 130% !important;
 }
+
+/*for PMINZ*/
+.jumbotron {
+    margin-bottom: 2rem;
+    background-color: #e9ecef;
+    border-radius: .3rem;
+}
+
+    .jumbotron  .display-4 {
+        font-size: 3.5rem;
+        font-weight: 300;
+        line-height: 1.2;
+    }

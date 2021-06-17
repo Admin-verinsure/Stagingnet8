@@ -1084,20 +1084,25 @@
         //var advisoryModal = document.getElementById('advisoryModal');
         //advisoryModal.addEventListener('show.bs.modal');
 
-            if ("@Model.Status" == "Submitted") {
-                if (document.getElementById('fieldset') != null) {
+        if ("@Model.Status" == "Submitted")
+        {
+            if (document.getElementById('fieldset') != null)
+            {
                     document.getElementById('fieldset').setAttribute("disabled", "disabled");
-                } else {
+            }
+            else
+            {
                     document.getElementById('btn1').removeAttribute("disabled");
-                }
+            }
                 $('.btn-sm').addClass("hidden");
                 $("#accordion :input").prop("disabled", true);
                 $('.btn-success').removeClass("hidden");
                 $('.btn-success').prop("disabled", false);
                 $('.btn-danger').prop("disabled", false);
-
-            }
-        });
+                $("select").attr("disabled", "disabled");
+                $("textarea").attr("disabled", "disabled");
+        }
+    });
         function CloseAdvisory(clientInformationSheetId) {
             if (typeof clientInformationSheetId !== null) {
                 var postData = { ClientInformationSheetId: clientInformationSheetId };

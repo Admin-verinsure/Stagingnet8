@@ -58,10 +58,12 @@
 
              setTimeout(function(){
 
-                if ("@Model.Status" == "Submitted" || "@Model.Status" == "Bound") {
+                 if ("@Model.Status" == "Submitted" || "@Model.Status" == "Bound")
+                 {
                 debugger;
         
                     $("select").attr("disabled", "disabled");
+                    $("textarea").attr("disabled", "disabled");
                  $("input").attr("disabled", "disabled");
                 $(".btn-success").attr("disabled", "disabled");
                  //$("button").attr("disabled", "disabled");
