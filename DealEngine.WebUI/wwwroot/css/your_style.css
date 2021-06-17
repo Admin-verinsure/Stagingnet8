@@ -1392,8 +1392,15 @@ ui-datepicker-div {
     border-radius: .3rem;
 }
 
-    .jumbotron  .display-4 {
-        font-size: 3.5rem;
-        font-weight: 300;
-        line-height: 1.2;
+    .jumbotron .display-4 {
+        font-size: 3.5rem !important;
+        font-weight: 300 !important;
+        line-height: 1.2 !important;
     }
+
+@media (min-width: 576px) 
+{
+    .jumbotron {
+        padding: 4rem 2rem;
+    }
+}
