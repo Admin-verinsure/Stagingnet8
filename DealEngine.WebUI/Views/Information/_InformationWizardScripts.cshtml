@@ -38,6 +38,7 @@
         });
 
         $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+            debugger;
             var clientInformationSheet = '@Model.ClientInformationSheet.Id';
              var informationsheetstatus = '@Model.ClientInformationSheet.Status';
 
@@ -490,6 +491,7 @@
         });
 
         $("#accordion").on("accordionactivate", function (e, ui) {
+            debugger;
             if (ui.oldPanel != null) {
                 $.ajax({
                     url: '@Url.Action("SaveInformation", "Information")',
