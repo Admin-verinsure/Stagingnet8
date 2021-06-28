@@ -7,7 +7,7 @@
     <div class="form-group col-md-6">
         <div class="form-group" id="HideOrganisationType">
             @Html.LabelFor(m => m.OrganisationViewModel.OrganisationTypes, new { @class = "label required" })
-            <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in Model.OrganisationViewModel.OrganisationTypes)
                 {
     <option selected="@option.Selected" value="@option.Value">@option.Text</option>}
@@ -22,7 +22,7 @@
     <div class="form-group col-md-6">
         <div class="form-group" id="HideInsuranceAttribute">
             @Html.LabelFor(m => m.OrganisationViewModel.InsuranceAttributes, new { @class = "label required" })
-            <select id="Organisation.InsuranceAttribute" name="OrganisationViewModel.InsuranceAttribute" class="custom-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
+            <select id="Organisation.InsuranceAttribute" name="OrganisationViewModel.InsuranceAttribute" class="form-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.InsuranceAttributes)
                 {
     <option selected="@option.Selected" value="@option.Value">@option.Text</option>}
@@ -68,7 +68,7 @@
                                                                 <div class="form-group">
                                                                     <div class="form-group">
                                                                         @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationTheFAP, new { @class = "label required" })
-                                                                        <select id="Organisation.isOrganisationTheFAP" name="OrganisationViewModel.Organisation.isOrganisationTheFAP" data-rule="IsTheFap" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                                                        <select id="Organisation.isOrganisationTheFAP" name="OrganisationViewModel.Organisation.isOrganisationTheFAP" data-rule="IsTheFap" class="form-select" onchange="OnChange(this.id, this.name)" required>
                                                                             @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
                                                                             {
                                                         <option selected="@option.Selected" value="@option.Value">
@@ -86,7 +86,7 @@
 
                                                                                             </div>
 
-                                                                                            <select id="Organisation.isOrganisationInterposedPerson" name="OrganisationViewModel.Organisation.isOrganisationInterposedPerson" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                                                                            <select id="Organisation.isOrganisationInterposedPerson" name="OrganisationViewModel.Organisation.isOrganisationInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
                                                                                                 @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
                                                                                                 {
                                                                             <option selected="@option.Selected" value="@option.Value">
@@ -137,7 +137,7 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
                                         @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationTheFAP, new { @class = "label required" })
                                     </div>
 
-                                    <select id="Organisation.isOrganisationTheFAP" name="OrganisationViewModel.Organisation.isOrganisationTheFAP" data-rule="IsTheFap" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="Organisation.isOrganisationTheFAP" name="OrganisationViewModel.Organisation.isOrganisationTheFAP" data-rule="IsTheFap" class="form-select" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
                                         {
                         <option selected="@option.Selected" value="@option.Value">
@@ -153,7 +153,7 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
 
                                                     </div>
 
-                                                    <select id="Organisation.isOrganisationInterposedPerson" name="OrganisationViewModel.Organisation.isOrganisationInterposedPerson" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                                    <select id="Organisation.isOrganisationInterposedPerson" name="OrganisationViewModel.Organisation.isOrganisationInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
                                                         @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
                                                         {
                                         <option selected="@option.Selected" value="@option.Value">
@@ -189,7 +189,7 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
     <div class="form-group col-md-6">
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.isTheFAP, new { @class = "label required" })
-            <select id="AdvisorUnit.isTheFAP" name="OrganisationViewModel.AdvisorUnit.isTheFAP" data-rule="IsTheFap" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="AdvisorUnit.isTheFAP" name="OrganisationViewModel.AdvisorUnit.isTheFAP" data-rule="IsTheFap" class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
                 {
 <option selected="@option.Selected" value="@option.Value">
@@ -207,7 +207,7 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
 
                 </div>
 
-                <select id="AdvisorUnit.isInterposedPerson" name="OrganisationViewModel.AdvisorUnit.isInterposedPerson" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="AdvisorUnit.isInterposedPerson" name="OrganisationViewModel.AdvisorUnit.isInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">
@@ -232,7 +232,7 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
 
             </div>
 
-            <select id="AdvisorUnit.isInterposedPerson" name="OrganisationViewModel.AdvisorUnit.isInterposedPerson" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="AdvisorUnit.isInterposedPerson" name="OrganisationViewModel.AdvisorUnit.isInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
                 {
 <option selected="@option.Selected" value="@option.Value">

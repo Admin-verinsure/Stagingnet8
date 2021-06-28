@@ -163,6 +163,7 @@
                     data: $("#tab_1 :input").serialize({ json: true })
                 })
                     .done(function (url) {
+                        debugger;
                     $('#getAgreementModal').hide();
                     $("#agreementView").load(url, function () {
 

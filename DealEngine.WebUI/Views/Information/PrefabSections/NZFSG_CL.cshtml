@@ -77,7 +77,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="haslocation" name="CLIViewModel.HasLocationOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="haslocation" name="CLIViewModel.HasLocationOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasLocationOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -95,7 +95,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasactivity" name="CLIViewModel.HasActivityOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasactivity" name="CLIViewModel.HasActivityOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasActivityOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -112,7 +112,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasconfidencial" name="CLIViewModel.HasConfidencialOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasconfidencial" name="CLIViewModel.HasConfidencialOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasConfidencialOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -129,7 +129,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasbreaches" name="CLIViewModel.HasBreachesOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasbreaches" name="CLIViewModel.HasBreachesOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasBreachesOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -146,7 +146,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasknowledge" name="CLIViewModel.HasKnowledgeOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasknowledge" name="CLIViewModel.HasKnowledgeOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasKnowledgeOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -163,7 +163,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasprocedures" name="CLIViewModel.HasProceduresOptions" class="custom-select" data-rule="CyberOptional" data-item="hasapprovedvendors,hasprocedures" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasprocedures" name="CLIViewModel.HasProceduresOptions" class="form-select" data-rule="CyberOptional" data-item="hasapprovedvendors,hasprocedures" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasProceduresOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -180,7 +180,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasapprovedvendors" name="CLIViewModel.HasApprovedVendorsOptions" class="custom-select" data-rule="CyberOptional" data-item="hasapprovedvendors,hasprocedures" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasapprovedvendors" name="CLIViewModel.HasApprovedVendorsOptions" class="form-select" data-rule="CyberOptional" data-item="hasapprovedvendors,hasprocedures" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.CLIViewModel.HasApprovedVendorsOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -197,7 +197,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasrenewal" name="CLIViewModel.HasExistingPolicyOptions" class="custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                <select id="hasrenewal" name="CLIViewModel.HasExistingPolicyOptions" class="form-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
                     @foreach (var option in Model.CLIViewModel.HasExistingPolicyOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
