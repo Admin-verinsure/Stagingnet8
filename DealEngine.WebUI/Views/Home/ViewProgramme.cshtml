@@ -18,12 +18,12 @@
                 <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
             </li>
 
-            if (Model.IsSubclientEnabled)
+            @*if (Model.IsSubclientEnabled)
             {
                 <li class="nav-item">
                     <a onclick="location.href='@Url.Action("IssueSubUIS", "Home", new { ProgrammeId = @Model.Programme.Id, actionname = "IssueUIS" })'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue Sub UIS </a>
                 </li>
-            }
+            }*@
 
             if (Model.IsRenewFromProgramme)
             {

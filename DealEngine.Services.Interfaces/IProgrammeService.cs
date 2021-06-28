@@ -14,6 +14,7 @@ namespace DealEngine.Services.Interfaces
 		Task<ClientProgramme> GetClientProgramme (Guid id);
         Task<List<ClientProgramme>> GetClientProgrammesByOwner (Guid ownerOrganisationId);
         Task<List<ClientProgramme>> GetClientProgrammesByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId);
+        Task<ClientProgramme> GetOriginalClientProgrammeByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId);
         Task<List<ClientProgramme>> GetClientProgrammesForProgramme (Guid programmeId);
         Task<List<ClientProgramme>> GetRenewBaseClientProgrammesForProgramme(Guid programmeId);
         Task<ClientProgramme> CreateClientProgrammeFor (Guid programmeId, User creatingUser, Organisation owner);

@@ -7,6 +7,36 @@
         <table class="table table-bordered">
             <tbody>
                 @*the old data import functions have been commented out here, so it is hidden in the UI, please do not delete*@
+
+                <tr>
+                    <td>
+                        FANZ Data Import
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="~/Admin/ApolloImportOwners">Upload Owners/Advisors</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="~/Admin/ApolloImportPreRenewData">Upload PreRenewData</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="~/Admin/ApolloSetELDefaultVale">Set EL Default Vale</a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        FANZ ML Programme Data Import
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="~/Admin/FANZImportML">Upload Owners/Advisors</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="~/Admin/FANZImportMLPreRenewData">Upload PreRenewData</a>
+                    </td>
+                    <td>
+                        
+                    </td>
+                </tr>
                 @*<tr>
             <td>
                 NZACS Data Import (Client, Principals, etc)
@@ -78,17 +108,7 @@
                 <a class="btn btn-primary btn-sm" href="~/Admin/DANZImportPreRenewData">Upload Pre-Renew Data</a>
             </td>
         </tr>
-        <tr>
-            <td>
-                NZFSG Data Import (PrincipalAdvisor, Advisors, etc)
-            </td>
-            <td>
-                <a class="btn btn-primary btn-sm" href="~/Admin/NZFSGImportUsers">Upload Clients</a>
-            </td>
-            <td>
-                <a class="btn btn-primary btn-sm" href="~/Admin/NZFSGImportPrincipals">Upload Advisor</a>
-            </td>
-        </tr>
+
         <tr>
             <td>
                 AAA Data Import (PrincipalAdvisor, Advisors, etc)
@@ -122,30 +142,72 @@
                     </td>
                 </tr>*@
                 @*<tr>
-                    <td>
-                        Apollo Data Import
-                    </td>
-                    <td>
-                        <a class="btn btn-primary btn-sm" href="~/Admin/ApolloImportOwners">Upload Owners/Advisors</a>
-                    </td>
-                    <td>
-                        <a class="btn btn-primary btn-sm" href="~/Admin/ApolloImportPreRenewData">Upload PreRenewData</a>
-                    </td>
-                    <td>
-                        <a class="btn btn-primary btn-sm" href="~/Admin/ApolloSetELDefaultVale">Set EL Default Vale</a>
-                    </td>
-                </tr>*@
+            <td>
+                Apollo Data Import
+            </td>
+            <td>
+                <a class="btn btn-primary btn-sm" href="~/Admin/ApolloImportOwners">Upload Owners/Advisors</a>
+            </td>
+            <td>
+                <a class="btn btn-primary btn-sm" href="~/Admin/ApolloImportPreRenewData">Upload PreRenewData</a>
+            </td>
+            <td>
+                <a class="btn btn-primary btn-sm" href="~/Admin/ApolloSetELDefaultVale">Set EL Default Vale</a>
+            </td>
+        </tr>*@
                 @*<tr>
-                    <td>
-                        Abbott Data Import
-                    </td>
-                    <td>
-                        <a class="btn btn-primary btn-sm" href="~/Admin/AbbottImportOwners">Upload Owners/Advisors</a>
-                    </td>
-                    <td>
-                        <a class="btn btn-primary btn-sm" href="~/Admin/AbbottImportPreRenewData">Upload PreRenewData</a>
-                    </td>
-                </tr>*@
+            <td>
+                Abbott Data Import
+            </td>
+            <td>
+                <a class="btn btn-primary btn-sm" href="~/Admin/AbbottImportOwners">Upload Owners/Advisors</a>
+            </td>
+            <td>
+                <a class="btn btn-primary btn-sm" href="~/Admin/AbbottImportPreRenewData">Upload PreRenewData</a>
+            </td>
+        </tr>*@
+                <!--<tr>
+    <td>
+        NZFSG 2021 Data Import (ML and Run Off programme clients)
+    </td>
+    <td>
+        <a class="btn btn-primary btn-sm" href="~/Admin/NZFSGImportPIUsers">Upload PI Clients Renew</a>
+    </td>
+    <td>-->
+                @*<a class="btn btn-primary btn-sm" href="~/Admin/NZFSGImportPIUsersNewCompany">Upload PI Clients Create New Company</a>*@
+                <!--</td>
+        <td>
+            <a class="btn btn-primary btn-sm" href="~/Admin/NZFSGImportPIUsersNewAll">Upload PI Clients Create New Company and User</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            NZFSG 2021 Data Import (ML and Run Off programme clients)
+        </td>
+        <td>
+            <a class="btn btn-primary btn-sm" href="~/Admin/NZFSGImportMLUsers">Upload ML Clients Renew</a>
+        </td>
+        <td>
+            <a class="btn btn-primary btn-sm" href="~/Admin/NZFSGImportMLUsersNewCompany">Upload ML Clients Create New Company</a>
+        </td>
+        <td>
+            <a class="btn btn-primary btn-sm" href="~/Admin/NZFSGImportMLUsersNewAll">Upload ML Clients Create New Company and User</a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            NZFSG 2021 Data Import (ML and Run Off programme clients)
+        </td>
+        <td>
+            <a class="btn btn-primary btn-sm" href="~/Admin/NZFSGImportROUsers">Upload Run Off Clients</a>
+        </td>
+        <td>
+
+        </td>
+        <td>
+
+        </td>
+    </tr>-->
             </tbody>
         </table>
     </div>

@@ -13,6 +13,7 @@
     <PackageReference Include="NReco.PdfGenerator.LT" Version="1.1.17" />
     <PackageReference Include="ServiceStack.Client" Version="5.7.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.20" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DealEngine.Domain.Exceptions\DealEngine.Domain.Exceptions.csproj" />

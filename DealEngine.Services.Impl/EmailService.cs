@@ -157,8 +157,7 @@ namespace DealEngine.Services.Impl
         {
             var user = await _userService.GetUserByEmail(recipent);
             List<KeyValuePair<string, string>> mergeFields;
-
-            
+          
 
             if (clientInformationSheet != null)
             {
@@ -198,6 +197,70 @@ namespace DealEngine.Services.Impl
 			email.WithBody (systememailbody);
 			email.UseHtmlBody (true);
             if(documents != null)
+            {
+                foreach (SystemDocument document in documents)
+                {
+                    if(document.ContentType == "application/pdf")
+                    {
+                        email.Attachments(new Attachment(new MemoryStream(document.Contents), document.Name));
+                    }
+                }
+                //var documentsList = await ToAttachments(documents);
+                //email.Attachments(documentsList.ToArray());
+                //_mailMessage.Attachments.Add(attachment);
+                email.Send();
+            }
+            else
+            {
+                email.Send();
+            }
+        }
+
+        public async Task SendEmailViaEmailTemplateWithCC(string recipent, EmailTemplate emailTemplate, List<SystemDocument> documents, ClientInformationSheet clientInformationSheet, ClientAgreement clientAgreement, string cCRecipent)
+        {
+            var user = await _userService.GetUserByEmail(recipent);
+            List<KeyValuePair<string, string>> mergeFields;
+
+
+            if (clientInformationSheet != null)
+            {
+                if (clientAgreement != null)
+                {
+                    mergeFields = MergeFieldLibrary(null, null, clientInformationSheet.Programme.BaseProgramme, clientInformationSheet, clientAgreement);
+                }
+                else
+                {
+                    mergeFields = MergeFieldLibrary(null, null, clientInformationSheet.Programme.BaseProgramme, clientInformationSheet, null);
+                }
+
+            }
+            else
+            {
+                mergeFields = MergeFieldLibrary(null, null, null, clientInformationSheet, null);
+            }
+
+            var insuredUser = _userService.GetApplicationUserByEmail(recipent);
+            if (insuredUser != null)
+            {
+                mergeFields.Add(new KeyValuePair<string, string>("[[First Name]]", insuredUser.Result.FirstName));
+                mergeFields.Add(new KeyValuePair<string, string>("[[Last Name]]", insuredUser.Result.LastName));
+            }
+
+            string systememailsubject = emailTemplate.Subject;
+            string systememailbody = System.Net.WebUtility.HtmlDecode(emailTemplate.Body);
+            foreach (KeyValuePair<string, string> field in mergeFields)
+            {
+                systememailsubject = systememailsubject.Replace(field.Key, field.Value);
+                systememailbody = systememailbody.Replace(field.Key, field.Value);
+            }
+
+            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
+            email.From(DefaultSender);
+            email.WithSubject(systememailsubject);
+            email.WithBody(systememailbody);
+            email.CC(cCRecipent);
+            email.UseHtmlBody(true);
+            if (documents != null)
             {
                 var documentsList = await ToAttachments(documents);
                 email.Attachments(documentsList.ToArray());

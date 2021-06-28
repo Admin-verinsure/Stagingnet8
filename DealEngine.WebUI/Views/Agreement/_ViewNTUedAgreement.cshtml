@@ -1,0 +1,41 @@
+﻿@model DealEngine.WebUI.Models.Agreement.ViewAgreementViewModel
+<!-- NEW WIDGET START -->
+<div class="container-fluid">
+    <!-- Widget ID (each widget will need unique ID)-->
+    <div class="card">
+        <div class="card-header">
+            <span class="widget-icon">
+                <h6><i class="fa fa-list-alt"></i> @ViewBag.Title </h6>
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                You have declined the offer of this cover. Click the button below to return to the dashboard. If you change your mind you can select the programme and resume by clicking on the Resume button.
+            </div>
+        </div>
+        <div class="card-body">
+            <a class="btn btn-primary btn-xs" href="~/Home/Index" id="backbutton"><i class="fa fa-home"></i> Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+@if (Model.InformationSheetStatus == "Not Taken Up")
+{
+    <script type="text/javascript">
+        var nextbutton1 = document.getElementsByClassName("sw-btn-next");
+        $(nextbutton1).addClass("hidden");
+        $(nextbutton1).hide();
+        var prevbutton = document.getElementsByClassName("sw-btn-prev");
+        $(prevbutton).addClass("hidden");
+        $(prevbutton).hide();
+    </script>
+}
+else
+{
+    <script type="text/javascript">
+        var nextbutton1 = document.getElementsByClassName("sw-btn-next");
+        $(nextbutton1).removeClass("hidden");
+        var prevbutton = document.getElementsByClassName("sw-btn-prev");
+        $(prevbutton).removeClass("hidden");
+    </script>
+}

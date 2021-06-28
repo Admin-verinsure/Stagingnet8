@@ -453,7 +453,7 @@ namespace DealEngine.WebUI.Controllers
                     //rsaUser.Username = user.UserName;
                     rsaUser.Username = rsaAuth.GetHashedId(user.UserName.ToLower()+"@mnzconnect.com"); //use hashed username(lower case) + production domain name as requested by Marsh
                     rsaUser.HttpReferer = "~Account/LoginMarsh";
-                    rsaUser.OrgName = "Marsh_Model";
+                    rsaUser.OrgName = _appSettingService.MarshRSAOrgName; //staging:Marsh_Model, production: Marsh
                     rsaUser.RsaStatus = RsaStatus.Deny;
                     rsaUser.DeviceTokenCookie = user.DeviceTokenCookie;
                     if (!string.IsNullOrEmpty(user.DeviceTokenCookie)) //As marsh adviced ClientGenCookie is a Mandatory field for none-enrollment request, use DeviceTokenCookie to define the enrollment status
@@ -526,7 +526,7 @@ namespace DealEngine.WebUI.Controllers
                 //rsaUser.Username = username;
                 rsaUser.Username = rsaAuth.GetHashedId(username.ToLower() + "@mnzconnect.com"); //use hashed username(lower case) + production domain name as requested by Marsh
                 rsaUser.HttpReferer = "";
-                rsaUser.OrgName = "Marsh_Model";
+                rsaUser.OrgName = _appSettingService.MarshRSAOrgName; //staging:Marsh_Model, production: Marsh
                 rsaUser.Otp = viewModel.OtpCode;
                 rsaUser.CurrentSessionId = viewModel.SessionId;
                 rsaUser.CurrentTransactionId = viewModel.TransactionId;

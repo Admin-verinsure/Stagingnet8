@@ -5,12 +5,12 @@
                 <div class="row">
                     <div class="col-12">
                         <label for="HasSL" class="label">
-                            Some advisers may be subject to the above Act. A breach of this Act could result in
+                            Some advisers may be subject to the Anti Money Laundering and Countering Financing of Terrorism Act 2009. A breach of this Act could result in
                             civil pecuniary penalties being imposed which is not covered currently by a Statutory
-                            liability policy or a Professional Indemnity policy. Therefore, if you are a reporting 
-                            entity in conjunction with this Act, it would be prudent that you consider 
+                            Liability policy or a Professional Indemnity policy. Therefore, if you are a reporting
+                            entity in conjunction with this Act, it would be prudent that you consider
                             purchasing some cover for this exposure. Please note that if the answer is ‘NO’ to the next 3
-                            underwriting questions, Lumley will not provide this cover. This cover is subject to 
+                            underwriting questions, NZI will not provide this cover. This cover is subject to
                             the sub-limit, excess and premium quoted below and the full wording of the
                             endorsement is included for your reference;
                         </label>
@@ -98,11 +98,9 @@
                             <div class="col-2">
                             </div>
                             <div class="col-8">
-
-                                Sub Limit: $500,000 plus
-                                <br />Defence costs: $500,000
-                                <br />Excess: $2,000
-                                @*<br />Please refer to TripleA pre-renewal correspondence for additional premium payable for this extension*@
+                                Sub Limit: @((Model.ProgNamedPartyName == "TripleA Programme" || Model.ProgNamedPartyName == "Apollo Programme") ? "$500,000 plus" : "$250,000 plus")
+                                <br />Defence costs: @((Model.ProgNamedPartyName == "TripleA Programme" || Model.ProgNamedPartyName == "Apollo Programme") ? "$500,000" : "$250,000")
+                                <br />Excess: @((Model.ProgNamedPartyName == "TripleA Programme" || Model.ProgNamedPartyName == "Apollo Programme") ? "$2,000" : "$10,000")
                                 <br />If there is addtional premium it will appear on the quote page.
                             </div>
                             <div class="col-1">

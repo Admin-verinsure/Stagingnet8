@@ -21,7 +21,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsPublic { get; set; }
         public virtual IList<Organisation> Parties { get; set; }
         public virtual IList<User> UISIssueNotifyUsers { get; set; }
-       public virtual IList<UpdateType> UpdateTypes { get; set; }
+        public virtual IList<UpdateType> UpdateTypes { get; set; }
 
         public virtual IList<User> UISSubmissionNotifyUsers { get; set; }
         public virtual IList<User> AgreementReferNotifyUsers { get; set; }
@@ -81,6 +81,11 @@ namespace DealEngine.Domain.Entities
         public virtual bool ProgHideAdditionalCertFee { get; set; }
         public virtual int RenewGracePriodInDays { get; set; }
         public virtual int NewGracePriodInDays { get; set; }
+        public virtual bool ProgEnableProgEmailCC { get; set; }
+        public virtual string ProgEmailCCRecipent { get; set; }
+        public virtual bool IsPdfDoc{ get; set; }
+        public virtual bool ProgEnableRequireNoCover { get; set; }
+
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)

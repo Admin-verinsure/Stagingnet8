@@ -76,6 +76,14 @@ namespace DealEngine.WebUI.Controllers
 
             // DOCX & HTML
             string html = _fileService.FromBytes(doc.Contents);
+            //html = html.Insert(0, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>");
+            html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { width: 120px; height:120px}</style></head>");
+           // Test if the below 4 are even necessary by this function, setting above should make these redundant now
+            html = html.Replace("“", "&quot");
+            html = html.Replace("”", "&quot");
+            html = html.Replace(" – ", "--");
+            html = html.Replace("&nbsp;", " ");
+
             var htmlToPdfConv = new NReco.PdfGenerator.HtmlToPdfConverter();
             htmlToPdfConv.License.SetLicenseKey(
                _appSettingService.NRecoUserName,
@@ -112,12 +120,14 @@ namespace DealEngine.WebUI.Controllers
             var docContents = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
             // DOCX & HTML
             string html = _fileService.FromBytes(doc.Contents);
+            html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { width: 120px; height:120px}</style></head>");
+
             var htmlToPdfConv = new HtmlToPdfConverter();
             htmlToPdfConv.License.SetLicenseKey(
                _appSettingService.NRecoUserName,
                _appSettingService.NRecoLicense
            );            // for Linux/OS-X: "wkhtmltopdf"
-            htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
+           htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
             htmlToPdfConv.PdfToolPath = _appSettingService.NRecoPdfToolPath;
 
             string submittedBy = clientprogramme.InformationSheet.SubmittedBy.FullName;
@@ -126,14 +136,14 @@ namespace DealEngine.WebUI.Controllers
                 submittedBy = clientprogramme.InformationSheet.Programme.BrokerContactUser.FullName;
             }
 
-            htmlToPdfConv.PageHeaderHtml = "<p style='padding-top: 60px'>"
-                + "</br><strong> Title: " + clientprogramme.BaseProgramme.Name + "</strong></br>"
-                + " <strong> Information Sheet for: " + clientprogramme.Owner.Name + "</strong></br>"
-                + " <strong> UIS No: " + clientInformationSheet.ReferenceId + "</strong></br>"
-                + " <strong> Sheet Submitted On: " + clientInformationSheet.SubmitDate.ToShortDateString() + "</strong></br>"
-                + " <strong> Report Generated On: " + DateTime.Now.ToShortDateString() + "</strong></br>"
-                + " <strong> Submitted By: " + submittedBy + "</strong></br>"
-                + "<h2> </br>  </h2> </p>";
+            //htmlToPdfConv.PageHeaderHtml = "<p style='padding-top: 60px'>"
+            //    + "</br><strong> Title: " + clientprogramme.BaseProgramme.Name + "</strong></br>"
+            //    + " <strong> Information Sheet for: " + clientprogramme.Owner.Name + "</strong></br>"
+            //    + " <strong> UIS No: " + clientInformationSheet.ReferenceId + "</strong></br>"
+            //    + " <strong> Sheet Submitted On: " + clientInformationSheet.SubmitDate.ToShortDateString() + "</strong></br>"
+            //    + " <strong> Report Generated On: " + DateTime.Now.ToShortDateString() + "</strong></br>"
+            //    + " <strong> Submitted By: " + submittedBy + "</strong></br>"
+            //    + "<h2> </br>  </h2> </p>";
 
             htmlToPdfConv.PageFooterHtml = "</br>" + $@"page <span class=""page""></span> of <span class=""topage""></span>";
 

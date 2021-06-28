@@ -1367,13 +1367,13 @@ namespace DealEngine.Services.Impl
         {
 
             string html = FromBytes(doc.Contents);
-            html = html.Insert(0, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>");
-            // Test if the below 4 are even necessary by this function, setting above should make these redundant now
-            html = html.Replace("“", "&quot");
-            html = html.Replace("”", "&quot");
-            html = html.Replace(" – ", "--");
-            html = html.Replace("&nbsp;", " ");
-            
+            //html = html.Insert(0, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>");
+            //// Test if the below 4 are even necessary by this function, setting above should make these redundant now
+            //html = html.Replace("“", "&quot");
+            //html = html.Replace("”", "&quot");
+            //html = html.Replace(" – ", "--");
+            //html = html.Replace("&nbsp;", " ");
+            User user = null; 
             var htmlToPdfConv = new NReco.PdfGenerator.HtmlToPdfConverter();
             htmlToPdfConv.License.SetLicenseKey(_appSettingService.NRecoUserName,_appSettingService.NRecoLicense);
             htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
@@ -1386,11 +1386,17 @@ namespace DealEngine.Services.Impl
             margins.Right = 25;
             htmlToPdfConv.Margins = margins;
             htmlToPdfConv.PageFooterHtml = "</br>" + $@"page <span class=""page""></span> of <span class=""topage""></span>";
-            
-            var output = htmlToPdfConv.GeneratePdf(html);
-            doc.Contents = output;
 
-            return doc;
+
+
+            var pdfBytes = htmlToPdfConv.GeneratePdf(html);
+            Document document = new Document(user, doc.Name, "application/pdf", doc.DocumentType);
+            document.Contents = pdfBytes;
+
+            //var output = htmlToPdfConv.GeneratePdf(html);
+            //doc.Contents = output;
+
+            return document;
         }
         public async Task<Document> FormatCKHTMLforConversion(Document doc)
         {
@@ -1505,7 +1511,7 @@ namespace DealEngine.Services.Impl
 
                         decimal widthPercent = decimal.Parse(width);
                         widthPercent = decimal.Divide(widthPercent, 100);
-                        decimal pixelWidth = 500 * widthPercent; // 500 is pretty much 100% width in the .docx documents so treating 500 as 100% and the ck value to adjust how big it should be
+                        decimal pixelWidth = 100 * widthPercent; // 500 is pretty much 100% width in the .docx documents so treating 500 as 100% and the ck value to adjust how big it should be
                         int pixelWidthZeroDP = Convert.ToInt32(pixelWidth);
                         string pixelWidthStr = pixelWidthZeroDP.ToString();
 

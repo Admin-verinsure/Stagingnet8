@@ -22,7 +22,7 @@ namespace DealEngine.WebUI.Models
                 Programme = ClientInformationSheet.Programme.BaseProgramme;
                 if(Programme.NamedPartyUnitName == "NZFSG Programme" || Programme.NamedPartyUnitName == "TripleA Programme" || Programme.NamedPartyUnitName == "Apollo Programme" || 
                     Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" || 
-                    Programme.NamedPartyUnitName == "Financial Advice New Zealand Inc Programme")
+                    Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
                 {
                     AdvisorUnit = new AdvisorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
                     AdministratorUnit = new AdministratorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
@@ -36,7 +36,7 @@ namespace DealEngine.WebUI.Models
                         InsuranceAttributes = GetAdvisorTypes2();
                     }
                     else if (Programme.NamedPartyUnitName == "Apollo Programme" || Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" || 
-                        Programme.NamedPartyUnitName == "Financial Advice New Zealand Inc Programme")
+                        Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
                     {
                         InsuranceAttributes = GetAdvisorTypes3();
                         if(Programme.NamedPartyUnitName == "Apollo Programme") 
@@ -78,7 +78,7 @@ namespace DealEngine.WebUI.Models
                     HasMajorShareHolder = GetBooleanSelectOptions();
                 }
 
-                if (Programme.NamedPartyUnitName == "NZFSG ML Programme")
+                if (Programme.NamedPartyUnitName == "NZFSG ML Programme" || Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme")
                 {
                     DirectorUnit = new DirectorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
 

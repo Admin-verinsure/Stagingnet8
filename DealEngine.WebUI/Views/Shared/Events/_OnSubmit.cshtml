@@ -178,12 +178,14 @@
 
     function UnitValidationOnSubmit(Programme) {
         var Unit = document.getElementsByName("Unit");
+       var directorUnit = document.getElementsByName("DirectorUnit");
 
 
         if (Unit != null) {
             if (Unit.length > 0) {
                 if (Unit[0].id == "AdvisorUnit" ||
-                    Unit[0].id == "PlannerUnit"
+                    Unit[0].id == "PlannerUnit"||
+                    Unit[0].id == "DirectorUnit"
                 ) {
                     var pAdvisor = document.getElementById("IsPrincipal");
                     if (pAdvisor == null) {
@@ -207,7 +209,7 @@
                         }
                     }
 
-                    if (Programme != "Apollo Programme" && Programme != "Abbott Financial Advisor Liability Programme") {
+                    if (Programme != "Apollo Programme" && Programme != "Abbott Financial Advisor Liability Programme" && Programme != "Financial Advice NZ Financial Advice Provider Liability Programme" ) {
                         var TradingName = document.getElementById("NoTradingName");
                         if (TradingName != null) {
                             if (TradingName.value === "True") {
@@ -244,6 +246,55 @@
             window.alert("Please update email for: " + InvalidEmail.value);
             throw "InvalidEmail Named Parties";
         }
+
+
+        if (directorUnit != null) {
+            if (directorUnit.length > 0) {
+                if (directorUnit[0].id == "DirectorUnit") {
+                    if (Programme == "NZFSG ML Programme") {
+                        var TradingName = document.getElementById("NoTradingName");
+                        if (TradingName != null) {
+                            if (TradingName.value === "True") {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                $("#more").trigger("click");
+                                window.alert("Please add 'Trading Name' for 'Owner' in Named Parties");
+                                $("[id='Insured Details / Named Parties']").trigger("click");
+                                throw "no trading name";
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        if (Programme == "Apollo Programme" || Programme != "Abbott Financial Advisor Liability Programme" || Programme == "Financial Advice NZ Financial Advice Provider Liability Programme" ) {
+            debugger;
+            var clientInformationSheet = document.getElementById("AnswerSheetId").value;
+           $.ajax({
+               url: '@Url.Action("IfFapExist", "Organisation")',
+               type: "POST",
+               async: false,
+              data: { clientInformationSheet: clientInformationSheet},
+               success: function (Data) {
+                   debugger;
+                   if (Data == false) {
+                       $("#IsFapOrg").val("false");
+                       var hh = document.getElementById("IsFapOrg").value
+                       
+                   } else {
+                       $("#IsFapOrg").val("true");
+                       var hhd = document.getElementById("IsFapOrg").value
+
+
+                   }
+               }
+           });
+   
+        }
+
+
     }
 
     function OnOrganisationSubmit(FormId, AccordionId) {
@@ -293,8 +344,7 @@
             }
         //  document.getElementsByName("Unit").value="AdministratorUnit"
 
-           
-        
+       
 
         if (FormId === "organisationViewModel") {
             for (var i = 0; i < form.length; i++) {
@@ -333,6 +383,14 @@
                                 }
                             }
                         }
+                            
+                            var NoTradingNameValidation = document.getElementById("NoTradingNameValidation");
+                             var TradingName = document.getElementById("Organisation.TradingName");
+                  
+                        if (NoTradingNameValidation != null && NoTradingNameValidation.value == "True") {
+                            TradingName.classList.remove("is-invalid");
+                            TradingName.classList.add("is-valid");
+                         }
                         var IsHidden = IsElementHidden(element);
                         if (element.classList.contains("is-invalid") && (IsHidden != true)) {
                             PostAjax = false;

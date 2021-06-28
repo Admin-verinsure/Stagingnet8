@@ -1793,7 +1793,13 @@ namespace DealEngine.WebUI.Controllers
                             }
                             if (emailTemplate != null)
                             {
-                                await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, null, null, null);
+                                if (programme.ProgEnableProgEmailCC && !string.IsNullOrEmpty(programme.ProgEmailCCRecipent))
+                                {
+                                    await _emailService.SendEmailViaEmailTemplateWithCC(email, emailTemplate, null, null, null, programme.ProgEmailCCRecipent);
+                                } else
+                                {
+                                    await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, null, null, null);
+                                }
                             }
                             //send out uis issue notification email
                             //await _emailService.SendSystemEmailUISIssueNotify(programme.BrokerContactUser, programme, sheet, programme.Owner);

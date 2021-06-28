@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
     <PackageReference Include="NHibernate.AspNetCore.Identity" Version="3.1.2" />
     <PackageReference Include="NHibernate.Extensions.NpgSql" Version="3.1.2" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
   </ItemGroup>
 
   <ItemGroup>

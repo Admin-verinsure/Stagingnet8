@@ -10,5 +10,6 @@
     <PackageReference Include="HtmlToOpenXml.dll" Version="2.0.3" />
     <PackageReference Include="MailKit" Version="2.4.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
   </ItemGroup>
 </Project>

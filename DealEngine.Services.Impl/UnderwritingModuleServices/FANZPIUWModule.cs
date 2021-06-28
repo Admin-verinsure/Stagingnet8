@@ -6,13 +6,13 @@ using System.Linq;
 
 namespace DealEngine.Services.Impl.UnderwritingModuleServices
 {
-    public class FAPProgrammePIUWModule : IUnderwritingModule
+    public class FANZPIUWModule : IUnderwritingModule
     {
         public string Name { get; protected set; }
 
-        public FAPProgrammePIUWModule()
+        public FANZPIUWModule()
         {
-            Name = "FAPProgramme_PI";
+            Name = "FANZ_PI";
         }
 
         public bool Underwrite(User CurrentUser, ClientInformationSheet informationSheet)
@@ -41,7 +41,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
-            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "pitermexcess", "1millimitpremiumratemb", "1millimitminimumpremiummbclass1", "1millimitminimumpremiummbclass2",
+            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "1millimitpremiumratemb", "1millimitminimumpremiummbclass1", "1millimitminimumpremiummbclass2",
                 "2millimitpremiumratemb", "2millimitminimumpremiummbclass1", "2millimitminimumpremiummbclass2", "3millimitpremiumratemb", "3millimitminimumpremiummbclass1", "3millimitminimumpremiummbclass2",
                 "4millimitpremiumratemb", "4millimitminimumpremiummbclass1", "4millimitminimumpremiummbclass2", "5millimitpremiumratemb", "5millimitminimumpremiummbclass1", "5millimitminimumpremiummbclass2",
                 "1millimitpremiumrateslh", "1millimitminimumpremiumslhclass1", "1millimitminimumpremiumslhclass2",
@@ -52,7 +52,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 "4millimitpremiumratelhfg", "4millimitminimumpremiumlhfgclass1", "4millimitminimumpremiumlhfgclass2", "5millimitpremiumratelhfg", "5millimitminimumpremiumlhfgclass1", "5millimitminimumpremiumlhfgclass2",
                 "1millimitpremiumrateinv", "1millimitminimumpremiuminvclass1", "1millimitminimumpremiuminvclass2",
                 "2millimitpremiumrateinv", "2millimitminimumpremiuminvclass1", "2millimitminimumpremiuminvclass2", "3millimitpremiumrateinv", "3millimitminimumpremiuminvclass1", "3millimitminimumpremiuminvclass2",
-                "4millimitpremiumrateinv", "4millimitminimumpremiuminvclass1", "4millimitminimumpremiuminvclass2", "5millimitpremiumrateinv", "5millimitminimumpremiuminvclass1", "5millimitminimumpremiuminvclass2");
+                "4millimitpremiumrateinv", "4millimitminimumpremiuminvclass1", "4millimitminimumpremiuminvclass2", "5millimitpremiumrateinv", "5millimitminimumpremiuminvclass1", "5millimitminimumpremiuminvclass2", 
+                "10kexcessdiscountrate", "25kexcessdiscountrate", "10kexcessdiscountrateadvisortruststatus", "25kexcessdiscountrateadvisortruststatus");
 
             //Create default referral points based on the clientagreementrules
             if (agreement.ClientAgreementReferrals.Count == 0)
@@ -109,132 +110,115 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Programme specific term
 
             //Default Professional Business, Retroactive Date, TerritoryLimit, Jurisdiction, AuditLog Detail
-            string strProfessionalBusiness = "";
-            string retrodate = "";
-            string strTerritoryLimit = "";
-            string strJurisdiction = "";
-            string auditLogDetail = "";
+            string strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Investment Advice, Mortgage Broking, Financial Planning and Fire & General Broking ";
+            string retrodate = "Unlimited excluding known claims or circumstances";
+            string strTerritoryLimit = "New Zealand";
+            string strJurisdiction = "New Zealand";
+            string auditLogDetail = "FANZ PI UW created/modified";
 
-            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "TripleA Programme")
+            if (agreement.ClientInformationSheet.RevenueData != null)
             {
-                strProfessionalBusiness = "Life and general advisers of any insurance or assurance company and/or intermediaries, agents or consultants in the sale or negotiation of any financial product or the provision of any financial advice including mortgage advice and financial services educational workshops.";
-                retrodate = "Unlimited excluding known claims or circumstances";
-                strTerritoryLimit = "Australia and New Zealand";
-                strJurisdiction = "Australia and New Zealand";
-                auditLogDetail = "TripleA PI UW created/modified";
-
-            } else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme")
-            {
-                strProfessionalBusiness = "General Insurance Brokers, Life Agents, Investment Advisers, Financial Planning and Mortgage Broking, Consultants and Advisers in the sale of any financial product including referrals to other financial product providers.";
-                retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
-                strTerritoryLimit = "Worldwide";
-                strJurisdiction = "Australia and New Zealand";
-                auditLogDetail = "Apollo PI UW created/modified";
-            } else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
-            {
-                strProfessionalBusiness = "Sales & Promotion of Life, Investment & General Insurance products, Financial planning & Mortgage Brokering Services";
-                retrodate = "Unlimited excluding known claims and circumstances";
-                strTerritoryLimit = "Australia and New Zealand";
-                strJurisdiction = "Australia and New Zealand";
-                auditLogDetail = "Abbott PI UW created/modified";
-            } else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme") 
-            {
-                strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Mortgage Broking and Fire & General Broking.";
-                retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
-                strTerritoryLimit = "New Zealand";
-                strJurisdiction = "New Zealand";
-                auditLogDetail = "NZFSG PI UW created/modified";
-
-                if (agreement.ClientInformationSheet.RevenueData != null)
+                foreach (var uISActivity in agreement.ClientInformationSheet.RevenueData.Activities)
                 {
-                    foreach (var uISActivity in agreement.ClientInformationSheet.RevenueData.Activities)
+                    if (uISActivity.AnzsciCode == "CUSFANZ01") //Financial Planning (eg Preparation and/or Monitoring of Financial Plans)
                     {
-                        if (uISActivity.AnzsciCode == "CUS0020") //Mortgage Broking (Residential)
+                        if (uISActivity.Percentage > 0)
+                            decInvProdCategoryPercentage += uISActivity.Percentage;
+                    }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ02") //Fire & General Commercial (eg Business Insurance)
+                    {
+                        if (uISActivity.Percentage > 0)
                         {
-                            if (uISActivity.Percentage > 0)
-                                decMBCategoryPercentage += uISActivity.Percentage;
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0021") //Mortgage Broking (Commercial)
-                        {
-                            if (uISActivity.Percentage > 0)
-                                decMBCategoryPercentage += uISActivity.Percentage;
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0022") //Insurance (Life, medical, disability only)
-                        {
-                            if (uISActivity.Percentage > 0)
-                                decSLHCategoryPercentage += uISActivity.Percentage;
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0023") //Financial Planning
-                        {
-                            
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0024") //Kiwisaver
-                        {
-                            if (uISActivity.Percentage > 0)
-                                decSLHCategoryPercentage += uISActivity.Percentage;
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0026") //Asset Finance
-                        {
-                            if (uISActivity.Percentage > 0)
-                                decMBCategoryPercentage += uISActivity.Percentage;
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0027") //Referred Fire and General (i.e. Tower, Aon)
-                        {
-                            if (uISActivity.Percentage > 0)
-                            {
-                                decLHFGCategoryPercentage += uISActivity.Percentage;
-                                decFG += uISActivity.Percentage;
-                            }
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0028") //Broking Fire and General (i.e. NZI)
-                        {
-                            if (uISActivity.Percentage > 0)
-                            {
-                                decLHFGCategoryPercentage += uISActivity.Percentage;
-                                decFG += uISActivity.Percentage;
-                            }
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0029") //Other
-                        {
-                            if (uISActivity.Percentage > 0)
-                                decOther = uISActivity.Percentage;
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0079") //Investments
-                        {
-                            if (uISActivity.Percentage > 0)
-                                decInv = uISActivity.Percentage;
+                            decLHFGCategoryPercentage += uISActivity.Percentage;
+                            decFG += uISActivity.Percentage;
                         }
                     }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ03") //Fire & General (eg House, Contents, Car, Travel)
+                    {
+                        if (uISActivity.Percentage > 0)
+                        {
+                            decLHFGCategoryPercentage += uISActivity.Percentage;
+                            decFG += uISActivity.Percentage;
+                        }
+                    }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ04") //Fire & General – Referral Income
+                    {
+                        if (uISActivity.Percentage > 0)
+                        {
+                            decLHFGCategoryPercentage += uISActivity.Percentage;
+                            decFG += uISActivity.Percentage;
+                        }
+                    }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ05") //Home Equity Release (including reverse mortgages)
+                    {
+                        if (uISActivity.Percentage > 0)
+                            decMBCategoryPercentage += uISActivity.Percentage;
+                    }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ06") //Insurance – Personal Risk (eg Life insurance, Income Protection, Health, In/Expatriate insurance)
+                    {
+                        if (uISActivity.Percentage > 0)
+                            decSLHCategoryPercentage += uISActivity.Percentage;
+                    }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ07") //Investments (eg Advice on Portfolio)
+                    {
+                        if (uISActivity.Percentage > 0)
+                        {
+                            decInvProdCategoryPercentage += uISActivity.Percentage;
+                            decInv = uISActivity.Percentage;
+                        }
+                    }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ08") //Managed Investment Funds (eg Unit Trusts, PIEs, Advice on portfolios)
+                    {
+                        if (uISActivity.Percentage > 0)
+                            decInvProdCategoryPercentage += uISActivity.Percentage;
+                    }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ09") //Kiwisaver & Retirement Savings (including superannuation)
+                    {
+                        if (uISActivity.Percentage > 0)
+                            decSLHCategoryPercentage += uISActivity.Percentage;
+                    }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ10") //Mortgage Advice (Commercial, Residential & Asset Financing)
+                    {
+                        if (uISActivity.Percentage > 0)
+                            decMBCategoryPercentage += uISActivity.Percentage;
+                    }
+                    else if (uISActivity.AnzsciCode == "CUSFANZ11") //Other
+                    {
+                        if (uISActivity.Percentage > 0)
+                            decOther = uISActivity.Percentage;
+                    }
                 }
-                if (decLHFGCategoryPercentage > 0)
-                {
-                    decLHFGCategoryPercentage += decSLHCategoryPercentage;
-                }
-                feeincome = feeincomelastyear;
             }
+            if (decLHFGCategoryPercentage > 0)
+            {
+                decLHFGCategoryPercentage += decSLHCategoryPercentage;
+            }
+            feeincome = feeincomelastyear;
 
 
             //Update retro date and endorsement based on the pre-renewal data or renewal agreement
             bool bolcustomendorsementrenew = false;
             string strretrodate = "";
 
-            if (agreement.ClientInformationSheet.IsRenewawl && agreement.ClientInformationSheet.RenewFromInformationSheet != null)
+            if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
             {
-                var renewFromAgreement = agreement.ClientInformationSheet.RenewFromInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PI"));
-
-                if (renewFromAgreement != null)
+                foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
                 {
-                    strretrodate = renewFromAgreement.RetroactiveDate;
-
-                    foreach (var renewendorsement in renewFromAgreement.ClientAgreementEndorsements)
+                    if (preRenewOrRefData.DataType == "preterm")
                     {
+                        if (!string.IsNullOrEmpty(preRenewOrRefData.PIRetro))
+                        {
+                            strretrodate = preRenewOrRefData.PIRetro;
+                        }
 
-                        if (renewendorsement.DateDeleted == null)
+                    }
+                    if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "PI")
+                    {
+                        if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
                         {
                             bolcustomendorsementrenew = true;
-                            ClientAgreementEndorsement newclientendorsement =
-                                new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
-                            agreement.ClientAgreementEndorsements.Add(newclientendorsement);
+                            ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
+                            agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
                         }
                     }
                 }
@@ -287,43 +271,13 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
-            //Check No Employees information
-            bool bolnoemployeesreferral = false;
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EPLViewModel.HaveAnyEmployeeYN").First().Value == "1" &&
-                        Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EPLViewModel.TotalEmployees").First().Value) == 0)
+            //Check Trusted Advisor status information
+            bool boladvisortruststatus = false;
+            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.TrustAdvisorStatus").Any())
             {
-                bolnoemployeesreferral = true;
-            }
-
-            //Check Authorised Bodies information
-            bool bolauthorisedbodiesreferral = false;
-
-            if (agreement.ClientInformationSheet.Owner.isOrganisationTheFAP && agreement.ClientInformationSheet.Owner.isOrganisationInterposedPerson)
-            {
-                bolauthorisedbodiesreferral = true;
-            }
-            else
-            {
-                if (agreement.ClientInformationSheet.Organisation.Count > 0)
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.TrustAdvisorStatus").First().Value == "1")
                 {
-                    foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
-                    {
-                        if (!uisorg.Removed)
-                        {
-                            var advisorunit = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor" && u.DateDeleted == null);
-
-                            if (advisorunit != null)
-                            {
-                                if (uisorg.DateDeleted == null && !uisorg.Removed)
-                                {
-                                    if (!bolauthorisedbodiesreferral && advisorunit.isTheFAP && advisorunit.isInterposedPerson)
-                                    {
-                                        bolauthorisedbodiesreferral = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    boladvisortruststatus = true;
                 }
             }
 
@@ -374,108 +328,302 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
 
 
-            decimal TermExcess = 0M;
-            TermExcess = rates["pitermexcess"];
+            decimal StandardTermExcess = 0M;
+            decimal TermExcess10k = 10000;
+            decimal TermExcess25k = 25000;
 
             int TermLimit1mil = 1000000;
             decimal TermPremium1mil = 0M;
             decimal TermBasePremium1mil = 0M;
             decimal TermBrokerage1mil = 0M;
+            decimal TermPremium1mil10kexcess = 0M;
+            decimal TermBasePremium1mil10kexcess = 0M;
+            decimal TermBrokerage1mil10kexcess = 0M;
+            decimal TermPremium1mil25kexcess = 0M;
+            decimal TermBasePremium1mil25kexcess = 0M;
+            decimal TermBrokerage1mil25kexcess = 0M;
 
-            TermPremium1mil = GetPremium(rates, TermLimit1mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage);
+            if (boladvisortruststatus)
+            {
+                StandardTermExcess = 2500;
+            }
+            else
+            {
+                StandardTermExcess = 5000;
+            }
+
+            TermPremium1mil = GetPremium(rates, TermLimit1mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, StandardTermExcess, boladvisortruststatus);
             TermBasePremium1mil = TermPremium1mil;
             TermPremium1mil = TermPremium1mil * agreementperiodindays / coverperiodindays;
             TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
 
-            ClientAgreementTerm term1millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit1mil, TermExcess);
+            ClientAgreementTerm term1millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit1mil, StandardTermExcess);
             term1millimitpremiumoption.TermLimit = TermLimit1mil;
             term1millimitpremiumoption.Premium = TermPremium1mil;
             term1millimitpremiumoption.BasePremium = TermBasePremium1mil;
-            term1millimitpremiumoption.Excess = TermExcess;
+            term1millimitpremiumoption.Excess = StandardTermExcess;
             term1millimitpremiumoption.BrokerageRate = agreement.Brokerage;
             term1millimitpremiumoption.Brokerage = TermBrokerage1mil;
             term1millimitpremiumoption.DateDeleted = null;
             term1millimitpremiumoption.DeletedBy = null;
 
+            TermPremium1mil10kexcess = GetPremium(rates, TermLimit1mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess10k, boladvisortruststatus);
+            TermBasePremium1mil10kexcess = TermPremium1mil10kexcess;
+            TermPremium1mil10kexcess = TermPremium1mil10kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage1mil10kexcess = TermPremium1mil10kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term1millimitpremium10kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit1mil, TermExcess10k);
+            term1millimitpremium10kexcessoption.TermLimit = TermLimit1mil;
+            term1millimitpremium10kexcessoption.Premium = TermPremium1mil10kexcess;
+            term1millimitpremium10kexcessoption.BasePremium = TermBasePremium1mil10kexcess;
+            term1millimitpremium10kexcessoption.Excess = TermExcess10k;
+            term1millimitpremium10kexcessoption.BrokerageRate = agreement.Brokerage;
+            term1millimitpremium10kexcessoption.Brokerage = TermBrokerage1mil10kexcess;
+            term1millimitpremium10kexcessoption.DateDeleted = null;
+            term1millimitpremium10kexcessoption.DeletedBy = null;
+
+            TermPremium1mil25kexcess = GetPremium(rates, TermLimit1mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess25k, boladvisortruststatus);
+            TermBasePremium1mil25kexcess = TermPremium1mil25kexcess;
+            TermPremium1mil25kexcess = TermPremium1mil25kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage1mil25kexcess = TermPremium1mil25kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term1millimitpremium25kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit1mil, TermExcess25k);
+            term1millimitpremium25kexcessoption.TermLimit = TermLimit1mil;
+            term1millimitpremium25kexcessoption.Premium = TermPremium1mil25kexcess;
+            term1millimitpremium25kexcessoption.BasePremium = TermBasePremium1mil25kexcess;
+            term1millimitpremium25kexcessoption.Excess = TermExcess25k;
+            term1millimitpremium25kexcessoption.BrokerageRate = agreement.Brokerage;
+            term1millimitpremium25kexcessoption.Brokerage = TermBrokerage1mil25kexcess;
+            term1millimitpremium25kexcessoption.DateDeleted = null;
+            term1millimitpremium25kexcessoption.DeletedBy = null;
+
+
             int TermLimit2mil = 2000000;
             decimal TermPremium2mil = 0M;
             decimal TermBasePremium2mil = 0M;
             decimal TermBrokerage2mil = 0M;
+            decimal TermPremium2mil10kexcess = 0M;
+            decimal TermBasePremium2mil10kexcess = 0M;
+            decimal TermBrokerage2mil10kexcess = 0M;
+            decimal TermPremium2mil25kexcess = 0M;
+            decimal TermBasePremium2mil25kexcess = 0M;
+            decimal TermBrokerage2mil25kexcess = 0M;
 
-            TermPremium2mil = GetPremium(rates, TermLimit2mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage);
+            TermPremium2mil = GetPremium(rates, TermLimit2mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, StandardTermExcess, boladvisortruststatus);
             TermBasePremium2mil = TermPremium2mil;
             TermPremium2mil = TermPremium2mil * agreementperiodindays / coverperiodindays;
             TermBrokerage2mil = TermPremium2mil * agreement.Brokerage / 100;
 
-            ClientAgreementTerm term2millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit2mil, TermExcess);
+            ClientAgreementTerm term2millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit2mil, StandardTermExcess);
             term2millimitpremiumoption.TermLimit = TermLimit2mil;
             term2millimitpremiumoption.Premium = TermPremium2mil;
             term2millimitpremiumoption.BasePremium = TermBasePremium2mil;
-            term2millimitpremiumoption.Excess = TermExcess;
+            term2millimitpremiumoption.Excess = StandardTermExcess;
             term2millimitpremiumoption.BrokerageRate = agreement.Brokerage;
             term2millimitpremiumoption.Brokerage = TermBrokerage2mil;
             term2millimitpremiumoption.DateDeleted = null;
             term2millimitpremiumoption.DeletedBy = null;
 
+            TermPremium2mil10kexcess = GetPremium(rates, TermLimit2mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess10k, boladvisortruststatus);
+            TermBasePremium2mil10kexcess = TermPremium2mil10kexcess;
+            TermPremium2mil10kexcess = TermPremium2mil10kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage2mil10kexcess = TermPremium2mil10kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term2millimitpremium10kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit2mil, TermExcess10k);
+            term2millimitpremium10kexcessoption.TermLimit = TermLimit2mil;
+            term2millimitpremium10kexcessoption.Premium = TermPremium2mil10kexcess;
+            term2millimitpremium10kexcessoption.BasePremium = TermBasePremium2mil10kexcess;
+            term2millimitpremium10kexcessoption.Excess = TermExcess10k;
+            term2millimitpremium10kexcessoption.BrokerageRate = agreement.Brokerage;
+            term2millimitpremium10kexcessoption.Brokerage = TermBrokerage2mil10kexcess;
+            term2millimitpremium10kexcessoption.DateDeleted = null;
+            term2millimitpremium10kexcessoption.DeletedBy = null;
+
+            TermPremium2mil25kexcess = GetPremium(rates, TermLimit2mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess25k, boladvisortruststatus);
+            TermBasePremium2mil25kexcess = TermPremium2mil25kexcess;
+            TermPremium2mil25kexcess = TermPremium2mil25kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage2mil25kexcess = TermPremium2mil25kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term2millimitpremium25kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit2mil, TermExcess25k);
+            term2millimitpremium25kexcessoption.TermLimit = TermLimit2mil;
+            term2millimitpremium25kexcessoption.Premium = TermPremium2mil25kexcess;
+            term2millimitpremium25kexcessoption.BasePremium = TermBasePremium2mil25kexcess;
+            term2millimitpremium25kexcessoption.Excess = TermExcess25k;
+            term2millimitpremium25kexcessoption.BrokerageRate = agreement.Brokerage;
+            term2millimitpremium25kexcessoption.Brokerage = TermBrokerage2mil25kexcess;
+            term2millimitpremium25kexcessoption.DateDeleted = null;
+            term2millimitpremium25kexcessoption.DeletedBy = null;
+
+
             int TermLimit3mil = 3000000;
             decimal TermPremium3mil = 0M;
             decimal TermBasePremium3mil = 0M;
             decimal TermBrokerage3mil = 0M;
+            decimal TermPremium3mil10kexcess = 0M;
+            decimal TermBasePremium3mil10kexcess = 0M;
+            decimal TermBrokerage3mil10kexcess = 0M;
+            decimal TermPremium3mil25kexcess = 0M;
+            decimal TermBasePremium3mil25kexcess = 0M;
+            decimal TermBrokerage3mil25kexcess = 0M;
 
-            TermPremium3mil = GetPremium(rates, TermLimit3mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage);
+            TermPremium3mil = GetPremium(rates, TermLimit3mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, StandardTermExcess, boladvisortruststatus);
             TermBasePremium3mil = TermPremium3mil;
             TermPremium3mil = TermPremium3mil * agreementperiodindays / coverperiodindays;
             TermBrokerage3mil = TermPremium3mil * agreement.Brokerage / 100;
 
-            ClientAgreementTerm term3millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit3mil, TermExcess);
+            ClientAgreementTerm term3millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit3mil, StandardTermExcess);
             term3millimitpremiumoption.TermLimit = TermLimit3mil;
             term3millimitpremiumoption.Premium = TermPremium3mil;
             term3millimitpremiumoption.BasePremium = TermBasePremium3mil;
-            term3millimitpremiumoption.Excess = TermExcess;
+            term3millimitpremiumoption.Excess = StandardTermExcess;
             term3millimitpremiumoption.BrokerageRate = agreement.Brokerage;
             term3millimitpremiumoption.Brokerage = TermBrokerage3mil;
             term3millimitpremiumoption.DateDeleted = null;
             term3millimitpremiumoption.DeletedBy = null;
 
+            TermPremium3mil10kexcess = GetPremium(rates, TermLimit3mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess10k, boladvisortruststatus);
+            TermBasePremium3mil10kexcess = TermPremium3mil10kexcess;
+            TermPremium3mil10kexcess = TermPremium3mil10kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage3mil10kexcess = TermPremium3mil10kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term3millimitpremium10kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit3mil, TermExcess10k);
+            term3millimitpremium10kexcessoption.TermLimit = TermLimit3mil;
+            term3millimitpremium10kexcessoption.Premium = TermPremium3mil10kexcess;
+            term3millimitpremium10kexcessoption.BasePremium = TermBasePremium3mil10kexcess;
+            term3millimitpremium10kexcessoption.Excess = TermExcess10k;
+            term3millimitpremium10kexcessoption.BrokerageRate = agreement.Brokerage;
+            term3millimitpremium10kexcessoption.Brokerage = TermBrokerage3mil10kexcess;
+            term3millimitpremium10kexcessoption.DateDeleted = null;
+            term3millimitpremium10kexcessoption.DeletedBy = null;
+
+            TermPremium3mil25kexcess = GetPremium(rates, TermLimit3mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess25k, boladvisortruststatus);
+            TermBasePremium3mil25kexcess = TermPremium3mil25kexcess;
+            TermPremium3mil25kexcess = TermPremium3mil25kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage3mil25kexcess = TermPremium3mil25kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term3millimitpremium25kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit3mil, TermExcess25k);
+            term3millimitpremium25kexcessoption.TermLimit = TermLimit3mil;
+            term3millimitpremium25kexcessoption.Premium = TermPremium3mil25kexcess;
+            term3millimitpremium25kexcessoption.BasePremium = TermBasePremium3mil25kexcess;
+            term3millimitpremium25kexcessoption.Excess = TermExcess25k;
+            term3millimitpremium25kexcessoption.BrokerageRate = agreement.Brokerage;
+            term3millimitpremium25kexcessoption.Brokerage = TermBrokerage3mil25kexcess;
+            term3millimitpremium25kexcessoption.DateDeleted = null;
+            term3millimitpremium25kexcessoption.DeletedBy = null;
+
+
             int TermLimit4mil = 4000000;
             decimal TermPremium4mil = 0M;
             decimal TermBasePremium4mil = 0M;
             decimal TermBrokerage4mil = 0M;
+            decimal TermPremium4mil10kexcess = 0M;
+            decimal TermBasePremium4mil10kexcess = 0M;
+            decimal TermBrokerage4mil10kexcess = 0M;
+            decimal TermPremium4mil25kexcess = 0M;
+            decimal TermBasePremium4mil25kexcess = 0M;
+            decimal TermBrokerage4mil25kexcess = 0M;
 
-            TermPremium4mil = GetPremium(rates, TermLimit4mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage);
+            TermPremium4mil = GetPremium(rates, TermLimit4mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, StandardTermExcess, boladvisortruststatus);
             TermBasePremium4mil = TermPremium4mil;
             TermPremium4mil = TermPremium4mil * agreementperiodindays / coverperiodindays;
             TermBrokerage4mil = TermPremium4mil * agreement.Brokerage / 100;
 
-            ClientAgreementTerm term4millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit4mil, TermExcess);
+            ClientAgreementTerm term4millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit4mil, StandardTermExcess);
             term4millimitpremiumoption.TermLimit = TermLimit4mil;
             term4millimitpremiumoption.Premium = TermPremium4mil;
             term4millimitpremiumoption.BasePremium = TermBasePremium4mil;
-            term4millimitpremiumoption.Excess = TermExcess;
+            term4millimitpremiumoption.Excess = StandardTermExcess;
             term4millimitpremiumoption.BrokerageRate = agreement.Brokerage;
             term4millimitpremiumoption.Brokerage = TermBrokerage4mil;
             term4millimitpremiumoption.DateDeleted = null;
             term4millimitpremiumoption.DeletedBy = null;
 
+            TermPremium4mil10kexcess = GetPremium(rates, TermLimit4mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess10k, boladvisortruststatus);
+            TermBasePremium4mil10kexcess = TermPremium4mil10kexcess;
+            TermPremium4mil10kexcess = TermPremium4mil10kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage4mil10kexcess = TermPremium4mil10kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term4millimitpremium10kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit4mil, TermExcess10k);
+            term4millimitpremium10kexcessoption.TermLimit = TermLimit4mil;
+            term4millimitpremium10kexcessoption.Premium = TermPremium4mil10kexcess;
+            term4millimitpremium10kexcessoption.BasePremium = TermBasePremium4mil10kexcess;
+            term4millimitpremium10kexcessoption.Excess = TermExcess10k;
+            term4millimitpremium10kexcessoption.BrokerageRate = agreement.Brokerage;
+            term4millimitpremium10kexcessoption.Brokerage = TermBrokerage4mil10kexcess;
+            term4millimitpremium10kexcessoption.DateDeleted = null;
+            term4millimitpremium10kexcessoption.DeletedBy = null;
+
+            TermPremium4mil25kexcess = GetPremium(rates, TermLimit4mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess25k, boladvisortruststatus);
+            TermBasePremium4mil25kexcess = TermPremium4mil25kexcess;
+            TermPremium4mil25kexcess = TermPremium4mil25kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage4mil25kexcess = TermPremium4mil25kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term4millimitpremium25kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit4mil, TermExcess25k);
+            term4millimitpremium25kexcessoption.TermLimit = TermLimit4mil;
+            term4millimitpremium25kexcessoption.Premium = TermPremium4mil25kexcess;
+            term4millimitpremium25kexcessoption.BasePremium = TermBasePremium4mil25kexcess;
+            term4millimitpremium25kexcessoption.Excess = TermExcess25k;
+            term4millimitpremium25kexcessoption.BrokerageRate = agreement.Brokerage;
+            term4millimitpremium25kexcessoption.Brokerage = TermBrokerage4mil25kexcess;
+            term4millimitpremium25kexcessoption.DateDeleted = null;
+            term4millimitpremium25kexcessoption.DeletedBy = null;
+
+
             int TermLimit5mil = 5000000;
             decimal TermPremium5mil = 0M;
             decimal TermBasePremium5mil = 0M;
             decimal TermBrokerage5mil = 0M;
+            decimal TermPremium5mil10kexcess = 0M;
+            decimal TermBasePremium5mil10kexcess = 0M;
+            decimal TermBrokerage5mil10kexcess = 0M;
+            decimal TermPremium5mil25kexcess = 0M;
+            decimal TermBasePremium5mil25kexcess = 0M;
+            decimal TermBrokerage5mil25kexcess = 0M;
 
-            TermPremium5mil = GetPremium(rates, TermLimit5mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage);
+            TermPremium5mil = GetPremium(rates, TermLimit5mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, StandardTermExcess, boladvisortruststatus);
             TermBasePremium5mil = TermPremium5mil;
             TermPremium5mil = TermPremium5mil * agreementperiodindays / coverperiodindays;
             TermBrokerage5mil = TermPremium5mil * agreement.Brokerage / 100;
 
-            ClientAgreementTerm term5millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit5mil, TermExcess);
+            ClientAgreementTerm term5millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit5mil, StandardTermExcess);
             term5millimitpremiumoption.TermLimit = TermLimit5mil;
             term5millimitpremiumoption.Premium = TermPremium5mil;
             term5millimitpremiumoption.BasePremium = TermBasePremium5mil;
-            term5millimitpremiumoption.Excess = TermExcess;
+            term5millimitpremiumoption.Excess = StandardTermExcess;
             term5millimitpremiumoption.BrokerageRate = agreement.Brokerage;
             term5millimitpremiumoption.Brokerage = TermBrokerage5mil;
             term5millimitpremiumoption.DateDeleted = null;
             term5millimitpremiumoption.DeletedBy = null;
+
+            TermPremium5mil10kexcess = GetPremium(rates, TermLimit5mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess10k, boladvisortruststatus);
+            TermBasePremium5mil10kexcess = TermPremium5mil10kexcess;
+            TermPremium5mil10kexcess = TermPremium5mil10kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage5mil10kexcess = TermPremium5mil10kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term5millimitpremium10kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit5mil, TermExcess10k);
+            term5millimitpremium10kexcessoption.TermLimit = TermLimit5mil;
+            term5millimitpremium10kexcessoption.Premium = TermPremium5mil10kexcess;
+            term5millimitpremium10kexcessoption.BasePremium = TermBasePremium5mil10kexcess;
+            term5millimitpremium10kexcessoption.Excess = TermExcess10k;
+            term5millimitpremium10kexcessoption.BrokerageRate = agreement.Brokerage;
+            term5millimitpremium10kexcessoption.Brokerage = TermBrokerage5mil10kexcess;
+            term5millimitpremium10kexcessoption.DateDeleted = null;
+            term5millimitpremium10kexcessoption.DeletedBy = null;
+
+            TermPremium5mil25kexcess = GetPremium(rates, TermLimit5mil, intclasscategory, feeincome, option, investmentfeeincome, remainingfeeincome, decMBCategoryPercentage, decSLHCategoryPercentage, decLHFGCategoryPercentage, decInvProdCategoryPercentage, TermExcess25k, boladvisortruststatus);
+            TermBasePremium5mil25kexcess = TermPremium5mil25kexcess;
+            TermPremium5mil25kexcess = TermPremium5mil25kexcess * agreementperiodindays / coverperiodindays;
+            TermBrokerage5mil25kexcess = TermPremium5mil25kexcess * agreement.Brokerage / 100;
+
+            ClientAgreementTerm term5millimitpremium25kexcessoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit5mil, TermExcess25k);
+            term5millimitpremium25kexcessoption.TermLimit = TermLimit5mil;
+            term5millimitpremium25kexcessoption.Premium = TermPremium5mil25kexcess;
+            term5millimitpremium25kexcessoption.BasePremium = TermBasePremium5mil25kexcess;
+            term5millimitpremium25kexcessoption.Excess = TermExcess25k;
+            term5millimitpremium25kexcessoption.BrokerageRate = agreement.Brokerage;
+            term5millimitpremium25kexcessoption.Brokerage = TermBrokerage5mil25kexcess;
+            term5millimitpremium25kexcessoption.DateDeleted = null;
+            term5millimitpremium25kexcessoption.DeletedBy = null;
 
 
             //Change policy premium calculation
@@ -547,7 +695,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
-
             //Referral points per agreement
             //Claims / Insurance History
             uwrfpriorinsurance(underwritingUser, agreement);
@@ -561,12 +708,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             uwrfotheractivity(underwritingUser, agreement, decOther);
             //Class 3 referral
             uwrfclass3(underwritingUser, agreement, bolclass3referral);
-            //No Employees
-            uwrfnoemployees(underwritingUser, agreement, bolnoemployeesreferral);
-            //Authorised Bodies
-            uwrfauthorisedbodies(underwritingUser, agreement, bolauthorisedbodiesreferral);
             //Referred Fire and General Activity
             uwrffgactivity(underwritingUser, agreement, decFG, feeincome);
+            //High Fee Income
+            uwrfhighfeeincome(underwritingUser, agreement, feeincome);
 
             //Update agreement Status
             if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
@@ -685,13 +830,74 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
         }
 
 
-        decimal GetPremium(IDictionary<string, decimal> rates, int termlimit, int intclasscategory, decimal feeincome, int option, decimal investmentfeeincome, decimal remainingfeeincome, decimal decMBCategoryPercentage, decimal decSLHCategoryPercentage, decimal decLHFGCategoryPercentage, decimal decInvProdCategoryPercentage)
+        decimal GetPremium(IDictionary<string, decimal> rates, int termlimit, int intclasscategory, decimal feeincome, int option, decimal investmentfeeincome, decimal remainingfeeincome, decimal decMBCategoryPercentage, decimal decSLHCategoryPercentage, decimal decLHFGCategoryPercentage, decimal decInvProdCategoryPercentage, decimal TermExcess, bool boladvisortruststatus)
         {
             decimal premium = 0M;
             decimal minimumpremium = 0M;
+            decimal discountrate = 0M;
 
             if (intclasscategory == 1 || intclasscategory == 2)
             {
+                if (boladvisortruststatus)
+                {
+                    switch (TermExcess)
+                    {
+                        case 2500:
+                            {
+                                discountrate = 0M;
+                                break;
+                            }
+                        case 5000:
+                            {
+                                discountrate = 0M;
+                                break;
+                            }
+                        case 10000:
+                            {
+                                discountrate = rates["10kexcessdiscountrateadvisortruststatus"];
+                                break;
+                            }
+                        case 25000:
+                            {
+                                discountrate = rates["25kexcessdiscountrateadvisortruststatus"];
+                                break;
+                            }
+                        default:
+                            {
+                                throw new Exception(string.Format("Can not calculate premium for PI"));
+                            }
+                    }
+                }
+                else
+                {
+                    switch (TermExcess)
+                    {
+                        case 2500:
+                            {
+                                discountrate = 0M;
+                                break;
+                            }
+                        case 5000:
+                            {
+                                discountrate = 0M;
+                                break;
+                            }
+                        case 10000:
+                            {
+                                discountrate = rates["10kexcessdiscountrate"];
+                                break;
+                            }
+                        case 25000:
+                            {
+                                discountrate = rates["25kexcessdiscountrate"];
+                                break;
+                            }
+                        default:
+                            {
+                                throw new Exception(string.Format("Can not calculate premium for PI"));
+                            }
+                    }
+                }
 
                 if (option == 1) //Mortgage broking
                 {
@@ -699,7 +905,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     {
                         case 1000000:
                             {
-                                premium = feeincome * rates["1millimitpremiumratemb"] / 100;
+                                premium = feeincome * rates["1millimitpremiumratemb"] / 100 * (100 - discountrate) /100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["1millimitminimumpremiummbclass1"];
@@ -713,7 +919,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 2000000:
                             {
-                                premium = feeincome * rates["2millimitpremiumratemb"] / 100;
+                                premium = feeincome * rates["2millimitpremiumratemb"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["2millimitminimumpremiummbclass1"];
@@ -727,7 +933,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 3000000:
                             {
-                                premium = feeincome * rates["3millimitpremiumratemb"] / 100;
+                                premium = feeincome * rates["3millimitpremiumratemb"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["3millimitminimumpremiummbclass1"];
@@ -741,7 +947,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 4000000:
                             {
-                                premium = feeincome * rates["4millimitpremiumratemb"] / 100;
+                                premium = feeincome * rates["4millimitpremiumratemb"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["4millimitminimumpremiummbclass1"];
@@ -755,7 +961,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 5000000:
                             {
-                                premium = feeincome * rates["5millimitpremiumratemb"] / 100;
+                                premium = feeincome * rates["5millimitpremiumratemb"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["5millimitminimumpremiummbclass1"];
@@ -779,7 +985,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     {
                         case 1000000:
                             {
-                                premium = feeincome * rates["1millimitpremiumrateslh"] / 100;
+                                premium = feeincome * rates["1millimitpremiumrateslh"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["1millimitminimumpremiumslhclass1"];
@@ -793,7 +999,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 2000000:
                             {
-                                premium = feeincome * rates["2millimitpremiumrateslh"] / 100;
+                                premium = feeincome * rates["2millimitpremiumrateslh"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["2millimitminimumpremiumslhclass1"];
@@ -807,7 +1013,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 3000000:
                             {
-                                premium = feeincome * rates["3millimitpremiumrateslh"] / 100;
+                                premium = feeincome * rates["3millimitpremiumrateslh"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["3millimitminimumpremiumslhclass1"];
@@ -821,7 +1027,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 4000000:
                             {
-                                premium = feeincome * rates["4millimitpremiumrateslh"] / 100;
+                                premium = feeincome * rates["4millimitpremiumrateslh"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["4millimitminimumpremiumslhclass1"];
@@ -835,7 +1041,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 5000000:
                             {
-                                premium = feeincome * rates["5millimitpremiumrateslh"] / 100;
+                                premium = feeincome * rates["5millimitpremiumrateslh"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["5millimitminimumpremiumslhclass1"];
@@ -859,7 +1065,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     {
                         case 1000000:
                             {
-                                premium = feeincome * rates["1millimitpremiumratelhfg"] / 100;
+                                premium = feeincome * rates["1millimitpremiumratelhfg"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["1millimitminimumpremiumlhfgclass1"];
@@ -873,7 +1079,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 2000000:
                             {
-                                premium = feeincome * rates["2millimitpremiumratelhfg"] / 100;
+                                premium = feeincome * rates["2millimitpremiumratelhfg"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["2millimitminimumpremiumlhfgclass1"];
@@ -887,7 +1093,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 3000000:
                             {
-                                premium = feeincome * rates["3millimitpremiumratelhfg"] / 100;
+                                premium = feeincome * rates["3millimitpremiumratelhfg"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["3millimitminimumpremiumlhfgclass1"];
@@ -901,7 +1107,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 4000000:
                             {
-                                premium = feeincome * rates["4millimitpremiumratelhfg"] / 100;
+                                premium = feeincome * rates["4millimitpremiumratelhfg"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["4millimitminimumpremiumlhfgclass1"];
@@ -915,7 +1121,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 5000000:
                             {
-                                premium = feeincome * rates["5millimitpremiumratelhfg"] / 100;
+                                premium = feeincome * rates["5millimitpremiumratelhfg"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["5millimitminimumpremiumlhfgclass1"];
@@ -939,7 +1145,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     {
                         case 1000000:
                             {
-                                premium = feeincome * rates["1millimitpremiumrateinv"] / 100;
+                                premium = feeincome * rates["1millimitpremiumrateinv"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["1millimitminimumpremiuminvclass1"];
@@ -953,7 +1159,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 2000000:
                             {
-                                premium = feeincome * rates["2millimitpremiumrateinv"] / 100;
+                                premium = feeincome * rates["2millimitpremiumrateinv"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["2millimitminimumpremiuminvclass1"];
@@ -967,7 +1173,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 3000000:
                             {
-                                premium = feeincome * rates["3millimitpremiumrateinv"] / 100;
+                                premium = feeincome * rates["3millimitpremiumrateinv"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["3millimitminimumpremiuminvclass1"];
@@ -981,7 +1187,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 4000000:
                             {
-                                premium = feeincome * rates["4millimitpremiumrateinv"] / 100;
+                                premium = feeincome * rates["4millimitpremiumrateinv"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["4millimitminimumpremiuminvclass1"];
@@ -995,7 +1201,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 5000000:
                             {
-                                premium = feeincome * rates["5millimitpremiumrateinv"] / 100;
+                                premium = feeincome * rates["5millimitpremiumrateinv"] / 100 * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["5millimitminimumpremiuminvclass1"];
@@ -1019,7 +1225,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     {
                         case 1000000:
                             {
-                                premium = investmentfeeincome * rates["1millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["1millimitpremiumratelhfg"] / 100;
+                                premium = (investmentfeeincome * rates["1millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["1millimitpremiumratelhfg"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["1millimitminimumpremiuminvclass1"];
@@ -1033,7 +1239,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 2000000:
                             {
-                                premium = investmentfeeincome * rates["2millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["2millimitpremiumratelhfg"] / 100;
+                                premium = (investmentfeeincome * rates["2millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["2millimitpremiumratelhfg"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["2millimitminimumpremiuminvclass1"];
@@ -1047,7 +1253,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 3000000:
                             {
-                                premium = investmentfeeincome * rates["3millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["3millimitpremiumratelhfg"] / 100;
+                                premium = (investmentfeeincome * rates["3millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["3millimitpremiumratelhfg"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["3millimitminimumpremiuminvclass1"];
@@ -1061,7 +1267,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 4000000:
                             {
-                                premium = investmentfeeincome * rates["4millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["4millimitpremiumratelhfg"] / 100;
+                                premium = (investmentfeeincome * rates["4millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["4millimitpremiumratelhfg"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["4millimitminimumpremiuminvclass1"];
@@ -1075,7 +1281,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 5000000:
                             {
-                                premium = investmentfeeincome * rates["5millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["5millimitpremiumratelhfg"] / 100;
+                                premium = (investmentfeeincome * rates["5millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["5millimitpremiumratelhfg"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["5millimitminimumpremiuminvclass1"];
@@ -1099,7 +1305,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     {
                         case 1000000:
                             {
-                                premium = investmentfeeincome * rates["1millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["1millimitpremiumrateslh"] / 100;
+                                premium = (investmentfeeincome * rates["1millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["1millimitpremiumrateslh"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["1millimitminimumpremiuminvclass1"];
@@ -1113,7 +1319,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 2000000:
                             {
-                                premium = investmentfeeincome * rates["2millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["2millimitpremiumrateslh"] / 100;
+                                premium = (investmentfeeincome * rates["2millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["2millimitpremiumrateslh"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["2millimitminimumpremiuminvclass1"];
@@ -1127,7 +1333,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 3000000:
                             {
-                                premium = investmentfeeincome * rates["3millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["3millimitpremiumrateslh"] / 100;
+                                premium = (investmentfeeincome * rates["3millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["3millimitpremiumrateslh"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["3millimitminimumpremiuminvclass1"];
@@ -1141,7 +1347,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 4000000:
                             {
-                                premium = investmentfeeincome * rates["4millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["4millimitpremiumrateslh"] / 100;
+                                premium = (investmentfeeincome * rates["4millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["4millimitpremiumrateslh"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["4millimitminimumpremiuminvclass1"];
@@ -1155,7 +1361,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 5000000:
                             {
-                                premium = investmentfeeincome * rates["5millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["5millimitpremiumrateslh"] / 100;
+                                premium = (investmentfeeincome * rates["5millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["5millimitpremiumrateslh"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["5millimitminimumpremiuminvclass1"];
@@ -1179,7 +1385,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     {
                         case 1000000:
                             {
-                                premium = investmentfeeincome * rates["1millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["1millimitpremiumratemb"] / 100;
+                                premium = (investmentfeeincome * rates["1millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["1millimitpremiumratemb"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["1millimitminimumpremiuminvclass1"];
@@ -1193,7 +1399,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 2000000:
                             {
-                                premium = investmentfeeincome * rates["2millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["2millimitpremiumratemb"] / 100;
+                                premium = (investmentfeeincome * rates["2millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["2millimitpremiumratemb"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["2millimitminimumpremiuminvclass1"];
@@ -1207,7 +1413,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 3000000:
                             {
-                                premium = investmentfeeincome * rates["3millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["3millimitpremiumratemb"] / 100;
+                                premium = (investmentfeeincome * rates["3millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["3millimitpremiumratemb"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["3millimitminimumpremiuminvclass1"];
@@ -1221,7 +1427,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 4000000:
                             {
-                                premium = investmentfeeincome * rates["4millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["4millimitpremiumratemb"] / 100;
+                                premium = (investmentfeeincome * rates["4millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["4millimitpremiumratemb"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["4millimitminimumpremiuminvclass1"];
@@ -1235,7 +1441,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             }
                         case 5000000:
                             {
-                                premium = investmentfeeincome * rates["5millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["5millimitpremiumratemb"] / 100;
+                                premium = (investmentfeeincome * rates["5millimitpremiumrateinv"] / 100 + remainingfeeincome * rates["5millimitpremiumratemb"] / 100) * (100 - discountrate) / 100;
                                 if (intclasscategory == 1)
                                 {
                                     minimumpremium = rates["5millimitminimumpremiuminvclass1"];
@@ -1259,6 +1465,65 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             return premium;
         }
 
+        decimal GetPremiumOtherExcess(IDictionary<string, decimal> rates, decimal TermPremium1mil, int intclasscategory, int option, decimal TermExcess, bool boladvisortruststatus)
+        {
+            decimal excesspremium = 0M;
+            decimal excessminimumpremium = 0M;
+            decimal discountrate = 0M;
+
+            if (intclasscategory == 1 || intclasscategory == 2)
+            {
+                if (boladvisortruststatus)
+                {
+                    switch (TermExcess)
+                    {
+                        case 10000:
+                            {
+                                discountrate = rates["10kexcessdiscountrateadvisortruststatus"];
+                                break;
+                            }
+                        case 25000:
+                            {
+                                discountrate = rates["25kexcessdiscountrateadvisortruststatus"];
+                                break;
+                            }
+                        default:
+                            {
+                                throw new Exception(string.Format("Can not calculate premium for PI"));
+                            }
+                    }
+                }
+                else
+                {
+                    switch (TermExcess)
+                    {
+                        case 10000:
+                            {
+                                discountrate = rates["10kexcessdiscountrate"];
+                                break;
+                            }
+                        case 25000:
+                            {
+                                discountrate = rates["25kexcessdiscountrate"];
+                                break;
+                            }
+                        default:
+                            {
+                                throw new Exception(string.Format("Can not calculate premium for PI"));
+                            }
+                    }
+                }
+
+                if (option == 1) //Mortgage broking
+                {
+                    
+                }
+
+
+            }
+
+            return excesspremium;
+        }
 
         void uwrfpriorinsurance(User underwritingUser, ClientAgreement agreement)
         {
@@ -1445,66 +1710,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
-        void uwrfnoemployees(User underwritingUser, ClientAgreement agreement, bool bolnoemployeesreferral)
-        {
-            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnoemployees" && cref.DateDeleted == null) == null)
-            {
-                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnoemployees") != null)
-                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnoemployees").Name,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnoemployees").Description,
-                        "",
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnoemployees").Value,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnoemployees").OrderNumber,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnoemployees").DoNotCheckForRenew));
-            }
-            else
-            {
-                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnoemployees" && cref.DateDeleted == null).Status != "Pending")
-                {
-                    if (bolnoemployeesreferral) //No Employees referral
-                    {
-                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnoemployees" && cref.DateDeleted == null).Status = "Pending";
-                    }
-                }
-
-                if (agreement.ClientInformationSheet.IsRenewawl
-                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnoemployees" && cref.DateDeleted == null).DoNotCheckForRenew)
-                {
-                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnoemployees" && cref.DateDeleted == null).Status = "";
-                }
-            }
-        }
-        
-        void uwrfauthorisedbodies(User underwritingUser, ClientAgreement agreement, bool bolauthorisedbodiesreferral)
-        {
-            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfauthorisedbodies" && cref.DateDeleted == null) == null)
-            {
-                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfauthorisedbodies") != null)
-                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfauthorisedbodies").Name,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfauthorisedbodies").Description,
-                        "",
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfauthorisedbodies").Value,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfauthorisedbodies").OrderNumber,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfauthorisedbodies").DoNotCheckForRenew));
-            }
-            else
-            {
-                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfauthorisedbodies" && cref.DateDeleted == null).Status != "Pending")
-                {
-                    if (bolauthorisedbodiesreferral) //Authorised Bodies referral
-                    {
-                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfauthorisedbodies" && cref.DateDeleted == null).Status = "Pending";
-                    }
-                }
-
-                if (agreement.ClientInformationSheet.IsRenewawl
-                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfauthorisedbodies" && cref.DateDeleted == null).DoNotCheckForRenew)
-                {
-                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfauthorisedbodies" && cref.DateDeleted == null).Status = "";
-                }
-            }
-        }
-
         void uwrffgactivity(User underwritingUser, ClientAgreement agreement, decimal decFG, decimal feeincome)
         {
             if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrffgactivity" && cref.DateDeleted == null) == null)
@@ -1535,7 +1740,39 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
+        void uwrfhighfeeincome(User underwritingUser, ClientAgreement agreement, decimal feeincome)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfhighfeeincome" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfhighfeeincome") != null)
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfhighfeeincome").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfhighfeeincome").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfhighfeeincome").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfhighfeeincome").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfhighfeeincome").DoNotCheckForRenew));
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfhighfeeincome" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (feeincome > 2500000)
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfhighfeeincome" && cref.DateDeleted == null).Status = "Pending";
+                    }
+                }
+
+                if (agreement.ClientInformationSheet.IsRenewawl
+                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfhighfeeincome" && cref.DateDeleted == null).DoNotCheckForRenew)
+                {
+                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfhighfeeincome" && cref.DateDeleted == null).Status = "";
+                }
+
+            }
+        }
+
 
     }
 }
+
 

@@ -16,6 +16,7 @@ namespace DealEngine.Services.Interfaces
         Task<Organisation> GetOrganisation(Guid organisationId);
         Task<Organisation> GetOrganisationByName(string organisationName);
         Task<Organisation> GetOrganisationByEmail(string organisationEmail);
+        Task<Organisation> GetOrganisationByEmailAndName(string organisationEmail, string organisationName);
         Task<Organisation> GetOrganisationByOrganisationalUnitId(Guid organisationalUnitId);
         Task PostOrganisation(IFormCollection collection, Organisation organistaion);
         Task<List<Organisation>> GetNZFSGSubsystemAdvisors(ClientInformationSheet sheet); 

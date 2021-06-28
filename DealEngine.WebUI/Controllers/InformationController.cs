@@ -638,13 +638,13 @@ namespace DealEngine.WebUI.Controllers
                 user = await CurrentUser();
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(ProgrammeId);
 
-                String[][] OptionItems = new String[clientProgramme.Agreements.Count][];
+                String[][] OptionItems = new String[clientProgramme.Agreements.Where(ag => ag.DateDeleted == null).Count()][];
                 var count = 0;
-                foreach (var agreement in clientProgramme.Agreements)
+                foreach (var agreement in clientProgramme.Agreements.Where(ag => ag.DateDeleted == null))
                 {
                     //count = 0;
                     boundval = false;
-                    foreach (var selectterm in agreement.ClientAgreementTerms)
+                    foreach (var selectterm in agreement.ClientAgreementTerms.Where(agt => agt.DateDeleted == null))
                     {
 
                         if (selectterm.Bound)
@@ -664,7 +664,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         var term = agreement.ClientAgreementTerms.FirstOrDefault(o => o.Bound = true);
                         if (term == null)
-                            term = agreement.ClientAgreementTerms.OrderByDescending(o => o.TermLimit).FirstOrDefault();
+                            term = agreement.ClientAgreementTerms.OrderBy(o => o.TermLimit).ThenBy(o => o.Excess).FirstOrDefault();
 
                         OptionItem = new String[2];
 
@@ -1113,6 +1113,28 @@ namespace DealEngine.WebUI.Controllers
                     if (sheet.Status != "Submitted" && sheet.Status != "Bound")
                     {
                         await _clientInformationService.SaveAnswersFor(sheet, collection, user);
+
+                        if (sheet.Programme.BaseProgramme.ProgEnableRequireNoCover)
+                        {
+                            foreach (Product product in sheet.Programme.BaseProgramme.Products.OrderBy(t => t.OrderNumber))
+                            {
+                                if (product.IsMasterProduct)
+                                {
+                                    if (sheet.Answers.Where(sa => sa.ItemName == product.NoCoverRequiredAnswer).Any())
+                                    {
+                                        if (sheet.Answers.Where(sa => sa.ItemName == product.NoCoverRequiredAnswer).First().Value != "1")
+                                        {
+                                            using (var uow = _unitOfWork.BeginUnitOfWork())
+                                            {
+                                                sheet.Status = "Not Taken Up";
+                                                await uow.Commit();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }                        
+
                         await GenerateUWM(user, sheet, reference);
                     }
 
@@ -1531,6 +1553,8 @@ namespace DealEngine.WebUI.Controllers
             var docContents = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
             // DOCX & HTML
             string html = _fileService.FromBytes(renderedDoc.Contents);
+            html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { width: 120px; height:120px}</style></head>");
+
             var htmlToPdfConv = new NReco.PdfGenerator.HtmlToPdfConverter();
             htmlToPdfConv.License.SetLicenseKey(
                _appSettingService.NRecoUserName,
@@ -1642,7 +1666,9 @@ namespace DealEngine.WebUI.Controllers
                         InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial");
                         //InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault();
 
-                        if(unit != null)
+                       // if(unit != null)
+                        if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
+
                         {
                             if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
                             {

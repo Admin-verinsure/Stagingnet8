@@ -92,12 +92,20 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 strJurisdiction = "New Zealand";
                 auditLogDetail = "Apollo SL UW created/modified";
             }
-            else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Financial Advice New Zealand Inc Programme")
+            else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
             {
-                strProfessionalBusiness = "";
-                retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
-                strTerritoryLimit = "";
-                strJurisdiction = "";
+                strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Investment Advice, Mortgage Broking, Financial Planning and Fire & General Broking ";
+                retrodate = "Unlimited excluding known claims or circumstances";
+                strTerritoryLimit = "New Zealand";
+                strJurisdiction = "New Zealand";
+                auditLogDetail = "FANZ SL UW created/modified";
+            }
+            else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme")
+            {
+                strProfessionalBusiness = "Provision of Life & Health Insurance, Investment Advice, Mortgage Broking, Financial Planning and Fire & General Broking ";
+                retrodate = "Unlimited excluding known claims or circumstances";
+                strTerritoryLimit = "New Zealand";
+                strJurisdiction = "New Zealand";
                 auditLogDetail = "FANZ SL UW created/modified";
             }
             else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
@@ -111,30 +119,12 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme" ||
                 agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG ML Programme")
             {
-                //Additional professional business added based on selected business activities
-                strProfessionalBusiness = "Mortgage broking and life, risk, health and medical insurance broking services. Fire and General referrals, including AON domestic placement services only. Advice in respect of ACC reporting status. Advice in relation to Kiwisaver.  Asset Finance.";
+                strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Mortgage Broking and Fire & General Broking.";
                 retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
                 strTerritoryLimit = "New Zealand";
                 strJurisdiction = "New Zealand";
                 auditLogDetail = "NZFSG SL UW created/modified";
 
-                if (agreement.ClientInformationSheet.RevenueData != null)
-                {
-                    foreach (var uISActivity in agreement.ClientInformationSheet.RevenueData.Activities)
-                    {
-                        if (uISActivity.AnzsciCode == "CUS0023") //Financial Planning
-                        {
-                            if (uISActivity.Percentage > 0)
-                                strProfessionalBusiness += "  Advice in relation to Financial Planning.";
-
-                        }
-                        else if (uISActivity.AnzsciCode == "CUS0028") //Broking Fire and General (i.e. NZI)
-                        {
-                            if (uISActivity.Percentage > 0)
-                                strProfessionalBusiness += "  Advice in relation to Fire and General Broking.";
-                        }
-                    }
-                }
             }
 
             //renewal data (retro date and endorsements)
@@ -159,6 +149,13 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     }
                 }
 
+            }
+
+            ClientAgreementEndorsement cAESLAmlExcl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Anti-money laundering extension");
+            if (cAESLAmlExcl != null)
+            {
+                cAESLAmlExcl.DateDeleted = DateTime.UtcNow;
+                cAESLAmlExcl.DeletedBy = underwritingUser;
             }
 
             int TermLimit = 0;
@@ -202,19 +199,33 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 TermExtensionPremium = rates["slamlextensionpremium"];
 
-                //work out 5% of PI $1mil option premium whichever is the greater 
-                var PIAgreement = agreement.ClientInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PI"));
-                if (PIAgreement != null)
+                if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme" ||
+                agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme")
                 {
-                    foreach (var term in PIAgreement.ClientAgreementTerms)
+                    if (cAESLAmlExcl != null)
                     {
-                        if (term.TermLimit == 1000000 && term.DateDeleted == null)
+                        cAESLAmlExcl.DateDeleted = null;
+                        cAESLAmlExcl.DeletedBy = null;
+                    }
+                }
+
+                if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme" ||
+                agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG ML Programme")
+                {
+                    //work out 5% of PI $1mil option premium whichever is the greater 
+                    var PIAgreement = agreement.ClientInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PI"));
+                    if (PIAgreement != null)
+                    {
+                        foreach (var term in PIAgreement.ClientAgreementTerms)
                         {
-                            TermExtensionPremium = (TermExtensionPremium > (term.Premium * 0.05M)) ? TermExtensionPremium : (term.Premium * 0.05M);
+                            if (term.TermLimit == 1000000 && term.DateDeleted == null)
+                            {
+                                TermExtensionPremium = (TermExtensionPremium > (term.Premium * 0.05M)) ? TermExtensionPremium : (term.Premium * 0.05M);
+                            }
                         }
                     }
-
                 }
+                
             }
             if (!bolclass2referral && !bolclass3referral)
             {

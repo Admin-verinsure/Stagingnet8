@@ -29,7 +29,7 @@ namespace DealEngine.Services.Impl
         public async Task<string> Analyze(string analyzeRequest)
         {
             var responseMessage = "";            
-            string service = "https://ris.us1.qeadaptiveauth.com/AdaptiveAuthentication/services/AdaptiveAuthentication";
+            string service = "https://" + _appSettingService.MarshRSAEndPoint;
             string SOAPAction = "rsa:analyze:Analyze";
 
             SocketsHttpHandler _socketsHttpHandler;
@@ -75,7 +75,7 @@ namespace DealEngine.Services.Impl
         public async Task<string> UpdateUser(string updateRequest)
         {
             var responseMessage = "";            
-            string service = "https://ris.us1.qeadaptiveauth.com/AdaptiveAuthentication/services/AdaptiveAuthentication";
+            string service = "https://" + _appSettingService.MarshRSAEndPoint;
             string SOAPAction = "rsa:udpateuser:UpdateUser";
 
             SocketsHttpHandler _socketsHttpHandler;
@@ -121,7 +121,7 @@ namespace DealEngine.Services.Impl
         public async Task<string> Challenge(string challengeRequest)
         {
             var responseMessage = "";
-            string service = "https://ris.us1.qeadaptiveauth.com/AdaptiveAuthentication/services/AdaptiveAuthentication";
+            string service = "https://" + _appSettingService.MarshRSAEndPoint;
             string SOAPAction = "rsa:challenge:Challenge";
 
             SocketsHttpHandler _socketsHttpHandler;
@@ -168,7 +168,7 @@ namespace DealEngine.Services.Impl
         public async Task<string> Authenticate(string authenticateRequest)
         {
             var responseMessage = "";
-            string service = "https://ris.us1.qeadaptiveauth.com/AdaptiveAuthentication/services/AdaptiveAuthentication";
+            string service = "https://" + _appSettingService.MarshRSAEndPoint;
             string SOAPAction = "rsa:authenticate:Authenticate";
 
             SocketsHttpHandler _socketsHttpHandler;

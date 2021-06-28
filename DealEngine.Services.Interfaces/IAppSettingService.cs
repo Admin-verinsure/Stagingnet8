@@ -18,8 +18,11 @@ namespace DealEngine.Services.Interfaces
         string GetSuperUser { get; }
         string NRecoUserName { get; }
         string NRecoLicense { get; }
+        string MarshRSAEndPoint { get; }
+        string MarshRSAOrgName { get; }
         string MarshRSACredentials { get; }
         string NRecoPdfToolPath { get; }
+        string IsLinuxEnv { get; }
     }
 }
 

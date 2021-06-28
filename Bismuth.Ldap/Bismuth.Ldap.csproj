@@ -5,4 +5,7 @@
     <UpgradeBackupLocation>C:\inetpub\wwwroot\DealEngine2019core\Backup\Bismuth.Ldap\</UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
+  </ItemGroup>
 </Project>

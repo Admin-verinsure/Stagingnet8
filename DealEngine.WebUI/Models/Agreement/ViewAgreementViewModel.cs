@@ -171,7 +171,7 @@ namespace DealEngine.WebUI.Models.Agreement
             {
                 intMonthlyInstalmentNumber = agreement.ClientInformationSheet.Programme.BaseProgramme.MonthlyInstalmentNumber;
             }
-            foreach (ClientAgreementTerm term in agreement.ClientAgreementTerms.Where(t => t.DateDeleted == null).OrderBy(acat => acat.TermLimit))
+            foreach (ClientAgreementTerm term in agreement.ClientAgreementTerms.Where(t => t.DateDeleted == null).OrderBy(acat => acat.TermLimit).ThenBy(acat => acat.Excess))
             {
                 if ((agreement.Product.Id == new Guid("094f0b97-f288-440d-a32a-3c2128e35e70") || agreement.Product.Id == new Guid("eda1fa59-19e3-48f6-aef9-3057582717b4")) 
                     && term.TermLimit == 0 && term.Excess == 0 && term.Premium == 0) //Apollo PIFAP or Abbott PIFAP

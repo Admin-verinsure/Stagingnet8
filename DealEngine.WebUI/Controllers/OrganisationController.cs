@@ -641,6 +641,39 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> IfFapExist(Guid clientInformationSheet)
+        {
+            User currentUser = await CurrentUser();
+            ClientInformationSheet Sheet = await _clientInformationService.GetInformation(clientInformationSheet);
+            Boolean IfFapExistflag = false;
+            foreach (var organisation in Sheet.Organisation)
+            {
+                var advisorUnit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(i => i.Name == "Advisor");
+                if (advisorUnit != null && advisorUnit.isTheFAP)
+                {
+                    IfFapExistflag = true;
+                }
+
+                var administratorUnit = (AdministratorUnit)organisation.OrganisationalUnits.FirstOrDefault(i => i.Name == "Administrator");
+                if (administratorUnit != null && administratorUnit.isAdministratorTheFAP)
+                {
+                    IfFapExistflag = true;
+                }
+
+                if (organisation.isOrganisationTheFAP) {
+                    IfFapExistflag = true;
+                }
+
+            }
+            if (!IfFapExistflag)
+            {
+                throw new ArgumentException("Please Add atleastone FAP Org"); ;
+            }
+
+            return Json(IfFapExistflag);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RemoveIsTheFAPS(IFormCollection collection)
         {
             User currentUser = await CurrentUser();

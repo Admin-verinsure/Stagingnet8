@@ -473,10 +473,10 @@ namespace DealEngine.WebUI.Models
             HasConfidencialOptions = GetSelectListOptions();
             HasBreachesOptions = GetSelectListOptions();
             HasKnowledgeOptions = GetSelectListOptions();
-            HasOptionalCLEOptions = GetSelectListOptions();
+            HasOptionalCLEOptions = GetSelectListOptions1();
             HasProceduresOptions = GetSelectListOptions();
             HasApprovedVendorsOptions = GetSelectListOptions();
-            HasExistingPolicyOptions = GetSelectListOptions();
+            HasExistingPolicyOptions = GetSelectListOptionsCyberRenew();
             HasLocationOptions = GetSelectListOptions();
             HasOptionalUltraOptions = GetSelectListOptions();
         }
@@ -510,6 +510,24 @@ namespace DealEngine.WebUI.Models
                 },
                 new SelectListItem
                 { Text = "No", Value = "2" }
+            };
+        }
+        private IList<SelectListItem> GetSelectListOptionsCyberRenew()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" },
+                new SelectListItem
+                { Text = "Never had Cyber", Value = "3" }
             };
         }
         public IList<SelectListItem> HasCLIOptions { get; set; }
@@ -707,7 +725,50 @@ namespace DealEngine.WebUI.Models
             HasPartyMembers = GetPartyMembersOptions();
             HasOtherPIinsurances = GetSelectListOptions();
             HasClassOfLicense = GetClassOfLicenseOptions();
+            TrustAdvisorStatus = GetSelectListOptions();
+            HaveAnyRunOffinsurance = GetSelectListOptions();
+            YearCover = GetRunOffYearCoverSelectListOptions();
 
+        }
+
+        private IList<SelectListItem> GetRunOffYearCoverSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "1 year", Value = "1"
+                },
+                new SelectListItem
+                {
+                    Text = "2 years", Value = "2"
+                },
+                new SelectListItem
+                {
+                    Text = "3 years", Value = "3"
+                },
+                new SelectListItem
+                {
+                    Text = "4 years", Value = "4"
+                },
+                new SelectListItem
+                {
+                    Text = "5 years", Value = "5"
+                },
+                new SelectListItem
+                {
+                    Text = "6 years", Value = "6"
+                },
+                new SelectListItem
+                {
+                    Text = "7 years", Value = "7"
+                }
+
+            };
         }
 
         private IList<SelectListItem> GetCEASMembershipSelectListOptions()
@@ -871,7 +932,7 @@ namespace DealEngine.WebUI.Models
                 },
                 new SelectListItem
                 {
-                    Text = " Class 2 - More that one advisor", Value = "2"
+                    Text = " Class 2 - More than one advisor", Value = "2"
                 },
                 new SelectListItem
                 {
@@ -993,7 +1054,9 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasPartyMembers { get; set; }
         public IList<SelectListItem> HasOtherPIinsurances { get; set; }
         public IList<SelectListItem> HasClassOfLicense { get; set; }
-
+        public IList<SelectListItem> TrustAdvisorStatus { get; set; }
+        public IList<SelectListItem> HaveAnyRunOffinsurance { get; set; }
+        public IList<SelectListItem> YearCover { get; set; }
 
         public string ProcedureManagedDetails { get; set; }
         public string BusinessChangesDetails { get; set; }        

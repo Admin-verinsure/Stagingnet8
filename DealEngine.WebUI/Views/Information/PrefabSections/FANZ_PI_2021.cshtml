@@ -1,0 +1,121 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="PIViewModel" class="is-valid" data-accordianId="Professional Indemnity">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasFSDR" class="label required">
+                    Name of Financial Services Dispute Resolutions scheme you have registered with
+                </label>
+            </div>
+            <div class="col-3">
+
+                @Html.TextAreaFor(m => m.PIViewModel.hasfsdr, new { @class = "form-control", @id = "hasfsdr", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasotherBusinessActivity" class="label required">
+                    Have you been approved by the FMA for an exemption enabling personalised digital financial & investment advice?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasotherBusinessActivity" name="PIViewModel.HasotherBusinessActivity" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasotherBusinessActivity)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasdirectagencies" class="label required">
+                    With regard to fire & general insurance, do you hold direct agencies with the likes of Vero, Lumley/NZI, QBE for the placement of this business or do you refer this business through another broker?
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextAreaFor(m => m.PIViewModel.hasdirectagencies, new { @class = "form-control", @id = "hasdirectagencies", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="haspartymembers" class="label required">
+                    Are you aware of any parties to this policy being a member of :
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="haspartymembers" name="PIViewModel.HasPartyMembers" class="custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                    @foreach (var option in Model.PIViewModel.HasPartyMembers)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasotherpiinsurances" class="label required">
+                    Are you aware of any other insurances held for any of the parties to this policy?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasotherpiinsurances" name="PIViewModel.HasOtherPIinsurances" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasOtherPIinsurances)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasclassoflicense" class="label required">
+                    What class of license are you intending to apply for?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasclassoflicense" name="PIViewModel.HasClassOfLicense" class="custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                    @foreach (var option in Model.PIViewModel.HasClassOfLicense)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="trustadvisorstatus" class="label required">
+                    Have 80% of your advisors in the FAP obtained Financial Advice NZ Trusted Advisor status?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="trustadvisorstatus" name="PIViewModel.TrustAdvisorStatus" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.TrustAdvisorStatus)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+</form>

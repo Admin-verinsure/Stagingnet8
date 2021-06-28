@@ -104,6 +104,12 @@ namespace DealEngine.Services.Impl
             return list;
         }
 
+        public async Task<ClientProgramme> GetOriginalClientProgrammeByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId)
+        {
+            ClientProgramme originalClientProgramme = _clientProgrammeRepository.FindAll().Where(cp => cp.BaseProgramme.Id == programmeId && cp.Owner.Id == ownerOrganisationId && cp.InformationSheet != null && cp.DateDeleted == null && cp.InformationSheet.PreviousInformationSheet == null).FirstOrDefault();
+            return originalClientProgramme;
+        }
+
         public async Task<List<ClientProgramme>> GetClientProgrammesForProgramme(Guid programmeId)
         {
             Programme programme = await GetProgramme(programmeId);
@@ -231,7 +237,7 @@ namespace DealEngine.Services.Impl
 
         public async Task<List<Programme>> GetAllProgrammes()
         {
-            return await _programmeRepository.FindAll().OrderBy(p => p.Name).ToListAsync();
+            return await _programmeRepository.FindAll().Where(p => p.DateDeleted == null).OrderBy(p => p.Name).ToListAsync();
         }
 
         public async Task<Programme> GetProgrammeById(Guid ProgrammeId)
@@ -647,7 +653,7 @@ namespace DealEngine.Services.Impl
             await _referenceRepository.AddAsync(new Reference(newClientInformationSheet.Id, newClientInformationSheet.ReferenceId));
 
             ClientProgramme newClientProgramme = new ClientProgramme(createdBy, oldClientProgramme.Owner, oldClientProgramme.BaseProgramme);
-            newClientProgramme.BrokerContactUser = oldClientProgramme.BaseProgramme.BrokerContactUser;
+            newClientProgramme.BrokerContactUser = currentProgramme.BrokerContactUser;
             newClientProgramme.RenewFromClientProgramme = oldClientProgramme;
             newClientProgramme.InformationSheet = newClientInformationSheet;
             newClientProgramme.InformationSheet.Programme = newClientProgramme;
@@ -759,6 +765,7 @@ namespace DealEngine.Services.Impl
             //        newClientInformationSheet.SubClientInformationSheets.Add(newSubClientInformationSheet);
             //    }
             //}
+            //Renew named parties based on the programme config
             if (newClientInformationSheet.Organisation != null)
             {
                 foreach (Organisation org in newClientInformationSheet.Organisation)

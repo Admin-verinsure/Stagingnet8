@@ -6,13 +6,13 @@ using System.Linq;
 
 namespace DealEngine.Services.Impl.UnderwritingModuleServices
 {
-    public class NZFSGDOUWModule2021 : IUnderwritingModule
+    public class FANZDOUWModule : IUnderwritingModule
     {
         public string Name { get; protected set; }
 
-        public NZFSGDOUWModule2021()
+        public FANZDOUWModule()
         {
-            Name = "NZFSG_DO_2021";
+            Name = "FANZ_DO";
         }
 
         public bool Underwrite(User CurrentUser, ClientInformationSheet informationSheet)
@@ -41,7 +41,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
-            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "dotermlimit", "dotermexcess", "dotermpremiumclass1", "dotermpremiumclass1noemp", "maximumassetsize");
+            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "maximumassetsize");
 
             //Create default referral points based on the clientagreementrules
             if (agreement.ClientAgreementReferrals.Count == 0)
@@ -60,90 +60,58 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             agreement.QuoteDate = DateTime.UtcNow;
 
-            int coverperiodindays = 0;
-            coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
-
-            int coverperiodindaysforchange = 0;
-            coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
-
-            //string strretrodate = "";
-            //if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
-            //{
-            //    foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
-            //    {
-            //        if (preRenewOrRefData.DataType == "preterm")
-            //        {
-            //            if (!string.IsNullOrEmpty(preRenewOrRefData.DORetro))
-            //            {
-            //                strretrodate = preRenewOrRefData.DORetro;
-            //            }
-
-            //        }
-            //        if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "DO")
-            //        {
-            //            if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
-            //            {
-            //                ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
-            //                agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
-            //            }
-            //        }
-            //    }
-            //}
-
-            //renewal data (retro date and endorsements)
             string strretrodate = "";
-            if (agreement.ClientInformationSheet.IsRenewawl && agreement.ClientInformationSheet.RenewFromInformationSheet != null)
+            if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
             {
-                var renewFromAgreement = agreement.ClientInformationSheet.RenewFromInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "DO"));
-
-                if (renewFromAgreement != null)
+                foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
                 {
-                    strretrodate = renewFromAgreement.RetroactiveDate;
-
-                    foreach (var renewendorsement in renewFromAgreement.ClientAgreementEndorsements)
+                    if (preRenewOrRefData.DataType == "preterm")
                     {
-
-                        if (renewendorsement.DateDeleted == null && renewendorsement.Name != "Insolvency Exclusion")
+                        if (!string.IsNullOrEmpty(preRenewOrRefData.DORetro))
                         {
-                            ClientAgreementEndorsement newclientendorsement =
-                                new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
-                            agreement.ClientAgreementEndorsements.Add(newclientendorsement);
+                            strretrodate = preRenewOrRefData.DORetro;
+                        }
+
+                    }
+                    if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "DO")
+                    {
+                        if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
+                        {
+                            ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
+                            agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
                         }
                     }
                 }
-
             }
 
-            string strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Mortgage Broking and Fire & General Broking.";
+            string strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Investment Advice, Mortgage Broking, Financial Planning and Fire & General Broking (Please note Fire & General broking cover is restricted to insureds who derive income below -5% of total Turnover or $125,000 whichever is the lesser from this activity).";
+
             agreement.ProfessionalBusiness = strProfessionalBusiness;
 
+            int TermLimit1mil = 1000000;
+            decimal TermPremium1mil = 0m;
+            decimal TermBrokerage1mil = 0m;
 
-            decimal decDOTotalAssets = 0m;
-            decimal decDOTotalLiabilities = 0m;
-            decimal decDOCurrentAssets = 0m;
-            decimal decDOCurrentLiabilities = 0m;
-            decimal decDOAftertaxProfitOrLoss = 0m;
+            TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
 
+            int TermExcess = 0;
+            int intCompanyAge = 0;
+            decimal decDOAssets = 0m;
+            decimal decDOLiabs = 0m;
+
+            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.FormDate").Any())
+            {
+                intCompanyAge = DateTime.Now.Subtract(Convert.ToDateTime(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.FormDate").First().Value)).Days;
+            }
             if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.AssetTotal").Any())
             {
-                decDOTotalAssets = Convert.ToDecimal(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.AssetTotal").First().Value);
+                decDOAssets = Convert.ToDecimal(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.AssetTotal").First().Value);
             }
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.LiabilityTotal").Any())
+            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.DebtTotal").Any())
             {
-                decDOTotalLiabilities = Convert.ToDecimal(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.LiabilityTotal").First().Value);
+                decDOLiabs = Convert.ToDecimal(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.DebtTotal").First().Value);
             }
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.AssetCurrent").Any())
-            {
-                decDOCurrentAssets = Convert.ToDecimal(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.AssetCurrent").First().Value);
-            }
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.LiabilityCurrent").Any())
-            {
-                decDOCurrentLiabilities = Convert.ToDecimal(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.LiabilityCurrent").First().Value);
-            }
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.AfterTaxNumber").Any())
-            {
-                decDOAftertaxProfitOrLoss = Convert.ToDecimal(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.AfterTaxNumber").First().Value);
-            }
+
 
             ClientAgreementEndorsement cAEDOInsExcl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Insolvency Exclusion");
             if (cAEDOInsExcl != null)
@@ -151,7 +119,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 cAEDOInsExcl.DateDeleted = DateTime.UtcNow;
                 cAEDOInsExcl.DeletedBy = underwritingUser;
             }
-            if (decDOTotalAssets <= 0 && decDOTotalLiabilities <= 0 && decDOCurrentAssets <= 0 && decDOCurrentLiabilities <= 0 && decDOAftertaxProfitOrLoss <= 0)
+            if ((decDOAssets < decDOLiabs) || (intCompanyAge < 730))
             {
                 if (cAEDOInsExcl != null)
                 {
@@ -160,51 +128,26 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
-            int TermLimit = 0;
-            decimal TermPremium = 0M;
-            decimal TermBasePremium = 0M;
-            decimal TermBrokerage = 0M;
-            decimal TermExcess = 0M;
-            TermLimit = Convert.ToInt32(rates["dotermlimit"]);
-            TermExcess = rates["dotermexcess"];
-
             //Check class information to calculate the premium
             bool bolclass2referral = false;
-            bool bolclass3referral = false;
             if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasClassOfLicense").Any())
             {
-                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasClassOfLicense").First().Value == "1")
-                {
-                    TermPremium = rates["dotermpremiumclass1noemp"];
-                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EPLViewModel.HaveAnyEmployeeYN").First().Value == "1" &&
-                        Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EPLViewModel.TotalEmployees").First().Value) > 1)
-                    {
-                        TermPremium = rates["dotermpremiumclass1"];
-                    }
-                }
-                else if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasClassOfLicense").First().Value == "2")
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasClassOfLicense").First().Value == "2")
                 {
                     bolclass2referral = true;
                 }
-                else if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasClassOfLicense").First().Value == "3")
-                {
-                    bolclass3referral = true;
-                }
             }
 
-            TermBasePremium = TermPremium;
-            TermPremium = TermPremium * agreementperiodindays / coverperiodindays;
-            TermBrokerage = TermPremium * agreement.Brokerage / 100;
 
-            ClientAgreementTerm termdotermoption = GetAgreementTerm(underwritingUser, agreement, "DO", TermLimit, TermExcess);
-            termdotermoption.TermLimit = TermLimit;
-            termdotermoption.Premium = TermPremium;
-            termdotermoption.BasePremium = TermBasePremium;
-            termdotermoption.Excess = TermExcess;
-            termdotermoption.BrokerageRate = agreement.Brokerage;
-            termdotermoption.Brokerage = TermBrokerage;
-            termdotermoption.DateDeleted = null;
-            termdotermoption.DeletedBy = null;
+            ClientAgreementTerm termdo1millimitoption = GetAgreementTerm(underwritingUser, agreement, "DO", TermLimit1mil, TermExcess);
+            termdo1millimitoption.TermLimit = TermLimit1mil;
+            termdo1millimitoption.Premium = TermPremium1mil;
+            termdo1millimitoption.BasePremium = TermPremium1mil;
+            termdo1millimitoption.Excess = TermExcess;
+            termdo1millimitoption.BrokerageRate = agreement.Brokerage;
+            termdo1millimitoption.Brokerage = TermBrokerage1mil;
+            termdo1millimitoption.DateDeleted = null;
+            termdo1millimitoption.DeletedBy = null;
 
             //Change policy premium calculation
             if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
@@ -220,15 +163,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         {
                             PreviousBoundPremium = term.BasePremium;
                         }
-                        termdotermoption.PremiumDiffer = (TermPremium - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
-                        termdotermoption.PremiumPre = PreviousBoundPremium;
-                        if (termdotermoption.TermLimit == term.TermLimit && termdotermoption.Excess == term.Excess)
+                        termdo1millimitoption.PremiumDiffer = 0;
+                        termdo1millimitoption.PremiumPre = PreviousBoundPremium;
+                        if (termdo1millimitoption.TermLimit == term.TermLimit && termdo1millimitoption.Excess == term.Excess)
                         {
-                            termdotermoption.Bound = true;
-                        }
-                        if (termdotermoption.PremiumDiffer < 0)
-                        {
-                            termdotermoption.PremiumDiffer = 0;
+                            termdo1millimitoption.Bound = true;
                         }
                     }
                 }
@@ -236,14 +175,12 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
 
             //Referral points per agreement
-            //D&O Issues
-            uwrdoissue(underwritingUser, agreement, decDOTotalAssets, decDOTotalLiabilities, decDOCurrentAssets, decDOCurrentLiabilities, decDOAftertaxProfitOrLoss);
-            //Class 2 referral
-            //uwrfclass2(underwritingUser, agreement, bolclass2referral);
-            //Class 3 referral
-            uwrfclass3(underwritingUser, agreement, bolclass3referral);
             //Asset Size
             uwrfassetsize(underwritingUser, agreement, rates);
+            //D&O Issues
+            uwrdoissue(underwritingUser, agreement);
+            //Class 2 referral
+            //uwrfclass2(underwritingUser, agreement, bolclass2referral);
 
             //Update agreement status
             if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
@@ -255,7 +192,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 agreement.Status = "Quoted";
             }
 
-            string retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
+            string retrodate = "Unlimited excluding known claims or circumstances";
             agreement.TerritoryLimit = "Worldwide";
             agreement.Jurisdiction = "New Zealand";
             agreement.RetroactiveDate = retrodate;
@@ -266,7 +203,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             agreement.InsuredName = informationSheet.Owner.Name;
 
-            string auditLogDetail = "NZFSG DO UW created/modified";
+            string auditLogDetail = "FANZ DO UW created/modified";
             AuditLog auditLog = new AuditLog(underwritingUser, informationSheet, agreement, auditLogDetail);
             agreement.ClientAgreementAuditLogs.Add(auditLog);
 
@@ -359,7 +296,37 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             return dict;
         }
 
-        void uwrdoissue(User underwritingUser, ClientAgreement agreement, decimal decDOTotalAssets, decimal decDOTotalLiabilities, decimal decDOCurrentAssets, decimal decDOCurrentLiabilities, decimal decDOAftertaxProfitOrLoss)
+        void uwrfassetsize(User underwritingUser, ClientAgreement agreement, IDictionary<string, decimal> rates)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize") != null)
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").DoNotCheckForRenew));
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (Convert.ToDecimal(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.AssetTotal").First().Value) > rates["maximumassetsize"])
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null).Status = "Pending";
+                    }
+                }
+
+                if (agreement.ClientInformationSheet.IsRenewawl
+                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null).DoNotCheckForRenew)
+                {
+                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null).Status = "";
+                }
+            }
+        }
+
+        void uwrdoissue(User underwritingUser, ClientAgreement agreement)
         {
             if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdoissue" && cref.DateDeleted == null) == null)
             {
@@ -375,7 +342,14 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdoissue" && cref.DateDeleted == null).Status != "Pending")
                 {
-                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDebtsOptions").First().Value == "2")
+                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasClaimOptions").First().Value == "1" ||
+                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasCircumstanceOptions").First().Value == "1" ||
+                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDeclinedOptions").First().Value == "1" ||
+                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasReceivershipOptions").First().Value == "1" ||
+                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasObligationOptions").First().Value == "1" ||
+                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasInvestigationOptions").First().Value == "1" ||
+                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasProcecutionOptions").First().Value == "1" ||
+                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasCriminalOptions").First().Value == "1")
                     {
                         agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdoissue" && cref.DateDeleted == null).Status = "Pending";
                     }
@@ -419,65 +393,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
-        void uwrfclass3(User underwritingUser, ClientAgreement agreement, bool bolclass3referral)
-        {
-            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfclass3" && cref.DateDeleted == null) == null)
-            {
-                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfclass3") != null)
-                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfclass3").Name,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfclass3").Description,
-                        "",
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfclass3").Value,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfclass3").OrderNumber,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfclass3").DoNotCheckForRenew));
-            }
-            else
-            {
-                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfclass3" && cref.DateDeleted == null).Status != "Pending")
-                {
-                    if (bolclass3referral) //Class 3 referral
-                    {
-                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfclass3" && cref.DateDeleted == null).Status = "Pending";
-                    }
-                }
-
-                if (agreement.ClientInformationSheet.IsRenewawl
-                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfclass3" && cref.DateDeleted == null).DoNotCheckForRenew)
-                {
-                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfclass3" && cref.DateDeleted == null).Status = "";
-                }
-            }
-        }
-
-        void uwrfassetsize(User underwritingUser, ClientAgreement agreement, IDictionary<string, decimal> rates)
-        {
-            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null) == null)
-            {
-                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize") != null)
-                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").Name,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").Description,
-                        "",
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").Value,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").OrderNumber,
-                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfassetsize").DoNotCheckForRenew));
-            }
-            else
-            {
-                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null).Status != "Pending")
-                {
-                    if (Convert.ToDecimal(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.AssetTotal").First().Value) > rates["maximumassetsize"])
-                    {
-                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null).Status = "Pending";
-                    }
-                }
-
-                if (agreement.ClientInformationSheet.IsRenewawl
-                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null).DoNotCheckForRenew)
-                {
-                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfassetsize" && cref.DateDeleted == null).Status = "";
-                }
-            }
-        }
 
     }
 }

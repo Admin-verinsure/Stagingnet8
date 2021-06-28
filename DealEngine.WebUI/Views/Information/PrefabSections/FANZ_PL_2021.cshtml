@@ -1,0 +1,78 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="PIViewModel" class="is-valid" data-accordianId="General Liability">
+    
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="haspartymembers" class="label required">
+                    Are you aware of any parties to this policy being a member of :
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="haspartymembers" name="PIViewModel.HasPartyMembers" class="custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                    @foreach (var option in Model.PIViewModel.HasPartyMembers)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasotherpiinsurances" class="label required">
+                    Are you aware of any other insurances held for any of the parties to this policy?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasotherpiinsurances" name="PIViewModel.HasOtherPIinsurances" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasOtherPIinsurances)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasclassoflicense" class="label required">
+                    What class of license are you intending to apply for?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasclassoflicense" name="PIViewModel.HasClassOfLicense" class="custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                    @foreach (var option in Model.PIViewModel.HasClassOfLicense)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="trustadvisorstatus" class="label required">
+                    Have 80% of your advisors in the FAP obtained Financial Advice NZ Trusted Advisor status?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="trustadvisorstatus" name="PIViewModel.TrustAdvisorStatus" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.TrustAdvisorStatus)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>*@
+
+
+</form>

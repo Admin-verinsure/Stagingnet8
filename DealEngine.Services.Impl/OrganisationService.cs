@@ -261,7 +261,15 @@ namespace DealEngine.Services.Impl
             return await _organisationRepository.FindAll().Where(o => o.Email == email).ToListAsync();
         }
 
-
+        public async Task<Organisation> GetOrganisationByEmailAndName(string organisationEmail, string organisationName)
+        {
+            var list = await GetAllOrganisationsByEmailAndName(organisationEmail, organisationName);
+            return list.OrderByDescending(i => i.DateCreated).FirstOrDefault();
+        }
+        public async Task<List<Organisation>> GetAllOrganisationsByEmailAndName(string email, string name)
+        {
+            return await _organisationRepository.FindAll().Where(o => o.Email == email && o.Name == name).ToListAsync();
+        }
 
         public async Task<List<Organisation>> GetNZFSGSubsystemAdvisors(ClientInformationSheet sheet)
         {
@@ -502,11 +510,14 @@ namespace DealEngine.Services.Impl
             var FinancialList = await GetFinancialInstitutes();
             foreach (var Financial in FinancialList)
             {
+
                 // var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault();
                 //var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial"); //|| i.Name == "CoOwner"
-                var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.Where(i => i.Name == "Financial").FirstOrDefault(); //|| i.Name == "CoOwner"
+                //var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.Where(i => i.Name == "Financial").FirstOrDefault(); //|| i.Name == "CoOwner"
 
                 //Name = "Financial"
+
+                var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.Where(i => i.Name == "Financial").FirstOrDefault();
                 if (unit != null)
                 {
                     if (unit.Location != null)

@@ -135,7 +135,7 @@
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasexistingpolicy" class="label required">
+                    <label for="haspartymembers" class="label required">
                         Are you aware of any parties to this policy being a member of :
                     </label>
                 </div>
@@ -152,12 +152,13 @@
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="insurername" class="label required">
+                    <label for="hasotherpiinsurances" class="label required">
                         Are you aware of any other insurances held for any of the parties to this policy?
                     </label>
                 </div>
                 <div class="col-3">
                     <select id="hasexistingpolicy" name="PIViewModel.HasOtherPIinsurances" class="form-select" onchange="OnChange(this.id, this.name)" required>
+
                         @foreach (var option in Model.PIViewModel.HasOtherPIinsurances)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -171,12 +172,13 @@
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasexistingpolicy" class="label required">
+                    <label for="hasclassoflicense" class="label required">
                         What class of license are you intending to apply for?
                     </label>
                 </div>
                 <div class="col-3">
                     <select id="hasexistingpolicy" name="PIViewModel.HasClassOfLicense" class="form-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+
                         @foreach (var option in Model.PIViewModel.HasClassOfLicense)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>

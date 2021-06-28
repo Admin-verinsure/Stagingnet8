@@ -249,9 +249,10 @@
                     document.getElementById("HideInsuranceAttribute").hidden = true;
                     document.getElementById("Organisation.OrganisationType").disabled = true;
                     document.getElementById("Organisation.InsuranceAttribute").disabled = true;
-                   
                     document.getElementById("Else").hidden = false;
+
                     }
+
                     TradingNameOwnerOnLoad();
 
                     var ProgrammeName = document.getElementById("Programme_NamedPartyUnitName");
@@ -261,11 +262,27 @@
                     if (ProgrammeName.value == "Apollo Programme" || ProgrammeName.value == "Abbott Financial Advisor Liability Programme") {
                         ApolloOwnerOnLoad();
                     } 
+                    // if (ProgrammeName.value == "Financial Advice NZ Financial Advice Provider Liability Programme") {
+                    //     var TradingName = document.getElementById("Organisation.TradingName");
+                    //     TradingName.removeAttribute("required");
+                    //     TradingName.removeAttribute("is-invalid");
+                    //} 
+                    var NoTradingNameValidation = document.getElementById("NoTradingNameValidation");
+                    var TradingName = document.getElementById("Organisation.TradingName");
+                  
+                    if (NoTradingNameValidation != null && NoTradingNameValidation.value == "True") {
+                        TradingName.classList.remove("is-invalid");
+                        TradingName.hidden = false;
+                        TradingName.classList.add("is-valid");
+                    }
+                   
                 }
                 if (OutPut["User"] == null) {
                     //user is null so we override with organisation
                     document.getElementById("User.Email").value = OutPut["Organisation"]["Email"];
                 }
+
+                
             }
         } catch (ex) { debugger; }
     }

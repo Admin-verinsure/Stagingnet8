@@ -224,7 +224,8 @@
                             <div class="row">
                                 <div class="col-9">
                                     <label for="hasoptionalCLE" class="label required">
-                                        Would you like to purchase this optional Cyber Liability Social Engineering Fraud Extension policy extension  @(Model.ProgNamedPartyName == "TripleA Programme" ? "" : "for $250") ?
+                                        Would you like to purchase/include this optional Cyber Liability Social Engineering Fraud Extension policy extension 
+                                        @((Model.ProgNamedPartyName == "TripleA Programme" || Model.ProgNamedPartyName == "Financial Advice NZ Financial Advice Provider Liability Programme" || Model.ProgNamedPartyName == "Financial Advice NZ Financial Advice Provider Liability ML Programme") ? "" : "for $250") ?
                                     </label>
                                 </div>
                                 <div class="col-3">
@@ -242,7 +243,7 @@
                         <div class="row">
                             <div class="col-9">
                                 <label for="hasrenewal" class="label required">
-                                    Is this a renewal of an existing Cyber policy placed with @Model.ProgNamedPartyName ?
+                                    Is this a renewal of an existing Cyber policy placed with @Model.Programme.Name ?
                                 </label>
                             </div>
                             <div class="col-3">

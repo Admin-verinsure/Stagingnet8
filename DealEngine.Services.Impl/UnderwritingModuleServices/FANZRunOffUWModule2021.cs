@@ -6,13 +6,13 @@ using System.Linq;
 
 namespace DealEngine.Services.Impl.UnderwritingModuleServices
 {
-    public class RunOffProgrammePIUWModule : IUnderwritingModule
+    public class FANZRunOffUWModule2021 : IUnderwritingModule
     {
         public string Name { get; protected set; }
 
-        public RunOffProgrammePIUWModule()
+        public FANZRunOffUWModule2021()
         {
-            Name = "RunOffProgramme_PIRO";
+            Name = "FANZ_PIRO_2021";
         }
 
         public bool Underwrite(User CurrentUser, ClientInformationSheet informationSheet)
@@ -41,7 +41,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
-            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "pirotermlimit", "pirotermexcess", "pirotermpremium");
+            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "pirotermlimit", "pirotermexcess", "pirotermpremium", "piroterm1yearrate", 
+                "piroterm2yearrate", "piroterm3yearrate", "piroterm4yearrate", "pirotermminimumpremium");
 
             //Create default referral points based on the clientagreementrules
             if (agreement.ClientAgreementReferrals.Count == 0)
@@ -66,124 +67,149 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int coverperiodindaysforchange = 0;
             coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
 
-            
+
             //Programme specific term
 
             //Default Professional Business, Retroactive Date, TerritoryLimit, Jurisdiction, AuditLog Detail
-            string strProfessionalBusiness = "";
-            string retrodate = "";
-            string strTerritoryLimit = "";
-            string strJurisdiction = "";
-            string auditLogDetail = "";
-
-            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "TripleA Run Off Programme")
-            {
-                strProfessionalBusiness = "Life and general advisers of any insurance or assurance company and/or intermediaries, agents or consultants in the sale or negotiation of any financial product or the provision of any financial advice including mortgage advice and financial services educational workshops.";
-                retrodate = "Unlimited excluding known claims or circumstances";
-                strTerritoryLimit = "Australia and New Zealand";
-                strJurisdiction = "Australia and New Zealand";
-                auditLogDetail = "TripleA PI UW created/modified";
-
-            }
-            else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Run Off Programme")
-            {
-                strProfessionalBusiness = "General Insurance Brokers, Life Agents, Investment Advisers, Financial Planning and Mortgage Broking, Consultants and Advisers in the sale of any financial product including referrals to other financial product providers.";
-                retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
-                strTerritoryLimit = "Worldwide";
-                strJurisdiction = "Australia and New Zealand";
-                auditLogDetail = "Apollo PI UW created/modified";
-            }
-            else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Financial Advice New Zealand Inc Run Off Programme")
-            {
-                strProfessionalBusiness = "";
-                retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
-                strTerritoryLimit = "";
-                strJurisdiction = "";
-                auditLogDetail = "FANZ PI UW created/modified";
-            }
-            else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Abbott Financial Advisor Liability Run Off Programme")
-            {
-                strProfessionalBusiness = "Sales & Promotion of Life, Investment & General Insurance products, Financial planning & Mortgage Brokering Services";
-                retrodate = "Unlimited excluding known claims and circumstances";
-                strTerritoryLimit = "Australia and New Zealand";
-                strJurisdiction = "Australia and New Zealand";
-                auditLogDetail = "Abbott PI UW created/modified";
-            }
-            else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Run Off Programme")
-            {
-                strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Mortgage Broking and Fire & General Broking.";
-                retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
-                strTerritoryLimit = "New Zealand";
-                strJurisdiction = "New Zealand";
-                auditLogDetail = "NZFSG PI UW created/modified";
-                
-            }
+            string strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Investment Advice, Mortgage Broking, Financial Planning and Fire & General Broking (Please note Fire & General broking cover is restricted to insureds who derive income below -5% of total Turnover or $125,000 whichever is the lesser from this activity).";
+            string retrodate = "Unlimited excluding known claims or circumstances";
+            string strTerritoryLimit = "New Zealand";
+            string strJurisdiction = "New Zealand";
+            string auditLogDetail = "FANZ PI Run Off UW created/modified";
 
             //Update retro date and endorsement based on the pre-renewal data or renewal agreement
+
+            int intrenewalpitermlimit = 0;
+            decimal decrenewalpitermexcess = 0M;
+            decimal decrenewalpitermpremium = 0M;
             bool bolcustomendorsementrenew = false;
+            bool bolnorenewterm = true;
             string strretrodate = "";
 
-            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme") //for FANZ as a new programme in 2021, turn off at next renewal
+            if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
             {
-                if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
+                foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
                 {
-                    foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
+                    if (preRenewOrRefData.DataType == "preterm")
                     {
-                        if (preRenewOrRefData.DataType == "preterm")
+                        if (!string.IsNullOrEmpty(preRenewOrRefData.PIRetro))
                         {
-                            if (!string.IsNullOrEmpty(preRenewOrRefData.PIRetro))
-                            {
-                                strretrodate = preRenewOrRefData.PIRetro;
-                            }
+                            strretrodate = preRenewOrRefData.PIRetro;
+                        }
+                        if (!string.IsNullOrEmpty(preRenewOrRefData.PIBoundLimit))
+                        {
+                            bolcustomendorsementrenew = false;
+                            intrenewalpitermlimit = Convert.ToInt32(preRenewOrRefData.PIBoundLimit);
+                        }
+                        if (!string.IsNullOrEmpty(preRenewOrRefData.PIBoundExcess))
+                        {
+                            bolcustomendorsementrenew = false;
+                            decrenewalpitermexcess = Convert.ToDecimal(preRenewOrRefData.PIBoundExcess);
+                        }
+                        if (!string.IsNullOrEmpty(preRenewOrRefData.PIBoundPremium))
+                        {
+                            bolcustomendorsementrenew = false;
+                            decrenewalpitermpremium = Convert.ToDecimal(preRenewOrRefData.PIBoundPremium);
+                        }
 
-                        }
-                        if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "PIRO")
-                        {
-                            if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
-                            {
-                                bolcustomendorsementrenew = true;
-                                ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
-                                agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
-                            }
-                        }
                     }
-                }
-            }
-            else
-            {
-                if (agreement.ClientInformationSheet.IsRenewawl && agreement.ClientInformationSheet.RenewFromInformationSheet != null)
-                {
-                    var renewFromAgreement = agreement.ClientInformationSheet.RenewFromInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PIRO"));
-
-                    if (renewFromAgreement != null)
+                    if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "PIRO")
                     {
-                        strretrodate = renewFromAgreement.RetroactiveDate;
-
-                        foreach (var renewendorsement in renewFromAgreement.ClientAgreementEndorsements)
+                        if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
                         {
-
-                            if (renewendorsement.DateDeleted == null)
-                            {
-                                bolcustomendorsementrenew = true;
-                                ClientAgreementEndorsement newclientendorsement =
-                                    new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
-                                agreement.ClientAgreementEndorsements.Add(newclientendorsement);
-                            }
+                            bolcustomendorsementrenew = true;
+                            ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
+                            agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
                         }
                     }
                 }
             }
 
+
+            //Check year cover required
+            int intyearcover = 0;
+            bool bolyearcoverreferral = false;
+            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.YearCover").Any())
+            {
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.YearCover").First().Value == "1")
+                {
+                    intyearcover = 1;
+                }
+                else if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.YearCover").First().Value == "2")
+                {
+                    intyearcover = 2;
+                }
+                else if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.YearCover").First().Value == "3")
+                {
+                    intyearcover = 3;
+                }
+                else if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.YearCover").First().Value == "4")
+                {
+                    intyearcover = 4;
+                }
+                else if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.YearCover").First().Value == "5")
+                {
+                    intyearcover = 5;
+                }
+                else if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.YearCover").First().Value == "6")
+                {
+                    intyearcover = 6;
+                }
+                else if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.YearCover").First().Value == "7")
+                {
+                    intyearcover = 7;
+                }
+            }
+            if (intyearcover != 1)
+            {
+                bolyearcoverreferral = true;
+            }
 
             decimal TermExcess = 0M;
             int TermLimit = 0;
             decimal TermPremium = 0M;
+            decimal TermMinimumPremium = 0M;
             decimal TermBasePremium = 0M;
             decimal TermBrokerage = 0M;
+            decimal decyear1premium = 0M;
+            decimal decyear2premium = 0M;
+            decimal decyear3premium = 0M;
+            decimal decyear4premium = 0M;
 
             TermLimit = Convert.ToInt32(rates["pirotermlimit"]);
             TermExcess = rates["pirotermexcess"];
             TermPremium = rates["pirotermpremium"];
+            TermMinimumPremium = rates["pirotermminimumpremium"];
+
+            if (intrenewalpitermlimit > 0)
+                TermLimit = intrenewalpitermlimit;
+            if (decrenewalpitermexcess > 0)
+                TermExcess = decrenewalpitermexcess;
+            if (decrenewalpitermpremium > 0)
+            {
+                decyear1premium = decrenewalpitermpremium * rates["piroterm1yearrate"] / 100;
+                decyear2premium = decyear1premium * rates["piroterm2yearrate"] / 100;
+                decyear3premium = decyear2premium * rates["piroterm3yearrate"] / 100;
+                decyear4premium = decyear3premium * rates["piroterm4yearrate"] / 100;
+
+                if (intyearcover == 1)
+                {
+                    TermPremium = decyear1premium;
+                    TermPremium = (TermPremium > TermMinimumPremium) ? TermPremium : TermMinimumPremium;
+                } 
+                //else if (intyearcover == 2)
+                //{
+                //    TermPremium = decyear1premium + decyear2premium;
+                //}
+                //else if (intyearcover == 3)
+                //{
+                //    TermPremium = decyear1premium + decyear2premium + decyear3premium;
+                //}
+                //else if (intyearcover == 4)
+                //{
+                //    TermPremium = decyear1premium + decyear2premium + decyear3premium + decyear4premium;
+                //}
+            }
 
             TermBasePremium = TermPremium;
             TermPremium = TermPremium * agreementperiodindays / coverperiodindays;
@@ -232,6 +258,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Referral points per agreement
             //Claims / Insurance History
             uwrfpriorinsurance(underwritingUser, agreement);
+            //Requires cover over 1 year
+            uwrfyearcoverover1year(underwritingUser, agreement, bolyearcoverreferral);
+            //No PI renew term
+            uwrfnopirenewterm(underwritingUser, agreement, bolnorenewterm);
 
             //Update agreement Status
             if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
@@ -381,10 +411,69 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
+        void uwrfyearcoverover1year(User underwritingUser, ClientAgreement agreement, bool bolyearcoverreferral)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfyearcoverover1year" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfyearcoverover1year") != null)
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfyearcoverover1year").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfyearcoverover1year").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfyearcoverover1year").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfyearcoverover1year").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfyearcoverover1year").DoNotCheckForRenew));
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfyearcoverover1year" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (bolyearcoverreferral)
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfyearcoverover1year" && cref.DateDeleted == null).Status = "Pending";
+                    }
+                }
 
+                if (agreement.ClientInformationSheet.IsRenewawl
+                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfyearcoverover1year" && cref.DateDeleted == null).DoNotCheckForRenew)
+                {
+                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfyearcoverover1year" && cref.DateDeleted == null).Status = "";
+                }
+            }
+        }
+
+        void uwrfnopirenewterm(User underwritingUser, ClientAgreement agreement, bool bolnorenewterm)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnopirenewterm" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnopirenewterm") != null)
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnopirenewterm").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnopirenewterm").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnopirenewterm").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnopirenewterm").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfnopirenewterm").DoNotCheckForRenew));
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnopirenewterm" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (bolnorenewterm)
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnopirenewterm" && cref.DateDeleted == null).Status = "Pending";
+                    }
+                }
+
+                if (agreement.ClientInformationSheet.IsRenewawl
+                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnopirenewterm" && cref.DateDeleted == null).DoNotCheckForRenew)
+                {
+                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfnopirenewterm" && cref.DateDeleted == null).Status = "";
+                }
+            }
+        }
 
 
     }
 }
+
 
 

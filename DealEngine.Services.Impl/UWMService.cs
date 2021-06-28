@@ -145,6 +145,11 @@ namespace DealEngine.Services.Impl
         {
             var modules = new IUnderwritingModule[] {
                 new EmptyUWModule(),
+                new FANZRunOffUWModule2021(),
+                new FANZMLPLUWModule(),
+                new FANZPIUWModule(),
+                new FANZCLUWModule(),
+                new FANZDOUWModule(),
                 new I2IITCPIUWModule(),
                 new I2IITCPLUWModule(),
                 new I2IITCSLUWModule(),
