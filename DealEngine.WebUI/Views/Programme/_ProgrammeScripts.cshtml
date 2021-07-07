@@ -5,6 +5,7 @@
             var questionmodal = document.getElementById('questionmodal').innerHTML;
 
             $('#smartwizardprogramme').smartWizard({
+                //debugger;
                 selected: 0,  // Initial selected step, 0 = first step
                 keyNavigation: true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
                 autoAdjustHeight: true, // Automatically adjust content height
@@ -69,6 +70,7 @@
             });
 
             $("#smartwizardprogramme").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+                debugger;
                 if (stepDirection == "forward") {
                     if (stepNumber == 0) {
                         var form = document.getElementById('programmeform');
