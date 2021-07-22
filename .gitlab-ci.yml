@@ -37,6 +37,9 @@ deploy_staging:
   - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLdevops"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
   - eval "$(ssh-agent -s)"
   - ssh-add <(echo "$PKgitlab")
+  - ls -la
+  - scp ubuntu@"$URLdevops":/home/ubuntu/backup/appsettings.json /home/gitlab-runner/
+  - /home/gitlab-runner/DE-UpdateStartup.sh
   - ssh ubuntu@"$URLdevops" './DE-DeployPrep.sh'
   - 'dotnet publish -c Release'
   - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/netcoreapp3.1/ ubuntu@$URLdevops:/home/ubuntu/projects/dealengine

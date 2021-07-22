@@ -140,7 +140,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             if (agreement.ClientInformationSheet.RevenueData != null) //CL using current year fee income
             {
                 feeincome = agreement.ClientInformationSheet.RevenueData.CurrentYearTotal;
-                if (agreement.ClientInformationSheet.RevenueData.CurrentYearTotal > 0 && agreement.ClientInformationSheet.RevenueData.CurrentYearTotal < rates["cltermmaxfeeincome"])
+                if (agreement.ClientInformationSheet.RevenueData.CurrentYearTotal >= 0 && agreement.ClientInformationSheet.RevenueData.CurrentYearTotal < rates["cltermmaxfeeincome"])
                 {
                     TermPremium = rates["cltermpremium"];
                 }

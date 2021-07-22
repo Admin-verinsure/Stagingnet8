@@ -47,9 +47,7 @@ namespace DealEngine.WebUI.Controllers
         // IUpdateTypeService _updateTypeService;
         IUpdateTypeService _updateTypeServices;
         public AdminController(
-                    //
-
-        IUpdateTypeService updateTypeService,
+            IUpdateTypeService updateTypeService,
             IOrganisationService organisationService,
             ISerializerationService serializerationService,
             IMilestoneService milestoneService,
@@ -418,6 +416,23 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
                 await _importService.ImportNZFSGServicePI(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> NZFSGImportPInewUsers()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.NZFSGImportPInewUsers(user);
 
                 return RedirectToAction("Index", "Home");
             }
@@ -1171,6 +1186,16 @@ namespace DealEngine.WebUI.Controllers
                     case "OtherMarinaTCNotifyEmail":
                         {
                             systememailtemplatename = "Create Other Marina Notification Email";
+                            break;
+                        }
+                    case "OneTimePasswordEmail":
+                        {
+                            systememailtemplatename = "One Time Password Email";
+                            break;
+                        }
+                    case "RSANotificationEmail":
+                        {
+                            systememailtemplatename = "RSA Notification Email";
                             break;
                         }
                     default:

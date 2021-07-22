@@ -160,9 +160,14 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
 
 			if (responseUserStatus == UserStatus.LOCKOUT || responseUserStatus == UserStatus.DELETE)
 			{
-				_logger.LogInformation("Marsh user failed to login");
-				throw new Exception("unable to login user: "+ rsaUser.Username);
-			}
+                //_logger.LogInformation("Marsh user failed to login");
+                //throw new Exception("unable to login user: "+ rsaUser.Username);
+                // Need to save the deviceTokenCookie from analyzeReponse
+                UpdateRsaUserFromResponse(response, rsaUser);
+                rsaUser.RsaStatus = RsaStatus.Deny;
+
+                return rsaUser;
+            }
 			// user not allowed in if we get here.
 
 			return rsaUser;
@@ -301,7 +306,7 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
             {                
                 user.Lock();
                 await _userService.Update(user);                
-            }            
+            }           
             else if (statusCode == "SUCCESS")
             {
                 
@@ -311,6 +316,56 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
             //invalid otp or user locked
             return false;
 		}
+
+        public async Task<string> AuthenticateStatus(MarshRsaUser rsaUser, IUserService _userService, string username)
+        {
+            string authenticateStatus = "";
+            Authenticate authenticateRequest = new Authenticate();
+            AuthenticateResponse authenticateResponse = new AuthenticateResponse();
+            XmlDocument xDoc = new XmlDocument();
+            //var user = await _userService.GetUser(rsaUser.Username);
+            var user = await _userService.GetUser(username); //changed to use not hashed username to find user in application
+            authenticateRequest.request = GetAuthenticateRequest(rsaUser);
+            var xml = SerializeRSARequest(authenticateRequest, "Authenticate");
+            var authenticateResponseXmlStr = await _httpClientService.Authenticate(xml);
+
+            //used for RSA authenticate request and response log
+            await _emailService.RsaLogEmail("marshevents@proposalonline.com", username, xml, authenticateResponseXmlStr);
+
+            try
+            {
+                xDoc.LoadXml(authenticateResponseXmlStr);
+                authenticateResponse = await BuildAuthenticateResponse(xDoc);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            var userStatus = authenticateResponse.identificationData.userStatus;
+            var statusCode = authenticateResponse.credentialAuthResultList.acspAuthenticationResponseData.callStatus.statusCode;
+            user.DeviceTokenCookie = authenticateResponse.deviceResult.deviceData.deviceTokenCookie;
+            if (userStatus == UserStatus.LOCKOUT || userStatus == UserStatus.DELETE)
+            {
+                user.Lock();
+                await _userService.Update(user);
+                authenticateStatus = "LOCKOUT";
+            }
+            else if (statusCode == "FAIL")
+            {
+
+                await _userService.Update(user);
+                authenticateStatus = "FAIL";
+            }
+            else if (statusCode == "SUCCESS")
+            {
+
+                await _userService.Update(user);
+                authenticateStatus = "SUCCESS";
+            }
+
+            return authenticateStatus;
+        }
 
         void UpdateRsaUserFromResponse(GenericResponse response, MarshRsaUser rsaUser)
         {

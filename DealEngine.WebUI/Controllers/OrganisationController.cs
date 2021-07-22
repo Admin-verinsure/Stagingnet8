@@ -344,10 +344,6 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 await _organisationService.PostOrganisation(collection, organisation);
-
-               
-                 
-
                 if (!Sheet.Organisation.Contains(organisation))
                     Sheet.Organisation.Add(organisation);
 

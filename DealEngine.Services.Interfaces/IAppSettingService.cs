@@ -23,6 +23,7 @@ namespace DealEngine.Services.Interfaces
         string MarshRSACredentials { get; }
         string NRecoPdfToolPath { get; }
         string IsLinuxEnv { get; }
+        string MarshRSANotificationEmail { get; }
     }
 }
 

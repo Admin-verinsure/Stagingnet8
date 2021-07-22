@@ -155,10 +155,12 @@ namespace DealEngine.WebUI.Controllers
                         {
                             foreach (var clientProgramme in clientProgList)
                             {
-                                programmeList.Add(clientProgramme.BaseProgramme);
+                                if (clientProgramme.InformationSheet.Status != "Not Taken Up By Broker")
+                                {
+                                    programmeList.Add(clientProgramme.BaseProgramme);
+                                }
                             }
                         }
-                        
                     }
                 }
                 else
@@ -959,6 +961,45 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> IssueRenewalPagination(string ProgrammeId, int? page)
+        //{
+        //    User user = null;
+        //    try
+        //    {
+        //        var pagenumber = page ?? 1;
+        //        int pagesize = 10;
+
+        //        user = await CurrentUser();
+        //        IssueUISViewModel model = new IssueUISViewModel();
+        //        var clientProgrammes = new List<ClientProgramme>();
+        //        Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+        //        List<ClientProgramme> renewClientProgrammes = await _programmeService.GetRenewBaseClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
+
+        //        foreach (var client in renewClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name).ToPagedList(pagenumber, pagesize))
+        //        {
+        //            if (client.DateDeleted == null && client.InformationSheet != null)
+        //            {
+        //                //filter out the renewal clientprogramme already created
+        //                List<ClientProgramme> currentClientProgrammes = await _programmeService.GetClientProgrammesByOwnerByProgramme(client.Owner.Id, programme.Id);
+        //                if (currentClientProgrammes.Count == 0)
+        //                {
+        //                    clientProgrammes.Add(client);
+        //                }
+        //            }
+        //        }
+        //        model.clientProgrammespagedlist = clientProgrammes.ToPagedList(pagenumber, pagesize);
+        //        model.ProgrammeId = ProgrammeId;
+        //        model.IsSubUIS = "false";
+
+        //        return View(model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        //        return RedirectToAction("Error500", "Error");
+        //    }
+        //}
         [HttpGet]
         public async Task<IActionResult> IssueRenewal(string ProgrammeId)
         {
@@ -1760,6 +1801,8 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+
         [HttpPost]
         public async Task<IActionResult> IssueUIS(IFormCollection formCollection)
         {
@@ -1774,7 +1817,7 @@ namespace DealEngine.WebUI.Controllers
                 var isSubUis = formCollection["IsSubUIS"];
                 foreach (var key in formCollection.Keys)
                 {
-
+                    try { 
                     email = key;
                     var correctEmail = await _userService.GetUserByEmail(email);
                     if (correctEmail != null)
@@ -1803,7 +1846,8 @@ namespace DealEngine.WebUI.Controllers
                                 if (programme.ProgEnableProgEmailCC && !string.IsNullOrEmpty(programme.ProgEmailCCRecipent))
                                 {
                                     await _emailService.SendEmailViaEmailTemplateWithCC(email, emailTemplate, null, null, null, programme.ProgEmailCCRecipent);
-                                } else
+                                }
+                                else
                                 {
                                     await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, null, null, null);
                                 }
@@ -1812,7 +1856,13 @@ namespace DealEngine.WebUI.Controllers
                             //await _emailService.SendSystemEmailUISIssueNotify(programme.BrokerContactUser, programme, sheet, programme.Owner);
                         }
                     }
-
+                    }
+                    catch (Exception ex)
+                    {
+                        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                        continue;
+                        /// return RedirectToAction("Error500", "Error");
+                    }
                 }
 
                 return await RedirectToLocal();
@@ -1820,7 +1870,9 @@ namespace DealEngine.WebUI.Controllers
             catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-                return RedirectToAction("Error500", "Error");
+               // return await RedirectToLocal();
+
+                 return RedirectToAction("Error500", "Error");
             }
         }
 
@@ -2068,6 +2120,7 @@ namespace DealEngine.WebUI.Controllers
                 programme = await _programmeService.GetProgramme(Guid.Parse(formCollection["ProgrammeId"]));
                 foreach (var key in formCollection.Keys)
                 {
+                    try { 
                     email = key;
                     var correctEmail = await _userService.GetUserByEmail(email);
                     if (correctEmail != null)
@@ -2088,7 +2141,13 @@ namespace DealEngine.WebUI.Controllers
                             }
                         }
                     }
-
+                    }
+                    catch (Exception ex)
+                    {
+                        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                        continue;
+                        /// return RedirectToAction("Error500", "Error");
+                    }
                 }
 
                 return await RedirectToLocal();

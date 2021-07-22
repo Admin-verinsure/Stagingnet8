@@ -178,12 +178,23 @@ namespace DealEngine.Services.Impl
                 User user = await _userService.GetUserById(UserId);
                 if (user != null)
                 {
-                    if (user.Organisations.Contains(organisation))
+                    var bool1 = user.Organisations.Contains(organisation);
+                    foreach (var org in user.Organisations)
                     {
-                        user = _mapper.Map(jsonUser, user);
-                        await _userService.Update(user);
-                        return user;
-                    }                    
+                        if(org.Id == organisation.Id)
+                        {
+                            user = _mapper.Map(jsonUser, user);
+                            await _userService.Update(user);
+                            return user;
+                        }
+
+                    }
+                    //if (user.Organisations.Contains(organisation))
+                    //{
+                    //    user = _mapper.Map(jsonUser, user);
+                    //    await _userService.Update(user);
+                    //    return user;
+                    //}                    
                 }
             }
             return null;
@@ -199,19 +210,28 @@ namespace DealEngine.Services.Impl
 
             if (user != null)
             {
-                if(organisation.Id != user.PrimaryOrganisation.Id && organisation.Email == user.Email)
-                {
-                    organisation.Name = user.FirstName + " " + user.LastName;
-                }
-                else
+                //if(organisation.Id != user.PrimaryOrganisation.Id && organisation.Email == user.Email)
+                //{
+                //    organisation.Name = user.FirstName + " " + user.LastName;
+                //}
+                //else
+                //{
+                //    organisation.Name = jsonOrganisation.Name;
+                //}
+                if (jsonOrganisation.Name != "")
                 {
                     organisation.Name = jsonOrganisation.Name;
                 }
 
-                if ((user.FirstName + " " + user.LastName) != organisation.Name && TypeName == "Advisor")
+                if ((user.FirstName + " " + user.LastName) != organisation.Name && jsonOrganisation.Name != "" && TypeName != "")
                 {
                     organisation.Name = user.FirstName + " " + user.LastName;
                 }
+
+                //if ((user.FirstName + " " + user.LastName) != organisation.Name && TypeName == "Advisor")
+                //{
+                //    organisation.Name = user.FirstName + " " + user.LastName;
+                //}
             }
             var isfap = collection["OrganisationViewModel.Organisation.isTheFAP"];
             if (isfap == "true")

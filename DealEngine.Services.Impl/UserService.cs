@@ -66,7 +66,7 @@ namespace DealEngine.Services.Impl
 					await Update(user);
 				return user;
 			}
-			user = _legacyLdapService.GetLegacyUser(username);
+			//user = _legacyLdapService.GetLegacyUser(username);
 			// have a legacy ldap user only? Create them in Ldap & NHibernate & return them
 			if (user != null)
 			{
@@ -90,7 +90,7 @@ namespace DealEngine.Services.Impl
 				await Update(user);
 				return user;
 			}
-			user = _legacyLdapService.GetLegacyUser(userId);
+			//user = _legacyLdapService.GetLegacyUser(userId);
 			// have a legacy ldap user only? Create them in Ldap & NHibernate & return them
 			if (user != null)
 			{

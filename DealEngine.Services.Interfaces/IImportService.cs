@@ -49,6 +49,8 @@ namespace DealEngine.Services.Interfaces
         Task ImportFANZPIPreRenewData(User user);
         Task ImportFANZMLPreRenewData(User user);
         Task ImportFANZROPreRenewData(User user);
+        Task NZFSGImportPInewUsers(User user);
 
+        
     }
 }

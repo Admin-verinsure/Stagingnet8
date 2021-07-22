@@ -98,6 +98,11 @@ namespace DealEngine.Services.Impl
             return list;
         }
 
+        //public async Task<ClientProgramme> GetEditClientProgrammesByOwner(Guid ownerOrganisationId)
+        //{
+        //    return await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(cp => cp.Owner.Id == ownerOrganisationId && cp.InformationSheet != null && cp.DateDeleted == null);
+        //}
+
         public async Task<List<ClientProgramme>> GetClientProgrammesByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId)
         {
             var list = await _clientProgrammeRepository.FindAll().Where(cp => cp.BaseProgramme.Id == programmeId && cp.Owner.Id == ownerOrganisationId && cp.InformationSheet != null && cp.DateDeleted == null).ToListAsync();

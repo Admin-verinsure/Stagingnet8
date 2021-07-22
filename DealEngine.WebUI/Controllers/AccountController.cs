@@ -212,7 +212,9 @@ namespace DealEngine.WebUI.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> ChangePassword(Guid id, AccountChangePasswordModel viewModel)
 		{
-			try
+            SingleUseToken st = _authenticationService.GetToken(id);
+            User user = await _userService.GetUserById(st.UserID);
+            try
 			{
                 if (id == Guid.Empty)
 					// if we get here - either invalid guid or invalid token - 404
@@ -222,8 +224,7 @@ namespace DealEngine.WebUI.Controllers
 					ModelState.AddModelError ("passwordConfirm", "Passwords do not match");
 					return View ();
 				}
-                SingleUseToken st = _authenticationService.GetToken(id);
-                User user = await _userService.GetUserById(st.UserID);
+                
                 if (user == null)
                     // in theory, we should never get here. Reason being is that a reset request should not be created without a valid user
                     throw new Exception(string.Format("Could not find user with ID {0}", st.UserID));
@@ -233,7 +234,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     string username = user.UserName;
 
-                    //change the users password to an intermediate
+                    //change the users password using admin
                     if (_ldapService.ChangePassword(user.UserName, _appSettingService.IntermediatePassword, viewModel.Password))
                     {
                         var deUser = await _userManager.FindByNameAsync(user.UserName);
@@ -275,8 +276,11 @@ namespace DealEngine.WebUI.Controllers
                 ModelState.AddModelError ("passwordConfirm", "Your chosen password does not meet the requirements of our password policy. Please refer to the policy above to assist with creating an appropriate password.");				
 			}
 			catch (Exception ex) {
+
+                _ldapService.ChangePassword(user.UserName, "", _appSettingService.IntermediatePassword);
+
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
-                ModelState.AddModelError ("passwordConfirm", "There was an error while trying to change your password.");				
+                ModelState.AddModelError ("passwordConfirm", "There was an error while trying to change your password. Please try again with a new password below.");				
 			}
 
 			return View ();
@@ -498,7 +502,15 @@ namespace DealEngine.WebUI.Controllers
                             Password = password
                         });
                     }
+                    if (rsaUser.RsaStatus == RsaStatus.Deny)
+                    {
+                        //email the notification
+                        _emailService.RsaNotificationEmail(_appSettingService.MarshRSANotificationEmail, user.UserName + "@mnzconnect.com");
 
+                        return Redirect("~/Account/RSAErrorMessage");
+                        
+                        await Logout();
+                    }
                 }
                 ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.");
                 return View(viewModel);
@@ -531,8 +543,10 @@ namespace DealEngine.WebUI.Controllers
                 rsaUser.CurrentSessionId = viewModel.SessionId;
                 rsaUser.CurrentTransactionId = viewModel.TransactionId;
                 var user = await _userService.GetUser(viewModel.UserName);
-                bool isAuthenticated = await rsaAuth.Authenticate(rsaUser, _userService, username);                
-                if (isAuthenticated)
+                //bool isAuthenticated = await rsaAuth.Authenticate(rsaUser, _userService, username);                
+                //if (isAuthenticated)
+                string authenticatedStatus = await rsaAuth.AuthenticateStatus(rsaUser, _userService, username);
+                if (authenticatedStatus == "SUCCESS")
                 {
                     var result = await DealEngineIdentityUserLogin(user, viewModel.Password);
                     if (!result.Succeeded)
@@ -552,9 +566,18 @@ namespace DealEngine.WebUI.Controllers
                     }
                     return RedirectToAction("Index", "Home");
                 }
-                else
+                else if (authenticatedStatus == "FAIL")
                 {
-                    ViewBag.AccountLocked = "Your Login has failed - Marsh has been notified and will be in contact with you shortly";
+                    return Redirect("~/Account/OTPFailMessage");
+                    await Logout();                    
+                }
+                else if (authenticatedStatus == "LOCKOUT")
+                {
+                    ViewBag.AccountLocked = "Unfortunately the account that you are trying to access has been locked and will require assistance from the Marsh IT Support team to be reset. The support team have been notified and Marsh will be in contact with you to let you know when this has been resolved. This is nothing to do with TechCertain - please do not file a ticket with TechCertain.";
+
+                    //email the notification
+                    _emailService.RsaNotificationEmail(_appSettingService.MarshRSANotificationEmail, username+ "@mnzconnect.com");
+
                     await Logout();
                 }                
             }
@@ -562,8 +585,22 @@ namespace DealEngine.WebUI.Controllers
             return View ();
 		}
 
-		// GET: /account/error
-		[HttpGet]
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OTPFailMessage()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> RSAErrorMessage()
+        {
+            return View();
+        }
+
+        // GET: /account/error
+        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Error()
         {

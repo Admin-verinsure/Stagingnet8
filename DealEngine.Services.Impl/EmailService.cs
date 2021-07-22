@@ -435,13 +435,62 @@ namespace DealEngine.Services.Impl
 
         public async Task MarshRsaOneTimePassword(string recipient, string subject)
         {
-            string subjectPrefix = "One Time Password: ";
+            List<KeyValuePair<string, string>> mergeFields = new List<KeyValuePair<string, string>>();
+            mergeFields.Add(new KeyValuePair<string, string>("[[OTP]]", subject));
 
-            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipient);
-            email.From(DefaultSender);
-            email.WithSubject(subjectPrefix + subject);            
-            email.UseHtmlBody(true);
-            email.Send();
+            SystemEmail oneTimePasswordEmailTemplate = await _systemEmailRepository.GetSystemEmailByType("OneTimePasswordEmail");
+
+            if (oneTimePasswordEmailTemplate != null)
+            {
+                string systememailsubject = oneTimePasswordEmailTemplate.Subject;
+                string systememailbody = System.Net.WebUtility.HtmlDecode(oneTimePasswordEmailTemplate.Body);
+               
+                foreach (KeyValuePair<string, string> field in mergeFields)
+                {
+                    systememailsubject = systememailsubject.Replace(field.Key, field.Value);
+                    systememailbody = systememailbody.Replace(field.Key, field.Value);
+                }
+                EmailBuilder systememail = await GetLocalizedEmailBuilder(DefaultSender, recipient);
+                systememail.From(DefaultSender);
+                systememail.WithSubject(systememailsubject);
+                systememail.WithBody(systememailbody);
+                systememail.UseHtmlBody(true);
+                systememail.Send();
+            }         
+
+            //string subjectPrefix = "One Time Password: ";
+
+            //EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipient);
+            //email.From(DefaultSender);
+            //email.WithSubject(subjectPrefix + subject);            
+            //email.UseHtmlBody(true);
+            //email.Send();
+        }
+
+        public async Task RsaNotificationEmail(string recipient, string rsausername)
+        {
+            List<KeyValuePair<string, string>> mergeFields = new List<KeyValuePair<string, string>>();
+            mergeFields.Add(new KeyValuePair<string, string>("[[RSAUsername]]", rsausername));
+
+            SystemEmail rSANotificationEmailTemplate = await _systemEmailRepository.GetSystemEmailByType("RSANotificationEmail");
+
+            if (rSANotificationEmailTemplate != null)
+            {
+                string systememailsubject = rSANotificationEmailTemplate.Subject;
+                string systememailbody = System.Net.WebUtility.HtmlDecode(rSANotificationEmailTemplate.Body);
+
+                foreach (KeyValuePair<string, string> field in mergeFields)
+                {
+                    systememailsubject = systememailsubject.Replace(field.Key, field.Value);
+                    systememailbody = systememailbody.Replace(field.Key, field.Value);
+                }
+                EmailBuilder systememail = await GetLocalizedEmailBuilder(DefaultSender, recipient);
+                systememail.From(DefaultSender);
+                systememail.WithSubject(systememailsubject);
+                systememail.WithBody(systememailbody);
+                systememail.UseHtmlBody(true);
+                systememail.Send();
+            }
         }
 
         public async Task RsaLogEmail(string recipient, string loginUserUserName, string requestXML, string responseXML)
