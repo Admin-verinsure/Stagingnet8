@@ -79,7 +79,16 @@ namespace DealEngine.Services.Impl
             // we don't want to query ldap. That way lies timeouts. Or Dragons.
             return await _organisationRepository.FindAll().ToListAsync();
         }
+        public async Task UpdateOrganisationsEmail(String Email , String NewEmail)
+        {
+            foreach (Organisation org in await GetAllOrganisationsByEmail(Email))
+            {
+                org.Email = NewEmail;
 
+
+            }
+            // we don't want to query ldap. That way lies timeouts. Or Dragons.
+        }
         public async Task<Organisation> GetOrganisation(Guid organisationId)
         {
             if (organisationId != Guid.Empty)
@@ -103,7 +112,13 @@ namespace DealEngine.Services.Impl
         public async Task PostOrganisation(IFormCollection collection, Organisation organisation)
         {
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
+            if (organisation.Email != collection["OrganisationViewModel.User.Email"])
+            {
+                UpdateOrganisationsEmail(organisation.Email, collection["OrganisationViewModel.User.Email"]);
+               
+            }
             organisation = await UpdateOrganisation(collection, organisation);
+
             if (!string.IsNullOrWhiteSpace(TypeName))
             {
                 await UpdateOrganisationUnit(organisation, collection);
@@ -202,7 +217,7 @@ namespace DealEngine.Services.Impl
 
         private async Task<Organisation> UpdateOrganisation(IFormCollection collection, Organisation organisation)
         {
-            var jsonOrganisation = (Organisation) await _serializerationService.GetDeserializedObject(typeof(Organisation), collection);
+            var jsonOrganisation = (Organisation)await _serializerationService.GetDeserializedObject(typeof(Organisation), collection);
             var OrganisationType = collection["OrganisationViewModel.OrganisationType"];
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             var user = await UpdateOrganisationUser(collection, organisation);
@@ -234,6 +249,7 @@ namespace DealEngine.Services.Impl
                 //}
             }
             var isfap = collection["OrganisationViewModel.Organisation.isTheFAP"];
+            organisation.Email = collection["OrganisationViewModel.User.Email"].ToString();
             if (isfap == "true")
             {
                 organisation.isOrganisationTheFAP = true;

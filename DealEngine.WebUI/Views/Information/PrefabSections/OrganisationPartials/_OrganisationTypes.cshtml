@@ -261,21 +261,33 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
 
 @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG ML Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme")
 {
-    <div class="form-group col-md-6" id="TradingName" hidden>
-        @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
+<div class="form-group col-md-6" id="TradingName" hidden>
+    @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
+    {
+        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label required" })
+        @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", @required = "" })
+        @if (string.IsNullOrWhiteSpace(Model.OrganisationViewModel.Organisation.TradingName))
         {
-            @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", @required = "" })
-            @if (string.IsNullOrWhiteSpace(Model.OrganisationViewModel.Organisation.TradingName))
-            {
-                @Html.Hidden("NoTradingName", true)
-            }
-            else
-            {
-                @Html.Hidden("NoTradingName", false)
-            }
+            @Html.Hidden("NoTradingName", true)
         }
-    </div>
+        else
+        {
+            @Html.Hidden("NoTradingName", false)
+        }
+
+        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme")
+        {
+            @Html.Hidden("NoTradingNameValidation", true)
+        }
+        else
+        {
+            @Html.Hidden("NoTradingNameValidation", false)
+        }
+    }
+ </div>
+
+
+
 
 
 
