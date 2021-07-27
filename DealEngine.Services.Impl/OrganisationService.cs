@@ -79,7 +79,16 @@ namespace DealEngine.Services.Impl
             // we don't want to query ldap. That way lies timeouts. Or Dragons.
             return await _organisationRepository.FindAll().ToListAsync();
         }
+        public async Task UpdateOrganisationsEmail(String Email, String NewEmail)
+        {
+            foreach (Organisation org in await GetAllOrganisationsByEmail(Email))
+            {
+                org.Email = NewEmail;
 
+
+            }
+            // we don't want to query ldap. That way lies timeouts. Or Dragons.
+        }
         public async Task<Organisation> GetOrganisation(Guid organisationId)
         {
             if (organisationId != Guid.Empty)
@@ -103,7 +112,13 @@ namespace DealEngine.Services.Impl
         public async Task PostOrganisation(IFormCollection collection, Organisation organisation)
         {
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
+            if (organisation.Email != collection["OrganisationViewModel.User.Email"])
+            {
+                UpdateOrganisationsEmail(organisation.Email, collection["OrganisationViewModel.User.Email"]);
+
+            }
             organisation = await UpdateOrganisation(collection, organisation);
+
             if (!string.IsNullOrWhiteSpace(TypeName))
             {
                 await UpdateOrganisationUnit(organisation, collection);
@@ -132,15 +147,15 @@ namespace DealEngine.Services.Impl
             var UnitName = "";
             if (InsuranceAttribute == "Administrator")
             {
-                 UnitName = collection["AdministratorUnit"].ToString();
+                UnitName = collection["AdministratorUnit"].ToString();
             }
-            else if(InsuranceAttribute == "Director")
+            else if (InsuranceAttribute == "Director")
             {
                 UnitName = collection["DirectorUnit"].ToString();
             }
             else
             {
-                 UnitName = collection["Unit"].ToString();
+                UnitName = collection["Unit"].ToString();
 
             }
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
@@ -178,12 +193,23 @@ namespace DealEngine.Services.Impl
                 User user = await _userService.GetUserById(UserId);
                 if (user != null)
                 {
-                    if (user.Organisations.Contains(organisation))
+                    var bool1 = user.Organisations.Contains(organisation);
+                    foreach (var org in user.Organisations)
                     {
-                        user = _mapper.Map(jsonUser, user);
-                        await _userService.Update(user);
-                        return user;
+                        if (org.Id == organisation.Id)
+                        {
+                            user = _mapper.Map(jsonUser, user);
+                            await _userService.Update(user);
+                            return user;
+                        }
+
                     }
+                    //if (user.Organisations.Contains(organisation))
+                    //{
+                    //    user = _mapper.Map(jsonUser, user);
+                    //    await _userService.Update(user);
+                    //    return user;
+                    //}                    
                 }
             }
             return null;
@@ -199,21 +225,31 @@ namespace DealEngine.Services.Impl
 
             if (user != null)
             {
-                if (organisation.Id != user.PrimaryOrganisation.Id && organisation.Email == user.Email)
-                {
-                    organisation.Name = user.FirstName + " " + user.LastName;
-                }
-                else
+                //if(organisation.Id != user.PrimaryOrganisation.Id && organisation.Email == user.Email)
+                //{
+                //    organisation.Name = user.FirstName + " " + user.LastName;
+                //}
+                //else
+                //{
+                //    organisation.Name = jsonOrganisation.Name;
+                //}
+                if (jsonOrganisation.Name != "")
                 {
                     organisation.Name = jsonOrganisation.Name;
                 }
 
-                if ((user.FirstName + " " + user.LastName) != organisation.Name && TypeName == "Advisor")
+                if ((user.FirstName + " " + user.LastName) != organisation.Name && jsonOrganisation.Name != "" && TypeName != "")
                 {
                     organisation.Name = user.FirstName + " " + user.LastName;
                 }
+
+                //if ((user.FirstName + " " + user.LastName) != organisation.Name && TypeName == "Advisor")
+                //{
+                //    organisation.Name = user.FirstName + " " + user.LastName;
+                //}
             }
             var isfap = collection["OrganisationViewModel.Organisation.isTheFAP"];
+            organisation.Email = collection["OrganisationViewModel.User.Email"].ToString();
             if (isfap == "true")
             {
                 organisation.isOrganisationTheFAP = true;
@@ -242,7 +278,8 @@ namespace DealEngine.Services.Impl
             foreach (Organisation org in list)
             {
                 var foundIt = org.OrganisationalUnits.FirstOrDefault(u => u.Id == organisationalUnitId);
-                if (foundIt != null) {
+                if (foundIt != null)
+                {
                     organisation = org;
                     break;
                 }
@@ -346,11 +383,6 @@ namespace DealEngine.Services.Impl
                         User.Organisations.Add(foundOrg);
 
                     if (Type != "Administrator" && User.PrimaryOrganisation == null)
-
-                    //if (!User.Organisations.Any(o => o.InsuranceAttributes.Any(i => i.Name == Type)))
-                    //    User.Organisations.Add(foundOrg);
-
-                    //if (User.PrimaryOrganisation == null)
                     {
                         User.SetPrimaryOrganisation(foundOrg);
                     }
@@ -510,13 +542,6 @@ namespace DealEngine.Services.Impl
             var FinancialList = await GetFinancialInstitutes();
             foreach (var Financial in FinancialList)
             {
-
-                // var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault();
-                //var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial"); //|| i.Name == "CoOwner"
-                //var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.Where(i => i.Name == "Financial").FirstOrDefault(); //|| i.Name == "CoOwner"
-
-                //Name = "Financial"
-
                 var unit = (InterestedPartyUnit)Financial.OrganisationalUnits.Where(i => i.Name == "Financial").FirstOrDefault();
                 if (unit != null)
                 {
@@ -529,21 +554,6 @@ namespace DealEngine.Services.Impl
                     }
                 }
             }
-
-
-            //var CoOwnerList = await GetCoOwnerInstitutes();
-            //foreach (var CoOwner in CoOwnerList)
-            //{
-            //    var unit1 = (InterestedPartyUnit)CoOwner.OrganisationalUnits.Where(i => i.Name == "CoOwner").FirstOrDefault(); //|| i.Name == "CoOwner"
-
-            //    if (unit1 != null)
-            //    {
-                 
-            //                organisations.Add(CoOwner);
-                
-            //    }
-            //}
-
 
             return organisations;
         }
@@ -573,11 +583,6 @@ namespace DealEngine.Services.Impl
         public async Task<List<Organisation>> GetFinancialInstitutes()
         {
             return await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "Financial")).ToListAsync();
-        }
-
-        public async Task<List<Organisation>> GetCoOwnerInstitutes()
-        {
-            return await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "CoOwner")).ToListAsync();
         }
 
         public async Task PostMarina(IFormCollection model)
@@ -611,7 +616,7 @@ namespace DealEngine.Services.Impl
                 organisation.OrganisationalUnits.Add(marinaUnit);
             }
 
-            await Update(organisation);            
+            await Update(organisation);
         }
 
         public async Task PostInstitute(IFormCollection model)

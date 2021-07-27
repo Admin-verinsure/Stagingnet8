@@ -1,46 +1,53 @@
 ﻿@{
-//if (!Request.IsAuthenticated)
-//{
-//    ViewBag.PageId = "extr-page";
-//    ViewBag.PageClass = "animated fadeInDown";
-//}
+    //if (!Request.IsAuthenticated)
+    //{
+    //    ViewBag.PageId = "extr-page";
+    //    ViewBag.PageClass = "animated fadeInDown";
+    //}
 }
 
 @section topright{
     @*@if (!Request.IsAuthenticated && Html.DemoEnvironment()) {
-        <span id="extr-page-header-space"> <span class="hidden-mobile">Need an account?</span> <a href="~/Account/Register" class="btn btn-danger">Create account</a> </span>
-    }*@
+            <span id="extr-page-header-space"> <span class="hidden-mobile">Need an account?</span> <a href="~/Account/Register" class="btn btn-danger">Create account</a> </span>
+        }*@
 }
 
 <!-- MAIN CONTENT -->
 <div id="content">
+
     <!-- row -->
     <div class="row">
+
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+
             <div class="row">
                 <div class="col-sm-12">
                     <div class="text-center error-box">
-                        <h1 class="error-text tada animated"><i class="fa fa-times-circle text-danger error-icon-shadow"></i> Invalid Token</h1>
-                        <h2 class="font-xl"><strong>Oooops, Something went wrong!</strong></h2>
+                        <h1 class="error-text tada animated"><i class="fa fa-times-circle text-danger error-icon-shadow"></i> Error 500</h1>
+                        <h2 class="font-xl"><strong>Oooops, No Organisation!</strong></h2>
                         <br />
                         <p class="lead semi-bold">
-                            <strong>It looks as if you've followed a Single Use link that has either been used or has expired.</strong><br><br>
-							For security reasons some links can only be used once or expire after a certain amount of time.<br>
-							If you need to reuse a link, please request a new one.
+                            <strong>You have experienced a technical error. We apologize.</strong><br><br>
                             <small>
+                                We are working hard to correct this issue. Please wait a few moments and try again. <br> In the meantime, try one of the links below:
                             </small>
                         </p>
                         <ul class="error-search text-left font-md">
-                            @*<li><a href="~/Home/Index"><small>Go to My Dashboard <i class="fa fa-arrow-right"></i></small></a></li>*@
+                            <li><a href="~/Home/Index"><small>Go to My Dashboard <i class="fa fa-arrow-right"></i></small></a></li>
                             <li><a href="https://techcertain.com/helpdesk-form"><small>Please file a Helpdesk ticket <i class="fa fa-mail-forward"></i></small></a></li>
                             @* <li><a href="javascript:void(0);"><small>Report error!</small></a></li>*@
                             <li><a href="javascript:history.go(-1)"><small>Go back</small></a></li>
                         </ul>
                     </div>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
     <!-- end row -->
+
 </div>
 <!-- END MAIN CONTENT -->

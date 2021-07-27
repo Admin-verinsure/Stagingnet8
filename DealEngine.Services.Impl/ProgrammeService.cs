@@ -98,6 +98,11 @@ namespace DealEngine.Services.Impl
             return list;
         }
 
+        //public async Task<ClientProgramme> GetEditClientProgrammesByOwner(Guid ownerOrganisationId)
+        //{
+        //    return await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(cp => cp.Owner.Id == ownerOrganisationId && cp.InformationSheet != null && cp.DateDeleted == null);
+        //}
+
         public async Task<List<ClientProgramme>> GetClientProgrammesByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId)
         {
             var list = await _clientProgrammeRepository.FindAll().Where(cp => cp.BaseProgramme.Id == programmeId && cp.Owner.Id == ownerOrganisationId && cp.InformationSheet != null && cp.DateDeleted == null).ToListAsync();
@@ -271,6 +276,16 @@ namespace DealEngine.Services.Impl
             }
         }
 
+        public async Task AddPreRenewOrRefDataByMembershipAndProgramme(PreRenewOrRefData preRenewOrRefData, Programme programme)
+        {
+            var clientProgramme = await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(c => c.ClientProgrammeMembershipNumber == preRenewOrRefData.RefField && c.BaseProgramme == programme);
+            if (clientProgramme != null)
+            {
+                clientProgramme.InformationSheet.PreRenewOrRefDatas.Add(preRenewOrRefData);
+                await _clientProgrammeRepository.UpdateAsync(clientProgramme);
+            }
+        }
+
         public async Task AddPreRenewOrRefDataByMembership(PreRenewOrRefData preRenewOrRefData)
         {
             var clientProgramme = await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(c => c.ClientProgrammeMembershipNumber == preRenewOrRefData.RefField);
@@ -279,6 +294,12 @@ namespace DealEngine.Services.Impl
                 clientProgramme.InformationSheet.PreRenewOrRefDatas.Add(preRenewOrRefData);
                 await _clientProgrammeRepository.UpdateAsync(clientProgramme);
             }
+        }
+
+        public async Task<ClientProgramme> GetClientProgrammebyOwnerName(String ProgName , String OwnerName)
+        {
+            return await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(c => c.Owner.Name == OwnerName && c.BaseProgramme.Name == ProgName);
+
         }
 
         public async Task<ClientProgramme> GetClientProgrammebyId(Guid clientProgrammeID)

@@ -5,6 +5,7 @@
             var questionmodal = document.getElementById('questionmodal').innerHTML;
 
             $('#smartwizardprogramme').smartWizard({
+                //debugger;
                 selected: 0,  // Initial selected step, 0 = first step
                 keyNavigation: true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
                 autoAdjustHeight: true, // Automatically adjust content height
@@ -69,8 +70,10 @@
             });
 
             $("#smartwizardprogramme").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+                debugger;
                 if (stepDirection == "forward") {
                     if (stepNumber == 0) {
+                        debugger;
                         var form = document.getElementById('programmeform');
                         form.classList.add('was-validated');
                         if (form.checkValidity() === false) {
@@ -81,6 +84,7 @@
                         }
                     }
                     else if (stepNumber == 1) {
+                        debugger;
                         var form = document.getElementById('productform');
                         form.classList.add('was-validated');
                         if (form.checkValidity() === false) {
@@ -91,6 +95,7 @@
                         }
                     }
                     else if (stepNumber == 2) {
+                        debugger;
                         var form = document.getElementById('templateform');
                         form.classList.add('was-validated');
                         form.submit();

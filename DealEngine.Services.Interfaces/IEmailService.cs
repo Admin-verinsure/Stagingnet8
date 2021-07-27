@@ -47,6 +47,7 @@ namespace DealEngine.Services.Interfaces
         Task EGlobalLogEmail(string recipient, string transactionreferenceid, string requestXML, string responseXML);
         Task JoinOrganisationEmail(User organisationUser);
         Task RemoveOrganisationUserEmail(User removedUser, User brokerContactUser, ClientInformationSheet sheet);
+        Task RsaNotificationEmail(string recipient, string rsausername);
     }
 }
 

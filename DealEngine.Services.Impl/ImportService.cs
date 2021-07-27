@@ -22,6 +22,7 @@ namespace DealEngine.Services.Impl
         IBusinessActivityService _businessActivityService;
         IInsuranceAttributeService _InsuranceAttributeService;
         private readonly string WorkingDirectory;
+        IAppSettingService _appSettingService;
 
         public ImportService(
             IOrganisationService organisationService,
@@ -33,10 +34,9 @@ namespace DealEngine.Services.Impl
             IOrganisationTypeService organisationTypeService,
             IInsuranceAttributeService insuranceAttributeService,
             IMapperSession<Organisation> organisationRepository,
-            IBusinessActivityService businessActivityService)
-        {            
-            //WorkingDirectory = "/tmp/";
-            WorkingDirectory = "C:\\Users\\Public\\";
+            IBusinessActivityService businessActivityService,
+            IAppSettingService appSettingService)
+        {       
 
             _businessActivityService = businessActivityService;
             _InsuranceAttributeService = insuranceAttributeService;
@@ -47,6 +47,16 @@ namespace DealEngine.Services.Impl
             _referenceService = referenceService;
             _clientInformationService = clientInformationService;
             _unitOfWork = unitOfWork;
+            _appSettingService = appSettingService;
+
+            if (_appSettingService.IsLinuxEnv == "True")
+            {
+                WorkingDirectory = "/tmp/";
+            } else
+            {
+                WorkingDirectory = "C:\\Users\\Public\\";
+            }
+            
         }
 
         public async Task ImportAOEServiceIndividuals(User CreatedUser)
@@ -718,6 +728,97 @@ namespace DealEngine.Services.Impl
                 }
             }
         }
+        
+              public async Task NZFSGImportPInewUsers(User CreatedUser)
+        {
+            //addresses need to be on one line            
+            var fileName = WorkingDirectory + "MLPrincipalList.csv";
+            var currentUser = CreatedUser;
+            Guid programmeID = Guid.Parse("62ee21a0-802f-4c22-a46d-d677c212ba92"); //NZFSG PI FAP Programme ID
+            //Guid renewFromProgrammeID = Guid.Parse("a073a11f-c0e2-4ef6-b7c9-2b3db04a6017"); //NZFSG Programme 2020 ID
+            StreamReader reader;
+            User user = null;
+            Organisation organisation = null;
+            bool readFirstLine = true;
+            string line;
+            string email;
+            string orgname;
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    //if has a title row
+                    if (!readFirstLine)
+                    {
+                        line = reader.ReadLine();
+                        readFirstLine = true;
+                    }
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    user = null;
+                    organisation = null;
+                    email = "";
+                    orgname = "";
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(parts[0]) && !string.IsNullOrWhiteSpace(parts[1]))
+                        {
+                            email = parts[4];
+                            orgname = parts[0];
+
+                            organisation = await _organisationService.GetOrganisationByEmailAndName(email, orgname);
+
+                            user = await _userService.GetUserByEmail(email);
+
+                            if (organisation == null)
+                            {
+                                ClientProgramme ClientProgrammeBase = await _programmeService.GetClientProgrammebyId(Guid.Parse("a69e2609-b95d-44f8-aef5-503d1497549f"));
+                                if (ClientProgrammeBase != null)
+                                {
+                                    var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor");
+                                    if (unit == null)
+                                    {
+                                        OrganisationType advisorType = new OrganisationType("Person - Individual");
+                                        InsuranceAttribute advisorAttribute = new InsuranceAttribute(currentUser, "Advisor");
+                                        OrganisationalUnit defaultUnit = new OrganisationalUnit(currentUser, "Person - Individual", "Person - Individual", null);
+                                        AdvisorUnit AdvisorUnit = new AdvisorUnit(currentUser, "Advisor", "Person - Individual", null)
+                                        {
+                                            IsPrincipalAdvisor = true
+                                        };
+                                        Organisation Advisor = new Organisation(currentUser, Guid.NewGuid())
+                                        {
+                                            OrganisationType = advisorType,
+                                            Email = user.Email,
+                                            Name = user.FullName
+                                        };
+
+                                        Advisor.InsuranceAttributes.Add(advisorAttribute);
+                                        Advisor.OrganisationalUnits.Add(defaultUnit);
+                                        Advisor.OrganisationalUnits.Add(AdvisorUnit);
+                                        var sheet = await _clientInformationService.GetInformation(Guid.Parse("a69e2609-b95d-44f8-aef5-503d1497549f"));
+                                        sheet.Organisation.Add(Advisor);
+                                    }
+                                    //Create a renew
+                                }
+                            }
+                            else
+                            {
+                                if (organisation != null)
+                                {
+                                    var sheet = await _clientInformationService.GetInformation(Guid.Parse("a69e2609-b95d-44f8-aef5-503d1497549f"));
+                                    sheet.Organisation.Add(organisation);
+                                }
+                            }
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
         public async Task ImportNZFSGServicePI(User CreatedUser)
         {
             //addresses need to be on one line            
@@ -983,14 +1084,119 @@ namespace DealEngine.Services.Impl
             }
         }
 
+        public async Task ImportFANZImportRO(User CreatedUser)
+        {
+            //addresses need to be on one line            
+            var fileName = WorkingDirectory + "clientlistmlro.csv";
+            var currentUser = CreatedUser;
+            Guid programmeID = Guid.Parse("352a24bd-4b8f-4f69-8c2e-38ab10a389df"); //FANZ Run Off Programme ID
+            StreamReader reader;
+            User user = null;
+            Organisation organisation = null;
+            bool readFirstLine = true;
+            string line;
+            string email;
+            string orgname;
+            string username;
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    //if has a title row
+                    if (!readFirstLine)
+                    {
+                        line = reader.ReadLine();
+                        readFirstLine = true;
+                    }
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    user = null;
+                    organisation = null;
+                    email = "";
+                    orgname = "";
+                    username = "";
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(parts[0]) && !string.IsNullOrWhiteSpace(parts[3]) && !string.IsNullOrWhiteSpace(parts[5]))
+                        {
+                            email = parts[3];
+                            orgname = parts[0];
+                            username = parts[5];
+
+                            organisation = await _organisationService.GetOrganisationByEmailAndName(email, orgname);
+
+                            user = await _userService.GetUserByUserName(username);
+
+                            if (user == null)
+                            {
+                                user = new User(currentUser, Guid.NewGuid(), username);
+                                user.FirstName = parts[1].Trim();
+                                user.LastName = parts[2].Trim();
+                                user.FullName = parts[1].Trim() + " " + parts[2].Trim();
+                                user.Email = email;
+                                user.Address = "";
+                                user.Phone = "12345";
+                            }
+
+                            if (organisation == null)
+                            {
+                                var organisationType = await _organisationTypeService.GetOrganisationTypeByName("Corporation – Limited liability");
+                                if (organisationType == null)
+                                {
+                                    organisationType = await _organisationTypeService.CreateNewOrganisationType(currentUser, "Corporation – Limited liability");
+                                }
+
+                                organisation = new Organisation(currentUser, Guid.NewGuid(), orgname, organisationType, email);
+                                await _organisationService.CreateNewOrganisation(organisation);
+                            }
+
+                            if (!user.Organisations.Contains(organisation))
+                                user.Organisations.Add(organisation);
+
+                            await _userService.Update(user);
+
+                            var programme = await _programmeService.GetProgramme(programmeID);
+                            var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, user, organisation);
+
+                            var reference = await _referenceService.GetLatestReferenceId();
+                            var sheet = await _clientInformationService.IssueInformationFor(user, organisation, clientProgramme, reference);
+                            await _referenceService.CreateClientInformationReference(sheet);
+
+                            using (var uow = _unitOfWork.BeginUnitOfWork())
+                            {
+                                clientProgramme.BrokerContactUser = programme.BrokerContactUser;
+                                clientProgramme.ClientProgrammeMembershipNumber = parts[4];
+                                sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(user, sheet, null, programme.Name + "UIS issue Process Completed"));
+                                try
+                                {
+                                    await uow.Commit();
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(ex.Message);
+                                }
+                            }
+                        }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
+
         public async Task ImportFANZMLPreRenewData(User CreatedUser)
         {
             var currentUser = CreatedUser;
             StreamReader reader;
             PreRenewOrRefData preRenewOrRefData;
+            Guid programmeID = Guid.Parse("4b7eefbd-910f-4a9b-b56e-5c425afa4608"); //FANZ ML Programme ID
             bool readFirstLine = true;
             string line;
             var fileName = WorkingDirectory + "renewaldata.csv";
+            Programme programme = await _programmeService.GetProgramme(programmeID);
 
             using (reader = new StreamReader(fileName))
             {
@@ -1009,13 +1215,121 @@ namespace DealEngine.Services.Impl
                         if (!string.IsNullOrEmpty(parts[2]))
                             preRenewOrRefData.CLRetro = parts[2];
                         if (!string.IsNullOrEmpty(parts[3]))
-                            preRenewOrRefData.EndorsementProduct = parts[3];
+                            preRenewOrRefData.PIBoundLimit = parts[3];
                         if (!string.IsNullOrEmpty(parts[4]))
-                            preRenewOrRefData.EndorsementTitle = parts[4];
+                            preRenewOrRefData.PIBoundExcess = parts[4];
                         if (!string.IsNullOrEmpty(parts[5]))
-                            preRenewOrRefData.EndorsementText = parts[5];
+                            preRenewOrRefData.PIBoundPremium = parts[5];
+                        if (!string.IsNullOrEmpty(parts[6]))
+                            preRenewOrRefData.EndorsementProduct = parts[6];
+                        if (!string.IsNullOrEmpty(parts[7]))
+                            preRenewOrRefData.EndorsementTitle = parts[7];
+                        if (!string.IsNullOrEmpty(parts[8]))
+                            preRenewOrRefData.EndorsementText = parts[8];
 
-                        await _programmeService.AddPreRenewOrRefDataByMembership(preRenewOrRefData);
+                        await _programmeService.AddPreRenewOrRefDataByMembershipAndProgramme(preRenewOrRefData, programme);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
+
+        public async Task ImportFANZPIPreRenewData(User CreatedUser)
+        {
+            var currentUser = CreatedUser;
+            StreamReader reader;
+            PreRenewOrRefData preRenewOrRefData;
+            Guid programmeID = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d"); //FANZ PI FAP Programme ID
+            bool readFirstLine = true;
+            string line;
+            var fileName = WorkingDirectory + "renewaldata.csv";
+            Programme programme = await _programmeService.GetProgramme(programmeID);
+
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    if (!readFirstLine)
+                    {
+                        line = reader.ReadLine();
+                        readFirstLine = true;
+                    }
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    try
+                    {
+                        preRenewOrRefData = new PreRenewOrRefData(currentUser, parts[1], parts[0]);
+                        if (!string.IsNullOrEmpty(parts[2]))
+                            preRenewOrRefData.CLRetro = parts[2];
+                        if (!string.IsNullOrEmpty(parts[3]))
+                            preRenewOrRefData.PIBoundLimit = parts[3];
+                        if (!string.IsNullOrEmpty(parts[4]))
+                            preRenewOrRefData.PIBoundExcess = parts[4];
+                        if (!string.IsNullOrEmpty(parts[5]))
+                            preRenewOrRefData.PIBoundPremium = parts[5];
+                        //if (!string.IsNullOrEmpty(parts[6]))
+                        //    preRenewOrRefData.EndorsementProduct = parts[6];
+                        //if (!string.IsNullOrEmpty(parts[7]))
+                        //    preRenewOrRefData.EndorsementTitle = parts[7];
+                        //if (!string.IsNullOrEmpty(parts[8]))
+                        //    preRenewOrRefData.EndorsementText = parts[8];
+
+                        await _programmeService.AddPreRenewOrRefDataByMembershipAndProgramme(preRenewOrRefData, programme);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
+
+        public async Task ImportFANZROPreRenewData(User CreatedUser)
+        {
+            var currentUser = CreatedUser;
+            StreamReader reader;
+            PreRenewOrRefData preRenewOrRefData;
+            Guid programmeID = Guid.Parse("352a24bd-4b8f-4f69-8c2e-38ab10a389df"); //FANZ Run Off Programme ID
+            bool readFirstLine = true;
+            string line;
+            var fileName = WorkingDirectory + "renewaldata.csv";
+            Programme programme = await _programmeService.GetProgramme(programmeID);
+
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    if (!readFirstLine)
+                    {
+                        line = reader.ReadLine();
+                        readFirstLine = true;
+                    }
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    try
+                    {
+                        preRenewOrRefData = new PreRenewOrRefData(currentUser, parts[1], parts[0]);
+                        if (!string.IsNullOrEmpty(parts[2]))
+                            preRenewOrRefData.CLRetro = parts[2];
+                        if (!string.IsNullOrEmpty(parts[3]))
+                            preRenewOrRefData.PIBoundLimit = parts[3];
+                        if (!string.IsNullOrEmpty(parts[4]))
+                            preRenewOrRefData.PIBoundExcess = parts[4];
+                        if (!string.IsNullOrEmpty(parts[5]))
+                            preRenewOrRefData.PIBoundPremium = parts[5];
+                        //if (!string.IsNullOrEmpty(parts[6]))
+                        //    preRenewOrRefData.EndorsementProduct = parts[6];
+                        //if (!string.IsNullOrEmpty(parts[7]))
+                        //    preRenewOrRefData.EndorsementTitle = parts[7];
+                        //if (!string.IsNullOrEmpty(parts[8]))
+                        //    preRenewOrRefData.EndorsementText = parts[8];
+
+                        await _programmeService.AddPreRenewOrRefDataByMembershipAndProgramme(preRenewOrRefData, programme);
 
                     }
                     catch (Exception ex)
@@ -1697,16 +2011,16 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async Task ImportFanzImportOwners(User CreatedUser)
+        public async Task ImportFanzOwners(User CreatedUser)
         {
             var currentUser = CreatedUser;
             StreamReader reader;
 
-            bool readFirstLine = false;
+            bool readFirstLine = true;
             string line;
-            Guid.TryParse("633b32f7-93bd-4ed1-9f7e-088ae5312b98", out Guid ProgrammeId);
+            Guid.TryParse("62aea93b-8f7e-4554-b037-bb6726bc3c2d", out Guid ProgrammeId);
             //addresses need to be on one line            
-            var fileName = WorkingDirectory + "FanzMember.csv";
+            var fileName = WorkingDirectory + "fanzpalist.csv";
 
             using (reader = new StreamReader(fileName))
             {
@@ -1724,25 +2038,12 @@ namespace DealEngine.Services.Impl
                     {
                         string type = "";
                         string Name = "";
-                        User user = new User(currentUser, Guid.NewGuid())
-                        {
-                            FirstName = parts[2],
-                            LastName = parts[3],
-                            FullName = parts[2] + " " + parts[3],///// use existing username
-                            Email = parts[4],
-                            UserName = parts[6]
-                        };
-                        if (parts[0] == "t")///check with sheet
-                        {
-                            type = "Corporation – Limited liability";
-                            Name = parts[1];
-                        }
-                        else
-                        {
-                            type = "Person - Individual";
-                            Name = user.FullName;
-                        }
+                        User user = await _userService.GetUserByUserName(parts[5]);///username
+                        if (user != null) {
 
+                        type = "Corporation – Limited liability";
+                        Name = parts[6];/////use fap name
+                                        
                         OrganisationType ownerType = new OrganisationType(type);
                         InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, type);
                         OrganisationalUnit ownerUnit = new OrganisationalUnit(currentUser, type, "Head Office", null);
@@ -1785,18 +2086,89 @@ namespace DealEngine.Services.Impl
                         var sheet = await _clientInformationService.IssueInformationFor(user, Owner, clientProgramme, reference);
                         await _referenceService.CreateClientInformationReference(sheet);
                         clientProgramme.BrokerContactUser = programme.BrokerContactUser;
-                        clientProgramme.ClientProgrammeMembershipNumber = parts[5];
-                        clientProgramme.EGlobalClientNumber = parts[7];
-                        clientProgramme.Tier = parts[8];
+                        clientProgramme.ClientProgrammeMembershipNumber = parts[4];////proposalreferencenum
                         sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(user, sheet, null, programme.Name + "UIS issue Process Completed"));
                         sheet.Organisation.Add(Advisor);
                         await _programmeService.Update(clientProgramme);
+                    }
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                     }
 
+                }
+            }
+        }
+
+        public async Task ImportFanzAdvisors(User CreatedUser)
+        {
+            //addresses need to be on one line            
+            var fileName = WorkingDirectory + "fanznonepalist.csv";
+            var currentUser = CreatedUser;
+            Guid programmeID = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
+            StreamReader reader;
+            User user = null;
+            Organisation organisation = null;
+            bool readFirstLine = true;
+            string line;
+            string email;
+            int lineCount = 0;
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    user = null;
+                    organisation = null;
+                    email = "";
+                    try
+                    {
+                       
+                            user = await _userService.GetUserByUserName(parts[5]);///username
+                        
+                       // organisation = await _organisationService.GetOrganisationByEmail(email);
+
+                        if (user != null)
+                        {
+                            OrganisationType advisorType = new OrganisationType("Person - Individual");
+                            InsuranceAttribute advisorAttribute = new InsuranceAttribute(currentUser, "Advisor");
+                            OrganisationalUnit defaultUnit = new OrganisationalUnit(currentUser, "Person - Individual", "Person - Individual", null);
+
+                            var advisorUnit = new AdvisorUnit(null, "Advisor", "Private", null)
+                            {
+                                IsPrincipalAdvisor = false
+                            };
+
+                            organisation = await _organisationService.GetOrganisationByName(parts[6]);//faqp name///this is owner
+
+                            Organisation Advisor = new Organisation(currentUser, Guid.NewGuid())
+                            {
+                                OrganisationType = advisorType,
+                                Email = user.Email,
+                                Name = user.FullName
+                            };
+
+                            Advisor.InsuranceAttributes.Add(advisorAttribute);
+                            Advisor.OrganisationalUnits.Add(defaultUnit);
+                            Advisor.OrganisationalUnits.Add(advisorUnit);
+                            user.Organisations.Add(Advisor);
+                            Programme programme = await _programmeService.GetProgramme(programmeID);
+                            ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyOwnerName(programme.Name, organisation.Name);
+                            ClientInformationSheet sheet = clientProgramme.InformationSheet;
+
+                            sheet.Organisation.Add(Advisor);
+                            await _programmeService.Update(clientProgramme);
+                        }
+
+                       
+                        lineCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message + lineCount);
+                    }
                 }
             }
         }

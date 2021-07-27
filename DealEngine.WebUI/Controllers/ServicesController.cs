@@ -131,7 +131,7 @@ namespace DealEngine.WebUI.Controllers
         #region Vehicle
 
         [HttpPost]
-        public async Task<IActionResult> GetClient(IFormCollection Collection , Guid ProgId)
+        public async Task<IActionResult> GetClient1(IFormCollection Collection , Guid ProgId)
         {
             User user = null;
             try
@@ -141,19 +141,45 @@ namespace DealEngine.WebUI.Controllers
                 //EditClientsViewModel EditClientsViewModel = new EditClientsViewModel();
                 Programme programme = await _programmeService.GetProgrammeById(ProgId);
                 EditClientsViewModel model = new EditClientsViewModel(programme);
-               
 
-                     Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+                if (organisation != null)
+                {
+                    var ClientProgrammes = await _programmeService.GetClientProgrammesByOwnerByProgramme(organisation.Id, ProgId);
+                    if (ClientProgrammes.Any())
+                    {
+                        model.ClientProgramme = ClientProgrammes.FirstOrDefault();
+                        model.Organisation = organisation;
+
+                    }
+                }
+                return Json(model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetClient(IFormCollection Collection)
+        {
+            User user = null;
+            try
+            {
+                Guid.TryParse(Collection["Id"], out Guid OrganisationId);
+                Organisation organisation = await _organisationService.GetOrganisation(OrganisationId);
+                Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
                 if (organisation != null)
                 {
                     var ClientProgrammes = await _programmeService.GetClientProgrammesByOwner(organisation.Id);
                     if (ClientProgrammes.Any())
                     {
-                        model.ClientProgramme = ClientProgrammes.FirstOrDefault();
-                        model.Organisation = organisation;
-                      
-                        return Json(model);
-                    } 
+                        JsonObjects.Add("Organisation", organisation);
+                        JsonObjects.Add("ClientProgramme", ClientProgrammes.FirstOrDefault());
+                        var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
+                        return Json(jsonObj);
+                    }
                 }
                 return NoContent();
             }
@@ -178,10 +204,14 @@ namespace DealEngine.WebUI.Controllers
                     clientProgramme.Tier = Collection["ClientProgramme.Tier"];
                     await _programmeService.Update(clientProgramme);
                     User OwnerUser = await _userService.GetUserPrimaryOrganisationOrEmail(clientProgramme.Owner);
-                    OwnerUser.Email = Collection["Organisation.Email"];
-                    OwnerUser.PrimaryOrganisation.Email = Collection["Organisation.Email"];
-                    OwnerUser.PrimaryOrganisation.Name = Collection["Organisation.Name"];
-                    await _userService.Update(OwnerUser);
+                    if(OwnerUser != null)
+                    {
+
+                        OwnerUser.Email = Collection["Organisation.Email"];
+                        OwnerUser.PrimaryOrganisation.Email = Collection["Organisation.Email"];
+                        OwnerUser.PrimaryOrganisation.Name = Collection["Organisation.Name"];
+                        await _userService.Update(OwnerUser);
+                    }
                 }
                 return Redirect("../Home/EditClients?ProgrammeId=" + clientProgramme.BaseProgramme.Id.ToString());
             }
@@ -4592,6 +4622,14 @@ namespace DealEngine.WebUI.Controllers
                 if (!string.IsNullOrWhiteSpace(membershipNumber))
                 {
                     sheet.Programme.ClientProgrammeMembershipNumber = membershipNumber;
+                }
+
+                if (user != null && organisation != null)
+                {
+                    if (!user.Organisations.Contains(organisation))
+                        user.Organisations.Add(organisation);
+
+                    await _userService.Update(user);
                 }
 
                 await _clientInformationService.UpdateInformation(sheet);

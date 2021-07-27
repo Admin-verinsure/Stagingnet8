@@ -24,16 +24,19 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
 		ILogger _logger;
         IHttpClientService _httpClientService;
         IEmailService _emailService;
+        IAppSettingService _appSettingService;
 
         public MarshRsaAuthProvider (
             ILogger logger, 
             IHttpClientService httpClientService,
-            IEmailService emailService
+            IEmailService emailService,
+            IAppSettingService appSettingService
             )
 		{
 			_logger = logger;
             _httpClientService = httpClientService;
             _emailService = emailService;
+            _appSettingService = appSettingService;
         }
 
 		public MarshRsaUser GetRsaUser(string email)
@@ -157,9 +160,14 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
 
 			if (responseUserStatus == UserStatus.LOCKOUT || responseUserStatus == UserStatus.DELETE)
 			{
-				_logger.LogInformation("Marsh user failed to login");
-				throw new Exception("unable to login user: "+ rsaUser.Username);
-			}
+                //_logger.LogInformation("Marsh user failed to login");
+                //throw new Exception("unable to login user: "+ rsaUser.Username);
+                // Need to save the deviceTokenCookie from analyzeReponse
+                UpdateRsaUserFromResponse(response, rsaUser);
+                rsaUser.RsaStatus = RsaStatus.Deny;
+
+                return rsaUser;
+            }
 			// user not allowed in if we get here.
 
 			return rsaUser;
@@ -261,7 +269,8 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
 
             xml = xml.Replace(REPLACESTRING, ACTUALSTRING);
 
-            var stringPayLoad = GetSoapEnvelopeHeaderString() + xml.Remove(0, 21) + GetSoapEnvelopeFooterString();
+            //var stringPayLoad = GetSoapEnvelopeHeaderString() + xml.Remove(0, 21) + GetSoapEnvelopeFooterString();
+            var stringPayLoad = GetSoapEnvelopeHeaderString1stPart() + _appSettingService.MarshRSACredentials + GetSoapEnvelopeHeaderString2ndPart() + xml.Remove(0, 21) + GetSoapEnvelopeFooterString();
 
             return stringPayLoad;
         }
@@ -297,7 +306,7 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
             {                
                 user.Lock();
                 await _userService.Update(user);                
-            }            
+            }           
             else if (statusCode == "SUCCESS")
             {
                 
@@ -307,6 +316,56 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
             //invalid otp or user locked
             return false;
 		}
+
+        public async Task<string> AuthenticateStatus(MarshRsaUser rsaUser, IUserService _userService, string username)
+        {
+            string authenticateStatus = "";
+            Authenticate authenticateRequest = new Authenticate();
+            AuthenticateResponse authenticateResponse = new AuthenticateResponse();
+            XmlDocument xDoc = new XmlDocument();
+            //var user = await _userService.GetUser(rsaUser.Username);
+            var user = await _userService.GetUser(username); //changed to use not hashed username to find user in application
+            authenticateRequest.request = GetAuthenticateRequest(rsaUser);
+            var xml = SerializeRSARequest(authenticateRequest, "Authenticate");
+            var authenticateResponseXmlStr = await _httpClientService.Authenticate(xml);
+
+            //used for RSA authenticate request and response log
+            await _emailService.RsaLogEmail("marshevents@proposalonline.com", username, xml, authenticateResponseXmlStr);
+
+            try
+            {
+                xDoc.LoadXml(authenticateResponseXmlStr);
+                authenticateResponse = await BuildAuthenticateResponse(xDoc);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            var userStatus = authenticateResponse.identificationData.userStatus;
+            var statusCode = authenticateResponse.credentialAuthResultList.acspAuthenticationResponseData.callStatus.statusCode;
+            user.DeviceTokenCookie = authenticateResponse.deviceResult.deviceData.deviceTokenCookie;
+            if (userStatus == UserStatus.LOCKOUT || userStatus == UserStatus.DELETE)
+            {
+                user.Lock();
+                await _userService.Update(user);
+                authenticateStatus = "LOCKOUT";
+            }
+            else if (statusCode == "FAIL")
+            {
+
+                await _userService.Update(user);
+                authenticateStatus = "FAIL";
+            }
+            else if (statusCode == "SUCCESS")
+            {
+
+                await _userService.Update(user);
+                authenticateStatus = "SUCCESS";
+            }
+
+            return authenticateStatus;
+        }
 
         void UpdateRsaUserFromResponse(GenericResponse response, MarshRsaUser rsaUser)
         {
@@ -582,8 +641,8 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
         #endregion
 
         #region
-		string GetSoapEnvelopeHeaderString()
-		{
+        string GetSoapEnvelopeHeaderString()
+        {
             //staging:MarNZ0sa$0Cap16us, production: Password@123456
             return @"<soap:Envelope xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
     <soap:Header>
@@ -595,9 +654,29 @@ namespace DealEngine.Infrastructure.AuthorizationRSA
         </wsse:Security>
     </soap:Header>
     <soap:Body>";
+        }
+        string GetSoapEnvelopeHeaderString1stPart()
+		{
+            //staging:MarNZ0sa$0Cap16us, production: Password@123456
+            return @"<soap:Envelope xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+    <soap:Header>
+        <wsse:Security soap:mustUnderstand = ""1"" xmlns:wsse=""http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd"">
+            <wsse:UsernameToken wsu:Id=""UsernameToken-1d15e0d7-37fa-4de8-8bd9-758caa95112c"" xmlns:wsu=""http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"">
+                <wsse:Username>MarshNZSOAPUser</wsse:Username>
+                <wsse:Password Type = ""http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText"">";
 		}
 
-		string GetSoapEnvelopeFooterString()
+        string GetSoapEnvelopeHeaderString2ndPart()
+        {
+            //staging:MarNZ0sa$0Cap16us, production: Password@123456
+            return @"</wsse:Password>
+            </wsse:UsernameToken>
+        </wsse:Security>
+    </soap:Header>
+    <soap:Body>";
+        }
+
+        string GetSoapEnvelopeFooterString()
 		{
 			return @"</soap:Body></soap:Envelope>";
 		}

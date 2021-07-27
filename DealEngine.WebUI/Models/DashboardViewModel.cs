@@ -111,7 +111,7 @@ namespace DealEngine.WebUI.Models
 			if (!string.IsNullOrWhiteSpace(LocalDateCreated))
 				statusDisplay.Add("Created on " + LocalDateCreated);
 			if (!string.IsNullOrWhiteSpace(LocalDateSubmitted))
-				statusDisplay.Add("Submitted on " + LocalDateSubmitted);
+				statusDisplay.Add("UIS Completed on " + LocalDateSubmitted);
 			if (agreementstatus != "")
 			{
 				statusDisplay.Add(" Agreement Status: " + agreementstatus);

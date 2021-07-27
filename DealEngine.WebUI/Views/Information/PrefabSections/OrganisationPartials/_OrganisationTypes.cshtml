@@ -122,45 +122,46 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
                                                             {
                                         @Html.Hidden("NoTradingNameValidation", false)}}
 </div>
+                @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName != "NZPI Programme")
+                {
+<div class="form-group  col-md-6">
+    <div>
+        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "label required" })
+    </div>
 
-                <div class="form-group  col-md-6">
-                    <div>
-                        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "label required" })
+    @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "form-control", @id = "Organisation.OrganisationFAPLicenseNumber" })
+
+</div>
+
+                    <div class="form-group  col-md-6">
+                        <div>
+                            @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationTheFAP, new { @class = "label required" })
+                        </div>
+
+                        <select id="Organisation.isOrganisationTheFAP" name="OrganisationViewModel.Organisation.isOrganisationTheFAP" data-rule="IsTheFap" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                            @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
+                            {
+        <option selected="@option.Selected" value="@option.Value">
+            @option.Text
+        </option>                    }
+                        </select>
                     </div>
 
-                    @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "form-control", @id = "Organisation.OrganisationFAPLicenseNumber" })
+                                        <div id="OrganisationViewModel.Organisation.isOrganisationTheFAP" class="form-group  col-md-6" hidden>
 
-                </div>
+                                            <div>
+                                                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationInterposedPerson, new { @class = "label required" })
 
-                                <div class="form-group  col-md-6">
-                                    <div>
-                                        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationTheFAP, new { @class = "label required" })
-                                    </div>
+                                            </div>
 
-                                    <select id="Organisation.isOrganisationTheFAP" name="OrganisationViewModel.Organisation.isOrganisationTheFAP" data-rule="IsTheFap" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                                        @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
-                                        {
-                        <option selected="@option.Selected" value="@option.Value">
-                            @option.Text
-                        </option>                }
-                                    </select>
-                                </div>
-
-                                                <div id="OrganisationViewModel.Organisation.isOrganisationTheFAP" class="form-group  col-md-6" hidden>
-
-                                                    <div>
-                                                        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationInterposedPerson, new { @class = "label required" })
-
-                                                    </div>
-
-                                                    <select id="Organisation.isOrganisationInterposedPerson" name="OrganisationViewModel.Organisation.isOrganisationInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                                                        @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
-                                                        {
-                                        <option selected="@option.Selected" value="@option.Value">
-                                            @option.Text
-                                        </option>                }
-                                                    </select>
-                                                </div>}
+                                            <select id="Organisation.isOrganisationInterposedPerson" name="OrganisationViewModel.Organisation.isOrganisationInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                                                @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
+                                                {
+                            <option selected="@option.Selected" value="@option.Value">
+                                @option.Text
+                            </option>                    }
+                                            </select>
+                                        </div>}}
 </div>
 
 @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme"
@@ -218,20 +219,6 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
             </div>*@
         <div class="form-group">
 
-            <div>
-                @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.isInterposedPerson, new { @class = "label required" })
-                <i id="elem" href="#"
-                   class="fa fa-question-circle cgpopover"
-                   data-placement="bottom"
-                   data-container="body"
-                   data-toggle="popover"
-                   data-content="An arrangement where a financial advice provider engages individuals (financial advisers and/or nominated representatives) indirectly through one or more other entities (the ‘interposed persons’) to give advice on its behalf">
-
-                </i>
-
-
-            </div>
-
             <select id="AdvisorUnit.isInterposedPerson" name="OrganisationViewModel.AdvisorUnit.isInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
                 {
@@ -260,5 +247,12 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
                     @Html.Hidden("NoTradingName", true) }
                                         else
                                         {
-                    @Html.Hidden("NoTradingName", false)}}
+                    @Html.Hidden("NoTradingName", false)}
+
+                                                            @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme")
+                                                            {
+                                        @Html.Hidden("NoTradingNameValidation", true) }
+                                                            else
+                                                            {
+                                        @Html.Hidden("NoTradingNameValidation", false)}}
 </div>}

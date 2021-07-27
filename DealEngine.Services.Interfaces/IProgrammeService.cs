@@ -30,6 +30,7 @@ namespace DealEngine.Services.Interfaces
         Task AddClaimNotificationByMembership(ClaimNotification claimNotification);
         Task AddBusinessContractByMembership(BusinessContract businessContract);
         Task AddPreRenewOrRefDataByMembership(PreRenewOrRefData preRenewOrRefData);
+        Task AddPreRenewOrRefDataByMembershipAndProgramme(PreRenewOrRefData preRenewOrRefData, Programme programme);
         Task<ClientProgramme> GetClientProgrammebyId(Guid clientProgrammeID);
         Task<SubClientProgramme> CreateSubClientProgrammeFor(Guid programmeId);
         Task<bool> HasProgrammebyMembership(string membershipNumber);
@@ -49,6 +50,8 @@ namespace DealEngine.Services.Interfaces
         Task MoveAdvisorsToClientProgramme(IList<string> advisors, ClientProgramme clientProgramme, ClientProgramme sourceClientProgramme, User user);
         Task<List<ClientAgreement>> CloneAgreementsForUpdate(User createdBy, Guid oldProgrammeId, Guid currentProgrammeId);
         Task<ClientProgramme> CloneForRenew(User createdBy, Guid renewFromProgrammeBaseId, Guid currentProgrammeId);
+        Task<ClientProgramme> GetClientProgrammebyOwnerName(String Programmename , String OwnerName);
+
     }
 }
 

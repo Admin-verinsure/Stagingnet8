@@ -249,9 +249,9 @@
                     document.getElementById("HideInsuranceAttribute").hidden = true;
                     document.getElementById("Organisation.OrganisationType").disabled = true;
                     document.getElementById("Organisation.InsuranceAttribute").disabled = true;
-                    document.getElementById("Else").hidden = false;
 
                     }
+                    document.getElementById("Else").hidden = false;
 
                     TradingNameOwnerOnLoad();
 
@@ -269,7 +269,6 @@
                     //} 
                     var NoTradingNameValidation = document.getElementById("NoTradingNameValidation");
                     var TradingName = document.getElementById("Organisation.TradingName");
-                  
                     if (NoTradingNameValidation != null && NoTradingNameValidation.value == "True") {
                         TradingName.classList.remove("is-invalid");
                         TradingName.hidden = false;

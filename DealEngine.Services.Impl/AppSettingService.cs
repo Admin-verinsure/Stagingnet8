@@ -74,6 +74,14 @@ namespace DealEngine.Services.Impl
             }
         }
 
+        public string MarshRSANotificationEmail
+        {
+            get
+            {
+                return _configuration.GetValue<string>("MarshRSANotificationEmail");
+            }
+        }
+
         public string MarshRSAEndPoint
         {
             get

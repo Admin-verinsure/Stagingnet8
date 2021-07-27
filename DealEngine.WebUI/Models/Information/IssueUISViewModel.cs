@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using DealEngine.Domain.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using X.PagedList;
 
 namespace DealEngine.WebUI.Models
 {
@@ -21,6 +22,7 @@ namespace DealEngine.WebUI.Models
 		public  bool EnableCyberReport { get; set; }
 		public  bool EnableFAPReport { get; set; }
 		public string ProgrammeNamedPartyUnitName { get; set; }
+		public IPagedList<ClientProgramme> clientProgrammespagedlist { get; set; }
 
 	}
 }

@@ -78,18 +78,23 @@ namespace DealEngine.WebUI.Controllers
             string html = _fileService.FromBytes(doc.Contents);
             //html = html.Insert(0, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>");
             html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { width: 120px; height:120px}</style></head>");
-           // Test if the below 4 are even necessary by this function, setting above should make these redundant now
+            // Test if the below 4 are even necessary by this function, setting above should make these redundant now
             html = html.Replace("“", "&quot");
             html = html.Replace("”", "&quot");
             html = html.Replace(" – ", "--");
             html = html.Replace("&nbsp;", " ");
+            html = html.Replace("’", "&#146");
+            html = html.Replace("‘", "&#39");
 
             var htmlToPdfConv = new NReco.PdfGenerator.HtmlToPdfConverter();
             htmlToPdfConv.License.SetLicenseKey(
                _appSettingService.NRecoUserName,
                _appSettingService.NRecoLicense
            );            // for Linux/OS-X: "wkhtmltopdf"
-            htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
+            if (_appSettingService.IsLinuxEnv == "True")
+            {
+                htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
+            }
             htmlToPdfConv.PdfToolPath = _appSettingService.NRecoPdfToolPath;
             var margins = new PageMargins();
             margins.Bottom = 10;
@@ -127,7 +132,10 @@ namespace DealEngine.WebUI.Controllers
                _appSettingService.NRecoUserName,
                _appSettingService.NRecoLicense
            );            // for Linux/OS-X: "wkhtmltopdf"
-           htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
+            if (_appSettingService.IsLinuxEnv == "True")
+            {
+                htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
+            }
             htmlToPdfConv.PdfToolPath = _appSettingService.NRecoPdfToolPath;
 
             string submittedBy = clientprogramme.InformationSheet.SubmittedBy.FullName;

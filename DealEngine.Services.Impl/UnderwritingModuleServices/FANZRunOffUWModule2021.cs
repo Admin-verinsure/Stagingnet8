@@ -98,17 +98,17 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                         if (!string.IsNullOrEmpty(preRenewOrRefData.PIBoundLimit))
                         {
-                            bolcustomendorsementrenew = false;
+                            bolnorenewterm = false;
                             intrenewalpitermlimit = Convert.ToInt32(preRenewOrRefData.PIBoundLimit);
                         }
                         if (!string.IsNullOrEmpty(preRenewOrRefData.PIBoundExcess))
                         {
-                            bolcustomendorsementrenew = false;
+                            bolnorenewterm = false;
                             decrenewalpitermexcess = Convert.ToDecimal(preRenewOrRefData.PIBoundExcess);
                         }
                         if (!string.IsNullOrEmpty(preRenewOrRefData.PIBoundPremium))
                         {
-                            bolcustomendorsementrenew = false;
+                            bolnorenewterm = false;
                             decrenewalpitermpremium = Convert.ToDecimal(preRenewOrRefData.PIBoundPremium);
                         }
 

@@ -120,7 +120,7 @@
                     }
                     debugger;
 
-                     if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Apollo Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Abbott Financial Advisor Liability Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Financial Advice NZ Financial Advice Provider Liability Programme"  ) {
+                     if (('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Apollo Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Abbott Financial Advisor Liability Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Financial Advice NZ Financial Advice Provider Liability Programme" ) &&  informationsheetstatus == "Started" ) {
                          var hgj = document.getElementById("IsFapOrg");
                         var isfap = document.getElementById("IsFapOrg").value;
                          if (isfap != "true") {

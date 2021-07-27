@@ -119,7 +119,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 cAEDOInsExcl.DateDeleted = DateTime.UtcNow;
                 cAEDOInsExcl.DeletedBy = underwritingUser;
             }
-            if ((decDOAssets < decDOLiabs) || (intCompanyAge < 730))
+            if ((decDOAssets <= decDOLiabs) || (intCompanyAge < 730))
             {
                 if (cAEDOInsExcl != null)
                 {

@@ -42,9 +42,15 @@ namespace DealEngine.Services.Interfaces
         Task ImportApolloSetELDefaultVale(User user);
         Task ImportAbbottImportOwners(User user);
         Task ImportAbbottServicePreRenewData(User user);
-        Task ImportFanzImportOwners(User user);
+        Task ImportFanzOwners(User user);
+        Task ImportFanzAdvisors(User user);
         Task ImportFANZImportML(User user);
+        Task ImportFANZImportRO(User user);
+        Task ImportFANZPIPreRenewData(User user);
         Task ImportFANZMLPreRenewData(User user);
+        Task ImportFANZROPreRenewData(User user);
+        Task NZFSGImportPInewUsers(User user);
 
+        
     }
 }

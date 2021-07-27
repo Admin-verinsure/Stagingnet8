@@ -334,7 +334,6 @@ namespace DealEngine.WebUI.Controllers
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             string OrganisationTypeName = collection["OrganisationViewModel.OrganisationType"].ToString();
             Organisation organisation = await _organisationService.GetOrganisation(OrganisationId);
-            //condition for organisation exists
             try
             {
 
@@ -344,10 +343,6 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 await _organisationService.PostOrganisation(collection, organisation);
-
-               
-                 
-
                 if (!Sheet.Organisation.Contains(organisation))
                     Sheet.Organisation.Add(organisation);
 
@@ -360,6 +355,8 @@ namespace DealEngine.WebUI.Controllers
                 await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
+
+            //condition for organisation exists
         }
 
 

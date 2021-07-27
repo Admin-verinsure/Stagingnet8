@@ -118,7 +118,7 @@ namespace DealEngine.WebUI.Controllers
             User user = null;
 			string errorMessage = @"We have sent you an email to the email address we have recorded in the system, that email address is different from the one you supplied. 
 				Please check the other email addresses you may have used. If you cannot locate our email, 
-				please email support@techcertain.com with your contact details, we can re-establish your account with your broker.";
+				please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details, we can re-establish your account with your broker.";
 			try
 			{
 				if (!string.IsNullOrWhiteSpace (viewModel.Email))
@@ -212,7 +212,9 @@ namespace DealEngine.WebUI.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> ChangePassword(Guid id, AccountChangePasswordModel viewModel)
 		{
-			try
+            SingleUseToken st = _authenticationService.GetToken(id);
+            User user = await _userService.GetUserById(st.UserID);
+            try
 			{
                 if (id == Guid.Empty)
 					// if we get here - either invalid guid or invalid token - 404
@@ -222,8 +224,7 @@ namespace DealEngine.WebUI.Controllers
 					ModelState.AddModelError ("passwordConfirm", "Passwords do not match");
 					return View ();
 				}
-                SingleUseToken st = _authenticationService.GetToken(id);
-                User user = await _userService.GetUserById(st.UserID);
+                
                 if (user == null)
                     // in theory, we should never get here. Reason being is that a reset request should not be created without a valid user
                     throw new Exception(string.Format("Could not find user with ID {0}", st.UserID));
@@ -233,7 +234,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     string username = user.UserName;
 
-                    //change the users password to an intermediate
+                    //change the users password using admin
                     if (_ldapService.ChangePassword(user.UserName, _appSettingService.IntermediatePassword, viewModel.Password))
                     {
                         var deUser = await _userManager.FindByNameAsync(user.UserName);
@@ -275,8 +276,11 @@ namespace DealEngine.WebUI.Controllers
                 ModelState.AddModelError ("passwordConfirm", "Your chosen password does not meet the requirements of our password policy. Please refer to the policy above to assist with creating an appropriate password.");				
 			}
 			catch (Exception ex) {
+
+                _ldapService.ChangePassword(user.UserName, "", _appSettingService.IntermediatePassword);
+
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
-                ModelState.AddModelError ("passwordConfirm", "There was an error while trying to change your password.");				
+                ModelState.AddModelError ("passwordConfirm", "There was an error while trying to change your password. Please try again with a new password below.");				
 			}
 
 			return View ();
@@ -375,15 +379,15 @@ namespace DealEngine.WebUI.Controllers
 */
                 else // ANY OTHER LDAP CODE https://ldapwiki.com/wiki/LDAP%20Result%20Codes 
                 {
-                    ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or email support@techcertain.com.");
+                    ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.");
                     return View(viewModel);
                 }
             }
 			catch (UserImportException ex)
 			{
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);                
-				await _emailService.ContactSupport (_emailService.DefaultSender, "DealEngine 2019 - User Import Error", ex.Message);
-				ModelState.AddModelError(string.Empty, "We have encountered an error importing your account. Proposalonline has been notified, and will be in touch shortly to resolve this error.");
+				await _emailService.ContactSupport (_emailService.DefaultSender, "DealEngine - User Import Error", ex.Message);
+				ModelState.AddModelError(string.Empty, "We have encountered an error importing your account. DealEngine has been notified, and will be in touch shortly to resolve this error.");
 				return View(viewModel);
 			}
 			catch(Exception ex)
@@ -446,7 +450,7 @@ namespace DealEngine.WebUI.Controllers
                 _ldapService.Validate(userName, password, out resultCode, out resultMessage);
                 if (resultCode == 0)
                 {
-                    MarshRsaAuthProvider rsaAuth = new MarshRsaAuthProvider(_logger, _httpClientService, _emailService);
+                    MarshRsaAuthProvider rsaAuth = new MarshRsaAuthProvider(_logger, _httpClientService, _emailService, _appSettingService);
                     MarshRsaUser rsaUser = rsaAuth.GetRsaUser(user.Email);
                     rsaUser.DevicePrint = viewModel.DevicePrint;
                     rsaUser.Email = user.Email;
@@ -498,9 +502,17 @@ namespace DealEngine.WebUI.Controllers
                             Password = password
                         });
                     }
+                    if (rsaUser.RsaStatus == RsaStatus.Deny)
+                    {
+                        //email the notification
+                        _emailService.RsaNotificationEmail(_appSettingService.MarshRSANotificationEmail, user.UserName + "@mnzconnect.com");
 
+                        return Redirect("~/Account/RSAErrorMessage");
+                        
+                        await Logout();
+                    }
                 }
-                ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or email support@techcertain.com.");
+                ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.");
                 return View(viewModel);
             }
             catch (Exception ex)
@@ -518,7 +530,7 @@ namespace DealEngine.WebUI.Controllers
 		{
             if (ModelState.IsValid)
             {                
-                MarshRsaAuthProvider rsaAuth = new MarshRsaAuthProvider(_logger, _httpClientService, _emailService);
+                MarshRsaAuthProvider rsaAuth = new MarshRsaAuthProvider(_logger, _httpClientService, _emailService, _appSettingService);
                 string username = viewModel.UserName;
                 MarshRsaUser rsaUser = rsaAuth.GetRsaUser(username);                
                 rsaUser.DevicePrint = viewModel.DevicePrint;
@@ -531,8 +543,10 @@ namespace DealEngine.WebUI.Controllers
                 rsaUser.CurrentSessionId = viewModel.SessionId;
                 rsaUser.CurrentTransactionId = viewModel.TransactionId;
                 var user = await _userService.GetUser(viewModel.UserName);
-                bool isAuthenticated = await rsaAuth.Authenticate(rsaUser, _userService, username);                
-                if (isAuthenticated)
+                //bool isAuthenticated = await rsaAuth.Authenticate(rsaUser, _userService, username);                
+                //if (isAuthenticated)
+                string authenticatedStatus = await rsaAuth.AuthenticateStatus(rsaUser, _userService, username);
+                if (authenticatedStatus == "SUCCESS")
                 {
                     var result = await DealEngineIdentityUserLogin(user, viewModel.Password);
                     if (!result.Succeeded)
@@ -552,9 +566,18 @@ namespace DealEngine.WebUI.Controllers
                     }
                     return RedirectToAction("Index", "Home");
                 }
-                else
+                else if (authenticatedStatus == "FAIL")
                 {
-                    ViewBag.AccountLocked = "Your Login has failed - Marsh has been notified and will be in contact with you shortly";
+                    return Redirect("~/Account/OTPFailMessage");
+                    await Logout();                    
+                }
+                else if (authenticatedStatus == "LOCKOUT")
+                {
+                    ViewBag.AccountLocked = "Unfortunately the account that you are trying to access has been locked and will require assistance from the Marsh IT Support team to be reset. The support team have been notified and Marsh will be in contact with you to let you know when this has been resolved. This is nothing to do with TechCertain - please do not file a ticket with TechCertain.";
+
+                    //email the notification
+                    _emailService.RsaNotificationEmail(_appSettingService.MarshRSANotificationEmail, username+ "@mnzconnect.com");
+
                     await Logout();
                 }                
             }
@@ -562,8 +585,22 @@ namespace DealEngine.WebUI.Controllers
             return View ();
 		}
 
-		// GET: /account/error
-		[HttpGet]
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OTPFailMessage()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> RSAErrorMessage()
+        {
+            return View();
+        }
+
+        // GET: /account/error
+        [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Error()
         {
