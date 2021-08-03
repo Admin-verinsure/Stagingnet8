@@ -1404,3 +1404,12 @@ ui-datepicker-div {
         padding: 4rem 2rem;
     }
 }
+
+
+/*aib group table*/
+table#ReportAnalysis {
+    border-color: #212529 !important;
+}
+#ReportAnalysis.table td, #ReportAnalysis.table th {
+    border: 1px solid #212529 !important;
+}
