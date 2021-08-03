@@ -157,10 +157,15 @@
                     }
                 }
                 $('#getAgreementModal').show();
+                var mainData = $("#tab_1 :input");
+                var mainDataSerialize = $("#tab_1 :input").serialize();
                 $.ajax({
                     url: '@Url.Action("SubmitInformation", "Information")',
                     type: "POST",
-                    data: $("#tab_1 :input").serialize({ json: true })
+                    //data: $("#tab_1 :input").serialize(),
+                    //dataType: 'json',
+                    data: $("#tab_1 :input")
+                    //data: $("#tab_1 :input").serialize({ json: true })
                 })
                     .done(function (url) {
                         debugger;

@@ -1092,7 +1092,10 @@
             }
             else
             {
+                if (document.getElementById('btn1') != null) {
                     document.getElementById('btn1').removeAttribute("disabled");
+
+                }
             }
                 $('.btn-sm').addClass("hidden");
                 $("#accordion :input").prop("disabled", true);

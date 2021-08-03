@@ -37,7 +37,7 @@
     });
 
     function OnChange(Id, Name) {
-        debugger;
+        //debugger;
         var obj = document.getElementById(Id);
         var value = obj.value;
         var dataRule = obj.getAttribute('data-rule');
@@ -72,7 +72,7 @@
     }
 
     function InputValidation(obj, value) {
-        debugger
+        //debugger
         if (obj.type == "number") {
             if (value >= 0) {
                 obj.classList.add("is-valid");
@@ -96,7 +96,7 @@
 
 
     function SelectValidation(obj, value) {
-        debugger;
+        //debugger;
         if (!obj.multiple) {
             //if (value != "0") {
             //    obj.classList.add("is-valid");

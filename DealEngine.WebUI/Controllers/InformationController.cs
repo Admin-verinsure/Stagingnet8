@@ -1094,6 +1094,8 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+        //string jsonString = JsonSerializer.Serialize(weatherForecast);
         [HttpPost]
         public async Task<IActionResult> SubmitInformation(IFormCollection collection)
         {
