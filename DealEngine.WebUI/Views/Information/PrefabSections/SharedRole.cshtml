@@ -23,7 +23,7 @@
                             <label for="roles" class="label required">Select principals and staff in each applicable category and indicate the number:</label>
                         </div>
                         <div class="col-8">
-                            <select id="dataroles" name="RoleDataViewModel.DataRoles" class="chosen-select form-control b form-select" form="RoleDataViewModel" multiple data-rule="BuildSharedTable" data-item="dataroles,rolestable" onchange="OnChange(this.id, this.name)" required>
+                            <select id="dataroles" name="RoleDataViewModel.DataRoles" class="chosen-select b form-select" form="RoleDataViewModel" multiple data-rule="BuildSharedTable" data-item="dataroles,rolestable" onchange="OnChange(this.id, this.name)" required>
                                 @foreach (var option in Model.RoleDataViewModel.DataRoles)
                                 {
                                     <option selected="@option.Selected" value="@option.TemplateId.ToString()">@option.Name</option>

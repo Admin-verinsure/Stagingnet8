@@ -1330,7 +1330,7 @@ ui-datepicker-div {
 /*for toast message*/
 #toast {
     position: fixed;
-    top: 0% !important;
+    /*top: 0% !important;*/
     right: 0;
     z-index: 100;
 }

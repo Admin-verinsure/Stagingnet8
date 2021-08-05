@@ -18,7 +18,7 @@
 
     <label class="required">Please select a payment Method</label>
     @Html.HiddenFor(m => m.ClientInformationSheet.Programme.Id, new { @id = "Programme.Id" })
-    @Html.DropDownListFor(m => m.ClientInformationSheet.Programme.PaymentType, Model.PaymentMethodOptions, new { @required = "", @class = "form-control b", onchange = "SavePaymentOption(this.id)" })
+    @Html.DropDownListFor(m => m.ClientInformationSheet.Programme.PaymentType, Model.PaymentMethodOptions, new { @required = "", @class = "form-select b", onchange = "SavePaymentOption(this.id)" })
 }
 @if (Model.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
 {
@@ -37,7 +37,7 @@
 
     <label class="required">Do you want to pay annually or monthly</label>
     @Html.HiddenFor(m => m.ClientInformationSheet.Programme.Id, new { @id = "Programme.Id" })
-    @Html.DropDownListFor(m => m.ClientInformationSheet.Programme.PaymentFrequency, Model.PaymentFrequencyOptions, new { @required = "", @class = "form-control b", onchange = "SavePaymentFrequency(this.id)" })
+    @Html.DropDownListFor(m => m.ClientInformationSheet.Programme.PaymentFrequency, Model.PaymentFrequencyOptions, new { @required = "", @class = "form-select b", onchange = "SavePaymentFrequency(this.id)" })
 }
 
 

@@ -24,7 +24,7 @@
                 </div>
                 <div class="form-group">
                     <label>Select Target Owner ("Move Advisor" only works with BOUND policies. The Target POLICY owner will not appear in the list if there is an open update in progress. To get the target policy to appear please complete the update and BIND the un-completed update.)</label>
-                    <select id="ownerSelect" name="MoveAdvisorsViewModel.TargetOwner" form="MoveAdvisorsViewModel" class="form-control">
+                    <select id="ownerSelect" name="MoveAdvisorsViewModel.TargetOwner" form="MoveAdvisorsViewModel" class="form-select">
                         @foreach (var owner in Model.UniqueOwners)
                         {
                             <option value="@owner.Value">@owner.Text</option>
@@ -33,17 +33,17 @@
                 </div>
                 <div id="currentFAP" class="form-group" style="display:none">
                     <label>Current isTheFAP for Target Owner's Policy.</label>
-                    <select id="selectedFAP" name="MoveAdvisorsViewModel.TargetOwnerFAP" form="MoveAdvisorsViewModel" class="form-control">
+                    <select id="selectedFAP" name="MoveAdvisorsViewModel.TargetOwnerFAP" form="MoveAdvisorsViewModel" class="form-select">
                     </select>
                 </div> 
                 <div class="form-group" style="display:none">
                     <label></label>
-                    <select id="multipleFAPOrgs" form="MoveAdvisorsViewModel" class="form-control">
+                    <select id="multipleFAPOrgs" form="MoveAdvisorsViewModel" class="form-select">
                     </select>
                 </div>    
                 <div id="FAPLicenseHolderSelect" class="form-group" style="display:none">
                     <label>There is no Organisation/Advisor on the Target Owner's Policy that is currently set as the FAP License Holder, please Select an Organisation from the Target Owner's Policy that you'd like to set as the FAP License Holder.</label>
-                    <select id="selectedNoFAP" name="MoveAdvisorsViewModel.NewFAP" form="MoveAdvisorsViewModel" class="form-control">
+                    <select id="selectedNoFAP" name="MoveAdvisorsViewModel.NewFAP" form="MoveAdvisorsViewModel" class="form-select">
                     </select>
                 </div>
                 <div id="noFAPLicenseNumberSection" style="display:none; color:red">

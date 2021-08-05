@@ -175,7 +175,7 @@
                             <!--section class="col col-xs-12 col-sm-6 col-md-4 col-lg-3">
                             <label class="label">Area of Operation</label>
                             <label class="input">
-                                <select style="" class="form-control rmv" id="AreaOfOperation" name="AreaOfOperation">
+                                <select style="" class="rmv" id="AreaOfOperation" name="AreaOfOperation">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="1">Auckland</option>
                                     <option value="2">Wellington</option>
@@ -188,7 +188,7 @@
                             <!--section class="col col-xs-12 col-sm-6 col-md-4 col-lg-3">
                             <label class="label">Type of Vehicle</label>
                             <label class="input">
-                                <select style="" class="form-control rmv" id="VehicleType" name="VehicleType">
+                                <select style="" class="rmv" id="VehicleType" name="VehicleType">
                                     <option value="8">Registered Trailer</option>
                                 </select>
                             </label>
@@ -196,7 +196,7 @@
                             <!--section class="col col-xs-12 col-sm-6 col-md-4 col-lg-3">
                             <label class="label">Use</label>
                             <label class="input">
-                                <select style="" class="form-control rmv" id="Use" name="Use">
+                                <select style="" class="rmv" id="Use" name="Use">
                                     <option value="4">Boat Trailer</option>
                                 </select>
                             </label>
@@ -241,7 +241,7 @@
                                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                     <label class="label">Cease Reason</label>
                                     <label class="input">
-                                        <select style="" class="form-control rmv" id="CeaseReason" name="CeaseReason">
+                                        <select style="" class="rmv" id="CeaseReason" name="CeaseReason">
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="1">Sold</option>
                                             <option value="2">Decommision</option>
@@ -257,7 +257,7 @@
                             @*<section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                 <label class="label">Interested Parties</label>
                                 <label class="input">
-                                    <select style="" class="cselect form-control rmv" data-placeholder="Interested Parties" id="InterestedParties" multiple="multiple" name="InterestedParties" style="display: none;">
+                                    <select style="" class="cselect rmv" data-placeholder="Interested Parties" id="InterestedParties" multiple="multiple" name="InterestedParties" style="display: none;">
                                         @foreach (var trip in Model.InterestedParties.Where(o => o.OrganisationType == "financial"))
                                         {
                                             <option value="@trip.ID">@trip.OrganisationName</option>
@@ -391,7 +391,7 @@
                                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                     <label class="label">Cease Reason</label>
                                     <label class="input">
-                                        <select style="" class="form-control rmv" id="AddCeaseReason" name="CeaseReason">
+                                        <select style="" class="rmv" id="AddCeaseReason" name="CeaseReason">
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="1">Sold</option>
                                             <option value="2">Decommision</option>

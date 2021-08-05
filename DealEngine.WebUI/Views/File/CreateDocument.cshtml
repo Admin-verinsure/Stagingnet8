@@ -59,7 +59,7 @@
                                     {
                                         <div class="form-group">
                                             <div class="input-group">
-                                                <select id="documentType" name="DocumentType" class="form-control form-select input-lg">
+                                                <select id="documentType" name="DocumentType" class="form-select input-lg">
                                                     <option value="" selected="">-- Select --</option>
                                                     <option value="0">Wording</option>
                                                     <option value="1">Certificate</option>
@@ -81,7 +81,7 @@
                                             <div class="col-sm-11">
                                                 <label class="form-control" for="RenderToPDF">Render as PDF? (Default is DOCX)</label>                                            
                                            </div>
-                                            <div class="col-sm-1">@Html.CheckBoxFor(m => m.RenderToPDF, new { @class = "form-control" })</div>
+                                            <div class="col-sm-1">@Html.CheckBoxFor(m => m.RenderToPDF, new { @class = "form-select" })</div>
                                             <div class="m-1"></div>
                                         </div>
                                     </div>

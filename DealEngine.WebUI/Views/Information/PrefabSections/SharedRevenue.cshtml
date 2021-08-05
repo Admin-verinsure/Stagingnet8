@@ -28,7 +28,7 @@
                                 <label for="territories" class="label required">Please select the territories you trade in</label>
                             </div>
                             <div class="col-8">
-                                <select id="territories" name="RevenueDataViewModel.Territories" form="RevenueDataViewModel" class="chosen-select form-control b" multiple data-rule="BuildSharedTable" data-item="territories,territoriestable" onchange="OnChange(this.id, this.name)" required>
+                                <select id="territories" name="RevenueDataViewModel.Territories" form="RevenueDataViewModel" class="chosen-select form-select b" multiple data-rule="BuildSharedTable" data-item="territories,territoriestable" onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.RevenueDataViewModel.Territories)
                                     {
                                         <option selected="@option.Selected" value="@option.TemplateId.ToString()">@option.Location</option>
