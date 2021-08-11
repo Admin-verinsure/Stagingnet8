@@ -1413,3 +1413,12 @@ table#ReportAnalysis {
 #ReportAnalysis.table td, #ReportAnalysis.table th {
     border: 1px solid #212529 !important;
 }
+.sw-theme-circles > ul.step-anchor > li.done > a {
+    border-color: #5cb85c;
+    color: #fff;
+    background: #5cb85c;
+}
+
+.input-group-text {
+    padding: 0.755rem .75rem !important;
+}
