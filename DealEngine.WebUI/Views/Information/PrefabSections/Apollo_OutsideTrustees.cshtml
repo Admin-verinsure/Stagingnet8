@@ -56,7 +56,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextAreaFor(m => m.OTViewModel.InvolvedTrusteeDetails, new { @class = "form-control", @id = "involvedtrusteedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                    @Html.TextAreaFor(m => m.OTViewModel.InvolvedTrusteeDetails, new { @class = "form-control", @id = "involvedtrusteedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
@@ -104,7 +104,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextAreaFor(m => m.OTViewModel.FinancialObligationsDetails, new { @class = "form-control", @id = "involvedtrusteedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                    @Html.TextAreaFor(m => m.OTViewModel.FinancialObligationsDetails, new { @class = "form-control", @id = "involvedtrusteedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>

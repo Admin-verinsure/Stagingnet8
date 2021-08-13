@@ -3,7 +3,7 @@
     <div class="form-group col-md-6 AdvisorUnit">
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.Qualifications, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.AdvisorUnit.Qualifications, new { @class = "form-control", @id = "AdvisorUnit.Qualifications", @required = "", @onchange = "OnChange(this.id, this.name)" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.AdvisorUnit.Qualifications, new { @class = "form-control", @id = "AdvisorUnit.Qualifications", @required = "", @onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.IsRetiredorDeceased)

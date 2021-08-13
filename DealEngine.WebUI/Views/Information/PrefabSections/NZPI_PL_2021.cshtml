@@ -1,17 +1,29 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
 <form id="PIViewModel" class="is-valid" data-accordianId="General Liability">
-
     <div class="form-group">
         <div class="row">
             <div class="col-9">
-                <label for="hasbusinesschanges" class="label required">
-                    Are any changes to your company or business expected in the next 12 months?
+                <label for="hasFSDR" class="label required">
+                    Name of Financial Services Dispute Resolutions scheme you have registered with
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasbusinesschanges" name="PIViewModel.HasBusinessChangesOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
-                    @foreach (var option in Model.PIViewModel.HasBusinessChangesOptions)
+
+                @Html.TextAreaFor(m => m.PIViewModel.hasfsdr, new { @class = "form-control", @id = "hasfsdr", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasotherBusinessActivity" class="label required">
+                    Have you been approved by the FMA for an exemption enabling personalised digital financial & investment advice?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasotherBusinessActivity" name="PIViewModel.HasotherBusinessActivity" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasotherBusinessActivity)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                     }
@@ -19,21 +31,19 @@
             </div>
         </div>
     </div>
-    <div id="PIViewModel.HasBusinessChangesOptions" hidden>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="businesschangesdetails" class="label required">
-                        You have answered "Yes" above, please provide futher details:
-                    </label>
-                </div>
-                <div class="col-3">
-                    @Html.TextBoxFor(m => m.PIViewModel.BusinessChangesDetails, new { @class = "form-control", @id = "businesschangesdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasdirectagencies" class="label required">
+                    With regard to fire & general insurance, do you hold direct agencies with the likes of Vero, Lumley/NZI, QBE for the placement of this business or do you refer this business through another broker?
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextAreaFor(m => m.PIViewModel.hasdirectagencies, new { @class = "form-control", @id = "hasdirectagencies", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
     </div>
-
 
     <div class="form-group">
         <div class="row">
@@ -88,5 +98,6 @@
             </div>
         </div>
     </div>
+
 
 </form>

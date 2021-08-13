@@ -56,7 +56,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.PercentDetails, new { @class = "form-control", @id = "percentdetails", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                        @Html.TextAreaFor(m => m.PIViewModel.PercentDetails, new { @class = "form-control", @id = "percentdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                     </div>
                 </div>
             </div>
@@ -88,7 +88,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.SubstantialChangeDetails, new { @class = "form-control", @id = "substantialchangedetails", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                        @Html.TextAreaFor(m => m.PIViewModel.SubstantialChangeDetails, new { @class = "form-control", @id = "substantialchangedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                     </div>
                 </div>
             </div>
@@ -139,7 +139,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.PersonnelDismisedDetails, new { @class = "form-control", @id = "personneldismisseddetails", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                        @Html.TextAreaFor(m => m.PIViewModel.PersonnelDismisedDetails, new { @class = "form-control", @id = "personneldismisseddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                     </div>
                 </div>
             </div>
@@ -192,7 +192,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.FormInPracticeDetails, new { @class = "form-control", @id = "forminpracticedetails", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                        @Html.TextAreaFor(m => m.PIViewModel.FormInPracticeDetails, new { @class = "form-control", @id = "forminpracticedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                     </div>
                 </div>
             </div>
@@ -226,7 +226,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.UseInCircumstancesDetails, new { @class = "form-control", @id = "useincircumstancesdetails", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                        @Html.TextAreaFor(m => m.PIViewModel.UseInCircumstancesDetails, new { @class = "form-control", @id = "useincircumstancesdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                     </div>
                 </div>
             </div>
@@ -419,7 +419,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        @Html.TextBoxFor(m => m.PIViewModel.InsurerName, new { @class = "form-control", @id = "insurername", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                        @Html.TextBoxFor(m => m.PIViewModel.InsurerName, new { @class = "form-control", @id = "insurername", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                     </div>
                 </div>
             </div>

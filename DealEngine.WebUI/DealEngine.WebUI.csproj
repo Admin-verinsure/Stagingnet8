@@ -125,6 +125,7 @@
     <PackageReference Include="ClosedXML" Version="0.95.3" />    
     <PackageReference Include="ElmahCore" Version="1.2.5" />
     <PackageReference Include="HtmlToOpenXml.dll" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.0" />
     <PackageReference Include="FastReport.Data.Postgres" Version="2020.2.0" />    
     <PackageReference Include="FastReport.OpenSource" Version="2020.2.9" />    

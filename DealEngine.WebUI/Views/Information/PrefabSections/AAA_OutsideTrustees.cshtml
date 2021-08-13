@@ -1,19 +1,65 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
 
-    <form id="OTViewModel" class="is-valid" data-accordianId="Outside Trustee">
+<form id="OTViewModel" class="is-valid" data-accordianId="Outside Trustee">
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasoutsideTrustees" class="label required">
+                    Would you like Outside Trustees Cover? (please indicate):
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasoutsideTrustees" name="OTViewModel.HasOutsideTrusteesOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.OTViewModel.HasOutsideTrusteesOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="OTViewModel.HasOutsideTrusteesOptions" hidden>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="trusteecompanyname" class="label">
+                        Trustee Company Name
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.OTViewModel.CompanyName, new { id = "companyname", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
 
 
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasoutsideTrustees" class="label required">
-                        Would you like Outside Trustees Cover? (please indicate):
+                    <label for="outsidepositions" class="label">
+                        Number of Outside Positions Held
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasoutsideTrustees" name="OTViewModel.HasOutsideTrusteesOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.OTViewModel.HasOutsideTrusteesOptions)
+                    @Html.TextBoxFor(m => m.OTViewModel.OutsidePositions, new { id = "outsidepositions", @class = "form-control", @onchange = "OnChange(this.id, this.name)" })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasclaimquestions" class="label">
+                        Has there been any claim made again you as an outside trustee?
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasclaimquestions" name="OTViewModel.HasClaimQuestionsOptions" data-rule="OTAlert" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.OTViewModel.HasClaimQuestionsOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                         }
@@ -21,68 +67,22 @@
                 </div>
             </div>
         </div>
-        <div id="OTViewModel.HasOutsideTrusteesOptions" hidden>
 
+    </div>
+
+    @*<div id="OTViewModel.HasClaimQuestionsOptions" hidden>
             <div class="form-group">
                 <div class="row">
                     <div class="col-9">
-                        <label for="trusteecompanyname" class="label">
-                            Trustee Company Name
+                        <label for="claimdetails" class="label required">
+                            <strong>You have answered "Yes" </strong>, please provide full details:
                         </label>
                     </div>
                     <div class="col-3">
-                        @Html.TextBoxFor(m => m.OTViewModel.CompanyName, new { id = "companyname", @class = "form-control", @onchange = "OnChange(this.id, this.name)" })
+                        @Html.TextAreaFor(m => m.OTViewModel.ClaimDetails, new { @class = "form-control", @id = "claimdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                     </div>
                 </div>
             </div>
+        </div>*@
 
-
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="outsidepositions" class="label">
-                            Number of Outside Positions Held
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextBoxFor(m => m.OTViewModel.OutsidePositions, new { id = "outsidepositions", @class = "form-control", @onchange = "OnChange(this.id, this.name)" })
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="hasclaimquestions" class="label">
-                            Has there been any claim made again you as an outside trustee?
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        <select id="hasclaimquestions" name="OTViewModel.HasClaimQuestionsOptions" data-rule="OTAlert" class="custom-select" onchange="OnChange(this.id, this.name)"  required>
-                            @foreach (var option in Model.OTViewModel.HasClaimQuestionsOptions)
-                            {
-                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-            @*<div id="OTViewModel.HasClaimQuestionsOptions" hidden>
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-9">
-                            <label for="claimdetails" class="label required">
-                                <strong>You have answered "Yes" </strong>, please provide full details:
-                            </label>
-                        </div>
-                        <div class="col-3">
-                            @Html.TextAreaFor(m => m.OTViewModel.ClaimDetails, new { @class = "form-control", @id = "claimdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
-                        </div>
-                    </div>
-                </div>
-            </div>*@
-            
-    </form>
+</form>

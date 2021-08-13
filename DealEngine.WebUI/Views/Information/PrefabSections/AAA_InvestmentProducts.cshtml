@@ -28,7 +28,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextAreaFor(m => m.IPViewModel.totalValue, new { @class = "form-control", @id = "totalValue", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                    @Html.TextAreaFor(m => m.IPViewModel.totalValue, new { @class = "form-control", @id = "totalValue", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
@@ -162,7 +162,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            @Html.TextBoxFor(m => m.IPViewModel.OtherFundsAdditional, new { @class = "form-control", @id = "otherfundsadditional", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                            @Html.TextBoxFor(m => m.IPViewModel.OtherFundsAdditional, new { @class = "form-control", @id = "otherfundsadditional", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                         </div>
                     </div>
                 </div>

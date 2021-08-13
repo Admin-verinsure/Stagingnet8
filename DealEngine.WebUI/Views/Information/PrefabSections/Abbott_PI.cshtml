@@ -10,7 +10,7 @@
             </div>
             <div class="col-3">
 
-                @Html.TextAreaFor(m => m.PIViewModel.hasfsdr, new { @class = "form-control", @id = "hasfsdr", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                @Html.TextAreaFor(m => m.PIViewModel.hasfsdr, new { @class = "form-control", @id = "hasfsdr", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
     </div>
@@ -40,7 +40,7 @@
                 </label>
             </div>
             <div class="col-3">
-                @Html.TextAreaFor(m => m.PIViewModel.hasdirectagencies, new { @class = "form-control", @id = "hasdirectagencies", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                @Html.TextAreaFor(m => m.PIViewModel.hasdirectagencies, new { @class = "form-control", @id = "hasdirectagencies", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
     </div>

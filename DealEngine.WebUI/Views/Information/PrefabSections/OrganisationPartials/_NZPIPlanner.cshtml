@@ -4,7 +4,7 @@
     <div class="form-group col-md-6">
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PlannerUnit.Qualifications, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.PlannerUnit.Qualifications, new { @class = "form-control", @id = "PlannerUnit.Qualifications", @required = "" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.PlannerUnit.Qualifications, new { @class = "form-control", @id = "PlannerUnit.Qualifications", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PlannerUnit.YearsAtFirm, new { @class = "label required" })

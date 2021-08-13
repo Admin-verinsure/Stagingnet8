@@ -25,13 +25,13 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PrincipalUnit.PrevPracticeCEAS, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.PrincipalUnit.PrevPracticeCEAS, new { @class = "form-control", @id = "PrincipalUnit.PrevPracticeCEAS", @required = "" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.PrincipalUnit.PrevPracticeCEAS, new { @class = "form-control", @id = "PrincipalUnit.PrevPracticeCEAS", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         </div>
     </div>    
     <div class="form-group col-md-6">
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PrincipalUnit.Qualifications, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.PrincipalUnit.Qualifications, new { @class = "form-control", @id = "PrincipalUnit.Qualifications", @required = "" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.PrincipalUnit.Qualifications, new { @class = "form-control", @id = "PrincipalUnit.Qualifications", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PrincipalUnit.IsIPENZmember, new { @class = "label required" })

@@ -27,7 +27,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextAreaFor(m => m.PIViewModel.MedicalServicesDetails, new { @class = "form-control", @id = "medicalservicesdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                    @Html.TextAreaFor(m => m.PIViewModel.MedicalServicesDetails, new { @class = "form-control", @id = "medicalservicesdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
@@ -58,7 +58,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextAreaFor(m => m.PIViewModel.NavigationIndustryDetails, new { @class = "form-control", @id = "navigationindustrydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                    @Html.TextAreaFor(m => m.PIViewModel.NavigationIndustryDetails, new { @class = "form-control", @id = "navigationindustrydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
@@ -89,7 +89,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextAreaFor(m => m.PIViewModel.NetworkSecurityDetails, new { @class = "form-control", @id = "networksecuritydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                    @Html.TextAreaFor(m => m.PIViewModel.NetworkSecurityDetails, new { @class = "form-control", @id = "networksecuritydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
@@ -120,7 +120,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextAreaFor(m => m.PIViewModel.TradingIndustryDetails, new { @class = "form-control", @id = "tradingindustrydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                    @Html.TextAreaFor(m => m.PIViewModel.TradingIndustryDetails, new { @class = "form-control", @id = "tradingindustrydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>

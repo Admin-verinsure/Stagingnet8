@@ -46,7 +46,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            @Html.TextAreaFor(m => m.GLViewModel.EquipmentDetails, new { @class = "form-control", @id = "alternativelimit", @type = "text" })
+                            @Html.TextAreaFor(m => m.GLViewModel.EquipmentDetails, new { @class = "form-control", @id = "alternativelimit", @type = "text", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                         </div>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            @Html.TextAreaFor(m => m.GLViewModel.VehicleDetails, new { @class = "form-control", @id = "vehicledetails", @type = "text" })
+                            @Html.TextAreaFor(m => m.GLViewModel.VehicleDetails, new { @class = "form-control", @id = "vehicledetails", @type = "text", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            @Html.TextAreaFor(m => m.GLViewModel.CarParkDetails, new { @class = "form-control", @id = "carparkdetails", @type = "text" })
+                            @Html.TextAreaFor(m => m.GLViewModel.CarParkDetails, new { @class = "form-control", @id = "carparkdetails", @type = "text", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                         </div>
                     </div>
                 </div>
@@ -109,7 +109,7 @@
                                 </label>
                             </div>
                             <div class="col-3">
-                                @Html.TextAreaFor(m => m.GLViewModel.AssumeLiabilityDetails, new { @class = "form-control", @id = "assumeliabilitydetails", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                                @Html.TextAreaFor(m => m.GLViewModel.AssumeLiabilityDetails, new { @class = "form-control", @id = "assumeliabilitydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                             </div>
                         </div>
                     </div>
@@ -165,7 +165,7 @@
                                 </label>
                             </div>
                             <div class="col-3">
-                                @Html.TextBoxFor(m => m.GLViewModel.InsurerName, new { @class = "form-control", @id = "insurername", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                                @Html.TextBoxFor(m => m.GLViewModel.InsurerName, new { @class = "form-control", @id = "insurername", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                             </div>
                         </div>
                     </div>
