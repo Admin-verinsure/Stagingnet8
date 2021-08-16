@@ -470,6 +470,13 @@ namespace DealEngine.WebUI.Controllers
                             if (agreement.IsPolicyDocSend)
                                 DocSendDate = ", Document Issued on: " + agreement.DocIssueDate;
                         }
+                        if (client.InformationSheet.Status == "Bound" || client.InformationSheet.Status == "Bound and invoiced")
+                        {
+                            if (client.Agreements.Where(ags => ags.DateDeleted == null).Count() == client.Agreements.Where(ags => ags.Cancelled && ags.DateDeleted == null).Count())
+                            {
+                                agreementSatus = "Cancelled";
+                            }
+                        }
                         if (null != client.InformationSheet.NextInformationSheet)
                         {
                             nextInfoSheet = true;
@@ -554,6 +561,13 @@ namespace DealEngine.WebUI.Controllers
                         {
                             agreementSatus = "Referred";
                             break;
+                        }
+                    }
+                    if (client.InformationSheet.Status == "Bound" || client.InformationSheet.Status == "Bound and invoiced")
+                    {
+                        if (client.Agreements.Where(ags => ags.DateDeleted == null).Count() == client.Agreements.Where(ags => ags.Cancelled && ags.DateDeleted == null).Count())
+                        {
+                            agreementSatus = "Cancelled";
                         }
                     }
                     if (client.BaseProgramme.AllowUsesChange)

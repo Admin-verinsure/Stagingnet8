@@ -727,6 +727,8 @@ namespace DealEngine.WebUI.Models
             TrustAdvisorStatus = GetSelectListOptions();
             HaveAnyRunOffinsurance = GetSelectListOptions();
             YearCover = GetRunOffYearCoverSelectListOptions();
+            HasInvActivity = GetSelectListOptions();
+            YearCover1 = GetRunOffYearCoverSelectListOptions1();
 
         }
 
@@ -765,6 +767,42 @@ namespace DealEngine.WebUI.Models
                 new SelectListItem
                 {
                     Text = "7 years", Value = "7"
+                }
+
+            };
+        }
+
+        private IList<SelectListItem> GetRunOffYearCoverSelectListOptions1()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "1 year", Value = "1"
+                },
+                new SelectListItem
+                {
+                    Text = "2 years", Value = "2"
+                },
+                new SelectListItem
+                {
+                    Text = "3 years", Value = "3"
+                },
+                new SelectListItem
+                {
+                    Text = "4 years", Value = "4"
+                },
+                new SelectListItem
+                {
+                    Text = "5 years", Value = "5"
+                },
+                new SelectListItem
+                {
+                    Text = "6 years", Value = "6"
                 }
 
             };
@@ -1056,6 +1094,8 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> TrustAdvisorStatus { get; set; }
         public IList<SelectListItem> HaveAnyRunOffinsurance { get; set; }
         public IList<SelectListItem> YearCover { get; set; }
+        public IList<SelectListItem> YearCover1 { get; set; }
+        public IList<SelectListItem> HasInvActivity { get; set; }
 
         public string ProcedureManagedDetails { get; set; }
         public string BusinessChangesDetails { get; set; }        

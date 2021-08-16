@@ -748,16 +748,17 @@ namespace DealEngine.Services.Impl
                         if (unit3 != null)
                         {
                             string mentoredadvisorexpirydate = "";
-                            if (unit3.DateofCommencement.Value.AddMonths(6) > agreement.ExpiryDate)
-                            {
-                                mentoredadvisorexpirydate = 
+                            //if (unit3.DateofCommencement.Value.AddMonths(6) > agreement.ExpiryDate)
+                            //{
+                            //    mentoredadvisorexpirydate = 
+                            //        TimeZoneInfo.ConvertTimeFromUtc(agreement.ExpiryDate, TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
+                            //} else
+                            //{
+                            //    mentoredadvisorexpirydate =
+                            //        TimeZoneInfo.ConvertTimeFromUtc(unit3.DateofCommencement.Value.AddMonths(6), TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
+                            //}
+                            mentoredadvisorexpirydate =
                                     TimeZoneInfo.ConvertTimeFromUtc(agreement.ExpiryDate, TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
-                            } else
-                            {
-                                mentoredadvisorexpirydate =
-                                    TimeZoneInfo.ConvertTimeFromUtc(unit3.DateofCommencement.Value.AddMonths(6), TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
-                            }
-
                             if (string.IsNullOrEmpty(strmentoradvisorlist))
                             {
                                 strmentoradvisorlist = "Name:            " + uisorg.Name +
