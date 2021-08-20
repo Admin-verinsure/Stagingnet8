@@ -67,7 +67,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        @Html.TextBoxFor(m => m.PIViewModel.ContrctAgreeHarmProvDetails, new { @class = "form-control", @id = "contrctagreeharmprovdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                        @Html.TextBoxFor(m => m.PIViewModel.ContrctAgreeHarmProvDetails, new { @class = "form-control", @id = "contrctagreeharmprovdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                     </div>
                 </div>
             </div>

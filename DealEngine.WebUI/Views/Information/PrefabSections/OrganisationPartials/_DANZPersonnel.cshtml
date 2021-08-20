@@ -30,7 +30,7 @@
         <div id="OrganisationViewModel.PersonnelUnit.IsCurrentMembership" hidden>
             <div class="form-group">
                 @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.OtherCompanyName, new { @class = "label required" })
-                @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.OtherCompanyName, new { @class = "form-control", @id = "PersonnelUnit.OtherCompanyName", @required = "" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.OtherCompanyName, new { @class = "form-control", @id = "PersonnelUnit.OtherCompanyName", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
             <div class="form-group">
                 @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.YearOfPractice, new { @class = "label required" })
@@ -41,7 +41,7 @@
     <div class="form-group col-md-6">
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.Qualifications, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.Qualifications, new { @class = "form-control", @id = "PersonnelUnit.Qualifications", @required = "" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.Qualifications, new { @class = "form-control", @id = "PersonnelUnit.Qualifications", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.IsRegisteredLicensed, new { @class = "label required" })

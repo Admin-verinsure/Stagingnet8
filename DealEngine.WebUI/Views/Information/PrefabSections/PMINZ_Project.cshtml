@@ -71,7 +71,7 @@
                                 </label>
                             </div>
                             <div class="col-6">
-                                @Html.TextAreaFor(m => m.ProjectViewModel.ProjectDescription, new { id = "projectdetails", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "" })
+                                @Html.TextAreaFor(m => m.ProjectViewModel.ProjectDescription, new { id = "projectdetails", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                             </div>
                         </div>
                     </div>

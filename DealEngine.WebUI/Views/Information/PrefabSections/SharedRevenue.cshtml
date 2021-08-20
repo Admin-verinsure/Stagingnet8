@@ -155,7 +155,7 @@
                                     <label for="inspectionreportdetails">Please describe the nature of these reports and what they would be used for, (examples. Domestic pre-purchase property inspections, Commercial building Inspections for Earthquake Strengthening, Inspections relating to Building Feasibility reports)</label>
                                 </div>
                                 <div class="col-3">
-                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.InspectionReportDetails, new { @class = "form-control", @id = "inspectionreportdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional" })
+                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.InspectionReportDetails, new { @class = "form-control", @id = "inspectionreportdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                                 </div>
                             </div>
                         </div>
@@ -182,7 +182,7 @@
                                     <label for="valuationdetails">Please state the types of Valuations provided, (examples. Domestic replacement valuation for insurance, Insurance valuation for Historic buildings)</label>
                                 </div>
                                 <div class="col-3">
-                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.ValuationDetails, new { @class = "form-control", @id = "valuationdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional" })
+                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.ValuationDetails, new { @class = "form-control", @id = "valuationdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                                 </div>
                             </div>
                         </div>
@@ -192,7 +192,7 @@
                                     <label for="qualificationdetails">Please provide details of the relevant qualifications held by the persons undertaking this Discipline</label>
                                 </div>
                                 <div class="col-3">
-                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.QualificationDetails, new { @class = "form-control", @id = "qualificationdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional" })
+                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.QualificationDetails, new { @class = "form-control", @id = "qualificationdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                                 </div>
                             </div>
                         </div>
@@ -286,7 +286,7 @@
                                     <label for="otherdetails">You have specified Other, please provide further details:</label>
                                 </div>
                                 <div class="col-3">
-                                    @Html.TextAreaFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.OtherDetails, new { @class = "form-control", @id = "otherdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional" })
+                                    @Html.TextAreaFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.OtherDetails, new { @class = "form-control", @id = "otherdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                                 </div>
                             </div>
                         </div>
@@ -298,7 +298,7 @@
                                     <label for="otherservices">You have specified Other Work not listed above, please provide further details:</label>
                                 </div>
                                 <div class="col-3">
-                                    @Html.TextAreaFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.OtherServices, new { @class = "form-control", @id = "otherservices", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional" })
+                                    @Html.TextAreaFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.OtherServices, new { @class = "form-control", @id = "otherservices", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                                 </div>
                             </div>
                         </div>
@@ -310,7 +310,7 @@
                                     <label for="rebuilddetails">If you have specified 20% or more of your fee income earned in the next 12 months to come from work related to the Canterbury earthquake rebuild work, please provide details:</label>
                                 </div>
                                 <div class="col-3">
-                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.RebuildDetails, new { @class = "form-control", @id = "rebuilddetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional" })
+                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.RebuildDetails, new { @class = "form-control", @id = "rebuilddetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                                 </div>
                             </div>
                         </div>
@@ -322,7 +322,7 @@
                                     <label for="otherprojectmanagementdetails">Please provide details of your Other Project Management activities:</label>
                                 </div>
                                 <div class="col-3">
-                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.OtherProjectManagementDetails, new { @class = "form-control", @id = "otherprojectmanagementdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional" })
+                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.OtherProjectManagementDetails, new { @class = "form-control", @id = "otherprojectmanagementdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                                 </div>
                             </div>
                         </div>
@@ -334,7 +334,7 @@
                                     <label for="nonprojectmanagementdetails">Please provide details of your non Project Management activities:</label>
                                 </div>
                                 <div class="col-3">
-                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.NonProjectManagementDetails, new { @class = "form-control", @id = "nonprojectmanagementdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional" })
+                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.NonProjectManagementDetails, new { @class = "form-control", @id = "nonprojectmanagementdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @data_item = "validateadditional", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                                 </div>
                             </div>
                         </div>
@@ -399,7 +399,7 @@
                                     <label for="constructionengineerdetails">Please provide your best estimate of a percentage of your construction revenue where you undertook the role as Engineer to the Contract</label>
                                 </div>
                                 <div class="col-3">
-                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.ConstructionEngineerDetails, new { @class = "form-control", @id = "constructionengineerdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "" })
+                                    @Html.TextBoxFor(t => t.RevenueDataViewModel.AdditionalActivityViewModel.ConstructionEngineerDetails, new { @class = "form-control", @id = "constructionengineerdetails", @form = "RevenueDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                                 </div>
                             </div>
                         </div>

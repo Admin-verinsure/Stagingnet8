@@ -1,0 +1,61 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="PIViewModel" class="is-valid" data-accordianId="Run Off Insurance">
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="HaveAnyRunOffinsurance" class="label required">Would you like Run Off insurance?</label>
+            </div>
+            <div class="col-3">
+                <select id="HaveAnyRunOffinsurance" name="PIViewModel.HaveAnyRunOffinsurance" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HaveAnyRunOffinsurance)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="PIViewModel.HaveAnyRunOffinsurance" hidden>
+
+        <div class="form-group">
+            <div class="row">
+
+                <div class="col-9">
+                    <label for="HasInvActivity" class="label required">Did your past activities include invesment or investment advice?</label>
+                </div>
+                <div class="col-3">
+                    <select id="HasInvActivity" name="PIViewModel.HasInvActivity" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.PIViewModel.HasInvActivity)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+
+                <div class="col-9">
+                    <label for="YearCover1" class="label required">How many years of cover would you require?</label>
+                </div>
+                <div class="col-3">
+                    <select id="YearCover1" name="PIViewModel.YearCover1" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.PIViewModel.YearCover1)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</form>
+

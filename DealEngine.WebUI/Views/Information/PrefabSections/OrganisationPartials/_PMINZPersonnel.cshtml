@@ -9,11 +9,11 @@
     <div class="form-group col-md-6">
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.Qualifications, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.Qualifications, new { @class = "form-control", @id = "PersonnelUnit.Qualifications", @required = "" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.Qualifications, new { @class = "form-control", @id = "PersonnelUnit.Qualifications", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.JobTitle, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.JobTitle, new { @class = "form-control", @id = "PersonnelUnit.JobTitle", @required = "" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.JobTitle, new { @class = "form-control", @id = "PersonnelUnit.JobTitle", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.IsCurrentMembershipPMINZ, new { @class = "label required" })
@@ -47,7 +47,7 @@
     <div class="form-group col-md-6">
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.ProfAffiliation, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.ProfAffiliation, new { @class = "form-control", @id = "PersonnelUnit.ProfAffiliation", @required = "" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.PersonnelUnit.ProfAffiliation, new { @class = "form-control", @id = "PersonnelUnit.ProfAffiliation", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PersonnelUnit.InsuredEntityRelation, new { @class = "label required" })

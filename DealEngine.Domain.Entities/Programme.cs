@@ -85,6 +85,7 @@ namespace DealEngine.Domain.Entities
         public virtual string ProgEmailCCRecipent { get; set; }
         public virtual bool IsPdfDoc{ get; set; }
         public virtual bool ProgEnableRequireNoCover { get; set; }
+        public virtual bool IsFAPOrg { get; set; }
 
         protected Programme() : this(null) { }
 

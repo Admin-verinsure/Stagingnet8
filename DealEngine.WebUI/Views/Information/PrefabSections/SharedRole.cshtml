@@ -74,7 +74,7 @@
                                 <label for="otherroledetails">You have specified Other Role, please provide further details:</label>
                             </div>
                             <div class="col-3">
-                                @Html.TextAreaFor(t => t.RoleDataViewModel.AdditionalRoleInformationViewModel.OtherDetails, new { @class = "form-control", @id = "otherroledetails", @form = "RoleDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "" })
+                                @Html.TextAreaFor(t => t.RoleDataViewModel.AdditionalRoleInformationViewModel.OtherDetails, new { @class = "form-control", @id = "otherroledetails", @form = "RoleDataViewModel", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                             </div>
                         </div>
                     </div>

@@ -65,7 +65,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            @Html.TextAreaFor(m => m.FAPViewModel.TransitionalLicenseNum, new { @class = "form-control", @id = "transitionallicensenum", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                            @Html.TextAreaFor(m => m.FAPViewModel.TransitionalLicenseNum, new { @class = "form-control", @id = "transitionallicensenum", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                         </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                                @Html.TextAreaFor(m => m.FAPViewModel.TransitionalLicenseHolder, new { @class = "form-control", @id = "transitionallicenseholder", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                                @Html.TextAreaFor(m => m.FAPViewModel.TransitionalLicenseHolder, new { @class = "form-control", @id = "transitionallicenseholder", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                         </div>
                     </div>
                 </div>

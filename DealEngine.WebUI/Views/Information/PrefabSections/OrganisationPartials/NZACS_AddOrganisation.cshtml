@@ -6,13 +6,13 @@
         <div class="form-group col-md-6">
             <div class="form-group">
                 @Html.LabelFor(m => m.OrganisationViewModel.User.FirstName, new { @class = "label required" })
-                @Html.TextBoxFor(m => m.OrganisationViewModel.User.FirstName, new { @class = "form-control", @id = "User.FirstName", @onchange = "OnChange(this.id, this.name)", @required = "" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.User.FirstName, new { @class = "form-control", @id = "User.FirstName", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
         <div class="form-group col-md-6">
             <div class="form-group">
                 @Html.LabelFor(m => m.OrganisationViewModel.User.LastName, new { @class = "label required" })
-                @Html.TextBoxFor(m => m.OrganisationViewModel.User.LastName, new { @class = "form-control", @id = "User.LastName", @onchange = "OnChange(this.id, this.name)", @required = "" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.User.LastName, new { @class = "form-control", @id = "User.LastName", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
         @await Html.PartialAsync("PrefabSections/OrganisationPartials/_NZACSPrincipal", Model)

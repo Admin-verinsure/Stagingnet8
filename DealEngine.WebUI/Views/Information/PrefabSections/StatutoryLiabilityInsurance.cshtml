@@ -70,7 +70,7 @@
                                 </label>
                             </div>
                             <div class="col-3">
-                                @Html.TextBoxFor(m => m.SLViewModel.InsurerName, new { @class = "form-control", @id = "insurername", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                                @Html.TextBoxFor(m => m.SLViewModel.InsurerName, new { @class = "form-control", @id = "insurername", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                             </div>
                         </div>
                     </div>

@@ -28,7 +28,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextBoxFor(m => m.PIViewModel.BusinessChangesDetails, new { @class = "form-control", @id = "businesschangesdetails", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                    @Html.TextBoxFor(m => m.PIViewModel.BusinessChangesDetails, new { @class = "form-control", @id = "businesschangesdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
@@ -77,7 +77,7 @@
         <div class="row">
             <div class="col-9">
                 <label for="hasclassoflicense" class="label required">
-                    What class of license are you intending to apply for?
+                    How many advisors are in your non fap advisor business?
                 </label>
             </div>
             <div class="col-3">

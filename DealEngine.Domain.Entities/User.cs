@@ -63,6 +63,9 @@ namespace DealEngine.Domain.Entities
 
         [Display(Name = "Date of Birth")]
         public virtual DateTime? DateOfBirth { get; set; }
+        public virtual bool IsLoggedout { get; set; }
+        public virtual DateTime LoggedOutTime { get; set; }
+        public virtual DateTime LoggedInTime { get; set; }
         /// <summary>
         /// Gets or sets the users primary organisation.
         /// The primary organisation is defined as the users current organisation for the purposes of tracking organisation ownership and related permissions.
@@ -218,7 +221,8 @@ namespace DealEngine.Domain.Entities
         [JsonIgnore]
         public virtual IList<Building> Buildings { get; set; }
         public virtual string LocationType { get; set; }
-  
+      
+
 
         public virtual Location CloneForNewSheet (ClientInformationSheet newSheet)
 		{

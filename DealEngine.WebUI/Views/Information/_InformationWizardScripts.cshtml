@@ -56,14 +56,18 @@
                     debugger;
                     var vesselExists = document.getElementById("Vessel");//tblBoat
                     //var Isboatexist = document.querySelector('[aria-describedby="tblBoat_BoatName"]') !== null;
-                    var Isboatexist = document.querySelector('[id="tblBoat"]') !== null;
-
-                   var IsboatNamecount = 0;
+                    //var Isboatexist = document.querySelector('[id="tblBoat"]') !== null; 
+                    var jqgh_tblBoat_BoatName = document.querySelector('[class="tblBoat_BoatName"]')
+                    var Isboatexist = document.querySelector('[class="tblBoat_BoatName"]') !== null;
+                    var IsboatNamecount = 0;
+                    //tblBoat
                        $('#tblBoat tr').each(function () {
                        var $tds = $(this).find('td'),
                            value = $tds.eq(1).text().toString();
 
-                       if (value == false && value != "") {
+                          if (value == false && value != "")
+                           //if (value == false && value == "")
+                           {
                            IsboatNamecount++;
                        }
                        });
@@ -121,13 +125,16 @@
                     debugger;
 
                      if (('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Apollo Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Abbott Financial Advisor Liability Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Financial Advice NZ Financial Advice Provider Liability Programme" ) &&  informationsheetstatus == "Started" ) {
-                         var hgj = document.getElementById("IsFapOrg");
-                        var isfap = document.getElementById("IsFapOrg").value;
-                         if (isfap != "true") {
+                         var fapele = document.getElementById("IsFapOrg");
+                         if (fapele != null) {
+                            var isfap = document.getElementById("IsFapOrg").value;
+                              if (isfap != "true") {
                              window.alert("One party must be nominated as the FAP for this policy. Please answer \"YES\" to the Question which asks for one of the persons, entities or companies to be identified as THE FAP for this policy.");
                              $("[id='Insured Details / Named Parties']").trigger("click");
                              return false;
+                                }
                          }
+                        
 
 
                     }

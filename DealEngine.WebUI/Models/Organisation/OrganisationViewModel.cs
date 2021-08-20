@@ -780,11 +780,11 @@ namespace DealEngine.WebUI.Models
                     Text = "Advisor",
                     Value = "Advisor"
                 },
-                new SelectListItem
-                {
-                    Text = "Mentored Advisor",
-                    Value = "Mentored Advisor"
-                },
+                //new SelectListItem
+                //{
+                //    Text = "Mentored Advisor",
+                //    Value = "Mentored Advisor"
+                //},
                 new SelectListItem
                 {
                         Text = "Administrator",
