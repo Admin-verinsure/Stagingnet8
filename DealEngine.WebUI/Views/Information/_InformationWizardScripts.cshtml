@@ -63,10 +63,12 @@
                     //tblBoat
                        $('#tblBoat tr').each(function () {
                        var $tds = $(this).find('td'),
-                           value = $tds.eq(1).text().toString();
-
-                          if (value == false && value != "")
-                           //if (value == false && value == "")
+                               value = $tds.eq(1).text().toString();
+                           var valLength = value.length;
+                           var value1 = $tds.eq(1);
+                           var value2 = $tds.eq(1).text();
+                           if (value == false && value.length < 1 )
+                           //if (value == false && value != "")
                            {
                            IsboatNamecount++;
                        }
@@ -78,7 +80,8 @@
                    var IsPersonnelcount = 0;
                        $('#tblOrganisation tr').each(function () {
                        var $tds = $(this).find('td'),
-                           value = $tds.eq(2).text().toString();
+                               value = $tds.eq(2).text().toString();
+                           
 
                        if ( value == "Personnel") {
                            IsPersonnelcount++;
@@ -97,7 +100,8 @@
                        });
 
 
-                       if ((Isboatexist == false || IsboatNamecount == 1) && (informationsheetstatus != "Bound") && vesselExists != null) {
+                       //if ((Isboatexist == false || IsboatNamecount == 1) && (informationsheetstatus != "Bound") && vesselExists != null) {
+                       if ((Isboatexist == false || IsboatNamecount > 1) && (informationsheetstatus != "Bound") && vesselExists != null) {
 
                            window.alert("Please complete the detailed information required for your vessel in the Vessel section in order for us to be able to provide you with a quote.");
                            $("#Vessel").trigger("click");
