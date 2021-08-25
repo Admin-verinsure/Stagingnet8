@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <Compile Remove="bin\**" />
+    <Compile Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
+    <Compile Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <Compile Remove="wwwroot\Data\**" />
     <Compile Remove="wwwroot\Documents\**" />
     <Compile Remove="wwwroot\files\**" />
@@ -16,6 +18,8 @@
     <Compile Remove="wwwroot\NewFolder\**" />
     <Compile Remove="wwwroot\Report\**" />
     <Content Remove="bin\**" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <Content Remove="wwwroot\Data\**" />
     <Content Remove="wwwroot\Documents\**" />
     <Content Remove="wwwroot\files\**" />
@@ -24,6 +28,8 @@
     <Content Remove="wwwroot\NewFolder\**" />
     <Content Remove="wwwroot\Report\**" />
     <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
+    <EmbeddedResource Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <EmbeddedResource Remove="wwwroot\Data\**" />
     <EmbeddedResource Remove="wwwroot\Documents\**" />
     <EmbeddedResource Remove="wwwroot\files\**" />
@@ -32,6 +38,8 @@
     <EmbeddedResource Remove="wwwroot\NewFolder\**" />
     <EmbeddedResource Remove="wwwroot\Report\**" />
     <None Remove="bin\**" />
+    <None Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
+    <None Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <None Remove="wwwroot\Data\**" />
     <None Remove="wwwroot\Documents\**" />
     <None Remove="wwwroot\files\**" />
@@ -47,10 +55,262 @@
 
   <ItemGroup>
     <Content Remove="bundleconfig.json" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\ckeditor.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\ckeditor.js.map" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\af.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ar.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ast.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\az.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\bg.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ca.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\cs.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\da.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\de-ch.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\de.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\el.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\en-au.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\en-gb.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\eo.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\es.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\et.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\eu.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\fa.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\fi.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\fr.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\gl.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\gu.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\he.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\hi.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\hr.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\hu.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\id.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\it.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ja.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\km.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\kn.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ko.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ku.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\lt.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\lv.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\nb.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ne.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\nl.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\no.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\oc.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\pl.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\pt-br.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\pt.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ro.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ru.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\si.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sk.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sl.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sq.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sr-latn.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sr.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sv.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\th.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\tk.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\tr.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\tt.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ug.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\uk.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\vi.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\zh-cn.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\zh.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\ckeditor.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\ckeditor.js.map" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\af.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ar.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ast.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\az.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\bg.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ca.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\cs.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\da.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\de-ch.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\de.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\el.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\en-au.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\en-gb.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\eo.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\es.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\et.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\eu.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\fa.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\fi.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\fr.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\gl.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\gu.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\he.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\hi.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\hr.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\hu.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\id.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\it.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ja.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\km.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\kn.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ko.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ku.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\lt.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\lv.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\nb.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ne.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\nl.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\no.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\oc.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\pl.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\pt-br.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\pt.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ro.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ru.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\si.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sk.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sl.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sq.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sr-latn.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sr.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sv.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\th.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\tk.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\tr.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\tt.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ug.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\uk.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\vi.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\zh-cn.js" />
+    <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\zh.js" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="bundleconfig.json" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\ckeditor.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\ckeditor.js.map" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\af.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ar.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ast.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\az.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\bg.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ca.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\cs.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\da.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\de-ch.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\de.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\el.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\en-au.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\en-gb.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\eo.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\es.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\et.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\eu.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\fa.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\fi.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\fr.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\gl.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\gu.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\he.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\hi.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\hr.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\hu.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\id.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\it.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ja.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\km.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\kn.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ko.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ku.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\lt.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\lv.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\nb.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ne.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\nl.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\no.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\oc.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\pl.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\pt-br.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\pt.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ro.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ru.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\si.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sk.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sl.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sq.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sr-latn.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sr.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\sv.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\th.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\tk.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\tr.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\tt.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\ug.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\uk.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\vi.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\zh-cn.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\translations\zh.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\ckeditor.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\ckeditor.js.map" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\af.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ar.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ast.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\az.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\bg.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ca.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\cs.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\da.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\de-ch.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\de.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\el.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\en-au.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\en-gb.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\eo.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\es.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\et.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\eu.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\fa.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\fi.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\fr.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\gl.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\gu.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\he.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\hi.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\hr.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\hu.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\id.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\it.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ja.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\km.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\kn.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ko.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ku.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\lt.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\lv.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\nb.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ne.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\nl.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\no.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\oc.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\pl.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\pt-br.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\pt.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ro.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ru.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\si.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sk.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sl.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sq.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sr-latn.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sr.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\sv.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\th.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\tk.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\tr.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\tt.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\ug.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\uk.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\vi.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\zh-cn.js" />
+    <None Include="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\zh.js" />
     <None Include="wwwroot\ckeditor\ckeditor5-techcertain\build\ckeditor.js" />
     <None Include="wwwroot\ckeditor\ckeditor5-techcertain\build\ckeditor.js.map" />
     <None Include="wwwroot\ckeditor\ckeditor5-techcertain\build\translations\af.js" />
@@ -118,6 +378,14 @@
 
   <ItemGroup>
     <Content Update="nlog.config" CopyToOutputDirectory="PreserveNewest" />
+    <Content Update="wwwroot\ckeditor\ckeditor5-techcertain-email\build\ckeditor.css">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\ckeditor\ckeditor5-techcertain-email\build\selectimportimg.js">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>    
@@ -168,10 +436,6 @@
     <ProjectReference Include="..\DealEngine.Infrastructure.FluentNHibernate\DealEngine.Infrastructure.FluentNHibernate.csproj" />
     <ProjectReference Include="..\DealEngine.Infrastructure.Payment\DealEngine.Infrastructure.Payment.csproj" />
     <ProjectReference Include="..\DealEngine.Services.Impl\DealEngine.Services.Impl.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\ckeditor\ckeditor5-techcertain\images\" />
   </ItemGroup>
 
 </Project>

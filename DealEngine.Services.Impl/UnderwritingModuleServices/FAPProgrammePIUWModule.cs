@@ -84,6 +84,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             decimal decInv = 0M;
             decimal decFG = 0M;
             decimal decOther = 0M;
+            decimal decSB = 0M;
+            decimal decDPI = 0M;
+            decimal decDIM = 0M;
 
             decimal decMBCategoryPercentage = 0M;
             decimal decSLHCategoryPercentage = 0M;
@@ -125,11 +128,89 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             } else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme")
             {
-                strProfessionalBusiness = "General Insurance Brokers, Life Agents, Investment Advisers, Financial Planning and Mortgage Broking, Consultants and Advisers in the sale of any financial product including referrals to other financial product providers.";
+                strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Investment Advice, Mortgage Broking and Fire & General Broking.";
                 retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
-                strTerritoryLimit = "Worldwide";
-                strJurisdiction = "Australia and New Zealand";
+                strTerritoryLimit = "New Zealand";
+                strJurisdiction = "New Zealand";
                 auditLogDetail = "Apollo PI UW created/modified";
+
+                if (agreement.ClientInformationSheet.RevenueData != null)
+                {
+                    foreach (var uISActivity in agreement.ClientInformationSheet.RevenueData.Activities)
+                    {
+                        if (uISActivity.AnzsciCode == "CUS0050") //Fire & General Domestic
+                        {
+                            if (uISActivity.Percentage > 0) {
+                                decLHFGCategoryPercentage += uISActivity.Percentage;
+                                decFG += uISActivity.Percentage;
+                            }
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0051") //Fire & General Commercial
+                        {
+                            if (uISActivity.Percentage > 0)
+                            {
+                                decLHFGCategoryPercentage += uISActivity.Percentage;
+                                decFG += uISActivity.Percentage;
+                            }
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0053") //Mortgage Broking (residential)
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decMBCategoryPercentage += uISActivity.Percentage;
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0054") //Finance Broking (commercial)
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decMBCategoryPercentage += uISActivity.Percentage;
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0055") //Term Life, Medical, Income Protection
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decSLHCategoryPercentage += uISActivity.Percentage;
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0056") //Preparation of Financial Plans and/or monitoring of Financial Portfolios
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decInvProdCategoryPercentage += uISActivity.Percentage;
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0057") //Investment Products (eg Unit Trusts, Bonds)
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decInvProdCategoryPercentage += uISActivity.Percentage;
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0058") //Sharebroking
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decSB = uISActivity.Percentage;
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0059") //KiwiSaver
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decSLHCategoryPercentage += uISActivity.Percentage;
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0060") //Direct Property Investment
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decDPI = uISActivity.Percentage;
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0061") //Other
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decOther = uISActivity.Percentage;
+                        }
+                        else if (uISActivity.AnzsciCode == "CUS0062") //Discretionary Investment Management (Licensed Only)
+                        {
+                            if (uISActivity.Percentage > 0)
+                                decDIM = uISActivity.Percentage;
+                        }
+                    }
+                }
+                if (decLHFGCategoryPercentage > 0)
+                {
+                    decLHFGCategoryPercentage += decSLHCategoryPercentage;
+                }
+                feeincome = feeincomelastyear;
+
             } else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
             {
                 strProfessionalBusiness = "Sales & Promotion of Life, Investment & General Insurance products, Financial planning & Mortgage Brokering Services";
@@ -137,6 +218,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 strTerritoryLimit = "Australia and New Zealand";
                 strJurisdiction = "Australia and New Zealand";
                 auditLogDetail = "Abbott PI UW created/modified";
+
             } else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme") 
             {
                 strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Mortgage Broking and Fire & General Broking.";
@@ -555,8 +637,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             uwrfclustergroups(underwritingUser, agreement, bolclustergroupsreferral);
             //Dual Insurance
             uwrfdualinsurance(underwritingUser, agreement, boldualinsurancereferral);
-            //Investment Activity
-            uwrfinvestmentactivity(underwritingUser, agreement, decInv);
             //Other Activity
             uwrfotheractivity(underwritingUser, agreement, decOther);
             //Class 3 referral
@@ -567,6 +647,21 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             uwrfauthorisedbodies(underwritingUser, agreement, bolauthorisedbodiesreferral);
             //Referred Fire and General Activity
             uwrffgactivity(underwritingUser, agreement, decFG, feeincome);
+
+            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme")
+            {
+                //Investment Activity
+                uwrfinvestmentactivity(underwritingUser, agreement, decInv);
+            } else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme")
+            {
+                //Sharebroking Activity
+                uwrsharebrokingactivity(underwritingUser, agreement, decSB);
+                //Direct Property Investment Activity
+                uwrdirectpropertyinvestmentactivity(underwritingUser, agreement, decDPI);
+                //Discretionary Investment Management Activity
+                uwrdiscretionaryinvestmentmanagementactivity(underwritingUser, agreement, decDIM);
+            }
+                
 
             //Update agreement Status
             if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
@@ -1534,6 +1629,97 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
         }
+
+        void uwrsharebrokingactivity(User underwritingUser, ClientAgreement agreement, decimal decSB)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrsharebrokingactivity" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrsharebrokingactivity") != null)
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrsharebrokingactivity").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrsharebrokingactivity").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrsharebrokingactivity").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrsharebrokingactivity").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrsharebrokingactivity").DoNotCheckForRenew));
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrsharebrokingactivity" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (decSB > 0)
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrsharebrokingactivity" && cref.DateDeleted == null).Status = "Pending";
+                    }
+                }
+
+                if (agreement.ClientInformationSheet.IsRenewawl
+                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrsharebrokingactivity" && cref.DateDeleted == null).DoNotCheckForRenew)
+                {
+                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrsharebrokingactivity" && cref.DateDeleted == null).Status = "";
+                }
+            }
+        }
+
+        void uwrdirectpropertyinvestmentactivity(User underwritingUser, ClientAgreement agreement, decimal decDPI)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdirectpropertyinvestmentactivity" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdirectpropertyinvestmentactivity") != null)
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdirectpropertyinvestmentactivity").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdirectpropertyinvestmentactivity").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdirectpropertyinvestmentactivity").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdirectpropertyinvestmentactivity").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdirectpropertyinvestmentactivity").DoNotCheckForRenew));
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdirectpropertyinvestmentactivity" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (decDPI > 0)
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdirectpropertyinvestmentactivity" && cref.DateDeleted == null).Status = "Pending";
+                    }
+                }
+
+                if (agreement.ClientInformationSheet.IsRenewawl
+                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdirectpropertyinvestmentactivity" && cref.DateDeleted == null).DoNotCheckForRenew)
+                {
+                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdirectpropertyinvestmentactivity" && cref.DateDeleted == null).Status = "";
+                }
+            }
+        }
+
+        void uwrdiscretionaryinvestmentmanagementactivity(User underwritingUser, ClientAgreement agreement, decimal decDIM)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdiscretionaryinvestmentmanagementactivity" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdiscretionaryinvestmentmanagementactivity") != null)
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdiscretionaryinvestmentmanagementactivity").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdiscretionaryinvestmentmanagementactivity").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdiscretionaryinvestmentmanagementactivity").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdiscretionaryinvestmentmanagementactivity").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrdiscretionaryinvestmentmanagementactivity").DoNotCheckForRenew));
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdiscretionaryinvestmentmanagementactivity" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (decDIM > 0)
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdiscretionaryinvestmentmanagementactivity" && cref.DateDeleted == null).Status = "Pending";
+                    }
+                }
+
+                if (agreement.ClientInformationSheet.IsRenewawl
+                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdiscretionaryinvestmentmanagementactivity" && cref.DateDeleted == null).DoNotCheckForRenew)
+                {
+                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrdiscretionaryinvestmentmanagementactivity" && cref.DateDeleted == null).Status = "";
+                }
+            }
+        }
+
 
 
     }

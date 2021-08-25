@@ -18,5 +18,7 @@ namespace DealEngine.Services.Interfaces
 
         Task DeleteAgreementTerm(User deletedBy, ClientAgreementTerm clientAgreementTerm);
         Task<List<ClientAgreementTerm>> GetAllClientAgreementTerm();
+        Task<ClientAgreementTerm> GetAgreementById(string clientAgreementId);
+
     }
 }

@@ -97,7 +97,7 @@
                            $("#Vessel").trigger("click");
                            return false;
 
-                        } 
+                        }
 
                     if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "PMINZ Programme" && IsPersonnelcount == 0) {
 
@@ -128,7 +128,7 @@
                              return false;
                                 }
                          }
-                        
+
 
 
                     }
@@ -251,6 +251,33 @@
                 .fail(function (a, s, d) {
                     alert("Unable to save.");
                 });
+
+                    ///For Extention covers
+                    
+					
+					var ExtensionCoverOptions = new Array(proddata.length);
+                for (var i = 0; i < proddata.length; i++) {
+                    var ProdName = proddata[i];
+                    var queryselector = "" + "input[name=\'" + ProdName + " Extensiontable\']:checked";
+                    var Extensionoptionsselected = $(queryselector).val();
+                    rownum = 0;
+                    
+                    ExtensionCoverOptions[i] = Extensionoptionsselected;
+                }
+
+                    debugger;
+                    var progId = $('#ClientProgrammeId').val();
+                    var postData = { Answers: ExtensionCoverOptions, ProgrammeId: progId };
+                $.ajax({
+                    url: '@Url.Action("SaveExtensionCoverOptions", "Information")',
+                    type: "POST",
+                    data: postData
+                })
+                .done(function (data) { })
+                .fail(function (a, s, d) {
+                    alert("Unable to save.");
+                });
+
                 $.ajax({
                     url: '@Url.Action("QuoteToAgree", "Information")',
                     type: "GET",
@@ -810,7 +837,7 @@
             type: "Post",
             data: postData
         })
-        .done(function (data) {            
+        .done(function (data) {
             if (data.originalBoatId != "00000000-0000-0000-0000-000000000000") {
                 if (Modelstatus != "Submitted") {
                     $('#BoatRemoveModal').show();
@@ -2694,7 +2721,7 @@ function UpdateChosen() {
         });
     };
 
-    function EditBoat(classId, boatId) {        
+    function EditBoat(classId, boatId) {
         var _sheetId = $('#AnswerSheetId').val();
         $('#getDetailsModal').show();
         var postData = {

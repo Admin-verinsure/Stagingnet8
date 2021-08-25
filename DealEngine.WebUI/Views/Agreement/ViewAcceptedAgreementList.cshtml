@@ -55,18 +55,18 @@
                                         <a href="~/Agreement/ReRunUWM/@item.ClientAgreementId" class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Re-run All Underwriting Rules </a>
                                     </li>
                                 }
-                                @if (item.CurrentUser.PrimaryOrganisation.IsTC || (item.ProgrammeNamedPartyName == "NZFSG Programme" || item.ProgrammeNamedPartyName == "First Mate Cover"))
+                                @if (item.CurrentUser.PrimaryOrganisation.IsTC || item.ProgrammeNamedPartyName == "First Mate Cover")
                                 {
                                     <li class="nav-item">
                                         <a href="@Url.Action("AuthoriseReferrals", "Agreement", new { sheetId = @item.ClientProgrammeId, informationsheet = @item.InformationSheetId, agreementId = @item.ClientAgreementId })" class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Authorise Referrals </a>
                                     </li>
                                 }
-                                @if (item.ProgrammeNamedPartyName == "NZFSG Programme")
+                                @*@if (item.ProgrammeNamedPartyName == "NZFSG Programme")
                                 {
                                     <li class="nav-item">
                                         <a href="~/Agreement/EditAdvisor/@item.ClientAgreementId" class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Edit Advisors </a>
                                     </li>
-                                }
+                                }*@
 
                                 <li class="nav-item">
                                     <a href="~/Agreement/EditAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Dates </a>
@@ -145,13 +145,6 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                         <li class="nav-item">
                                             <a href="~/Agreement/CancellAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Cancel Policy </a>
                                         </li>
-
-                                        @if (item.ProgrammeNamedPartyName == "NZFSG Programme")
-                                        {
-                                            <li class="nav-item">
-                                                <a href="~/Agreement/UnbindAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Unbind This Policy </a>
-                                            </li>
-                                        }
                                     }
                                 }
 
@@ -409,6 +402,26 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                 });
 
              }
+             debugger;
+                var postData = { ProgrammeId: progId };
+
+                $.ajax({
+                    url: '@Url.Action("GetExtensionCoverOptions", "Information")',
+                    type: "POST",
+                    data: postData
+                }).done(function (data) {
+                    if (data != "") {
+                        for (var item = 0; item < data.length; item++) {
+                            var arr = data[item];
+                            var count = 0;
+                            var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
+                            $(queryselector).attr('checked', true);
+                        }
+                    }
+                }) .fail(function (jqXHR, textStatus, errorThrown) {
+                alert("There was an error while trying to get the Cover Options.");
+                });
+
 
               if (!("@ViewBag.IsBroker" == "True" || "@ViewBag.IsTC" == "True" || "@ViewBag.IsInsurer" == "True") && "@ViewBag.showDocs" == "False")
               {
@@ -418,13 +431,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
 
         });
 
-
-        //$(window).bind("pageshow", function (event) {
-        //     window.location.reload();      
-           
-        //});
-
-
+       
     </script>
 
 }

@@ -58,6 +58,8 @@ namespace DealEngine.Domain.Entities
         public virtual string ProductPolicyNumberPrefixString { get; set; }
         public virtual bool IsOptionalProductWithoutSelectOption { get; set; }
         public virtual string NoCoverRequiredAnswer { get; set; }
+        public virtual bool IsExtentionOption { get; set; }
+
         protected Product() : base(null) { }
 
         protected Product(User createdBy)

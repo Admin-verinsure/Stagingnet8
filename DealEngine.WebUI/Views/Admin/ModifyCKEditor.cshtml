@@ -1,0 +1,153 @@
+﻿@model DealEngine.WebUI.Models.CKEditorViewModel
+
+@{
+    ViewData["Title"] = "Manage CKEditor Builds";
+}
+
+<div class="container">
+    <div class="panel panel-default" style="margin-top:25px;">
+        <div class="panel-heading">Manage CKEditor Builds</div>
+        <div class="panel-body">
+            <p>This page is to be used for updating the various existing CKEditor Builds, see options below.</p>
+            <p>To use a specific build you'll need to add the following tags into a document substituting in the PATH where specified.</p>
+            <br>
+            <p>script src="~/ckeditor/ckeditor5-techcertain-CHANGEME/build/ckeditor.js" /script</p>
+            <p>script src="~/ckeditor/ckeditor5-techcertain-CHANGEME/build/selectimportimg.js" /script</p>
+            <p>link href="~/ckeditor/ckeditor5-techcertain-CHANGEME/build/ckeditor.css" rel="stylesheet" /</p>
+            <br>
+            <p>If you want a new CK Build then you'll need to copy the Default build "ckeditor5-techertain" and paste it at OS/Code level to depending on scope.</p>
+            <p>You'll be pasting it into the same parent folder as ckeditor5-techcertain resides in. (.../dealengine/DealEngine.WebUI/wwwroot/ckeditor/)</p>
+            <p>Then rename the folder from techcertain (Copy) to techcertain-purpose where purpose is what it's being used for.</p>
+            <br>
+            <p>PLEASE NOTE:</p> 
+            <p>Updating this on LOCAL will also get pushed to the servers if you commit the change so be very careful when you add placeholders.</p>
+            <p>If you want to remove a placeholder you can go to the respective ckeditor.js file in the code and change it there (38 ln from the end) as a Remove Placeholder function doesn't exist yet.</p>
+            <p>Finally even though this page allows you to do so, best practice would involve NOT adding placeholders to the Default build (ckeditor5-techcertain) as this is used for new builds. (outlined above)</p>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Path</th>
+                    <th>Placeholders</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (CKEditorViewModel.CKEditorBuild build in Model.DirectoryList){
+                    <tr>
+                        <td>@build.Name</td>
+                        <td>@build.Path</td>
+                        <td>@build.Placeholders</td>
+                        <td style="width:37%;"><div class="btn-group" role="group" aria-label="...">
+                              <button type="button" class="btn btn-primary" onclick="AddPlaceholder('@build.Name','@build.Path')">Add Placeholder</button>
+                              <button type="button" class="btn btn-primary" disabled>Update Toolbar</button>
+                              <button type="button" class="btn btn-primary" disabled>Change Anchor</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal" id="AddPlaceholderModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add a Placeholder</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <form enctype="multipart/form-data" asp-controller="Admin" asp-action="AddPlaceholder" method="post" class="mt-3">              
+                
+                <div class="modal-body col-sm-12">
+                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Name</label>
+                        <div class="col-sm-10">
+                            <input id="PluginName" class="form-control" asp-for="Name" placeholder="Name">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Path</label>
+                        <div class="col-sm-10">
+                            <input id="PluginPath" class="form-control" asp-for="Path" placeholder="Path">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Placeholder</label>
+                        <div class="col-sm-10">
+                            <input id="PlaceholderName" class="form-control" asp-for="Placeholder" placeholder="What is the name of the placeholder?"/>
+                        </div>              
+                    </div>
+
+                    <div class="modal-footer" style="display:flex;">
+                        <div class="btn-group float-right mt-1" role="group">
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section pagespecific {
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> 
+
+<script type="text/javascript">
+
+    function AddPlaceholder(name, path) {
+        // ok we need to just put name and path into the modal lol eazy
+
+        $('#PluginName').val(name);
+        $('#PluginPath').val(path);
+        //console.log("This is " + test);
+        $("#AddPlaceholderModal").modal({
+            backdrop: true
+        });
+    }
+
+    //$(document).ready(function () {
+    //    $("#AddPlaceholderModal").click(function () {
+    //        console.log("Awwww");
+    //        $("#AddPlaceholderModal").modal({
+    //            backdrop: true
+    //        });
+    //    });
+
+
+    //});  
+</script>
+}
+
+@*$("#AddPlaceholderModal").modal({
+//    backdrop: true
+//});*@
+@*$.ajax({
+    type: 'Post',
+    url: '@Url.Action("AddPlaceholder", "Admin")',
+    data: {
+        Name: name,
+        Path: path
+    }
+})
+    .done(function (data) {
+        alert("done");-->
+        @*if (data != null) {
+            var OutPut = JSON.parse(data);
+            PopulateView(OutPut);
+        } else {
+            document.getElementById("form").reset();
+            document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
+            document.getElementById('User.Email').value = userEmail;
+        }
+
+    })
+    .fail(function (jqXhr, textStatus, errorThrown) {
+        alert("fail");
+});*@
+        

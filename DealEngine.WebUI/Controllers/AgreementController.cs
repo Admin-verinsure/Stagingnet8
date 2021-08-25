@@ -1757,6 +1757,7 @@ namespace DealEngine.WebUI.Controllers
                     model.IsOptionalProduct = agreement.Product.IsOptionalProduct;
                     model.Status = agreement.Status;
                     model.InformationSheetStatus = sheet.Status;
+                    model.IsExtentionCoverOption = agreement.Product.IsExtentionOption;
                     Boolean nextInfoSheet = false;
                     Boolean IsChange = false;
 
@@ -1793,6 +1794,7 @@ namespace DealEngine.WebUI.Controllers
                     }
                     model.PolicyNumber = agreement.PolicyNumber;
                     model.InformationSheetId = sheet.Id;
+                    model.AgreementExtensions = agreement.ClientAgreementTermExtensions;
                     models.Add(model);
                 }
 
@@ -2581,23 +2583,24 @@ namespace DealEngine.WebUI.Controllers
                     if (agreement == null)
                         throw new Exception(string.Format("No Agreement found for {0}", agreement.Id));
 
-                    var agreeDocList = agreement.GetDocuments();
-                    foreach (SystemDocument doc in agreeDocList)
-                    {
-                        // The PDF document will skip rendering so we don't delete it here but all others are getting regenerated so we delete the old ones
-                        if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
-                        {
-                            doc.Delete(user);
-                        }
-                    }
+                   var agreeDocList = agreement.GetDocuments();
+                    RenderDocs(agreement,user);
+                    //foreach (SystemDocument doc in agreeDocList)
+                    //{
+                    //    // The PDF document will skip rendering so we don't delete it here but all others are getting regenerated so we delete the old ones
+                    //    if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
+                    //    {
+                    //        doc.Delete(user);
+                    //    }
+                    //}
 
-                    foreach (SystemDocument template in agreement.Product.Documents)
-                    {
-                        SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
-                        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                        agreement.Documents.Add(renderedDoc);
-                        await _fileService.UploadFile(renderedDoc);
-                    }
+                    //foreach (SystemDocument template in agreement.Product.Documents)
+                    //{
+                    //    SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+                    //    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                    //    agreement.Documents.Add(renderedDoc);
+                    //    await _fileService.UploadFile(renderedDoc);
+                    //}
 
                     ClientAgreement reloadedAgreement = await _clientAgreementService.GetAgreement(agreement.Id);
                     agreeDocList = reloadedAgreement.GetDocuments();
@@ -2631,6 +2634,52 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+        [HttpGet]
+        public async void RerenderAlldocs(string ProgrammeId)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                var clientProgrammes = new List<ClientProgramme>();
+                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+                List<ClientProgramme> ClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
+                foreach (var clientProgramme in ClientProgrammes.OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                {
+                    foreach (ClientAgreement agreement in clientProgramme.Agreements)//not deleted and only bound / bound and incvoiced check different bound status fron domain entity
+                    {
+                        RenderDocs(agreement, user);
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                //return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        public async void RenderDocs(ClientAgreement agreement,User user)
+        {
+            var agreeDocList = agreement.GetDocuments();
+            foreach (SystemDocument doc in agreeDocList)
+            {
+                // The PDF document will skip rendering so we don't delete it here but all others are getting regenerated so we delete the old ones
+                if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
+                {
+                    doc.Delete(user);
+                }
+            }
+
+            foreach (SystemDocument template in agreement.Product.Documents)
+            {
+                SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                agreement.Documents.Add(renderedDoc);
+                await _fileService.UploadFile(renderedDoc);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> ByPassPayment(IFormCollection collection)
         {

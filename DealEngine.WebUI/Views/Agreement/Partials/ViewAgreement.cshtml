@@ -3,6 +3,7 @@
 
 @Html.HiddenFor(m => m.ClientProgrammeId)
 @Html.HiddenFor(m => m.Sheetstatus)
+@Html.HiddenFor(m => m.IsExtentionCoverOption)
 
 @if (Model.Advisory != null)
 {
@@ -52,7 +53,7 @@
         <table class="table-hover">
             <tbody>
                 <tr>
-                    <td width="260" height="40" valign="top">
+                    <td width="260" height="40">
                         <strong>Product:</strong>
                     </td>
                     <td width="350" height="40">
@@ -60,63 +61,63 @@
                     </td>
                 </tr>
                 @if (Model.ProgrammeId == new Guid("5f4f9a19-c948-425a-b306-c7f5cba56d86")) //Coastguard for Ando
-                { 
+                {
+                    <tr>
+                        <td width="260" height="40">
+                            <strong>Insurer:</strong>
+                        </td>
+                        <td width="350" height="40">
+                            This policy is underwritten by certain underwriters at Lloyd's. Ando Insurance Group Limited is an agent underwriting for and on behalf of certain underwriters at Lloyd's under binder reference B0180MA1906286.
+                        </td>
+                    </tr>
+                }
                 <tr>
                     <td width="260" height="40">
-                        <strong>Insurer:</strong>
+                        <strong>Policy Start Date:</strong>
                     </td>
                     <td width="350" height="40">
-                        This policy is underwritten by certain underwriters at Lloyd's. Ando Insurance Group Limited is an agent underwriting for and on behalf of certain underwriters at Lloyd's under binder reference B0180MA1906286.
+                        @Html.DisplayFor(m => m.StartDate) 4pm local time
+
+                        @if (Model.IsChange == false && !Model.InformationSheetStatus.StartsWith("Bound") && Model.ClientInformationSheet.Programme.BaseProgramme.ProgEnableInsuredDateChange)
+                        {
+                            <a style="color:green;font-size:24px" onclick="event.preventDefault;$('#getStartDate').show();"><i class="fa fa-calendar"></i></a>
+
+                        }
                     </td>
                 </tr>
-                }
-                    <tr>
-                        <td width="260" height="40">
-                            <strong>Policy Start Date:</strong>
-                        </td>
-                        <td width="350" height="40">
-                            @Html.DisplayFor(m => m.StartDate) 4pm local time
-
-                            @if (Model.IsChange == false && !Model.InformationSheetStatus.StartsWith("Bound") && Model.ClientInformationSheet.Programme.BaseProgramme.ProgEnableInsuredDateChange)
-                            {
-                                <a style="color:green;font-size:24px" onclick="event.preventDefault;$('#getStartDate').show();"><i class="fa fa-calendar"></i></a>
-
-                            }
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="260" height="40">
-                            <strong>Policy End Date:</strong>
-                        </td>
-                        <td width="350" height="40">
-                            @Html.DisplayFor(m => m.EndDate) 4pm local time
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="260" height="40">
-                            <strong>Current @Html.DisplayNameFor(m => m.Status):</strong>
-                        </td>
-                        <td width="350" height="40">
-                            @Html.DisplayFor(m => m.Status)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="260" height="40">
-                            <strong>Client Number #:</strong>
-                        </td>
-                        <td width="350" height="40">
-                            @Html.DisplayFor(m => m.ClientNumber)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="260" height="40">
-                            <strong>Insurer Policy #:</strong>
-                        </td>
-                        <td width="350" height="40">
-                            @Html.DisplayFor(m => m.PolicyNumber)
-                        </td>
-                    </tr>
-                </tbody>
+                <tr>
+                    <td width="260" height="40">
+                        <strong>Policy End Date:</strong>
+                    </td>
+                    <td width="350" height="40">
+                        @Html.DisplayFor(m => m.EndDate) 4pm local time
+                    </td>
+                </tr>
+                <tr>
+                    <td width="260" height="40">
+                        <strong>Current @Html.DisplayNameFor(m => m.Status):</strong>
+                    </td>
+                    <td width="350" height="40">
+                        @Html.DisplayFor(m => m.Status)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="260" height="40">
+                        <strong>Client Number #:</strong>
+                    </td>
+                    <td width="350" height="40">
+                        @Html.DisplayFor(m => m.ClientNumber)
+                    </td>
+                </tr>
+                <tr>
+                    <td width="260" height="40">
+                        <strong>Insurer Policy #:</strong>
+                    </td>
+                    <td width="350" height="40">
+                        @Html.DisplayFor(m => m.PolicyNumber)
+                    </td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </fieldset>
@@ -439,41 +440,74 @@ else
                 </table>
             </div>
 
-            @*@if (!Model.ClientInformationSheet.Programme.BaseProgramme.ProgHideAdminFee)
-            {
-                <div class="row">
-                    <div class="col-3">
-                        <strong>@Html.DisplayNameFor(m => m.AdministrationFee):</strong>
-                    </div>
-                    <div class="col">
-                        @Model.AdministrationFee
-                    </div>
+            @if (Model.IsExtentionCoverOption) { 
+            <div class="row">
+                <div class="col-3 font-md">
+                    <strong>Extension Options</strong>
                 </div>
-            }
+            </div>
 
-            @if (Model.ClientInformationSheet.Programme.BaseProgramme.DisplayGSTInclusive)
-            {
-                <div class="row">
-                    <div class="col-3">
-                        <strong>GST:</strong>
-                    </div>
-                    <div class="col">
-                        All premiums and fees displayed are inclusive of GST
-                    </div>
-                </div>
-            }
+            <div>
+                <table class="table table-bordered table-responsive-md table-striped text-center" id="@Model.ProductName Extensiontable">
+                    <tr>
+                        <th class="text-center" width="5%"></th>
+                        <th class="text-center" width="17%">Extension Name</th>
+                        <th class="text-center" width="20%">Limit</th>
+                        <th class="text-center" width="20%">Excess</th>
+                        <th class="text-center" width="16%">Premium</th>
 
-            @if (Model.ClientInformationSheet.Programme.BaseProgramme.DisplayGSTExclusive)
-            {
-                <div class="row">
-                    <div class="col-3">
-                        <strong>GST:</strong>
-                    </div>
-                    <div class="col">
-                        All premiums and fees displayed are exclusive of GST
-                    </div>
-                </div>
-            }*@
+
+                    </tr>
+                    @foreach (var item in Model.ExtensionCoverOptions)
+                    {
+
+                <tr class="clickable-row">
+                    <td>
+                        <input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId" onchange="extensionselected('@Model.ProductName')">
+
+                    </td>
+                    <td class="pt-3-half" width="20%" contenteditable="true">
+                        @item.ExtensionName
+                    </td>
+                    <td class="pt-3-half" width="20%" contenteditable="true">
+                        @item.Inclusion
+                    </td>
+                    <td class="pt-3-half" width="20%" contenteditable="true">
+                        @item.Exclusion
+                    </td>
+                    <td class="pt-4-half" id="@Model.ProductCode row">
+                        @item.TotalPremium
+                    </td>
+                </tr>
+
+
+                    }
+                    <tr>
+                        <td><input type="radio" dirname="" name="@Model.ProductName Extensiontable" value="None"></td>
+                        <td class="pt-4-half" colspan="5" width="15%">
+                            <label> I don't want this Extension</label>
+                        </td>
+                    </tr>
+
+
+
+                </table>
+            </div>
+            }
+            <table class="table-hover" id="@Model.ProductCode totalprem" hidden>
+                <tbody>
+
+                    <tr>
+                        <td width="260" height="40">
+                            <strong>Total:</strong>
+                        </td>
+                        <td width="350" height="40">
+                            <label id="@Model.ProductCode premiumamount"></label>  (Total premium per product)
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
 
 
             <table class="table-hover">
@@ -537,6 +571,9 @@ else
                 </tbody>
             </table>
 
+
+            <p style="border-style:double;"></p>
+
         </div>
     </fieldset>
 }
@@ -566,6 +603,16 @@ else
         </div>
     </div>
 </div>
+<div class="modal" id="CalculateModal" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p><img src="/img/loading.gif" /> Calculating total. Please wait...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <style>
 
@@ -580,12 +627,12 @@ else
 </style>
 @section pagespecific {
     <script type="text/javascript">
+                debugger;
 
          $(window).on("load", function () {
            if ("@Model.InformationSheetStatus" == "Started" || "@Model.InformationSheetStatus" == "Submitted") {
 
                 var progId = "@ViewBag.Id";
-                //var progId = $('#ClientProgrammeId').val();
                 var postData = { ProgrammeId: progId };
 
                 $.ajax({
@@ -597,12 +644,8 @@ else
                         for (var item = 0; item < data.length; item++) {
                             var arr = data[item];
                             var count = 0;
-                            //var element = 'input[name=\\"' + arr[count] + '"][value=\\"' + arr[count + 1] + '"]';
                             var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
-
                             $(queryselector).attr('checked', true);
-                            //$("#"+Arr[count]).
-                            //$('#' + arr[count+1]).val(arr[count + 1]);
                         }
                     }
                 }) .fail(function (jqXHR, textStatus, errorThrown) {
@@ -611,19 +654,27 @@ else
 
              }
 
+         });
+        debugger;
+         var progId = "@ViewBag.Id";
+                var postData = { ProgrammeId: progId };
 
-
-             @*if ("@Model.InformationSheetStatus.StartsWith("Bound")" == "True") {
-                debugger;
-
-                $("#Coveroptionssec :input").prop("disabled", true);
-              } else {
-                $("#Coveroptionssec :input").prop("disabled", false);
-              }*@
-
-
-
-        });
+                $.ajax({
+                    url: '@Url.Action("GetExtensionCoverOptions", "Information")',
+                    type: "POST",
+                    data: postData
+                }).done(function (data) {
+                    if (data != "") {
+                        for (var item = 0; item < data.length; item++) {
+                            var arr = data[item];
+                            var count = 0;
+                            var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
+                            $(queryselector).attr('checked', true);
+                        }
+                    }
+                }) .fail(function (jqXHR, textStatus, errorThrown) {
+                alert("There was an error while trying to get the Cover Options.");
+                });
 
     </script>
 
@@ -711,7 +762,30 @@ else
                 alert("There was an error while trying to get the Cover Options.");
                 });
 
+                var progId = $("#ClientProgrammeId").val();
+                var postData = { ProgrammeId: progId };
+
+                $.ajax({
+                    url: '@Url.Action("GetExtensionCoverOptions", "Information")',
+                    type: "POST",
+                    data: postData
+                }).done(function (data) {
+                    if (data != "") {
+                        for (var item = 0; item < data.length; item++) {
+                            var arr = data[item];
+                            var count = 0;
+                            var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
+                            $(queryselector).attr('checked', true);
+                        }
+                    }
+                }) .fail(function (jqXHR, textStatus, errorThrown) {
+                alert("There was an error while trying to get the Cover Options.");
+                });
+
+
         }
+
+        debugger;
 
           if ("@Model.InformationSheetStatus" == "Started") {
 
@@ -744,85 +818,10 @@ else
              }
 
 
-
-        @*if ( "@Model.InformationSheetStatus" == "Started") {
-                debugger;
-
-                var progId = $("#ClientProgrammeId").val();
-                //var progId = $('#ClientProgrammeId').val();
-                var postData = { ProgrammeId: progId };
-
-                var proddata = "";
-               $.ajax({
-                   url: '@Url.Action("GetdefaulProductSelect", "Information")',
-                   type: "POST",
-                    async: false,
-                   data: postData
-               })
-                    .done(function (data) {
-                         proddata = data;
-
-                    }).fail(function (jqXHR, textStatus, errorThrown) {
-                        alert("There was an error getting ProductName.");
-                    });
-
-              var CoverOptions = new Array(proddata.length);
-                        for (var i = 0; i < proddata.length; i++) {
-                               var ProdName = proddata[i];
-                            var producttable = "[id='" + ProdName + "'] tr";
-                            //var table = document.getElementById(ProdName);
-                            //var table1 = $('#producttable');
-                             count = 0;
-                                $(producttable).each(function () {
-                                    debugger;
-                                    count++;
-                                    var $tds = $(this).find('td'),
-                                        value = $tds.eq(3).text().trim();
-                                    value1 = $tds.eq(1).text().trim();
-                                    if(count == 2)
-                                    $tds.eq(0).checked = true;
-                                  
-                                });
-                        }
-          }*@
-
     });
 
 
 
-
-
-    //      //@*if ("@Model.InformationSheetStatus.StartsWith("Started")" == "True") {
-                debugger;
-
-                var ID = $("#ClientProgrammeId").val();
-               var postdata = {
-                     id : ID
-               }
-                $.ajax({
-                   url: '@Url.Action("GetProductName", "Information")',
-                   type: "POST",
-                   data: postdata
-                }).done(function (data) {
-                        var prodname = data;
-                        for (var i = 0; i < prodname.length; i++) {
-                            var ProdName = prodname[i];
-                             if (ProdName.length == 1) {
-                             var queryselector = "" + "input[name=\'" + ProdName + "\']";
-
-                               $(queryselector).attr('checked', true);
-                             }
-                        }
-
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                        alert("There was an error getting ProductName.");
-                });
-
-          }*@
-
-
-
-    //});
 </script>
 
 

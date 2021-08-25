@@ -20,9 +20,11 @@ namespace DealEngine.Domain.Entities
             ClientAgreementAuditLogs = new List<AuditLog>();
             ClientAgreementReferrals = new List<ClientAgreementReferral>();
             ClientAgreementTermsCancel = new List<ClientAgreementTermCancel>();
+            //ClientAgreementTermExtensions = new List<ClientAgreementTermExtension>();
+
         }
 
-		public ClientAgreement(User createdBy, string insuredName, DateTime inceptionDate, DateTime expiryDate, decimal brokerage, decimal brokerFee, ClientInformationSheet clientInformationSheet, Product product, string reference)
+        public ClientAgreement(User createdBy, string insuredName, DateTime inceptionDate, DateTime expiryDate, decimal brokerage, decimal brokerFee, ClientInformationSheet clientInformationSheet, Product product, string reference)
             : this (createdBy)
         {
             if (string.IsNullOrWhiteSpace(insuredName))
@@ -122,6 +124,8 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsFullProposalDocSend { get; set; }
         public virtual decimal PlacementFee { get; set; }
         public virtual decimal AdditionalCertFee { get; set; }
+        public virtual IList<ClientAgreementTermExtension> ClientAgreementTermExtensions { get; set; }
+
         public virtual List<Document> GetDocuments()
         {
             return Documents.Where(d => d.DateDeleted == null).ToList();                        

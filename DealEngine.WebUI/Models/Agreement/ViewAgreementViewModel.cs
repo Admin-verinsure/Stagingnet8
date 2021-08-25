@@ -24,6 +24,7 @@ namespace DealEngine.WebUI.Models.Agreement
             {
                 GetInsuranceInclusionsExclusions(agreement, userCulture);
                 GetMultiCoverOptions(agreement, userCulture);
+                GetExtensionCoverOptions(agreement, userCulture);
                 GetRiskPremiums(agreement, userCulture);
             }
             if (sheet != null)
@@ -161,6 +162,31 @@ namespace DealEngine.WebUI.Models.Agreement
                         TotalPremiumIncFeeIncGST = ((term.Premium + agreement.BrokerFee) * (1 + agreement.ClientInformationSheet.Programme.BaseProgramme.TaxRate)).ToString("C", userCulture)
                     });
                 }
+            }
+        }
+
+        private async Task GetExtensionCoverOptions(ClientAgreement agreement, System.Globalization.CultureInfo userCulture)
+        {
+            ExtensionCoverOptions = new List<ExtensionCoverOptions>();
+            int intMonthlyInstalmentNumber = 1;
+           
+            foreach (ClientAgreementTermExtension term in agreement.ClientAgreementTermExtensions.Where(t => t.DateDeleted == null).OrderBy(acat => acat.TermLimit).ThenBy(acat => acat.Excess))
+            {
+                
+                    ExtensionCoverOptions.Add(new ExtensionCoverOptions
+                    {
+                        TermId = term.Id,
+                        //isSelected = (term.Bound == true) ? "checked" : "",
+                        ProductId = agreement.Product.Id,
+                        RiskName = agreement.Product.Name,
+                        Inclusion = "Limit: " + term.TermLimit.ToString("C", userCulture),
+                        Exclusion = "Minimum Excess: " + term.Excess.ToString("C", userCulture),
+                        TotalPremium = term.Premium.ToString("C", userCulture),
+                        ExtensionName = term.ExtentionName,
+                    });
+               
+               
+
             }
         }
         private async Task GetMultiCoverOptions(ClientAgreement agreement, System.Globalization.CultureInfo userCulture)
@@ -557,7 +583,10 @@ namespace DealEngine.WebUI.Models.Agreement
         public IList<SelectListItem> PaymentMethodOptions { get; set; }
         public IList<SelectListItem> PaymentFrequencyOptions { get; set; }
         public string ProductCode { get; set; }
-
+        public IList<ClientAgreementTermExtension> AgreementExtensions { get; set; }
+        public IList<ExtensionCoverOptions> ExtensionCoverOptions { get; set; }
+        public bool IsExtentionCoverOption { get; set; }
+        public bool ExtentionCoverName { get; set; }
     }
 
     public class InsuranceInclusion
@@ -582,6 +611,22 @@ namespace DealEngine.WebUI.Models.Agreement
         public string TotalPremium { get; set; }
         public string monthlypremium { get; set; }
         public string Dependableproduct { get; set; }
+    }
+
+    public class ExtensionCoverOptions
+    {
+        public Guid ProductId { get; set; }
+        public Guid TermId { get; set; }
+        public string RiskName { get; set; }
+        public string isSelected { get; set; }
+        public string Inclusion { get; set; }
+        public string Exclusion { get; set; }
+        public string limit { get; set; }
+        public string excess { get; set; }
+        public string premium { get; set; }
+        public string TotalPremium { get; set; }
+        public string ExtensionName { get; set; }
+
     }
 
     public class InsuranceExclusion
