@@ -114,8 +114,34 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             }
 
-            string strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Mortgage Broking and Fire & General Broking.";
-            agreement.ProfessionalBusiness = strProfessionalBusiness;
+            //Programme specific term
+
+            //Default Professional Business, Retroactive Date, TerritoryLimit, Jurisdiction, AuditLog Detail
+            string strProfessionalBusiness = "";
+            string retrodate = "";
+            string strTerritoryLimit = "";
+            string strJurisdiction = "";
+            string auditLogDetail = "";
+
+            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme" ||
+                agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo ML Programme")
+            {
+                strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Investment Advice, Mortgage Broking and Fire & General Broking.";
+                retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
+                strTerritoryLimit = "Worldwide";
+                strJurisdiction = "New Zealand";
+                auditLogDetail = "Apollo DO UW created/modified";
+            }
+            else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme" ||
+               agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG ML Programme")
+            {
+                strProfessionalBusiness = "Financial Advice Provider – in the provision of Life & Health Insurance, Mortgage Broking and Fire & General Broking.";
+                retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
+                strTerritoryLimit = "Worldwide";
+                strJurisdiction = "New Zealand";
+                auditLogDetail = "NZFSG DO UW created/modified";
+
+            }
 
 
             decimal decDOTotalAssets = 0m;
@@ -151,14 +177,40 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 cAEDOInsExcl.DateDeleted = DateTime.UtcNow;
                 cAEDOInsExcl.DeletedBy = underwritingUser;
             }
-            if (decDOTotalAssets <= 0 && decDOTotalLiabilities <= 0 && decDOCurrentAssets <= 0 && decDOCurrentLiabilities <= 0 && decDOAftertaxProfitOrLoss <= 0)
+
+            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme" ||
+                agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG ML Programme")
             {
-                if (cAEDOInsExcl != null)
+                if (decDOTotalAssets <= 0 && decDOTotalLiabilities <= 0 && decDOCurrentAssets <= 0 && decDOCurrentLiabilities <= 0 && decDOAftertaxProfitOrLoss <= 0)
                 {
-                    cAEDOInsExcl.DateDeleted = null;
-                    cAEDOInsExcl.DeletedBy = null;
+                    if (cAEDOInsExcl != null)
+                    {
+                        cAEDOInsExcl.DateDeleted = null;
+                        cAEDOInsExcl.DeletedBy = null;
+                    }
                 }
             }
+            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme" ||
+                agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo ML Programme")
+            {
+                int intCompanyAge = 0;
+                if (agreement.ClientInformationSheet.Owner.DateofIncorportation.Value != null)
+                {
+                    intCompanyAge = DateTime.Now.Subtract(agreement.ClientInformationSheet.Owner.DateofIncorportation.Value).Days;
+                }
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDebtsOptions").First().Value == "2" || 
+                    (intCompanyAge < 1095))
+                {
+                    if (cAEDOInsExcl != null)
+                    {
+                        cAEDOInsExcl.DateDeleted = null;
+                        cAEDOInsExcl.DeletedBy = null;
+                    }
+                }
+            }
+
+
 
             int TermLimit = 0;
             decimal TermPremium = 0M;
@@ -255,18 +307,20 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 agreement.Status = "Quoted";
             }
 
-            string retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
-            agreement.TerritoryLimit = "Worldwide";
-            agreement.Jurisdiction = "New Zealand";
+            //Update agreement Name of Insured
+            agreement.InsuredName = informationSheet.Owner.Name;
+
+            //Update agreement Professional Business, Retroactive Date, TerritoryLimit, Jurisdiction
+            agreement.ProfessionalBusiness = strProfessionalBusiness;
             agreement.RetroactiveDate = retrodate;
+            agreement.TerritoryLimit = strTerritoryLimit;
+            agreement.Jurisdiction = strJurisdiction;
             if (!String.IsNullOrEmpty(strretrodate))
             {
                 agreement.RetroactiveDate = strretrodate;
             }
 
-            agreement.InsuredName = informationSheet.Owner.Name;
-
-            string auditLogDetail = "NZFSG DO UW created/modified";
+            //Create agreement audit log
             AuditLog auditLog = new AuditLog(underwritingUser, informationSheet, agreement, auditLogDetail);
             agreement.ClientAgreementAuditLogs.Add(auditLog);
 

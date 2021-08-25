@@ -1,0 +1,71 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+@section pagespecific {
+    <script src="~/lib/popper.js/umd/popper.js"></script>
+}
+
+    <div class="form-group col-md-6">
+        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.Name, new { @class = "label required" })
+        @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.Name, new { @class = "form-control", @id = "Organisation.Name", @onchange = "OnChange(this.id, this.name)", @required = "" })
+        @*@if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
+        {*@
+          
+            <div class="form-group" id="TradingName">
+                @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
+                {
+                    @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label" })
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", placeholder = "If Applicable" })
+
+
+                    <div class="form-group">
+                        <div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "label required" })
+                                @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "form-control", @id = "Organisation.OrganisationFAPLicenseNumber" })
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationTheFAP, new { @class = "label required" })
+                            <select id="Organisation.isOrganisationTheFAP" name="OrganisationViewModel.Organisation.isOrganisationTheFAP" data-rule="IsTheFap" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
+                                {
+                                    <option selected="@option.Selected" value="@option.Value">
+                                        @option.Text
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="OrganisationViewModel.Organisation.isOrganisationTheFAP" class="form-group" hidden>
+                        <div class="form-group">
+
+                            <div>
+                                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationInterposedPerson, new { @class = "label required" })
+
+                            </div>
+
+                            <select id="Organisation.isOrganisationInterposedPerson" name="OrganisationViewModel.Organisation.isOrganisationInterposedPerson" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
+                                {
+                                    <option selected="@option.Selected" value="@option.Value">
+                                        @option.Text
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    @*@Html.LabelFor(m => m.OrganisationViewModel.Organisation.isTheFAP, new { @class = "label" })
+                        @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.isTheFAP, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", placeholder = "If Applicable" })*@
+
+                }
+            </div>
+        @*}*@
+    </div>
+

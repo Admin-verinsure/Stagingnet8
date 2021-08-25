@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.IO;
+using File = System.IO.File ;
 using System.Collections.Generic;
 using System.Linq;
 using DealEngine.Domain.Entities;
@@ -1283,6 +1285,89 @@ namespace DealEngine.WebUI.Controllers
             return View(userViewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ModifyCKEditor()
+        {
+            CKEditorViewModel model = new CKEditorViewModel();
+
+            // Get directories that begin with ckeditor5-techcertain in ckeditor folder
+            string[] directoriesArr = Directory.GetDirectories("wwwroot/ckeditor/", "ckeditor5-techcertain*", SearchOption.AllDirectories);
+            List<string> directories = new List<string>(directoriesArr);
+
+            IList<CKEditorViewModel.CKEditorBuild> directoryList = new List<CKEditorViewModel.CKEditorBuild>();
+
+            foreach (string dir in directories)
+            {
+                CKEditorViewModel.CKEditorBuild CkBuild = new CKEditorViewModel.CKEditorBuild();
+                CkBuild.Name = dir.Substring(27);
+                CkBuild.Path = dir;
+                CkBuild.Placeholders = GetPlaceholders(dir);
+                directoryList.Add(CkBuild);
+            }
+            model.DirectoryList = directoryList;
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public string GetPlaceholders(string Path)
+        {
+            // This will be computationally intensive if we end up with a LOT of different ckeditors, doubt it will happen but if it does.
+            // You'll want to rewrite it so the placeholders are saved into an object and loaded from there rather than checking the .js file.
+
+            string placeholders = "";
+
+            string[] ckBuild = System.IO.File.ReadAllLines(Path + "/build/ckeditor.js").ToArray();
+
+            int lengthOfFile = ckBuild.Length;
+            int stoppingPoint = ckBuild.Length - 100; // We only want to reverse iterate about 100 places MAX
+
+            while (lengthOfFile > stoppingPoint)
+            {
+                if (ckBuild[lengthOfFile - 1].Contains("placeholderConfig: {"))
+                {
+                    string lineWithPlaceholders = ckBuild[lengthOfFile];
+                    // Create an array from actual array in string, get index of [ and index of ] get that string between those two then return that string.
+                    placeholders = GetStringBetweenCharacters(lineWithPlaceholders, '[', ']');
+                    break;
+                }
+                lengthOfFile = lengthOfFile - 1;
+            }
+
+            return placeholders;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPlaceholder(CKEditorViewModel model)
+        {
+            // Wasn't a way to just update one line efficiently, need to either process whole file or store file in memory.
+            // string currentPlaceholders = System.IO.File.ReadLines(model.Path + "/build/ckeditor.js").Reverse().Take(38).ToList()[37];
+
+            if (model != null)
+            {
+                string[] ckBuild = System.IO.File.ReadAllLines(model.Path + "/build/ckeditor.js").ToArray();
+
+                // Its n long, we only care about the very end so just search the file backwards until we get the index of the line containing 
+                // PlaceholderConfig, the types are on the next line following this so we add the new placeholder there.
+
+                int lengthOfFile = ckBuild.Length;
+                int stoppingPoint = ckBuild.Length - 100; // We only want to reverse iterate about 100 places MAX
+
+                while (lengthOfFile > stoppingPoint)
+                {
+                    if (ckBuild[lengthOfFile - 1].Contains("placeholderConfig: {"))
+                    {
+                        ckBuild[lengthOfFile] = ckBuild[lengthOfFile].Substring(0, ckBuild[lengthOfFile].Length - 1) + ", '" + model.Placeholder + "']";
+                        break;
+                    }
+                    lengthOfFile = lengthOfFile - 1;
+                }
+                System.IO.File.WriteAllLines(model.Path + "/build/ckeditor.js", ckBuild);
+            }
+
+            return Redirect("~/Admin/ModifyCKEditor");
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetCreateUser(IFormCollection form)
         {
@@ -1316,6 +1401,21 @@ namespace DealEngine.WebUI.Controllers
                 await _userManager.CreateAsync(deUser, "defaultPassword");
             }
             return Redirect("~/Home/Index");
+        }
+
+        public static string GetStringBetweenCharacters(string input, char charFrom, char charTo)
+        {
+            int posFrom = input.IndexOf(charFrom);
+            if (posFrom != -1) //if found char
+            {
+                int posTo = input.IndexOf(charTo, posFrom + 1);
+                if (posTo != -1) //if found char
+                {
+                    return input.Substring(posFrom + 1, posTo - posFrom - 1);
+                }
+            }
+
+            return string.Empty;
         }
     }
 }

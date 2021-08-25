@@ -66,6 +66,7 @@ namespace DealEngine.WebUI.Controllers
         IChangeProcessService _changeProcessService;
         IMapperSession<OrganisationalUnit> _organisationalUnitRepository;
         IMapperSession<Organisation> _organisationRepository;
+        IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
 
         public InformationController(
             ISubsystemService subsystemService,
@@ -108,8 +109,8 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<OrganisationalUnit> organisationalUnitRepository,
             IMapperSession<Organisation> organisationRepository,
             //IGeneratePdf generatePdf,
-
-            IMapper mapper
+            IClientAgreementExtensionTermService clientAgreementExtensionTermService,
+        IMapper mapper
             )
             : base(userService)
         {
@@ -153,6 +154,7 @@ namespace DealEngine.WebUI.Controllers
             _changeProcessService = changeProcessService;
             _organisationalUnitRepository = organisationalUnitRepository;
             _organisationRepository = organisationRepository;
+            _clientAgreementExtensionTermService = clientAgreementExtensionTermService;
             //_generatePdf = generatePdf;
         }
 
@@ -547,6 +549,59 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
+        [HttpPost]
+        public async Task<IActionResult> SaveExtensionCoverOptions(string[] Answers, Guid ProgrammeId)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(ProgrammeId);
+
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    foreach (var agreement in clientProgramme.Agreements)
+                    {
+                        //if (agreement.Product.IsMultipleOption)
+                            if (agreement.Product.IsExtentionOption)
+
+                            {
+                                foreach (var term in agreement.ClientAgreementTermExtensions)
+                            {
+                                term.Bound = false;
+                                await uow.Commit();
+                            }
+                        }
+                    }
+                }
+
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    foreach (var option in Answers)
+                    {
+                        if (option != "None")
+                        {
+                            var clientAgreementExtentionTerm = await _clientAgreementExtensionTermService.GetAllClientAgreementExtensionTerm();
+                            List<ClientAgreementTermExtension> listClientAgreementExtensionterm = clientAgreementExtentionTerm.Where(cagt => cagt.Id == Guid.Parse(option)).ToList();
+                            foreach (var term in listClientAgreementExtensionterm)
+                            {
+                                term.Bound = true;
+                                await uow.Commit();
+                            }
+                        }
+                    }
+                }
+
+                return Json(true);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> SaveCoverOptions(string[] Answers, Guid ProgrammeId)
@@ -685,6 +740,81 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetSelectedCoverOptionPremium(string SelectedId)
+        {
+            List<ClientAgreementTerm> listClientAgreementerm = new List<ClientAgreementTerm>();
+            List<Guid> listClientAgreementermid = new List<Guid>();
+            var count = 0;
+            String[] OptionItem;
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                ClientAgreementTerm selectedterm = await _clientAgreementTermService.GetAgreementById(SelectedId);
+               // var prem = selectedterm.Premium;
+                    //ClientAgreementTerms.Where(at => at.DateDeleted == null);
+                    //String[][] OptionItems = new String[clientProgramme.Agreements.Count][];
+
+                return Json(selectedterm);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        public async Task<IActionResult> GetExtensionCoverOptions(Guid ProgrammeId)
+        {
+            List<ClientAgreementTermExtension> listClientAgreementermExtension = new List<ClientAgreementTermExtension>();
+            List<Guid> listClientAgreementermExtensionid = new List<Guid>();
+            var count = 0;
+            String[] OptionItem;
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(ProgrammeId);
+
+                String[][] OptionItems = new String[clientProgramme.Agreements.Count][];
+                var chosenoption = 0;
+                foreach (var agreement in clientProgramme.Agreements.Where(a => a.DateDeleted == null))
+                {
+                    chosenoption = 0;
+                    foreach (var term in agreement.ClientAgreementTermExtensions.Where(at => at.DateDeleted == null))
+                    {
+
+                        OptionItem = new String[2];
+                        if (term.Bound)
+                        {
+                            OptionItem[0] = agreement.Product.Name + " Extensiontable";
+                            OptionItem[1] = "" + term.Id;
+                            OptionItems[count] = OptionItem;
+                            count++;
+                            chosenoption++;
+                        }
+
+                    }
+                    if (chosenoption == 0)
+                    {
+                        OptionItem = new String[2];
+                        OptionItem[0] = agreement.Product.Name + " Extensiontable";
+                        OptionItem[1] = "None";
+                        OptionItems[count] = OptionItem;
+                        count++;
+                    }
+                }
+                return Json(OptionItems);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> GetCoverOptions(Guid ProgrammeId)
@@ -1555,7 +1685,7 @@ namespace DealEngine.WebUI.Controllers
             var docContents = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
             // DOCX & HTML
             string html = _fileService.FromBytes(renderedDoc.Contents);
-            html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { width: 120px; height:120px}</style></head>");
+            html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /></head>"); // Removed here too <style>img { width: 120px;}</style>
 
             var htmlToPdfConv = new NReco.PdfGenerator.HtmlToPdfConverter();
             htmlToPdfConv.License.SetLicenseKey(
