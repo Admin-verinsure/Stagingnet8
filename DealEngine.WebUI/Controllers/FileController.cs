@@ -76,8 +76,15 @@ namespace DealEngine.WebUI.Controllers
 
             // DOCX & HTML
             string html = _fileService.FromBytes(doc.Contents);
-            //html = html.Insert(0, "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>");
-            html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /></head>"); // Removed to fix Image <style>img { width: 30%; }</style>
+
+            if (doc.DocumentType == 8) // Apollo Invoice
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /></head>"); // Removed to fix Image 
+            }
+            else
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { height:auto; max-width: 300px }</style></head>"); // Ashu old values -> width: 120px; height:120px
+            }
             // Test if the below 4 are even necessary by this function, setting above should make these redundant now
             html = html.Replace("“", "&quot");
             html = html.Replace("”", "&quot");
@@ -111,7 +118,6 @@ namespace DealEngine.WebUI.Controllers
             html = html.Replace(badURL, newURL);
 
             var pdfBytes = htmlToPdfConv.GeneratePdf(html);
-
             return File(pdfBytes, "application/pdf", invoicename + ".pdf");
 
         }

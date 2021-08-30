@@ -39,8 +39,8 @@ deploy_staging:
   - ssh-add <(echo "$PKgitlab")
   - ls -la
   - scp ubuntu@"$URLdevops":/home/ubuntu/backup/appsettings.json /home/gitlab-runner/
-  - /home/gitlab-runner/DE-UpdateStartup.sh
-  - ssh ubuntu@"$URLdevops" './DE-DeployPrep.sh'
+  #- /home/gitlab-runner/DE-UpdateStartup.sh
+  #- ssh ubuntu@"$URLdevops" './DE-DeployPrep.sh'
   - 'dotnet publish -c Release'
   - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/netcoreapp3.1/ ubuntu@$URLdevops:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLdevops" './DE-DeployFin.sh'

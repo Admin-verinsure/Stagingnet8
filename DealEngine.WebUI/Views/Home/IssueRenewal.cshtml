@@ -46,9 +46,9 @@
                                 <td>
                                     @*<input type="text" class="dateInput form-control" value="@clientProg.RenewNotificationDate" readonly>*@
                                     @*for windows, to do: need to work out how to check IsLinux*@
-                                    @*<input type="text" class="dateInput form-control" value="@TimeZoneInfo.ConvertTimeFromUtc(clientProg.RenewNotificationDate, TimeZoneInfo.FindSystemTimeZoneById("New Zealand Standard Time")).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" readonly>*@
+                                    <input type="text" class="dateInput form-control" value="@TimeZoneInfo.ConvertTimeFromUtc(clientProg.RenewNotificationDate, TimeZoneInfo.FindSystemTimeZoneById("New Zealand Standard Time")).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" readonly>
                                     @*for linux, to do: need to work out how to check IsLinux*@
-                                    <input type="text" class="dateInput form-control" value="@TimeZoneInfo.ConvertTimeFromUtc(clientProg.RenewNotificationDate, TimeZoneInfo.FindSystemTimeZoneById("NZ")).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" readonly>
+                                    @*<input type="text" class="dateInput form-control" value="@TimeZoneInfo.ConvertTimeFromUtc(clientProg.RenewNotificationDate, TimeZoneInfo.FindSystemTimeZoneById("NZ")).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" readonly>*@
                                 </td>
                             </tr>
                         }

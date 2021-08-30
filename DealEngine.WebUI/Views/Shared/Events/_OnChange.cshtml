@@ -875,12 +875,19 @@
         return Value;
     }
 
+     function Resetmoreoptions(productname ,ExtensionCoverCount) {
+         debugger;
+         if(ExtensionCoverCount > 0)
+         $('input[name=\'' + productname + ' Extensiontable\']').prop('checked', false);
+          
+    };
 
-    
+
+
      function extensionselected(productname) {
             debugger;
            // var val = $(this).val();
-          var queryselector = "" + "input[name=\'" + productname + "\']:checked";
+        var queryselector = "" + "input[name=\'" + productname + "\']:checked";
             var optionsselected = $(queryselector).val();
             var postData = { SelectedId: optionsselected };
             $('#CalculateModal').show();
@@ -890,17 +897,16 @@
                     type: "POST",
                     data: postData
                }).done(function (data) {
+                               debugger;
+
+                   $('#CalculateModal').hide();
                    var element = document.getElementById(data.subTermType + " premiumamount"); 
                    var rowelement = document.getElementById(data.subTermType + " row"); 
                    rowelement.hidden = false;
-                   var totalprem = parseInt('400') + parseFloat(data.premium);
-                   element.append('$' + totalprem);
-                  var element = document.getElementById(data.subTermType + " totalprem"); 
+                   var totalprem = parseFloat("400") + parseFloat(data.premium); ;
+                   element.innerHTML="$"+  totalprem.toFixed(2);
+                   var element = document.getElementById(data.subTermType + " totalprem"); 
                    element.hidden = false;
-                   $('#CalculateModal').hide();
-
-                      debugger;
-
                }).fail(function (jqXHR, textStatus, errorThrown) {
                  $('#CalculateModal').hide();
                 alert("There was an error while trying to get the Cover Options.");
@@ -909,28 +915,5 @@
            
     };
 
-     @*if ("@Model.InformationSheetStatus" == "Started" || "@Model.InformationSheetStatus" == "Submitted") {
-
-                var progId = "@ViewBag.Id";
-                var postData = { ProgrammeId: progId };
-
-                $.ajax({
-                    url: '@Url.Action("GetExtensionCoverOptions", "Information")',
-                    type: "POST",
-                    data: postData
-                }).done(function (data) {
-                    if (data != "") {
-                        for (var item = 0; item < data.length; item++) {
-                            var arr = data[item];
-                            var count = 0;
-                            var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
-                            $(queryselector).attr('checked', true);
-                        }
-                    }
-                }) .fail(function (jqXHR, textStatus, errorThrown) {
-                alert("There was an error while trying to get the Cover Options.");
-                });
-
-             }*@
 
 </script>

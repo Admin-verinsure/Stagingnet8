@@ -1,0 +1,13 @@
+﻿@model DealEngine.WebUI.Models.Agreement.ViewAgreementViewModel
+
+<div id="widget-grid" class="container">
+        @Html.HiddenFor(m => m.ProgrammeId)
+
+        <ul class="nav">
+           
+            <li class="nav-item">
+                <a onclick="location.href='@Url.Action("RerenderAlldocs", "Agreement",new { ProgrammeId=@Model.ProgrammeId})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Rerender all documents </a>
+            </li>
+        </ul>
+
+</div>

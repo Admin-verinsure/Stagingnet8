@@ -67,24 +67,44 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
 
             string strretrodate = "";
-            if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
-            {
-                foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
-                {
-                    if (preRenewOrRefData.DataType == "preterm")
-                    {
-                        if (!string.IsNullOrEmpty(preRenewOrRefData.SLRetro))
-                        {
-                            strretrodate = preRenewOrRefData.SLRetro;
-                        }
+            //if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
+            //{
+            //    foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
+            //    {
+            //        if (preRenewOrRefData.DataType == "preterm")
+            //        {
+            //            if (!string.IsNullOrEmpty(preRenewOrRefData.SLRetro))
+            //            {
+            //                strretrodate = preRenewOrRefData.SLRetro;
+            //            }
 
-                    }
-                    if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "SL")
+            //        }
+            //        if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "SL")
+            //        {
+            //            if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
+            //            {
+            //                ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
+            //                agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
+            //            }
+            //        }
+            //    }
+            //}
+            if (agreement.ClientInformationSheet.IsRenewawl && agreement.ClientInformationSheet.RenewFromInformationSheet != null)
+            {
+                var renewFromAgreement = agreement.ClientInformationSheet.RenewFromInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "SL"));
+
+                if (renewFromAgreement != null)
+                {
+                    strretrodate = renewFromAgreement.RetroactiveDate;
+
+                    foreach (var renewendorsement in renewFromAgreement.ClientAgreementEndorsements)
                     {
-                        if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
+
+                        if (renewendorsement.DateDeleted == null)
                         {
-                            ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
-                            agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
+                            ClientAgreementEndorsement newclientendorsement =
+                                new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
+                            agreement.ClientAgreementEndorsements.Add(newclientendorsement);
                         }
                     }
                 }
@@ -215,17 +235,21 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 DateTime inceptionDate = (product.DefaultInceptionDate > DateTime.MinValue) ? product.DefaultInceptionDate : DateTime.UtcNow;
                 DateTime expiryDate = (product.DefaultExpiryDate > DateTime.MinValue) ? product.DefaultExpiryDate : DateTime.UtcNow.AddYears(1);
 
-                //Inception date rule apply to the renewal client only for grace period of 1 month
-                if (string.IsNullOrEmpty(informationSheet.Programme.ClientProgrammeMembershipNumber))
+                //Inception date rule (turned on after implementing change, any remaining policy and new policy will use submission date as inception date)
+                if (informationSheet.IsRenewawl)
                 {
-                    if (DateTime.UtcNow > product.DefaultInceptionDate)
+                    int renewalgraceperiodindays = 0;
+                    renewalgraceperiodindays = programme.BaseProgramme.RenewGracePriodInDays;
+                    if (DateTime.UtcNow > product.DefaultInceptionDate.AddDays(renewalgraceperiodindays))
                     {
                         inceptionDate = DateTime.UtcNow;
                     }
                 }
-                else if (!string.IsNullOrEmpty(informationSheet.Programme.ClientProgrammeMembershipNumber))
+                else
                 {
-                    if (DateTime.UtcNow >= product.DefaultInceptionDate.AddMonths(1))
+                    int newalgraceperiodindays = 0;
+                    newalgraceperiodindays = programme.BaseProgramme.NewGracePriodInDays;
+                    if (DateTime.UtcNow > product.DefaultInceptionDate.AddDays(newalgraceperiodindays))
                     {
                         inceptionDate = DateTime.UtcNow;
                     }

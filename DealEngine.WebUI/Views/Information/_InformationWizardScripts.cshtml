@@ -253,31 +253,46 @@
                 });
 
                     ///For Extention covers
-                    
-					
-					var ExtensionCoverOptions = new Array(proddata.length);
+
+
+                    var ExtensionCoverOptions = new Array(proddata.length);
+                    var countextension = 0; 
+                    var extensiontablecount = 0;
+                    debugger;
                 for (var i = 0; i < proddata.length; i++) {
                     var ProdName = proddata[i];
                     var queryselector = "" + "input[name=\'" + ProdName + " Extensiontable\']:checked";
+                    var productExtenstablequery = "[id='" + ProdName + " Extension\'] tr";
+                    var table = $(productExtenstablequery).val();
+                    if (table != null) extensiontablecount++;
                     var Extensionoptionsselected = $(queryselector).val();
                     rownum = 0;
-                    
+                    if (Extensionoptionsselected != null) {
+                        countextension++;
+                    }
+
                     ExtensionCoverOptions[i] = Extensionoptionsselected;
-                }
+                    }
 
+                    if (countextension == 0 && extensiontablecount >0) {
+                           alert("Please select Extension cover options to proceed");
+                        return false;
+                    }
                     debugger;
-                    var progId = $('#ClientProgrammeId').val();
-                    var postData = { Answers: ExtensionCoverOptions, ProgrammeId: progId };
-                $.ajax({
-                    url: '@Url.Action("SaveExtensionCoverOptions", "Information")',
-                    type: "POST",
-                    data: postData
-                })
-                .done(function (data) { })
-                .fail(function (a, s, d) {
-                    alert("Unable to save.");
-                });
 
+                    if (countextension > 0) {
+                        var progId = $('#ClientProgrammeId').val();
+                        var postData = { Answers: ExtensionCoverOptions, ProgrammeId: progId };
+                        $.ajax({
+                            url: '@Url.Action("SaveExtensionCoverOptions", "Information")',
+                            type: "POST",
+                            data: postData
+                        })
+                            .done(function (data) { })
+                            .fail(function (a, s, d) {
+                                alert("Unable to save.");
+                            });
+                    }
                 $.ajax({
                     url: '@Url.Action("QuoteToAgree", "Information")',
                     type: "GET",

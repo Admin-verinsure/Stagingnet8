@@ -175,8 +175,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                     }
                 }
-
-                
             }
 
             ClientAgreementTerm termcl100klimitoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit100k, TermExcess);

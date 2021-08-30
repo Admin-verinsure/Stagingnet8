@@ -228,9 +228,10 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
         $(window).on("load", function () {
             if ($("#Sheetstatus").val() != "Started") {
                 var progId = "@ViewBag.Id";
-                //var progId = $('#ClientProgrammeId').val();
-                var postData = { ProgrammeId: progId };
+                                debugger;
 
+                //var progId 3= $('#ClientProgrammeId').val();
+                var postData = { ProgrammeId: "@ViewBag.Id" };
                 $.ajax({
                     url: '@Url.Action("GetCoverOptions", "Information")',
                     type: "POST",
@@ -252,6 +253,27 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                     debugger;
                 });
 
+                 @*var postData = { ProgrammeId: "@ViewBag.Id" };
+
+                $.ajax({
+                    url: '@Url.Action("GetExtensionCoverOptions", "Information")',
+                    type: "POST",
+                    data: postData
+                }).done(function (data) {
+                    ///bound viewaccptedconverted
+                    debugger;
+                    if (data != "") {
+                        for (var item = 0; item < data.length; item++) {
+                            var arr = data[item];
+                            var count = 0;
+                            var queryselector = "" + "input[name=\'" + arr[count] + " Extensiontable\'][value=\'" + arr[count + 1] + "\']";
+                            $(queryselector).attr('checked', true);
+                            //extensionselected(arr[count]);
+                        }
+                    }
+                }) .fail(function (jqXHR, textStatus, errorThrown) {
+                alert("There was an error while trying to get the Cover Options.");
+                });*@
 
 
             }

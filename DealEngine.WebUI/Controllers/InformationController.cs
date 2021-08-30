@@ -562,34 +562,68 @@ namespace DealEngine.WebUI.Controllers
                 {
                     foreach (var agreement in clientProgramme.Agreements)
                     {
-                        //if (agreement.Product.IsMultipleOption)
                             if (agreement.Product.IsExtentionOption)
 
                             {
                                 foreach (var term in agreement.ClientAgreementTermExtensions)
                             {
                                 term.Bound = false;
-                                await uow.Commit();
                             }
                         }
+
+
+                      if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
+                      {
+                        ClientAgreementEndorsement cAELPLAIncl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Inclusion");
+                        ClientAgreementEndorsement cAELPLAExcl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Exclusion");
+
+                        if (cAELPLAIncl != null)
+                        {
+                            cAELPLAIncl.DateDeleted = DateTime.UtcNow;
+                            cAELPLAIncl.DeletedBy = user;
+                        }
+                        if (cAELPLAExcl != null)
+                        {
+                            cAELPLAExcl.DateDeleted = null;
+                            cAELPLAExcl.DeletedBy = null;
+                        }
+                      }
                     }
+                    await uow.Commit();
                 }
 
                 using (var uow = _unitOfWork.BeginUnitOfWork())
                 {
                     foreach (var option in Answers)
                     {
-                        if (option != "None")
+                        if (option != "None" && option != null)
                         {
-                            var clientAgreementExtentionTerm = await _clientAgreementExtensionTermService.GetAllClientAgreementExtensionTerm();
-                            List<ClientAgreementTermExtension> listClientAgreementExtensionterm = clientAgreementExtentionTerm.Where(cagt => cagt.Id == Guid.Parse(option)).ToList();
-                            foreach (var term in listClientAgreementExtensionterm)
+                            ClientAgreementTermExtension clientAgreementExtentionTerm = await _clientAgreementExtensionTermService.GetAgreementExtentionById(Guid.Parse(option));
+                            
+                                clientAgreementExtentionTerm.Bound = true;
+                              
+                            ClientAgreement agreement = clientAgreementExtentionTerm.ClientAgreement;
+                            if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
                             {
-                                term.Bound = true;
-                                await uow.Commit();
+                                ClientAgreementEndorsement cAELPLAIncl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Inclusion");
+                                ClientAgreementEndorsement cAELPLAExcl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Exclusion");
+                                if (cAELPLAIncl != null)
+                                {
+                                    cAELPLAIncl.DateDeleted = null;
+                                    cAELPLAIncl.DeletedBy = null;
+                                }
+                                if (cAELPLAExcl != null)
+                                {
+                                    cAELPLAExcl.DateDeleted = DateTime.UtcNow;
+                                    cAELPLAExcl.DeletedBy = user;
+                                }
                             }
+                            
+
                         }
                     }
+
+                    await uow.Commit();
                 }
 
                 return Json(true);
@@ -746,6 +780,7 @@ namespace DealEngine.WebUI.Controllers
             List<ClientAgreementTerm> listClientAgreementerm = new List<ClientAgreementTerm>();
             List<Guid> listClientAgreementermid = new List<Guid>();
             var count = 0;
+
             String[] OptionItem;
             User user = null;
 
@@ -790,7 +825,8 @@ namespace DealEngine.WebUI.Controllers
                         OptionItem = new String[2];
                         if (term.Bound)
                         {
-                            OptionItem[0] = agreement.Product.Name + " Extensiontable";
+                            OptionItem[0] = agreement.Product.Name;
+                            //OptionItem[0] = agreement.Product.Name + " Extensiontable";
                             OptionItem[1] = "" + term.Id;
                             OptionItems[count] = OptionItem;
                             count++;
@@ -801,7 +837,7 @@ namespace DealEngine.WebUI.Controllers
                     if (chosenoption == 0)
                     {
                         OptionItem = new String[2];
-                        OptionItem[0] = agreement.Product.Name + " Extensiontable";
+                        OptionItem[0] = agreement.Product.Name;
                         OptionItem[1] = "None";
                         OptionItems[count] = OptionItem;
                         count++;
@@ -1683,7 +1719,15 @@ namespace DealEngine.WebUI.Controllers
             var docContents = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
             // DOCX & HTML
             string html = _fileService.FromBytes(renderedDoc.Contents);
-            html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /></head>"); // Removed here too <style>img { width: 120px;}</style>
+
+            if (renderedDoc.DocumentType == 8) // Apollo Invoice
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /></head>"); // Removed to fix Image 
+            }
+            else
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { height:auto; max-width: 300px }</style></head>"); // Ashu old values -> width: 120px; height:120px
+            }
 
             var htmlToPdfConv = new NReco.PdfGenerator.HtmlToPdfConverter();
             htmlToPdfConv.License.SetLicenseKey(
