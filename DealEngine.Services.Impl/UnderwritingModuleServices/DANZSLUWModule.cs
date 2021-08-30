@@ -106,8 +106,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                     }
                 }
-
-                
             }
 
             int TermLimit1mil = 1000000;

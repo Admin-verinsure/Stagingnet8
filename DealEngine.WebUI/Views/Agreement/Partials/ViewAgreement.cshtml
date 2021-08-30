@@ -403,7 +403,7 @@ else
                         <tr class="clickable-row">
                             <td>
                                 <input type="radio" dirname=""
-                                       id="@item.TermId" name="@item.RiskName" @item.isSelected value="@item.TermId">
+                                       id="@item.TermId" name="@item.RiskName" @item.isSelected value="@item.TermId" onchange="Resetmoreoptions('@Model.ProductName',@Model.ExtensionCoverOptions.Count)">
                             </td>
                             <td class="pt-3-half" width="12%" contenteditable="true">
                                 @item.RiskName
@@ -440,15 +440,15 @@ else
                 </table>
             </div>
 
-            @if (Model.IsExtentionCoverOption) { 
+            @if (Model.IsExtentionCoverOption &&  Model.ExtensionCoverOptions.Count > 0) { 
             <div class="row">
                 <div class="col-3 font-md">
                     <strong>Extension Options</strong>
                 </div>
             </div>
 
-            <div>
-                <table class="table table-bordered table-responsive-md table-striped text-center" id="@Model.ProductName Extensiontable">
+            <div class="row">
+                <table class="table table-bordered table-responsive-md table-striped text-center" id="@Model.ProductName Extension">
                     <tr>
                         <th class="text-center" width="5%"></th>
                         <th class="text-center" width="17%">Extension Name</th>
@@ -463,7 +463,8 @@ else
 
                 <tr class="clickable-row">
                     <td>
-                        <input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId" onchange="extensionselected('@Model.ProductName')">
+                       @*<input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId" onchange="extensionselected('@Model.ProductName')" onselect="extensionselected('@Model.ProductName')">*@
+                        <input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId" >
 
                     </td>
                     <td class="pt-3-half" width="20%" contenteditable="true">
@@ -494,7 +495,7 @@ else
                 </table>
             </div>
             }
-            <table class="table-hover" id="@Model.ProductCode totalprem" hidden>
+            @*<table class="table-hover" id="@Model.ProductCode totalprem" hidden>
                 <tbody>
 
                     <tr>
@@ -507,7 +508,7 @@ else
                     </tr>
 
                 </tbody>
-            </table>
+            </table>*@
 
 
             <table class="table-hover">
@@ -631,10 +632,10 @@ else
 
          $(window).on("load", function () {
            if ("@Model.InformationSheetStatus" == "Started" || "@Model.InformationSheetStatus" == "Submitted") {
+                              debugger;
 
                 var progId = "@ViewBag.Id";
                 var postData = { ProgrammeId: progId };
-
                 $.ajax({
                     url: '@Url.Action("GetCoverOptions", "Information")',
                     type: "POST",
@@ -646,6 +647,7 @@ else
                             var count = 0;
                             var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
                             $(queryselector).attr('checked', true);
+                            debugger;
                         }
                     }
                 }) .fail(function (jqXHR, textStatus, errorThrown) {
@@ -656,25 +658,28 @@ else
 
          });
         debugger;
-         var progId = "@ViewBag.Id";
-                var postData = { ProgrammeId: progId };
-
+         @*var progId = "@ViewBag.Id";
+                var postData = { ProgrammeId: "@ViewBag.Id" };
+        //viewage662
                 $.ajax({
                     url: '@Url.Action("GetExtensionCoverOptions", "Information")',
                     type: "POST",
                     data: postData
                 }).done(function (data) {
+
                     if (data != "") {
                         for (var item = 0; item < data.length; item++) {
                             var arr = data[item];
                             var count = 0;
-                            var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
+                            var queryselector = "" + "input[name=\'" + arr[count] + " Extensiontable\'][value=\'" + arr[count + 1] + "\']";
                             $(queryselector).attr('checked', true);
+                            //extensionselected(arr[count]);
+
                         }
                     }
                 }) .fail(function (jqXHR, textStatus, errorThrown) {
                 alert("There was an error while trying to get the Cover Options.");
-                });
+                });*@
 
     </script>
 
@@ -736,11 +741,11 @@ else
 
 
           if ( "@Model.InformationSheetStatus" == "Submitted") {
+                            debugger;
 
                 var progId = $("#ClientProgrammeId").val();
-                //var progId = $('#ClientProgrammeId').val();
-                var postData = { ProgrammeId: progId };
-
+                //var progId 2= $('#ClientProgrammeId').val();
+              var postData = { ProgrammeId: progId };
                 $.ajax({
                    url: '@Url.Action("GetCoverOptions", "Information")',
                     type: "POST",
@@ -764,7 +769,7 @@ else
 
                 var progId = $("#ClientProgrammeId").val();
                 var postData = { ProgrammeId: progId };
-
+              ///viewagree 771
                 $.ajax({
                     url: '@Url.Action("GetExtensionCoverOptions", "Information")',
                     type: "POST",
@@ -774,8 +779,10 @@ else
                         for (var item = 0; item < data.length; item++) {
                             var arr = data[item];
                             var count = 0;
-                            var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
+                            var queryselector = "" + "input[name=\'" + arr[count] + " Extensiontable\'][value=\'" + arr[count + 1] + "\']";
                             $(queryselector).attr('checked', true);
+                            //extensionselected(arr[count]);
+
                         }
                     }
                 }) .fail(function (jqXHR, textStatus, errorThrown) {
@@ -784,8 +791,6 @@ else
 
 
         }
-
-        debugger;
 
           if ("@Model.InformationSheetStatus" == "Started") {
 
@@ -811,7 +816,6 @@ else
                         }
                     }
                 }).fail(function (jqXHR, textStatus, errorThrown) {
-                    debugger;
                 alert("There was an error while trying to save default cover option.");
                 });
 

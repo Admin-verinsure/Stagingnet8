@@ -180,7 +180,7 @@ namespace DealEngine.WebUI.Models.Agreement
                         ProductId = agreement.Product.Id,
                         RiskName = agreement.Product.Name,
                         Inclusion = "Limit: " + term.TermLimit.ToString("C", userCulture),
-                        Exclusion = "Minimum Excess: " + term.Excess.ToString("C", userCulture),
+                        Exclusion = "Excess: " + term.Excess.ToString("C", userCulture),
                         TotalPremium = term.Premium.ToString("C", userCulture),
                         ExtensionName = term.ExtentionName,
                     });

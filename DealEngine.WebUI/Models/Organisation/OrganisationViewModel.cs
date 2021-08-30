@@ -78,7 +78,7 @@ namespace DealEngine.WebUI.Models
                     HasMajorShareHolder = GetBooleanSelectOptions();
                 }
 
-                if (Programme.NamedPartyUnitName == "NZFSG ML Programme" || Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme")
+                if (Programme.NamedPartyUnitName == "NZFSG ML Programme" || Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme"|| Programme.NamedPartyUnitName == "Apollo ML Programme")
                 {
                     DirectorUnit = new DirectorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
 

@@ -74,9 +74,9 @@ namespace DealEngine.Services.Impl
             return await _clientAgreementTermExtentionRepository.FindAll().ToListAsync();
         }
 
-        public async Task<ClientAgreementTermExtension> GetAgreementById(string clientAgreementId)
+        public async Task<ClientAgreementTermExtension> GetAgreementExtentionById(Guid clientAgreementExtentionId)
         {
-            return await _clientAgreementTermExtentionRepository.GetByIdAsync(Guid.Parse(clientAgreementId) );
+            return await _clientAgreementTermExtentionRepository.GetByIdAsync(clientAgreementExtentionId);
         }
     }
 }

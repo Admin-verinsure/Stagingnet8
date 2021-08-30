@@ -20,7 +20,7 @@ namespace DealEngine.Domain.Entities
             ClientAgreementAuditLogs = new List<AuditLog>();
             ClientAgreementReferrals = new List<ClientAgreementReferral>();
             ClientAgreementTermsCancel = new List<ClientAgreementTermCancel>();
-            //ClientAgreementTermExtensions = new List<ClientAgreementTermExtension>();
+            ClientAgreementTermExtensions = new List<ClientAgreementTermExtension>();
 
         }
 
