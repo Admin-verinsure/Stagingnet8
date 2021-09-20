@@ -27,7 +27,6 @@ namespace DealEngine.Domain.Entities
             TermLimit = termLimit;
             Excess = excess;
             Premium = premium;
-            
         }
 
         public virtual int TermLimit
@@ -64,5 +63,36 @@ namespace DealEngine.Domain.Entities
             get;
             set;
         }
+
+        public virtual bool HideLimitExcess
+        {
+            get;
+            set;
+        }
+
+        public virtual decimal BasePremium
+        {
+            get;
+            set;
+        }
+
+        public virtual decimal PremiumPre
+        {
+            get;
+            set;
+        }
+
+        public virtual decimal PremiumDiffer
+        {
+            get;
+            set;
+        }
+
+        public virtual string SubTermType
+        {
+            get;
+            protected set;
+        }
+
     }
 }

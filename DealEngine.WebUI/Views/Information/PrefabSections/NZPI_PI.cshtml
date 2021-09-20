@@ -5,11 +5,11 @@
             <div class="row">
                 <div class="col-9">
                     <label for="revenueinsuredcontractors" class="label required">
-                        How much of the revenue relates to services provided on behalf of the Insured (You) by Contractors?
+                        What percentage of the revenue relates to services provided on behalf of the Insured (You) by Contractors?
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextBoxFor(m => m.PIViewModel.RevenueInsuredContractors, new { @class = "form-control", @id = "revenueinsuredcontractors", @type = "number", onchange = "OnChange(this.id, this.name)", @required = ""})
+                    @Html.TextBoxFor(m => m.PIViewModel.RevenueInsuredContractors, new { @class = "form-control", @id = "revenueinsuredcontractors", @type = "number", onchange = "OnChange(this.id, this.name)", @required = "", @placeholder = "%" })
                 </div>
             </div>
         </div>

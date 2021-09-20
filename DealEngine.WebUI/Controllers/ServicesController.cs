@@ -21,6 +21,7 @@ using System.Linq.Dynamic;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using DealEngine.Infrastructure.Ldap.Interfaces;
+using System.Text.Json;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -165,19 +166,22 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> GetClient(IFormCollection Collection)
         {
             User user = null;
+            Guid.TryParse(Collection["Id"], out Guid OrganisationId);
+            Guid.TryParse(Collection["ProgId"], out Guid ProgId);
+            Organisation organisation = await _organisationService.GetOrganisation(OrganisationId);
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
             try
             {
-                Guid.TryParse(Collection["Id"], out Guid OrganisationId);
-                Organisation organisation = await _organisationService.GetOrganisation(OrganisationId);
-                Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+                
                 if (organisation != null)
                 {
-                    var ClientProgrammes = await _programmeService.GetClientProgrammesByOwner(organisation.Id);
+                    var ClientProgrammes = await _programmeService.GetClientProgrammesByOwnerByProgramme(OrganisationId, ProgId);
                     if (ClientProgrammes.Any())
                     {
                         JsonObjects.Add("Organisation", organisation);
-                        JsonObjects.Add("ClientProgramme", ClientProgrammes.FirstOrDefault());
+                        JsonObjects.Add("ClientProgramme", ClientProgrammes.OrderByDescending(cpobdc => cpobdc.DateCreated).FirstOrDefault());
                         var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
+                        //var jsonObj = JsonSerializer.Serialize(JsonObjects);
                         return Json(jsonObj);
                     }
                 }

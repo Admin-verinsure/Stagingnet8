@@ -132,21 +132,7 @@
 
 
                     }
-			       @*if (@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName == "Apollo Programme" || @Model.ClientProgramme.BaseProgramme.NamedPartyUnitName != "Abbott Financial Advisor Liability Programme" || @Model.ClientProgramme.BaseProgramme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme" ) {
-
-                        var isfap = document.getElementById("IsFapOrg").value;
-                         if (isfap != "true") {
-                              window.alert("One party must be nominated as the FAP for this policy. Please answer \"YES\" to the Question which asks for one of the persons, entities or companies to be identified as THE FAP for this policy.");
-                              $("[id='Insured Details / Named Parties']").trigger("click");
-                              event.preventDefault();
-                              event.stopPropagation();
-                              location.reload();
-                              return false;
-                         }
-
-                    }*@
-
-
+			      
 
                     if ($('#CompanyName').val() === "AON") {
                         var nextbutton = document.getElementsByClassName("next");

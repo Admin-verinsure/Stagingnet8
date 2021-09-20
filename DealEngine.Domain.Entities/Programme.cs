@@ -86,7 +86,10 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsPdfDoc{ get; set; }
         public virtual bool ProgEnableRequireNoCover { get; set; }
         public virtual bool IsFAPOrg { get; set; }
-
+        public virtual string ProgMergeClassOfInsurance { get; set; }
+        public virtual string ProgMergeInsurer { get; set; }
+        public virtual string ProgMergeInsurerRating { get; set; }
+        public virtual string ProgMergePolicyNumber { get; set; }
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)

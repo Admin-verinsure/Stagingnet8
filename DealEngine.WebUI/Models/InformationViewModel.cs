@@ -1127,7 +1127,6 @@ namespace DealEngine.WebUI.Models
         public string NavigationIndustryDetails { get; set; }
         public string NetworkSecurityDetails { get; set; }
         public string TradingIndustryDetails { get; set; }
-        
         public int CoverAmount { get; set; }
         public int PercentFees { get; set; }
         public decimal RevenueInsuredContractors { get; set; }

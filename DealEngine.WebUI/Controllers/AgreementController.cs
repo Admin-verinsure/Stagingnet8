@@ -61,6 +61,7 @@ namespace DealEngine.WebUI.Controllers
         IClientAgreementTermCanService _clientAgreementTermCanService;
         IClientAgreementBVTermCanService _clientAgreementBVTermCanService;
         ISerializerationService _serializationService;
+
         //convert to service?
         IMapperSession<Rule> _ruleRepository;
         IMapperSession<SystemDocument> _documentRepository;
@@ -1423,6 +1424,44 @@ namespace DealEngine.WebUI.Controllers
         //    }
         //}
 
+        [HttpGet]
+        public async Task<IActionResult> EditExtensionTerms(Guid id, String productname = null)
+        {
+            User user = null;
+            ViewAgreementViewModel model = new ViewAgreementViewModel();
+            try
+            {
+                ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
+                model.ClientAgreementId = id;
+                model.ClientProgrammeId = agreement.ClientInformationSheet.Programme.Id;
+                var subtypeterms = new List<EditExtensionTermsViewModel>();
+
+                foreach (ClientAgreementTermExtension subtypeterm in agreement.ClientAgreementTermExtensions.Where(t => t.DateDeleted == null))
+                {
+                    subtypeterms.Add(new EditExtensionTermsViewModel
+                    {
+                        TermId = subtypeterm.Id,
+                        TermLimit = subtypeterm.TermLimit,
+                        Excess = Convert.ToInt32(subtypeterm.Excess),
+                        Premium = subtypeterm.Premium,
+
+                        //BasePremium = subtypeterm.BasePremium,
+                        //PremiumDiffer = subtypeterm.PremiumDiffer
+                    });
+                }
+
+                model.ExtensionTerms = subtypeterms.OrderBy(acat => acat.TermLimit).ToList();
+                model.ProductName = productname;
+                ViewBag.Title = "Edit Extension Terms ";
+
+                return View("EditExtensionTerms", model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
 
 
         [HttpGet]
@@ -1571,6 +1610,73 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DeleteExtensionTerm(EditExtensionTermsViewModel clientAgreemenExtensionTerm)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                ClientAgreement agreement = await _clientAgreementService.GetAgreement(clientAgreemenExtensionTerm.clientAgreementId);
+                ClientAgreementTermExtension term = agreement.ClientAgreementTermExtensions.FirstOrDefault(t => t.Id == clientAgreemenExtensionTerm.TermId && t.DateDeleted == null);
+
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+
+                    term.DateDeleted = DateTime.UtcNow;
+                    await uow.Commit();
+                }
+
+                return RedirectToAction("EditExtensionTerms", new { id = clientAgreemenExtensionTerm.clientAgreementId });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditExtensionTerm(Guid clientAgreementId, EditExtensionTermsViewModel clientAgreementSubTerm)
+        {
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                ClientAgreement agreement = await _clientAgreementService.GetAgreement(clientAgreementId);
+                if (clientAgreementSubTerm.TermId != Guid.Empty)
+                {
+                    ClientAgreementTermExtension Extensionterm = agreement.ClientAgreementTermExtensions.FirstOrDefault(t => t.Id == clientAgreementSubTerm.TermId && t.DateDeleted == null);
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        Extensionterm.Premium = clientAgreementSubTerm.Premium;
+                        Extensionterm.TermLimit = clientAgreementSubTerm.TermLimit;
+                        Extensionterm.Excess = clientAgreementSubTerm.Excess;
+                        await uow.Commit();
+                    }
+                }
+                else
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        decimal brokeragerate = agreement.Product.DefaultBrokerage;
+                        decimal Brokerage = clientAgreementSubTerm.Premium * agreement.Product.DefaultBrokerage / 100;
+                        _clientAgreementTermService.AddAgreementExtensionTerm(user, clientAgreementSubTerm.TermLimit, clientAgreementSubTerm.Excess, clientAgreementSubTerm.Premium, agreement);
+                        await uow.Commit();
+                    }
+                }
+                return RedirectToAction("EditExtensionTerms", new { id = clientAgreementId });
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+        [HttpPost]
         public async Task<IActionResult> EditSubTerm(Guid clientAgreementId, EditTermsViewModel clientAgreementSubTerm)
         {
             User user = null;
@@ -1684,6 +1790,7 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
         [HttpPost]
         public async Task<IActionResult> DeleteSubTerm(EditTermsViewModel clientAgreementBVTerm)
         {
@@ -1787,6 +1894,10 @@ namespace DealEngine.WebUI.Controllers
                         sheet.Programme.EGlobalBranchCode != null && sheet.Programme.EGlobalClientNumber != null)
                     {
                         model.ClientNumber = sheet.Programme.EGlobalBranchCode + "-" + sheet.Programme.EGlobalClientNumber;
+                    }
+                    else if (!sheet.Programme.BaseProgramme.UsesEGlobal && sheet.Programme.EGlobalClientNumber != null)
+                    {
+                        model.ClientNumber = sheet.Programme.EGlobalClientNumber;
                     }
                     else
                     {
@@ -2583,8 +2694,8 @@ namespace DealEngine.WebUI.Controllers
                     if (agreement == null)
                         throw new Exception(string.Format("No Agreement found for {0}", agreement.Id));
 
-                   var agreeDocList = agreement.GetDocuments();
-                    RenderDocs(agreement,user);
+                    var agreeDocList = agreement.GetDocuments();
+                    //RenderDocs(agreement,user);
                     //foreach (SystemDocument doc in agreeDocList)
                     //{
                     //    // The PDF document will skip rendering so we don't delete it here but all others are getting regenerated so we delete the old ones
@@ -2639,13 +2750,15 @@ namespace DealEngine.WebUI.Controllers
         {
             User user = null;
             ViewAgreementViewModel viewAgreementViewModel = new ViewAgreementViewModel();
-
+            List<Product> listAgreementProduct = new List<Product>();
             try
             {
                 user = await CurrentUser();
                 viewAgreementViewModel.ProgrammeId = Guid.Parse(ProgrammeId);
+                //listAgreementProduct = Notes.DistinctBy(note => note.Author);
+                listAgreementProduct = await GetAgreementProduct(ProgrammeId);
+                viewAgreementViewModel.AgreementProducts = listAgreementProduct.Distinct().ToList();
                 return View(viewAgreementViewModel);
-
             }
             catch (Exception ex)
             {
@@ -2653,25 +2766,77 @@ namespace DealEngine.WebUI.Controllers
                 return View(viewAgreementViewModel);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> PopulateTemplate(string ProductId, string ProgrammeId)
+        {
+            User user = null;
+            ViewAgreementViewModel viewAgreementViewModel = new ViewAgreementViewModel();
+            List<String> listProductTemplate = new List<String>();
+            Product product = await _productService.GetProductById(Guid.Parse(ProductId));
+            try
+            {
+                List<ClientProgramme> ClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(Guid.Parse(ProgrammeId));
 
+                foreach (SystemDocument systemDocument in product.Documents)
+                {
+                    listProductTemplate.Add(systemDocument.Name);
+                }
+                user = await CurrentUser();
+                viewAgreementViewModel.ProgrammeId = Guid.Parse(ProgrammeId);
+                viewAgreementViewModel.AgreementTemplates = listProductTemplate.Distinct().ToList();
+                return Json(viewAgreementViewModel);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return View(viewAgreementViewModel);
+            }
+        }
         [HttpGet]
-        public async void RerenderAlldocs(string ProgrammeId)
+        public async Task<List<Product>> GetAgreementProduct(string ProgrammeId)
+        {
+            User user = null;
+            List<Product> listProduct = new List<Product>();
+
+            try
+            {
+                List<ClientProgramme> ClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(Guid.Parse(ProgrammeId));
+
+                foreach (ClientProgramme clientprogramme in ClientProgrammes)
+                {
+                    foreach (ClientAgreement agreement in clientprogramme.Agreements)
+                    {
+                        listProduct.Add(agreement.Product);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+            }
+            return listProduct;
+        }
+
+        //Rerenderalldocs flag will be true for only rerenderallfuntionality on programme level,sendUser is to define which user to send documents.
+        public async void CommonRenderDocs(Guid ProgrammeId, string Action = null, string status = null, ClientInformationSheet sheet = null, 
+                                                                   bool Rerenderalldocs = false, bool sendUser = false,string ActionPath = null)
         {
             User user = null;
             try
             {
-                user = await CurrentUser();
                 var clientProgrammes = new List<ClientProgramme>();
-                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
-                List<ClientProgramme> ClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
-                foreach (var clientProgramme in ClientProgrammes.OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                List<ClientProgramme> ClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(ProgrammeId);
+                foreach (ClientProgramme programme in ClientProgrammes.OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
                 {
-                    foreach (ClientAgreement agreement in clientProgramme.Agreements)//not deleted and only bound / bound and incvoiced check different bound status fron domain entity
-                    {
-                        RenderDocs(agreement, user);
-                    }
-                }
+                    user = await CurrentUser();
+                    //var agreeDocList = new List<Document>();
+                    //Document renderedDoc;
 
+                    RerenderClientProgrammes(programme, ActionPath, Action, status, Rerenderalldocs, sendUser);
+
+
+
+                }
             }
             catch (Exception ex)
             {
@@ -2679,27 +2844,312 @@ namespace DealEngine.WebUI.Controllers
                 //return RedirectToAction("Error500", "Error");
             }
         }
-
-        public async void RenderDocs(ClientAgreement agreement,User user)
+        public async Task<IActionResult> RerenderAlldocs(Guid ProgrammeId)
         {
-            var agreeDocList = agreement.GetDocuments();
-            foreach (SystemDocument doc in agreeDocList)
+            bool Rerenderalldocs = true;
+            CommonRenderDocs(ProgrammeId, null, null, null, Rerenderalldocs, false);
+
+            return await RedirectToLocal();
+
+        }
+
+        public async Task<IActionResult> RerenderClientProgrammes(ClientProgramme programme, string ActionPath, string Action, string status, bool Rerenderalldocs, bool sendUser, string bindnotes = null)
+
+        {
+            User user = await CurrentUser();
+            try
             {
-                // The PDF document will skip rendering so we don't delete it here but all others are getting regenerated so we delete the old ones
-                if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
+
+            
+            //ClientProgramme programme = await _programmeService.GetClientProgrammebyId(clientprogrammeId);
+
+            foreach (ClientAgreement agreement in programme.Agreements.Where(agree => agree.DateDeleted == null))
                 {
-                    doc.Delete(user);
+
+                    if (agreement.Status == "Quoted" || ActionPath == "SendPolicyDocuments")
+                {
+                    if (Action == "BindAgreement")
+                    {
+                        agreement.BindNotes = bindnotes;
+                        agreement.BindByUserID = user;
+                    }
+
+                    if (agreement.ClientAgreementTerms.Where(acagreement => acagreement.DateDeleted == null && acagreement.Bound).Any())
+                    {
+                       
+                        var allDocs = await _fileService.GetDocumentByOwner(programme.Owner);
+                        var documents = new List<SystemDocument>();
+                        var documentspremiumadvice = new List<SystemDocument>();
+                        var agreeTemplateList = agreement.Product.Documents;
+                        var agreeDocList = agreement.GetDocuments();
+
+                            using (var uow = _unitOfWork.BeginUnitOfWork())
+                            {
+                                if (agreement.Status != status)
+                                {
+                                    agreement.Status = status;
+                                    agreement.BoundDate = DateTime.Now;
+                                    if (programme.BaseProgramme.PolicyNumberPrefixString != null)//programme PolicyNumberPrefixString 
+                                    {
+                                        agreement.PolicyNumber = programme.BaseProgramme.PolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
+                                    }
+                                    if (agreement.Product.ProductPolicyNumberPrefixString != null)//product PolicyNumberPrefixString
+                                    {
+                                        agreement.PolicyNumber = agreement.Product.ProductPolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
+                                    }
+                                    await uow.Commit();
+                                }
+                            }
+                            agreement.Status = status;
+
+                        foreach (SystemDocument doc in agreeDocList)
+                        {
+                            // The PDF document will skip rendering so we don't delete it here but all others are getting regenerated so we delete the old ones
+                            if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
+                            {
+                                doc.Delete(user);
+                            }
+                        }
+
+                        //tripleA DO use case, remove when all client set as company
+                        if (agreement.Product.Id == new Guid("bdbdda02-ee4e-44f5-84a8-dd18d17287c1") &&
+                            agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDAOLIOptions").First().Value == "2")
+                        {
+
+                        }
+                        else
+                        {
+
+                            if (!agreement.Product.IsOptionalCombinedProduct)
+                            {
+                                foreach (SystemDocument template in agreeTemplateList.Where(atl => atl.DateDeleted == null && atl.DocumentType != 10))
+                                {
+                                    documents = await RerenderTemplate(template, agreement, programme);
+                                }
+                                if (programme.BaseProgramme.ProgEnableEmail && !Rerenderalldocs)
+                                {
+                                    if (!programme.BaseProgramme.ProgStopPolicyDocAutoRelease)
+                                    {
+                                        //send out policy document email
+                                        EmailTemplate emailTemplate = programme.BaseProgramme.EmailTemplates.FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+                                        if (emailTemplate != null)
+                                        {
+                                            if (sendUser)
+                                            {
+                                                  await _emailService.SendEmailViaEmailTemplate(user.Email, emailTemplate, documents, agreement.ClientInformationSheet, agreement);
+                                            }
+                                            else
+                                            {
+                                                  await _emailService.SendEmailViaEmailTemplate(programme.Owner.Email, emailTemplate, documents, agreement.ClientInformationSheet, agreement);
+                                            }
+
+                                            
+                                                if (!agreement.IsPolicyDocSend)
+                                                {
+                                                    agreement.IsPolicyDocSend = true;
+                                                    agreement.DocIssueDate = DateTime.Now;
+                                                }
+                                            
+                                        }
+                                    }
+                                    //send out premium advice  ///need to check for send policy doc functionality 
+                                    if (programme.BaseProgramme.ProgEnableSendPremiumAdvice && !string.IsNullOrEmpty(programme.BaseProgramme.PremiumAdviceRecipent) &&
+                                        agreement.Product.ProductEnablePremiumAdvice)
+                                    {
+                                         await _emailService.SendPremiumAdviceEmail(programme.BaseProgramme.PremiumAdviceRecipent, documentspremiumadvice, agreement.ClientInformationSheet, agreement, programme.BaseProgramme.PremiumAdviceRecipentCC);
+                                    }
+
+                                    //send out agreement bound notification email
+                                     await _emailService.SendSystemEmailAgreementBoundNotify(programme.BrokerContactUser, programme.BaseProgramme, agreement, programme.Owner);
+                                }
+                            }
+                        }
+
+                            
+                    }
+                    else
+                    {
+                        agreement.DateDeleted = DateTime.Now;
+                    }
+                 }
+                   
+
+              }
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+            }
+            return NoContent();
+            
+        }
+            public async Task<List<SystemDocument>> RerenderTemplate(SystemDocument template, ClientAgreement agreement, ClientProgramme programme)
+        {
+            Document renderedDoc;
+            var documents = new List<SystemDocument>();
+            var documentspremiumadvice = new List<SystemDocument>();
+            User user = await CurrentUser();
+            try {
+            ClientInformationSheet sheet = agreement.ClientInformationSheet;
+            if (template.ContentType == MediaTypeNames.Application.Pdf)
+            {
+                SystemDocument notRenderedDoc = await _fileService.GetDocumentByID(template.Id);
+                agreement.Documents.Add(notRenderedDoc);
+                documents.Add(notRenderedDoc);
+            }
+            else
+            {
+                //render docs except invoice
+                if (template.DocumentType != 4 && template.DocumentType != 6 && template.DocumentType != 9)
+                {
+                    if (template.Name == "TripleA Individual TL Certificate" && !programme.BaseProgramme.IsPdfDoc)
+                    {
+                        if (agreement.Product.IsOptionalProductBasedSub &&
+                            agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                        {
+                            renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+
+                            renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                            agreement.Documents.Add(renderedDoc);
+                            documents.Add(renderedDoc);
+                            await _fileService.UploadFile(renderedDoc);
+                        }
+                    }
+                    else if (template.DocumentType == 7)
+                    {
+                        renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+                        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                        agreement.Documents.Add(renderedDoc);
+                        //documents.Add(renderedDoc);
+                        documentspremiumadvice.Add(renderedDoc);
+                        await _fileService.UploadFile(renderedDoc);
+                    }
+                    else if (template.DocumentType == 8 && !programme.BaseProgramme.IsPdfDoc)
+                    {
+                        renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+
+                        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                        agreement.Documents.Add(renderedDoc);
+                        documents.Add(renderedDoc);
+                        await _fileService.UploadFile(renderedDoc);
+                    }
+                    else if (programme.BaseProgramme.IsPdfDoc)
+                    {
+                        SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
+                        renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+
+                        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                        agreement.Documents.Add(renderedDoc1);
+                        documents.Add(renderedDoc);
+                        await _fileService.UploadFile(renderedDoc);
+                    }
+                    else
+                    {
+                        renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+
+                        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                        agreement.Documents.Add(renderedDoc);
+                        documents.Add(renderedDoc);
+                        await _fileService.UploadFile(renderedDoc);
+
+                    }
+
+                }
+
+                //render job certificate
+                if (template.DocumentType == 9 && !programme.BaseProgramme.IsPdfDoc)
+                {
+                    if (sheet.Jobs.Where(sj => sj.DateDeleted == null && !sj.Removed).Count() > 0)
+                    {
+                        foreach (var job in sheet.Jobs.Where(sj => sj.DateDeleted == null && !sj.Removed))
+                        {
+                            renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, job);
+                            renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                            agreement.Documents.Add(renderedDoc);
+                            documents.Add(renderedDoc);
+                            await _fileService.UploadFile(renderedDoc);
+                        }
+                    }
+                }
+
+                //render all subsystem
+                if (template.DocumentType == 6)
+                {
+                    foreach (var subSystemClient in sheet.SubClientInformationSheets)
+                    {
+                        if (agreement.Product.IsOptionalProductBasedSub)
+                        {
+                            if (subSystemClient.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                            {
+                                SystemDocument renderedDocSub = await _fileService.RenderDocument(user, template, agreement, subSystemClient, null);
+                                renderedDocSub.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                agreement.Documents.Add(renderedDocSub);
+                                documents.Add(renderedDocSub);
+                                await _fileService.UploadFile(renderedDocSub);
+                            }
+                        }
+                        else
+                        {
+                            renderedDoc = await _fileService.RenderDocument(user, template, agreement, subSystemClient, null);
+                            renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                            agreement.Documents.Add(renderedDoc);
+                            documents.Add(renderedDoc);
+                            await _fileService.UploadFile(renderedDoc);
+                        }
+
+                    }
                 }
             }
 
-            foreach (SystemDocument template in agreement.Product.Documents)
-            {
-                SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
-                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                agreement.Documents.Add(renderedDoc);
-                await _fileService.UploadFile(renderedDoc);
             }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return documents;
+            }
+            return documents;
+
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RerenderSelectedTemplate(string TemplateName, Guid ProgrammeId)
+        {
+            //SystemDocument template = await _documentRepository.GetByIdAsync(TemplateId);
+            //Programme programme = await _programmeService.GetProgrammeById(ProgrammeId);
+            User user = await CurrentUser();
+            List<Document> documents = null;
+            List<SystemDocument> agreeTemplateList = null;
+            List<ClientAgreement> clientagreements = null;
+            List <ClientProgramme> ClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(ProgrammeId);
+            try
+            {
+                foreach (ClientProgramme programme in ClientProgrammes.OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                {
+                    clientagreements = programme.Agreements.ToList(); ;
+                    foreach (ClientAgreement agreement in clientagreements)
+                    {
+                         agreeTemplateList = agreement.Documents.Where(doc => doc.Name == TemplateName).ToList();
+
+                        //var templatetype = agreement.Documents.Where(doc => doc.Name == TemplateName);
+                        foreach (SystemDocument templatetypes in agreeTemplateList)
+                        {
+                             documents = await RerenderTemplate(templatetypes, agreement, programme);
+
+                        }
+
+                    }
+                }
+            } catch(Exception ex){
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+
+          var url = "/Agreement/RerenderDocs/?ProgrammeId=" + ""+ProgrammeId;
+            //return Redirect("/Agreement/RerenderDocs/" + ProgrammeId);
+            return Json(new { url });
+
+        }
+
         [HttpPost]
         public async Task<IActionResult> ByPassPayment(IFormCollection collection)
         {
@@ -2780,7 +3230,7 @@ namespace DealEngine.WebUI.Controllers
 
                                 if (!agreement.Product.IsOptionalCombinedProduct)
                                 {
-                                    foreach (SystemDocument template in agreeTemplateList)
+                                    foreach (SystemDocument template in agreeTemplateList.Where(atl => atl.DateDeleted == null && atl.DocumentType != 10))
                                     {
                                         if (template.ContentType == MediaTypeNames.Application.Pdf)
                                         {
@@ -2982,212 +3432,7 @@ namespace DealEngine.WebUI.Controllers
                 ClientInformationSheet sheet = await _customerInformationService.GetInformation(id);
                 user = await CurrentUser();
                 // TODO - rewrite to save templates on a per programme basis
-
-                ClientProgramme programme = sheet.Programme;
-                foreach (ClientAgreement agreement in programme.Agreements)
-                {
-                    if (agreement.ClientAgreementTerms.Where(acagreement => acagreement.DateDeleted == null && acagreement.Bound).Count() > 0)
-                    {
-                        var allDocs = await _fileService.GetDocumentByOwner(programme.Owner);
-                        var documents = new List<SystemDocument>();
-                        var documentspremiumadvice = new List<SystemDocument>();
-                        var agreeTemplateList = agreement.Product.Documents;
-                        var agreeDocList = agreement.GetDocuments();
-
-                        foreach (SystemDocument doc in agreeDocList)
-                        {
-                            // The PDF document will skip rendering so we don't delete it here but all others are getting regenerated so we delete the old ones
-                            if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
-                            {
-                                doc.Delete(user);
-                            }
-                        }
-
-                        //tripleA DO use case, remove when all client set as company
-                        if (agreement.Product.Id == new Guid("bdbdda02-ee4e-44f5-84a8-dd18d17287c1") &&
-                            agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDAOLIOptions").First().Value == "2")
-                        {
-
-                        }
-                        else
-                        {
-                            if (!agreement.Product.IsOptionalCombinedProduct)
-                            {
-                                foreach (SystemDocument template in agreeTemplateList)
-                                {
-                                    if (template.ContentType == MediaTypeNames.Application.Pdf)
-                                    {
-                                        SystemDocument notRenderedDoc = await _fileService.GetDocumentByID(template.Id);
-                                        agreement.Documents.Add(notRenderedDoc);
-                                        documents.Add(notRenderedDoc);
-                                    }
-                                    else
-                                    {
-                                        //if not Payment Confirmation or Advisory
-                                        if (template.DocumentType != 4 && template.DocumentType != 6)
-                                        {
-                                            if (template.Name == "TripleA Individual TL Certificate")
-                                            {
-                                                if (agreement.Product.IsOptionalProductBasedSub &&
-                                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
-                                                {
-                                                    SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
-                                                    renderedDoc.FileRendered = true;
-                                                    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                    agreement.Documents.Add(renderedDoc);
-                                                    documents.Add(renderedDoc);
-                                                    await _fileService.UploadFile(renderedDoc);
-                                                }
-                                            }
-                                            // else if TripleA Base Premium Advice
-                                            else if (template.DocumentType == 7)
-                                            {
-                                                SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
-                                                SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
-                                                renderedDoc.FileRendered = true;
-                                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                agreement.Documents.Add(renderedDoc);
-                                                //documents.Add(renderedDoc);
-                                                documentspremiumadvice.Add(renderedDoc);
-                                                await _fileService.UploadFile(renderedDoc);
-                                            }
-                                            // else if Apollo Invoice
-                                            else if (template.DocumentType == 8)
-                                            {
-                                                SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
-
-                                                SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
-                                                renderedDoc.FileRendered = true;
-                                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                agreement.Documents.Add(renderedDoc);
-                                                documents.Add(renderedDoc);
-                                                await _fileService.UploadFile(renderedDoc);
-                                            }
-                                            else
-                                            {
-                                                SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
-                                                SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
-                                                renderedDoc.FileRendered = true;
-                                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                agreement.Documents.Add(renderedDoc);
-                                                documents.Add(renderedDoc);
-                                                await _fileService.UploadFile(renderedDoc);
-                                            }
-                                        }
-                                        // else if TripleA Base Premium Advice
-                                        else if (template.DocumentType == 7)
-                                        {
-                                            SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
-                                            SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
-                                            renderedDoc.FileRendered = true;
-                                            renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                            agreement.Documents.Add(renderedDoc);
-                                            //documents.Add(renderedDoc);
-                                            documentspremiumadvice.Add(renderedDoc);
-                                            await _fileService.UploadFile(renderedDoc);
-                                        }
-                                        //else if (template.Description == doc.Name.EqualsIgnoreCase("FullProposalReport"))
-                                        //{
-                                        //    SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null);
-                                        //    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                        //    agreement.Documents.Add(renderedDoc);
-                                        //    documents.Add(renderedDoc);
-                                        //    await _fileService.UploadFile(renderedDoc);
-                                        //}
-                                        else
-                                        {
-                                            SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
-                                            SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
-                                            renderedDoc.FileRendered = true;
-                                            renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                            agreement.Documents.Add(renderedDoc);
-                                            documents.Add(renderedDoc);
-                                            await _fileService.UploadFile(renderedDoc);
-                                        }
-                                    }
-                                    //render all subsystem
-                                    if (template.DocumentType == 6)
-                                    {
-                                        foreach (var subSystemClient in sheet.SubClientInformationSheets)
-                                        {
-                                            if (agreement.Product.IsOptionalProductBasedSub)
-                                            {
-                                                if (subSystemClient.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
-                                                {
-                                                    SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, subSystemClient, null);
-                                                    SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
-                                                    renderedDoc.FileRendered = true;
-                                                    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                    agreement.Documents.Add(renderedDoc);
-                                                    documents.Add(renderedDoc);
-                                                    await _fileService.UploadFile(renderedDoc);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, subSystemClient, null);
-                                                SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
-                                                renderedDoc.FileRendered = true;
-                                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                                agreement.Documents.Add(renderedDoc);
-                                                documents.Add(renderedDoc);
-                                                await _fileService.UploadFile(renderedDoc);
-                                            }
-
-                                        }
-                                    }
-                                }
-
-                                //if (programme.BaseProgramme.ProgEnableEmail) //code change for allowing send out policy docs to both insured and broker regardless of the enable email settings
-                                //{
-                                //send out policy document email
-                                EmailTemplate emailTemplate = programme.BaseProgramme.EmailTemplates.FirstOrDefault(et => et.Type == "SendPolicyDocuments");
-                                if (emailTemplate != null)
-                                {
-                                    if (sendUser)
-                                    {
-                                        await _emailService.SendEmailViaEmailTemplate(user.Email, emailTemplate, documents, agreement.ClientInformationSheet, agreement);
-                                    }
-                                    else
-                                    {
-                                        await _emailService.SendEmailViaEmailTemplate(programme.Owner.Email, emailTemplate, documents, agreement.ClientInformationSheet, agreement);
-                                    }
-                                    using (var uow = _unitOfWork.BeginUnitOfWork())
-                                    {
-                                        if (!agreement.IsPolicyDocSend)
-                                        {
-                                            agreement.IsPolicyDocSend = true;
-                                            agreement.DocIssueDate = DateTime.Now;
-                                            await uow.Commit();
-                                        }
-                                    }
-                                }
-                                //}
-
-                            }
-
-                            // Note:this LOC is needed if we need to send FullProposalReport PDF document with other documents in agreement
-
-                            //foreach (SystemDocument doc in agreeDocList)
-                            //{
-                            //    if (doc.Name.EqualsIgnoreCase("FullProposalReport"))
-                            //    {
-                            //        SystemDocument renderedDoc = await  GetPdfDocument(doc.Id);
-                            //        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                            //        agreement.Documents.Add(renderedDoc);
-                            //        documents.Add(renderedDoc);
-                            //        await _fileService.UploadFile(renderedDoc);
-                            //    }
-                            //}
-
-
-
-                        }
-
-                    }
-
-                }
-
+                RerenderClientProgrammes(sheet.Programme, "SendPolicyDocuments", null, null, false, sendUser);
                 return NoContent();
             }
             catch (Exception ex)
@@ -3447,7 +3692,18 @@ namespace DealEngine.WebUI.Controllers
             var docContents = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
             // DOCX & HTML
             string html = _fileService.FromBytes(renderedDoc.Contents);
-            html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { width: 120px; height:120px}</style></head>");
+
+
+            if (renderedDoc.DocumentType == 8) // Apollo Invoice
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /></head>"); // Removed to fix Image 
+            }
+            else
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { height:auto; max-width: 300px }</style></head>"); // Ashu old values -> width: 120px; height:120px
+            }
+
+            //html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { width: 120px; height:120px}</style></head>");
             // Test if the below 4 are even necessary by this function, setting above should make these redundant now
             html = html.Replace("“", "&quot");
             html = html.Replace("”", "&quot");
@@ -4133,7 +4389,7 @@ namespace DealEngine.WebUI.Controllers
                             }
                             else if (doc.DocumentType == 8)//.Name.Contains("Invoice"))
                             {
-                                model.Documents.Add(new AgreementDocumentViewModel { DisplayName = doc.Name + ".pdf", Url = "/File/GetInvoicePDF/" + doc.Id + "?ClientProgrammeId=" + programme.Id + "&invoicename=ApolloInvoice", ClientAgreementId = agreement.Id, DocType = doc.DocumentType, RenderToPDF = doc.RenderToPDF });
+                                model.Documents.Add(new AgreementDocumentViewModel { DisplayName = doc.Name + ".pdf", Url = "/File/GetInvoicePDF/" + doc.Id + "?ClientProgrammeId=" + programme.Id + "&invoicename=Invoice", ClientAgreementId = agreement.Id, DocType = doc.DocumentType, RenderToPDF = doc.RenderToPDF });
                             }
                             else if (doc.DocumentType == 7)
                             {
@@ -4274,6 +4530,96 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        //        public async void Renderdocs1(ClientAgreement agreement , ClientInformationSheet answerSheet)
+        //        {
+        //            User user = null;
+        //            user = await CurrentUser();
+        //            var agreeDocList = new List<Document>();
+        //            Document renderedDoc;
+        //            agreeDocList = agreement.GetDocuments();
+        //            foreach (Document doc in agreeDocList)
+        //            {
+        //                // The PDF document will skip rendering so we don't delete the old document here (as re-rending will make new doc) and all others are getting regenerated so we delete the old ones
+        //                if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0) && !(doc.DocumentType == 99))
+        //                {
+        //                    doc.Delete(user);
+        //                }
+        //            }
+
+        //            if (agreement.Product.Id == new Guid("bdbdda02-ee4e-44f5-84a8-dd18d17287c1") &&
+        //                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDAOLIOptions").First().Value == "2")
+        //            {
+
+        //            }
+        //            else
+        //            {
+
+        //                if (!agreement.Product.IsOptionalCombinedProduct)
+        //                {
+        //                    foreach (Document template in agreement.Product.Documents)
+        //                    {
+        //                        if (template.DocumentType == 6)
+        //                        {
+        //<<<<<<< HEAD
+        //                            foreach (var subsheet in agreement.ClientInformationSheet.SubClientInformationSheets)
+        //=======
+        //                            foreach (Document template in agreement.Product.Documents.Where(apd => apd.DateDeleted == null && apd.DocumentType != 10))
+        //>>>>>>> 47a043fb023b9bb1e37b13b9aef4e27db8e42699
+        //                            {
+        //                                if (agreement.Product.IsOptionalProductBasedSub)
+        //                                {
+        //                                    if (subsheet.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+        //                                    {
+        //                                        renderedDoc = await _fileService.RenderDocument(user, template, agreement, subsheet, null);
+        //                                        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+        //                                        agreement.Documents.Add(renderedDoc);
+        //                                        await _fileService.UploadFile(renderedDoc);
+        //                                    }
+        //                                }
+        //                                else
+        //                                {
+        //                                    renderedDoc = await _fileService.RenderDocument(user, template, agreement, subsheet, null);
+        //                                    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+        //<<<<<<< HEAD
+        //=======
+        //                                    renderedDoc.RenderToPDF = template.RenderToPDF;
+        //                                    if (answerSheet.Programme.BaseProgramme.IsPdfDoc)
+        //                                    {
+        //                                        if (renderedDoc.IsTemplate == true)
+        //                                        {
+        //                                            renderedDoc = await _fileService.FormatCKHTMLforConversion(renderedDoc);
+        //                                            renderedDoc = await _fileService.ConvertHTMLToPDF(renderedDoc);
+        //                                        }
+        //                                    }
+        //>>>>>>> 47a043fb023b9bb1e37b13b9aef4e27db8e42699
+        //                                    agreement.Documents.Add(renderedDoc);
+        //                                    await _fileService.UploadFile(renderedDoc);
+        //                                }
+        //                            }
+        //                        }
+        //                        else
+        //                        {
+        //                            renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+        //                            renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+        //                            renderedDoc.RenderToPDF = template.RenderToPDF;
+        //                            if (answerSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme" || answerSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG ML Programme" ||
+        //                                 answerSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Run Off Programme")
+        //                            {
+        //                                if (renderedDoc.IsTemplate == true)
+        //                                {
+        //                                    renderedDoc = await _fileService.FormatCKHTMLforConversion(renderedDoc);
+        //                                    renderedDoc = await _fileService.ConvertHTMLToPDF(renderedDoc);
+        //                                }
+        //                            }
+        //                            agreement.Documents.Add(renderedDoc);
+        //                            await _fileService.UploadFile(renderedDoc);
+        //                        }
+        //                    }
+        //                }
+        //            }
+
+        //        }
+
         public async Task<IActionResult> RenderDocuments(Guid id)
         {
             User user = null;
@@ -4313,9 +4659,10 @@ namespace DealEngine.WebUI.Controllers
                     else
                     {
 
-                        if (!agreement.Product.IsOptionalCombinedProduct)
+                        if (!agreement.Product.IsOptionalCombinedProduct && agreement.DateDeleted == null &&
+                (agreement.Status == "Bound and pending payment" || agreement.Status == "Bound and invoice pending" || agreement.Status == "Bound and invoiced" || agreement.Status == "Bound"))
                         {
-                            foreach (Document template in agreement.Product.Documents)
+                            foreach (Document template in agreement.Product.Documents.Where(atl => atl.DateDeleted == null && atl.DocumentType != 10))
                             {
                                 if (template.DocumentType == 6)
                                 {
@@ -4345,8 +4692,7 @@ namespace DealEngine.WebUI.Controllers
                                     renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
                                     renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
                                     renderedDoc.RenderToPDF = template.RenderToPDF;
-                                    if (answerSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme" || answerSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG ML Programme" ||
-                                         answerSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Run Off Programme")
+                                    if (answerSheet.Programme.BaseProgramme.IsPdfDoc)
                                     {
                                         if (renderedDoc.IsTemplate == true)
                                         {

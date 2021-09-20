@@ -1,0 +1,200 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+
+<form id="EPLViewModel" class="is-valid" data-accordianId="Employment Practices Liability Insurance">
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="HaveAnyEmployee" class="label required">Do you have any staff engaged as employees?</label>
+            </div>
+            <div class="col-3">
+                <select id="HaveAnyEmployee" name="EPLViewModel.HaveAnyEmployeeYN" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.EPLViewModel.HaveAnyEmployeeYN)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="EPLViewModel.HaveAnyEmployeeYN" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="totalemployees" class="label required">How many employees do you have (please include full time and part time employees, but exclude contractors):</label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.EPLViewModel.TotalEmployees, new { @class = "form-control", @id = "totalemployees", @type = "number", onchange = "OnChange(this.id, this.name)" })
+                </div>
+            </div>
+        </div>
+
+        <h3 style="font-size:20px;color:black">Employment Practices Liability</h3>
+        <p>Provides cover for damages and costs arising out of certain employment related disputes such as wrongful termination, harassment and discrimination.  Cover includes associated defence costs.</p>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasEPLI" class="label required">Would you like Employment Practices Liability Insurance?</label>
+                </div>
+                <div class="col-3">
+                    <select id="hasEPLI" name="EPLViewModel.HasEPLIOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                        @foreach (var option in Model.EPLViewModel.HasEPLIOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="EPLViewModel.HasEPLIOptions" hidden>
+
+            <div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="iscovered" class="label required">Are all employees covered by written employment contract?</label>
+                        </div>
+                        <div class="col-3">
+                            <select id="iscovered" name="EPLViewModel.CoveredOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                                @foreach (var option in Model.EPLViewModel.CoveredOptions)
+                                {
+                                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="EPLViewModel.CoveredOptions" hidden>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-9">
+                                <label for="islegaladvisor" class="label required">You have answered "Yes" above, were these contracts drawn up by a legal advisor or suitably qualified employment specialist?</label>
+                            </div>
+                            <div class="col-3">
+                                <select id="islegaladvisor" name="EPLViewModel.LegalAdvisorOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                                    @foreach (var option in Model.EPLViewModel.LegalAdvisorOptions)
+                                    {
+                                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="iscasualbasis" class="label required">Do you utilise staff on a casual basis?</label>
+                        </div>
+                        <div class="col-3">
+                            <select id="iscasualbasis" name="EPLViewModel.CasualBasisOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                                @foreach (var option in Model.EPLViewModel.CasualBasisOptions)
+                                {
+                                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="EPLViewModel.CasualBasisOptions" hidden>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-9">
+                                <label for="isdefined" class="label required">You have answered "Yes" above, are such casual employees employed pursuant to a written contract clearly defining the temporary nature of their role?</label>
+                            </div>
+                            <div class="col-3">
+                                <select id="isdefined" name="EPLViewModel.DefinedOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                                    @foreach (var option in Model.EPLViewModel.DefinedOptions)
+                                    {
+                                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="hasmanual" class="label required">Do you have a written human resources manual or equivalent written management guidelines?</label>
+                        </div>
+                        <div class="col-3">
+                            <select id="hasmanual" name="EPLViewModel.ManualOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                                @foreach (var option in Model.EPLViewModel.ManualOptions)
+                                {
+                                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="ispostingnotices" class="label required">Do you post all notices required by law in places conspicuous to all employees including potential employees?</label>
+                        </div>
+                        <div class="col-3">
+                            <select id="ispostingnotices" name="EPLViewModel.PostingNoticesOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                                @foreach (var option in Model.EPLViewModel.PostingNoticesOptions)
+                                {
+                                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="isconsulting" class="label required">Do you consult with your legal advisor and/or a suitable qualified employment consultant prior to undertaking staff restructures or redundancies?</label>
+                        </div>
+                        <div class="col-3">
+                            <select id="isconsulting" name="EPLViewModel.StaffRedundancyOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                                @foreach (var option in Model.EPLViewModel.StaffRedundancyOptions)
+                                {
+                                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="isinsuredclaim" class="label required"><strong>After enquiry,</strong> are you aware of any workplace incidents that have resulted in claims and/or complaints made against during the last 5 years whether insured or uninsured?</label>
+                        </div>
+                        <div class="col-3">
+                            <select id="isinsuredclaim" name="EPLViewModel.IsInsuredClaimOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                                @foreach (var option in Model.EPLViewModel.IsInsuredClaimOptions)
+                                {
+                                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="EPLViewModel.IsInsuredClaimOptions" hidden>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-9">
+                                <label for="insuredclaimdetails" class="label required">
+                                    <strong>You have answered "Yes" </strong>, please provide full details:
+                                </label>
+                            </div>
+                            <div class="col-3">
+                                @Html.TextAreaFor(m => m.EPLViewModel.InsuredClaimDetails, new { @class = "form-control", @id = "insuredclaimdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</form>

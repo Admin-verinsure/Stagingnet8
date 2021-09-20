@@ -18,6 +18,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
+using SystemDocument = DealEngine.Domain.Entities.Document;
+using Document = DealEngine.Domain.Entities.Document;
+using NReco.PdfGenerator;
 #endregion
 
 namespace DealEngine.WebUI.Controllers
@@ -43,7 +46,7 @@ namespace DealEngine.WebUI.Controllers
         IOrganisationService _organisationService;
         IClientInformationAnswerService _clientInformationAnswer;
         IUnitOfWork _unitOfWork;
-
+        IFileService _fileService;
         IUpdateTypeService _updateTypeServices;
         IMilestoneService _milestoneService;
 
@@ -67,6 +70,7 @@ namespace DealEngine.WebUI.Controllers
             IClientInformationService clientInformationService,
             IUnitOfWork unitOfWork,
             IClientInformationAnswerService clientInformationAnswer,
+            IFileService fileService,
             IUpdateTypeService updateTypeService,
             IMilestoneService milestoneService
 
@@ -93,6 +97,7 @@ namespace DealEngine.WebUI.Controllers
             _mapper = mapper;
             _clientInformationAnswer = clientInformationAnswer;
             _updateTypeServices = updateTypeService;
+            _fileService = fileService;
             _milestoneService = milestoneService;
 
         }
@@ -1043,6 +1048,11 @@ namespace DealEngine.WebUI.Controllers
                 model.ClientProgrammes = clientProgrammes;
                 model.ProgrammeId = ProgrammeId;
                 model.IsSubUIS = "false";
+                model.IsLinuxEnv = "True";
+                if (_appSettingService.IsLinuxEnv == "False")
+                {
+                    model.IsLinuxEnv = "False";
+                }
 
                 return View(model);
             }
@@ -1886,6 +1896,23 @@ namespace DealEngine.WebUI.Controllers
                             clientProgramme.IssueDate = DateTime.Now;
                             await _programmeService.Update(clientProgramme);
 
+                                //get UIS instruction email attachement
+                                Product masterUISProduct = clientProgramme.BaseProgramme.Products.Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
+                                var UISAttachmentDocuments = new List<SystemDocument>();
+                                if (masterUISProduct != null)
+                                {
+                                    var UISAttachmentTemplateList = masterUISProduct.Documents.Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
+                                    
+                                    foreach (SystemDocument template in UISAttachmentTemplateList)
+                                    {
+                                        SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, clientProgramme.InformationSheet, null);
+                                        SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                                        renderedDoc.OwnerOrganisation = clientProgramme.Owner;
+                                        UISAttachmentDocuments.Add(renderedDoc);
+                                        await _fileService.UploadFile(renderedDoc);
+                                    }
+                                }
+
                             //send out login instruction email
                             await _emailService.SendSystemEmailLogin(email);
                             //send out information sheet instruction email
@@ -1903,11 +1930,11 @@ namespace DealEngine.WebUI.Controllers
                             {
                                 if (programme.ProgEnableProgEmailCC && !string.IsNullOrEmpty(programme.ProgEmailCCRecipent))
                                 {
-                                    await _emailService.SendEmailViaEmailTemplateWithCC(email, emailTemplate, null, null, null, programme.ProgEmailCCRecipent);
+                                    await _emailService.SendEmailViaEmailTemplateWithCC(email, emailTemplate, UISAttachmentDocuments, null, null, programme.ProgEmailCCRecipent);
                                 }
                                 else
                                 {
-                                    await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, null, null, null);
+                                    await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
                                 }
                             }
                             //send out uis issue notification email
@@ -1962,12 +1989,30 @@ namespace DealEngine.WebUI.Controllers
                             //create renew task
                             await _milestoneService.CreateRenewNotificationTask(user, renewfromClientProgramme, renewfromClientProgramme.Owner, programme);
 
+
+                            //get UIS instruction email attachement
+                            Product masterUISProduct = programme.Products.Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
+                            var UISAttachmentDocuments = new List<SystemDocument>();
+                            if (masterUISProduct != null)
+                            {
+                                var UISAttachmentTemplateList = masterUISProduct.Documents.Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
+
+                                foreach (SystemDocument template in UISAttachmentTemplateList)
+                                {
+                                    SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, renewfromClientProgramme.InformationSheet, null);
+                                    SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                                    renderedDoc.OwnerOrganisation = renewfromClientProgramme.Owner;
+                                    UISAttachmentDocuments.Add(renderedDoc);
+                                    await _fileService.UploadFile(renderedDoc);
+                                }
+                            }
+
                             //send out renew notification email
                             EmailTemplate emailTemplate = null;
                             emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == "SendInformationSheetInstructionRenew");
                             if (emailTemplate != null)
                             {
-                                await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, null, null, null);
+                                await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
                             }
                             //send out login instruction email
                             await _emailService.SendSystemEmailLogin(email);
@@ -2224,6 +2269,61 @@ namespace DealEngine.WebUI.Controllers
             Programme programme = await _programmeService.GetProgrammeById(Id);
             BreakdownModel model = new BreakdownModel(programme);
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<Document> GetInvoicePDF(SystemDocument renderedDoc, string invoicename)
+        {
+            User user = null;
+
+            //SystemDocument doc = await _documentRepository.GetByIdAsync(Id);
+
+
+            var docContents = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+            // DOCX & HTML
+            string html = _fileService.FromBytes(renderedDoc.Contents);
+
+
+            if (renderedDoc.DocumentType == 8) // Apollo Invoice
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /></head>"); // Removed to fix Image 
+            }
+            else
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { height:auto; max-width: 300px }</style></head>"); // Ashu old values -> width: 120px; height:120px
+            }
+
+            //html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { width: 120px; height:120px}</style></head>");
+            // Test if the below 4 are even necessary by this function, setting above should make these redundant now
+            html = html.Replace("“", "&quot");
+            html = html.Replace("”", "&quot");
+            html = html.Replace(" – ", "--");
+            html = html.Replace("&nbsp;", " ");
+            html = html.Replace("’", "&#146");
+            html = html.Replace("‘", "&#39");
+
+            var htmlToPdfConv = new NReco.PdfGenerator.HtmlToPdfConverter();
+            htmlToPdfConv.License.SetLicenseKey(
+               _appSettingService.NRecoUserName,
+               _appSettingService.NRecoLicense
+           );            // for Linux/OS-X: "wkhtmltopdf"
+            if (_appSettingService.IsLinuxEnv == "True")
+            {
+                htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
+            }
+            htmlToPdfConv.PdfToolPath = _appSettingService.NRecoPdfToolPath;
+            var margins = new PageMargins();
+            margins.Bottom = 10;
+            margins.Top = 10;
+            margins.Left = 30;
+            margins.Right = 10;
+            htmlToPdfConv.Margins = margins;
+
+            htmlToPdfConv.PageFooterHtml = "</br>" + $@"page <span class=""page""></span> of <span class=""topage""></span>";
+            var pdfBytes = htmlToPdfConv.GeneratePdf(html);
+            Document document = new Document(user, invoicename, "application/pdf", renderedDoc.DocumentType);
+            document.Contents = pdfBytes;
+            return document;
         }
     }
 }

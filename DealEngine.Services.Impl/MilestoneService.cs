@@ -319,7 +319,10 @@ namespace DealEngine.Services.Impl
             DateTime taskduedate = DateTime.Now.AddDays(7);
             if (renewFromProgrammeBase != null)
             {
-                taskduedate = renewFromProgrammeBase.Agreements.First().ExpiryDate.AddDays(14);
+                if (renewFromProgrammeBase.Agreements.FirstOrDefault() != null)
+                {
+                    taskduedate = renewFromProgrammeBase.Agreements.FirstOrDefault().ExpiryDate.AddDays(14);
+                }
             }
             
             UserTask renewOrgContactUserTask = renewOrgContactUser.UserTasks.FirstOrDefault(t => t.URL == URL && t.IsActive == true);

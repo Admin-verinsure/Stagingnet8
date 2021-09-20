@@ -25,6 +25,7 @@
                 <div class="form-group">
                     <label>Select Target Owner ("Move Advisor" only works with BOUND policies. The Target POLICY owner will not appear in the list if there is an open update in progress. To get the target policy to appear please complete the update and BIND the un-completed update.)</label>
                     <select id="ownerSelect" name="MoveAdvisorsViewModel.TargetOwner" form="MoveAdvisorsViewModel" class="form-control">
+                        <option value="default" selected>-- Select --</option>
                         @foreach (var owner in Model.UniqueOwners)
                         {
                             <option value="@owner.Value">@owner.Text</option>
@@ -64,13 +65,13 @@
         $(document).ready(function () {
 
             $("#ownerSelect").change(function () {
-
                 var ownerId = $("#ownerSelect").val();
+                if (ownerId == "default") {
+                    return;
+                }
                 var ownerIdClientProgrammeId = ownerId.split(" ");
-
                 var ownerId = ownerIdClientProgrammeId[0];
                 var clientProgrammeId = ownerIdClientProgrammeId[1];
-
                 var postData = {
                     'clientProgrammeId': clientProgrammeId,
                 };
@@ -81,12 +82,14 @@
                     data: postData,
                 })
                     .done(function (data) {
-
-                        debugger;
+                        $("#selectedFAP")
+                            .empty()
+                            .removeAttr("disabled")
+                        ;                        
                         var numOrgs = 0;
                         var organisations = JSON.parse(data);
-
                         numOrgs = Object.keys(organisations).length;
+
                         if (numOrgs == 0) {
                             OwnerSelectedNoFAP(clientProgrammeId);
                         }
@@ -94,18 +97,17 @@
                             OwnerSelected(organisations);
                         }
                         else {
-                            debugger;
+                            $("#selectedFAP").append('<option selected="selected" value="default">-- Select --</option>');
                             MultipleisTheFAPOrgsExist(organisations);
+                            confirm("The selected Target Owner's policy has 2+ owners set to \"is the FAP\".\nOnly one can can be the FAP. \nChoose one and the other(s) will be set to negative on the attribute \"is the FAP\".");
                         }
                     })
                     .fail(function () {
                         alert("error");
                     });
-
             });
 
             $("#selectedFAP").change(function () {
-                debugger;
                 var selectedFAP = $('#selectedFAP');
                 if (selectedFAP.is(':disabled')) {
                    $('#noFAPLicenseNumberSection').hide();
@@ -130,13 +132,11 @@
 
             function OwnerSelectedNoFAP(clientProgrammeId) {
                 $('#FAPLicenseHolderSelect').show();
-
                 GetFAPLicenseNumOrgsByClientProgrammeId(clientProgrammeId);
                 return;
             }
 
             function MultipleisTheFAPOrgsExist(organisations) {
-                debugger;
                 PopulateFAPOrgs(organisations);
                 $('#currentFAP').show();
                 $('#SubmitMoveAdvisors').show();
@@ -176,7 +176,6 @@
             }
 
             function PopulateFAPOrgs(organisations) {
-                debugger;
                 for (var orgId in organisations) {
                     $('#selectedFAP').append($('<option value=\"' + organisations[orgId].Id + '">' + organisations[orgId].Name + '</option>'));
                 }
@@ -198,7 +197,6 @@
                     $('#multipleFAPOrgs').append($('<input name="MoveAdvisorsViewModel.ExtraFAP" value="' + organisations[i] + '" form="MoveAdvisorsViewModel">' + organisations[i] + '</input>'));
                 }
                  $('#noFAPLicenseNumberSection').hide();
-
                 return;
             }
         });

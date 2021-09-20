@@ -994,7 +994,7 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async Task MoveAdvisorsToClientProgramme(IList<string> advisors, ClientProgramme clientProgramme, ClientProgramme sourceClientProgramme, User user)
+        public async Task MoveAdvisorsToClientProgramme(IList<string> advisors, ClientProgramme clientProgramme, ClientProgramme sourceClientProgramme, User user, string targetOwnerFAP)
         {
             ClientInformationSheet lastInformationSheet = clientProgramme.InformationSheet;
             ClientInformationSheet sourceClientProgrammeLastInformationSheet = sourceClientProgramme.InformationSheet;
@@ -1062,10 +1062,7 @@ namespace DealEngine.Services.Impl
                                     moveAdvisorAddEvent.OldClientProgrammeId = sourceClientProgramme.Id;
                                     moveAdvisorAddEvent.NewClientProgrammeId = clientProgramme.Id;
                                     moveAdvisorAddEvent.EventDate = DateTime.Now;
-                                    await _organisationEventRepository.AddAsync(moveAdvisorAddEvent);
-
-                                    
-
+                                    await _organisationEventRepository.AddAsync(moveAdvisorAddEvent);                                 
                                 }
                                 if (sourceClientProgrammeLastInformationSheet.Organisation.Contains(Organisation))
                                 {
@@ -1104,7 +1101,43 @@ namespace DealEngine.Services.Impl
                     sourceClientProgrammeLastInformationSheet.Status = "Ceased";
                 }
             }
-            
+
+            //Update all other Orgs on sheet to not be isTheFAP except for TargetOwnerFAP
+            Guid.TryParse(targetOwnerFAP, out Guid targetOwnerFAPId);
+            foreach (Organisation org in lastInformationSheet.Organisation)
+            {
+                //Is this org theFAP the broker selected?
+                if (org.Id == targetOwnerFAPId)
+                {
+                    //Owner
+                    if(lastInformationSheet.Owner.Id == org.Id)
+                    {
+                        org.isOrganisationTheFAP = true;
+                    }
+                    //Advisor
+                    else
+                    {
+                        var advisorUnit = (AdvisorUnit)org.OrganisationalUnits.FirstOrDefault(u => (u.Name == "Advisor") && u.DateDeleted == null);
+                        advisorUnit.isTheFAP = true;
+                    }
+                }
+                
+                else
+                {
+                    //Owner
+                    if (lastInformationSheet.Owner.Id == org.Id)
+                    {
+                        org.isOrganisationTheFAP = false;
+                    }
+                    //Advisor
+                    else
+                    {
+                        var advisorUnit = (AdvisorUnit)org.OrganisationalUnits.FirstOrDefault(u => (u.Name == "Advisor") && u.DateDeleted == null);
+                        advisorUnit.isTheFAP = false;
+                    }
+                }
+            }
+
             await _clientInformationRepository.UpdateAsync(lastInformationSheet);
             await _clientInformationRepository.UpdateAsync(sourceClientProgrammeLastInformationSheet);
 

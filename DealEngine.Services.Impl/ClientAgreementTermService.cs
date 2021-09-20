@@ -14,11 +14,30 @@ namespace DealEngine.Services.Impl
     {
         IMapperSession<ClientAgreementTerm> _clientAgreementTermRepository;
         IMapperSession<ClientAgreement> _clientAgreementRepository;
+        IMapperSession<ClientAgreementTermExtension> _clientAgreementTermExtensionRepository;
 
-        public ClientAgreementTermService(IMapperSession<ClientAgreementTerm> clientAgreementTermRepository, IMapperSession<ClientAgreement> clientAgreementRepository)
+        public ClientAgreementTermService(IMapperSession<ClientAgreementTerm> clientAgreementTermRepository, IMapperSession<ClientAgreement> clientAgreementRepository, IMapperSession<ClientAgreementTermExtension> clientAgreementTermExtensionRepository)
         {
             _clientAgreementTermRepository = clientAgreementTermRepository;
             _clientAgreementRepository = clientAgreementRepository;
+            _clientAgreementTermExtensionRepository = clientAgreementTermExtensionRepository;
+        }
+        public async Task AddAgreementExtensionTerm(User createdBy, int termLimit, decimal excess, decimal premium,  ClientAgreement clientAgreement)
+        {
+            if (string.IsNullOrWhiteSpace(termLimit.ToString()))
+                throw new ArgumentNullException(nameof(termLimit));
+            if (string.IsNullOrWhiteSpace(excess.ToString()))
+                throw new ArgumentNullException(nameof(excess));
+            if (string.IsNullOrWhiteSpace(premium.ToString()))
+                throw new ArgumentNullException(nameof(premium));
+            if (clientAgreement == null)
+                throw new ArgumentNullException(nameof(clientAgreement));
+
+            ClientAgreementTermExtension clientAgreementExtensionTerm = new ClientAgreementTermExtension(createdBy, termLimit, excess, premium,clientAgreement);
+            clientAgreement.ClientAgreementTermExtensions.Add(clientAgreementExtensionTerm);
+            await _clientAgreementTermExtensionRepository.AddAsync(clientAgreementExtensionTerm);
+            await _clientAgreementRepository.UpdateAsync(clientAgreement);
+
         }
 
         public async Task AddAgreementTerm(User createdBy, int termLimit, decimal excess, decimal premium, decimal fSL, decimal brokerageRate, decimal brokerage, ClientAgreement clientAgreement, string subTermType)

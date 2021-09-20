@@ -1,13 +1,97 @@
 ﻿@model DealEngine.WebUI.Models.Agreement.ViewAgreementViewModel
 
-<div id="widget-grid" class="container">
-        @Html.HiddenFor(m => m.ProgrammeId)
 
-        <ul class="nav">
+@Html.HiddenFor(m => m.ProgrammeId)
+
+<div class="container">
+    <form method="POST" action="~/Services/PostClient" novalidate>
+        <div class="card">
+            <div class="card-header">
+                <div class=" form-group">
+                    <a class="btn btn-primary btn-sm" href="/Agreement/RerenderAlldocs?ProgrammeId=@Model.ProgrammeId"> Rerender all documents </a>
+                    <button class="btn-success btn btn-xs" type="button" onclick="GetOwner()">Go</button>
+                </div>
+                @*<div class="form-group">
+                    <button class="btn-success btn btn-xs" type="button" onclick="GetOwner()">Go</button>
+                </div>*@
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+
+                    <div class="form-group col-md-6">
+                        <div>
+                            <label>Rerender selected template </label>
+                            <a class="btn btn-primary btn-sm" id="Rerenderselected" style="display:none"> Rerender selected template </a>
+                            <button class="btn-success btn btn-xs AgreemnTemplateTypeSec" type="button" onclick="Rerenderselected(" AgreemntTemplateType")">Go</button>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label">Select Product</label>
+                            <select id="AgreemntProductType" name="ProductType" class="custom-select">
+
+                                @foreach (var agreementproduct in Model.AgreementProducts)
+                                {
+                                    <option value="@agreementproduct.Id">@agreementproduct.Name</option>
+
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group AgreemnTemplateTypeSec" style="display:none">
+                            <label class="label">Select Template</label>
+                            <select id="AgreemntTemplateType" name="TemplateType" class="form-control input-lg">
+                            </select>
+                        </div>
+
+                    </div>
+
+                    @*<div class="form-group col-md-6">
+                        <div>
+                            <label>Rerender UIS </label>
+                            <a class="btn btn-primary btn-sm" id="Rerenderselected" style="display:none"> Rerender selected template </a>
+                            <button class="btn-success btn btn-xs AgreemnTemplateTypeSec" type="button" onclick="Rerenderselected(" AgreemntTemplateType")">Go</button>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label">Select Product</label>
+                            <select id="AgreemntProductType" name="ProductType" class="custom-select">
+
+                                @foreach (var agreementproduct in Model.AgreementProducts)
+                                {
+                                    <option value="@agreementproduct.Id">@agreementproduct.Name</option>
+
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group AgreemnTemplateTypeSec" style="display:none">
+                            <label class="label">Select Template</label>
+                            <select id="AgreemntTemplateType" name="TemplateType" class="form-control input-lg">
+                            </select>
+                        </div>
+
+                    </div>*@
+                </div>
+            </div>
            
-            <li class="nav-item">
-                <a onclick="location.href='@Url.Action("RerenderAlldocs", "Agreement",new { ProgrammeId=@Model.ProgrammeId})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Rerender all documents </a>
-            </li>
-        </ul>
-
+        </div>
+    </form>
 </div>
+
+<div class="modal" id="getRerenderModal" tabindex="-1" role="dialog" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p><img src="/img/loading.gif" /> Rendering your documents. Please wait...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section pagespecific {
+
+    @await Html.PartialAsync("_AgreementScripts")
+}

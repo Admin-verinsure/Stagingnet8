@@ -1,0 +1,169 @@
+@model DealEngine.WebUI.Models.Agreement.ViewAgreementViewModel
+
+@{
+    int count = 0;
+}
+
+<div class="container">
+    <div class="form-group">
+        <h1 class="page-title txt-color-blueDark">
+            <a href="~/Agreement/ViewAcceptedAgreement/@Model.ClientProgrammeId"> Agreement</a>
+            > <span>Edit Agreement Extension Term</span>
+        </h1>
+    </div>
+    <div class="form-group">
+        <span>
+            <a class="btn btn-primary btn-xs text-white" onclick="location.href='@Url.Action("ViewAcceptedAgreement", "Agreement",new { Id =@Model.ClientProgrammeId })'" id="backbutton"><i class="fa fa-home"></i> Back </a>
+        </span>
+    </div>
+    <div class="form-group">
+        <div class="card">
+            <div class="card-header">
+                <span class="widget-icon">
+                    <h2><i class="fa fa-comment"></i> @ViewBag.Title </h2>
+                </span>
+            </div>
+            <div class="card-body">
+                @Html.HiddenFor(m => m.ClientAgreementId)
+               
+                @if (Model.ExtensionTerms.Count != 0)
+                {
+                    <div class="form-group">
+                        <div class="card">
+                            <div class="card-header">
+                                <header>  @Model.ProductName ExtensionTerms <a href="#ExtensionTermModal" aria-hidden="true" data-sub-type="@Model.ProductName" style="color:green" data-type-id="AddTerm" data-toggle="modal"> <u>  Add New Extension Term </u></a></header>
+
+
+                            </div>
+                            <div class="card-body">
+
+                                @if (Model.ExtensionTerms.Any())
+                                {
+                                    count = 0;
+                                    <form action="~/Agreement/EditAgreement/item" method="POST" id="update-form" class="client-form" enctype="multipart/form-data">
+
+                                        <table class="table table-bordered table-responsive-md table-striped text-center" id="PLTable">
+                                            <tr>
+                                                <th class="text-center" width="12%" hidden> Id</th>
+                                                <th class="text-center" width="11%"> Sum Insured</th>
+                                                <th class="text-center" width="11%"> Excess</th>
+                                                <th class="text-center" width="11%"> Total Premium</th>
+                                                @*<th class="text-center" width="11%"> Base Premium</th>
+                                                <th class="text-center" width="11%"> Total Premium Difference</th>*@
+                                                <th class="text-center" width="9%"></th>
+                                            </tr>
+                                            @foreach (var item in Model.ExtensionTerms)
+                                            {
+                                                <tr class="clickable-row">
+                                                    <td class="pt-3-half" width="12%" contenteditable="true" id="VesselId" hidden>
+                                                        @item.TermId
+                                                    </td>
+                                                    <td class="pt-3-half" width="11%" contenteditable="true">
+                                                        @item.TermLimit.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))
+                                                    </td>
+                                                    <td class="pt-3-half" width="11%" contenteditable="true">
+                                                        @item.Excess.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))
+                                                    </td>
+                                                    <td class="pt-3-half" width="11%" contenteditable="true">
+                                                        @item.Premium.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))
+                                                    </td>
+                                                  
+                                                <td width="9%">
+                                                   
+                                                    <a href="#ExtensionTermModal" aria-hidden="true" style="color:forestgreen" data-toggle="modal"
+                                                             data-sub-sum="@item.TermLimit.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" data-sub-premium="@item.Premium.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))"
+                                                             data-sub-excess="@item.Excess.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" data-sub-id="@item.TermId"><i class="fa fa-edit"> </i></a>
+                                                    <a href="#ConfirmExtensionTermDelete" aria-hidden="true" style="color:red" data-toggle="modal" data-term-id="@item.TermId"><span class="fa fa-trash" id="span"></span></a>
+                                                </td>
+                                                </tr>
+                                            }
+                                        </table>
+
+                                    </form>
+
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                }
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="ConfirmExtensionTermDelete" role="dialog" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p style="color:black;font-size:18px; ">Confirm To Delete This Term</p>
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-control " id="Term_Id" name="TermId" hidden />
+            </div>
+            <div class="form-group">
+            </div>
+            <div class="modal-footer">
+                <button type="Submit" data-dismiss="modal" class="btn btn-success" id="btnExtensionTermDelete">Confirm </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ExtensionTermModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="color:blue; font-size:22px">Edit Extension Term</h4>
+            </div>
+            <div class="modal-body">
+                <form id="ExtensionForm">
+
+                        <div class="form-group" hidden>
+                            <label for="MaxSumInsured">Term Id</label>
+                            <input type="text" class="form-control " id="TermId" name="Id" readonly />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="MaxSumInsured">Sum Insured</label>
+                            <input type="text" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="TermSumInsured" name="SumInsured" required />
+                            <p class="validationContainer" id="validateTermSum"></p>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="Excess">Excess</label>
+                            <input type="text" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="TermExcess" name="Excess" required>
+                            <p class="validationContainer" id="validateTermExcess"></p>
+
+                        </div>
+                        <div class="form-group">
+                            <label for="Premium">Total Premium</label>
+                            <input type="text" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="TermPremium" name="Premium" required>
+                            <p class="validationContainer" id="validateTermPremium"></p>
+
+                        </div>
+
+                    </form>
+            </div>
+            <div class="modal-footer">
+                <input type="Reset" value="Submit" class="btn btn-success" id="btnExtenionTermSubmit">
+                <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section pagespecific {
+
+    @await Html.PartialAsync("_AgreementScripts")
+
+}

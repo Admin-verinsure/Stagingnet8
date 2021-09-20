@@ -12,6 +12,7 @@ namespace DealEngine.Services.Impl
     {
         IMapperSession<ClientAgreement> _clientAgreementRepository;
         IMapperSession<ClientInformationSheet> _clientInformationSheetRepository;
+        IMapperSession<ClientAgreementTermExtension> _clientAgreementExtensionRepository;
 
         public ClientAgreementService(IMapperSession<ClientAgreement> clientAgreementRepository, IMapperSession<ClientInformationSheet> clientInformationSheetRepository)
         {
@@ -60,6 +61,11 @@ namespace DealEngine.Services.Impl
         public async Task UpdateClientAgreement(ClientAgreement clientAgreement)
         {
             await _clientAgreementRepository.UpdateAsync(clientAgreement);
+        }
+
+        public async Task<ClientAgreementTermExtension> GetAgreementExtension(Guid clientAgreementTermExtensionId)
+        {
+            return await _clientAgreementExtensionRepository.GetByIdAsync(clientAgreementTermExtensionId);
         }
     }
 }
