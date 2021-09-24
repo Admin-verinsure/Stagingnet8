@@ -661,6 +661,11 @@ namespace DealEngine.WebUI.Controllers
                                     documentType = "Job-Certificate";
                                     break;
                                 }
+                            case 10:
+                                {
+                                    documentType = "UIS Invitation Email Attachment";
+                                    break;
+                                }
                             case 99:
                                 {
                                     documentType = "Full Proposal Report";

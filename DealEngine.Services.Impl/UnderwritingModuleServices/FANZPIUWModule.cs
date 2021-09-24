@@ -649,6 +649,26 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         {
                             term1millimitpremiumoption.PremiumDiffer = 0;
                         }
+                        term1millimitpremium10kexcessoption.PremiumDiffer = (TermPremium1mil10kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term1millimitpremium10kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term1millimitpremium10kexcessoption.TermLimit == term.TermLimit && term1millimitpremium10kexcessoption.Excess == term.Excess)
+                        {
+                            term1millimitpremium10kexcessoption.Bound = true;
+                        }
+                        if (term1millimitpremium10kexcessoption.PremiumDiffer < 0)
+                        {
+                            term1millimitpremium10kexcessoption.PremiumDiffer = 0;
+                        }
+                        term1millimitpremium25kexcessoption.PremiumDiffer = (TermPremium1mil25kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term1millimitpremium25kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term1millimitpremium25kexcessoption.TermLimit == term.TermLimit && term1millimitpremium25kexcessoption.Excess == term.Excess)
+                        {
+                            term1millimitpremium25kexcessoption.Bound = true;
+                        }
+                        if (term1millimitpremium25kexcessoption.PremiumDiffer < 0)
+                        {
+                            term1millimitpremium25kexcessoption.PremiumDiffer = 0;
+                        }
                         term2millimitpremiumoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         term2millimitpremiumoption.PremiumPre = PreviousBoundPremium;
                         if (term2millimitpremiumoption.TermLimit == term.TermLimit && term2millimitpremiumoption.Excess == term.Excess)
@@ -659,7 +679,26 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         {
                             term2millimitpremiumoption.PremiumDiffer = 0;
                         }
-
+                        term2millimitpremium10kexcessoption.PremiumDiffer = (TermPremium2mil10kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term2millimitpremium10kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term2millimitpremium10kexcessoption.TermLimit == term.TermLimit && term2millimitpremium10kexcessoption.Excess == term.Excess)
+                        {
+                            term2millimitpremium10kexcessoption.Bound = true;
+                        }
+                        if (term2millimitpremium10kexcessoption.PremiumDiffer < 0)
+                        {
+                            term2millimitpremium10kexcessoption.PremiumDiffer = 0;
+                        }
+                        term2millimitpremium25kexcessoption.PremiumDiffer = (TermPremium2mil25kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term2millimitpremium25kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term2millimitpremium25kexcessoption.TermLimit == term.TermLimit && term2millimitpremium25kexcessoption.Excess == term.Excess)
+                        {
+                            term2millimitpremium25kexcessoption.Bound = true;
+                        }
+                        if (term2millimitpremium25kexcessoption.PremiumDiffer < 0)
+                        {
+                            term2millimitpremium25kexcessoption.PremiumDiffer = 0;
+                        }
                         term3millimitpremiumoption.PremiumDiffer = (TermPremium3mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         term3millimitpremiumoption.PremiumPre = PreviousBoundPremium;
                         if (term3millimitpremiumoption.TermLimit == term.TermLimit && term3millimitpremiumoption.Excess == term.Excess)
@@ -669,6 +708,26 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         if (term3millimitpremiumoption.PremiumDiffer < 0)
                         {
                             term3millimitpremiumoption.PremiumDiffer = 0;
+                        }
+                        term3millimitpremium10kexcessoption.PremiumDiffer = (TermPremium3mil10kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term3millimitpremium10kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term3millimitpremium10kexcessoption.TermLimit == term.TermLimit && term3millimitpremium10kexcessoption.Excess == term.Excess)
+                        {
+                            term3millimitpremium10kexcessoption.Bound = true;
+                        }
+                        if (term3millimitpremium10kexcessoption.PremiumDiffer < 0)
+                        {
+                            term3millimitpremium10kexcessoption.PremiumDiffer = 0;
+                        }
+                        term3millimitpremium25kexcessoption.PremiumDiffer = (TermPremium3mil25kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term3millimitpremium25kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term3millimitpremium25kexcessoption.TermLimit == term.TermLimit && term3millimitpremium25kexcessoption.Excess == term.Excess)
+                        {
+                            term3millimitpremium25kexcessoption.Bound = true;
+                        }
+                        if (term3millimitpremium25kexcessoption.PremiumDiffer < 0)
+                        {
+                            term3millimitpremium25kexcessoption.PremiumDiffer = 0;
                         }
                         term4millimitpremiumoption.PremiumDiffer = (TermPremium4mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         term4millimitpremiumoption.PremiumPre = PreviousBoundPremium;
@@ -680,6 +739,26 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         {
                             term4millimitpremiumoption.PremiumDiffer = 0;
                         }
+                        term4millimitpremium10kexcessoption.PremiumDiffer = (TermPremium4mil10kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term4millimitpremium10kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term4millimitpremium10kexcessoption.TermLimit == term.TermLimit && term4millimitpremium10kexcessoption.Excess == term.Excess)
+                        {
+                            term4millimitpremium10kexcessoption.Bound = true;
+                        }
+                        if (term4millimitpremium10kexcessoption.PremiumDiffer < 0)
+                        {
+                            term4millimitpremium10kexcessoption.PremiumDiffer = 0;
+                        }
+                        term4millimitpremium25kexcessoption.PremiumDiffer = (TermPremium4mil25kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term4millimitpremium25kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term4millimitpremium25kexcessoption.TermLimit == term.TermLimit && term4millimitpremium25kexcessoption.Excess == term.Excess)
+                        {
+                            term4millimitpremium25kexcessoption.Bound = true;
+                        }
+                        if (term4millimitpremium25kexcessoption.PremiumDiffer < 0)
+                        {
+                            term4millimitpremium25kexcessoption.PremiumDiffer = 0;
+                        }
                         term5millimitpremiumoption.PremiumDiffer = (TermPremium5mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
                         term5millimitpremiumoption.PremiumPre = PreviousBoundPremium;
                         if (term5millimitpremiumoption.TermLimit == term.TermLimit && term5millimitpremiumoption.Excess == term.Excess)
@@ -689,6 +768,26 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         if (term5millimitpremiumoption.PremiumDiffer < 0)
                         {
                             term5millimitpremiumoption.PremiumDiffer = 0;
+                        }
+                        term5millimitpremium10kexcessoption.PremiumDiffer = (TermPremium5mil10kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term5millimitpremium10kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term5millimitpremium10kexcessoption.TermLimit == term.TermLimit && term5millimitpremium10kexcessoption.Excess == term.Excess)
+                        {
+                            term5millimitpremium10kexcessoption.Bound = true;
+                        }
+                        if (term5millimitpremium10kexcessoption.PremiumDiffer < 0)
+                        {
+                            term5millimitpremium10kexcessoption.PremiumDiffer = 0;
+                        }
+                        term5millimitpremium25kexcessoption.PremiumDiffer = (TermPremium5mil25kexcess - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        term5millimitpremium25kexcessoption.PremiumPre = PreviousBoundPremium;
+                        if (term5millimitpremium25kexcessoption.TermLimit == term.TermLimit && term5millimitpremium25kexcessoption.Excess == term.Excess)
+                        {
+                            term5millimitpremium25kexcessoption.Bound = true;
+                        }
+                        if (term5millimitpremium25kexcessoption.PremiumDiffer < 0)
+                        {
+                            term5millimitpremium25kexcessoption.PremiumDiffer = 0;
                         }
                     }
 

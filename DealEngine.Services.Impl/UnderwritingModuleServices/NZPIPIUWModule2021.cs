@@ -276,17 +276,52 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             term5millimitpremiumoption.DeletedBy = null;
 
             //add Landscape Architecture & Landscape Planning extension
-
+            decimal decLALPPremium = 400;
+            decimal decLALPBasePremium = 400;
+            decLALPPremium = decLALPPremium / coverperiodindays * agreementperiodindays;
             foreach (ClientAgreementTermExtension pitermextension in agreement.ClientAgreementTermExtensions.Where(ctex => ctex.DateDeleted == null))
             {
                 pitermextension.Delete(underwritingUser);
             }
             if (decLALP > 0)
             {
-                ClientAgreementTermExtension termLALPextension = GetAgreementExtensionTerm(underwritingUser, agreement, 0, 0M, 400, "Landscape Architecture & Landscape Planning");
+                ClientAgreementTermExtension termLALPextension = GetAgreementExtensionTerm(underwritingUser, agreement, 0, 0M, decLALPPremium, "Landscape Architecture & Landscape Planning");
                 termLALPextension.ExtentionName = "Landscape Architecture & Landscape Planning";
+                termLALPextension.HideLimitExcess = true;
+                termLALPextension.Premium = decLALPPremium;
+                termLALPextension.BasePremium = decLALPBasePremium;
                 termLALPextension.DateDeleted = null;
                 termLALPextension.DeletedBy = null;
+
+                //Change policy premium claculation
+                if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
+                {
+                    var PreviousAgreementExtension = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PI"));
+                    foreach (var termExtension in PreviousAgreementExtension.ClientAgreementTermExtensions)
+                    {
+                        if (termExtension.Bound)
+                        {
+                            var PreviousBoundPremiumExtension = termExtension.Premium;
+                            if (termExtension.BasePremium > 0 && PreviousAgreementExtension.ClientInformationSheet.IsChange)
+                            {
+                                PreviousBoundPremiumExtension = termExtension.BasePremium;
+                            }
+                            termLALPextension.PremiumDiffer = (decLALPPremium - PreviousBoundPremiumExtension) * coverperiodindaysforchange / agreementperiodindays;
+                            termLALPextension.PremiumPre = PreviousBoundPremiumExtension;
+                            if (termLALPextension.TermLimit == termExtension.TermLimit && termLALPextension.Excess == termExtension.Excess && termLALPextension.ExtentionName == termExtension.ExtentionName)
+                            {
+                                termLALPextension.Bound = true;
+                            }
+                            if (termLALPextension.PremiumDiffer < 0)
+                            {
+                                termLALPextension.PremiumDiffer = 0;
+                            }
+
+                        }
+
+                    }
+                }
+
             }
 
 

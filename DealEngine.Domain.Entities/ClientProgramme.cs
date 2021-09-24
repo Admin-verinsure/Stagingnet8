@@ -12,20 +12,23 @@ namespace DealEngine.Domain.Entities
     {
         public virtual Organisation Owner { get; set; }
         [JsonIgnore]
-        public virtual Programme BaseProgramme { get; set; }        
-        public virtual ClientInformationSheet InformationSheet { get; set; }
+        public virtual Programme BaseProgramme { get; set; }
+        [JsonIgnore]
+        public virtual ClientInformationSheet InformationSheet { get; set; } //ignore for edit client page
         [JsonIgnore]
         public virtual Payment Payment { get; set; }
-        public virtual User BrokerContactUser { get; set; }
+        [JsonIgnore]
+        public virtual User BrokerContactUser { get; set; } //ignore for edit client page
         public virtual ChangeReason ChangeReason { get; set; }
         public virtual DateTime IssueDate { get; set; }
         public virtual DateTime ReminderDate { get; set; }
         public virtual DateTime RenewNotificationDate { get; set; }
-        public virtual IDictionary<Product, bool> Products { get; set; }      
         [JsonIgnore]
-        public virtual IList<ClientAgreement> Agreements { get; set; }        
-        public virtual IList<EGlobalSubmission> ClientAgreementEGlobalSubmissions { get; set; }        
-        public virtual IList<EGlobalResponse> ClientAgreementEGlobalResponses { get; set; }        
+        public virtual IDictionary<Product, bool> Products { get; set; } //ignore for edit client page     
+        [JsonIgnore]
+        public virtual IList<ClientAgreement> Agreements { get; set; }
+        public virtual IList<EGlobalSubmission> ClientAgreementEGlobalSubmissions { get; set; }
+        public virtual IList<EGlobalResponse> ClientAgreementEGlobalResponses { get; set; }
         public virtual IList<SubClientProgramme> SubClientProgrammes { get; set; }       
         public virtual bool HasEGlobalCustomDescription { get; set; }
         public virtual string PaymentType { get; set; }

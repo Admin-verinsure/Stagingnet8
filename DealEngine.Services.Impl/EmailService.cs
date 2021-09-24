@@ -262,10 +262,21 @@ namespace DealEngine.Services.Impl
             email.WithBody(systememailbody);
             email.CC(cCRecipent);
             email.UseHtmlBody(true);
+            
             if (documents != null)
             {
-                var documentsList = await ToAttachments(documents);
-                email.Attachments(documentsList.ToArray());
+                foreach (SystemDocument document in documents)
+                {
+                    if (document.ContentType == "application/pdf")
+                    {
+                        email.Attachments(new Attachment(new MemoryStream(document.Contents), document.Name));
+                    }
+                    else
+                    {
+                        var documentsList = await ToAttachments(documents);
+                        email.Attachments(documentsList.ToArray());
+                    }
+                }
                 email.Send();
             }
             else

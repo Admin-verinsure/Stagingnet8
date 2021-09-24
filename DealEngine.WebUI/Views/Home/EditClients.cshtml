@@ -38,12 +38,18 @@
                             <label class="label">Email</label>
                             @Html.TextBoxFor(m => m.Organisation.Email, new { @class = "form-control", @id = "Organisation.Email", @required = "" })
                         </div>
-                        @if (Model.Programme.NamedPartyUnitName == "Apollo Programme")
+                        @if (Model.Programme.NamedPartyUnitName == "Apollo Programme" ||
+                            Model.Programme.NamedPartyUnitName == "Apollo ML Programme" ||
+                            Model.Programme.NamedPartyUnitName == "Apollo Run Off Programme" ||
+                            Model.Programme.NamedPartyUnitName == "NZPI Programme")
                         {
                             <div class="form-group">
                                 <label class="label">EGlobal Number</label>
                                 @Html.TextBoxFor(m => m.ClientProgramme.EGlobalClientNumber, new { @class = "form-control", @id = "ClientProgramme.EGlobalClientNumber", @required = "" })
                             </div>
+                        }
+                        @if (Model.Programme.NamedPartyUnitName == "Apollo Programme")
+                        {
 
                             <div class="form-group">
                                 <label class="label">Tier</label>

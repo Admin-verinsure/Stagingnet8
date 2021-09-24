@@ -97,13 +97,13 @@ namespace DealEngine.Services.Impl
                 // have a repo organisation? Return it
                 if (organisation != null)
                     return organisation;
-                organisation = _ldapService.GetOrganisation(organisationId);
-                // have a ldap organisation but no repo? Update NHibernate & return
-                if (organisation != null)
-                {
-                    await Update(organisation);
-                    return organisation;
-                }
+                //organisation = _ldapService.GetOrganisation(organisationId);
+                //// have a ldap organisation but no repo? Update NHibernate & return
+                //if (organisation != null)
+                //{
+                //    await Update(organisation);
+                //    return organisation;
+                //}
                 throw new Exception("Organisation with id [" + organisationId + "] does not exist in the system");
             }
             return null;

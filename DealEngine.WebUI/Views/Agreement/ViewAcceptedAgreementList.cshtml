@@ -62,11 +62,11 @@
                                     </li>
                                 }
                                 @*@if (item.ProgrammeNamedPartyName == "NZFSG Programme")
-                                {
-                                    <li class="nav-item">
-                                        <a href="~/Agreement/EditAdvisor/@item.ClientAgreementId" class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Edit Advisors </a>
-                                    </li>
-                                }*@
+            {
+                <li class="nav-item">
+                    <a href="~/Agreement/EditAdvisor/@item.ClientAgreementId" class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Edit Advisors </a>
+                </li>
+            }*@
 
                                 <li class="nav-item">
                                     <a href="~/Agreement/EditAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Dates </a>
@@ -96,7 +96,10 @@
 
                                     @*<a href="~/Agreement/EditTerms/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>*@
                                 </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Extension Limits2 </a>
 
+                                </li>
                                 @if (item.Status == "Authorised" && item.ClientInformationSheet.Status == "Submitted")
                                 {
                                     <li class="nav-item">
@@ -208,7 +211,10 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                 <li class="nav-item">
                                     <a href="@Url.Action("EditTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>
 
-                                    @*<a href="~/Agreement/EditTerms/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>*@
+                                </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Extension Limits </a>
+
                                 </li>
                                 @if (item.Status == "Authorised" && item.ClientInformationSheet.Status == "Submitted")
                                 {
@@ -277,7 +283,11 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
 
 
 
-
+                            <li class="nav-item" id="SendReport">
+                                <a class="btn btn-success btn-sm fullreport" href="~/Agreement/SendFullProposalReport?id=@item.InformationSheetId&sendUser=@true">
+                                    <i class="fa fa-edit"></i> Re-send FullProposal Report
+                                </a>
+                            </li>
 
                         </ul>
                     </div>
@@ -289,30 +299,31 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                 }
 
 
-                <div class="form-group">
-                    @foreach (var item in Model)
-                    {
+            <div class="form-group">
+                @foreach (var item in Model)
+                {
 
-                        @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
+                    @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
 (item.Status == "Bound" || item.Status == "Bound and invoice pending" || item.Status == "Bound and invoiced"))
+                    {
+                        <h3><strong>Documents </strong></h3>
+
+                        @await Html.PartialAsync("Partials/ViewAgreementDocs", item.Documents)
+
+                        @if (@ViewBag.IsBroker || @ViewBag.IsTC || @ViewBag.IsInsurer)
                         {
-                            <h3><strong>Documents </strong></h3>
-
-                            @await Html.PartialAsync("Partials/ViewAgreementDocs", item.Documents)
-
-                            @if (@ViewBag.IsBroker || @ViewBag.IsTC || @ViewBag.IsInsurer)
-                            {
-                                <h3><strong>Options </strong></h3>
-                                <a class="btn btn-primary btn-sm" href="/Agreement/RenderDocuments/@item.InformationSheetId"> Render Documents </a>
-                                <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@false"><i class="fa fa-edit"></i> Send Documents To Insured </a>
-                                <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@true"><i class="fa fa-edit"></i> Send Documents To Me </a>
-                            }
-
+                            <h3><strong>Options </strong></h3>
+                            <a class="btn btn-primary btn-sm" href="/Agreement/RenderDocuments/@item.InformationSheetId"> Render all Documents </a>
+                            <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@false"><i class="fa fa-edit"></i> Send Documents To Insured </a>
+                            <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@true"><i class="fa fa-edit"></i> Send Documents To Me </a>
+                            <a onclick="location.href='@Url.Action("RerenderDocs", "Agreement",new { ProgrammeId=@Model.FirstOrDefault().ProgrammeId, ClientProgId = @Model.FirstOrDefault().ClientProgrammeId})'" class="btn btn-primary btn-sm" style="color:white">Rerender Selected document </a>
                         }
-                        <!-- loop through process once only!! -->
-                        break;
+
                     }
-                </div>
+                    <!-- loop through process once only!! -->
+                    break;
+                }
+            </div>
 
                 @if (@multiCoverOptionsStatus && (@ViewBag.IsBroker || @ViewBag.IsTC || @ViewBag.IsInsurer))
                 {
@@ -402,16 +413,15 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                 });
 
              }
-                //var postData = { ProgrammeId: progId };
-                              @*var postData = { ProgrammeId: "@ViewBag.Id" };
-             debugger;
+
+              var progId = "@ViewBag.Id";
+              var postData = { ProgrammeId: progId };
+
                 $.ajax({
                     url: '@Url.Action("GetExtensionCoverOptions", "Information")',
                     type: "POST",
                     data: postData
                 }).done(function (data) {
-                    ///bound viewacceptednormal
-                    debugger;
                     if (data != "") {
                         for (var item = 0; item < data.length; item++) {
                             var arr = data[item];
@@ -419,11 +429,12 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                             var queryselector = "" + "input[name=\'" + arr[count] + " Extensiontable\'][value=\'" + arr[count + 1] + "\']";
                             $(queryselector).attr('checked', true);
                             //extensionselected(arr[count]);
+
                         }
                     }
                 }) .fail(function (jqXHR, textStatus, errorThrown) {
-                alert("There was an error while trying to get the Cover Options.");
-                });*@
+                alert("There was an error while trying to get the Extension Cover Options.");
+                });
 
 
               if (!("@ViewBag.IsBroker" == "True" || "@ViewBag.IsTC" == "True" || "@ViewBag.IsInsurer" == "True") && "@ViewBag.showDocs" == "False")

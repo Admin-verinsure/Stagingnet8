@@ -23,6 +23,7 @@ namespace DealEngine.WebUI.Models
 		public  bool EnableFAPReport { get; set; }
 		public string ProgrammeNamedPartyUnitName { get; set; }
 		public IPagedList<ClientProgramme> clientProgrammespagedlist { get; set; }
+		public string IsLinuxEnv { get; set; }
 
 	}
 }

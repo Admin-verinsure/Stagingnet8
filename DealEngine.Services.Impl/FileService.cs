@@ -165,8 +165,8 @@ namespace DealEngine.Services.Impl
 			return await _imageRepository.FindAll().FirstOrDefaultAsync(i => i.Name == imageName);
 		}
 
-		public async Task<T> RenderDocument<T>(User renderedBy, T template, ClientAgreement agreement, ClientInformationSheet clientInformationSheet, Job job) where T : Document
-		{
+        public async Task<T> RenderDocument<T>(User renderedBy, T template, ClientAgreement agreement, ClientInformationSheet clientInformationSheet, Job job) where T : Document
+        {
 			Document doc = new Document (renderedBy, template.Name, template.ContentType, template.DocumentType);
 
             // This is for Locally Saved PDF Wording Documents which don't need to be rendered.
@@ -175,819 +175,890 @@ namespace DealEngine.Services.Impl
                 return (T)template;
             }
             // store all the fields to be merged
-            List<KeyValuePair<string, string>> mergeFields = GetMergeFields(agreement, clientInformationSheet);            
-            NumberFormatInfo currencyFormat = new CultureInfo (CultureInfo.CurrentCulture.ToString ()).NumberFormat;
-			currencyFormat.CurrencyNegativePattern = 2;
-            Decimal PremiumTotal = 0.0m;
 
-            int intMonthlyInstalmentNumber = 1;
-            if (agreement.ClientInformationSheet.Programme.BaseProgramme.EnableMonthlyPremiumDisplay)
+            if (clientInformationSheet != null)
             {
-                intMonthlyInstalmentNumber = agreement.ClientInformationSheet.Programme.BaseProgramme.MonthlyInstalmentNumber;
-            }
+                List<KeyValuePair<string, string>> mergeFields = new List<KeyValuePair<string, string>>();
+                mergeFields.Add(new KeyValuePair<string, string>("[[ClientName]]", clientInformationSheet.Owner.Name));
+                mergeFields.Add(new KeyValuePair<string, string>("[[Date]]", DateTime.UtcNow.ToShortDateString()));
+                mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.FirstName +
+                    clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.LastName));
 
-            // loop over terms and set merge feilds
-            foreach (var agreementlist in agreement.ClientInformationSheet.Programme.Agreements)
-            {
-                foreach (var term in agreementlist.ClientAgreementTerms)
+                // merge the configured merge feilds into the document
+                string content = FromBytes(template.Contents);
+                try
                 {
-                    if (term.Bound)
+                    foreach (KeyValuePair<string, string> field in mergeFields)
+                        if (field.Value != null && field.Value.Contains("&"))
+                        {
+                            content = content.Replace(field.Key, field.Value.Replace("&", "&amp;"));
+                        }
+                        else
+                        {
+                            content = content.Replace(field.Key, field.Value);
+                        }
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+                // save the merged content
+                doc.Contents = ToBytes(content);
+
+            } else if (agreement != null)
+            {
+                List<KeyValuePair<string, string>> mergeFields = GetMergeFields(agreement, clientInformationSheet);
+
+                NumberFormatInfo currencyFormat = new CultureInfo(CultureInfo.CurrentCulture.ToString()).NumberFormat;
+                currencyFormat.CurrencyNegativePattern = 2;
+                Decimal PremiumTotal = 0.0m;
+
+                int intMonthlyInstalmentNumber = 1;
+                if (agreement.ClientInformationSheet.Programme.BaseProgramme.EnableMonthlyPremiumDisplay)
+                {
+                    intMonthlyInstalmentNumber = agreement.ClientInformationSheet.Programme.BaseProgramme.MonthlyInstalmentNumber;
+                }
+
+                // loop over terms and set merge feilds
+                foreach (var agreementlist in agreement.ClientInformationSheet.Programme.Agreements.Where(a => a.DateDeleted == null))
+                {
+                    foreach (var term in agreementlist.ClientAgreementTerms)
                     {
-                        
-
-                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimit_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx2_{0}]]", term.SubTermType), (term.TermLimit * 2).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx3_{0}]]", term.SubTermType), (term.TermLimit * 3).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx4_{0}]]", term.SubTermType), (term.TermLimit * 4).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx5_{0}]]", term.SubTermType), (term.TermLimit * 5).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundLimit_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-
-                        if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
+                        if (term.Bound)
                         {
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumAdjustment_{0}]]", term.SubTermType), (term.PremiumDiffer - term.FSLDiffer).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremium_{0}]]", term.SubTermType), term.PremiumDiffer.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFee_{0}]]", term.SubTermType), (term.PremiumDiffer + agreement.BrokerFee).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundGST_{0}]]", term.SubTermType), ((term.PremiumDiffer) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundFSL_{0}]]", term.SubTermType), term.FSLDiffer.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeGST_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGST_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (1 + agreement.Product.TaxRate)).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[CreditCardSurcharge_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (0.013m)).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeCCSurchargeGST_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (1 + 0.013m) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclGSTCreditCardCharge_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) * 1.013m).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumFAP_{0}]]", term.SubTermType), term.FAPPremium.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGSTMonthly_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) / intMonthlyInstalmentNumber).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            PremiumTotal += term.PremiumDiffer;
-                        }
-                        else
-                        {
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumAdjustment_{0}]]", term.SubTermType), (term.Premium - term.FSL).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremium_{0}]]", term.SubTermType), term.Premium.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFee_{0}]]", term.SubTermType), (term.Premium + agreement.BrokerFee).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundGST_{0}]]", term.SubTermType), ((term.Premium) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundFSL_{0}]]", term.SubTermType), term.FSL.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeGST_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGST_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * (1 + agreement.Product.TaxRate)).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[CreditCardSurcharge_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * 0.013m).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeCCSurchargeGST_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * (1 + 0.013m) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclGSTCreditCardCharge_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) * 1.013m).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumFAP_{0}]]", term.SubTermType), term.FAPPremium.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGSTMonthly_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) / intMonthlyInstalmentNumber).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                            PremiumTotal += term.Premium;
-                        }
 
-                        //Endorsements
-                        if (agreementlist.ClientAgreementEndorsements.Where(ce => ce.DateDeleted == null && !ce.Removed).Count() > 0)
-                        {
-                            DataTable dt9 = new DataTable();
-                            dt9.Columns.Add("Endorsement Name");
-                            dt9.Columns.Add("Product Name");
-                            dt9.Columns.Add("Endorsement Text");
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimit_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx2_{0}]]", term.SubTermType), (term.TermLimit * 2).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx3_{0}]]", term.SubTermType), (term.TermLimit * 3).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx4_{0}]]", term.SubTermType), (term.TermLimit * 4).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx5_{0}]]", term.SubTermType), (term.TermLimit * 5).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundLimit_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
-                            foreach (ClientAgreementEndorsement ClientAgreementEndorsement in agreementlist.ClientAgreementEndorsements)
+                            if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
                             {
-                                if (ClientAgreementEndorsement.DateDeleted == null && !ClientAgreementEndorsement.Removed)
-                                {
-                                    DataRow dr9 = dt9.NewRow();
-
-                                    dr9["Endorsement Name"] = ClientAgreementEndorsement.Name;
-                                    if (agreementlist.Product != null)
-                                    {
-                                        dr9["Product Name"] = agreementlist.Product.Name;
-                                    }
-
-                                    dr9["Endorsement Text"] = ClientAgreementEndorsement.Value;
-
-                                    dt9.Rows.Add(dr9);
-                                }
-
-                            }
-
-                            dt9.TableName = "EndorsementTable";
-
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[EndorsementTable_{0}]]", term.SubTermType), ConvertDataTableToHTML(dt9)));
-                        }
-                        else
-                        {
-                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[EndorsementTable_{0}]]", term.SubTermType), ""));
-                        }
-
-                        if (term.SubTermType == "CL")
-                        {
-                            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasApprovedVendorsOptions").Count() == 0 ||
-                                agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasProceduresOptions").Count() == 0 ||
-                                agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasOptionalCLEOptions").Count() == 0)
-                            {
-                                mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL]]", "Extension NOT Included"));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumAdjustment_{0}]]", term.SubTermType), (term.PremiumDiffer - term.FSLDiffer).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremium_{0}]]", term.SubTermType), term.PremiumDiffer.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFee_{0}]]", term.SubTermType), (term.PremiumDiffer + agreement.BrokerFee).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundGST_{0}]]", term.SubTermType), ((term.PremiumDiffer) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundFSL_{0}]]", term.SubTermType), term.FSLDiffer.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeGST_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGST_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (1 + agreement.Product.TaxRate)).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[CreditCardSurcharge_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (0.013m)).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeCCSurchargeGST_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (1 + 0.013m) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclGSTCreditCardCharge_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) * 1.013m).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumFAP_{0}]]", term.SubTermType), term.FAPPremium.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGSTMonthly_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) / intMonthlyInstalmentNumber).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                PremiumTotal += term.PremiumDiffer;
                             }
                             else
                             {
-                                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasApprovedVendorsOptions").First().Value == "1" &&
-                                agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasProceduresOptions").First().Value == "1" &&
-                                agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasOptionalCLEOptions").First().Value == "1")
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumAdjustment_{0}]]", term.SubTermType), (term.Premium - term.FSL).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremium_{0}]]", term.SubTermType), term.Premium.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFee_{0}]]", term.SubTermType), (term.Premium + agreement.BrokerFee).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundGST_{0}]]", term.SubTermType), ((term.Premium) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundFSL_{0}]]", term.SubTermType), term.FSL.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeGST_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGST_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * (1 + agreement.Product.TaxRate)).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[CreditCardSurcharge_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * 0.013m).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeCCSurchargeGST_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * (1 + 0.013m) * agreement.Product.TaxRate).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclGSTCreditCardCharge_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) * 1.013m).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumFAP_{0}]]", term.SubTermType), term.FAPPremium.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGSTMonthly_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) / intMonthlyInstalmentNumber).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                                PremiumTotal += term.Premium;
+                            }
+
+                            //Endorsements
+                            if (agreementlist.ClientAgreementEndorsements.Where(ce => ce.DateDeleted == null && !ce.Removed).Count() > 0)
+                            {
+                                DataTable dt9 = new DataTable();
+                                dt9.Columns.Add("Endorsement Name");
+                                dt9.Columns.Add("Product Name");
+                                dt9.Columns.Add("Endorsement Text");
+
+                                foreach (ClientAgreementEndorsement ClientAgreementEndorsement in agreementlist.ClientAgreementEndorsements)
                                 {
-                                    mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL]]", "Extension Included"));
+                                    if (ClientAgreementEndorsement.DateDeleted == null && !ClientAgreementEndorsement.Removed)
+                                    {
+                                        DataRow dr9 = dt9.NewRow();
+
+                                        dr9["Endorsement Name"] = ClientAgreementEndorsement.Name;
+                                        if (agreementlist.Product != null)
+                                        {
+                                            dr9["Product Name"] = agreementlist.Product.Name;
+                                        }
+
+                                        dr9["Endorsement Text"] = ClientAgreementEndorsement.Value;
+
+                                        dt9.Rows.Add(dr9);
+                                    }
+
                                 }
-                                else
+
+                                dt9.TableName = "EndorsementTable";
+
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[EndorsementTable_{0}]]", term.SubTermType), ConvertDataTableToHTML(dt9)));
+                            }
+                            else
+                            {
+                                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[EndorsementTable_{0}]]", term.SubTermType), ""));
+                            }
+
+                            if (term.SubTermType == "CL")
+                            {
+                                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasApprovedVendorsOptions").Count() == 0 ||
+                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasProceduresOptions").Count() == 0 ||
+                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasOptionalCLEOptions").Count() == 0)
                                 {
                                     mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL]]", "Extension NOT Included"));
                                 }
-                            }
-
-                            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasApprovedVendorsOptions").Count() == 0 ||
-                                agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasProceduresOptions").Count() == 0)
-                            {
-                                mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL1]]", "Extension NOT Included"));
-                            }
-                            else
-                            {
-                                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasApprovedVendorsOptions").First().Value == "1" &&
-                                agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasProceduresOptions").First().Value == "1")
-                                {
-                                    mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL1]]", "Extension Included"));
-                                }
                                 else
+                                {
+                                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasApprovedVendorsOptions").First().Value == "1" &&
+                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasProceduresOptions").First().Value == "1" &&
+                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasOptionalCLEOptions").First().Value == "1")
+                                    {
+                                        mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL]]", "Extension Included"));
+                                    }
+                                    else
+                                    {
+                                        mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL]]", "Extension NOT Included"));
+                                    }
+                                }
+
+                                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasApprovedVendorsOptions").Count() == 0 ||
+                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasProceduresOptions").Count() == 0)
                                 {
                                     mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL1]]", "Extension NOT Included"));
                                 }
+                                else
+                                {
+                                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasApprovedVendorsOptions").First().Value == "1" &&
+                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "CLIViewModel.HasProceduresOptions").First().Value == "1")
+                                    {
+                                        mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL1]]", "Extension Included"));
+                                    }
+                                    else
+                                    {
+                                        mergeFields.Add(new KeyValuePair<string, string>("[[RequiresSEE_CL1]]", "Extension NOT Included"));
+                                    }
+                                }
                             }
-                        }
-                    } 
-                }
-            }
-
-            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_Total]]", ""), PremiumTotal.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
-            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_GST]]", ""), (PremiumTotal * (decimal)0.15).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
-
-            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremiuminclGst_Total]]", ""), (PremiumTotal * (decimal)1.15).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
-            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremiuminclGstMonthly_Total]]", ""), (PremiumTotal * (decimal)1.15 / intMonthlyInstalmentNumber).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
-
-            if (agreement.ClientInformationSheet.Locations.Any())
-            {
-                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[InsuredPostalAddress]]", ""),
-            agreement.ClientInformationSheet.Locations.FirstOrDefault().Street + " " + agreement.ClientInformationSheet.Locations.FirstOrDefault().Suburb));
-                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[InsuredCity]]", ""),
-                agreement.ClientInformationSheet.Locations.FirstOrDefault().City));
-
-                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[InsuredPostCode]]", ""),
-               agreement.ClientInformationSheet.Locations.FirstOrDefault().Postcode));
-            }
-
-            //render job cert job detail
-            if (job != null)
-            {
-                string jobdetail = "";
-                jobdetail = "<strong>Job Detail</strong>" +
-                 "<br />" + "Job Description:                   " + job.JobDescription +
-                 "<br />" + "Job Number:                         " + job.JobNumber +
-                 "<br />" + "Start Date:                             " + job.StartDate.ToString("dd/MM/yyyy") +
-                 "<br />" + "End Date:                               " + job.EndDate.ToString("dd/MM/yyyy") +
-                 "<br />" + "RA Client Named Party:      " + job.RACLientNamedParty;
-
-                mergeFields.Add(new KeyValuePair<string, string>("[[JobDetail]]", jobdetail));
-
-            }
-            else
-            {
-                mergeFields.Add(new KeyValuePair<string, string>("[[JobDetail]]", ""));
-            }
-
-            //MV Details
-            if (agreement.ClientAgreementTerms.Any (cat => cat.SubTermType == "MV")) {
-				int intMVNumberOfUnits = 0;
-				string strFinancialIPList = null;
-				int intFinancialIPCount = 0;
-
-				DataTable dt = new DataTable ();
-				dt.Columns.Add ("Category");
-				dt.Columns.Add ("Year");
-				dt.Columns.Add ("Make");
-				dt.Columns.Add ("Model");
-				dt.Columns.Add ("Fleet No.");
-				dt.Columns.Add ("Registration");
-				dt.Columns.Add ("Interest Parties");
-				dt.Columns.Add ("Sum Insured");
-
-                var AgreementMVTerms = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "MV"));
-                AgreementMVTerms.OrderBy(camvt => camvt.Registration);
-
-                foreach (ClientAgreementMVTerm mVTerm in AgreementMVTerms) {
-					DataRow dr = dt.NewRow ();
-
-					dr ["Category"] = mVTerm.VehicleCategory;
-					dr ["Year"] = mVTerm.Year;
-					dr ["Make"] = mVTerm.Make;
-					dr ["Model"] = mVTerm.Model;
-					dr ["Fleet No."] = mVTerm.FleetNumber;
-					dr ["Registration"] = mVTerm.Registration;
-
-					string strInterestPartiesNamesList = null;
-					int intIPCount = 0;
-					if (mVTerm.Vehicle.InterestedParties.Count > 0) {
-						foreach (Organisation InterestParty in mVTerm.Vehicle.InterestedParties) {
-							if (intIPCount == 0) {
-								strInterestPartiesNamesList = InterestParty.Name;
-							} else {
-								strInterestPartiesNamesList = strInterestPartiesNamesList + ", " + InterestParty.Name;
-							}
-
-							intIPCount += 1;
-
-							if (InterestParty.OrganisationType.Name == "financial") {
-								if (intFinancialIPCount == 0) {
-									strFinancialIPList = InterestParty.Name;
-								} else {
-									strFinancialIPList = strInterestPartiesNamesList + ", " + InterestParty.Name;
-								}
-								intFinancialIPCount += 1;
-							}
-						}
-					}
-					dr ["Interest Parties"] = strInterestPartiesNamesList;
-
-					dr ["Sum Insured"] = mVTerm.TermLimit.ToString ("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
-
-					dt.Rows.Add (dr);
-
-					intMVNumberOfUnits += 1;
-				}
-
-				dt.TableName = "MVDetailsTable";
-
-				DataTable dt2 = new DataTable ();
-				dt2.Columns.Add ("Year");
-				dt2.Columns.Add ("Make");
-				dt2.Columns.Add ("Model");
-				dt2.Columns.Add ("Registration");
-				dt2.Columns.Add ("Sum Insured");
-                //dt2.Columns.Add ("End Date");
-
-                AgreementMVTerms = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "MV"));
-                AgreementMVTerms.OrderBy(camvt => camvt.Registration);
-
-                foreach (ClientAgreementMVTerm mVTerm2 in AgreementMVTerms) {
-					DataRow dr2 = dt2.NewRow ();
-
-					dr2 ["Year"] = mVTerm2.Year;
-					dr2 ["Make"] = mVTerm2.Make;
-					dr2 ["Model"] = mVTerm2.Model;
-					dr2 ["Registration"] = mVTerm2.Registration;
-					dr2 ["Sum Insured"] = mVTerm2.TermLimit.ToString ("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
-					//dr2 ["End Date"] = "01/09/2018";
-
-					dt2.Rows.Add (dr2);
-
-				}
-
-				dt2.TableName = "MVDetailsTable2";
-
-				mergeFields.Add (new KeyValuePair<string, string> ("[[MVNumberOfUnits]]", intMVNumberOfUnits.ToString ()));
-				mergeFields.Add (new KeyValuePair<string, string> ("[[MVDetailsTable]]", ConvertDataTableToHTML (dt)));
-				mergeFields.Add (new KeyValuePair<string, string> ("[[MVDetailsTable2]]", ConvertDataTableToHTML (dt2)));
-
-				//if (intFinancialIPCount > 1)
-				//{
-				//    strFinancialIP = strFinancialIPList + " are";
-				//} else
-				//{
-				//    strFinancialIP = strFinancialIPList + " is";
-				//}
-				mergeFields.Add (new KeyValuePair<string, string> ("[[FinancialIP]]", strFinancialIPList));
-			}
-
-            //BV Details
-            if (agreement.ClientAgreementTerms.Any(cat => cat.SubTermType == "BV"))
-            {
-                int intBVNumberOfUnits = 0;
-
-                DataTable dtbv = new DataTable();
-                dtbv.Columns.Add("Name");
-                dtbv.Columns.Add("Year");
-                dtbv.Columns.Add("Make");
-                dtbv.Columns.Add("Model");
-
-                /*foreach (ClientAgreementBVTerm bVTerm in _clientAgreementBVTermService.GetAllAgreementBVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV")).OrderBy(cabvt => cabvt.BoatName))
-                {
-                    DataRow drbv = dtbv.NewRow();
-
-                    drbv["Name"] = bVTerm.BoatName;
-                    drbv["Year"] = bVTerm.YearOfManufacture;
-                    drbv["Make"] = bVTerm.BoatMake;
-                    drbv["Model"] = bVTerm.BoatModel;
-
-                    string strBVInterestPartiesNamesList = null;
-                    int intBVIPCount = 0;
-                    if (bVTerm.Boat.InterestedParties.Count > 0)
-                    {
-                        foreach (Organisation InterestParty in bVTerm.Boat.InterestedParties)
-                        {
-                            if (intBVIPCount == 0)
-                            {
-                                strBVInterestPartiesNamesList = InterestParty.Name;
-                            }
-                            else
-                            {
-                                strBVInterestPartiesNamesList = strBVInterestPartiesNamesList + ", " + InterestParty.Name;
-                            }
-
-                            intBVIPCount += 1;
-                        }
-                    }
-                    //drbv["Interest Parties"] = strBVInterestPartiesNamesList;
-
-                    dtbv.Rows.Add(drbv);
-
-                    
-                }*/
-
-                DataTable dtbv2 = new DataTable();
-                dtbv2.Columns.Add("Name");
-                dtbv2.Columns.Add("Year");
-                dtbv2.Columns.Add("Make");
-                dtbv2.Columns.Add("Model");
-                dtbv2.Columns.Add("Sum Insured");
-                dtbv2.Columns.Add("Effective Date");
-
-                DataTable dtbv3 = new DataTable();
-                dtbv3.Columns.Add("Name");
-                //dtbv3.Columns.Add("Year");
-                //dtbv3.Columns.Add("Make");
-                //dtbv3.Columns.Add("Model");
-                dtbv3.Columns.Add("Excess");
-
-                DataTable dtbv4 = new DataTable();
-                dtbv4.Columns.Add("Name");
-                //dtbv4.Columns.Add("Year");
-                //dtbv4.Columns.Add("Make");
-                //dtbv4.Columns.Add("Model");
-                dtbv4.Columns.Add("Excess");
-
-                DataTable dtbv5 = new DataTable();
-                dtbv5.Columns.Add("Name");
-                //dtbv4.Columns.Add("Year");
-                //dtbv4.Columns.Add("Make");
-                //dtbv4.Columns.Add("Model");
-                dtbv5.Columns.Add("Interest Party");
-
-                var AgreementBVTerms = await _clientAgreementBVTermService.GetAllAgreementBVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV"));
-                AgreementBVTerms.OrderBy(cabvt => cabvt.BoatName);
-
-                foreach (ClientAgreementBVTerm bVTerm in AgreementBVTerms)
-                {
-                    intBVNumberOfUnits += 1;
-
-                    DataRow drbv = dtbv.NewRow();
-                    DataRow drbv2 = dtbv2.NewRow();
-                    DataRow drbv3 = dtbv3.NewRow();
-                    DataRow drbv4 = dtbv4.NewRow();
-                    DataRow drbv5 = dtbv5.NewRow();
-
-                    drbv["Name"] = bVTerm.BoatName;
-                    drbv["Year"] = bVTerm.YearOfManufacture;
-                    drbv["Make"] = bVTerm.BoatMake;
-                    drbv["Model"] = bVTerm.BoatModel;
-
-                    dtbv.Rows.Add(drbv);
-
-                    drbv2["Name"] = bVTerm.BoatName;
-                    drbv2["Year"] = bVTerm.YearOfManufacture;
-                    drbv2["Make"] = bVTerm.BoatMake;
-                    drbv2["Model"] = bVTerm.BoatModel;
-                    drbv2["Sum Insured"] = bVTerm.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
-                    drbv2["Effective Date"] = bVTerm.Boat.BoatEffectiveDate.ToShortDateString();
-
-                    dtbv2.Rows.Add(drbv2);
-
-                    drbv3["Name"] = bVTerm.BoatName;
-                    //drbv3["Year"] = bVTerm.YearOfManufacture;
-                    //drbv3["Make"] = bVTerm.BoatMake;
-                    //drbv3["Model"] = bVTerm.BoatModel;
-                    drbv3["Excess"] = bVTerm.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ")) + " any one Accident or Occurrence";
-
-                    dtbv3.Rows.Add(drbv3);
-
-                    drbv4["Name"] = bVTerm.BoatName;
-                    //drbv4["Year"] = bVTerm.YearOfManufacture;
-                    //drbv4["Make"] = bVTerm.BoatMake;
-                    //drbv4["Model"] = bVTerm.BoatModel;
-                    drbv4["Excess"] = "Not Included";
-                    if (bVTerm.Boat.BoatType1 == "YachtsandCatamarans" && bVTerm.Boat.BoatUses.Where(ycbu => ycbu.BoatUseCategory == "Race" && !ycbu.Removed && ycbu.DateDeleted == null).Count() > 0)
-                    {
-                        foreach (BoatUse boatuse in bVTerm.Boat.BoatUses)
-                        {
-                            drbv4["Excess"] = "$2,500";
-                        }
-                    }
-                    dtbv4.Rows.Add(drbv4);
-
-                    drbv5["Name"] = bVTerm.BoatName;
-                    //drbv4["Year"] = bVTerm.YearOfManufacture;
-                    //drbv4["Make"] = bVTerm.BoatMake;
-                    //drbv4["Model"] = bVTerm.BoatModel;
-                    string strBVInterestPartiesNamesList = null;
-                    int intBVIPCount = 0;
-                    if (bVTerm.Boat.InterestedParties.Count > 0)
-                    {
-                        foreach (Organisation InterestParty in bVTerm.Boat.InterestedParties)
-                        {
-                            if (intBVIPCount == 0)
-                            {
-                                strBVInterestPartiesNamesList = InterestParty.Name;
-                            }
-                            else
-                            {
-                                strBVInterestPartiesNamesList = strBVInterestPartiesNamesList + ", " + InterestParty.Name;
-                            }
-
-                            intBVIPCount += 1;
-                        }
-                    } else
-                    {
-                        strBVInterestPartiesNamesList = "None";
-                    }
-                    drbv5["Interest Party"] = strBVInterestPartiesNamesList;
-                    dtbv5.Rows.Add(drbv5);
-
-                }
-
-                dtbv.TableName = "BVDetailsTable";
-                dtbv2.TableName = "BVDetailsTable2";
-                dtbv3.TableName = "BVExcessDetailsTable";
-                dtbv4.TableName = "BVRaceDetailsTable";
-                dtbv5.TableName = "BVInterestPartyTable";
-
-                mergeFields.Add(new KeyValuePair<string, string>("[[BVNumberOfUnits]]", intBVNumberOfUnits.ToString()));
-                mergeFields.Add(new KeyValuePair<string, string>("[[BVDetailsTable]]", ConvertDataTableToHTML(dtbv)));
-                mergeFields.Add(new KeyValuePair<string, string>("[[BVDetailsTable2]]", ConvertDataTableToHTML(dtbv2)));
-                mergeFields.Add(new KeyValuePair<string, string>("[[BVExcessDetailsTable]]", ConvertDataTableToHTML(dtbv3)));
-                mergeFields.Add(new KeyValuePair<string, string>("[[BVRaceDetailsTable]]", ConvertDataTableToHTML(dtbv4)));
-                mergeFields.Add(new KeyValuePair<string, string>("[[BVInterestPartyTable]]", ConvertDataTableToHTML(dtbv5)));
-
-                var clientAgreementMVTerm = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV" && at.DateDeleted == null));
-                if (clientAgreementMVTerm.Count() > 0)
-                {
-                    var AgreementMVTerm = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV" && at.DateDeleted == null));
-                    AgreementMVTerm.OrderBy(camvt => camvt.Registration);
-
-                    foreach (ClientAgreementMVTerm mVTerm in AgreementMVTerm)
-                    {
-
-                        DataTable dtmv1 = new DataTable();
-                        dtmv1.Columns.Add("Year");
-                        dtmv1.Columns.Add("Make");
-                        dtmv1.Columns.Add("Model");
-                        dtmv1.Columns.Add("Registration");
-                        dtmv1.Columns.Add("Sum Insured");
-                        dtmv1.Columns.Add("Effective Date");
-
-                        AgreementMVTerm = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV"));
-                        AgreementMVTerm.OrderBy(camvt => camvt.Registration);
-
-                        foreach (ClientAgreementMVTerm bVMVTerm in AgreementMVTerm)
-                        {
-                            DataRow drmv1 = dtmv1.NewRow();
-
-                            drmv1["Year"] = bVMVTerm.Year;
-                            drmv1["Make"] = bVMVTerm.Make;
-                            drmv1["Model"] = bVMVTerm.Model;
-                            drmv1["Registration"] = bVMVTerm.Registration;
-                            drmv1["Sum Insured"] = bVMVTerm.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
-                            drmv1["Effective Date"] = bVMVTerm.Vehicle.VehicleEffectiveDate.ToShortDateString();
-
-                            dtmv1.Rows.Add(drmv1);
-
-                        }
-
-                        dtmv1.TableName = "BVMVDetailsTable";
-
-                        mergeFields.Add(new KeyValuePair<string, string>("[[BVMVDetailsTable]]", ConvertDataTableToHTML(dtmv1)));
-                    }
-                } else
-                {
-                    mergeFields.Add(new KeyValuePair<string, string>("[[BVMVDetailsTable]]", "No Trailer insured under this policy."));
-                }
-            }
-
-            string stradvisorlist = "";
-            string stradvisorlist1 = "";
-            string stradvisorlist2 = "";
-            string strnominatedrepresentative = "";
-            string strotherconsultingbusiness = "";
-            string strmentoradvisorlist = "";
-
-            if (agreement.ClientInformationSheet.Organisation.Count > 0)
-            {
-
-                foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
-                {
-                    if (!uisorg.Removed)
-                    {
-                        var unit = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor");
-                        if (unit != null)
-                        {
-                            if (string.IsNullOrEmpty(stradvisorlist))
-                            {
-                                stradvisorlist = "Advisor:                                           " + uisorg.Name +
-                                    "<br />" + "Retroactive Date:                          " + unit.PIRetroactivedate;
-                            }
-                            else
-                            {
-                                stradvisorlist += "<br />" + "Advisor:                                           " + uisorg.Name +
-                                    "<br />" + "Retroactive Date:                          " + unit.PIRetroactivedate;
-                            }
-                            if (string.IsNullOrEmpty(stradvisorlist1))
-                            {
-                                stradvisorlist1 = "Advisor:                                           " + uisorg.Name +
-                                    "<br />" + "Retroactive Date:                          " + unit.DORetroactivedate;
-                            }
-                            else
-                            {
-                                stradvisorlist1 += "<br />" + "Advisor:                                           " + uisorg.Name +
-                                    "<br />" + "Retroactive Date:                          " + unit.DORetroactivedate;
-                            }
-                            if (string.IsNullOrEmpty(stradvisorlist2))
-                            {
-                                stradvisorlist2 = uisorg.Name;
-                            }
-                            else
-                            {
-                                stradvisorlist2 += ", " + uisorg.Name;
-                            }
-                        }
-
-                        var unit1 = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Nominated Representative");
-                        if (unit1 != null)
-                        {
-                            if (string.IsNullOrEmpty(strnominatedrepresentative))
-                            {
-                                strnominatedrepresentative = "Nominated Representative:       " + uisorg.Name;
-                            }
-                            else
-                            {
-                                strnominatedrepresentative += ", " + uisorg.Name;
-                            }
-                        }
-
-                        var unit2 = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Other Consulting Business");
-                        if (unit2 != null)
-                        {
-                            if (string.IsNullOrEmpty(strotherconsultingbusiness))
-                            {
-                                strotherconsultingbusiness = uisorg.Name;
-                            }
-                            else
-                            {
-                                strotherconsultingbusiness += ", " + uisorg.Name;
-                            }
-                        }
-
-                        var unit3 = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Mentored Advisor");
-                        if (unit3 != null)
-                        {
-                            string mentoredadvisorexpirydate = "";
-                            //if (unit3.DateofCommencement.Value.AddMonths(6) > agreement.ExpiryDate)
-                            //{
-                            //    mentoredadvisorexpirydate = 
-                            //        TimeZoneInfo.ConvertTimeFromUtc(agreement.ExpiryDate, TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
-                            //} else
-                            //{
-                            //    mentoredadvisorexpirydate =
-                            //        TimeZoneInfo.ConvertTimeFromUtc(unit3.DateofCommencement.Value.AddMonths(6), TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
-                            //}
-                            mentoredadvisorexpirydate =
-                                    TimeZoneInfo.ConvertTimeFromUtc(agreement.ExpiryDate, TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
-                            if (string.IsNullOrEmpty(strmentoradvisorlist))
-                            {
-                                strmentoradvisorlist = "Name:            " + uisorg.Name +
-                                    "<br />" + "Expiry Date:  " + mentoredadvisorexpirydate;
-                            }
-                            else
-                            {
-                                strmentoradvisorlist += "<br />" + "Name:            " + uisorg.Name +
-                                    "<br />" + "Expiry Date:  " + mentoredadvisorexpirydate;
-                            }
-                        }
-
-
-                    }
-                    
-                }
-
-                if (!string.IsNullOrEmpty(strnominatedrepresentative))
-                {
-                    stradvisorlist += "<br /><br />" + strnominatedrepresentative;
-                }
-
-                if (string.IsNullOrEmpty(strotherconsultingbusiness))
-                {
-                    strotherconsultingbusiness = "No Additional Insureds.";
-                }
-
-                if (string.IsNullOrEmpty(strmentoradvisorlist))
-                {
-                    strmentoradvisorlist = "No Mentored Advisor insured under this policy.";
-                }
-                if (string.IsNullOrEmpty(stradvisorlist2))
-                {
-                    stradvisorlist2 = "No Advisor insured under this policy.";
-                }
-
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTablePI]]", stradvisorlist));
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTableDO]]", stradvisorlist1));
-                mergeFields.Add(new KeyValuePair<string, string>("[[OtherConsultingBusiness]]", strotherconsultingbusiness));
-                mergeFields.Add(new KeyValuePair<string, string>("[[MontoredAdvisorDetails]]", strmentoradvisorlist));
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorNames]]", stradvisorlist2));
-
-            }
-            else
-            {
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTablePI]]", "No Advisor insured under this policy."));
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTableDO]]", "No Advisor insured under this policy."));
-                mergeFields.Add(new KeyValuePair<string, string>("[[OtherConsultingBusiness]]", "No Additional Insured insureds."));
-                mergeFields.Add(new KeyValuePair<string, string>("[[MontoredAdvisorDetails]]", "No Mentored Advisor insured under this policy."));
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorNames]]", "No Advisor insured under this policy."));
-            }
-
-            //Advisor list with FAP Number
-
-            string stradvisornominatedrepresentative = "";
-            string strprincipleadvisorname = "";
-            string strInceptionDateForFAP = "";
-            int intadvisornumber = 1;
-
-            strInceptionDateForFAP = TimeZoneInfo.ConvertTimeFromUtc(agreement.InceptionDate, TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
-
-            if (agreement.ClientInformationSheet.Organisation.Count > 0)
-            {
-                foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
-                {
-                    var principleadvisorunit = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor" && u.DateDeleted == null);
-
-                    if (principleadvisorunit != null)
-                    {
-                        if (principleadvisorunit.IsPrincipalAdvisor && uisorg.DateDeleted == null && !uisorg.Removed)
-                        {
-                            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").Any())
-                            {
-                                stradvisornominatedrepresentative = uisorg.Name + "(FAP number: " +
-                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").First().Value + ")";
-                            }
-                            else
-                            {
-                                stradvisornominatedrepresentative = uisorg.Name + "(FAP number: None)";
-                            }
-
-                            strprincipleadvisorname = uisorg.Name;
                         }
                     }
 
+                    foreach (var termExtension in agreementlist.ClientAgreementTermExtensions.Where(ae => ae.DateDeleted == null))
+                    {
+                        if (termExtension.Bound)
+                        {
+                            if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
+                            {
+                                PremiumTotal += termExtension.PremiumDiffer;
+                            }
+                            else
+                            {
+                                PremiumTotal += termExtension.Premium;
+                            }
+                        }
+                    }
+
+                    if (agreementlist.Product.DefaultEnableBrokerFee)
+                    {
+                        PremiumTotal += agreementlist.BrokerFee;
+                    }
                 }
 
-                
-                if (agreement.ClientInformationSheet.SubClientInformationSheets.Where(advisorsubuis => advisorsubuis.DateDeleted == null).Count() > 0)
-                {
-                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "FAPViewModel.CoverStartDate").Any())
-                    {
-                        strInceptionDateForFAP = agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "FAPViewModel.CoverStartDate").First().Value.ToString();
-                    }
-                } 
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_Total]]", ""), PremiumTotal.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_GST]]", ""), (PremiumTotal * (decimal)0.15).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
-                foreach (var advsubuis in agreement.ClientInformationSheet.SubClientInformationSheets.Where(advisorsubuis => advisorsubuis.DateDeleted == null))
-                {
-                    intadvisornumber += 1;
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremiuminclGst_Total]]", ""), (PremiumTotal * (decimal)1.15).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremiuminclGstMonthly_Total]]", ""), (PremiumTotal * (decimal)1.15 / intMonthlyInstalmentNumber).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
-                    if (string.IsNullOrEmpty(stradvisornominatedrepresentative))
+                if (agreement.ClientInformationSheet.Locations.Any())
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[InsuredPostalAddress]]", ""),
+                agreement.ClientInformationSheet.Locations.FirstOrDefault().Street + " " + agreement.ClientInformationSheet.Locations.FirstOrDefault().Suburb));
+                    mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[InsuredCity]]", ""),
+                    agreement.ClientInformationSheet.Locations.FirstOrDefault().City));
+
+                    mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[InsuredPostCode]]", ""),
+                   agreement.ClientInformationSheet.Locations.FirstOrDefault().Postcode));
+                }
+
+                //render job cert job detail
+                if (job != null)
+                {
+                    string jobdetail = "";
+                    jobdetail = "<strong>Job Detail</strong>" +
+                     "<br />" + "Job Description:                   " + job.JobDescription +
+                     "<br />" + "Job Number:                         " + job.JobNumber +
+                     "<br />" + "Start Date:                             " + job.StartDate.ToString("dd/MM/yyyy") +
+                     "<br />" + "End Date:                               " + job.EndDate.ToString("dd/MM/yyyy") +
+                     "<br />" + "RA Client Named Party:      " + job.RACLientNamedParty;
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[JobDetail]]", jobdetail));
+
+                }
+                else
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[JobDetail]]", ""));
+                }
+
+                //MV Details
+                if (agreement.ClientAgreementTerms.Any(cat => cat.SubTermType == "MV"))
+                {
+                    int intMVNumberOfUnits = 0;
+                    string strFinancialIPList = null;
+                    int intFinancialIPCount = 0;
+
+                    DataTable dt = new DataTable();
+                    dt.Columns.Add("Category");
+                    dt.Columns.Add("Year");
+                    dt.Columns.Add("Make");
+                    dt.Columns.Add("Model");
+                    dt.Columns.Add("Fleet No.");
+                    dt.Columns.Add("Registration");
+                    dt.Columns.Add("Interest Parties");
+                    dt.Columns.Add("Sum Insured");
+
+                    var AgreementMVTerms = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "MV"));
+                    AgreementMVTerms.OrderBy(camvt => camvt.Registration);
+
+                    foreach (ClientAgreementMVTerm mVTerm in AgreementMVTerms)
                     {
-                        if (advsubuis.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").Any())
+                        DataRow dr = dt.NewRow();
+
+                        dr["Category"] = mVTerm.VehicleCategory;
+                        dr["Year"] = mVTerm.Year;
+                        dr["Make"] = mVTerm.Make;
+                        dr["Model"] = mVTerm.Model;
+                        dr["Fleet No."] = mVTerm.FleetNumber;
+                        dr["Registration"] = mVTerm.Registration;
+
+                        string strInterestPartiesNamesList = null;
+                        int intIPCount = 0;
+                        if (mVTerm.Vehicle.InterestedParties.Count > 0)
                         {
-                            stradvisornominatedrepresentative = advsubuis.Owner.Name + "(FAP number: " +
-                                advsubuis.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").First().Value + ")";
+                            foreach (Organisation InterestParty in mVTerm.Vehicle.InterestedParties)
+                            {
+                                if (intIPCount == 0)
+                                {
+                                    strInterestPartiesNamesList = InterestParty.Name;
+                                }
+                                else
+                                {
+                                    strInterestPartiesNamesList = strInterestPartiesNamesList + ", " + InterestParty.Name;
+                                }
+
+                                intIPCount += 1;
+
+                                if (InterestParty.OrganisationType.Name == "financial")
+                                {
+                                    if (intFinancialIPCount == 0)
+                                    {
+                                        strFinancialIPList = InterestParty.Name;
+                                    }
+                                    else
+                                    {
+                                        strFinancialIPList = strInterestPartiesNamesList + ", " + InterestParty.Name;
+                                    }
+                                    intFinancialIPCount += 1;
+                                }
+                            }
+                        }
+                        dr["Interest Parties"] = strInterestPartiesNamesList;
+
+                        dr["Sum Insured"] = mVTerm.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
+
+                        dt.Rows.Add(dr);
+
+                        intMVNumberOfUnits += 1;
+                    }
+
+                    dt.TableName = "MVDetailsTable";
+
+                    DataTable dt2 = new DataTable();
+                    dt2.Columns.Add("Year");
+                    dt2.Columns.Add("Make");
+                    dt2.Columns.Add("Model");
+                    dt2.Columns.Add("Registration");
+                    dt2.Columns.Add("Sum Insured");
+                    //dt2.Columns.Add ("End Date");
+
+                    AgreementMVTerms = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "MV"));
+                    AgreementMVTerms.OrderBy(camvt => camvt.Registration);
+
+                    foreach (ClientAgreementMVTerm mVTerm2 in AgreementMVTerms)
+                    {
+                        DataRow dr2 = dt2.NewRow();
+
+                        dr2["Year"] = mVTerm2.Year;
+                        dr2["Make"] = mVTerm2.Make;
+                        dr2["Model"] = mVTerm2.Model;
+                        dr2["Registration"] = mVTerm2.Registration;
+                        dr2["Sum Insured"] = mVTerm2.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
+                        //dr2 ["End Date"] = "01/09/2018";
+
+                        dt2.Rows.Add(dr2);
+
+                    }
+
+                    dt2.TableName = "MVDetailsTable2";
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[MVNumberOfUnits]]", intMVNumberOfUnits.ToString()));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[MVDetailsTable]]", ConvertDataTableToHTML(dt)));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[MVDetailsTable2]]", ConvertDataTableToHTML(dt2)));
+
+                    //if (intFinancialIPCount > 1)
+                    //{
+                    //    strFinancialIP = strFinancialIPList + " are";
+                    //} else
+                    //{
+                    //    strFinancialIP = strFinancialIPList + " is";
+                    //}
+                    mergeFields.Add(new KeyValuePair<string, string>("[[FinancialIP]]", strFinancialIPList));
+                }
+
+                //BV Details
+                if (agreement.ClientAgreementTerms.Any(cat => cat.SubTermType == "BV"))
+                {
+                    int intBVNumberOfUnits = 0;
+
+                    DataTable dtbv = new DataTable();
+                    dtbv.Columns.Add("Name");
+                    dtbv.Columns.Add("Year");
+                    dtbv.Columns.Add("Make");
+                    dtbv.Columns.Add("Model");
+
+                    /*foreach (ClientAgreementBVTerm bVTerm in _clientAgreementBVTermService.GetAllAgreementBVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV")).OrderBy(cabvt => cabvt.BoatName))
+                    {
+                        DataRow drbv = dtbv.NewRow();
+
+                        drbv["Name"] = bVTerm.BoatName;
+                        drbv["Year"] = bVTerm.YearOfManufacture;
+                        drbv["Make"] = bVTerm.BoatMake;
+                        drbv["Model"] = bVTerm.BoatModel;
+
+                        string strBVInterestPartiesNamesList = null;
+                        int intBVIPCount = 0;
+                        if (bVTerm.Boat.InterestedParties.Count > 0)
+                        {
+                            foreach (Organisation InterestParty in bVTerm.Boat.InterestedParties)
+                            {
+                                if (intBVIPCount == 0)
+                                {
+                                    strBVInterestPartiesNamesList = InterestParty.Name;
+                                }
+                                else
+                                {
+                                    strBVInterestPartiesNamesList = strBVInterestPartiesNamesList + ", " + InterestParty.Name;
+                                }
+
+                                intBVIPCount += 1;
+                            }
+                        }
+                        //drbv["Interest Parties"] = strBVInterestPartiesNamesList;
+
+                        dtbv.Rows.Add(drbv);
+
+
+                    }*/
+
+                    DataTable dtbv2 = new DataTable();
+                    dtbv2.Columns.Add("Name");
+                    dtbv2.Columns.Add("Year");
+                    dtbv2.Columns.Add("Make");
+                    dtbv2.Columns.Add("Model");
+                    dtbv2.Columns.Add("Sum Insured");
+                    dtbv2.Columns.Add("Effective Date");
+
+                    DataTable dtbv3 = new DataTable();
+                    dtbv3.Columns.Add("Name");
+                    //dtbv3.Columns.Add("Year");
+                    //dtbv3.Columns.Add("Make");
+                    //dtbv3.Columns.Add("Model");
+                    dtbv3.Columns.Add("Excess");
+
+                    DataTable dtbv4 = new DataTable();
+                    dtbv4.Columns.Add("Name");
+                    //dtbv4.Columns.Add("Year");
+                    //dtbv4.Columns.Add("Make");
+                    //dtbv4.Columns.Add("Model");
+                    dtbv4.Columns.Add("Excess");
+
+                    DataTable dtbv5 = new DataTable();
+                    dtbv5.Columns.Add("Name");
+                    //dtbv4.Columns.Add("Year");
+                    //dtbv4.Columns.Add("Make");
+                    //dtbv4.Columns.Add("Model");
+                    dtbv5.Columns.Add("Interest Party");
+
+                    var AgreementBVTerms = await _clientAgreementBVTermService.GetAllAgreementBVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV"));
+                    AgreementBVTerms.OrderBy(cabvt => cabvt.BoatName);
+
+                    foreach (ClientAgreementBVTerm bVTerm in AgreementBVTerms)
+                    {
+                        intBVNumberOfUnits += 1;
+
+                        DataRow drbv = dtbv.NewRow();
+                        DataRow drbv2 = dtbv2.NewRow();
+                        DataRow drbv3 = dtbv3.NewRow();
+                        DataRow drbv4 = dtbv4.NewRow();
+                        DataRow drbv5 = dtbv5.NewRow();
+
+                        drbv["Name"] = bVTerm.BoatName;
+                        drbv["Year"] = bVTerm.YearOfManufacture;
+                        drbv["Make"] = bVTerm.BoatMake;
+                        drbv["Model"] = bVTerm.BoatModel;
+
+                        dtbv.Rows.Add(drbv);
+
+                        drbv2["Name"] = bVTerm.BoatName;
+                        drbv2["Year"] = bVTerm.YearOfManufacture;
+                        drbv2["Make"] = bVTerm.BoatMake;
+                        drbv2["Model"] = bVTerm.BoatModel;
+                        drbv2["Sum Insured"] = bVTerm.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
+                        drbv2["Effective Date"] = bVTerm.Boat.BoatEffectiveDate.ToShortDateString();
+
+                        dtbv2.Rows.Add(drbv2);
+
+                        drbv3["Name"] = bVTerm.BoatName;
+                        //drbv3["Year"] = bVTerm.YearOfManufacture;
+                        //drbv3["Make"] = bVTerm.BoatMake;
+                        //drbv3["Model"] = bVTerm.BoatModel;
+                        drbv3["Excess"] = bVTerm.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ")) + " any one Accident or Occurrence";
+
+                        dtbv3.Rows.Add(drbv3);
+
+                        drbv4["Name"] = bVTerm.BoatName;
+                        //drbv4["Year"] = bVTerm.YearOfManufacture;
+                        //drbv4["Make"] = bVTerm.BoatMake;
+                        //drbv4["Model"] = bVTerm.BoatModel;
+                        drbv4["Excess"] = "Not Included";
+                        if (bVTerm.Boat.BoatType1 == "YachtsandCatamarans" && bVTerm.Boat.BoatUses.Where(ycbu => ycbu.BoatUseCategory == "Race" && !ycbu.Removed && ycbu.DateDeleted == null).Count() > 0)
+                        {
+                            foreach (BoatUse boatuse in bVTerm.Boat.BoatUses)
+                            {
+                                drbv4["Excess"] = "$2,500";
+                            }
+                        }
+                        dtbv4.Rows.Add(drbv4);
+
+                        drbv5["Name"] = bVTerm.BoatName;
+                        //drbv4["Year"] = bVTerm.YearOfManufacture;
+                        //drbv4["Make"] = bVTerm.BoatMake;
+                        //drbv4["Model"] = bVTerm.BoatModel;
+                        string strBVInterestPartiesNamesList = null;
+                        int intBVIPCount = 0;
+                        if (bVTerm.Boat.InterestedParties.Count > 0)
+                        {
+                            foreach (Organisation InterestParty in bVTerm.Boat.InterestedParties)
+                            {
+                                if (intBVIPCount == 0)
+                                {
+                                    strBVInterestPartiesNamesList = InterestParty.Name;
+                                }
+                                else
+                                {
+                                    strBVInterestPartiesNamesList = strBVInterestPartiesNamesList + ", " + InterestParty.Name;
+                                }
+
+                                intBVIPCount += 1;
+                            }
                         }
                         else
                         {
-                            stradvisornominatedrepresentative = advsubuis.Owner.Name + "(FAP number: None)";
+                            strBVInterestPartiesNamesList = "None";
+                        }
+                        drbv5["Interest Party"] = strBVInterestPartiesNamesList;
+                        dtbv5.Rows.Add(drbv5);
+
+                    }
+
+                    dtbv.TableName = "BVDetailsTable";
+                    dtbv2.TableName = "BVDetailsTable2";
+                    dtbv3.TableName = "BVExcessDetailsTable";
+                    dtbv4.TableName = "BVRaceDetailsTable";
+                    dtbv5.TableName = "BVInterestPartyTable";
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BVNumberOfUnits]]", intBVNumberOfUnits.ToString()));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BVDetailsTable]]", ConvertDataTableToHTML(dtbv)));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BVDetailsTable2]]", ConvertDataTableToHTML(dtbv2)));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BVExcessDetailsTable]]", ConvertDataTableToHTML(dtbv3)));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BVRaceDetailsTable]]", ConvertDataTableToHTML(dtbv4)));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BVInterestPartyTable]]", ConvertDataTableToHTML(dtbv5)));
+
+                    var clientAgreementMVTerm = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV" && at.DateDeleted == null));
+                    if (clientAgreementMVTerm.Count() > 0)
+                    {
+                        var AgreementMVTerm = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV" && at.DateDeleted == null));
+                        AgreementMVTerm.OrderBy(camvt => camvt.Registration);
+
+                        foreach (ClientAgreementMVTerm mVTerm in AgreementMVTerm)
+                        {
+
+                            DataTable dtmv1 = new DataTable();
+                            dtmv1.Columns.Add("Year");
+                            dtmv1.Columns.Add("Make");
+                            dtmv1.Columns.Add("Model");
+                            dtmv1.Columns.Add("Registration");
+                            dtmv1.Columns.Add("Sum Insured");
+                            dtmv1.Columns.Add("Effective Date");
+
+                            AgreementMVTerm = await _clientAgreementMVTermService.GetAllAgreementMVTermFor(agreement.ClientAgreementTerms.FirstOrDefault(at => at.SubTermType == "BV"));
+                            AgreementMVTerm.OrderBy(camvt => camvt.Registration);
+
+                            foreach (ClientAgreementMVTerm bVMVTerm in AgreementMVTerm)
+                            {
+                                DataRow drmv1 = dtmv1.NewRow();
+
+                                drmv1["Year"] = bVMVTerm.Year;
+                                drmv1["Make"] = bVMVTerm.Make;
+                                drmv1["Model"] = bVMVTerm.Model;
+                                drmv1["Registration"] = bVMVTerm.Registration;
+                                drmv1["Sum Insured"] = bVMVTerm.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
+                                drmv1["Effective Date"] = bVMVTerm.Vehicle.VehicleEffectiveDate.ToShortDateString();
+
+                                dtmv1.Rows.Add(drmv1);
+
+                            }
+
+                            dtmv1.TableName = "BVMVDetailsTable";
+
+                            mergeFields.Add(new KeyValuePair<string, string>("[[BVMVDetailsTable]]", ConvertDataTableToHTML(dtmv1)));
                         }
                     }
                     else
                     {
-                        if (advsubuis.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").Any())
+                        mergeFields.Add(new KeyValuePair<string, string>("[[BVMVDetailsTable]]", "No Trailer insured under this policy."));
+                    }
+                }
+
+                string stradvisorlist = "";
+                string stradvisorlist1 = "";
+                string stradvisorlist2 = "";
+                string strnominatedrepresentative = "";
+                string strotherconsultingbusiness = "";
+                string strmentoradvisorlist = "";
+
+                if (agreement.ClientInformationSheet.Organisation.Count > 0)
+                {
+
+                    foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
+                    {
+                        if (!uisorg.Removed)
                         {
-                            stradvisornominatedrepresentative += "<br />" + advsubuis.Owner.Name + "(FAP number: " +
-                                advsubuis.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").First().Value + ")";
+                            var unit = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor");
+                            if (unit != null)
+                            {
+                                if (string.IsNullOrEmpty(stradvisorlist))
+                                {
+                                    stradvisorlist = "Advisor:                                           " + uisorg.Name +
+                                        "<br />" + "Retroactive Date:                          " + unit.PIRetroactivedate;
+                                }
+                                else
+                                {
+                                    stradvisorlist += "<br />" + "Advisor:                                           " + uisorg.Name +
+                                        "<br />" + "Retroactive Date:                          " + unit.PIRetroactivedate;
+                                }
+                                if (string.IsNullOrEmpty(stradvisorlist1))
+                                {
+                                    stradvisorlist1 = "Advisor:                                           " + uisorg.Name +
+                                        "<br />" + "Retroactive Date:                          " + unit.DORetroactivedate;
+                                }
+                                else
+                                {
+                                    stradvisorlist1 += "<br />" + "Advisor:                                           " + uisorg.Name +
+                                        "<br />" + "Retroactive Date:                          " + unit.DORetroactivedate;
+                                }
+                                if (string.IsNullOrEmpty(stradvisorlist2))
+                                {
+                                    stradvisorlist2 = uisorg.Name;
+                                }
+                                else
+                                {
+                                    stradvisorlist2 += ", " + uisorg.Name;
+                                }
+                            }
+
+                            var unit1 = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Nominated Representative");
+                            if (unit1 != null)
+                            {
+                                if (string.IsNullOrEmpty(strnominatedrepresentative))
+                                {
+                                    strnominatedrepresentative = "Nominated Representative:       " + uisorg.Name;
+                                }
+                                else
+                                {
+                                    strnominatedrepresentative += ", " + uisorg.Name;
+                                }
+                            }
+
+                            var unit2 = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Other Consulting Business");
+                            if (unit2 != null)
+                            {
+                                if (string.IsNullOrEmpty(strotherconsultingbusiness))
+                                {
+                                    strotherconsultingbusiness = uisorg.Name;
+                                }
+                                else
+                                {
+                                    strotherconsultingbusiness += ", " + uisorg.Name;
+                                }
+                            }
+
+                            var unit3 = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Mentored Advisor");
+                            if (unit3 != null)
+                            {
+                                string mentoredadvisorexpirydate = "";
+                                //if (unit3.DateofCommencement.Value.AddMonths(6) > agreement.ExpiryDate)
+                                //{
+                                //    mentoredadvisorexpirydate = 
+                                //        TimeZoneInfo.ConvertTimeFromUtc(agreement.ExpiryDate, TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
+                                //} else
+                                //{
+                                //    mentoredadvisorexpirydate =
+                                //        TimeZoneInfo.ConvertTimeFromUtc(unit3.DateofCommencement.Value.AddMonths(6), TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
+                                //}
+                                mentoredadvisorexpirydate =
+                                        TimeZoneInfo.ConvertTimeFromUtc(agreement.ExpiryDate, TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
+                                if (string.IsNullOrEmpty(strmentoradvisorlist))
+                                {
+                                    strmentoradvisorlist = "Name:            " + uisorg.Name +
+                                        "<br />" + "Expiry Date:  " + mentoredadvisorexpirydate;
+                                }
+                                else
+                                {
+                                    strmentoradvisorlist += "<br />" + "Name:            " + uisorg.Name +
+                                        "<br />" + "Expiry Date:  " + mentoredadvisorexpirydate;
+                                }
+                            }
+
+
+                        }
+
+                    }
+
+                    if (!string.IsNullOrEmpty(strnominatedrepresentative))
+                    {
+                        stradvisorlist += "<br /><br />" + strnominatedrepresentative;
+                    }
+
+                    if (string.IsNullOrEmpty(strotherconsultingbusiness))
+                    {
+                        strotherconsultingbusiness = "No Additional Insureds.";
+                    }
+
+                    if (string.IsNullOrEmpty(strmentoradvisorlist))
+                    {
+                        strmentoradvisorlist = "No Mentored Advisor insured under this policy.";
+                    }
+                    if (string.IsNullOrEmpty(stradvisorlist2))
+                    {
+                        stradvisorlist2 = "No Advisor insured under this policy.";
+                    }
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTablePI]]", stradvisorlist));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTableDO]]", stradvisorlist1));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[OtherConsultingBusiness]]", strotherconsultingbusiness));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[MontoredAdvisorDetails]]", strmentoradvisorlist));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorNames]]", stradvisorlist2));
+
+                }
+                else
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTablePI]]", "No Advisor insured under this policy."));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTableDO]]", "No Advisor insured under this policy."));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[OtherConsultingBusiness]]", "No Additional Insured insureds."));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[MontoredAdvisorDetails]]", "No Mentored Advisor insured under this policy."));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorNames]]", "No Advisor insured under this policy."));
+                }
+
+                //Advisor list with FAP Number
+
+                string stradvisornominatedrepresentative = "";
+                string strprincipleadvisorname = "";
+                string strInceptionDateForFAP = "";
+                int intadvisornumber = 1;
+
+                strInceptionDateForFAP = TimeZoneInfo.ConvertTimeFromUtc(agreement.InceptionDate, TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone)).ToString("d", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
+
+                if (agreement.ClientInformationSheet.Organisation.Count > 0)
+                {
+                    foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
+                    {
+                        var principleadvisorunit = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor" && u.DateDeleted == null);
+
+                        if (principleadvisorunit != null)
+                        {
+                            if (principleadvisorunit.IsPrincipalAdvisor && uisorg.DateDeleted == null && !uisorg.Removed)
+                            {
+                                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").Any())
+                                {
+                                    stradvisornominatedrepresentative = uisorg.Name + "(FAP number: " +
+                                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").First().Value + ")";
+                                }
+                                else
+                                {
+                                    stradvisornominatedrepresentative = uisorg.Name + "(FAP number: None)";
+                                }
+
+                                strprincipleadvisorname = uisorg.Name;
+                            }
+                        }
+
+                    }
+
+
+                    if (agreement.ClientInformationSheet.SubClientInformationSheets.Where(advisorsubuis => advisorsubuis.DateDeleted == null).Count() > 0)
+                    {
+                        if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "FAPViewModel.CoverStartDate").Any())
+                        {
+                            strInceptionDateForFAP = agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "FAPViewModel.CoverStartDate").First().Value.ToString();
+                        }
+                    }
+
+                    foreach (var advsubuis in agreement.ClientInformationSheet.SubClientInformationSheets.Where(advisorsubuis => advisorsubuis.DateDeleted == null))
+                    {
+                        intadvisornumber += 1;
+
+                        if (string.IsNullOrEmpty(stradvisornominatedrepresentative))
+                        {
+                            if (advsubuis.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").Any())
+                            {
+                                stradvisornominatedrepresentative = advsubuis.Owner.Name + "(FAP number: " +
+                                    advsubuis.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").First().Value + ")";
+                            }
+                            else
+                            {
+                                stradvisornominatedrepresentative = advsubuis.Owner.Name + "(FAP number: None)";
+                            }
                         }
                         else
                         {
-                            stradvisornominatedrepresentative += "<br />" + advsubuis.Owner.Name + "(FAP number: None)";
+                            if (advsubuis.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").Any())
+                            {
+                                stradvisornominatedrepresentative += "<br />" + advsubuis.Owner.Name + "(FAP number: " +
+                                    advsubuis.Answers.Where(sa => sa.ItemName == "FAPViewModel.TransitionalLicenseNum").First().Value + ")";
+                            }
+                            else
+                            {
+                                stradvisornominatedrepresentative += "<br />" + advsubuis.Owner.Name + "(FAP number: None)";
+                            }
                         }
                     }
                 }
-            }
 
-            mergeFields.Add(new KeyValuePair<string, string>("[[InceptionDateForFAP]]", strInceptionDateForFAP));
+                mergeFields.Add(new KeyValuePair<string, string>("[[InceptionDateForFAP]]", strInceptionDateForFAP));
 
-            if (string.IsNullOrEmpty(stradvisornominatedrepresentative))
-            {
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorsList]]", "No Advisor insured under this policy"));
-            }
-            else
-            {
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorsList]]", stradvisornominatedrepresentative));
-            }
-            if (string.IsNullOrEmpty(strprincipleadvisorname))
-            {
-                mergeFields.Add(new KeyValuePair<string, string>("[[PrincipleAdvisorName]]", "No Principle Advisor insured under this policy"));
-            }
-            else
-            {
-                mergeFields.Add(new KeyValuePair<string, string>("[[PrincipleAdvisorName]]", strprincipleadvisorname));
-            }
-            mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorsNumber]]", intadvisornumber.ToString()));
-
-            //OT merge fields
-            string OTAdvisorList = "";
-            Product OTProduct = await _productService.GetProductById(new Guid("feb30dcf-c2d1-43e4-92df-d9c0fb555e5c"));
-            if (OTProduct != null)
-            {
-                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == OTProduct.OptionalProductRequiredAnswer).Any())
+                if (string.IsNullOrEmpty(stradvisornominatedrepresentative))
                 {
-                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == OTProduct.OptionalProductRequiredAnswer).First().Value == "1")
-                    {
-                        if (agreement.ClientInformationSheet.Organisation.Count > 0)
-                        {
-                            foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
-                            {
-                                var principleadvisorunit = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor" && u.DateDeleted == null);
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorsList]]", "No Advisor insured under this policy"));
+                }
+                else
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorsList]]", stradvisornominatedrepresentative));
+                }
+                if (string.IsNullOrEmpty(strprincipleadvisorname))
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[PrincipleAdvisorName]]", "No Principle Advisor insured under this policy"));
+                }
+                else
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[PrincipleAdvisorName]]", strprincipleadvisorname));
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorsNumber]]", intadvisornumber.ToString()));
 
-                                if (principleadvisorunit != null)
+                //OT merge fields
+                string OTAdvisorList = "";
+                Product OTProduct = await _productService.GetProductById(new Guid("feb30dcf-c2d1-43e4-92df-d9c0fb555e5c"));
+                if (OTProduct != null)
+                {
+                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == OTProduct.OptionalProductRequiredAnswer).Any())
+                    {
+                        if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == OTProduct.OptionalProductRequiredAnswer).First().Value == "1")
+                        {
+                            if (agreement.ClientInformationSheet.Organisation.Count > 0)
+                            {
+                                foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
                                 {
-                                    if (principleadvisorunit.IsPrincipalAdvisor && uisorg.DateDeleted == null && !uisorg.Removed && string.IsNullOrEmpty(OTAdvisorList))
+                                    var principleadvisorunit = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor" && u.DateDeleted == null);
+
+                                    if (principleadvisorunit != null)
                                     {
-                                        OTAdvisorList = uisorg.Name;
+                                        if (principleadvisorunit.IsPrincipalAdvisor && uisorg.DateDeleted == null && !uisorg.Removed && string.IsNullOrEmpty(OTAdvisorList))
+                                        {
+                                            OTAdvisorList = uisorg.Name;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (agreement.ClientInformationSheet.SubClientInformationSheets.Where(subuis => subuis.DateDeleted == null).Count() > 0)
+                    {
+                        foreach (var prodsubuis in agreement.ClientInformationSheet.SubClientInformationSheets.Where(prossubuis => prossubuis.DateDeleted == null))
+                        {
+                            if (prodsubuis.Answers.Where(sa => sa.ItemName == OTProduct.OptionalProductRequiredAnswer).Any())
+                            {
+                                if (prodsubuis.Answers.Where(sa => sa.ItemName == OTProduct.OptionalProductRequiredAnswer).First().Value == "1")
+                                {
+                                    if (string.IsNullOrEmpty(OTAdvisorList))
+                                    {
+                                        OTAdvisorList += prodsubuis.Owner.Name;
+                                    }
+                                    else
+                                    {
+                                        OTAdvisorList += ", " + prodsubuis.Owner.Name;
                                     }
                                 }
                             }
                         }
                     }
                 }
-                if (agreement.ClientInformationSheet.SubClientInformationSheets.Where(subuis => subuis.DateDeleted == null).Count() > 0)
+                if (string.IsNullOrEmpty(OTAdvisorList))
                 {
-                    foreach (var prodsubuis in agreement.ClientInformationSheet.SubClientInformationSheets.Where(prossubuis => prossubuis.DateDeleted == null))
-                    {
-                        if (prodsubuis.Answers.Where(sa => sa.ItemName == OTProduct.OptionalProductRequiredAnswer).Any())
-                        {
-                            if (prodsubuis.Answers.Where(sa => sa.ItemName == OTProduct.OptionalProductRequiredAnswer).First().Value == "1")
-                            {
-                                if (string.IsNullOrEmpty(OTAdvisorList))
-                                {
-                                    OTAdvisorList += prodsubuis.Owner.Name;
-                                }
-                                else
-                                {
-                                    OTAdvisorList += ", " + prodsubuis.Owner.Name;
-                                }
-                            }
-                        }
-                    }
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorTrustees_OT]]", "No Advisor insured under the Outside Trustees policy"));
                 }
-            }
-            if (string.IsNullOrEmpty(OTAdvisorList))
-            {
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorTrustees_OT]]", "No Advisor insured under the Outside Trustees policy"));
-            } else
-            {
-                mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorTrustees_OT]]", OTAdvisorList));
+                else
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorTrustees_OT]]", OTAdvisorList));
+                }
+
+                // merge the configured merge feilds into the document
+                string content = FromBytes(template.Contents);
+                try
+                {
+                    foreach (KeyValuePair<string, string> field in mergeFields)
+                        if (field.Value != null && field.Value.Contains("&"))
+                        {
+                            content = content.Replace(field.Key, field.Value.Replace("&", "&amp;"));
+                        }
+                        else
+                        {
+                            content = content.Replace(field.Key, field.Value);
+                        }
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+
+                // save the merged content
+                doc.Contents = ToBytes(content);
+
             }
 
-            // merge the configured merge feilds into the document
-            string content = FromBytes (template.Contents);
-            try
-            {
-                foreach (KeyValuePair<string, string> field in mergeFields)
-                    if (field.Value != null && field.Value.Contains("&"))
-                    {
-                        content = content.Replace(field.Key, field.Value.Replace("&", "&amp;"));
-                    }
-                    else
-                    {
-                        content = content.Replace(field.Key, field.Value);
-                    }
-
-            }catch(Exception ex)
-            {
-               
-            }
-            //content = content.Replace(field.Key, field.Value);
-            // save the merged content
-            doc.Contents = ToBytes (content);
-
-			return (T)doc;
-		}
+            return (T)doc;
+        }
 
        
-            private List<KeyValuePair<string, string>> GetMergeFields(ClientAgreement agreement, ClientInformationSheet clientInformationSheet)
+        private List<KeyValuePair<string, string>> GetMergeFields(ClientAgreement agreement, ClientInformationSheet clientInformationSheet)
         {
             List<KeyValuePair<string, string>> mergeFields = new List<KeyValuePair<string, string>>();
             mergeFields.Add(new KeyValuePair<string, string>("[[InsuredName]]", agreement.InsuredName));
@@ -997,8 +1068,18 @@ namespace DealEngine.Services.Impl
             mergeFields.Add(new KeyValuePair<string, string>("[[BrokerJobTitle]]", agreement.ClientInformationSheet.Programme.BrokerContactUser.JobTitle));
             mergeFields.Add(new KeyValuePair<string, string>("[[BrokerPhone]]", agreement.ClientInformationSheet.Programme.BrokerContactUser.Phone));
             mergeFields.Add(new KeyValuePair<string, string>("[[BrokerEmail]]", agreement.ClientInformationSheet.Programme.BrokerContactUser.Email));
+            mergeFields.Add(new KeyValuePair<string, string>("[[BrokerAddress]]", agreement.ClientInformationSheet.Programme.BrokerContactUser.Address));
             mergeFields.Add(new KeyValuePair<string, string>("[[ClientBranchCode]]", agreement.ClientInformationSheet.Programme.EGlobalBranchCode));
-            if(agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme")
+
+            mergeFields.Add(new KeyValuePair<string, string>("[[ProgrammeClassOfInsurance]]", agreement.ClientInformationSheet.Programme.BaseProgramme.ProgMergeClassOfInsurance));
+            mergeFields.Add(new KeyValuePair<string, string>("[[ProgrammeInsurer]]", agreement.ClientInformationSheet.Programme.BaseProgramme.ProgMergeInsurer));
+            mergeFields.Add(new KeyValuePair<string, string>("[[ProgrammeInsurerRating]]", agreement.ClientInformationSheet.Programme.BaseProgramme.ProgMergeInsurerRating));
+            mergeFields.Add(new KeyValuePair<string, string>("[[ProgrammePolicyNumber]]", agreement.ClientInformationSheet.Programme.BaseProgramme.ProgMergePolicyNumber));
+
+            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme" ||
+                agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo ML Programme" ||
+                agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Run Off Programme" ||
+                agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
             {
                 mergeFields.Add(new KeyValuePair<string, string>("[[ClientNumber]]", agreement.ClientInformationSheet.Programme.EGlobalClientNumber != null
                                                                                     ?agreement.ClientInformationSheet.Programme.EGlobalClientNumber

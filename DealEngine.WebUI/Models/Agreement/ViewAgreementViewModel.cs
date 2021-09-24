@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using DealEngine.Domain.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using SystemDocument = DealEngine.Domain.Entities.Document;
 
 namespace DealEngine.WebUI.Models.Agreement
 {
@@ -169,23 +170,38 @@ namespace DealEngine.WebUI.Models.Agreement
         {
             ExtensionCoverOptions = new List<ExtensionCoverOptions>();
             int intMonthlyInstalmentNumber = 1;
-           
+            var sheet = agreement.ClientInformationSheet;
             foreach (ClientAgreementTermExtension term in agreement.ClientAgreementTermExtensions.Where(t => t.DateDeleted == null).OrderBy(acat => acat.TermLimit).ThenBy(acat => acat.Excess))
             {
-                
+                if (sheet.IsChange && sheet.PreviousInformationSheet != null)
+                {
                     ExtensionCoverOptions.Add(new ExtensionCoverOptions
                     {
                         TermId = term.Id,
                         //isSelected = (term.Bound == true) ? "checked" : "",
                         ProductId = agreement.Product.Id,
                         RiskName = agreement.Product.Name,
-                        Inclusion = "Limit: " + term.TermLimit.ToString("C", userCulture),
-                        Exclusion = "Excess: " + term.Excess.ToString("C", userCulture),
+                        Inclusion = (term.HideLimitExcess) ? "As Selected Above" : "Limit: " + term.TermLimit.ToString("C", userCulture),
+                        Exclusion = (term.HideLimitExcess) ? "As Selected Above" : "Excess: " + term.Excess.ToString("C", userCulture),
+                        TotalPremium = term.PremiumDiffer.ToString("C", userCulture),
+                        ExtensionName = term.ExtentionName,
+                    });
+                }
+                else
+                {
+                    ExtensionCoverOptions.Add(new ExtensionCoverOptions
+                    {
+                        TermId = term.Id,
+                        //isSelected = (term.Bound == true) ? "checked" : "",
+                        ProductId = agreement.Product.Id,
+                        RiskName = agreement.Product.Name,
+                        Inclusion = (term.HideLimitExcess) ? "As Selected Above" : "Limit: " + term.TermLimit.ToString("C", userCulture),
+                        Exclusion = (term.HideLimitExcess) ? "As Selected Above" : "Excess: " + term.Excess.ToString("C", userCulture),
                         TotalPremium = term.Premium.ToString("C", userCulture),
                         ExtensionName = term.ExtentionName,
                     });
-               
-               
+                }
+   
 
             }
         }
@@ -495,6 +511,7 @@ namespace DealEngine.WebUI.Models.Agreement
 
         }
 
+      
         public IEnumerable<InsuranceRoleViewModel> InsuranceRoles { get; set; }
         public string ProductName { get; set; }
         public string ProgrammeName { get; set; }
@@ -587,6 +604,11 @@ namespace DealEngine.WebUI.Models.Agreement
         public IList<ExtensionCoverOptions> ExtensionCoverOptions { get; set; }
         public bool IsExtentionCoverOption { get; set; }
         public bool ExtentionCoverName { get; set; }
+        public List<EditExtensionTermsViewModel> ExtensionTerms { get; internal set; }
+        public IList<String> AgreementTemplates { get; set; }
+        public IList<Product> AgreementProducts { get; set; }
+
+
     }
 
     public class InsuranceInclusion

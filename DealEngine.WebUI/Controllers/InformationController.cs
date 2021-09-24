@@ -571,22 +571,16 @@ namespace DealEngine.WebUI.Controllers
                             }
                         }
 
-
                       if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
                       {
                         ClientAgreementEndorsement cAELPLAIncl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Inclusion");
-                        ClientAgreementEndorsement cAELPLAExcl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Exclusion");
 
                         if (cAELPLAIncl != null)
                         {
                             cAELPLAIncl.DateDeleted = DateTime.UtcNow;
                             cAELPLAIncl.DeletedBy = user;
                         }
-                        if (cAELPLAExcl != null)
-                        {
-                            cAELPLAExcl.DateDeleted = null;
-                            cAELPLAExcl.DeletedBy = null;
-                        }
+
                       }
                     }
                     await uow.Commit();
@@ -606,20 +600,13 @@ namespace DealEngine.WebUI.Controllers
                             if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
                             {
                                 ClientAgreementEndorsement cAELPLAIncl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Inclusion");
-                                ClientAgreementEndorsement cAELPLAExcl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Exclusion");
                                 if (cAELPLAIncl != null)
                                 {
                                     cAELPLAIncl.DateDeleted = null;
                                     cAELPLAIncl.DeletedBy = null;
                                 }
-                                if (cAELPLAExcl != null)
-                                {
-                                    cAELPLAExcl.DateDeleted = DateTime.UtcNow;
-                                    cAELPLAExcl.DeletedBy = user;
-                                }
                             }
                             
-
                         }
                     }
 
@@ -1524,30 +1511,30 @@ namespace DealEngine.WebUI.Controllers
             {
                 
                 // Attach the Advisors
-                await _programmeService.MoveAdvisorsToClientProgramme(advisors, clientProgramme, sourceClientProgramme, user);
+                await _programmeService.MoveAdvisorsToClientProgramme(advisors, clientProgramme, sourceClientProgramme, user, targetOwnerFAP);
 
                 //Clone or create sub uis
-                IList<SubClientProgramme> SubClientProgrammes;
-                if (clientProgramme.InformationSheet.NextInformationSheet.IsChange)
-                {
-                    SubClientProgrammes = clientProgramme.SubClientProgrammes;
-                    if (!SubClientProgrammes.Any())
-                    {
-                        SubClientProgrammes = clientProgramme.InformationSheet.NextInformationSheet.Programme.SubClientProgrammes;
-                    }
-                }
-                else
-                {
-                    SubClientProgrammes = clientProgramme.InformationSheet.NextInformationSheet.Programme.SubClientProgrammes;
-                }
-                if (SubClientProgrammes.Any())
-                {
-                    await _subsystemService.ValidateProgramme(clientProgramme.InformationSheet.NextInformationSheet, user);
-                }
-                else
-                {
-                    await _subsystemService.CreateSubObjects(clientProgramme.InformationSheet.NextInformationSheet.Programme.Id, clientProgramme.InformationSheet.NextInformationSheet, user);
-                }
+                //IList<SubClientProgramme> SubClientProgrammes;
+                //if (clientProgramme.InformationSheet.NextInformationSheet.IsChange)
+                //{
+                //    SubClientProgrammes = clientProgramme.SubClientProgrammes;
+                //    if (!SubClientProgrammes.Any())
+                //    {
+                //        SubClientProgrammes = clientProgramme.InformationSheet.NextInformationSheet.Programme.SubClientProgrammes;
+                //    }
+                //}
+                //else
+                //{
+                //    SubClientProgrammes = clientProgramme.InformationSheet.NextInformationSheet.Programme.SubClientProgrammes;
+                //}
+                //if (SubClientProgrammes.Any())
+                //{
+                //    await _subsystemService.ValidateProgramme(clientProgramme.InformationSheet.NextInformationSheet, user);
+                //}
+                //else
+                //{
+                //    await _subsystemService.CreateSubObjects(clientProgramme.InformationSheet.NextInformationSheet.Programme.Id, clientProgramme.InformationSheet.NextInformationSheet, user);
+                //}
 
                 //render new clientagreement doc
                 if (clientProgramme.InformationSheet.NextInformationSheet != null)
@@ -1563,7 +1550,6 @@ namespace DealEngine.WebUI.Controllers
                         var agreeTemplateList = newclientAgreement.Product.Documents;
                         var agreeDocList = newclientAgreement.GetDocuments();
 
-
                         //tripleA DO use case, remove when all client set as company
                         if (newclientAgreement.Product.Id == new Guid("bdbdda02-ee4e-44f5-84a8-dd18d17287c1") &&
                             newclientAgreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "DAOLIViewModel.HasDAOLIOptions").First().Value == "2")
@@ -1572,7 +1558,6 @@ namespace DealEngine.WebUI.Controllers
                         }
                         else
                         {
-
                             if (!newclientAgreement.Product.IsOptionalCombinedProduct)
                             {
                                 foreach (SystemDocument template in agreeTemplateList)
@@ -1631,39 +1616,37 @@ namespace DealEngine.WebUI.Controllers
                                         }
 
                                         //render all subsystem
-                                        if (template.DocumentType == 6)
-                                        {
-                                            foreach (var subSystemClient in clientProgramme.InformationSheet.NextInformationSheet.SubClientInformationSheets)
-                                            {
-                                                if (newclientAgreement.Product.IsOptionalProductBasedSub)
-                                                {
-                                                    if (subSystemClient.Answers.Where(sa => sa.ItemName == newclientAgreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
-                                                    {
-                                                        SystemDocument renderedDocSub = await _fileService.RenderDocument(user, template, newclientAgreement, subSystemClient, null);
-                                                        renderedDocSub.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
-                                                        newclientAgreement.Documents.Add(renderedDocSub);
-                                                        documents.Add(renderedDocSub);
-                                                        await _fileService.UploadFile(renderedDocSub);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, newclientAgreement, subSystemClient, null);
-                                                    renderedDoc.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
-                                                    newclientAgreement.Documents.Add(renderedDoc);
-                                                    documents.Add(renderedDoc);
-                                                    await _fileService.UploadFile(renderedDoc);
-                                                }
-
-                                            }
-                                        }
+                                        //if (template.DocumentType == 6)
+                                        //{
+                                        //    foreach (var subSystemClient in clientProgramme.InformationSheet.NextInformationSheet.SubClientInformationSheets)
+                                        //    {
+                                        //        if (newclientAgreement.Product.IsOptionalProductBasedSub)
+                                        //        {
+                                        //            if (subSystemClient.Answers.Where(sa => sa.ItemName == newclientAgreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                                        //            {
+                                        //                SystemDocument renderedDocSub = await _fileService.RenderDocument(user, template, newclientAgreement, subSystemClient, null);
+                                        //                renderedDocSub.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
+                                        //                newclientAgreement.Documents.Add(renderedDocSub);
+                                        //                documents.Add(renderedDocSub);
+                                        //                await _fileService.UploadFile(renderedDocSub);
+                                        //            }
+                                        //        }
+                                        //        else
+                                        //        {
+                                        //            SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, newclientAgreement, subSystemClient, null);
+                                        //            renderedDoc.OwnerOrganisation = newclientAgreement.ClientInformationSheet.Owner;
+                                        //            newclientAgreement.Documents.Add(renderedDoc);
+                                        //            documents.Add(renderedDoc);
+                                        //            await _fileService.UploadFile(renderedDoc);
+                                        //        }
+                                        //    }
+                                        //}
                                     }
                                 }
                             }
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {

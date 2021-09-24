@@ -29,6 +29,7 @@ namespace DealEngine.Domain.Entities
 		//Premium Advice= 7
 		//Invoice (pdf apollo)= 8
 		//Job-Certificate = 9
+		//UIS Invitation Email Attachment = 10
 		//FullProposal Report Pdf = 99
 		public virtual bool IsPublic { get; protected set; }
 		public virtual byte [] Contents { get; set; }
