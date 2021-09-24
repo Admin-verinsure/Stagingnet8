@@ -2,32 +2,25 @@
 
 
 @Html.HiddenFor(m => m.ProgrammeId)
-
+@Html.HiddenFor(m => m.ClientProgrammeId)
 <div class="container">
     <form method="POST" action="~/Services/PostClient" novalidate>
         <div class="card">
             <div class="card-header">
                 <div class=" form-group">
-                    <a class="btn btn-primary btn-sm" href="/Agreement/RerenderAlldocs?ProgrammeId=@Model.ProgrammeId"> Rerender all documents </a>
-                    <button class="btn-success btn btn-xs" type="button" onclick="GetOwner()">Go</button>
+                    @if (@ViewBag.IsTC) { 
+                           <a class="btn btn-primary btn-sm">Re-render all documents </a>
+                           <a class="btn-success btn btn-xs" href="/Agreement/RerenderAlldocs?ProgrammeId=@Model.ProgrammeId"> Go </a>
+                    }
                 </div>
-                @*<div class="form-group">
-                    <button class="btn-success btn btn-xs" type="button" onclick="GetOwner()">Go</button>
-                </div>*@
             </div>
             <div class="card-body">
                 <div class="form-group">
 
                     <div class="form-group col-md-6">
-                        <div>
-                            <label>Rerender selected template </label>
-                            <a class="btn btn-primary btn-sm" id="Rerenderselected" style="display:none"> Rerender selected template </a>
-                            <button class="btn-success btn btn-xs AgreemnTemplateTypeSec" type="button" onclick="Rerenderselected(" AgreemntTemplateType")">Go</button>
-
-                        </div>
 
                         <div class="form-group">
-                            <label class="label">Select Product</label>
+                            <label class="label">Step 1 :- Select Product</label>
                             <select id="AgreemntProductType" name="ProductType" class="custom-select">
 
                                 @foreach (var agreementproduct in Model.AgreementProducts)
@@ -37,45 +30,54 @@
                                 }
                             </select>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="form-group">
+
+                    <div class="form-group col-md-6">
 
                         <div class="form-group AgreemnTemplateTypeSec" style="display:none">
-                            <label class="label">Select Template</label>
+
+
+                            <label class="label">Step 2 :- Select Template</label>
+                            <br />
+
+                            <button class="btn btn-primary btn-sm" type="button">Re-render selected template</button>
+                            <button class="btn-success btn btn-xs" type="button" onclick='Rerenderselected("AgreemntTemplateType")'>Go</button>
+                            <br />
                             <select id="AgreemntTemplateType" name="TemplateType" class="form-control input-lg">
                             </select>
                         </div>
 
                     </div>
-
-                    @*<div class="form-group col-md-6">
-                        <div>
-                            <label>Rerender UIS </label>
-                            <a class="btn btn-primary btn-sm" id="Rerenderselected" style="display:none"> Rerender selected template </a>
-                            <button class="btn-success btn btn-xs AgreemnTemplateTypeSec" type="button" onclick="Rerenderselected(" AgreemntTemplateType")">Go</button>
-
-                        </div>
-
-                        <div class="form-group">
-                            <label class="label">Select Product</label>
-                            <select id="AgreemntProductType" name="ProductType" class="custom-select">
-
-                                @foreach (var agreementproduct in Model.AgreementProducts)
-                                {
-                                    <option value="@agreementproduct.Id">@agreementproduct.Name</option>
-
-                                }
-                            </select>
-                        </div>
-
-                        <div class="form-group AgreemnTemplateTypeSec" style="display:none">
-                            <label class="label">Select Template</label>
-                            <select id="AgreemntTemplateType" name="TemplateType" class="form-control input-lg">
-                            </select>
-                        </div>
-
-                    </div>*@
                 </div>
             </div>
-           
+
+            <div class="card-body" style="display:none">
+                <div class="form-group">
+
+                    <div class="form-group col-md-6">
+
+                        <div class="form-group">
+                            <button class="btn btn-primary btn-sm" type="button">Re-render Other Documents</button>
+                            <button class="btn-success btn btn-xs" type="button" onclick='RerenderOtherselected("OtherDocumentType")'>Go</button>
+                            <br />
+
+                            <select id="OtherDocumentType" name="OtherDocumentType" class="custom-select">
+                                <option value="FullProposal Report">Full Proposal Report</option>
+                            </select>
+                            
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+            </div>
         </div>
     </form>
 </div>

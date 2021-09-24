@@ -299,30 +299,31 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                 }
 
 
-                <div class="form-group">
-                    @foreach (var item in Model)
-                    {
+            <div class="form-group">
+                @foreach (var item in Model)
+                {
 
-                        @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
+                    @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
 (item.Status == "Bound" || item.Status == "Bound and invoice pending" || item.Status == "Bound and invoiced"))
+                    {
+                        <h3><strong>Documents </strong></h3>
+
+                        @await Html.PartialAsync("Partials/ViewAgreementDocs", item.Documents)
+
+                        @if (@ViewBag.IsBroker || @ViewBag.IsTC || @ViewBag.IsInsurer)
                         {
-                            <h3><strong>Documents </strong></h3>
-
-                            @await Html.PartialAsync("Partials/ViewAgreementDocs", item.Documents)
-
-                            @if (@ViewBag.IsBroker || @ViewBag.IsTC || @ViewBag.IsInsurer)
-                            {
-                                <h3><strong>Options </strong></h3>
-                                <a class="btn btn-primary btn-sm" href="/Agreement/RenderDocuments/@item.InformationSheetId"> Render Documents </a>
-                                <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@false"><i class="fa fa-edit"></i> Send Documents To Insured </a>
-                                <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@true"><i class="fa fa-edit"></i> Send Documents To Me </a>
-                            }
-
+                            <h3><strong>Options </strong></h3>
+                            <a class="btn btn-primary btn-sm" href="/Agreement/RenderDocuments/@item.InformationSheetId"> Render all Documents </a>
+                            <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@false"><i class="fa fa-edit"></i> Send Documents To Insured </a>
+                            <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@true"><i class="fa fa-edit"></i> Send Documents To Me </a>
+                            <a onclick="location.href='@Url.Action("RerenderDocs", "Agreement",new { ProgrammeId=@Model.FirstOrDefault().ProgrammeId, ClientProgId = @Model.FirstOrDefault().ClientProgrammeId})'" class="btn btn-primary btn-sm" style="color:white">Rerender Selected document </a>
                         }
-                        <!-- loop through process once only!! -->
-                        break;
+
                     }
-                </div>
+                    <!-- loop through process once only!! -->
+                    break;
+                }
+            </div>
 
                 @if (@multiCoverOptionsStatus && (@ViewBag.IsBroker || @ViewBag.IsTC || @ViewBag.IsInsurer))
                 {

@@ -865,6 +865,9 @@
               for (var index = 0; index < data.agreementTemplates.length; index++) {
                   templateselect.append('<option value="' + data.agreementTemplates[index] + '">' + data.agreementTemplates[index] + '</option>');
               }
+
+              //templateselect.append('<option value="FullProposal Report Pdf"> FullProposal Report Pdf </option>');
+
            })
           .fail(function (jqXHR, textStatus, errorThrown) {
              alert("There was an error while trying to decline agreement.");
@@ -874,6 +877,65 @@
 
 
     function Rerenderselected(typeselected) {
+        debugger;
+        event.preventDefault();
+        var ClienProgId = "";
+        $("#getRerenderModal").show();
+        var selectedtype = document.getElementById(typeselected);
+        var getValue = ""+selectedtype.value;
+
+        var progid = $('#ProgrammeId').val();
+        var ClienProgId = $('#ClientProgrammeId').val();
+        if (ClienProgId == '@System.Guid.Empty') {
+            var postData = {
+                "TemplateName": getValue,
+                "ProgrammeId": progid,
+            };
+
+            $.ajax({
+                url: '@Url.Action("RerenderSelectedTemplate", "Agreement")',
+                type: "Post",
+                data: postData,
+                async: true
+            }).done(function (data) {
+                window.location.href = data.url;
+                $("#getRerenderModal").hide();
+            }).fail(function (a, s, d) {
+                $("#getRerenderModal").hide();
+
+                alert("There was an error while trying to decline agreement.");
+
+            });
+        } else {
+
+            var postData = {
+            "TemplateName": getValue,
+            "ProgrammeId": progid,
+            "ClientProgId":ClienProgId
+            };
+
+         $.ajax({
+            url: '@Url.Action("RerenderSelectedTemplatebyClientProgId", "Agreement")',
+            type: "Post",
+            data: postData,
+            async: true
+        }).done(function (data) {
+            window.location.href = data.url;
+              $("#getRerenderModal").hide();
+        }).fail(function (a, s, d) {
+              $("#getRerenderModal").hide();
+
+              alert("There was an error while trying to decline agreement.");
+
+        });
+
+        }
+        
+
+    };
+
+
+     function RerenderOtherselected(typeselected) {
         debugger;
                 event.preventDefault();
         $("#getRerenderModal").show();
@@ -888,7 +950,7 @@
         };
 
          $.ajax({
-            url: '@Url.Action("RerenderSelectedTemplate", "Agreement")',
+            url: '@Url.Action("RerenderOtherType", "Agreement")',
             type: "Post",
             data: postData,
             async: true
