@@ -1,24 +1,25 @@
 ﻿@model DealEngine.WebUI.Models.Agreement.ViewAgreementViewModel
 
 @Html.Raw(Model.NoPaymentRequiredMessage)
-@if (Model.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme")
+@if (Model.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme" || Model.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo ML Programme" ||
+    Model.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Run Off Programme")
 {
-    @if (string.IsNullOrWhiteSpace(Model.ClientInformationSheet.Programme.PaymentType))
-    {
-        <script type="text/javascript">
-            document.getElementById("NextNoPayment").hidden = true;
-        </script>
-    }
-    else
-    {
-        <script type="text/javascript">
-            document.getElementById("NextNoPayment").hidden = false;
-        </script>
-    }
+@if (string.IsNullOrWhiteSpace(Model.ClientInformationSheet.Programme.PaymentType))
+{
+    <script type="text/javascript">
+        document.getElementById("NextNoPayment").hidden = true;
+    </script>
+}
+else
+{
+    <script type="text/javascript">
+        document.getElementById("NextNoPayment").hidden = false;
+    </script>
+}
 
-    <label class="required">Please select a payment Method</label>
-    @Html.HiddenFor(m => m.ClientInformationSheet.Programme.Id, new { @id = "Programme.Id" })
-    @Html.DropDownListFor(m => m.ClientInformationSheet.Programme.PaymentType, Model.PaymentMethodOptions, new { @required = "", @class = "form-control b", onchange = "SavePaymentOption(this.id)" })
+<label class="required">Please select a payment Method</label>
+@Html.HiddenFor(m => m.ClientInformationSheet.Programme.Id, new { @id = "Programme.Id" })
+@Html.DropDownListFor(m => m.ClientInformationSheet.Programme.PaymentType, Model.PaymentMethodOptions, new { @required = "", @class = "form-control b", onchange = "SavePaymentOption(this.id)" })
 }
 @if (Model.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
 {
