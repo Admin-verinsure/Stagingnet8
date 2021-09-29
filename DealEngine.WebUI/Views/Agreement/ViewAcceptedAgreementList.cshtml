@@ -97,7 +97,7 @@
                                     @*<a href="~/Agreement/EditTerms/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>*@
                                 </li>
                                 <li class="nav-item">
-                                    <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Extension Limits2 </a>
+                                    <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Extension </a>
 
                                 </li>
                                 @if (item.Status == "Authorised" && item.ClientInformationSheet.Status == "Submitted")
@@ -213,7 +213,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
 
                                 </li>
                                 <li class="nav-item">
-                                    <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Extension Limits </a>
+                                    <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Extension </a>
 
                                 </li>
                                 @if (item.Status == "Authorised" && item.ClientInformationSheet.Status == "Submitted")
