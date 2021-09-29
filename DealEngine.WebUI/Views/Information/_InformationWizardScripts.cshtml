@@ -101,7 +101,7 @@
 
                     if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "PMINZ Programme" && IsPersonnelcount == 0) {
 
-                           window.alert("Please add atleast one personnel in order for us to be able to provide you with a quote.");
+                           window.alert("Please add at least one personnel in order for us to be able to provide you with a quote.");
                        $("[id='Insured Details / Named Parties']").trigger("click");
                            return false;
 
@@ -110,7 +110,7 @@
 
                      if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Technology Contractors Liability Programme" && IsIndividualcount == 0) {
 
-                           window.alert("Please add atleast one individual in order for us to be able to provide you with a quote.");
+                           window.alert("Please add at least one individual in order for us to be able to provide you with a quote.");
                        $("[id='Insured Details / Named Parties']").trigger("click");
                            return false;
 
@@ -128,11 +128,18 @@
                              return false;
                                 }
                          }
-
-
-
                     }
-			      
+
+                    if (('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Apollo Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Apollo ML Programme" ) &&  informationsheetstatus == "Started" ) {
+                        if ('@Model.ClientProgramme.Owner' != null) {
+                            if ('@Model.ClientProgramme.Owner.DateofIncorportation' == null || '@Model.ClientProgramme.Owner.DateofIncorportation' == "") {
+                                window.alert("Please edit and enter \"Date of Company Incorporation\" for owner.");
+                            $("[id='Insured Details / Named Parties']").trigger("click");
+                            return false;
+                        }
+                        }
+                    }
+
 
                     if ($('#CompanyName').val() === "AON") {
                         var nextbutton = document.getElementsByClassName("next");
@@ -242,7 +249,7 @@
 
 
                     var ExtensionCoverOptions = new Array(proddata.length);
-                    var countextension = 0; 
+                    var countextension = 0;
                     var extensiontablecount = 0;
                     debugger;
                 for (var i = 0; i < proddata.length; i++) {
