@@ -514,6 +514,10 @@ h3 {
     .row > * {
        max-width: 1140px !important;
     }
+
+    #advisoryModal {
+        max-width: 100% !important;
+    }
 }
 
 @media (min-width: 1200px) 
