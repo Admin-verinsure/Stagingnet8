@@ -68,11 +68,11 @@
                                             <h3>
                                                 <strong> @Model.Wizardsteps.ElementAt(0) </strong> - Complete Information
                                                 @*<button type="button" class="btn btn-sm pull-right text-white" data-toggle="modal" data-target="#advisoryModal" style="background-color: #00A8C8">
-                                                    <i class="bi bi-node-plus"></i>Advisory
-                                                </button>*@
-                                            <button type="button" class="btn btn-sm pull-right text-white" data-bs-toggle="modal" data-bs-target="#advisoryModal" data-bs-whatever="mdo" style="background-color: #00A8C8">
-                                                Advisory
-                                            </button>
+                                                        <i class="bi bi-node-plus"></i>Advisory
+                                                    </button>*@
+                                                <button type="button" class="btn btn-sm pull-right text-white" data-bs-toggle="modal" data-bs-target="#advisoryModal" data-bs-whatever="mdo" style="background-color: #00A8C8">
+                                                    Advisory
+                                                </button>
                                             </h3>
                                             <div id="form-step-0" role="form" data-bs-toggle="validator">
                                                 <div class="form-group">
@@ -746,8 +746,8 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="modal fade" id="advisoryModal" aria-labelledby="advisoryModalLabel" tabindex="-1" role="dialog" aria-hidden="true" >
-                                                            <div class="modal-dialog" >
+                                                        <div class="modal fade" id="advisoryModal" aria-labelledby="advisoryModalLabel" tabindex="-1" role="dialog" aria-hidden="true">
+                                                            <div class="modal-dialog">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
                                                                         <h5 class="modal-title" id="advisoryModalLabel">Advisory</h5>
@@ -1012,10 +1012,44 @@
 
 @section pagespecific {
     @*<link rel="stylesheet" href="~/css/smartadmin-production.min.css">*@
+    <style>
+        body {
+            margin: 0;
+            /* padding: 0;*/
+            min-height: 100%;
+            /*background: url(../img/mybg.png) #fff;*/
+            background-color: #f3f0f0;
+            direction: ltr;
+        }
 
+        #header {
+            display: block;
+            /* height: 49px;*/
+            margin: 0;
+            padding: 0 13px 0 0;
+            background-color: #f3f3f3;
+            background-image: -moz-linear-gradient(top, #f3f3f3, #e2e2e2);
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f3f3f3), to(#e2e2e2));
+            background-image: -webkit-linear-gradient(top, #f3f3f3, #e2e2e2);
+            background-image: -o-linear-gradient(top, #f3f3f3, #e2e2e2);
+            background-image: linear-gradient(to bottom, #f3f3f3, #e2e2e2);
+            background-repeat: repeat-x;
+            position: relative;
+            z-index: 905;
+        }
+
+        html {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            /* background: url(../img/mybg.png) #fff;*/
+            background-color: #f3f0f0;
+            position: relative;
+        }
+    </style>
     @await Html.PartialAsync("_InformationWizardScripts")
     @await Html.PartialAsync("_DataTableScripts")
-<script>
+    <script>
 
 
 
@@ -1172,7 +1206,7 @@
          }
         });
 
-</script>
+    </script>
 
 }
 
