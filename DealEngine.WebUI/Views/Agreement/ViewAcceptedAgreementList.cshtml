@@ -281,7 +281,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                 </li>
                             }
 
-
+                        
 
                             <li class="nav-item" id="SendReport">
                                 <a class="btn btn-success btn-sm fullreport" href="~/Agreement/SendFullProposalReport?id=@item.InformationSheetId&sendUser=@true">
@@ -317,6 +317,8 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                             <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@false"><i class="fa fa-edit"></i> Send Documents To Insured </a>
                             <a class="btn btn-success btn-sm" href="~/Agreement/SendPolicyDocuments?id=@item.InformationSheetId&sendUser=@true"><i class="fa fa-edit"></i> Send Documents To Me </a>
                             <a onclick="location.href='@Url.Action("RerenderDocs", "Agreement",new { ProgrammeId=@Model.FirstOrDefault().ProgrammeId, ClientProgId = @Model.FirstOrDefault().ClientProgrammeId})'" class="btn btn-primary btn-sm" style="color:white">Rerender Selected document </a>
+                            @*<a class="btn btn-primary btn-sm" href="/Agreement/RenderDoc/@item.InformationSheetId"> Render Named Party COC  </a>*@
+
                         }
 
                     }

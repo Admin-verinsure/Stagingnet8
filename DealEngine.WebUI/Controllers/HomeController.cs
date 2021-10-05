@@ -173,7 +173,7 @@ namespace DealEngine.WebUI.Controllers
                     programmeList = await _programmeService.GetAllProgrammes();
                 }
 
-                foreach (Programme programme in programmeList.Distinct().OrderBy(proglist => proglist.DateCreated))
+                foreach (Programme programme in programmeList.Distinct().OrderByDescending(proglist => proglist.DateCreated))
                 {
                     model.ProgrammeItems.Add(new ProgrammeItem(programme)
                     {

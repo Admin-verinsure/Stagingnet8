@@ -50,7 +50,12 @@ namespace DealEngine.Services.Interfaces
         Task ImportFANZMLPreRenewData(User user);
         Task ImportFANZROPreRenewData(User user);
         Task NZFSGImportPInewUsers(User user);
+        Task ImportApolloServicePI(User user);
+        Task ImportApolloServiceML(User user);
+        Task ImportApolloServiceMLUIS(User user);
+        Task ImportApolloServiceRO(User user);
+        Task ImportApolloServiceROUIS(User user);
+        Task ImportApolloServicePIUIS(User user);
 
-        
     }
 }

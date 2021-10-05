@@ -387,6 +387,17 @@ namespace DealEngine.Services.Impl
             return false;
         }
 
+        public async Task<bool> AddOrganisationByMembershipByProgram(Organisation organisation, string membership,Guid ProgId)
+        {
+            var clientProgramme = await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(c => c.ClientProgrammeMembershipNumber == membership  && c.BaseProgramme.Id == ProgId);
+            if (clientProgramme != null)
+            {
+                clientProgramme.InformationSheet.Organisation.Add(organisation);
+                await _clientProgrammeRepository.UpdateAsync(clientProgramme);
+                return true;
+            }
+            return false;
+        }
         public async Task<SubClientProgramme> GetSubClientProgrammeFor(Organisation Owner)
         {
             var list = await _clientProgrammeRepository.FindAll().Where(c => c.Owner == Owner && c.DateDeleted == null).ToListAsync();
@@ -992,6 +1003,11 @@ namespace DealEngine.Services.Impl
                     }
                 }
             }
+        }
+
+        public async Task<ClientProgramme> GetOriginalClientProgrammeByReferenceNum(String ReferenceNum)
+        {
+            return _clientProgrammeRepository.FindAll().FirstOrDefault(cp => cp.InformationSheet.ReferenceId == ReferenceNum);
         }
 
         public async Task MoveAdvisorsToClientProgramme(IList<string> advisors, ClientProgramme clientProgramme, ClientProgramme sourceClientProgramme, User user, string targetOwnerFAP)
