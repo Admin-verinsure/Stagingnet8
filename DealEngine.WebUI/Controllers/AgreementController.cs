@@ -3008,6 +3008,19 @@ namespace DealEngine.WebUI.Controllers
             return NoContent();
             
         }
+
+        public async Task<SystemDocument> RenderDoc(ClientInformationSheet clientInformationSheet,Guid templateid)
+        {
+            SystemDocument renderedDoc = null;
+            ClientAgreement agreement =  clientInformationSheet.ClientAgreement;
+            User user = await CurrentUser();
+            //SystemDocument template = _documentRepository.FindAll
+            //renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+            return renderedDoc;
+        }
+
+
+
             public async Task<List<SystemDocument>> RerenderTemplate(SystemDocument template, ClientAgreement agreement, ClientProgramme programme)
         {
             Document renderedDoc;

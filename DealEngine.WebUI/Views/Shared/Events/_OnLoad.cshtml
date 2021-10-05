@@ -234,7 +234,9 @@
                     document.getElementById("Organisation.InsuranceAttribute").disabled = true;
 
                     }
-                    document.getElementById("Else").hidden = false;
+                    if (document.getElementById("Else") != null) { 
+                     document.getElementById("Else").hidden = false;
+                    }
 
                     TradingNameOwnerOnLoad();
 
