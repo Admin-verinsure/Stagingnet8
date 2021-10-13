@@ -31,11 +31,19 @@ namespace DealEngine.Services.Impl
         IAppSettingService _appSettingService;
         IApplicationLoggingService _applicationLoggingService;
         //ILogger<> _logger;
-
+        IUpdateTypeService _updateTypeService;
 
         private IConfiguration _configuration { get; set; }
 
-        public EmailService (IUserService userService, IFileService fileService, ISystemEmailService systemEmailService, IEmailTemplateService emailTemplateService, IConfiguration configuration, IMapperSession<ClientInformationSheet> clientInformationSheetmapperSession, IAppSettingService appSettingService, IApplicationLoggingService applicationLoggingService)
+        public EmailService (IUserService userService, 
+            IFileService fileService, 
+            ISystemEmailService systemEmailService, 
+            IEmailTemplateService emailTemplateService, 
+            IConfiguration configuration, 
+            IMapperSession<ClientInformationSheet> clientInformationSheetmapperSession, 
+            IAppSettingService appSettingService, 
+            IApplicationLoggingService applicationLoggingService,
+            IUpdateTypeService updateTypeService)
 		{
             _clientInformationSheetmapperSession = clientInformationSheetmapperSession;
             _userService = userService;			
@@ -45,6 +53,7 @@ namespace DealEngine.Services.Impl
             _configuration = configuration;
             _appSettingService = appSettingService;
             _applicationLoggingService = applicationLoggingService;
+            _updateTypeService = updateTypeService;
         }
 
         #region IEmailService implementation
@@ -536,8 +545,8 @@ namespace DealEngine.Services.Impl
 
             List<KeyValuePair<string, string>> mergeFields = new List<KeyValuePair<string, string>>();
             mergeFields.Add(new KeyValuePair<string, string>("[[UserName]]", user.UserName));
-            mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "09 377 6564"));
-            mergeFields.Add(new KeyValuePair<string, string>("[[SupportEmail]]", "support@techcertain.com"));
+            mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "Please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details"));
+            mergeFields.Add(new KeyValuePair<string, string>("[[SupportEmail]]", "Please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details"));
 
             SystemEmail systemEmailTemplate = await _systemEmailRepository.GetSystemEmailByType("LoginEmail");
             if (systemEmailTemplate == null)
@@ -885,6 +894,62 @@ namespace DealEngine.Services.Impl
             }
         }
 
+        public async Task SendSystemEmailUISUpdateNotify(User uISIssued, Programme programme, ClientInformationSheet sheet, Organisation insuredOrg)
+        {
+            var recipent = new List<string>();
+
+            if (programme.UISUpdateNotifyUsers.Count > 0)
+            {
+                foreach (User objNotifyUser in programme.UISUpdateNotifyUsers)
+                {
+                    recipent.Add(objNotifyUser.Email);
+                }
+
+                List<KeyValuePair<string, string>> mergeFields = MergeFieldLibrary(uISIssued, insuredOrg, programme, sheet, null);
+                if (sheet.IsChange)
+                {
+                    string strChangeType = "";
+                    string strDescription = "";
+                    string strEffectiveDate = "";
+                    if (sheet.Programme.ChangeReason != null)
+                    {
+                        UpdateType updateTypeForChangeReason = await _updateTypeService.GetUpdateTypeByTypeValue(sheet.Programme.ChangeReason.ChangeType);
+                        if (updateTypeForChangeReason != null)
+                            strChangeType = updateTypeForChangeReason.TypeName;
+                        strDescription = sheet.Programme.ChangeReason.Description;
+                        strEffectiveDate = sheet.Programme.ChangeReason.EffectiveDate.ToShortDateString();
+                    }
+                    mergeFields.Add(new KeyValuePair<string, string>("[[ChangeType]]", "Update Type: " + strChangeType));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[Description]]", "Update Description: " + strDescription));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[EffectiveDate]]", "Update Effective Date: " + strEffectiveDate));
+                }
+                
+
+                SystemEmail systemEmailTemplate = await _systemEmailRepository.GetSystemEmailByType("UISUpdateNotificationEmail");
+                if (systemEmailTemplate == null)
+                {
+                    throw new Exception("UISUpdateNotificationEmail is null");
+                }
+                string systememailsubject = systemEmailTemplate.Subject;
+                string systememailbody = System.Net.WebUtility.HtmlDecode(systemEmailTemplate.Body);
+                foreach (KeyValuePair<string, string> field in mergeFields)
+                {
+                    systememailsubject = systememailsubject.Replace(field.Key, field.Value);
+                    systememailbody = systememailbody.Replace(field.Key, field.Value);
+                }
+                EmailBuilder systememail = await GetLocalizedEmailBuilder(DefaultSender, null);
+                systememail.From(DefaultSender);
+                systememail.To(recipent.ToArray());
+                systememail.WithSubject(systememailsubject);
+                systememail.WithBody(systememailbody);
+                systememail.UseHtmlBody(true);
+                systememail.Send();
+
+                sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(uISIssued, sheet, null, "Information Sheet Update Notification Sent"));
+                await _clientInformationSheetmapperSession.UpdateAsync(sheet);
+            }
+        }
+
         public async Task SendSystemEmailAgreementReferNotify(User uISIssued, Programme programme, ClientAgreement agreement, Organisation insuredOrg)
         {
             var recipent = new List<string>();
@@ -897,6 +962,24 @@ namespace DealEngine.Services.Impl
                 }
 
                 List<KeyValuePair<string, string>> mergeFields = MergeFieldLibrary(uISIssued, insuredOrg, programme, agreement.ClientInformationSheet, null);
+
+                string strChangeType = "";
+                string strDescription = "";
+                string strEffectiveDate = "";
+                if (agreement.ClientInformationSheet.IsChange)
+                {
+                    if (agreement.ClientInformationSheet.Programme.ChangeReason != null)
+                    {
+                        UpdateType updateTypeForChangeReason = await _updateTypeService.GetUpdateTypeByTypeValue(agreement.ClientInformationSheet.Programme.ChangeReason.ChangeType);
+                        if (updateTypeForChangeReason != null)
+                            strChangeType = "Update Type: " + updateTypeForChangeReason.TypeName;
+                        strDescription = "Update Description: " + agreement.ClientInformationSheet.Programme.ChangeReason.Description;
+                        strEffectiveDate = "Update Effective Date: " + agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate.ToShortDateString();
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[ChangeType]]", strChangeType));
+                mergeFields.Add(new KeyValuePair<string, string>("[[Description]]", strDescription));
+                mergeFields.Add(new KeyValuePair<string, string>("[[EffectiveDate]]", strEffectiveDate));
 
                 SystemEmail systemEmailTemplate = await _systemEmailRepository.GetSystemEmailByType("AgreementReferralNotificationEmail");
                 if (systemEmailTemplate == null)
@@ -920,7 +1003,7 @@ namespace DealEngine.Services.Impl
 
                 ClientInformationSheet sheet = agreement.ClientInformationSheet;
 
-                sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(uISIssued, sheet, null, "Information Sheet Submission Confirmation Sent"));
+                sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(uISIssued, sheet, null, "Agreement Referral Notification Sent"));
                 await _clientInformationSheetmapperSession.UpdateAsync(sheet);
             }
         }
@@ -979,7 +1062,7 @@ namespace DealEngine.Services.Impl
 
                 List<KeyValuePair<string, string>> mergeFields = MergeFieldLibrary(binder, insuredOrg, programme, agreement.ClientInformationSheet, null);
 
-                mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "09 377 6564"));
+                mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "Please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details"));
 
                 SystemEmail systemEmailTemplate = await _systemEmailRepository.GetSystemEmailByType("AgreementBoundNotificationEmail");
                 if (systemEmailTemplate == null)
@@ -1290,7 +1373,7 @@ namespace DealEngine.Services.Impl
                 mergeFields.Add(new KeyValuePair<string, string>("[[ProductName]]", clientAgreement.Product.Name));
             }
                         
-            mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "09 377 6564"));
+            mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "Please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details"));
 
             return mergeFields;
         }

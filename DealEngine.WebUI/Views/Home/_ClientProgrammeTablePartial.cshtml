@@ -304,20 +304,17 @@
                         </tr>
                     }
 
-                    @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-                    {
-                        <tr>
-                            <td>
-                                <label for="ReasonDesc" class="required">Reason Description</label>
-                            </td>
-                            <td>
-                                @Html.TextAreaFor(m => m.ChangeReason.Description, new { @class = "form-control", @required = "" })
-                            </td>
-                            <td>
-                                <p class="validationContainer" id="validateDescription"></p>
-                            </td>
-                        </tr>
-                    }
+                <tr>
+                    <td>
+                        <label for="ReasonDesc" class="required">Please provide the details of the update:</label>
+                    </td>
+                    <td>
+                        @Html.TextAreaFor(m => m.ChangeReason.Description, new { @class = "form-control", @required = "" })
+                    </td>
+                    <td>
+                        <p class="validationContainer" id="validateDescription"></p>
+                    </td>
+                </tr>
                     <tr>
                         <td>
                             <label for="EffectiveDate" class="required">Effective Date</label>

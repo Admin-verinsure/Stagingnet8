@@ -37,6 +37,10 @@ namespace DealEngine.Services.Impl
 			return await _updateType.GetByIdAsync(updateTypeId);
 		}
 
+		public async Task<UpdateType> GetUpdateTypeByTypeValue(string updateTypeValue)
+		{
+			return await _updateType.FindAll().FirstOrDefaultAsync(ut => ut.TypeValue == updateTypeValue);
+		}
 
 	}
 }

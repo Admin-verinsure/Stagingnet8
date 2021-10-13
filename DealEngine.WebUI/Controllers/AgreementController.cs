@@ -3009,19 +3009,55 @@ namespace DealEngine.WebUI.Controllers
             
         }
 
-        public async Task<SystemDocument> RenderDoc(ClientInformationSheet clientInformationSheet,Guid templateid)
+        public async Task<IActionResult> RenderNamedPartyCOC(Guid sheetId)
         {
             SystemDocument renderedDoc = null;
-            ClientAgreement agreement =  clientInformationSheet.ClientAgreement;
-            User user = await CurrentUser();
-            //SystemDocument template = _documentRepository.FindAll
-            //renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+            ClientInformationSheet clientInformationSheet = await _customerInformationService.GetInformation(sheetId);
+            //ClientAgreement agreement =  clientInformationSheet.ClientAgreement;
+            ViewAgreementViewModel viewAgreementViewModel = new ViewAgreementViewModel();
+            //viewAgreementViewModel.ClientAgreementId = clientInformationSheet.ClientAgreement.Id;
+            viewAgreementViewModel.InformationSheetId = sheetId;
+           // List<Organisation> advisororgs = new List<Organisation>(); 
+            List<Organisation> Organisations = clientInformationSheet.Organisation.Where(o => o.Id != clientInformationSheet.Owner.Id && o.Removed != true).ToList();
+
+            List<SelectListItem> advisororgs = new List<SelectListItem>();
+           
+
+            foreach (Organisation org in Organisations)
+            {
+                // var ous = ou.OrganisationalUnits;
+                if (org.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor") != null)
+                {
+                    advisororgs.Add(
+                                   new SelectListItem()
+                                   {
+                                       Text = org.Name,
+                                       Value = org.Id.ToString(),
+                                   });
+                }
+
+            }
+            viewAgreementViewModel.Organisations = advisororgs;
+
+            return View(viewAgreementViewModel);
+        }
+        [HttpPost]
+        public async Task<SystemDocument> RenderCOC(ClientInformationSheet clientInformationSheet, Guid templateid)
+        {
+            SystemDocument renderedDoc = null;
+            ClientAgreement agreement = clientInformationSheet.ClientAgreement;
+            ViewAgreementViewModel viewAgreementViewModel = new ViewAgreementViewModel();
+            List<Organisation> Organisations = clientInformationSheet.Organisation.Where(o => o.Name == "Advisor" && o.Id != clientInformationSheet.Owner.Id && o.Removed != true).ToList();
+            //var unit = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor");
+            foreach (Organisation ou in Organisations)
+            {
+               // viewAgreementViewModel.advisorUnit = ou.OrganisationalUnits;
+            }
+
             return renderedDoc;
         }
 
-
-
-            public async Task<List<SystemDocument>> RerenderTemplate(SystemDocument template, ClientAgreement agreement, ClientProgramme programme)
+        public async Task<List<SystemDocument>> RerenderTemplate(SystemDocument template, ClientAgreement agreement, ClientProgramme programme)
         {
             Document renderedDoc;
             var documents = new List<SystemDocument>();
