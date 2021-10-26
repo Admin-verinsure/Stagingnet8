@@ -1,74 +1,78 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 @using DealEngine.Domain.Entities
-@using System 
+@using System
 @{
     IList<Territory> SelectedTerritories = Model.RevenueDataViewModel.Territories.Where(t => t.Selected == true).ToList();
     IList<BusinessActivity> SelectedActivities = Model.RevenueDataViewModel.Activities.Where(t => t.Selected == true).ToList();
+
 }
 
+@*@Html.HiddenFor(m => m.RevenueDataViewModel.IsRevenueData,new { @id="RevenueFlag"})*@
 
-    <form class="is-valid" id="RevenueDataViewModel" data-accordianId="Fee Income / Activities">
-        <div id="SharedRevenue">
-            <ul class="nav nav-tabs" role="tablist">
-                <li class="nav-item" id="tab1">
-                    <a class="nav-link active" href="#RevenueTab1" data-toggle="tab"> Territory </a>
-                </li>
-                <li class="nav-item" id="tab2">
-                    <a class="nav-link" href="#RevenueTab2" data-toggle="tab"> Activities </a>
-                </li>
-                <li class="nav-item" id="tab3">
-                    <a class="nav-link" href="#RevenueTab3" data-toggle="tab"> Additional Information </a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                <div id="RevenueTab1" class="tab-pane active" role="tabpanel">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-4">
-                                <label for="territories" class="label required">Please select the territories you trade in</label>
-                            </div>
-                            <div class="col-8">
-                                <select id="territories" name="RevenueDataViewModel.Territories" form="RevenueDataViewModel" class="chosen-select form-control b" multiple data-rule="BuildSharedTable" data-item="territories,territoriestable" onchange="OnChange(this.id, this.name)" required>
-                                    @foreach (var option in Model.RevenueDataViewModel.Territories)
-                                    {
-                                        <option selected="@option.Selected" value="@option.TemplateId.ToString()">@option.Location</option>
-                                    }
-                                </select>
-                            </div>
+
+  
+
+<form class="is-valid" id="RevenueDataViewModel" data-accordianId="Fee Income / Activities">
+    <div id="SharedRevenue">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" id="tab1">
+                <a class="nav-link active" href="#RevenueTab1" data-toggle="tab"> Territory </a>
+            </li>
+            <li class="nav-item" id="tab2">
+                <a class="nav-link" href="#RevenueTab2" data-toggle="tab"> Activities </a>
+            </li>
+            <li class="nav-item" id="tab3">
+                <a class="nav-link" href="#RevenueTab3" data-toggle="tab"> Additional Information </a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div id="RevenueTab1" class="tab-pane active" role="tabpanel">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="territories" class="label required">Please select the territories you trade in</label>
                         </div>
-                    </div>
-                    <div id="RevenueDataViewModel.Territories">
-                        <div class="form-group">
-                            <table id="territoriestable" class="table">
-                                <thread class="thead-dark">
-                                    <tr>
-                                        <th>Territories</th>
-                                        <th>Percentage Amount (%)</th>
-                                    </tr>
-                                </thread>
-                                <tbody>
-                                    @foreach (var select in SelectedTerritories)
-                                    {
-                                        <tr>
-                                            <td>
-                                                @select.Location
-                                            </td>
-                                            <td>
-                                                <input class="form-control" type="text" id="@select.Location.Trim()" form="RevenueDataViewModel" name="RevenueDataViewModel.Territories.@select.TemplateId.ToString()" onchange="OnChange(this.id, this.name)" data-rule="ValidateSharedTable" data-item="validatetableterritories" value="@System.Decimal.Round(select.Percentage, 2)" />
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="form-group">
-                            <a class="btn btn-sm btn-primary text-light" onclick="RevenueDataOnSubmit('territories', 'RevenueDataViewModel');">  Continue  </a>
+                        <div class="col-8">
+                            <select id="territories" name="RevenueDataViewModel.Territories" form="RevenueDataViewModel" class="chosen-select form-control b" multiple data-rule="BuildSharedTable" data-item="territories,territoriestable" onchange="OnChange(this.id, this.name)" required>
+                                @foreach (var option in Model.RevenueDataViewModel.Territories)
+                                {
+                                    <option selected="@option.Selected" value="@option.TemplateId.ToString()">@option.Location</option>
+                                }
+                            </select>
                         </div>
                     </div>
                 </div>
-                <div id="RevenueTab2" class="tab-pane" role="tabpanel">
+                <div id="RevenueDataViewModel.Territories">
                     <div class="form-group">
-                        <div class="row">
+                        <table id="territoriestable" class="table">
+                            <thread class="thead-dark">
+                                <tr>
+                                    <th>Territories</th>
+                                    <th>Percentage Amount (%)</th>
+                                </tr>
+                            </thread>
+                            <tbody>
+                                @foreach (var select in SelectedTerritories)
+                                {
+                                    <tr>
+                                        <td>
+                                            @select.Location
+                                        </td>
+                                        <td>
+                                            <input class="form-control" type="text" id="@select.Location.Trim()" form="RevenueDataViewModel" name="RevenueDataViewModel.Territories.@select.TemplateId.ToString()" onchange="OnChange(this.id, this.name)" data-rule="ValidateSharedTable" data-item="validatetableterritories" value="@System.Decimal.Round(select.Percentage, 2)" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="form-group">
+                        <a class="btn btn-sm btn-primary text-light" onclick="RevenueDataOnSubmit('territories', 'RevenueDataViewModel');">  Continue  </a>
+                    </div>
+                </div>
+            </div>
+            <div id="RevenueTab2" class="tab-pane" role="tabpanel">
+                        <div class="row" id="Activitydiv">
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-9">
@@ -96,14 +100,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
                     <div class="form-group">
                         <div class="row">
                             <div class="col-4">
                                 <label for="activities">Select Activities</label>
                             </div>
                             <div class="col-8">
-                               
+
                                 <select id="activities" name="RevenueDataViewModel.Activities" multiple class="chosen-select" form="RevenueDataViewModel" data-rule="BuildSharedTable" data-item="activities,activitiestable" onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.RevenueDataViewModel.Activities)
                                     {
@@ -406,5 +409,15 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+
+        if ("@Model.RevenueDataViewModel.IsRevenueData" == "True") {
+            $("#Activitydiv").hide('2000');
+        }
+    });
+</script>

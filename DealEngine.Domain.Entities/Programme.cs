@@ -91,6 +91,7 @@ namespace DealEngine.Domain.Entities
         public virtual string ProgMergeInsurer { get; set; }
         public virtual string ProgMergeInsurerRating { get; set; }
         public virtual string ProgMergePolicyNumber { get; set; }
+        public virtual bool IsRevenueData { get; set; }
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)

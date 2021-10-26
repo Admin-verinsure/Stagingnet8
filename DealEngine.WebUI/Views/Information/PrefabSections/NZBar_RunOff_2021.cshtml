@@ -1,0 +1,51 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="PIViewModel" class="is-valid" data-accordianId="Run Off Insurance">
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="HaveBarristerSole" class="label required">Are you still in practice as a barrister sole?</label>
+            </div>
+            <div class="col-3">
+                <select id="HaveBarristerSole" name="PIViewModel.HaveBarristerSole" class="custom-select" data-rule="Reverse" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HaveBarristerSole)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="PIViewModel.HaveBarristerSole" hidden>
+
+        <div class="form-group">
+            <div class="row">
+
+                <div class="col-9">
+                    <label for="HasRunOff" class="label required">Would you like to purchase Run-Off?</label>
+                </div>
+                <div class="col-3">
+                    <select id="HasRunOff" name="PIViewModel.HasRunOff" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.PIViewModel.HasRunOff)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                    <label class="label">Cover is available for 6 years at the expiry of the current policy and will be charged based on 40% of the final year premium *6.
+                                                  The policy will retain the final year Limit of Indemnity streched over the 6-year period.</label>
+            </div>
+        </div>
+    </div>
+
+
+
+</form>
+

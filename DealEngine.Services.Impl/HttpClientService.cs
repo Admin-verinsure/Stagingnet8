@@ -224,7 +224,7 @@ namespace DealEngine.Services.Impl
 
             _socketsHttpHandler = new SocketsHttpHandler()
             {
-                Credentials = new NetworkCredential("tcwebservices", "xfmdpnf2"),
+                Credentials = new NetworkCredential("tcwebservices", "welcome1"),
             };
 
             _httpRequestMessage = new HttpRequestMessage
@@ -275,7 +275,7 @@ namespace DealEngine.Services.Impl
 
             _socketsHttpHandler = new SocketsHttpHandler()
             {
-                Credentials = new NetworkCredential("tcwebservices", "xfmdpnf2"),                
+                Credentials = new NetworkCredential("tcwebservices", "welcome1"),                
             };
 
             _httpRequestMessage = new HttpRequestMessage

@@ -195,6 +195,8 @@ namespace DealEngine.WebUI.Models
         public decimal CurrentYearTotal { get; set; }
         public decimal LastFinancialYearTotal { get; set; }
         public AdditionalActivityViewModel AdditionalActivityViewModel { get; set; }
+        public bool IsRevenueData { get; set; }
+
     }
     public class AdditionalActivityViewModel
     {
@@ -249,7 +251,7 @@ namespace DealEngine.WebUI.Models
         public decimal ConstructionInfrastructureDetails { get; set; }
         public decimal ConstructionSchoolDetails { get; set; }
         public string ConstructionEngineerDetails { get; set; }
-        
+
     }
     public class RoleDataViewModel
     {
@@ -729,6 +731,14 @@ namespace DealEngine.WebUI.Models
             YearCover = GetRunOffYearCoverSelectListOptions();
             HasInvActivity = GetSelectListOptions();
             YearCover1 = GetRunOffYearCoverSelectListOptions1();
+            HaveBarristerSole = GetSelectListOptions();
+            HasRunOff = GetSelectListOptions();
+            hasNzbar = GetSelectListOptions();
+            hasAnnualFee = GetSelectListOptions();
+            IsJuniorBarrister = GetSelectListOptions();
+            IsOutsideNZBA = GetSelectListOptions();
+            hasPreviouslyUndertaken = GetSelectListOptions();
+            hasClaimsMade = GetSelectListOptions();
 
         }
 
@@ -1096,6 +1106,16 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> YearCover { get; set; }
         public IList<SelectListItem> YearCover1 { get; set; }
         public IList<SelectListItem> HasInvActivity { get; set; }
+        public IList<SelectListItem> HaveBarristerSole { get; set; }
+        public IList<SelectListItem> HasRunOff { get; set; }
+        public IList<SelectListItem> hasNzbar { get; set; }
+        public IList<SelectListItem> hasAnnualFee { get; set; }
+        public IList<SelectListItem> IsJuniorBarrister { get; set; }
+        public IList<SelectListItem> IsOutsideNZBA { get; set; }
+        public IList<SelectListItem> hasPreviouslyUndertaken { get; set; }
+        public IList<SelectListItem> hasClaimsMade { get; set; }
+
+        
 
         public string ProcedureManagedDetails { get; set; }
         public string BusinessChangesDetails { get; set; }        
@@ -1142,6 +1162,16 @@ namespace DealEngine.WebUI.Models
         public string SubstantialChangeDetails { get; set; }
         public string hasdirectagencies { get; set; }
         public string hasfsdr { get; set; }
+        public string JuniorBarristersdetails { get; set; }
+        public string InsurerDetails { get; set; }
+        public string IndemnityDetails { get; set; }
+        public string PracticeName { get; set; }
+        public string LawPracticed { get; set; }
+        public string CommencementPractice { get; set; }
+        public string LastDayPractice { get; set; }
+        public decimal AnnualFee { get; set; }
+        public decimal AnnualPremium { get; set; }
+        public string ClaimsMadedetails { get; set; }
     }
     public class DAOLIViewModel
     {
@@ -1197,7 +1227,7 @@ namespace DealEngine.WebUI.Models
         public string DateLapsed { get; set; }
         public string RetroactiveDate { get; set; }
         public string InsurerName { get; set; }
-
+       
         private IList<SelectListItem> GetSelectListOptions()
         {
             return new List<SelectListItem>()
