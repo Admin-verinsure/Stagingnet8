@@ -1,0 +1,38 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+
+<form id="EPLViewModel" class="is-valid" data-accordianId="Employment Practices Liability Insurance">
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="HaveAnyEmployee" class="label required">Do you have any staff engaged as employees?</label>
+            </div>
+            <div class="col-3">
+                <select id="HaveAnyEmployee" name="EPLViewModel.HaveAnyEmployeeYN" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.EPLViewModel.HaveAnyEmployeeYN)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="EPLViewModel.HaveAnyEmployeeYN" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="totalemployees" class="label required">How many employees do you have (please include full time and part time employees, but exclude contractors):</label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.EPLViewModel.TotalEmployees, new { @class = "form-control", @id = "totalemployees", @type = "number", onchange = "OnChange(this.id, this.name)" })
+                </div>
+            </div>
+        </div>
+        
+
+    </div>
+
+</form>

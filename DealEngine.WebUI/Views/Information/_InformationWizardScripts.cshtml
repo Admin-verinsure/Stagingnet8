@@ -80,8 +80,12 @@
                    var IsPersonnelcount = 0;
                        $('#tblOrganisation tr').each(function () {
                        var $tds = $(this).find('td'),
-                               value = $tds.eq(2).text().toString();
+
+                              // value = $tds.eq(2).text().toString();
                            
+
+                           value = $tds.eq(2).text().toString().replace(/\r?\n|\r/g, " ").trim();
+
 
                        if ( value == "Personnel") {
                            IsPersonnelcount++;
@@ -92,7 +96,7 @@
                     debugger;
                        $('#tblOrganisation tr').each(function () {
                        var $tds = $(this).find('td'),
-                           value = $tds.eq(2).text().toString();
+                           value = $tds.eq(2).text().toString().replace(/\r?\n|\r/g, " ").trim();
 
                        if ( value == "Individual") {
                            IsIndividualcount++;

@@ -1,0 +1,272 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+    <form id="PIViewModel" class="is-valid" data-accordianId="Professional Indemnity">
+        <div>
+            <strong>Professional Indemnity Cover</strong>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasNzbar" class="label required">
+                            Are you a financial member of the New Zealand Bar Association?
+                        </label>
+                        <label>(Note: Only current financial members of the NZBA qualify for coverage under this insurance plan.)</label>
+                    </div>
+                    <div class="col-3">
+
+                        <select id="hasNzbar" name="PIViewModel.hasNzbar" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                            @foreach (var option in Model.PIViewModel.hasNzbar)
+                            {
+                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                            }
+                        </select>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasAnnualFee" class="label required">
+                            Is your Annual Fee Income greater than $1,000,000?
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        <select id="hasAnnualFee" name="PIViewModel.hasAnnualFee" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                            @foreach (var option in Model.PIViewModel.hasAnnualFee)
+                            {
+                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                            }
+                        </select>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="IsJuniorBarrister" class="label required">
+                            Are you a junior barrister?
+                        </label>
+                        <label>(Cover is provided at an additional $200+gst per junior barrister and $500+gst per employed barrister.)</label>
+                    </div>
+                    <div class="col-3">
+                        <select id="IsJuniorBarrister" name="PIViewModel.IsJuniorBarrister" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                            @foreach (var option in Model.PIViewModel.IsJuniorBarrister)
+                            {
+                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                            }
+                        </select>
+
+
+                    </div>
+                </div>
+            </div>
+            <div id="PIViewModel.IsJuniorBarrister" hidden>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="JuniorBarristersdetails" class="label required">
+                                <strong>Please provide the details of all Employed or Junior Barristers for whom cover is required within the Named Parties Panel. </strong>
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextAreaFor(m => m.PIViewModel.JuniorBarristersdetails, new { @class = "form-control", @id = "investigationdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="IsOutsideNZBA" class="label required">
+                            Do you currently hold Professional Indemnity Insurance outside of NZBA?
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        <select id="IsOutsideNZBA" name="PIViewModel.IsOutsideNZBA" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                            @foreach (var option in Model.PIViewModel.IsOutsideNZBA)
+                            {
+                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                            }
+                        </select>
+
+
+                    </div>
+                </div>
+            </div>
+            <div id="PIViewModel.IsOutsideNZBA" hidden>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="OutsideNZBAdetails" class="label required">
+                                <strong>Please Provide Details. </strong>
+                            </label>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-9">
+                            <label class="label required">
+                                <strong>Insurer</strong>
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextAreaFor(m => m.PIViewModel.InsurerDetails, new { @class = "form-control", @id = "InsurerDetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-9">
+                            <label class="label required">
+                                <strong>Limit of Indemnity</strong>
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextAreaFor(m => m.PIViewModel.IndemnityDetails, new { @class = "form-control", @id = "IndemnityDetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div>
+            <strong>Professional Indemnity Run Off Cover</strong>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasPreviouslyUndertaken" class="label required">
+                            Do you require run-off cover for work previously undertaken as a sole practicing barrister or solicitor.
+                        </label>
+                    </div>
+                    <div class="col-3">
+
+                        <select id="hasPreviouslyUndertaken" name="PIViewModel.hasPreviouslyUndertaken" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                            @foreach (var option in Model.PIViewModel.hasPreviouslyUndertaken)
+                            {
+                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                            }
+                        </select>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="PIViewModel.hasPreviouslyUndertaken" hidden>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="JuniorBarristersdetails" class="label required">
+                                Practice name:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextAreaFor(m => m.PIViewModel.PracticeName, new { @class = "form-control", @id = "investigationdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="JuniorBarristersdetails" class="label required">
+                                Type of Law practiced:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextAreaFor(m => m.PIViewModel.LawPracticed, new { @class = "form-control", @id = "investigationdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="CommencementPractice" class="label required">
+                                Date of commencement at Practice:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextAreaFor(m => m.PIViewModel.CommencementPractice, new { @class = "form-control", @id = "investigationdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="LastDayPractice" class="label required">
+                                Last day of practice:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextAreaFor(m => m.PIViewModel.LastDayPractice, new { @class = "form-control", @id = "investigationdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="hasAnnualFee" class="label required">
+                                What was the Limit of Indemnity of the PI policy that you practised under prior to the last day of practice in your previous firm:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextBoxFor(m => m.PIViewModel.AnnualFee, Decimal.Round(Model.PIViewModel.AnnualFee, 2).ToString(), new { @class = "form-control", @id = "AnnualFee", onchange = "OnChange(this.id, this.name)", @placeholder = "$", @required = "" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="IsAnnualPremium" class="label required">
+                                What was the Annual Premium of the PI policy that you practised under prior to the last day of practice in your previous firm:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextBoxFor(m => m.PIViewModel.AnnualPremium, Decimal.Round(Model.PIViewModel.AnnualPremium, 2).ToString(), new { @class = "form-control", @id = "AnnualPremium", onchange = "OnChange(this.id, this.name)", @placeholder = "$", @required = "" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="IsClaimsMade" class="label required">
+                                Were any claims made against you for your work at this practice?
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            <select id="hasClaimsMade" name="PIViewModel.hasClaimsMade" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                                @foreach (var option in Model.PIViewModel.hasClaimsMade)
+                                {
+                                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="PIViewModel.hasClaimsMade" hidden>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-9">
+                                <label for="ClaimsMadedetails" class="label required">
+                                    <strong>Please provide the details. </strong>
+                                </label>
+                            </div>
+                            <div class="col-3">
+                                @Html.TextAreaFor(m => m.PIViewModel.ClaimsMadedetails, new { @class = "form-control", @id = "ClaimsMadedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </form>

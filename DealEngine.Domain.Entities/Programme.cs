@@ -30,6 +30,7 @@ namespace DealEngine.Domain.Entities
         public virtual IList<User> PaymentConfigNotifyUsers { get; set; }
         public virtual IList<User> InvoiceConfigNotifyUsers { get; set; }
         public virtual IList<User> RemoveAdvisorNotifyUsers { get; set; }
+        public virtual IList<User> UISUpdateNotifyUsers { get; set; }
         public virtual bool StopAgreement { get; set; }
         public virtual bool StopDeclaration { get; set; }
         public virtual DateTime StopAgreementDateTime { get; set; }
@@ -90,6 +91,7 @@ namespace DealEngine.Domain.Entities
         public virtual string ProgMergeInsurer { get; set; }
         public virtual string ProgMergeInsurerRating { get; set; }
         public virtual string ProgMergePolicyNumber { get; set; }
+        public virtual bool IsRevenueData { get; set; }
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)
@@ -112,6 +114,7 @@ namespace DealEngine.Domain.Entities
             InvoiceConfigNotifyUsers = new List<User>();
             RemoveAdvisorNotifyUsers = new List<User>();
             Packages = new List<Package>();
+            UISUpdateNotifyUsers = new List<User>();
         }
 
         public virtual ClientProgramme IssueFor(Organisation clientOrganisation)

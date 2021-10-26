@@ -283,7 +283,7 @@ namespace DealEngine.WebUI.Controllers
                 user = await CurrentUser();
 
                 //build custom models
-                await GetRevenueViewModel(model, sheet.RevenueData);
+                await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme.IsRevenueData);
                 await GetRoleViewModel(model, sheet.RoleData);
 
                 //build models from answers
@@ -940,7 +940,7 @@ namespace DealEngine.WebUI.Controllers
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
                 model.Advisory = await _milestoneService.SetMilestoneFor("Agreement Status - Not Started", user, sheet);
                 //build custom models
-                await GetRevenueViewModel(model, sheet.RevenueData);
+                await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme.IsRevenueData);
                 await GetRoleViewModel(model, sheet.RoleData);
 
                 //build models from answers
@@ -1089,7 +1089,7 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-        private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData)
+        private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData,bool IsRevenueData)
         {
             try
             {
@@ -1098,6 +1098,7 @@ namespace DealEngine.WebUI.Controllers
                     model.RevenueDataViewModel = _mapper.Map<RevenueDataViewModel>(revenueData);
                     model.RevenueDataViewModel.AdditionalActivityViewModel = _mapper.Map<AdditionalActivityViewModel>(revenueData.AdditionalActivityInformation);
                     model.RevenueDataViewModel.AdditionalActivityViewModel.SetOptions();
+                    model.RevenueDataViewModel.IsRevenueData = IsRevenueData;
                 }
             }
             catch (Exception ex)
@@ -1360,7 +1361,7 @@ namespace DealEngine.WebUI.Controllers
                             await GenerateUWM(user, sheet, sheet.ReferenceId);
                             if (sheet.Programme.BaseProgramme.ProgEnableEmail)
                             {
-                                await _emailService.SendSystemEmailAllSubUISComplete(sheet.Owner, sheet.Programme.BaseProgramme, sheet);
+                           await _emailService.SendSystemEmailAllSubUISComplete(sheet.Owner, sheet.Programme.BaseProgramme, sheet);
                             }
                             //sheet = baseSheet;
                         }
@@ -1369,16 +1370,16 @@ namespace DealEngine.WebUI.Controllers
                     if (sheet.Programme.BaseProgramme.ProgEnableEmail)
                     {
                         //sheet owner is null
-                    //    await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
+                        await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out information sheet submission notification email
-                    //    await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
+                        await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out agreement refer notification email
                         foreach (ClientAgreement agreement in clientProgramme.Agreements)
                         {
                             if (agreement.Status == "Referred")
                             {
-                                await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
-                                await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
+                              await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
+                              await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
                             }
                         }
                     }
@@ -1443,6 +1444,12 @@ namespace DealEngine.WebUI.Controllers
                 ClientProgramme CloneProgramme = await _programmeService.CloneForUpdate(createdBy, formCollection, null);
 
                 var updateType = formCollection["ChangeType"];
+
+                if (CloneProgramme.BaseProgramme.ProgEnableEmail)
+                {
+                    //send out information sheet update notification email
+                    await _emailService.SendSystemEmailUISUpdateNotify(createdBy, CloneProgramme.BaseProgramme, CloneProgramme.InformationSheet, CloneProgramme.InformationSheet.Owner);
+                }
 
                 return (RedirectToAction("EditInformation", new { id = CloneProgramme.Id, updateType = updateType }));
 

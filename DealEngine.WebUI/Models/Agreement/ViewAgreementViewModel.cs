@@ -607,8 +607,7 @@ namespace DealEngine.WebUI.Models.Agreement
         public List<EditExtensionTermsViewModel> ExtensionTerms { get; internal set; }
         public IList<String> AgreementTemplates { get; set; }
         public IList<Product> AgreementProducts { get; set; }
-
-
+        public IList<SelectListItem> Organisations { get; set; }
     }
 
     public class InsuranceInclusion
