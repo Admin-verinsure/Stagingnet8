@@ -79,6 +79,23 @@
                        }
                        });
 
+                    var BarristerExists = document.getElementById("IsRequirecoverJunior");
+                    var IsBarristerRequired = "";
+
+                    if (BarristerExists != null) {
+                      IsBarristerRequired = $('#IsRequirecoverJunior :selected').text();
+                    }
+
+                    var IsBarristercount = 0;
+                       $('#tblOrganisation tr').each(function () {
+                       var $tds = $(this).find('td'),
+                           value = $tds.eq(2).text().toString().replace(/\r?\n|\r/g, " ").trim();
+
+                       if ( value == "EBarrister" || value == "JBarrister") {
+                           IsBarristercount++;
+                       }
+                       });
+
                     var IsIndividualcount = 0;
                     debugger;
                        $('#tblOrganisation tr').each(function () {
@@ -138,6 +155,15 @@
                             return false;
                         }
                         }
+                    }
+
+                     if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "New Zealand Bar Association Liability Programme" && IsBarristercount == 0 && IsBarristerRequired == "Yes") {
+
+                           window.alert("Please add at least one Barrister in order for us to be able to provide you with a quote.");
+                       $("[id='Insured Details / Named Parties']").trigger("click");
+                           return false;
+
+
                     }
 
 
@@ -5800,7 +5826,11 @@ function UpdateChosen() {
     }
 
     function submitPayment() {
-         event.preventDefault();
+        debugger;
+        event.preventDefault();
+        var jh = $('#paymentCreditCard').is(":checked");
+
+        var kljklkl = $('#paymentEGlobal').is(":checked");
         if (!$('#paymentCreditCard').is(":checked") && !$('#paymentEGlobal').is(":checked"))
             return false;
         if ($('#paymentCreditCard').is(":checked")) {

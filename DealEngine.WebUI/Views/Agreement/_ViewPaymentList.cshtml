@@ -12,9 +12,13 @@
             <div id="pxpaysection" class="card-body">
                 @foreach (var item in Model)
                 {
-                    <div class="form-group">
-                        @await Html.PartialAsync("Partials/ViewPxPayments", item)
-                    </div>
+                    if (item.IsMasterAgreement)
+                    {
+                       <div class="form-group">
+                          @await Html.PartialAsync("Partials/ViewPxPayments", item)
+                       </div>
+                    }
+                    
                 }
                 <div class="form-group">
                     <button onclick="submitPayment()" class="btn btn-primary">Pay now</button>

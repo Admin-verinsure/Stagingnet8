@@ -608,6 +608,7 @@ namespace DealEngine.WebUI.Models.Agreement
         public IList<String> AgreementTemplates { get; set; }
         public IList<Product> AgreementProducts { get; set; }
         public IList<SelectListItem> Organisations { get; set; }
+        public bool IsMasterAgreement { get; set; }
     }
 
     public class InsuranceInclusion

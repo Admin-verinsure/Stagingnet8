@@ -145,6 +145,16 @@ namespace DealEngine.Services.Impl
         {
             var modules = new IUnderwritingModule[] {
                 new EmptyUWModule(),
+                new NZBarPIUWModule(),
+                new NZBarPLUWModule(),
+                new NZBarSLUWModule(),
+                new NZBarDOUWModule(),
+                new NZBarFIDUWModule(),
+                new NZBarLPDUWModule(),
+                new NZBarILUWModule(),
+                new NZBarELUWModule(),
+                new NZBarEDUWModule(),
+                new NZBarCLUWModule(),
                 new NZPIPIUWModule2021(),
                 new ApolloRunOffUWModule(),
                 new ApolloPLUWModule2021(),

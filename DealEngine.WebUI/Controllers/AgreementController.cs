@@ -2223,6 +2223,7 @@ namespace DealEngine.WebUI.Controllers
                 decimal totalPayable = 0M;
                 foreach (ClientAgreement agreement in clientProgramme.Agreements.Where(cagreement => cagreement.DateDeleted == null))
                 {
+                    
                     ViewAgreementViewModel model = new ViewAgreementViewModel
                     {
                         EditEnabled = true,
@@ -2286,14 +2287,14 @@ namespace DealEngine.WebUI.Controllers
                     model.PolicyNumber = agreement.PolicyNumber;
 
                     model.NoPaymentRequiredMessage = clientProgramme.BaseProgramme.NoPaymentRequiredMessage;
-
+                    model.IsMasterAgreement = agreement.MasterAgreement;
                     models.Add(model);
                 }
 
                 ViewBag.Title = clientProgramme.BaseProgramme.Name + " Payment for " + clientProgramme.Owner.Name;
 
                 bool requirePayment = false;
-                if (clientProgramme.BaseProgramme.HasCCPayment && totalPayable > 0)
+                if ((clientProgramme.BaseProgramme.HasCCPayment || clientProgramme.BaseProgramme.HasInvoicePayment) && totalPayable > 0)
                 {
                     requirePayment = true;
                 }
@@ -3947,6 +3948,7 @@ namespace DealEngine.WebUI.Controllers
             Guid sheetId = Guid.Empty;
             ClientInformationSheet sheet = null;
             User user = null;
+            var paymentype = HttpContext.Request.Form["AnswerSheetId"];
             try
             {
                 if (Guid.TryParse(HttpContext.Request.Form["AnswerSheetId"], out sheetId))
