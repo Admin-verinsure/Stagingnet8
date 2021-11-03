@@ -182,14 +182,14 @@
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/NZFSG_AddOrganisation", Model)
 
                 }
-                @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Run Off Programme" ||Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Run Off Programme")
+                @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Run Off Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Run Off Programme")
                 {
 
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/MarshRunOff", Model)
 
                 }
                 else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG ML Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme"
-                    ||Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo ML Programme" )
+                    || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo ML Programme")
                 {
                     @Html.Hidden("DirectorUnit", Model.OrganisationViewModel.DirectorUnit.GetType().AssemblyQualifiedName, new { @id = "DirectorUnit" })
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/NZFSG_ML_AddOrganisation", Model)
@@ -247,8 +247,15 @@
                     @Html.Hidden("Unit", Model.OrganisationViewModel.AdvisorUnit.GetType().AssemblyQualifiedName, new { @id = "AdvisorUnit" })
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/Apollo_AddOrganisation", Model)
 
-                    @*@Html.Hidden("Unit", Model.OrganisationViewModel.AdministratorUnit.GetType().AssemblyQualifiedName, new { @id = "AdministratorUnit" })
-                @await Html.PartialAsync("PrefabSections/OrganisationPartials/Apollo_AddOrganisation", Model)*@
+
+                }
+                else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                {
+                    @Html.Hidden("EBaristerUnit", Model.OrganisationViewModel.EBaristerUnit.GetType().AssemblyQualifiedName, new { @id = "EBaristerUnit" })
+                    @Html.Hidden("JBaristerUnit", Model.OrganisationViewModel.JBaristerUnit.GetType().AssemblyQualifiedName, new { @id = "JBaristerUnit" })
+
+                    @*@Html.Hidden("Unit", Model.OrganisationViewModel.InterestedPartyUnit.GetType().AssemblyQualifiedName, new { @id = "InterestedPartyUnit" })*@
+                    @await Html.PartialAsync("PrefabSections/OrganisationPartials/NZBar_AddOrganisation", Model)
                 }
                 <div class="form-group">
                     <button class="btn btn-success" type="submit" id="OrganisationSubmitBtn" onclick="OnOrganisationSubmit('organisationViewModel', 'Insured Details / Named Parties')">Add</button>

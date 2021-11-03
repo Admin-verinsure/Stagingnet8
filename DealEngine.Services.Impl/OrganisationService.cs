@@ -153,6 +153,15 @@ namespace DealEngine.Services.Impl
             {
                 UnitName = collection["DirectorUnit"].ToString();
             }
+            else if(InsuranceAttribute == "EBarrister" || InsuranceAttribute == "ABusiness")
+            {
+                UnitName = collection["EBaristerUnit"].ToString();
+
+            }else if (InsuranceAttribute == "JBarrister")
+            {
+                UnitName = collection["JBaristerUnit"].ToString();
+
+            }
             else
             {
                 UnitName = collection["Unit"].ToString();
@@ -450,6 +459,11 @@ namespace DealEngine.Services.Impl
                 {
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new PlannerUnit(User, Type, OrganisationTypeName, collection));
+                }
+                if ( Type == "ABusiness")
+                {
+                    OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
+                    OrganisationalUnits.Add(new EBaristerUnit(User, Type, OrganisationTypeName, collection));
                 }
                 //if (Type == "Individual")
                 //{

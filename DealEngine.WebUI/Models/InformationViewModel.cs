@@ -738,9 +738,9 @@ namespace DealEngine.WebUI.Models
             hasAnnualFee = GetSelectListOptions();
             IsJuniorBarrister = GetSelectListOptions();
             IsOutsideNZBA = GetSelectListOptions();
-            hasPreviouslyUndertaken = GetSelectListOptions();
+            HasPreviouslyUndertaken = GetSelectListOptions();
             hasClaimsMade = GetSelectListOptions();
-
+            IsRequirecoverJunior = GetSelectListOptions();
         }
 
         private IList<SelectListItem> GetRunOffYearCoverSelectListOptions()
@@ -1113,8 +1113,9 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> hasAnnualFee { get; set; }
         public IList<SelectListItem> IsJuniorBarrister { get; set; }
         public IList<SelectListItem> IsOutsideNZBA { get; set; }
-        public IList<SelectListItem> hasPreviouslyUndertaken { get; set; }
+        public IList<SelectListItem> HasPreviouslyUndertaken { get; set; }
         public IList<SelectListItem> hasClaimsMade { get; set; }
+        public IList<SelectListItem> IsRequirecoverJunior { get; set; }
 
         
 

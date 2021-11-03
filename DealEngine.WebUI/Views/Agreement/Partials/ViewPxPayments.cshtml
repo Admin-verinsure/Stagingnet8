@@ -16,18 +16,26 @@
 
 }
 
-<div class="container" id="pxpaycontainer">
-    <label class="radio">
-        <input id="paymentCreditCard" name="paymentRadio" type="radio">
-        <i></i><strong>
-            Credit Card -- $@premiumsGSTBrokerFee including GST
-        </strong>
-    </label>
+    <div class="container" id="pxpaycontainer">
+        <label class="radio">
+            <input id="paymentCreditCard" name="paymentRadio" type="radio">
+            <i></i><strong>
+                Credit Card -- $@premiumsGSTBrokerFee including GST
+            </strong>
 
-    <p>Payment by credit card will incur 2% +GST surcharge which will be included on your invoice.</p>
-    <p>The total amount to be charged to your credit card will be $@premiumsGSTBrokerFee</p>
-    <p>Payment can be made by Visa or MasterCard.</p>
-</div>
+            <p>Payment by credit card will incur 2% +GST surcharge which will be included on your invoice.</p>
+            <p>The total amount to be charged to your credit card will be $@premiumsGSTBrokerFee</p>
+            <p>Payment can be made by Visa or MasterCard.</p>
+
+
+            <br />
+            <input id="paymentEGlobal" name="paymentRadio" type="radio">
+        <i></i><strong>
+            Payment on Invoice (Cheque or Direct Credit) -- $@premiumsGSTBrokerFee including GST
+        </strong>
+        </label>
+
+    </div>
 
 <script type="text/javascript">
     var nextbutton1 = document.getElementsByClassName("sw-btn-next");

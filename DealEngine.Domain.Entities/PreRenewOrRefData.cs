@@ -33,5 +33,6 @@ namespace DealEngine.Domain.Entities
         public virtual string EndorsementProduct { get; set; }
         public virtual string EndorsementText { get; set; }
         public virtual string PIBoundExcess { get; set; }
+        public virtual string ILRetro { get; set; }
     }
 }

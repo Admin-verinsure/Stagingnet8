@@ -582,6 +582,19 @@ namespace DealEngine.WebUI.Controllers
                         }
 
                       }
+
+                      if (clientProgramme.BaseProgramme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                      {
+                        ClientAgreementEndorsement cAECLExt = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Social Engineering Fraud Extension");
+
+                        if (cAECLExt != null)
+                        {
+                            cAECLExt.DateDeleted = DateTime.UtcNow;
+                            cAECLExt.DeletedBy = user;
+                        }
+
+                      }
+
                     }
                     await uow.Commit();
                 }
@@ -606,7 +619,16 @@ namespace DealEngine.WebUI.Controllers
                                     cAELPLAIncl.DeletedBy = null;
                                 }
                             }
-                            
+                            if (clientProgramme.BaseProgramme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                            {
+                                ClientAgreementEndorsement cAECLExt = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Social Engineering Fraud Extension");
+                                if (cAECLExt != null)
+                                {
+                                    cAECLExt.DateDeleted = null;
+                                    cAECLExt.DeletedBy = null;
+                                }
+                            }
+
                         }
                     }
 
