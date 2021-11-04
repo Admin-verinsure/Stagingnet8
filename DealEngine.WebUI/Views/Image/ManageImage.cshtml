@@ -34,7 +34,8 @@
 
             <div class="col-sm-12" style="overflow-y:auto; height:44vh; width:100%;text-align:center;">
                 <form enctype="multipart/form-data" asp-controller="Image" asp-action="Upload" method="post" class="mt-3">
-                    <div>
+                    <div style="display: flex; flex-wrap: wrap;
+">
                         @foreach (var img in Model.Item)
                         {
                             <div class="col-sm-3 float-left">
