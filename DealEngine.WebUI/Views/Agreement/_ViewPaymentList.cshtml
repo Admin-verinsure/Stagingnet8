@@ -10,15 +10,38 @@
                 </span>
             </div>
             <div id="pxpaysection" class="card-body">
+                @{
+                    var totalPremiums = 0d;
+                    var totalbrokerageFee = 0d;
+
+                    foreach (var item1 in Model)
+                    {
+                        var brokerageFee = item1.AdministrationFee.Substring(1);
+                        totalbrokerageFee += double.Parse(brokerageFee);
+                        foreach (var item2 in item1.RiskPremiums)
+                        {
+                            var premium = item2.TotalPremium.Substring(1);
+                            totalPremiums += double.Parse(premium);
+                        }
+                        foreach (var item3 in item1.ExtensionCoverOptions)
+                        {
+                            var premium1 = item3.TotalPremium.Substring(1);
+                            totalPremiums += double.Parse(premium1);
+                        }
+                    }
+                }
+
                 @foreach (var item in Model)
                 {
                     if (item.IsMasterAgreement)
                     {
-                       <div class="form-group">
-                          @await Html.PartialAsync("Partials/ViewPxPayments", item)
-                       </div>
+                        item.TotalPremium = totalPremiums.ToString("C");
+                        item.TotalAdministrationFee = totalbrokerageFee.ToString("C");
+                        <div class="form-group">
+                            @await Html.PartialAsync("Partials/ViewPxPayments", item)
+                        </div>
                     }
-                    
+
                 }
                 <div class="form-group">
                     <button onclick="submitPayment()" class="btn btn-primary">Pay now</button>

@@ -2223,72 +2223,98 @@ namespace DealEngine.WebUI.Controllers
                 decimal totalPayable = 0M;
                 foreach (ClientAgreement agreement in clientProgramme.Agreements.Where(cagreement => cagreement.DateDeleted == null))
                 {
-                    
-                    ViewAgreementViewModel model = new ViewAgreementViewModel
+                    if (agreement.Status == "Quoted" && agreement.DateDeleted == null)
                     {
-                        EditEnabled = true,
-                        ClientAgreementId = agreement.Id,
-                        ClientProgrammeId = clientProgramme.Id,
-                        ClientInformationSheet = clientProgramme.InformationSheet
-                    };
+                        ViewAgreementViewModel model = new ViewAgreementViewModel
+                        {
+                            EditEnabled = true,
+                            ClientAgreementId = agreement.Id,
+                            ClientProgrammeId = clientProgramme.Id,
+                            ClientInformationSheet = clientProgramme.InformationSheet
+                        };
 
-                    var riskPremiums = new List<RiskPremiumsViewModel>();
-                    string riskname = null;
+                        var riskPremiums = new List<RiskPremiumsViewModel>();
+                        var extPremiums = new List<ExtensionCoverOptions>();
+                        string riskname = null;
 
-                    // List Agreement Inclusions
-                    foreach (ClientAgreementTerm term in agreement.ClientAgreementTerms)
-                    {
-                        if (term.SubTermType == "MV")
+                        // List Agreement Inclusions
+                        foreach (ClientAgreementTerm term in agreement.ClientAgreementTerms)
                         {
-                            riskname = "Motor Vehicle";
+                            if (term.SubTermType == "MV")
+                            {
+                                riskname = "Motor Vehicle";
+                            }
+                            else if (term.SubTermType == "BV")
+                            {
+                                riskname = "Vessel";
+                            }
+                            else
+                            {
+                                riskname = agreement.Product.Name;
+                            }
                         }
-                        else if (term.SubTermType == "BV")
+
+                        // List Agreement Premiums
+                        foreach (ClientAgreementTerm term in agreement.ClientAgreementTerms)
                         {
-                            riskname = "Vessel";
+                            if (agreement.Status == "Quoted" && agreement.DateDeleted == null && term.Bound)
+                            {
+                                if (answerSheet.PreviousInformationSheet == null)
+                                {
+                                    riskPremiums.Add(new RiskPremiumsViewModel { RiskName = riskname, Premium = (term.Premium - term.FSL).ToString("C"), FSL = term.FSL.ToString("C"), TotalPremium = term.Premium.ToString("C") });
+                                    totalPayable += term.Premium;
+                                }
+                                else
+                                {
+                                    riskPremiums.Add(new RiskPremiumsViewModel { RiskName = riskname, Premium = string.Format(currencyFormat, "{0:c}", (term.PremiumDiffer - term.FSLDiffer)), FSL = string.Format(currencyFormat, "{0:c}", term.FSLDiffer), TotalPremium = string.Format(currencyFormat, "{0:c}", term.PremiumDiffer) });
+                                    totalPayable += term.PremiumDiffer;
+                                }
+                            }
+
                         }
-                        else
+
+                        foreach (ClientAgreementTermExtension termext in agreement.ClientAgreementTermExtensions)
                         {
-                            riskname = agreement.Product.Name;
+                            if (agreement.Status == "Quoted" && agreement.DateDeleted == null && termext.Bound)
+                            {
+                                if (answerSheet.PreviousInformationSheet == null)
+                                {
+                                    extPremiums.Add(new ExtensionCoverOptions { RiskName = termext.ExtentionName, TotalPremium = termext.Premium.ToString("C") });
+                                    totalPayable += termext.Premium;
+                                }
+                                else
+                                {
+                                    extPremiums.Add(new ExtensionCoverOptions { RiskName = termext.ExtentionName, TotalPremium = termext.PremiumDiffer.ToString("C") });
+                                    totalPayable += termext.PremiumDiffer;
+                                }
+                            }
+
                         }
+
+                        bool isActive = true;
+
+                        model.EGlobalIsActive = isActive;
+
+                        // Populate the ViewModel
+                        model.RiskPremiums = riskPremiums;
+                        model.ExtensionCoverOptions = extPremiums;
+                        //model.EGlobalIsActive = isActive;
+
+                        // Status
+                        model.ProductName = agreement.Product.Name;
+                        model.Status = agreement.Status;
+                        model.StartDate = LocalizeTime(agreement.InceptionDate, "d");
+                        model.EndDate = LocalizeTime(agreement.ExpiryDate, "d");
+                        model.AdministrationFee = agreement.BrokerFee.ToString("C");
+                        model.BrokerageRate = (agreement.Brokerage / 100).ToString("P2");
+                        model.CurrencySymbol = "fa fa-dollar";
+                        model.ClientNumber = agreement.ClientNumber;
+                        model.PolicyNumber = agreement.PolicyNumber;
+
+                        model.NoPaymentRequiredMessage = clientProgramme.BaseProgramme.NoPaymentRequiredMessage;
+                        model.IsMasterAgreement = agreement.MasterAgreement;
+                        models.Add(model);
                     }
-
-                    // List Agreement Premiums
-                    foreach (ClientAgreementTerm term in agreement.ClientAgreementTerms)
-                    {
-                        if (answerSheet.PreviousInformationSheet == null)
-                        {
-                            riskPremiums.Add(new RiskPremiumsViewModel { RiskName = riskname, Premium = (term.Premium - term.FSL).ToString("C"), FSL = term.FSL.ToString("C"), TotalPremium = term.Premium.ToString("C") });
-                            totalPayable += term.Premium;
-                        }
-                        else
-                        {
-                            riskPremiums.Add(new RiskPremiumsViewModel { RiskName = riskname, Premium = string.Format(currencyFormat, "{0:c}", (term.PremiumDiffer - term.FSLDiffer)), FSL = string.Format(currencyFormat, "{0:c}", term.FSLDiffer), TotalPremium = string.Format(currencyFormat, "{0:c}", term.PremiumDiffer) });
-                            totalPayable += term.PremiumDiffer;
-                        }
-                    }
-
-                    bool isActive = true;
-
-                    model.EGlobalIsActive = isActive;
-
-                    // Populate the ViewModel
-                    model.RiskPremiums = riskPremiums;
-                    //model.EGlobalIsActive = isActive;
-
-                    // Status
-                    model.ProductName = agreement.Product.Name;
-                    model.Status = agreement.Status;
-                    model.StartDate = LocalizeTime(agreement.InceptionDate, "d");
-                    model.EndDate = LocalizeTime(agreement.ExpiryDate, "d");
-                    model.AdministrationFee = agreement.BrokerFee.ToString("C");
-                    model.BrokerageRate = (agreement.Brokerage / 100).ToString("P2");
-                    model.CurrencySymbol = "fa fa-dollar";
-                    model.ClientNumber = agreement.ClientNumber;
-                    model.PolicyNumber = agreement.PolicyNumber;
-
-                    model.NoPaymentRequiredMessage = clientProgramme.BaseProgramme.NoPaymentRequiredMessage;
-                    model.IsMasterAgreement = agreement.MasterAgreement;
-                    models.Add(model);
                 }
 
                 ViewBag.Title = clientProgramme.BaseProgramme.Name + " Payment for " + clientProgramme.Owner.Name;
