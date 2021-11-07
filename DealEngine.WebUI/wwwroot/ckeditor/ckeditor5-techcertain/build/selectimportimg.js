@@ -9,6 +9,8 @@ function selectImg(image) {
 }
 
 function importImg() {
+    debugger;
+    console.log("importImg1");
     var triggerMutationObserver = $('#importImg').val();
     triggerMutationObserver += "1";
     $('#importImg').val(triggerMutationObserver);
