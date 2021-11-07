@@ -2,17 +2,20 @@
 
 
 @{
-    var totalPremiums = 0d;
-    var premiumsGSTBrokerFee = 0d;
-    var brokerageFee = Model.AdministrationFee.Substring(1);
+    var totalPremiums = Model.TotalPremium.Substring(1);
+    var premiumsGSTBrokerFeeCC = 0d;
+    var brokerageFee = Model.TotalAdministrationFee.Substring(1);
+    var premiumsGSTBrokerFeeInv = 0d;
 
-    foreach (var item in Model.RiskPremiums)
-    {
-        //var premium = item.TotalPremium.Replace("$", "");
-        var premium = item.TotalPremium.Substring(1);
-        totalPremiums += double.Parse(premium);
-    }
-    premiumsGSTBrokerFee = Math.Round((double.Parse(brokerageFee) + totalPremiums) * (1.15f) * (1.013f), 2);
+    //foreach (var item in Model.RiskPremiums)
+    //{
+    //    //var premium = item.TotalPremium.Replace("$", "");
+    //    var premium = item.TotalPremium.Substring(1);
+    //    totalPremiums += double.Parse(premium);
+    //}
+    //premiumsGSTBrokerFee = Math.Round((double.Parse(brokerageFee) + totalPremiums) * (1.15f) * (1.013f), 2);
+    premiumsGSTBrokerFeeCC = Math.Round((double.Parse(brokerageFee) + double.Parse(totalPremiums)) * (1.15f) * (1.013f), 2);
+    premiumsGSTBrokerFeeInv = Math.Round((double.Parse(brokerageFee) + double.Parse(totalPremiums)) * (1.15f), 2);
 
 }
 
@@ -20,19 +23,21 @@
         <label class="radio">
             <input id="paymentCreditCard" name="paymentRadio" type="radio">
             <i></i><strong>
-                Credit Card -- $@premiumsGSTBrokerFee including GST
+                Credit Card -- $@premiumsGSTBrokerFeeCC including GST
             </strong>
 
-            <p>Payment by credit card will incur 2% +GST surcharge which will be included on your invoice.</p>
-            <p>The total amount to be charged to your credit card will be $@premiumsGSTBrokerFee</p>
+            <p>Payment by credit card will incur 1.3% +GST surcharge which will be included on your invoice.</p>
+            <p>The total amount to be charged to your credit card will be $@premiumsGSTBrokerFeeCC</p>
             <p>Payment can be made by Visa or MasterCard.</p>
 
 
             <br />
             <input id="paymentEGlobal" name="paymentRadio" type="radio">
-        <i></i><strong>
-            Payment on Invoice (Cheque or Direct Credit) -- $@premiumsGSTBrokerFee including GST
-        </strong>
+            <i></i><strong>
+                Payment on Invoice (Cheque or Direct Credit) -- $@premiumsGSTBrokerFeeInv including GST
+            </strong>
+            <p>You may elect to pay us on invoice either by sending a cheque to the address shown on the invoice, or by Direct Credit to our bank account.</p>
+            <p>Please note, our payment terms require settlement immediately on receipt of our invoice.</p>
         </label>
 
     </div>

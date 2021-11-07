@@ -214,9 +214,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     bolrunoffcoverrequired = true;
                 }
             }
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.hasPreviouslyUndertaken").Any())
+            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasPreviouslyUndertaken").Any())
             {
-                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.hasPreviouslyUndertaken").First().Value == "1")
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasPreviouslyUndertaken").First().Value == "1")
                 {
                     bolrunoffcoverrequired = true;
                 }
