@@ -43,6 +43,13 @@ namespace DealEngine.Services.Impl
             }
         }
 
+        public string OktaIntermediatePassword
+        {
+            get
+            {
+                return _configuration.GetValue<string>("OktaIntermediatePassword");
+            }
+        }
         public string domainQueryString
         {
             get

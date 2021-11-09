@@ -9,6 +9,7 @@ namespace DealEngine.Services.Interfaces
         string CarJamEndpoint { get; }
         string CarJamApiKey { get; }
         string IntermediatePassword { get; }
+        string OktaIntermediatePassword { get; }
         string domainQueryString { get; }
         string CKImagePath { get; }
         string RequireRSA { get; }

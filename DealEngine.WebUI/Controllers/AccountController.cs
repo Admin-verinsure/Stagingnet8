@@ -23,6 +23,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 using DealEngine.Infrastructure.FluentNHibernate;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Principal;
+using Newtonsoft.Json;
 #endregion
 
 namespace DealEngine.WebUI.Controllers
@@ -368,26 +369,26 @@ namespace DealEngine.WebUI.Controllers
                     return LocalRedirect("~/Home/Index");
                 }
                 /*
-                                else if (resultCode == 49) //	LDAP_INVALID_CREDENTIALS               
-                                {
-                                    deUser = await _userManager.FindByNameAsync(userName);
-                                    var result = await _signInManager.PasswordSignInAsync(deUser, password, true, lockoutOnFailure: true);                    
-                                    // AccessFailedCount = MaxFailedAccessAttempts                   
-                                    if (result.IsLockedOut == true)
-                                    {
-                                        // tell them they've been locked out
-                                        ModelState.AddModelError(string.Empty, "You are locked out. You can try again in 5 minutes (maybe).");
-                                        // Update record so that we know they're locked out for next time? Should be automatic.
-                                        // what else?
-                                        return View(viewModel);
-                                    }
-                                    // AccessFailedCount < MaxFailedAccessAttempts
-                                    else
-                                    {
-                                        ModelState.AddModelError(string.Empty, "Incorrect password. Please try entering your username or password again, or email support@techcertain.com.");
-                                        return View(viewModel);
-                                    }
-                                }
+                else if (resultCode == 49) //	LDAP_INVALID_CREDENTIALS               
+                {
+                    deUser = await _userManager.FindByNameAsync(userName);
+                    var result = await _signInManager.PasswordSignInAsync(deUser, password, true, lockoutOnFailure: true);                    
+                    // AccessFailedCount = MaxFailedAccessAttempts                   
+                    if (result.IsLockedOut == true)
+                    {
+                        // tell them they've been locked out
+                        ModelState.AddModelError(string.Empty, "You are locked out. You can try again in 5 minutes (maybe).");
+                        // Update record so that we know they're locked out for next time? Should be automatic.
+                        // what else?
+                        return View(viewModel);
+                    }
+                    // AccessFailedCount < MaxFailedAccessAttempts
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Incorrect password. Please try entering your username or password again, or email support@techcertain.com.");
+                        return View(viewModel);
+                    }
+                }
                 */
                 else // ANY OTHER LDAP CODE https://ldapwiki.com/wiki/LDAP%20Result%20Codes 
                 {
@@ -407,6 +408,48 @@ namespace DealEngine.WebUI.Controllers
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
                 throw new Exception(ex.Message + " " + ex.StackTrace);
             }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginOktaAsync(string json)
+        {
+            Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            // string username = dict["name"] + dict["okta_uid"].Substring(dict["okta_uid"].Length - 4);
+            // string username = dict["firstname"].Substring(0,1) + dict["surname"] + dict["id"].Substring(dict["id"].Length - 4);
+            string okta_uid = dict["okta_uid"];
+            string email = dict["email"];
+            string identityPassword = dict["okta_uid"] + _appSettingService.OktaIntermediatePassword;
+
+            // Will have to run kestrel to see this if possible
+            Console.WriteLine(okta_uid, identityPassword, email);
+
+            // See if user is in database already, if so grab them, if not it will end up creating them if they already exist in LDAP (also checks LDAP for them, so if they existed in LDAP they will be created)
+            // var user = await _userService.GetUser(username);
+
+            // TODO
+            // var user = await _userService.GetMarshUser(okta_uid);
+
+            // UPDATE EMAIL WITH OKTA EMAIL CLAIM? Will only update it if it's a new user though... If they already exist then it won't update it.
+            user.Email = email;
+
+            // See if identity user is in database, if so grab them, if not create them with password provided, then log them in
+            var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
+
+            // If the password worked then we are happy, if it didn't update the password and login
+            if (identityResult.Succeeded)
+            {
+                // That's what we wanted so can return now
+            }
+            else
+            {
+                IdentityUser deUser = await _userManager.FindByNameAsync(username);
+                await _userManager.RemovePasswordAsync(deUser);
+                await _userManager.AddPasswordAsync(deUser, password);
+                await _signInManager.PasswordSignInAsync(deUser, password, true, lockoutOnFailure: true);
+            }
+
+            return Ok();
         }
 
         private async Task<SignInResult> DealEngineIdentityUserLogin(User user, string password)

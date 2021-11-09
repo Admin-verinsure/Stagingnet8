@@ -22,6 +22,6 @@ namespace DealEngine.Services.Interfaces
         Task<List<User>> GetBrokerUsers();
         Task<User> PostCreateUser(User jsonUser, User currentUser, IFormCollection form);
         Task<User> GetApplicationUserByEmail(string email);
-
+        Task<User> GetMarshUser(string okta_uid);
     }
 }
