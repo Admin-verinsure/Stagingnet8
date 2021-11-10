@@ -19,7 +19,8 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI.BaseClasses
         {
             EGlobalDefaultSubAgent_SubCode = subAgent.SubCode;
             EGlobalDefaultSubAgent_PercentComm = subAgent.SubPercentCommn;
-            EGlobalDefaultSubAgent_PercentCommNew = subAgent.SubPercentCommr; 
+            EGlobalDefaultSubAgent_PercentCommNew = subAgent.SubPercentCommn;
+            EGlobalDefaultSubAgent_PercentCommRenew = subAgent.SubPercentCommr;
             EGlobalDefaultSubAgent_RegistedGST = subAgent.SubGSTRegistered; 
         }
 

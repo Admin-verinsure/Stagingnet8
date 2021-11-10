@@ -101,6 +101,10 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI.BaseClasses
                 if (ClientProgramme.InformationSheet.IsRenewawl && ClientProgramme.InformationSheet.PreviousInformationSheet != null)
                 {
                     description = Package.DescriptionRenew;
+                }
+                else if (ClientProgramme.InformationSheet.IsRenewawl && ClientProgramme.InformationSheet.PreviousInformationSheet == null)
+                {
+                    description = Package.DescriptionRenew;
                 } else if (ClientProgramme.InformationSheet.IsChange && ClientProgramme.InformationSheet.PreviousInformationSheet != null)
                 {
                     description = Package.DescriptionChange;

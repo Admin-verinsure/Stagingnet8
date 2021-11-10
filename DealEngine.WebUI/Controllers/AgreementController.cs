@@ -4030,7 +4030,7 @@ namespace DealEngine.WebUI.Controllers
                     ProgrammeId = programme.Id;
                     brokerFee += clientAgreement.BrokerFee;
                     var terms = await _clientAgreementTermService.GetAllAgreementTermFor(clientAgreement);
-                    foreach (ClientAgreementTerm clientAgreementTerm in terms)
+                    foreach (ClientAgreementTerm clientAgreementTerm in terms.Where(agree => agree.Bound == true && agree.DateDeleted == null))
                     {
                         if (programme.InformationSheet.IsChange && programme.InformationSheet.PreviousInformationSheet != null)
                         {
@@ -4039,6 +4039,12 @@ namespace DealEngine.WebUI.Controllers
                         else
                         {
                             totalPremium += clientAgreementTerm.Premium;
+                        }
+
+                        foreach (ClientAgreementTermExtension extension in clientAgreementTerm.ClientAgreement.ClientAgreementTermExtensions.Where(ext => ext.Bound == true))
+                        {
+                            totalPremium += extension.Premium;
+
                         }
 
                     }
@@ -4175,27 +4181,32 @@ namespace DealEngine.WebUI.Controllers
                 ClientProgramme programme = sheet.Programme;
                 var eGlobalSerializer = new EGlobalSerializerAPI();
 
-                //check Eglobal parameters
-                if (string.IsNullOrEmpty(programme.EGlobalClientNumber))
-                {
-                    throw new Exception(nameof(programme.EGlobalClientNumber) + " EGlobal client number");
-                }
                 string paymentType = "Invoice";
                 Guid transactionreferenceid = Guid.NewGuid();
 
-                var xmlPayload = eGlobalSerializer.SerializePolicy(programme, user, _unitOfWork, transactionreferenceid, paymentType, false, false, null);
-
-                var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
-
-                //used for eglobal request and response log
-                if (programme.BaseProgramme.ProgEnableEmail)
+                //check Eglobal parameters
+                if (string.IsNullOrEmpty(programme.EGlobalClientNumber))
                 {
-                    await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
+                    //throw new Exception(nameof(programme.EGlobalClientNumber) + " EGlobal client number");
+
+                    //send out notification email
+
+                } else
+                {
+                    var xmlPayload = eGlobalSerializer.SerializePolicy(programme, user, _unitOfWork, transactionreferenceid, paymentType, false, false, null);
+
+                    var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
+
+                    //used for eglobal request and response log
+                    if (programme.BaseProgramme.ProgEnableEmail)
+                    {
+                        await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
+                    }
+
+                    EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
+
+                    eGlobalSerializer.DeSerializeResponse(byteResponse, programme, user, _unitOfWork, eglobalsubmission);
                 }
-
-                EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
-
-                eGlobalSerializer.DeSerializeResponse(byteResponse, programme, user, _unitOfWork, eglobalsubmission);
 
                 //binding the agreements
                 //============
