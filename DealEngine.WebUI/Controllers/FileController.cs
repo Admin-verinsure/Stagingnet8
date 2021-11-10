@@ -638,7 +638,7 @@ namespace DealEngine.WebUI.Controllers
                                 }
                             case 4:
                                 {
-                                    documentType = "Invoice";
+                                    documentType = "EGlobal Credit Card Invoice";
                                     break;
                                 }
                             case 5:
@@ -664,6 +664,16 @@ namespace DealEngine.WebUI.Controllers
                             case 10:
                                 {
                                     documentType = "UIS Invitation Email Attachment";
+                                    break;
+                                }
+                            case 11:
+                                {
+                                    documentType = "Named Party COC";
+                                    break;
+                                }
+                            case 12:
+                                {
+                                    documentType = "EGlobal Invoice";
                                     break;
                                 }
                             case 99:

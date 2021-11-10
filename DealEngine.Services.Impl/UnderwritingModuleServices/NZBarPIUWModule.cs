@@ -74,9 +74,15 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int numberofaddjuniorbarrister = 0;
             int numberofaddbarrister = 0;
             bool bolworkoutsidenz = false;
+            decimal feeincome = 0M;
 
             if (agreement.ClientInformationSheet.RevenueData != null)
             {
+                if (agreement.ClientInformationSheet.RevenueData.LastFinancialYearTotal > 0)
+                {
+                    feeincome = agreement.ClientInformationSheet.RevenueData.LastFinancialYearTotal;
+                }
+
                 foreach (var uISTerritory in agreement.ClientInformationSheet.RevenueData.Territories)
                 {
                     if (!bolworkoutsidenz && uISTerritory.Location != "New Zealand" && uISTerritory.Percentage > 0) //Work outside New Zealand Check
@@ -197,19 +203,17 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             //Check Fee Income greater than $1,000,000 information
             bool bolfeeincomereferral = false;
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.hasAnnualFee").Any())
+            if (feeincome >= 1000000)
             {
-                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.hasAnnualFee").First().Value == "1")
-                {
-                    bolfeeincomereferral = true;
-                }
+                bolfeeincomereferral = true;
             }
 
             //Check run off cver required
             bool bolrunoffcoverrequired = false;
             if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasRunOff").Any())
             {
-                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasRunOff").First().Value == "1")
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HaveBarristerSole").First().Value == "2" && 
+                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.HasRunOff").First().Value == "1")
                 {
                     bolrunoffcoverrequired = true;
                 }

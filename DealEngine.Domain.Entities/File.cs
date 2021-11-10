@@ -23,7 +23,7 @@ namespace DealEngine.Domain.Entities
 		//Certificate = 1
 		//Schedule = 2
 		//Payment Confirmation = 3
-		//Eglobal Invoice = 4
+		//Eglobal CC Invoice = 4
 		//Advisory = 5
 		//Sub-Certificate = 6
 		//Premium Advice= 7
@@ -31,6 +31,8 @@ namespace DealEngine.Domain.Entities
 		//Job-Certificate = 9
 		//UIS Invitation Email Attachment = 10
 		//FullProposal Report Pdf = 99
+		//Named Party COC = 11
+		//Eglobal Invoice = 12
 		public virtual bool IsPublic { get; protected set; }
 		public virtual byte [] Contents { get; set; }
 		public virtual Organisation OwnerOrganisation { get; set; }

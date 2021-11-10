@@ -7147,15 +7147,18 @@
             });
         }
         else if ($('#paymentEGlobal').is(":checked")) {
+            $('#getDocumentsModal').show();
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("GenerateEGlobal", "Agreement")',
                 data: $("#tab_1 :input").serialize({ json: true })
 
             })
-            .done(function (url) {
-                $("#documentsSection").on('load', url, function () {
-                });
+            .done(function (data) {
+                //$("#documentsSection").on('load', url, function () {
+                //});
+                $('#getDocumentsModal').hide();
+                window.location.href = data.url;
             })
             .fail(function (a, s, d) {
                 alert("Unable to save.");

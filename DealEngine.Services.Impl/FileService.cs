@@ -213,6 +213,7 @@ namespace DealEngine.Services.Impl
                 NumberFormatInfo currencyFormat = new CultureInfo(CultureInfo.CurrentCulture.ToString()).NumberFormat;
                 currencyFormat.CurrencyNegativePattern = 2;
                 Decimal PremiumTotal = 0.0m;
+                Decimal BrokerFeeTotal = 0.0m;
 
                 int intMonthlyInstalmentNumber = 1;
                 if (agreement.ClientInformationSheet.Programme.BaseProgramme.EnableMonthlyPremiumDisplay)
@@ -301,6 +302,8 @@ namespace DealEngine.Services.Impl
                                 if (agreementlist.Status == "Bound" || agreementlist.Status == "Bound and pending payment" || agreementlist.Status == "Bound and invoice pending" || agreementlist.Status == "Bound and invoiced; Bound")
                                     PremiumTotal += term.Premium;
                             }
+
+                            BrokerFeeTotal += agreementlist.BrokerFee;
 
                             //Endorsements
                             if (agreementlist.ClientAgreementEndorsements.Where(ce => ce.DateDeleted == null && !ce.Removed).Count() > 0)
@@ -441,6 +444,15 @@ namespace DealEngine.Services.Impl
 
                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremiuminclGst_Total]]", ""), (PremiumTotal * (decimal)1.15).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremiuminclGstMonthly_Total]]", ""), (PremiumTotal * (decimal)1.15 / intMonthlyInstalmentNumber).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumAdjustmentTotal]]", ""), (PremiumTotal - BrokerFeeTotal).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumFeeTotal]]", ""), BrokerFeeTotal.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[CreditCardSurchargeTotal]]", ""), (PremiumTotal * (0.013m)).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeCCSurchargeGSTTotal]]", ""), (PremiumTotal * 1.013m * agreement.Product.TaxRate).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclGSTCreditCardChargeTotal]]", ""), (PremiumTotal * (1 + agreement.Product.TaxRate) * 1.013m).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeGSTTotal]]", ""), (PremiumTotal * agreement.Product.TaxRate).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclGSTTotal]]", ""), (PremiumTotal * (1 + agreement.Product.TaxRate)).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
                 if (agreement.ClientInformationSheet.Locations.Any())
                 {
