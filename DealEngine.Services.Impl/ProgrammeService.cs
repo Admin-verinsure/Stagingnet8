@@ -562,6 +562,8 @@ namespace DealEngine.Services.Impl
                 newClientProgramme.ClientProgrammeMembershipNumber = oldClientProgramme.ClientProgrammeMembershipNumber;
             if (!string.IsNullOrEmpty(oldClientProgramme.Tier))
                 newClientProgramme.Tier = oldClientProgramme.Tier;
+            if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalExternalContactNumber))
+                newClientProgramme.EGlobalExternalContactNumber = oldClientProgramme.EGlobalExternalContactNumber;
 
             oldClientProgramme.InformationSheet.NextInformationSheet = newClientInformationSheet;
             if (oldClientProgramme.InformationSheet.Vehicles != null)
@@ -703,6 +705,8 @@ namespace DealEngine.Services.Impl
                 newClientProgramme.ClientProgrammeMembershipNumber = oldClientProgramme.ClientProgrammeMembershipNumber;
             if (!string.IsNullOrEmpty(oldClientProgramme.Tier))
                 newClientProgramme.Tier = oldClientProgramme.Tier;
+            if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalExternalContactNumber))
+                newClientProgramme.EGlobalExternalContactNumber = oldClientProgramme.EGlobalExternalContactNumber;
 
             if (oldClientProgramme.InformationSheet.Vehicles != null)
             {

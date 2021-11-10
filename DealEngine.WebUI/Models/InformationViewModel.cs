@@ -195,7 +195,9 @@ namespace DealEngine.WebUI.Models
         public decimal CurrentYearTotal { get; set; }
         public decimal LastFinancialYearTotal { get; set; }
         public AdditionalActivityViewModel AdditionalActivityViewModel { get; set; }
-        public bool IsRevenueData { get; set; }
+        public bool IslastFinancialYear { get; set; }
+        public bool IsCurrentYear { get; set; }
+        public bool IsnextFinancialYear { get; set; }
 
     }
     public class AdditionalActivityViewModel

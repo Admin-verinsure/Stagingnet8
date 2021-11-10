@@ -72,9 +72,9 @@
                 </div>
             </div>
             <div id="RevenueTab2" class="tab-pane" role="tabpanel">
-                        <div class="row" id="Activitydiv">
-                            <div class="container-fluid">
-                                <div class="row">
+                        <div class="row" >
+                            <div class="container-fluid" >
+                                <div class="row" id="lastFinancialYeardiv">
                                     <div class="col-9">
                                         <label for="lastFinancialYear" class="label required">Actual commission / fees for Last completed financial year</label>
                                     </div>
@@ -82,7 +82,7 @@
                                         @Html.TextBoxFor(m => m.RevenueDataViewModel.LastFinancialYearTotal, Decimal.Round(Model.RevenueDataViewModel.LastFinancialYearTotal, 2).ToString(), new { @class = "form-control", @id = "lastFinancialYear", onchange = "OnChange(this.id, this.name)", @placeholder = "$", @required = "" })
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row" id="CurrentYeardiv">
                                     <div class="col-9">
                                         <label for="currentYear" class="label required">Estimated commission / fees for Current year</label>
                                     </div>
@@ -90,7 +90,7 @@
                                         @Html.TextBoxFor(m => m.RevenueDataViewModel.CurrentYearTotal, Decimal.Round(Model.RevenueDataViewModel.CurrentYearTotal, 2).ToString(), new { @class = "form-control", @id = "currentYear", onchange = "OnChange(this.id, this.name)", @placeholder = "$", @required = "" })
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row" id="nextFinancialYeardiv">
                                     <div class="col-9">
                                         <label for="nextFinancialYear">Estimated commission / fees for Next financial year</label>
                                     </div>
@@ -416,8 +416,14 @@
     $(document).ready(function () {
         debugger;
 
-        if ("@Model.RevenueDataViewModel.IsRevenueData" == "True") {
-            $("#Activitydiv").hide('2000');
+        if ("@Model.RevenueDataViewModel.IslastFinancialYear" == "True") {
+            $("#lastFinancialYeardiv").hide('2000');
+        }
+        if ("@Model.RevenueDataViewModel.IsCurrentYear" == "True") {
+            $("#CurrentYeardiv").hide('2000');
+        }
+        if ("@Model.RevenueDataViewModel.IsnextFinancialYear" == "True") {
+            $("#nextFinancialYeardiv").hide('2000');
         }
     });
 </script>

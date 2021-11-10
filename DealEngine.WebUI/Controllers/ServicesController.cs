@@ -206,6 +206,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     clientProgramme.EGlobalClientNumber = Collection["ClientProgramme.EGlobalClientNumber"];
                     clientProgramme.Tier = Collection["ClientProgramme.Tier"];
+                    clientProgramme.EGlobalBranchCode = Collection["ClientProgramme.EGlobalBranchCode"];
                     await _programmeService.Update(clientProgramme);
                     User OwnerUser = await _userService.GetUserPrimaryOrganisationOrEmail(clientProgramme.Owner);
                     if(OwnerUser != null)

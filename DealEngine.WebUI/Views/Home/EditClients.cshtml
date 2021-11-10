@@ -39,9 +39,9 @@
                             @Html.TextBoxFor(m => m.Organisation.Email, new { @class = "form-control", @id = "Organisation.Email", @required = "" })
                         </div>
                         @if (Model.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                            Model.Programme.NamedPartyUnitName == "Apollo ML Programme" ||
-                            Model.Programme.NamedPartyUnitName == "Apollo Run Off Programme" ||
-                            Model.Programme.NamedPartyUnitName == "NZPI Programme")
+                         Model.Programme.NamedPartyUnitName == "Apollo ML Programme" ||
+                         Model.Programme.NamedPartyUnitName == "Apollo Run Off Programme" ||
+                         Model.Programme.NamedPartyUnitName == "NZPI Programme")
                         {
                             <div class="form-group">
                                 <label class="label">EGlobal Number</label>
@@ -54,6 +54,17 @@
                             <div class="form-group">
                                 <label class="label">Tier</label>
                                 @Html.DropDownListFor(m => m.ClientProgramme.Tier, Model.Tiers, new { @class = "form-control b", @id = "ClientProgramme.Tier", @required = "", @size = 1 })
+                            </div>
+                        }
+                        @if (Model.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                        {
+                            <div class="form-group">
+                                <label class="label">EGlobal Client Branch Code</label><br />
+                                @Html.DropDownListFor(m => m.ClientProgramme.EGlobalBranchCode, Model.EGlobalClientBranchCodes, new { @class = "form-control b", @id = "ClientProgramme.EGlobalBranchCode", @required = "", @size = 1 })
+                            </div>
+                            <div class="form-group">
+                                <label class="label">EGlobal Number</label><br />
+                                @Html.TextBoxFor(m => m.ClientProgramme.EGlobalClientNumber, new { @class = "form-control", @id = "ClientProgramme.EGlobalClientNumber", @required = "" })
                             </div>
                         }
                     </div>

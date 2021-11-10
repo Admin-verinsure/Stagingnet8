@@ -21,6 +21,7 @@ namespace DealEngine.WebUI.Models
             Organisation = new Domain.Entities.Organisation();
 
             GetTiers();
+            GetEGlobalClientBranchCodes();
         }
 
         private void GetTiers()
@@ -43,6 +44,53 @@ namespace DealEngine.WebUI.Models
                 {
                     Text = "Mortgage Express",
                     Value = "Mortgage Express"
+                });
+        }
+
+        private void GetEGlobalClientBranchCodes()
+        {
+            EGlobalClientBranchCodes = new List<SelectListItem>();
+            EGlobalClientBranchCodes.Add(
+                new SelectListItem()
+                {
+                    Text = "AKL",
+                    Value = "AKL"
+                });
+            EGlobalClientBranchCodes.Add(
+                new SelectListItem()
+                {
+                    Text = "CHC",
+                    Value = "CHC"
+                });
+            EGlobalClientBranchCodes.Add(
+                new SelectListItem()
+                {
+                    Text = "DUN",
+                    Value = "DUN"
+                });
+            EGlobalClientBranchCodes.Add(
+                new SelectListItem()
+                {
+                    Text = "NAP",
+                    Value = "NAP"
+                });
+            EGlobalClientBranchCodes.Add(
+                new SelectListItem()
+                {
+                    Text = "NPL",
+                    Value = "NPL"
+                });
+            EGlobalClientBranchCodes.Add(
+                new SelectListItem()
+                {
+                    Text = "TGA",
+                    Value = "TGA"
+                });
+            EGlobalClientBranchCodes.Add(
+                new SelectListItem()
+                {
+                    Text = "WEL",
+                    Value = "WEL"
                 });
         }
 
@@ -79,6 +127,7 @@ namespace DealEngine.WebUI.Models
             }
         }
         public IList<SelectListItem> Tiers { get; set; }
+        public IList<SelectListItem> EGlobalClientBranchCodes { get; set; }
         public IList<SelectListItem> Owners { get; set; }
         public ClientProgramme ClientProgramme { get; set; }
         public Domain.Entities.Programme Programme { get; set; }
