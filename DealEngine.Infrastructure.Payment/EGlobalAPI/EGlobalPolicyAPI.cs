@@ -913,6 +913,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
                 if (ClientUIS.PreviousInformationSheet == null && ClientUIS.IsRenewawl)
                 {
                     gv_transactionType = 2;
+                    break;
                 }
                 // try and find the original policy
                 else if (ClientUIS.PreviousInformationSheet != null)
@@ -1182,7 +1183,11 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             // Fill in its fields
             gv_strUISReference = EGlobalPolicy.ClientProgramme.InformationSheet.ReferenceId;
-            if (objClientAgreement.ClientInformationSheet.IsChange && objClientAgreement.ClientInformationSheet.PreviousInformationSheet != null)
+            if (objClientAgreement.ClientInformationSheet.IsRenewawl && objClientAgreement.ClientInformationSheet.PreviousInformationSheet == null)
+            {
+                gv_strMasterAgreementReference = objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber;
+            }
+            else if (objClientAgreement.ClientInformationSheet.IsChange && objClientAgreement.ClientInformationSheet.PreviousInformationSheet != null)
             {
                 gv_strMasterAgreementReference = gv_strOriginalAgreementReference;
             } else { 
