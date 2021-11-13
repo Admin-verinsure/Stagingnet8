@@ -13,6 +13,7 @@ namespace DealEngine.Services.Interfaces
         string domainQueryString { get; }
         string CKImagePath { get; }
         string RequireRSA { get; }
+        string AuthenticationService { get; }
         string GetMarineInsuranceSpecialistEmail { get; }
         string GetCompanyTitle { get; }
         string GetConnectionString { get; }

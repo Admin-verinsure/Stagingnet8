@@ -105,6 +105,14 @@ namespace DealEngine.Services.Impl
             }
         }
 
+        public string AuthenticationService
+        {
+            get
+            {
+                return _configuration.GetValue<string>("AuthenticationService");
+            }
+        }
+
         public string GetMarineInsuranceSpecialistEmail
         {
             get
