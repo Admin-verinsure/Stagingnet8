@@ -600,7 +600,7 @@ namespace DealEngine.WebUI.Controllers
             var base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));
 
 
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "oauth/accesstoken"); ///amps/v2/
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/amps/v2/oauth/accesstoken"); //
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64EncodedAuthenticationString);
 
             var cacheControlHeader = new CacheControlHeaderValue { NoCache = true };
@@ -682,12 +682,10 @@ namespace DealEngine.WebUI.Controllers
             #endregion
             var data = new StringContent(body.ToString(), Encoding.UTF8, "application/json");
             //var content = new FormUrlEncodedContent(values);
-
             var requestMessage2 = new HttpRequestMessage(HttpMethod.Post, "/amps/v2/uam/users");
 
             // Add Headers to HTTP Message
             requestMessage2.Content = data;
-
             var task2 = client2.SendAsync(requestMessage2);
             var response2 = task2.Result;
 
