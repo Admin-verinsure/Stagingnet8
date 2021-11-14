@@ -464,6 +464,10 @@ namespace DealEngine.WebUI.Controllers
                         return Redirect("https://localhost:5001/Home/Index");
                     }
                 }
+                else
+                {
+                    string lol = "login failed";
+                }
             }
             catch
             {
@@ -579,8 +583,6 @@ namespace DealEngine.WebUI.Controllers
             // 1 Get Bearer token from https://marshdev-mmc.oktapreview.com/amps/v2/oauth/accesstoken
             var ampsUrl = "https://dev.api.m2digitalbroker.com/proxy/";
 
-
-
             // Setup client
             HttpClient client = new HttpClient();
             Uri ampsUri = new Uri(ampsUrl);
@@ -592,48 +594,35 @@ namespace DealEngine.WebUI.Controllers
             var values = new List<KeyValuePair<string, string>>();
             values.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
             values.Add(new KeyValuePair<string, string>("appId", "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq"));
-            //values.Add(new KeyValuePair<string, string>("scope", "access_token"));
+            values.Add(new KeyValuePair<string, string>("scope", "access_token"));
             var content = new FormUrlEncodedContent(values);
-
-
-            using (HttpClient httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = ampsUri;
-                //var authToken = Encoding.ASCII.GetBytes("ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq:MDjxj51RufK01vmt");
-                //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
-                //httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                
-                HttpResponseMessage response = httpClient.PostAsync("amps/v2/oauth/accesstoken", content).Result;
-                //response.EnsureSuccessStatusCode();
-                var resp = response.Content.ReadAsStringAsync().Result;
-
-                //oktaToken = JsonConvert.DeserializeObject<OktaToken>(resp);
-
-            }
-
-
-
-
-
-
-
             var authenticationString = "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq:MDjxj51RufK01vmt";
-            var base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));            
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/amps/v2/oauth/accesstoken");
+            var base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));
+
+
+            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "oauth/accesstoken"); ///amps/v2/
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64EncodedAuthenticationString);
-            
-            // Add Headers to HTTP Message
-            //requestMessage.Headers.Add("appId", "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq");
-            //requestMessage.Headers.Add("grant_type", "client_credentials");
+
+            var cacheControlHeader = new CacheControlHeaderValue { NoCache = true };
+            requestMessage.Headers.CacheControl = cacheControlHeader;          
             requestMessage.Content = content;
-            
+
+            //HttpCompletionOption completionOption = new HttpCompletionOption();
+            //completionOption = HttpCompletionOption.ResponseHeadersRead;
             // Send Request
-            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage); //completionOption
+            Console.WriteLine(responseMessage.StatusCode.ToString());
+
+
+
             var test = "";
 
             // Test if you even get a response
 
-                     
+            // Add Headers to HTTP Message
+            //requestMessage.Headers.Add("appId", "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq");
+            //requestMessage.Headers.Add("grant_type", "client_credentials");
+
             // Get Response
             //var response = task.Result;
             //Console.WriteLine(response);            
