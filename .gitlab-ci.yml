@@ -102,7 +102,7 @@ deploy_stagingmnzconnect:
   - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLstagingmnzconnect"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
   - eval "$(ssh-agent -s)"
   - ssh-add <(echo "$PKgitlab")
-  - ssh ubuntu@"$URLstagingmnzconnect" './DE-DeployPrep.sh'
+  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLstagingmnzconnect" './DE-DeployPrep.sh'
   - 'dotnet publish -c Release'
   - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLstagingmnzconnect:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLstagingmnzconnect" './DE-DeployFin.sh'
