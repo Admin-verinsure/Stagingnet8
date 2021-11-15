@@ -24,6 +24,9 @@ namespace DealEngine.Services.Interfaces
         string NRecoPdfToolPath { get; }
         string IsLinuxEnv { get; }
         string MarshRSANotificationEmail { get; }
+        string MarshEglobalEndpoint { get; }
+        string MarshEglobalUsername { get; }
+        string MarshEglobalPassword { get; }
     }
 }
 

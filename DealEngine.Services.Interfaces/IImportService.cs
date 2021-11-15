@@ -56,6 +56,8 @@ namespace DealEngine.Services.Interfaces
         Task ImportApolloServiceRO(User user);
         Task ImportApolloServiceROUIS(User user);
         Task ImportApolloServicePIUIS(User user);
-
+        Task ImportNZBarPreRenewData(User user);
+        Task ImportNZBarImportClaims(User user);
+        Task ImportNZBarOwners(User user);
     }
 }

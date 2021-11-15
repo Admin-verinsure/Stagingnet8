@@ -154,6 +154,29 @@ namespace DealEngine.Services.Impl
                 return _configuration.GetValue<string>("NRecoPdfToolPath");
             }
         }
-        
+
+        public string MarshEglobalEndpoint
+        {
+            get
+            {
+                return _configuration.GetValue<string>("MarshEglobalEndpoint");
+            }
+        }
+
+        public string MarshEglobalUsername
+        {
+            get
+            {
+                return _configuration.GetValue<string>("MarshEglobalUsername");
+            }
+        }
+
+        public string MarshEglobalPassword
+        {
+            get
+            {
+                return _configuration.GetValue<string>("MarshEglobalPassword");
+            }
+        }
     }
 }

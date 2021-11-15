@@ -912,7 +912,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             {
                 if (ClientUIS.PreviousInformationSheet == null && ClientUIS.IsRenewawl)
                 {
-                    gv_transactionType = 2;
+                    gv_transactionType = 3;//renew
                     break;
                 }
                 // try and find the original policy
@@ -1220,7 +1220,12 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             EBixPolicy.CreatedByUser = EbixUser;
             EBixPolicy.StatementDescription = EGlobalPolicy.GetDescription2;    // Invoice description
             EBixPolicy.MultiRisk = EGlobalPolicy.MultiRisk;                                   // set multisk flag
-            EBixPolicy.ExternalSystemContractID = String.Format("TC-{0}-{1}", gv_strMasterAgreementReference, EGlobalPolicy.ExtensionCode);
+            EBixPolicy.ExternalSystemContractID = String.Format("TCDE-{0}-{1}", gv_strMasterAgreementReference, EGlobalPolicy.ExtensionCode);
+            if (objClientAgreement.ClientInformationSheet.IsRenewawl && objClientAgreement.ClientInformationSheet.PreviousInformationSheet == null &&
+                !string.IsNullOrEmpty(objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber))
+            {
+                EBixPolicy.ExternalSystemContractID = objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber;
+            }
             EBixPolicy.Description = EGlobalPolicy.GetDescription1;
             EBixPolicy.ClientNumber = EGlobalPolicy.ClientProgramme.EGlobalClientNumber;
             EBixPolicy.TransactionType = gv_transactionType;
