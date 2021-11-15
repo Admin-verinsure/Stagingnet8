@@ -2806,6 +2806,120 @@ namespace DealEngine.Services.Impl
                 }
             }
         }
+
+        public async Task ImportNZBarOwners(User CreatedUser)
+        {
+            var currentUser = CreatedUser;
+            StreamReader reader;
+            User user = null;
+            Organisation organisation = null;
+            bool readFirstLine = false;
+            string line;
+            string email;
+            string userName;
+            string type = "";
+            string Name = "";
+            Guid.TryParse("8b6b0ca4-2ba3-4e40-a196-222c3e4982a2", out Guid ProgrammeId);
+            //addresses need to be on one line            
+            var fileName = WorkingDirectory + "nzbarownerdata.csv";
+
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    //if has a title row
+                    if (!readFirstLine)
+                    {
+                        line = reader.ReadLine();
+                        readFirstLine = true;
+                    }
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    try
+                    {
+                         userName = parts[5];
+                         email = parts[3];
+                         
+
+                            try
+                            {
+                                user = await _userService.GetUser(userName);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                Random random = new Random();
+                                int randomNumber = random.Next(10, 99);
+                                userName = userName + randomNumber.ToString();
+                            }
+                            user = new User(currentUser, Guid.NewGuid(), userName);
+                            user.FirstName = parts[1];
+                            user.LastName = parts[2];
+                            user.FullName = parts[1] + " " + parts[2];
+                            user.Email = email;
+
+                        type = "Person - Individual";
+                        Name = user.FullName;
+                        OrganisationType ownerType = new OrganisationType(type);
+                        InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, type);
+                        OrganisationalUnit ownerUnit = new OrganisationalUnit(currentUser, type, "Head Office", null);
+                        Organisation Owner = new Organisation(currentUser, Guid.NewGuid())
+                        {
+                            OrganisationType = ownerType,
+                            Email = user.Email,
+                            Name = Name
+                        };
+
+                        OrganisationType barristerType = new OrganisationType("Person - Individual");
+                        InsuranceAttribute barristerAttribute = new InsuranceAttribute(currentUser, "Barrister");
+                        OrganisationalUnit defaultUnit = new OrganisationalUnit(currentUser, "Person - Individual", "Person - Individual", null);
+                        BarristerUnit BarristerUnit = new BarristerUnit(currentUser, "Barrister", "Person - Individual", null)
+                        {
+                            IsPrincipalBarrister = true
+                        };
+                        Organisation Barrister = new Organisation(currentUser, Guid.NewGuid())
+                        {
+                            OrganisationType = barristerType,
+                            Email = user.Email,
+                            Name = user.FullName
+                        };
+
+                        Barrister.InsuranceAttributes.Add(barristerAttribute);
+                        Barrister.OrganisationalUnits.Add(defaultUnit);
+                        Barrister.OrganisationalUnits.Add(BarristerUnit);
+                        user.Organisations.Add(Barrister);
+
+
+
+                        user.SetPrimaryOrganisation(Owner);
+
+
+
+
+                        await _userService.ApplicationCreateUser(user);
+
+                        var programme = await _programmeService.GetProgramme(ProgrammeId);
+                        var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, user, Owner);
+
+                        var reference = await _referenceService.GetLatestReferenceId();
+                        var sheet = await _clientInformationService.IssueInformationFor(user, Owner, clientProgramme, reference);
+                        await _referenceService.CreateClientInformationReference(sheet);
+                        clientProgramme.EGlobalClientNumber = parts[6];
+                        clientProgramme.EGlobalExternalContactNumber = parts[7];
+                        clientProgramme.EGlobalBranchCode = parts[8];
+                        clientProgramme.ClientProgrammeMembershipNumber = parts[4];
+                        sheet.IsRenewawl = true;
+                        sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(user, sheet, null, programme.Name + "UIS issue Process Completed"));
+                        await _programmeService.Update(clientProgramme);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+
+                }
+            }
+        }
         public async Task ImportNZPIImportOwners(User CreatedUser)
         {
             var currentUser = CreatedUser;
@@ -3796,6 +3910,114 @@ namespace DealEngine.Services.Impl
 
                         await _programmeService.AddPreRenewOrRefDataByMembership(preRenewOrRefData);
 
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
+
+        public async Task ImportNZBarPreRenewData(User CreatedUser)
+        {
+            var currentUser = CreatedUser;
+            StreamReader reader;
+            PreRenewOrRefData preRenewOrRefData;
+            bool readFirstLine = false;
+            string line;
+            var fileName = WorkingDirectory + "nzbapolicydata2021.csv";
+
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    if (!readFirstLine)
+                    {
+                        line = reader.ReadLine();
+                        readFirstLine = true;
+                    }
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    try
+                    {
+                        preRenewOrRefData = new PreRenewOrRefData(currentUser, parts[1], parts[0]);
+                        if (!string.IsNullOrEmpty(parts[2]))
+                            preRenewOrRefData.CLRetro = parts[2];
+                        if (!string.IsNullOrEmpty(parts[3]))
+                            preRenewOrRefData.EndorsementProduct = parts[3];
+                        if (!string.IsNullOrEmpty(parts[4]))
+                            preRenewOrRefData.EndorsementTitle = parts[4];
+                        if (!string.IsNullOrEmpty(parts[5]))
+                            preRenewOrRefData.EndorsementText = parts[5];
+
+                        await _programmeService.AddPreRenewOrRefDataByMembership(preRenewOrRefData);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }
+        }
+
+        public async Task ImportNZBarImportClaims(User CreatedUser)
+        {
+            var currentUser = CreatedUser;
+            StreamReader reader;
+            ClaimNotification claimNotification;
+            bool readFirstLine = false;
+            string line;
+            var fileName = WorkingDirectory + "nzbaclaimdata2021.csv";
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    if (!readFirstLine)
+                    {
+                        line = reader.ReadLine();
+                        readFirstLine = true;
+                    }
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    try
+                    {
+                        claimNotification = new ClaimNotification(currentUser);
+                        claimNotification.ClaimMembershipNumber = parts[0];
+                        if (!string.IsNullOrEmpty(parts[1]))
+                            claimNotification.ClaimTitle = parts[1];
+                        if (!string.IsNullOrEmpty(parts[2]))
+                        {
+                            claimNotification.ClaimDescription = parts[2];
+                            if (parts[2].Length > 255)
+                            {
+                                claimNotification.ClaimDescription = parts[2].Substring(0, 255);
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(parts[3]))
+                            claimNotification.ClaimReference = parts[3];
+                        if (!string.IsNullOrEmpty(parts[4]))
+                            claimNotification.ClaimInsurerReference = parts[4];
+                        if (!string.IsNullOrEmpty(parts[5]))
+                            claimNotification.ClaimNotifiedDate = DateTime.Parse(parts[5]);
+                        if (!string.IsNullOrEmpty(parts[6]))
+                            claimNotification.ClaimInsuredName = parts[6];
+                        if (!string.IsNullOrEmpty(parts[7]))
+                            claimNotification.Claimant = parts[7];
+                        if (!string.IsNullOrEmpty(parts[8]))
+                            claimNotification.ClaimEstimateInsuredLiability = decimal.Parse(parts[8]);
+                        if (!string.IsNullOrEmpty(parts[9]))
+                        {
+                            claimNotification.ClaimNotes = parts[9];
+                            if (parts[9].Length > 255)
+                            {
+                                claimNotification.ClaimNotes = parts[9].Substring(0, 255);
+                            }
+                        }
+                        claimNotification.ClaimStatus = "Closed";
+
+                        await _programmeService.AddClaimNotificationByMembership(claimNotification);
                     }
                     catch (Exception ex)
                     {

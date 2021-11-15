@@ -497,7 +497,8 @@
             Value == "Administrator" ||
             Value == "Director"||
             Value == "EBarrister"||
-            Value == "JBarrister"||
+            Value == "JBarrister" ||
+            Value == "Barrister"||
             Value == "IEntity") {
             //readonly Organisation Type personal
             document.getElementById("OwnerFap").hidden = true;
@@ -519,6 +520,11 @@
             Value == "JBarrister"||
             Value == "IEntity") {
                 BaristerUnitOnChange();
+            }
+
+            if (Value == "Barrister") {
+                BarristerOnChange();
+
             }
 
             if (Value == "Nominated Representative") {
@@ -592,6 +598,17 @@
 
     }
 
+    function BarristerOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        if (IsBarristerUnit != null) {
+
+              document.querySelectorAll('.BarristerUnit').forEach(function(el) {
+                 el.style.display = 'unset';
+              });
+        }
+    }
+
+
     function AdvisorUnitOnChange() {
         var IsAdvisorUnit = document.getElementsByClassName("AdvisorUnit");
         if (IsAdvisorUnit != null) {
@@ -606,8 +623,9 @@
         debugger;
         var IsEBaristerUnit = document.getElementsByClassName("EBaristerUnit");
         var IsJBaristerUnit = document.getElementsByClassName("JBaristerUnit");
+        var IsBaristerUnit = document.getElementsByClassName("BaristerUnit");
 
-        if (IsEBaristerUnit != null || IsJBaristerUnit != null) {
+        if (IsEBaristerUnit != null || IsJBaristerUnit != null|| IsBaristerUnit != null) {
 
               document.querySelectorAll('.AdvisorUnit').forEach(function(el) {
                  el.style.display = 'unset';

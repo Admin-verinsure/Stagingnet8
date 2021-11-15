@@ -34,7 +34,8 @@
                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                        Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
+                        Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"||
+                        Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme"
                          )
                         {
                             <th data-field="IsPrincipal" data-sortable="true">Is Principal</th>
@@ -135,6 +136,23 @@
                                     }
 
                                 </td>
+                             }
+                                        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                              {
+                                <td>
+                                    @{
+                                        var BarristerUnit = (BarristerUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Barrister");
+
+                                        //var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor" || o.Name == "Administration");
+                                    }
+                                    @if (BarristerUnit != null)
+                                    {
+                                        @BarristerUnit.IsPrincipalBarrister
+                                        <input id="IsPrincipal" data-IsPrincipal="@BarristerUnit.IsPrincipalBarrister" value="@BarristerUnit.IsPrincipalBarrister" type="hidden">
+
+                                    }
+
+                                </td>
                             }
                             @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme")
                             {
@@ -150,10 +168,10 @@
 
                                 </td>
                             }
-                        <td>
+                        @*<td>
                             <input id="IsFapOrg"  value="" type="hidden">
 
-                        </td>
+                        </td>*@
                             <td>
                                 <button onclick="RemoveOrganisation('@organisation.Id', 'Insured Details / Named Parties')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
                             </td>
@@ -251,8 +269,8 @@
                 {
                     @Html.Hidden("EBaristerUnit", Model.OrganisationViewModel.EBaristerUnit.GetType().AssemblyQualifiedName, new { @id = "EBaristerUnit" })
                     @Html.Hidden("JBaristerUnit", Model.OrganisationViewModel.JBaristerUnit.GetType().AssemblyQualifiedName, new { @id = "JBaristerUnit" })
-
-                    @*@Html.Hidden("Unit", Model.OrganisationViewModel.InterestedPartyUnit.GetType().AssemblyQualifiedName, new { @id = "InterestedPartyUnit" })*@
+                    @Html.Hidden("BarristerUnit", Model.OrganisationViewModel.BarristerUnit.GetType().AssemblyQualifiedName, new { @id = "BarristerUnit" })
+                   
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/NZBar_AddOrganisation", Model)
                 }
                 <div class="form-group">

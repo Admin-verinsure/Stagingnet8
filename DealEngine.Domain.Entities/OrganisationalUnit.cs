@@ -109,6 +109,18 @@ namespace DealEngine.Domain.Entities
 
     }
 
+    public class BarristerUnit : OrganisationalUnit
+    {
+        public BarristerUnit() { }
+        public BarristerUnit(User User, string Name, string Type, IFormCollection Collection)
+            : base(User, Name, Type, Collection)
+        {
+        }
+        public virtual string OtherInformation { get; set; }
+        [Display(Name = "Is this individual the Principal Barrister?")]
+        public virtual bool IsPrincipalBarrister { get; set; }
+
+    }
 
     public class PersonnelUnit : OrganisationalUnit
     {

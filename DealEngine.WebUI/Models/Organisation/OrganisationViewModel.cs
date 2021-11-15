@@ -28,7 +28,7 @@ namespace DealEngine.WebUI.Models
                     AdministratorUnit = new AdministratorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
                     EBaristerUnit = new EBaristerUnit(null, null, null, null);
                     JBaristerUnit = new JBaristerUnit(null, null, null, null);
-
+                    BarristerUnit = new BarristerUnit(null, null, null, null);
                     if (Programme.NamedPartyUnitName == "NZFSG Programme") 
                     { 
                         InsuranceAttributes = GetAdvisorTypes1(); 
@@ -64,6 +64,7 @@ namespace DealEngine.WebUI.Models
                     HasIsTripleAApprovalOptions = GetBooleanSelectOptions();
                     HasIsFAPOptions = GetBooleanSelectOptions();
                     HasInterposedPersonOptions = GetBooleanSelectOptions();
+                    HasBarristerPrincipalOptions = GetBooleanSelectOptions();
 
 
 
@@ -780,6 +781,10 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "-- Select --",
                         Value = "0"
+                    }, new SelectListItem
+                    {
+                        Text = "Barrister",
+                        Value = "Barrister"
                     },
                     new SelectListItem
                     {
@@ -928,6 +933,9 @@ namespace DealEngine.WebUI.Models
         public DirectorUnit DirectorUnit { get; set; }
         public EBaristerUnit EBaristerUnit { get; set; }
         public JBaristerUnit JBaristerUnit { get; set; }
+        public BarristerUnit BarristerUnit { get; set; }
+        [JsonIgnore]
+        public IList<SelectListItem> HasBarristerPrincipalOptions { get; set; }
     }
 }
 

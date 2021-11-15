@@ -1,0 +1,19 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<div class="form-group col-md-6 BarristerUnit">
+   
+    <div class="form-group" id="HidePrincipal">
+        @Html.LabelFor(m => m.OrganisationViewModel.BarristerUnit.IsPrincipalBarrister, new { @class = "label required" })
+        <select id="BarristerUnit.IsPrincipalBarrister" name="OrganisationViewModel.BarristerUnit.IsPrincipalBarrister" class="custom-select" data-rule="PrincipalBarrister" onchange="OnChange(this.id, this.name)" required>
+            @foreach (var option in @Model.OrganisationViewModel.HasBarristerPrincipalOptions)
+            {
+                <option selected="@option.Selected" value="@option.Value">
+                    @option.Text
+                </option>
+            }
+        </select>
+    </div>
+  
+
+</div>
+

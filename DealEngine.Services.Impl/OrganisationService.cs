@@ -464,11 +464,12 @@ namespace DealEngine.Services.Impl
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new EBaristerUnit(User, Type, OrganisationTypeName, collection));
                 }
-                //if (Type == "Individual")
-                //{
-                //    OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
-                //    OrganisationalUnits.Add(new IndividualInsuredUnit(User, Type, OrganisationTypeName, collection));
-                //}
+                if (Type == "Barrister" 
+                   )
+                {
+                    OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
+                    OrganisationalUnits.Add(new BarristerUnit(User, Type, OrganisationTypeName, collection));
+                }
             }
 
             return OrganisationalUnits;

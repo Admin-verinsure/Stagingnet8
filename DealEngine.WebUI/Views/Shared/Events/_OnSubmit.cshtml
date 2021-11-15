@@ -179,13 +179,15 @@
     function UnitValidationOnSubmit(Programme) {
         var Unit = document.getElementsByName("Unit");
        var directorUnit = document.getElementsByName("DirectorUnit");
+               var BarristerUnit = document.getElementsByName("BarristerUnit");
 
 
         if (Unit != null) {
             if (Unit.length > 0) {
                 if (Unit[0].id == "AdvisorUnit" ||
-                    Unit[0].id == "PlannerUnit"||
-                    Unit[0].id == "DirectorUnit"
+                    Unit[0].id == "PlannerUnit" ||
+                    Unit[0].id == "DirectorUnit" ||
+                    Unit[0].id == "BarristerUnit"
                 ) {
                     var pAdvisor = document.getElementById("IsPrincipal");
                     if (pAdvisor == null) {
@@ -248,6 +250,24 @@
         }
 
 
+        if (BarristerUnit != null) {
+            if (BarristerUnit.length > 0) {
+                if (BarristerUnit[0].id == "BarristerUnit") {
+                    if (Programme == "New Zealand Bar Association Liability Programme") {
+                        var pBarrister = document.getElementById("IsPrincipal");
+                    if (pBarrister == null) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        $("#more").trigger("click");
+                        $("[id='Insured Details / Named Parties']").trigger("click");
+                        window.alert("A Principal Named Party needs to be declared in the Named Parties panel to proceed. ");
+                        throw "no principal selected";
+                    }
+                    }
+                }
+
+            }
+        }
         if (directorUnit != null) {
             if (directorUnit.length > 0) {
                 if (directorUnit[0].id == "DirectorUnit") {
@@ -301,6 +321,7 @@
         var PostAjax = true;
         var RemoveAdvisors = false;
         var RemoveIsTheFAPS = false;
+        var RemoveIsTheBarrister = false;
 
         var form = document.getElementById(FormId);
         var ErrorMessage = "";
@@ -363,8 +384,13 @@
                             if (element[element.selectedIndex].value == "true") {
                                 RemoveIsTheFAPS = true;
                             }
-                        }
+                         }
 
+                         if (dataRule == "PrincipalBarrister") {
+                            if (element[element.selectedIndex].value == "true") {
+                                 RemoveIsTheBarrister = true;
+                            }
+                         }
                         
                         if (dataRule == "RetirementDateValidation" && output == "Advisor") {
                             if (element[element.selectedIndex].value == "true") {
@@ -437,6 +463,21 @@
                         }
                     });
                 }
+
+                
+                 if (RemoveIsTheBarrister) {
+                    $.ajax({
+                        url: '@Url.Action("RemoveIsTheBarrister", "Organisation")',
+                        type: "POST",
+                        async: false,
+                        data: $("#" + form.id).serialize(),
+                        error: function (request, error) {
+                            debugger;
+                        }
+                    });
+                }
+
+                
                 var serializeddata = $("#" + form.id).serialize();
                 $.ajax({
                     url: '@Url.Action("AddOrganisation", "Organisation")',

@@ -695,6 +695,27 @@ namespace DealEngine.WebUI.Controllers
             return Ok();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RemoveIsTheBarrister(IFormCollection collection)
+        {
+            User currentUser = await CurrentUser(); 
+            Guid Id = Guid.Parse(collection["ClientInformationSheet.Id"]);
+            ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
+            foreach (var organisation in Sheet.Organisation)
+            {
+                var barristerUnit = (BarristerUnit)organisation.OrganisationalUnits.FirstOrDefault(i => i.Name == "Barrister");
+                if (barristerUnit != null)
+                {
+                    barristerUnit.IsPrincipalBarrister = false;
+                }
+
+                await _organisationService.Update(organisation);
+            }
+
+            return Ok();
+        }
+
+
         public async Task<IActionResult> SetPrimary(Guid id)
         {
             User user = null;

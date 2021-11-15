@@ -214,10 +214,10 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI.BaseClasses
                 {
                     if (ClientProgramme.InformationSheet.IsRenewawl)
                     {
-                        incomeClass = "Renewal";
+                        incomeClass = "REN";
                     } else
                     {
-                        incomeClass = "New";
+                        incomeClass = "NEW";
                     }
                 }
                 return incomeClass;

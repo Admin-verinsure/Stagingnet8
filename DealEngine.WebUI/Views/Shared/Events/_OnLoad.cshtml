@@ -170,6 +170,9 @@
                             } else if(Value == "Director") {
                                 Unit = "DirectorUnit";
                                 PopulateOrganisationalUnit(OutPut, Unit);
+                            } else if(Value == "Barrister") {
+                                Unit = "BarristerUnit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
                             }else {
                                 if (Unit.length > 0) {
                                     PopulateOrganisationalUnit(OutPut, Unit[0].id);

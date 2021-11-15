@@ -216,7 +216,7 @@ namespace DealEngine.Services.Impl
         {
             var responseMessage ="";            
             var SOAPAction = @"http://www.example.org/invoice-service/createInvoice";
-            var service = "https://stg.eglobalinvp.marsh.com/services/invoice/service"; //"https://staging.ap.marsh.com:19443/services/invoice/service"; old staging end point
+            var service = "https://" + _appSettingService.MarshEglobalEndpoint; //"https://stg.eglobalinvp.marsh.com/services/invoice/service"; //"https://staging.ap.marsh.com:19443/services/invoice/service"; old staging end point
             var body = generateBody(xmlPayload);
             HttpResponseMessage response;
             SocketsHttpHandler _socketsHttpHandler;
@@ -224,7 +224,7 @@ namespace DealEngine.Services.Impl
 
             _socketsHttpHandler = new SocketsHttpHandler()
             {
-                Credentials = new NetworkCredential("tcwebservices", "welcome1"),
+                Credentials = new NetworkCredential(_appSettingService.MarshEglobalUsername, _appSettingService.MarshEglobalPassword),
             };
 
             _httpRequestMessage = new HttpRequestMessage
@@ -238,7 +238,7 @@ namespace DealEngine.Services.Impl
             try
             {
                 HttpClient client = new HttpClient(_socketsHttpHandler);
-                //client.Timeout = TimeSpan.FromSeconds(200);
+                //client.Timeout = TimeSpan.FromSeconds(300);
                 response = await client.SendAsync(_httpRequestMessage);
                 //response = await client.SendAsync(_httpRequestMessage, HttpCompletionOption.ResponseHeadersRead);
                 Thread.Sleep(1000);
@@ -264,7 +264,7 @@ namespace DealEngine.Services.Impl
         {
             var responseMessage = "";
             var SOAPAction = "http://www.example.org/invoice-service/getEGlobalSiteStatus";
-            var service = "https://stg.eglobalinvp.marsh.com/services/invoice/service"; //"https://staging.ap.marsh.com:19443/services/invoice/service"; old staging end point
+            var service = "https://" + _appSettingService.MarshEglobalEndpoint; //"https://stg.eglobalinvp.marsh.com/services/invoice/service"; //"https://staging.ap.marsh.com:19443/services/invoice/service"; old staging end point
             var body = GenerateGetSiteActiveSoapBody();
             Envelope result = new Envelope();
             HttpResponseMessage response;
@@ -275,7 +275,7 @@ namespace DealEngine.Services.Impl
 
             _socketsHttpHandler = new SocketsHttpHandler()
             {
-                Credentials = new NetworkCredential("tcwebservices", "welcome1"),                
+                Credentials = new NetworkCredential(_appSettingService.MarshEglobalUsername, _appSettingService.MarshEglobalPassword),                
             };
 
             _httpRequestMessage = new HttpRequestMessage
