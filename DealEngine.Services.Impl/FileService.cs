@@ -281,7 +281,7 @@ namespace DealEngine.Services.Impl
                                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumFAP_{0}]]", term.SubTermType), term.FAPPremium.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
                                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGSTMonthly_{0}]]", term.SubTermType), ((term.PremiumDiffer + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) / intMonthlyInstalmentNumber).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                                if (agreementlist.Status == "Bound" || agreementlist.Status == "Bound and pending payment" || agreementlist.Status == "Bound and invoice pending" || agreementlist.Status == "Bound and invoiced")
+                                if (agreementlist.Status == "Bound" || agreementlist.Status == "Bound and pending payment" || agreementlist.Status == "Bound and invoice pending" || agreementlist.Status == "Bound and invoiced" || agreementlist.Status == "Quoted")
                                     PremiumTotal += term.PremiumDiffer;
                             }
                             else
@@ -299,7 +299,7 @@ namespace DealEngine.Services.Impl
                                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumFAP_{0}]]", term.SubTermType), term.FAPPremium.ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
                                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumInclFeeInclGSTMonthly_{0}]]", term.SubTermType), ((term.Premium + agreement.BrokerFee) * (1 + agreement.Product.TaxRate) / intMonthlyInstalmentNumber).ToString("C", CultureInfo.CreateSpecificCulture("en-NZ"))));
-                                if (agreementlist.Status == "Bound" || agreementlist.Status == "Bound and pending payment" || agreementlist.Status == "Bound and invoice pending" || agreementlist.Status == "Bound and invoiced")
+                                if (agreementlist.Status == "Bound" || agreementlist.Status == "Bound and pending payment" || agreementlist.Status == "Bound and invoice pending" || agreementlist.Status == "Bound and invoiced" || agreementlist.Status == "Quoted")
                                     PremiumTotal += term.Premium;
                             }
 
@@ -821,12 +821,15 @@ namespace DealEngine.Services.Impl
                 string strotherconsultingbusiness = "";
                 string strmentoradvisorlist = "";
 
+                string strbarristerlist = "";
+                string strabusiness = "";
+
                 if (agreement.ClientInformationSheet.Organisation.Count > 0)
                 {
 
                     foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
                     {
-                        if (!uisorg.Removed)
+                        if (!uisorg.Removed && uisorg.DateDeleted == null)
                         {
                             var unit = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor");
                             if (unit != null)
@@ -914,6 +917,67 @@ namespace DealEngine.Services.Impl
                                 }
                             }
 
+                            var barristerunit = (BarristerUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Barrister" && u.DateDeleted == null);
+                            if (barristerunit != null)
+                            {
+                                if (barristerunit.IsPrincipalBarrister)
+                                {
+                                    if (string.IsNullOrEmpty(strbarristerlist))
+                                    {
+                                        strbarristerlist = uisorg.Name;
+                                    }
+                                    else
+                                    {
+                                        strbarristerlist += ", " + uisorg.Name;
+                                    }
+                                }
+                            }
+
+                            var abusiness = (EBaristerUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "ABusiness");
+                            if (abusiness != null)
+                            {
+                                if (string.IsNullOrEmpty(strabusiness))
+                                {
+                                    strabusiness = uisorg.Name;
+                                }
+                                else
+                                {
+                                    strabusiness += ", " + uisorg.Name;
+                                }
+                            }
+
+                            //check if additional barrister cover required or not
+                            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.IsRequirecoverJunior").Any())
+                            {
+                                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.IsRequirecoverJunior").First().Value == "1")
+                                {
+                                    var addbarristerunit = (EBaristerUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "EBarrister" && u.DateDeleted == null);
+                                    if (addbarristerunit != null)
+                                    {
+                                        if (string.IsNullOrEmpty(strbarristerlist))
+                                        {
+                                            strbarristerlist = uisorg.Name;
+                                        }
+                                        else
+                                        {
+                                            strbarristerlist += ", " + uisorg.Name;
+                                        }
+                                    }
+
+                                    var addjuniorbarristerunit = (JBaristerUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "JBarrister" && u.DateDeleted == null);
+                                    if (addjuniorbarristerunit != null)
+                                    {
+                                        if (string.IsNullOrEmpty(strbarristerlist))
+                                        {
+                                            strbarristerlist = uisorg.Name;
+                                        }
+                                        else
+                                        {
+                                            strbarristerlist += ", " + uisorg.Name;
+                                        }
+                                    }
+                                }
+                            }
 
                         }
 
@@ -938,11 +1002,24 @@ namespace DealEngine.Services.Impl
                         stradvisorlist2 = "No Advisor insured under this policy.";
                     }
 
+                    if (string.IsNullOrEmpty(strbarristerlist))
+                    {
+                        strbarristerlist = "No Barrister insured under this policy.";
+                    }
+
+                    if (string.IsNullOrEmpty(strabusiness))
+                    {
+                        strabusiness = "No Associated Business Insureds.";
+                    }
+
                     mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTablePI]]", stradvisorlist));
                     mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTableDO]]", stradvisorlist1));
                     mergeFields.Add(new KeyValuePair<string, string>("[[OtherConsultingBusiness]]", strotherconsultingbusiness));
                     mergeFields.Add(new KeyValuePair<string, string>("[[MontoredAdvisorDetails]]", strmentoradvisorlist));
                     mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorNames]]", stradvisorlist2));
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BarristerNames]]", strbarristerlist));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AssociatedBusiness]]", strabusiness));
 
                 }
                 else
@@ -952,6 +1029,9 @@ namespace DealEngine.Services.Impl
                     mergeFields.Add(new KeyValuePair<string, string>("[[OtherConsultingBusiness]]", "No Additional Insured insureds."));
                     mergeFields.Add(new KeyValuePair<string, string>("[[MontoredAdvisorDetails]]", "No Mentored Advisor insured under this policy."));
                     mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorNames]]", "No Advisor insured under this policy."));
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BarristerNames]]", "No Barrister insured under this policy."));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AssociatedBusiness]]", "No Associated Business Insureds."));
                 }
 
                 //Advisor list with FAP Number
