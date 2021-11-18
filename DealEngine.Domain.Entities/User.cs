@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using DealEngine.Domain.Entities.Abstracts;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 
 namespace DealEngine.Domain.Entities
@@ -31,6 +32,8 @@ namespace DealEngine.Domain.Entities
             InvoiceConfigNotifyProgrammes = new List<Programme>();
             RemoveAdvisorNotifyProgrammes = new List<Programme>();
             UISUpdateNotifyProgrammes = new List<Programme>();
+            ClientNumberNotifyProgrammes = new List<Programme>();
+            //InitialNameOptions = GetInitialSelectOptions();
         }
 
         public virtual OrganisationalUnit DefaultOU { get; set; }
@@ -42,7 +45,6 @@ namespace DealEngine.Domain.Entities
         public virtual string FirstName { get; set; }
         [Display(Name = "Last Name")]
         public virtual string LastName { get; set; }
-
         public virtual string Email { get; set; }
 
         public virtual string Phone { get; set; }
@@ -67,13 +69,13 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsLoggedout { get; set; }
         public virtual DateTime LoggedOutTime { get; set; }
         public virtual DateTime LoggedInTime { get; set; }
+        
+
+
+        //[JsonIgnore]
+        //public virtual IList<SelectListItem> InitialNameOptions { get; set; }
         /// <summary>
-        /// Gets or sets the users primary organisation.
-        /// The primary organisation is defined as the users current organisation for the purposes of tracking organisation ownership and related permissions.
-        /// If no organisation is specifically set, it will use the 1st organisation the user belongs to as the primary unless overridden. If the user belongs to no organisations 
-        /// (something that should be impossible due to individual user organisations) it will return null.
-        /// </summary>
-        /// <value>The primary organisation.</value>
+
         public virtual Organisation PrimaryOrganisation { 
 			get {
 				if (_primaryOrganisation != null)
@@ -88,6 +90,29 @@ namespace DealEngine.Domain.Entities
 				_primaryOrganisation = value;
 			}
 		}
+
+        public virtual IList<SelectListItem> GetInitialSelectOptions()
+        {
+            var _Types = new List<SelectListItem>()
+            {
+                new SelectListItem
+                    {
+                        Text = "Mr",
+                        Value = "Mr"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Mrs",
+                        Value = "Mrs"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Other",
+                        Value = "Other"
+                    }
+            };
+            return _Types;
+        }
 
         //public virtual IEnumerable<Organisation> Organisations { get; set; }
         public virtual IList<Organisation> Organisations { get; set; }
@@ -120,6 +145,8 @@ namespace DealEngine.Domain.Entities
         public virtual IList<Programme> RemoveAdvisorNotifyProgrammes { get; set; }
         [JsonIgnore]
         public virtual IList<Programme> UISUpdateNotifyProgrammes { get; set; }
+        [JsonIgnore]
+        public virtual IList<Programme> ClientNumberNotifyProgrammes { get; set; }
         [JsonIgnore]
         public virtual IList<UserTask> UserTasks { get; set; }
         public virtual string EbixDepartmentCode { get; set; }

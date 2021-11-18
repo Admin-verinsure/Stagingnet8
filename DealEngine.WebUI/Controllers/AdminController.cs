@@ -1337,6 +1337,11 @@ namespace DealEngine.WebUI.Controllers
                             systememailtemplatename = "Information Sheet Update Notification Email";
                             break;
                         }
+                    case "ClientNumberNotificationEmail":
+                        {
+                            systememailtemplatename = "Client Number Notification Email";
+                            break;
+                        }
                     case "AgreementReferralNotificationEmail":
                         {
                             systememailtemplatename = "Agreement Referral Notification Email";

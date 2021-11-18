@@ -162,6 +162,11 @@ namespace DealEngine.Services.Impl
                 UnitName = collection["JBaristerUnit"].ToString();
 
             }
+            else if (InsuranceAttribute == "Barrister")
+            {
+                UnitName = collection["BarristerUnit"].ToString();
+
+            }
             else
             {
                  UnitName = collection["Unit"].ToString();

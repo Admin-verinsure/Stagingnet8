@@ -516,14 +516,21 @@
 
             }
 
-            if (Value == "EBarrister"||
-            Value == "JBarrister"||
-            Value == "IEntity") {
+            if (Value == "IEntity") {
                 BaristerUnitOnChange();
             }
 
             if (Value == "Barrister") {
                 BarristerOnChange();
+
+            }
+
+            if (Value == "JBarrister") {
+                JBarristerOnChange();
+
+            }
+            if (Value == "EBarrister") {
+                EBarristerOnChange();
 
             }
 
@@ -608,6 +615,24 @@
         }
     }
 
+     function JBarristerOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("JBarristerUnit");
+        if (IsBarristerUnit != null) {
+
+              document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
+                 el.style.display = 'unset';
+              });
+        }
+    }
+     function EBarristerOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("EBarristerUnit");
+        if (IsBarristerUnit != null) {
+
+              document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'unset';
+              });
+        }
+    }
 
     function AdvisorUnitOnChange() {
         var IsAdvisorUnit = document.getElementsByClassName("AdvisorUnit");

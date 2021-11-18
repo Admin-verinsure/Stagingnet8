@@ -173,6 +173,12 @@
                             } else if(Value == "Barrister") {
                                 Unit = "BarristerUnit";
                                 PopulateOrganisationalUnit(OutPut, Unit);
+                            }else if(Value == "EBarrister") {
+                                Unit = "EBaristerUnit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
+                            }else if(Value == "JBarrister") {
+                                Unit = "JBaristerUnit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
                             }else {
                                 if (Unit.length > 0) {
                                     PopulateOrganisationalUnit(OutPut, Unit[0].id);

@@ -84,98 +84,101 @@
                     }
                     @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.Id != Model.ClientInformationSheet.Owner.Id && o.Removed != true).ToList())
                     {
-                        <tr id="@organisation.Id">
-                            <td>
-                                @{
-                                    bool ValidBackEndEmail = false;
-                                    try
-                                    {
-                                        var addr = new System.Net.Mail.MailAddress(organisation.Email);
-                                        ValidBackEndEmail = addr.Address == organisation.Email;
-                                    }
-                                    catch
-                                    {
-                                        ValidBackEndEmail = false;
-                                    }
-                                    @if (!ValidBackEndEmail)
-                                    {
-                                        @Html.Hidden("ValidBackEndEmail", organisation.Name)
-                                    }
-
-                                }
-                                <button class="btn btn-success btn-sm" onclick="OnClick('', 'Organisation', '@organisation.Id', '@Model.ClientInformationSheet.Id')"><i class="fa fa-edit"></i> Edit</button>
-                            </td>
-                            <td>
-                                @organisation.Name
-                            </td>
-                            <td>
-                                @if (organisation.InsuranceAttributes.Any())
-                                {
-                                    @organisation.InsuranceAttributes.FirstOrDefault().Name
-                                }
-                            </td>
-                            @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
-                           Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
-                           Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                           Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                           Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
-                           )
+                <tr id="@organisation.Id">
+                    <td>
+                        @{
+                            bool ValidBackEndEmail = false;
+                            try
                             {
-                                <td>
-                                    @{
-                                        var gghg = organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor");
-                                        var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor");
-
-                                        //var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor" || o.Name == "Administration");
-                                    }
-                                    @if (unit != null)
-                                    {
-                                        @unit.IsPrincipalAdvisor
-                                        <input id="IsPrincipal" data-IsPrincipal="@unit.IsPrincipalAdvisor" value="" type="hidden">
-
-                                    }
-
-                                </td>
-                             }
-                                        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
-                              {
-                                <td>
-                                    @{
-                                        var BarristerUnit = (BarristerUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Barrister");
-
-                                        //var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor" || o.Name == "Administration");
-                                    }
-                                    @if (BarristerUnit != null)
-                                    {
-                                        @BarristerUnit.IsPrincipalBarrister
-                                        <input id="IsPrincipal" data-IsPrincipal="@BarristerUnit.IsPrincipalBarrister" value="@BarristerUnit.IsPrincipalBarrister" type="hidden">
-
-                                    }
-
-                                </td>
+                                var addr = new System.Net.Mail.MailAddress(organisation.Email);
+                                ValidBackEndEmail = addr.Address == organisation.Email;
                             }
-                            @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme")
+                            catch
                             {
-                                <td>
-                                    @{
-                                        var unit = (PlannerUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Planner");
-                                    }
-                                    @if (unit != null)
-                                    {
-                                        @unit.IsPrincipalPlanner
-                                        <input id="IsPrincipal" data-IsPrincipal="@unit.IsPrincipalPlanner" value="" type="hidden">
-                                    }
-
-                                </td>
+                                ValidBackEndEmail = false;
                             }
-                        @*<td>
-                            <input id="IsFapOrg"  value="" type="hidden">
+                            @if (!ValidBackEndEmail)
+                            {
+                                @Html.Hidden("ValidBackEndEmail", organisation.Name)
+                            }
 
-                        </td>*@
-                            <td>
-                                <button onclick="RemoveOrganisation('@organisation.Id', 'Insured Details / Named Parties')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
-                            </td>
-                        </tr>
+                        }
+                        <button class="btn btn-success btn-sm" onclick="OnClick('', 'Organisation', '@organisation.Id', '@Model.ClientInformationSheet.Id')"><i class="fa fa-edit"></i> Edit</button>
+                    </td>
+                    <td>
+                        @organisation.Name
+                    </td>
+                    <td>
+                        @if (organisation.InsuranceAttributes.Any())
+                        {
+                            @organisation.InsuranceAttributes.FirstOrDefault().Name
+                        }
+                    </td>
+
+                   
+
+                    @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
+            Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
+            Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
+            Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
+            Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
+            )
+                    {
+                        <td>
+                            @{
+                                var gghg = organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor");
+                                var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor");
+
+                                //var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor" || o.Name == "Administration");
+                            }
+                            @if (unit != null)
+                            {
+                                @unit.IsPrincipalAdvisor
+                                <input id="IsPrincipal" data-IsPrincipal="@unit.IsPrincipalAdvisor" value="" type="hidden">
+
+                            }
+
+                        </td>
+                    }
+                    @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                    {
+                        <td>
+                            @{
+                                var BarristerUnit = (BarristerUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Barrister");
+
+                                //var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor" || o.Name == "Administration");
+                            }
+                            @if (BarristerUnit != null)
+                            {
+                                @BarristerUnit.IsPrincipalBarrister
+                                <input id="IsPrincipal" data-IsPrincipal="@BarristerUnit.IsPrincipalBarrister" value="@BarristerUnit.IsPrincipalBarrister" type="hidden">
+
+                            }
+
+                        </td>
+                    }
+                    @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme")
+                    {
+                        <td>
+                            @{
+                                var unit = (PlannerUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Planner");
+                            }
+                            @if (unit != null)
+                            {
+                                @unit.IsPrincipalPlanner
+                                <input id="IsPrincipal" data-IsPrincipal="@unit.IsPrincipalPlanner" value="" type="hidden">
+                            }
+
+                        </td>
+                    }
+                    @*<td>
+            <input id="IsFapOrg"  value="" type="hidden">
+
+        </td>*@
+                    <td>
+                        <button onclick="RemoveOrganisation('@organisation.Id', 'Insured Details / Named Parties')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+                    </td>
+                </tr>
                     }
                 </tbody>
             </table>
