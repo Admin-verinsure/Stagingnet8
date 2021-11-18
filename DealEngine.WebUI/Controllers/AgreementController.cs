@@ -4049,7 +4049,8 @@ namespace DealEngine.WebUI.Controllers
 
                     }
                 }
-                totalPayment = Math.Round(((totalPremium + brokerFee) * (GST) * (creditCharge)), 2);
+                //totalPayment = Math.Round(((totalPremium + brokerFee) * (GST) * (creditCharge)), 2);
+                totalPayment = Math.Round(((totalPremium + brokerFee) * (GST)), 2); //for Marsh's merchant only pass in the company premium
 
                 PxPay pxPay = new PxPay(merchant.MerchantPaymentGateway.PaymentGatewayWebServiceURL, merchant.MerchantPaymentGateway.PxpayUserId, merchant.MerchantPaymentGateway.PxpayKey);
 
