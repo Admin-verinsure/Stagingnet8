@@ -207,6 +207,17 @@
                                     @Html.ActionLink("View", "SysEmailTemplate", "Admin", new { systemEmailType = "RSANotificationEmail", internalNotes = "RSA Notification Email" }, new { @class = "btn btn-success btn-sm" })
                                 </td>
                             </tr>
+                            <tr>
+                                <td align="left">
+                                    Client Number Notification Email
+                                </td>
+                                <td align="left" style="word-wrap: break-word">
+                                    System Client Number Notification Email.
+                                </td>
+                                <td>
+                                    @Html.ActionLink("View", "SysEmailTemplate", "Admin", new { systemEmailType = "ClientNumberNotificationEmail", internalNotes = "System Client Number Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                                </td>
+                            </tr>
                         </table>
                     </form>
                 </div>

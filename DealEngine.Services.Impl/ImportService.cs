@@ -2857,6 +2857,7 @@ namespace DealEngine.Services.Impl
                             user.LastName = parts[2];
                             user.FullName = parts[1] + " " + parts[2];
                             user.Email = email;
+                           
 
                         type = "Person - Individual";
                         Name = user.FullName;
@@ -2867,15 +2868,19 @@ namespace DealEngine.Services.Impl
                         {
                             OrganisationType = ownerType,
                             Email = user.Email,
-                            Name = Name
-                        };
+                            Name = Name,
+                            //Initial = parts[2],//////////////
+                            //honorific = parts[2]////kjjhk
+                    };
 
                         OrganisationType barristerType = new OrganisationType("Person - Individual");
                         InsuranceAttribute barristerAttribute = new InsuranceAttribute(currentUser, "Barrister");
                         OrganisationalUnit defaultUnit = new OrganisationalUnit(currentUser, "Person - Individual", "Person - Individual", null);
                         BarristerUnit BarristerUnit = new BarristerUnit(currentUser, "Barrister", "Person - Individual", null)
                         {
-                            IsPrincipalBarrister = true
+                            IsPrincipalBarrister = true,
+                            Initial = parts[6],
+                            honorific = parts[7]
                         };
                         Organisation Barrister = new Organisation(currentUser, Guid.NewGuid())
                         {
@@ -2888,7 +2893,6 @@ namespace DealEngine.Services.Impl
                         Barrister.OrganisationalUnits.Add(defaultUnit);
                         Barrister.OrganisationalUnits.Add(BarristerUnit);
                         user.Organisations.Add(Barrister);
-
 
 
                         user.SetPrimaryOrganisation(Owner);

@@ -95,7 +95,11 @@ namespace DealEngine.Domain.Entities
         {
         }
         public virtual string OtherInformation { get; set; }
-       
+        [Display(Name = "Title")]
+        public virtual string Initial { get; set; }
+        [Display(Name = "Honorific")]
+        public virtual string honorific { get; set; }
+
     }
 
     public class JBaristerUnit : OrganisationalUnit
@@ -106,7 +110,11 @@ namespace DealEngine.Domain.Entities
         {
         }
         public virtual string OtherInformation { get; set; }
+        [Display(Name = "Title")]
 
+        public virtual string Initial { get; set; }
+        [Display(Name = "Honorific")]
+        public virtual string honorific { get; set; }
     }
 
     public class BarristerUnit : OrganisationalUnit
@@ -119,7 +127,10 @@ namespace DealEngine.Domain.Entities
         public virtual string OtherInformation { get; set; }
         [Display(Name = "Is this individual the Principal Barrister?")]
         public virtual bool IsPrincipalBarrister { get; set; }
-
+        [Display(Name = "Title")]
+        public virtual string Initial { get; set; }
+        [Display(Name = "Honorific")]
+        public virtual string honorific { get; set; }
     }
 
     public class PersonnelUnit : OrganisationalUnit

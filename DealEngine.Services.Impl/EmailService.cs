@@ -940,6 +940,44 @@ namespace DealEngine.Services.Impl
             }
         }
 
+        public async Task SendSystemEmailClientNumberNotify(User uISIssued, Programme programme, ClientInformationSheet sheet, Organisation insuredOrg)
+        {
+            var recipent = new List<string>();
+
+            if (programme.ClientNumberNotifyUsers.Count > 0)
+            {
+                foreach (User objNotifyUser in programme.ClientNumberNotifyUsers)
+                {
+                    recipent.Add(objNotifyUser.Email);
+                }
+
+                List<KeyValuePair<string, string>> mergeFields = MergeFieldLibrary(uISIssued, insuredOrg, programme, sheet, null);
+
+                SystemEmail systemEmailTemplate = await _systemEmailRepository.GetSystemEmailByType("ClientNumberNotificationEmail");
+                if (systemEmailTemplate == null)
+                {
+                    throw new Exception("ClientNumberNotificationEmail is null");
+                }
+                string systememailsubject = systemEmailTemplate.Subject;
+                string systememailbody = System.Net.WebUtility.HtmlDecode(systemEmailTemplate.Body);
+                foreach (KeyValuePair<string, string> field in mergeFields)
+                {
+                    systememailsubject = systememailsubject.Replace(field.Key, field.Value);
+                    systememailbody = systememailbody.Replace(field.Key, field.Value);
+                }
+                EmailBuilder systememail = await GetLocalizedEmailBuilder(DefaultSender, null);
+                systememail.From(DefaultSender);
+                systememail.To(recipent.ToArray());
+                systememail.WithSubject(systememailsubject);
+                systememail.WithBody(systememailbody);
+                systememail.UseHtmlBody(true);
+                systememail.Send();
+
+                sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(uISIssued, sheet, null, "Client Number Notification Sent"));
+                await _clientInformationSheetmapperSession.UpdateAsync(sheet);
+            }
+        }
+
         public async Task SendSystemEmailAgreementReferNotify(User uISIssued, Programme programme, ClientAgreement agreement, Organisation insuredOrg)
         {
             var recipent = new List<string>();

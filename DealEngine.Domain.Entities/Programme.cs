@@ -31,6 +31,7 @@ namespace DealEngine.Domain.Entities
         public virtual IList<User> InvoiceConfigNotifyUsers { get; set; }
         public virtual IList<User> RemoveAdvisorNotifyUsers { get; set; }
         public virtual IList<User> UISUpdateNotifyUsers { get; set; }
+        public virtual IList<User> ClientNumberNotifyUsers { get; set; }
         public virtual bool StopAgreement { get; set; }
         public virtual bool StopDeclaration { get; set; }
         public virtual DateTime StopAgreementDateTime { get; set; }
@@ -117,6 +118,7 @@ namespace DealEngine.Domain.Entities
             RemoveAdvisorNotifyUsers = new List<User>();
             Packages = new List<Package>();
             UISUpdateNotifyUsers = new List<User>();
+            ClientNumberNotifyUsers = new List<User>();
         }
 
         public virtual ClientProgramme IssueFor(Organisation clientOrganisation)

@@ -1,8 +1,14 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
-<div class="form-group col-md-6 BarristerUnit">
-   
+<div class="form-group col-md-6 BarristerUnit" style="display:none">
+
     <div class="form-group" id="HidePrincipal">
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.OrganisationViewModel.BarristerUnit.honorific, new { @class = "label" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.BarristerUnit.honorific, new { @class = "form-control", @id = "BarristerUnit.honorific", @onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+        </div>
+
         @Html.LabelFor(m => m.OrganisationViewModel.BarristerUnit.IsPrincipalBarrister, new { @class = "label required" })
         <select id="BarristerUnit.IsPrincipalBarrister" name="OrganisationViewModel.BarristerUnit.IsPrincipalBarrister" class="custom-select" data-rule="PrincipalBarrister" onchange="OnChange(this.id, this.name)" required>
             @foreach (var option in @Model.OrganisationViewModel.HasBarristerPrincipalOptions)
@@ -13,7 +19,20 @@
             }
         </select>
     </div>
-  
+</div>
+
+<div class="form-group col-md-6 JBaristerUnit" style="display:none">
+        <div class="form-group">
+            @Html.LabelFor(m => m.OrganisationViewModel.JBaristerUnit.honorific, new { @class = "label" })
+            @Html.TextBoxFor(m => m.OrganisationViewModel.JBaristerUnit.honorific, new { @class = "form-control", @id = "JBaristerUnit.honorific", @onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+        </div>
 
 </div>
 
+<div class="form-group col-md-6 EBaristerUnit" style="display:none">
+    <div class="form-group">
+        @Html.LabelFor(m => m.OrganisationViewModel.EBaristerUnit.honorific, new { @class = "label" })
+        @Html.TextBoxFor(m => m.OrganisationViewModel.EBaristerUnit.honorific, new { @class = "form-control", @id = "EBaristerUnit.honorific", @onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+    </div>
+
+</div>

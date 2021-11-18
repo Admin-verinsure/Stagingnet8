@@ -4190,6 +4190,7 @@ namespace DealEngine.WebUI.Controllers
                     //throw new Exception(nameof(programme.EGlobalClientNumber) + " EGlobal client number");
 
                     //send out notification email
+                    await _emailService.SendSystemEmailClientNumberNotify(user, programme.BaseProgramme, programme.InformationSheet, programme.InformationSheet.Owner);
 
                 } else
                 {
@@ -4413,7 +4414,10 @@ namespace DealEngine.WebUI.Controllers
                 {
                     //Payment failed
                     status = "Bound and pending payment";
-                    //_emailService.SendSystemPaymentFailConfigEmailUISIssueNotify(programme.BrokerContactUser, programme.BaseProgramme, programme.InformationSheet, programme.Owner);
+
+                    //Payment failed notification
+                    await _emailService.SendSystemPaymentFailConfigEmailUISIssueNotify(user, programme.BaseProgramme, programme.InformationSheet, programme.InformationSheet.Owner);
+
                     foreach (ClientAgreement agreement in programme.Agreements)
                     {
                         using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -4424,8 +4428,6 @@ namespace DealEngine.WebUI.Controllers
                                 await uow.Commit();
                             }
                         }
-
-                        agreement.Status = status;
 
                     }
 
@@ -4444,8 +4446,8 @@ namespace DealEngine.WebUI.Controllers
                 }
                 else
                 {
-                    //Payment successed
-                    //await _emailService.SendSystemPaymentSuccessConfigEmailUISIssueNotify(programme.BrokerContactUser, programme.BaseProgramme, programme.InformationSheet, programme.Owner);
+                    //Payment successed notification
+                    await _emailService.SendSystemPaymentSuccessConfigEmailUISIssueNotify(user, programme.BaseProgramme, programme.InformationSheet, programme.InformationSheet.Owner);
 
                     status = "Bound";
                     if (programme.BaseProgramme.UsesEGlobal)
@@ -4464,6 +4466,7 @@ namespace DealEngine.WebUI.Controllers
                         //throw new Exception(nameof(programme.EGlobalClientNumber) + " EGlobal client number");
 
                         //send out notification email
+                        await _emailService.SendSystemEmailClientNumberNotify(user, programme.BaseProgramme, programme.InformationSheet, programme.InformationSheet.Owner);
 
                     }
                     else
