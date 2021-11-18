@@ -499,7 +499,8 @@
             Value == "EBarrister"||
             Value == "JBarrister" ||
             Value == "Barrister"||
-            Value == "IEntity") {
+            Value == "IEntity" ||
+            Value =="ABusiness") {
             //readonly Organisation Type personal
             document.getElementById("OwnerFap").hidden = true;
 
@@ -520,20 +521,7 @@
                 BaristerUnitOnChange();
             }
 
-            if (Value == "Barrister") {
-                BarristerOnChange();
-
-            }
-
-            if (Value == "JBarrister") {
-                JBarristerOnChange();
-
-            }
-            if (Value == "EBarrister") {
-                EBarristerOnChange();
-
-            }
-
+           
             if (Value == "Nominated Representative") {
                 AdvisorOnChange();
             }
@@ -551,9 +539,23 @@
                 }
             }
 
+             if (Value == "Barrister") {
+                BarristerOnChange();
+            }
+
+            if (Value == "JBarrister") {
+                JBarristerOnChange();
+            }
+            if (Value == "EBarrister") {
+                EBarristerOnChange();
+            }
+
             if (Value == "Administrator") {
                 AdministratorOnChange();
-             }
+            }
+            if (Value == "ABusiness") {
+                ABusinessOnChange();
+            }
 
             List.disabled = true;
         } else {
@@ -597,41 +599,107 @@
         });
 
 
-
-        // var IsAdvisorUnit = document.getElementsByClassName("AdvisorUnit");
-        //if (IsAdvisorUnit != null) {
-        //    IsAdvisorUnit.hidden = true;
-        //}
-
     }
 
     function BarristerOnChange() {
+        debugger;
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+
+
         if (IsBarristerUnit != null) {
 
               document.querySelectorAll('.BarristerUnit').forEach(function(el) {
                  el.style.display = 'unset';
               });
         }
+        if (IsJBarristerUnit != null) {
+             document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+            });
+        }
+
+        if (IsEBarristerUnit != null) {
+             document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+        });
+        }
+       
+        
+
+    }
+
+     function ABusinessOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+         if (IsJBarristerUnit != null) {
+
+              document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
+         }
+         if (IsBarristerUnit != null) {
+                document.querySelectorAll('.BarristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+             });
+         }
+         if (IsEBarristerUnit != null) {
+             document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
+
+         }
+          
     }
 
      function JBarristerOnChange() {
-        var IsBarristerUnit = document.getElementsByClassName("JBarristerUnit");
-        if (IsBarristerUnit != null) {
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+         if (IsJBarristerUnit != null) {
 
               document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
                  el.style.display = 'unset';
               });
-        }
-    }
-     function EBarristerOnChange() {
-        var IsBarristerUnit = document.getElementsByClassName("EBarristerUnit");
-        if (IsBarristerUnit != null) {
+         }
+         if (IsBarristerUnit != null) {
+                document.querySelectorAll('.BarristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+             });
+         }
+         if (IsEBarristerUnit != null) {
+             document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
 
+         }
+          
+    }
+
+    function EBarristerOnChange() {
+        debugger;
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+        var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        if (IsEBarristerUnit != null) {
               document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
                  el.style.display = 'unset';
               });
         }
+
+        if (IsJBarristerUnit != null) {
+            document.querySelectorAll('.JBaristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+        if (IsBarristerUnit != null) {
+            document.querySelectorAll('.BarristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+
     }
 
     function AdvisorUnitOnChange() {

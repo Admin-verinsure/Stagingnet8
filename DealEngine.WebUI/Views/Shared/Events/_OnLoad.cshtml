@@ -257,6 +257,10 @@
                         ProgrammeName.value == "Abbott Financial Advisor Liability Programme") {
                         ApolloOwnerOnLoad();
                     } 
+
+                    if (ProgrammeName.value == "New Zealand Bar Association Liability Programme") {
+                        ABusinessOnChange();
+                    } 
                     // if (ProgrammeName.value == "Financial Advice NZ Financial Advice Provider Liability Programme") {
                     //     var TradingName = document.getElementById("Organisation.TradingName");
                     //     TradingName.removeAttribute("required");
@@ -279,6 +283,31 @@
                 
             }
         } catch (ex) { debugger; }
+    }
+
+    
+     function ABusinessOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+         if (IsJBarristerUnit != null) {
+
+              document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
+         }
+         if (IsBarristerUnit != null) {
+                document.querySelectorAll('.BarristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+             });
+         }
+         if (IsEBarristerUnit != null) {
+             document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
+
+         }
+          
     }
 
     function TradingNameOwnerOnLoad() {

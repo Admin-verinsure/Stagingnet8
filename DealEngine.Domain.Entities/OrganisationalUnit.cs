@@ -96,9 +96,9 @@ namespace DealEngine.Domain.Entities
         }
         public virtual string OtherInformation { get; set; }
         [Display(Name = "Title")]
-        public virtual string Initial { get; set; }
+        public virtual string EInitial { get; set; }
         [Display(Name = "Honorific")]
-        public virtual string honorific { get; set; }
+        public virtual string Ehonorific { get; set; }
 
     }
 
@@ -112,9 +112,9 @@ namespace DealEngine.Domain.Entities
         public virtual string OtherInformation { get; set; }
         [Display(Name = "Title")]
 
-        public virtual string Initial { get; set; }
+        public virtual string JInitial { get; set; }
         [Display(Name = "Honorific")]
-        public virtual string honorific { get; set; }
+        public virtual string Jhonorific { get; set; }
     }
 
     public class BarristerUnit : OrganisationalUnit

@@ -922,13 +922,24 @@ namespace DealEngine.Services.Impl
                             {
                                 if (barristerunit.IsPrincipalBarrister)
                                 {
+                                    string strBInitial = "";
+                                    string strBhonorific = "";
+                                    if (!string.IsNullOrEmpty(barristerunit.Initial))
+                                    {
+                                        strBInitial = barristerunit.Initial + " ";
+                                    }
+                                    if (!string.IsNullOrEmpty(barristerunit.honorific))
+                                    {
+                                        strBhonorific = " " + barristerunit.honorific;
+                                    }
+
                                     if (string.IsNullOrEmpty(strbarristerlist))
                                     {
-                                        strbarristerlist = uisorg.Name;
+                                        strbarristerlist = strBInitial + uisorg.Name + strBhonorific;
                                     }
                                     else
                                     {
-                                        strbarristerlist += ", " + uisorg.Name;
+                                        strbarristerlist += ", " + strBInitial + uisorg.Name + strBhonorific;
                                     }
                                 }
                             }
@@ -954,26 +965,47 @@ namespace DealEngine.Services.Impl
                                     var addbarristerunit = (EBaristerUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "EBarrister" && u.DateDeleted == null);
                                     if (addbarristerunit != null)
                                     {
+                                        string strEInitial = "";
+                                        string strEhonorific = "";
+                                        if (!string.IsNullOrEmpty(addbarristerunit.EInitial))
+                                        {
+                                            strEInitial = addbarristerunit.EInitial + " ";
+                                        }
+                                        if (!string.IsNullOrEmpty(addbarristerunit.Ehonorific))
+                                        {
+                                            strEhonorific = " " + addbarristerunit.Ehonorific;
+                                        }
                                         if (string.IsNullOrEmpty(strbarristerlist))
                                         {
-                                            strbarristerlist = uisorg.Name;
+                                            
+                                            strbarristerlist = strEInitial + uisorg.Name + strEhonorific;
                                         }
                                         else
                                         {
-                                            strbarristerlist += ", " + uisorg.Name;
+                                            strbarristerlist += ", " + strEInitial + uisorg.Name + strEhonorific;
                                         }
                                     }
 
                                     var addjuniorbarristerunit = (JBaristerUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "JBarrister" && u.DateDeleted == null);
                                     if (addjuniorbarristerunit != null)
                                     {
+                                        string strJInitial = "";
+                                        string strJhonorific = "";
+                                        if (!string.IsNullOrEmpty(addjuniorbarristerunit.JInitial))
+                                        {
+                                            strJInitial = addjuniorbarristerunit.JInitial + " ";
+                                        }
+                                        if (!string.IsNullOrEmpty(addjuniorbarristerunit.Jhonorific))
+                                        {
+                                            strJhonorific = " " + addjuniorbarristerunit.Jhonorific;
+                                        }
                                         if (string.IsNullOrEmpty(strbarristerlist))
                                         {
-                                            strbarristerlist = uisorg.Name;
+                                            strbarristerlist = strJInitial + uisorg.Name + strJhonorific;
                                         }
                                         else
                                         {
-                                            strbarristerlist += ", " + uisorg.Name;
+                                            strbarristerlist += ", " + strJInitial + uisorg.Name + strJhonorific;
                                         }
                                     }
                                 }
