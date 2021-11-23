@@ -173,7 +173,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                         </li>
                                     }
                                 }
-                                @if (item.ProgrammeNamedPartyName == "First Mate Cover")
+                                @if (item.UsesEglobal)
                                 {
                                     <li class="nav-item">
                                         <a href="@Url.Action("EditBillingConfiguration", "Programme", new { programmeId = @item.ClientProgrammeId })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Billing Information Configuration </a>

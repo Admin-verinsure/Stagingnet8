@@ -1244,18 +1244,22 @@ namespace DealEngine.Services.Impl
 			List<Attachment> attachments = new List<Attachment> ();
 			foreach (SystemDocument document in documents)
             {
-                if (document.DocumentType != 8 && document.DocumentType != 99 && (!(document.Path != null && document.ContentType == "application/pdf" && document.DocumentType == 0)) && document.ContentType != "application/pdf")// && document.ContentType != "application/pdf"
+                if (document.ContentType != null)
                 {
-                    attachments.Add(await ToAttachment(document));
+                    if (document.DocumentType != 8 && document.DocumentType != 99 && (!(document.Path != null && document.ContentType == "application/pdf" && document.DocumentType == 0)) && document.ContentType != "application/pdf")// && document.ContentType != "application/pdf"
+                    {
+                        attachments.Add(await ToAttachment(document));
+                    }
+                    else if (document.Path != null && document.ContentType == "application/pdf" && document.DocumentType == 0)
+                    {
+                        attachments.Add(new Attachment(new FileStream(document.Path, FileMode.Open), document.Name, MediaTypeNames.Application.Pdf));
+                    }
+                    else
+                    {
+                        attachments.Add(new Attachment(new MemoryStream(document.Contents), document.Name, MediaTypeNames.Application.Pdf));
+                    }
                 }
-                else if (document.Path != null && document.ContentType == "application/pdf" && document.DocumentType == 0)
-                {
-                    attachments.Add(new Attachment(new FileStream(document.Path, FileMode.Open), document.Name, MediaTypeNames.Application.Pdf));
-                }
-                else
-                {
-                    attachments.Add(new Attachment(new MemoryStream(document.Contents), document.Name, MediaTypeNames.Application.Pdf));
-                }
+                
             }
             return attachments;
 		}

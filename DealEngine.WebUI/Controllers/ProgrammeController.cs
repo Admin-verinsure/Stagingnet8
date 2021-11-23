@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
+using NReco.PdfGenerator;
 
 //using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -48,6 +49,7 @@ namespace DealEngine.WebUI.Controllers
         IClaimService _claimService;
         ISerializerationService _serializerationService;
         IUpdateTypeService _updateTypeServices;
+        IAppSettingService _appSettingService;
         public ProgrammeController(
             ISerializerationService serializerationService,
             IClaimService claimService,
@@ -71,7 +73,8 @@ namespace DealEngine.WebUI.Controllers
             IMapper mapper,
             IHttpClientService httpClientService,
             IEGlobalSubmissionService eGlobalSubmissionService,
-                    IUpdateTypeService updateTypeService
+                    IUpdateTypeService updateTypeService,
+                    IAppSettingService appSettingService
             )
             : base(userRepository)
         {
@@ -98,6 +101,7 @@ namespace DealEngine.WebUI.Controllers
             _httpClientService = httpClientService;
             _eGlobalSubmissionService = eGlobalSubmissionService;
             _updateTypeServices = updateTypeService;
+            _appSettingService = appSettingService;
         }
 
         [HttpGet]
@@ -482,28 +486,34 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 var eGlobalSerializer = new EGlobalSerializerAPI();
+                string paymentType = programme.PaymentType;
+                Guid transactionreferenceid = Guid.NewGuid();
 
                 //check Eglobal parameters
                 if (string.IsNullOrEmpty(programme.EGlobalClientNumber))
                 {
-                    throw new Exception(nameof(programme.EGlobalClientNumber) + " EGlobal client number");
-                }
-                string paymentType = "Credit";
-                Guid transactionreferenceid = Guid.NewGuid();
-
-                var xmlPayload = eGlobalSerializer.SerializePolicy(programme, user, _unitOfWork, transactionreferenceid, paymentType, false, false, null);
-
-                var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
-
-                //used for eglobal request and response log
-                if (programme.BaseProgramme.ProgEnableEmail)
+                    //throw new Exception(nameof(programme.EGlobalClientNumber) + " EGlobal client number");
+                    //send out notification email
+                    await _emailService.SendSystemEmailClientNumberNotify(user, programme.BaseProgramme, programme.InformationSheet, programme.InformationSheet.Owner);
+                } else
                 {
-                    await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
-                }
-                
-                EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
+                   
 
-                eGlobalSerializer.DeSerializeResponse(byteResponse, programme, user, _unitOfWork, eglobalsubmission);
+                    var xmlPayload = eGlobalSerializer.SerializePolicy(programme, user, _unitOfWork, transactionreferenceid, paymentType, false, false, null);
+
+                    var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
+
+                    //used for eglobal request and response log
+                    if (programme.BaseProgramme.ProgEnableEmail)
+                    {
+                        await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
+                    }
+
+                    EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
+
+                    eGlobalSerializer.DeSerializeResponse(byteResponse, programme, user, _unitOfWork, eglobalsubmission);
+                }
+
 
                 if (programme.ClientAgreementEGlobalResponses.Count > 0)
                 {
@@ -512,24 +522,33 @@ namespace DealEngine.WebUI.Controllers
                     {
                         var status = "Bound and invoiced";
 
-                        var documents = new List<SystemDocument>();
                         foreach (ClientAgreement agreement in programme.Agreements)
                         {
-                            if (agreement.MasterAgreement && (agreement.ReferenceId == eGlobalResponse.MasterAgreementReferenceID))
+                            if (agreement.MasterAgreement)
                             {
-                                foreach (SystemDocument doc in agreement.Documents.Where(d => d.DateDeleted == null && d.DocumentType == 4))
+                                foreach (SystemDocument doc in agreement.Documents.Where(d => d.DateDeleted == null && (d.DocumentType == 4 || d.DocumentType == 12)))
                                 {
                                     doc.Delete(user);
                                 }
                                 foreach (SystemDocument template in agreement.Product.Documents)
                                 {
                                     //render docs invoice
-                                    if (template.DocumentType == 4)
+                                    if (template.DocumentType == 4 && agreement.ClientInformationSheet.Programme.PaymentType == "Credit Card" && programme.BaseProgramme.IsPdfDoc)
                                     {
-                                        SystemDocument renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+                                        SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
+                                        SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+
                                         renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
-                                        agreement.Documents.Add(renderedDoc);
-                                        documents.Add(renderedDoc);
+                                        agreement.Documents.Add(renderedDoc1);
+                                        await _fileService.UploadFile(renderedDoc);
+
+                                    } else if (template.DocumentType == 12 && agreement.ClientInformationSheet.Programme.PaymentType == "Invoice" && programme.BaseProgramme.IsPdfDoc)
+                                    {
+                                        SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
+                                        SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+
+                                        renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                        agreement.Documents.Add(renderedDoc1);
                                         await _fileService.UploadFile(renderedDoc);
                                     }
                                 }
@@ -1737,6 +1756,61 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
 
+        }
+
+        [HttpGet]
+        public async Task<Document> GetInvoicePDF(SystemDocument renderedDoc, string invoicename)
+        {
+            User user = null;
+
+            //SystemDocument doc = await _documentRepository.GetByIdAsync(Id);
+
+
+            var docContents = new byte[] { 0x20, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 };
+            // DOCX & HTML
+            string html = _fileService.FromBytes(renderedDoc.Contents);
+
+
+            if (renderedDoc.DocumentType == 8) // Apollo Invoice
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /></head>"); // Removed to fix Image 
+            }
+            else
+            {
+                html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { height:auto; max-width: 300px }</style></head>"); // Ashu old values -> width: 120px; height:120px
+            }
+
+            //html = html.Insert(0, "<head><meta http-equiv=\"content - type\" content=\"text / html; charset = utf - 8\" /><style>img { width: 120px; height:120px}</style></head>");
+            // Test if the below 4 are even necessary by this function, setting above should make these redundant now
+            html = html.Replace("“", "&quot");
+            html = html.Replace("”", "&quot");
+            html = html.Replace(" – ", "--");
+            html = html.Replace("&nbsp;", " ");
+            html = html.Replace("’", "&#146");
+            html = html.Replace("‘", "&#39");
+
+            var htmlToPdfConv = new NReco.PdfGenerator.HtmlToPdfConverter();
+            htmlToPdfConv.License.SetLicenseKey(
+               _appSettingService.NRecoUserName,
+               _appSettingService.NRecoLicense
+           );            // for Linux/OS-X: "wkhtmltopdf"
+            if (_appSettingService.IsLinuxEnv == "True")
+            {
+                htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
+            }
+            htmlToPdfConv.PdfToolPath = _appSettingService.NRecoPdfToolPath;
+            var margins = new PageMargins();
+            margins.Bottom = 10;
+            margins.Top = 10;
+            margins.Left = 30;
+            margins.Right = 10;
+            htmlToPdfConv.Margins = margins;
+
+            htmlToPdfConv.PageFooterHtml = "</br>" + $@"page <span class=""page""></span> of <span class=""topage""></span>";
+            var pdfBytes = htmlToPdfConv.GeneratePdf(html);
+            Document document = new Document(user, invoicename, "application/pdf", renderedDoc.DocumentType);
+            document.Contents = pdfBytes;
+            return document;
         }
     }
 }
