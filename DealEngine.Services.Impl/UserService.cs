@@ -203,6 +203,21 @@ namespace DealEngine.Services.Impl
 			return user;
 		}
 
+		public async Task<User> GetUserByOktaUID(string uid)
+        {
+			User user = null;
+			try
+			{
+				user = await _userRepository.FindAll().FirstOrDefaultAsync(u => u.OktaUID == uid);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message);
+			}
+
+			return user;
+        }
+
 		public async Task<List<User>> GetAllUsers()
 		{
 			return await _userRepository.FindAll().ToListAsync();

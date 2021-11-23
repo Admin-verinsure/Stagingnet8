@@ -14,7 +14,6 @@ namespace DealEngine.Domain.Entities
         private Organisation _primaryOrganisation;
 
         protected User() : this(null) { }
-
         protected User (User createdBy)
 			: base (null)
 		{
@@ -30,6 +29,15 @@ namespace DealEngine.Domain.Entities
             PaymentConfigNotifyProgrammes = new List<Programme>();
             InvoiceConfigNotifyProgrammes = new List<Programme>();
             RemoveAdvisorNotifyProgrammes = new List<Programme>();
+        }
+
+        public User(string oktaUid, string email, string firstname, string surname)
+        : this()
+        {
+            OktaUID = oktaUid;
+            Email = email;
+            FirstName = firstname;
+            LastName = surname;
         }
 
         public virtual OrganisationalUnit DefaultOU { get; set; }

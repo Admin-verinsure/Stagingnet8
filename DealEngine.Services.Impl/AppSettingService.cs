@@ -57,6 +57,13 @@ namespace DealEngine.Services.Impl
                 return _configuration.GetValue<string>("domainQueryString");
             }
         }
+        public string oktaCallBackServiceURL
+        {
+            get
+            {
+                return _configuration.GetValue<string>("oktaCallBackServiceURL");
+            }
+        }
 
         public string CKImagePath
         {

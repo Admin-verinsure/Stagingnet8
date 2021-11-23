@@ -28,10 +28,6 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Net.Http.Headers;
-using IO.Swagger;
-using IO.Swagger.Api;
-using IO.Swagger.Client;
-using IO.Swagger.Model;
 using System.Diagnostics;
 #endregion
 
@@ -55,6 +51,7 @@ namespace DealEngine.WebUI.Controllers
         IAppSettingService _appSettingService;
         IImportService _importService;
         IUnitOfWork _unitOfWork;
+        IMapperSession<User> _userRepository;
 
         public AccountController(
             IUnitOfWork unitOfWork,
@@ -72,6 +69,7 @@ namespace DealEngine.WebUI.Controllers
             IEmailService emailService,
             IFileService fileService,
             IOrganisationalUnitService organisationalUnitService,
+            IMapperSession<User> userRepository,
             IAppSettingService appSettingService) : base(userService)
         {
             _unitOfWork = unitOfWork;
@@ -90,6 +88,7 @@ namespace DealEngine.WebUI.Controllers
             _fileService = fileService;
             _organisationalUnitService = organisationalUnitService;
             _appSettingService = appSettingService;
+            _userRepository = userRepository;
         }
 
         // GET: /account/forgotpassword
@@ -445,206 +444,104 @@ namespace DealEngine.WebUI.Controllers
                 _ldapService.Validate(userName, password, out resultCode, out resultMessage);
                 if (resultCode == 0)
                 {
-                    // Get the User
                     var user = await _userService.GetUser(userName);
 
-                    // Check if they have an OktaID
+                    // No OktaUID
                     if (user.OktaUID == null)
                     {
-                        var result = await AMPSCreateUser(user, password);
-                        // AMPS Create User API
+                        var result = await AMPSGetAccessToken();
+                        var result2 = await AMPSCreateUser(result, user, password);
 
-                        // Update User table with OktaUID
+                        // Get OktaUID
+                        string oktaUID = result2.Substring(7, 20);
+                        user.OktaUID = oktaUID;
+                        await _userRepository.UpdateAsync(user);
 
                         // Redirect User to oktacallbackservice for Login
+                        var callbackService = _appSettingService.oktaCallBackServiceURL;
+                        return Redirect("https://" + callbackService);
                     }
+                    // Yes OktaUID
                     else
                     {
                         // Redirect User to oktacallbackservice for Login
-                        return Redirect("https://localhost:5001/Home/Index");
+                        var callbackService = _appSettingService.oktaCallBackServiceURL;
+                        return Redirect("https://" + callbackService);
                     }
                 }
-                else
-                {
-                    string lol = "login failed";
-                }
             }
-            catch
+            catch (Exception ex)
             {
-
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);
             }
-
-            //Create User AMPS
 
             return Ok();
         }
 
-        //[Authorize]
-        //private async Task<string> AMPSCreateUserSwagger(DealEngine.Domain.Entities.User user, string password)
-        //{
-        //    // AMPS API Details
-        //    // Configure HTTP basic authorization: Basic_Auth
-        //    Configuration apiConfiguration = new Configuration();
-        //    apiConfiguration.Username = "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq"; // ClientID
-        //    apiConfiguration.Password = "MDjxj51RufK01vmt"; // ClientSecret
-
-        //    ApiClient apiClient = new ApiClient();
-        //    apiClient.Configuration = apiConfiguration;
-
-        //    var apiInstance = new ApiAccessTokenApi();
-        //    var grantType = "client_credentials";  // String | value should be client_credentials
-        //    var appId = "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq";  // String | Consuming application's Id
-
-        //    try
-        //    {
-        //        // Generate apigee access token
-        //        AccessTokenJson result = apiInstance.getApiAccessToken(grantType, appId);
-        //        Debug.WriteLine(result);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Debug.Print("Exception when calling ApiAccessTokenApi.getApiAccessToken: " + e.Message );
-        //    }
-
-
-        //    // Client ID: ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq
-        //    // Client Secret: MDjxj51RufK01vmt
-        //    // Endpoint: marshdev-mmc.oktapreview.com
-        //    // https://stackoverflow.com/questions/58014360/how-do-you-use-basic-authentication-with-system-net-http-httpclient
-        //    // https://developer.okta.com/docs/guides/implement-grant-type/clientcreds/main/#flow-specifics
-
-        //    // 1 Get Bearer token from https://marshdev-mmc.oktapreview.com/amps/v2/oauth/accesstoken
-        //    var ampsUrl = "https://dev.api.m2digitalbroker.com/proxy/";
-
-
-
-
-        //    return "string";
-        //}
-
-//        static void RetrieveOktaUsers()
-//        {
-//            string BASE_URL = “”;
-//            //
-//            string CLIENT_ID = “clientid”;
-//            string YOUR_CLIENT_SECRET = “secret”;
-
-//            string OAUTH_ENDPOINT = "oauth2/default/v1/token";
-//            string USERS_ENDPOINT = "api/v1/users";
-//            string AUDIENCE = "";
-
-//            OktaToken oktaToken = null;
-//            //call 1
-//            using (HttpClient httpClient = new HttpClient())
-//            {
-//                httpClient.BaseAddress = new Uri(BASE_URL);
-//                var authToken = Encoding.ASCII.GetBytes($"{CLIENT_ID}:{YOUR_CLIENT_SECRET}");
-//                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(“Basic”,
-//                Convert.ToBase64String(authToken));
-//                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(“application / json”));
-//                FormUrlEncodedContent formUrlEncodedContent = new FormUrlEncodedContent(new
-//                {
-//                    new KeyValuePair<string, string>(“grant_type”, “client_credentials”),
-//                    new KeyValuePair<string, string>(“scope”, “access_token”),
-//                    new KeyValuePair<string, string>(“audience”, “api://default”),
-//});
-
-//                HttpResponseMessage response = httpClient.PostAsync(OAUTH_ENDPOINT, formUrlEncodedContent).Result;
-//                //response.EnsureSuccessStatusCode();
-//                var resp = response.Content.ReadAsStringAsync().Result;
-//                oktaToken = JsonConvert.DeserializeObject<OktaToken>(resp);
-
-//            }
-
-//            using (HttpClient httpClient = new HttpClient()) //Call 2
-//            {
-//                httpClient.BaseAddress = new Uri(BASE_URL);
-//                httpClient.DefaultRequestHeaders.Add("authorization", $"Bearer {oktaToken.access_token}");
-//                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-//                HttpResponseMessage response = httpClient.GetAsync(USERS_ENDPOINT).Result;
-//                //response.EnsureSuccessStatusCode();
-//                var resp = response.Content.ReadAsStringAsync().Result;
-//            }
-//        }
-
         //[HttpPost]
-        [AllowAnonymous]
         //[Authorize]
-        private async Task<string> AMPSCreateUser(DealEngine.Domain.Entities.User user, string password)
+        [AllowAnonymous]
+        private async Task<string> AMPSGetAccessToken()
         {
-            // AMPS API Details
-
-            // Client ID: ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq
-            // Client Secret: MDjxj51RufK01vmt
-            // Endpoint: marshdev-mmc.oktapreview.com
-            // https://stackoverflow.com/questions/58014360/how-do-you-use-basic-authentication-with-system-net-http-httpclient
-            // https://developer.okta.com/docs/guides/implement-grant-type/clientcreds/main/#flow-specifics
-            
-            // 1 Get Bearer token from https://marshdev-mmc.oktapreview.com/amps/v2/oauth/accesstoken
-            var ampsUrl = "https://dev.api.m2digitalbroker.com/proxy/";
+            string ampsUrl = "https://staging.api.m2digitalbroker.com";
+            string authenticationString = "VRGMAN4TCUf8EqladxEy7f8mGHAF2ruy:fvsnyFVgbll7VCxe"; // clientid:clientsecret
 
             // Setup client
-            HttpClient client = new HttpClient();
             Uri ampsUri = new Uri(ampsUrl);
+            HttpClient client = new HttpClient();
+
             client.BaseAddress = ampsUri;
-            client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.ConnectionClose = true;
+            client.DefaultRequestHeaders.Add("grant_type", "client_credentials");
+            client.DefaultRequestHeaders.Add("appId", "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            // Post body content
-            var values = new List<KeyValuePair<string, string>>();
-            values.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
-            values.Add(new KeyValuePair<string, string>("appId", "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq"));
-            values.Add(new KeyValuePair<string, string>("scope", "access_token"));
-            var content = new FormUrlEncodedContent(values);
-            var authenticationString = "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq:MDjxj51RufK01vmt";
-            var base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));
+            // Alternate way of requestMessage content, if there is any.
+            // List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>>();
+            // FormUrlEncodedContent content = new FormUrlEncodedContent(values);
+            // requestMessage.Content = content;
 
+            // Empty base64 encoded Content to be Posted
+            string base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));
 
-            var requestMessage = new HttpRequestMessage(HttpMethod.Post, "/amps/v2/oauth/accesstoken"); //
+            // HTTP Request Message
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "/proxy/amps/v2/oauth/accesstoken");
             requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64EncodedAuthenticationString);
+            requestMessage.Headers.CacheControl = new CacheControlHeaderValue { NoCache = true };
+            requestMessage.Content = new StringContent("", Encoding.UTF8, "application/x-www-form-urlencoded");
 
-            var cacheControlHeader = new CacheControlHeaderValue { NoCache = true };
-            requestMessage.Headers.CacheControl = cacheControlHeader;          
-            requestMessage.Content = content;
-
-            //HttpCompletionOption completionOption = new HttpCompletionOption();
-            //completionOption = HttpCompletionOption.ResponseHeadersRead;
             // Send Request
-            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage); //completionOption
-            Console.WriteLine(responseMessage.StatusCode.ToString());
-
-
-
-            var test = "";
-
-            // Test if you even get a response
-
-            // Add Headers to HTTP Message
-            //requestMessage.Headers.Add("appId", "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq");
-            //requestMessage.Headers.Add("grant_type", "client_credentials");
-
-            // Get Response
-            //var response = task.Result;
-            //Console.WriteLine(response);            
-            //response.EnsureSuccessStatusCode();          
-            //string responseBody = response.Content.ReadAsStringAsync().Result;
-            //Console.WriteLine(responseBody);
-
+            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+            var json = await responseMessage.Content.ReadAsStringAsync();
             client.Dispose();
-                      
-            // Create User API
 
-            // Setup client
-            HttpClient client2 = new HttpClient();
-            client2.BaseAddress = ampsUri;
-            client2.DefaultRequestHeaders.Clear();
-            client2.DefaultRequestHeaders.ConnectionClose = true;
-            client2.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "Your Oauth token");
-            client2.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return json;
+            
+        }
+        [AllowAnonymous]
+        private async Task<string> AMPSCreateUser(string json, User user, string password)
+        {
+            // Determine the group
+            string group = "";
+            if (user.PrimaryOrganisation.IsBroker)
+            {
+                group = "00g12zhd1k9V3G3kG0h8";
+            }
+            else if (user.PrimaryOrganisation.IsInsurer)
+            {
+                group = "00g12zhd1k9V3G3kG0h8";
+            }
+            else if (user.PrimaryOrganisation.IsTC)
+            {
+                group = "00g12zhd1k9V3G3kG0h8";
+            }
+            else
+            {
+                group = "00g12zhd1k9V3G3kG0h8";
+            }
 
-            // Post body content
-
-            #region Create JSON objects
+            #region Create JSON objects for upload
             JObject body =
                 new JObject(
                     new JProperty("roptions",
@@ -654,102 +551,143 @@ namespace DealEngine.WebUI.Controllers
                     ),
                     new JProperty("profile",
                         new JObject(
-                            new JProperty("firstName", user.FirstName),
-                            new JProperty("lastName", user.LastName),
-                            //new JProperty("mobilePhone", user.MobilePhone),
-                            //new JProperty("secondEmail", null),
-                            new JProperty("login", user.Email),
-                            new JProperty("email", user.Email)
+                            new JProperty("firstName", "NTestFN3"), //user.FirstName
+                            new JProperty("lastName", "NTestLN3"), //user.LastName
+                            new JProperty("mobilePhone", "+642102735737"), //user.MobilePhone - may have to pre-process this
+                            //new JProperty("secondEmail", "ntestemail2@techcertain.com"), //user.MobilePhone
+                            new JProperty("login", "ntestemail3@techcertain.com"),
+                            new JProperty("email", "ntestemail3@techcertain.com"), //user.Email
+                            new JProperty("CIAM_idp", "clientidp") 
                         )
                     ),
                     new JProperty("credentials",
                         new JObject(
                             new JProperty("password",
                                 new JObject(
-                                    new JProperty("value", password)
+                                    new JProperty("value", "NTestPw3") //password
                                 )
                             )
                         )
                     ),
                     new JProperty("groupIds",
-                        new JObject(
-                            new JProperty("00g11paplp3Yz4Qlz0h8")//, //TCDE_External_Users
-                                                                 //new JProperty("00g11pb30arN7hD3h0h8"), //TCDE_Internal_Users
-                                                                 //new JProperty("00g11pcdujzbgE3ur0h8")  //TCDE_UW_NZI
+                        new JArray(
+                            group
                         )
-                    )
-                );
+                    ));
+
             #endregion
+
+            string bodyToString = body.ToString();
             var data = new StringContent(body.ToString(), Encoding.UTF8, "application/json");
-            //var content = new FormUrlEncodedContent(values);
-            var requestMessage2 = new HttpRequestMessage(HttpMethod.Post, "/amps/v2/uam/users");
 
-            // Add Headers to HTTP Message
-            requestMessage2.Content = data;
-            var task2 = client2.SendAsync(requestMessage2);
-            var response2 = task2.Result;
+            // Fix JSON from access code which Deserializer doesn't like
+            json = json.Replace("\n  \"api_product_list\" : \"[AMPS]\",\n  \"api_product_list_json\" : [ \"AMPS\" ],", "");
+            var dict = JsonConvert.DeserializeObject<Dictionary<string,string>>(json);
+            var token = dict["access_token"];
 
-            //Console.WriteLine(response);
-            //response.EnsureSuccessStatusCode();
+            // Create User API
+            string ampsUrl = "https://staging.api.m2digitalbroker.com";
 
-            //string responseBody = response.Content.ReadAsStringAsync().Result;
-            //Console.WriteLine(responseBody);
+            // Setup client
+            Uri ampsUri = new Uri(ampsUrl);
+            HttpClient client = new HttpClient();
+            client.BaseAddress = ampsUri;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                   
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "/proxy/amps/v2/uam/users");
+            requestMessage.Content = data;
 
+            // Send Request
+            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
 
-            //var response2 = await client.PostAsync(createUserURL, data);
-
-            client2.Dispose();
-
-            //Console.WriteLine(response);
-
-            return "";//response.StatusCode.ToString();
+                return jsonResponse;
+            }
+            else
+            {
+                return responseMessage.StatusCode.ToString();
+            }
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginOktaAsync2(string json)
+        public async Task<IActionResult> IdentityLoginOktaCallbackServiceTEST(string json)
         {
-            Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            // string username = dict["name"] + dict["okta_uid"].Substring(dict["okta_uid"].Length - 4);
-            // string username = dict["firstname"].Substring(0,1) + dict["surname"] + dict["id"].Substring(dict["id"].Length - 4);
-            string okta_uid = dict["okta_uid"];
-            string email = dict["email"];
-            string identityPassword = dict["okta_uid"] + _appSettingService.OktaIntermediatePassword;
-
-            // Will have to run kestrel to see this if possible
-            Console.WriteLine(okta_uid, identityPassword, email);
-
-            // See if user is in database already, if so grab them, if not it will end up creating them if they already exist in LDAP (also checks LDAP for them, so if they existed in LDAP they will be created)
-            // var user = await _userService.GetUser(username);
-
-            // TODO
-            // var user = await _userService.GetMarshUser(okta_uid);
-
-            // UPDATE EMAIL WITH OKTA EMAIL CLAIM? Will only update it if it's a new user though... If they already exist then it won't update it.
-            //user.Email = email;
-
-            //// See if identity user is in database, if so grab them, if not create them with password provided, then log them in
-            //var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
-
-            //// If the password worked then we are happy, if it didn't update the password and login
-            //if (identityResult.Succeeded)
-            //{
-            //    // That's what we wanted so can return now
-            //}
-            //else
-            //{
-            //    IdentityUser deUser = await _userManager.FindByNameAsync(username);
-            //    await _userManager.RemovePasswordAsync(deUser);
-            //    await _userManager.AddPasswordAsync(deUser, password);
-            //    await _signInManager.PasswordSignInAsync(deUser, password, true, lockoutOnFailure: true);
-            //}
-
             return Ok();
         }
 
-        
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> IdentityLoginOktaCallbackService(string json)
+        {
+            Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            string okta_uid = dict["okta_uid"];
+            string email = dict["email"];
+            string identityPassword = dict["okta_uid"] + _appSettingService.OktaIntermediatePassword;
+            string firstname = dict["firstname"];
+            string surname = dict["surname"];
 
-        private async Task<SignInResult> DealEngineIdentityUserLogin(DealEngine.Domain.Entities.User user, string password)
+            User user = null;
+
+            // User Exists with Okta UID
+            try
+            {
+                // Do we need to check LDAP to see if a potential username is used first? 
+                user = await _userService.GetUserByOktaUID(okta_uid);
+                var identityResult = await DealEngineIdentityUserLogin(user, identityPassword); // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);
+            }
+
+            #region Can't find with Okta UID, means they haven't followed correct process.
+            if (user == null)
+            {
+                // If they don't have an OktaUID we can't find them so either we create them or do nothing.
+
+                #region Create User/Identity User
+                // They already exist but don't have an Okta UID
+
+                //// Create User
+                //user = new User(okta_uid, email, firstname, surname);
+                //user.DateCreated = DateTime.Now;
+                ////user.UserName = dict[""];
+                ////user.Email = dict[""];
+                ////user.FirstName = dict[""];
+                ////user.FullName = dict[""];
+                ////user.LastName = dict[""];
+                ////user.MobilePhone = dict[""];
+                ////user.OktaUID = dict[""];
+                ////user.Password = dict[""];
+                ////user.Phone = dict[""];
+
+                //await _userService.Create(user); // save the user - NOTE THIS CREATES LDAP RECORDS - we didn't check if LDAP records existed yet????
+
+                //// Create Identity User from User
+                //var identityUser = await _userManager.FindByNameAsync(user.UserName);
+                //if (identityUser == null)
+                //{
+                //    identityUser = new IdentityUser();
+                //    identityUser.UserName = user.UserName;
+                //    identityUser.Email = user.Email;
+                //    await _userManager.CreateAsync(identityUser, identityPassword);
+                //}
+                //// Sign them in 
+                //await _signInManager.PasswordSignInAsync(identityUser, identityPassword, true, lockoutOnFailure: true);
+                #endregion
+            }
+            #endregion
+
+            return Ok();
+        }
+       
+        private async Task<SignInResult> DealEngineIdentityUserLogin(User user, string password)
         {
 
             try

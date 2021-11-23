@@ -11,6 +11,7 @@ namespace DealEngine.Services.Interfaces
         string IntermediatePassword { get; }
         string OktaIntermediatePassword { get; }
         string domainQueryString { get; }
+        string oktaCallBackServiceURL { get; }
         string CKImagePath { get; }
         string RequireRSA { get; }
         string AuthenticationService { get; }
