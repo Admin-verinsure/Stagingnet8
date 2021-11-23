@@ -627,6 +627,7 @@ namespace DealEngine.WebUI.Models.Agreement
         public IList<Product> AgreementProducts { get; set; }
         public IList<SelectListItem> Organisations { get; set; }
         public bool IsMasterAgreement { get; set; }
+        public bool UsesEglobal { get; set; }
     }
 
     public class InsuranceInclusion

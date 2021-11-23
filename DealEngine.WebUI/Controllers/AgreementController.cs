@@ -2915,7 +2915,7 @@ namespace DealEngine.WebUI.Controllers
             User user = await CurrentUser();
             try
             {
-                foreach (ClientAgreement agreement in programme.Agreements.Where(agree => agree.DateDeleted == null))
+                foreach (ClientAgreement agreement in programme.Agreements.Where(agree => agree.DateDeleted == null && agree.InsurerDeclined != true))
                 {
 
                     if (agreement.Status == "Quoted" || ActionPath == "SendPolicyDocuments")
@@ -4741,9 +4741,10 @@ namespace DealEngine.WebUI.Controllers
                     model.InformationSheetId = programme.InformationSheet.Id;
                     model.ProgrammeName = programme.BaseProgramme.Name;
                     model.ProgrammeNamedPartyName = programme.BaseProgramme.NamedPartyUnitName;
+                    model.UsesEglobal = programme.BaseProgramme.UsesEGlobal;
                     ViewBag.Ispdfenable = "" + programme.BaseProgramme.EnableFullProposalReport;
                     model.ClientProgrammeId = id;
-                    foreach (ClientAgreement agreement in programme.Agreements.Where(a => a.DateDeleted == null))
+                    foreach (ClientAgreement agreement in programme.Agreements.Where(a => a.DateDeleted == null && a.InsurerDeclined !=true))
                     {
                         agreeDocList = agreement.GetDocuments();
                         foreach (Document doc in agreeDocList)
