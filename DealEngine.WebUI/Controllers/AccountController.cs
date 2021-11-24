@@ -438,7 +438,6 @@ namespace DealEngine.WebUI.Controllers
                 string password = viewModel.Password.Trim();
                 int resultCode = -1;
                 string resultMessage = "";
-                IdentityUser deUser;
 
                 // Step 1 validate in  LDap 
                 _ldapService.Validate(userName, password, out resultCode, out resultMessage);
@@ -479,8 +478,6 @@ namespace DealEngine.WebUI.Controllers
             return Ok();
         }
 
-        //[HttpPost]
-        //[Authorize]
         [AllowAnonymous]
         private async Task<string> AMPSGetAccessToken()
         {
@@ -496,11 +493,6 @@ namespace DealEngine.WebUI.Controllers
             client.DefaultRequestHeaders.Add("appId", "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            // Alternate way of requestMessage content, if there is any.
-            // List<KeyValuePair<string, string>> values = new List<KeyValuePair<string, string>>();
-            // FormUrlEncodedContent content = new FormUrlEncodedContent(values);
-            // requestMessage.Content = content;
 
             // Empty base64 encoded Content to be Posted
             string base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));
@@ -519,26 +511,27 @@ namespace DealEngine.WebUI.Controllers
             return json;
             
         }
+
         [AllowAnonymous]
         private async Task<string> AMPSCreateUser(string json, User user, string password)
         {
-            // Determine the group
+            // Map the group
             string group = "";
             if (user.PrimaryOrganisation.IsBroker)
             {
-                group = "00g12zhd1k9V3G3kG0h8";
+                group = "00g12zhoyi2xdZvH00h8";// Marsh Brokers TCDE_internal_users
             }
             else if (user.PrimaryOrganisation.IsInsurer)
             {
-                group = "00g12zhd1k9V3G3kG0h8";
+                group = "00g138harhtgadwim0h8";// Underwriters TCDE_external_Underwriters
             }
             else if (user.PrimaryOrganisation.IsTC)
             {
-                group = "00g12zhd1k9V3G3kG0h8";
+                group = "00g138goracXIMQre0h8";// Admin TCDE_external_Admins
             }
             else
             {
-                group = "00g12zhd1k9V3G3kG0h8";
+                group = "00g12zhd1k9V3G3kG0h8"; // Marsh Client TCDE_external_users
             }
 
             #region Create JSON objects for upload
@@ -551,30 +544,48 @@ namespace DealEngine.WebUI.Controllers
                     ),
                     new JProperty("profile",
                         new JObject(
-                            new JProperty("firstName", "NTestFN3"), //user.FirstName
-                            new JProperty("lastName", "NTestLN3"), //user.LastName
-                            new JProperty("mobilePhone", "+642102735737"), //user.MobilePhone - may have to pre-process this
-                            //new JProperty("secondEmail", "ntestemail2@techcertain.com"), //user.MobilePhone
-                            new JProperty("login", "ntestemail3@techcertain.com"),
-                            new JProperty("email", "ntestemail3@techcertain.com"), //user.Email
-                            new JProperty("CIAM_idp", "clientidp") 
+                            new JProperty("firstName", "NTestFN4"),
+                            new JProperty("lastName", "NTestLN4"),
+                            new JProperty("mobilePhone", "+642102735738"), 
+                            new JProperty("login", "ntestemail4@techcertain.com"),
+                            new JProperty("email", "ntestemail4@techcertain.com"),
+                            new JProperty("CIAM_idp", "clientidp")
                         )
                     ),
                     new JProperty("credentials",
                         new JObject(
                             new JProperty("password",
                                 new JObject(
-                                    new JProperty("value", "NTestPw3") //password
+                                    new JProperty("value", "NTestPw3")
                                 )
                             )
                         )
                     ),
+                    //new JProperty("profile",
+                    //    new JObject(
+                    //        new JProperty("firstName", user.FirstName),
+                    //        new JProperty("lastName", user.LastName),
+                    //        new JProperty("mobilePhone", user.MobilePhone),
+                    //        //new JProperty("secondEmail", "ntestemail2@techcertain.com"),
+                    //        new JProperty("login", user.Email),
+                    //        new JProperty("email", user.Email),
+                    //        new JProperty("CIAM_idp", "clientidp")
+                    //    )
+                    //),
+                    //new JProperty("credentials",
+                    //    new JObject(
+                    //        new JProperty("password",
+                    //            new JObject(
+                    //                new JProperty("value", password)
+                    //            )
+                    //        )
+                    //    )
+                    //),
                     new JProperty("groupIds",
                         new JArray(
                             group
                         )
                     ));
-
             #endregion
 
             string bodyToString = body.ToString();
@@ -600,16 +611,9 @@ namespace DealEngine.WebUI.Controllers
 
             // Send Request
             HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
-            if (responseMessage.IsSuccessStatusCode)
-            {
-                var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
 
-                return jsonResponse;
-            }
-            else
-            {
-                return responseMessage.StatusCode.ToString();
-            }
+            var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
+            return jsonResponse;
         }
 
         [HttpPost]
@@ -622,69 +626,46 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> IdentityLoginOktaCallbackService(string json)
-        {
-            Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            string okta_uid = dict["okta_uid"];
-            string email = dict["email"];
-            string identityPassword = dict["okta_uid"] + _appSettingService.OktaIntermediatePassword;
-            string firstname = dict["firstname"];
-            string surname = dict["surname"];
-
-            User user = null;
-
-            // User Exists with Okta UID
+        {            
             try
             {
-                // Do we need to check LDAP to see if a potential username is used first? 
-                user = await _userService.GetUserByOktaUID(okta_uid);
-                var identityResult = await DealEngineIdentityUserLogin(user, identityPassword); // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
-                return Ok();
+                if (json != null)
+                {
+                    Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                }
+                else
+                {
+                    return Ok();
+                }
+
             }
             catch (Exception ex)
             {
-                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-                throw new Exception(ex.Message + " " + ex.StackTrace);
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);//
             }
+            return NotFound();
 
-            #region Can't find with Okta UID, means they haven't followed correct process.
-            if (user == null)
-            {
-                // If they don't have an OktaUID we can't find them so either we create them or do nothing.
+            //string okta_uid = dict["okta_uid"];
+            //string email = dict["email"];
+            //string identityPassword = dict["okta_uid"] + _appSettingService.OktaIntermediatePassword;
+            //string firstname = dict["firstname"];
+            //string surname = dict["surname"];
 
-                #region Create User/Identity User
-                // They already exist but don't have an Okta UID
+            //User user = null;
 
-                //// Create User
-                //user = new User(okta_uid, email, firstname, surname);
-                //user.DateCreated = DateTime.Now;
-                ////user.UserName = dict[""];
-                ////user.Email = dict[""];
-                ////user.FirstName = dict[""];
-                ////user.FullName = dict[""];
-                ////user.LastName = dict[""];
-                ////user.MobilePhone = dict[""];
-                ////user.OktaUID = dict[""];
-                ////user.Password = dict[""];
-                ////user.Phone = dict[""];
-
-                //await _userService.Create(user); // save the user - NOTE THIS CREATES LDAP RECORDS - we didn't check if LDAP records existed yet????
-
-                //// Create Identity User from User
-                //var identityUser = await _userManager.FindByNameAsync(user.UserName);
-                //if (identityUser == null)
-                //{
-                //    identityUser = new IdentityUser();
-                //    identityUser.UserName = user.UserName;
-                //    identityUser.Email = user.Email;
-                //    await _userManager.CreateAsync(identityUser, identityPassword);
-                //}
-                //// Sign them in 
-                //await _signInManager.PasswordSignInAsync(identityUser, identityPassword, true, lockoutOnFailure: true);
-                #endregion
-            }
-            #endregion
-
-            return Ok();
+            //// User Exists with Okta UID
+            //try
+            //{
+            //    user = await _userService.GetUserByOktaUID(okta_uid);
+            //    var identityResult = await DealEngineIdentityUserLogin(user, identityPassword); // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
+            //    return Ok();
+            //}
+            //catch (Exception ex)
+            //{
+            //    await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+            //    throw new Exception(ex.Message + " " + ex.StackTrace);
+            //}
         }
        
         private async Task<SignInResult> DealEngineIdentityUserLogin(User user, string password)
