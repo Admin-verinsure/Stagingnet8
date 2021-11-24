@@ -542,33 +542,13 @@ namespace DealEngine.WebUI.Controllers
                             new JProperty("activate", true)
                         )
                     ),
-                    new JProperty("profile",
-                        new JObject(
-                            new JProperty("firstName", "NTestFN4"),
-                            new JProperty("lastName", "NTestLN4"),
-                            new JProperty("mobilePhone", "+642102735738"), 
-                            new JProperty("login", "ntestemail4@techcertain.com"),
-                            new JProperty("email", "ntestemail4@techcertain.com"),
-                            new JProperty("CIAM_idp", "clientidp")
-                        )
-                    ),
-                    new JProperty("credentials",
-                        new JObject(
-                            new JProperty("password",
-                                new JObject(
-                                    new JProperty("value", "NTestPw3")
-                                )
-                            )
-                        )
-                    ),
                     //new JProperty("profile",
                     //    new JObject(
-                    //        new JProperty("firstName", user.FirstName),
-                    //        new JProperty("lastName", user.LastName),
-                    //        new JProperty("mobilePhone", user.MobilePhone),
-                    //        //new JProperty("secondEmail", "ntestemail2@techcertain.com"),
-                    //        new JProperty("login", user.Email),
-                    //        new JProperty("email", user.Email),
+                    //        new JProperty("firstName", "NTestFN4"),
+                    //        new JProperty("lastName", "NTestLN4"),
+                    //        new JProperty("mobilePhone", "+642102735738"), 
+                    //        new JProperty("login", "ntestemail4@techcertain.com"),
+                    //        new JProperty("email", "ntestemail4@techcertain.com"),
                     //        new JProperty("CIAM_idp", "clientidp")
                     //    )
                     //),
@@ -576,11 +556,31 @@ namespace DealEngine.WebUI.Controllers
                     //    new JObject(
                     //        new JProperty("password",
                     //            new JObject(
-                    //                new JProperty("value", password)
+                    //                new JProperty("value", "NTestPw3")
                     //            )
                     //        )
                     //    )
                     //),
+                    new JProperty("profile",
+                        new JObject(
+                            new JProperty("firstName", user.FirstName),
+                            new JProperty("lastName", user.LastName),
+                            new JProperty("mobilePhone", user.MobilePhone),
+                            //new JProperty("secondEmail", "ntestemail2@techcertain.com"),
+                            new JProperty("login", user.Email),
+                            new JProperty("email", user.Email),
+                            new JProperty("CIAM_idp", "clientidp")
+                        )
+                    ),
+                    new JProperty("credentials",
+                        new JObject(
+                            new JProperty("password",
+                                new JObject(
+                                    new JProperty("value", password)
+                                )
+                            )
+                        )
+                    ),
                     new JProperty("groupIds",
                         new JArray(
                             group
