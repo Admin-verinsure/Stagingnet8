@@ -373,7 +373,7 @@
                 $.ajax({
                     url: '@Url.Action("PaymentInformation", "Information")',
                     type: "POST",
-                    data: $("#tab_1 :input").serialize({ json: true })
+                    data: $("#tab_1 :input")
                 })
                 .done(function (url) {
                     $("#pxpaymentView").load(url, function () {
@@ -7173,7 +7173,7 @@
         $.ajax({
             url: '@Url.Action("ByPassPayment", "Agreement")',
             type: "Post",
-            data: $("#tab_1 :input").serialize({ json: true }),
+            data: $("#tab_1 :input"),
             async: true
         }).done(function (data) {
             $('#getDocumentsModal').hide();
