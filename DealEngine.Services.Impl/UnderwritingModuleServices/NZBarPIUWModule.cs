@@ -576,7 +576,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             //Update agreement Professional Business, Retroactive Date, TerritoryLimit, Jurisdiction
             agreement.ProfessionalBusiness = "Barristers and other occupations agreed by NZI";
-            string retrodate = "Unlimited but excluding known or reported incidents, not including any previous practice as a barrister & solicitor unless specifically agreed by Lumley";
+            string retrodate = "Unlimited but excluding known or reported incidents, not including any previous practice as a barrister & solicitor unless specifically agreed by NZI";
             agreement.TerritoryLimit = "Worldwide excluding USA and Canada";
             agreement.Jurisdiction = "Worldwide excluding USA and Canada";
             agreement.RetroactiveDate = retrodate;
