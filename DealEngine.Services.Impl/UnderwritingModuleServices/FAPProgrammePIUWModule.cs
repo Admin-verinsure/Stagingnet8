@@ -629,6 +629,15 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
+            decimal decfglimit = 0M;
+            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme")
+            {
+                decfglimit = 125000;
+            }
+            else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme")
+            {
+                decfglimit = 100000;
+            }
 
             //Referral points per agreement
             //Claims / Insurance History
@@ -646,7 +655,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Authorised Bodies
             uwrfauthorisedbodies(underwritingUser, agreement, bolauthorisedbodiesreferral);
             //Referred Fire and General Activity
-            uwrffgactivity(underwritingUser, agreement, decFG, feeincome);
+            uwrffgactivity(underwritingUser, agreement, decFG, feeincome, decfglimit);
 
             if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "NZFSG Programme")
             {
@@ -1600,7 +1609,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
-        void uwrffgactivity(User underwritingUser, ClientAgreement agreement, decimal decFG, decimal feeincome)
+        void uwrffgactivity(User underwritingUser, ClientAgreement agreement, decimal decFG, decimal feeincome, decimal decfglimit)
         {
             if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrffgactivity" && cref.DateDeleted == null) == null)
             {
@@ -1616,7 +1625,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrffgactivity" && cref.DateDeleted == null).Status != "Pending")
                 {
-                    if (decFG > 5 || (decFG * feeincome) > 125000)
+                    if (decFG > 5 || (decFG * feeincome) > decfglimit)
                     {
                         agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrffgactivity" && cref.DateDeleted == null).Status = "Pending";
                     }

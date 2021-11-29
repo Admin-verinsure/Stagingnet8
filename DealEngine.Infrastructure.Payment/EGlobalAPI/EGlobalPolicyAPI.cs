@@ -850,14 +850,22 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             foreach (PackageProduct packageProduct in EGlobalPolicy.Package.PackageProducts)
             {
                 EGlobalPolicy.EGlobalPolicyRiskConfig.Add(new EGlobalPolicyRiskConfig(packageProduct));
+            }
                 foreach(ClientAgreement clientAgreement in EGlobalPolicy.ClientProgramme.Agreements)
                 {
-                    foreach (ClientAgreementTerm clientAgreementTerm in clientAgreement.ClientAgreementTerms)
+                    foreach (PackageProduct packageProducts in EGlobalPolicy.Package.PackageProducts)
                     {
-                        risks.Add(CreatePolicyRisk(packageProduct, clientAgreementTerm));
+                        if (clientAgreement.Product.Id == packageProducts.PackageProductProduct.Id)
+                        {
+                            foreach (ClientAgreementTerm clientAgreementTerm in clientAgreement.ClientAgreementTerms.Where(agree => agree.Bound == true))
+                            {
+                                risks.Add(CreatePolicyRisk(packageProducts, clientAgreementTerm));
+                            }
+                        }
                     }
+                    
                 }
-            }
+           
 
             EGlobalPolicy.PolicyRisks = risks;
 
@@ -902,8 +910,13 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             do
             {
+                if (ClientUIS.PreviousInformationSheet == null && ClientUIS.IsRenewawl)
+                {
+                    gv_transactionType = 3;//renew
+                    break;
+                }
                 // try and find the original policy
-                if (ClientUIS.PreviousInformationSheet != null)
+                else if (ClientUIS.PreviousInformationSheet != null)
                 {
                     previousClientUIS = ClientUIS.PreviousInformationSheet;
 
@@ -1170,7 +1183,11 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             // Fill in its fields
             gv_strUISReference = EGlobalPolicy.ClientProgramme.InformationSheet.ReferenceId;
-            if (objClientAgreement.ClientInformationSheet.IsChange && objClientAgreement.ClientInformationSheet.PreviousInformationSheet != null)
+            if (objClientAgreement.ClientInformationSheet.IsRenewawl && objClientAgreement.ClientInformationSheet.PreviousInformationSheet == null)
+            {
+                gv_strMasterAgreementReference = objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber;
+            }
+            else if (objClientAgreement.ClientInformationSheet.IsChange && objClientAgreement.ClientInformationSheet.PreviousInformationSheet != null)
             {
                 gv_strMasterAgreementReference = gv_strOriginalAgreementReference;
             } else { 
@@ -1203,7 +1220,12 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             EBixPolicy.CreatedByUser = EbixUser;
             EBixPolicy.StatementDescription = EGlobalPolicy.GetDescription2;    // Invoice description
             EBixPolicy.MultiRisk = EGlobalPolicy.MultiRisk;                                   // set multisk flag
-            EBixPolicy.ExternalSystemContractID = String.Format("TC-{0}-{1}", gv_strMasterAgreementReference, EGlobalPolicy.ExtensionCode);
+            EBixPolicy.ExternalSystemContractID = String.Format("TCDE-{0}-{1}", gv_strMasterAgreementReference, EGlobalPolicy.ExtensionCode);
+            if (objClientAgreement.ClientInformationSheet.IsRenewawl && objClientAgreement.ClientInformationSheet.PreviousInformationSheet == null &&
+                !string.IsNullOrEmpty(objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber))
+            {
+                EBixPolicy.ExternalSystemContractID = objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber;
+            }
             EBixPolicy.Description = EGlobalPolicy.GetDescription1;
             EBixPolicy.ClientNumber = EGlobalPolicy.ClientProgramme.EGlobalClientNumber;
             EBixPolicy.TransactionType = gv_transactionType;
@@ -1298,6 +1320,12 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
                 pr.BrokerAmountDue = clientAgreementTerm.Brokerage;
             }
 
+            foreach(ClientAgreementTermExtension extension in clientAgreementTerm.ClientAgreement.ClientAgreementTermExtensions.Where(ext => ext.Bound  == true))
+            {
+                pr.CoyPremium += (extension.Premium * EGlobalPolicy.DiscountRate);
+                pr.BrokerAmountDue += extension.Premium * clientAgreementTerm.ClientAgreement.Brokerage / 100;
+            }
+
             pr.GSTPremium = (pr.CoyPremium * packageProduct.PackageProductProduct.TaxRate);
             pr.GSTBrokerage = (pr.BrokerAmountDue * packageProduct.PackageProductProduct.TaxRate);
             pr.DueByClient = (pr.CoyPremium + pr.GSTPremium);
@@ -1343,14 +1371,29 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             {
                 foreach(EGlobalPolicyRiskConfig eGlobalPolicyRiskConfig in EGlobalPolicy.EGlobalPolicyRiskConfig)
                 {
-                    foreach(EGlobalInsurerConfig eGlobalInsurerConfig in eGlobalPolicyRiskConfig.Insurers)
+                    if (eGlobalPolicyRiskConfig.RiskCode == risk.RiskCode)
                     {
-                        Insurers.Add(GetInsurer(eGlobalInsurerConfig, risk));
+                        foreach (EGlobalInsurerConfig eGlobalInsurerConfig in eGlobalPolicyRiskConfig.Insurers)
+                        {
+                            Insurers.Add(GetInsurer(eGlobalInsurerConfig, risk));
+                        }
                     }
                     
                 }
             }
-               
+
+
+            //foreach (EBixPolicyRisk risk in EGlobalPolicy.PolicyRisks)
+            //{
+            //    foreach (EGlobalPolicyRiskConfig eGlobalPolicyRiskConfig in EGlobalPolicy.EGlobalPolicyRiskConfig)
+            //    {
+            //        foreach (EGlobalInsurerConfig eGlobalInsurerConfig in eGlobalPolicyRiskConfig.Insurers)
+            //        {
+            //            Insurers.Add(GetInsurer(eGlobalInsurerConfig, risk));
+            //        }
+
+            //    }
+            //}
             EGlobalPolicy.Insurers = Insurers;
 
             /*List<EBixInsurer> insurers = new List<EBixInsurer>();
@@ -1429,9 +1472,12 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             {
                 foreach (EGlobalPolicyRiskConfig eGlobalPolicyRiskConfig in EGlobalPolicy.EGlobalPolicyRiskConfig)
                 {
-                    foreach (EGlobalSubAgent eGlobalSubAgent in eGlobalPolicyRiskConfig.SubAgents)
+                    if (eGlobalPolicyRiskConfig.RiskCode == risk.RiskCode)
                     {
-                        subAgents.Add(eGlobalSubAgent.CalculateSubAgent(EGlobalPolicy.ClientProgramme.InformationSheet, risk));
+                        foreach (EGlobalSubAgent eGlobalSubAgent in eGlobalPolicyRiskConfig.SubAgents)
+                        {
+                            subAgents.Add(eGlobalSubAgent.CalculateSubAgent(EGlobalPolicy.ClientProgramme.InformationSheet, risk));
+                        }
                     }
 
                 }              

@@ -27,7 +27,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="hasReportingEntity" name="SLViewModel.HasReportingEntityOptions" data-rule="AAASL" data-item="hasReportingEntity,sllabel"  class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="hasReportingEntity" name="SLViewModel.HasReportingEntityOptions" data-rule="AAASL" data-item="hasReportingEntity,sllabel"  class="form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.SLViewModel.HasReportingEntityOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -46,7 +46,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            <select id="hastraining" name="SLViewModel.HasTrainingOptions" class="custom-select" data-rule="AAASL" data-item="hastraining,sllabel" onchange="OnChange(this.id, this.name)" required>
+                            <select id="hastraining" name="SLViewModel.HasTrainingOptions" class="form-select" data-rule="AAASL" data-item="hastraining,sllabel" onchange="OnChange(this.id, this.name)" required>
                                 @foreach (var option in Model.SLViewModel.HasTrainingOptions)
                                 {
                                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -65,7 +65,7 @@
                                 </label>
                             </div>
                             <div class="col-3">
-                                <select id="hasmanageAML" name="SLViewModel.HasManageAMLOptions" class="custom-select" data-rule="AAASL" data-item="hasmanageAML,sllabel" onchange="OnChange(this.id, this.name)" required>
+                                <select id="hasmanageAML" name="SLViewModel.HasManageAMLOptions" class="form-select" data-rule="AAASL" data-item="hasmanageAML,sllabel" onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.SLViewModel.HasManageAMLOptions)
                                     {
                                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -85,7 +85,7 @@
                                 </label>
                             </div>
                             <div class="col-3">
-                                <select id="hasAMLCFTExtension" name="SLViewModel.HasAMLCFTExtensionOptions" class="custom-select"  onchange="OnChange(this.id, this.name)" required>
+                                <select id="hasAMLCFTExtension" name="SLViewModel.HasAMLCFTExtensionOptions" class="form-select"  onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.SLViewModel.HasAMLCFTExtensionOptions)
                                     {
                                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>

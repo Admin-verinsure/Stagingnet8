@@ -51,7 +51,9 @@ namespace DealEngine.Services.Interfaces
         Task<List<ClientAgreement>> CloneAgreementsForUpdate(User createdBy, Guid oldProgrammeId, Guid currentProgrammeId);
         Task<ClientProgramme> CloneForRenew(User createdBy, Guid renewFromProgrammeBaseId, Guid currentProgrammeId);
         Task<ClientProgramme> GetClientProgrammebyOwnerName(String Programmename , String OwnerName);
-
+        Task<ClientProgramme> GetOriginalClientProgrammeByReferenceNum(String RefrenceNum);
+        Task<bool> AddOrganisationByMembershipByProgram(Organisation organisation, string membership,Guid Progid);
+        
     }
 }
 

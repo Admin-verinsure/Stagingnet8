@@ -13,7 +13,7 @@
 
             foreach (var informationSection in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position <= 5))
             {
-                <h4 style="background-color:#00A8C8; color:white" id="@informationSection.Name" data-newId="@informationSection.CustomView">@informationSection.Name</h4>
+                <h4 data-count="@count" style="background-color:#00A8C8; color:white" id="@informationSection.Name" data-newId="@informationSection.CustomView">@informationSection.Name</h4>
                 @if (!string.IsNullOrWhiteSpace(informationSection.CustomView))
                 {
 
@@ -24,16 +24,17 @@
                     {
                         var countNew = 0;
                         <div id="later" class="hidden">
-                            
+
                             @foreach (var Section in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position > 5))
                             {
-                                <h4 style="background-color:#00A8C8; color:white" id="@Section.Name" data-newId="@informationSection.CustomView@countNew">@Section.Name</h4>
+                                <h4 data-count="@count" style="background-color:#00A8C8; color:white" id="@Section.Name" data-newId="@informationSection.CustomView@countNew">@Section.Name</h4>
                                 if (!string.IsNullOrWhiteSpace(Section.CustomView))
                                 {
                                     @await Html.PartialAsync("PrefabSections/" + Section.CustomView, Model)
 
                                 }
                                 countNew++;
+                                
                             }
                         </div>
                     }
@@ -158,10 +159,11 @@
             }
         }
 
-        <a onclick=" $('#later').removeClass('hidden');$('#less').removeClass('hidden'); $('#more').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken" id="more">More </a>
-        <a onclick=" $('#later').addClass('hidden'); $('#more').removeClass('hidden');$('#less').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken hidden" id="less">Less </a>
-
     </div>
+
+    <a onclick=" $('#later').removeClass('hidden');$('#less').removeClass('hidden'); $('#more').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken" id="more">More</a>
+    <a onclick=" $('#later').addClass('hidden'); $('#more').removeClass('hidden');$('#less').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken hidden" id="less">Less</a>
+
 </div>
 
 
@@ -172,7 +174,7 @@
     <div class="modal-content">
 
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
             <h4 class="modal-title" style="color:blue; font-size:22px">Edit Accordion Order</h4>
         </div>
         <div class="modal-body">
@@ -273,27 +275,27 @@
     }
 
     .container {
-        margin-left: 16% !important;
-        width: 100%;
+        /*margin-left: 16% !important;*/
+        /*width: 100%;*/
     }
 </style>
 
 @*@section pagespecific {
-    <link href="~/jqueryui/jquery-ui.css" rel="stylesheet" />
-    <script src="~/jquery/jquery.min.js"></script>
-    <script src="~/jqueryui/jquery-ui.js"></script>
-    <script>
+        <link href="~/jqueryui/jquery-ui.css" rel="stylesheet" />
+        <script src="~/jquery/jquery.min.js"></script>
+        <script src="~/jqueryui/jquery-ui.js"></script>
+        <script>
 
-        $(window).on("load", function () {
-            debugger;
-            var slectedUpdateType = @Model.selectedUpdateType;
-            if (slectedUpdateType == "TC_amendLocation") {
-                $("#CommonLocation").trigger("click");
+            $(window).on("load", function () {
+                debugger;
+                var slectedUpdateType = @Model.selectedUpdateType;
+                if (slectedUpdateType == "TC_amendLocation") {
+                    $("#CommonLocation").trigger("click");
 
-            }
-        });
+                }
+            });
 
 
-    </script>
+        </script>
 
-}*@
+    }*@

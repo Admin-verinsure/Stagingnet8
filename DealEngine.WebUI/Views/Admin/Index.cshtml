@@ -132,6 +132,17 @@
                             </tr>
                             <tr>
                                 <td align="left">
+                                    Information Sheet Update Notification Email
+                                </td>
+                                <td align="left" style="word-wrap: break-word">
+                                    System Information Sheet Update Notification Email.
+                                </td>
+                                <td>
+                                    @Html.ActionLink("View", "SysEmailTemplate", "Admin", new { systemEmailType = "UISUpdateNotificationEmail", internalNotes = "System Information Sheet Update Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left">
                                     Agreement Referral Notification Email
                                 </td>
                                 <td align="left" style="word-wrap: break-word">
@@ -196,6 +207,17 @@
                                     @Html.ActionLink("View", "SysEmailTemplate", "Admin", new { systemEmailType = "RSANotificationEmail", internalNotes = "RSA Notification Email" }, new { @class = "btn btn-success btn-sm" })
                                 </td>
                             </tr>
+                            <tr>
+                                <td align="left">
+                                    Client Number Notification Email
+                                </td>
+                                <td align="left" style="word-wrap: break-word">
+                                    System Client Number Notification Email.
+                                </td>
+                                <td>
+                                    @Html.ActionLink("View", "SysEmailTemplate", "Admin", new { systemEmailType = "ClientNumberNotificationEmail", internalNotes = "System Client Number Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                                </td>
+                            </tr>
                         </table>
                     </form>
                 </div>
@@ -224,7 +246,7 @@
                                     </td>
                                     <td>
 
-                                        <select data-placeholder="Click here to search locked users" id="unlockUser" name="unlockUser" multiple class="col-6 chosen-select form-control b">
+                                        <select data-placeholder="Click here to search locked users" id="unlockUser" name="unlockUser" multiple class="col-6 chosen-select b form-select">
                                             @foreach (var user in Model.LockedUsers)
                                             {
                                                 <option value="@user.Value">@user.Text</option>

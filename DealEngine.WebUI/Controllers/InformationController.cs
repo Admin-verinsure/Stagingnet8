@@ -283,7 +283,7 @@ namespace DealEngine.WebUI.Controllers
                 user = await CurrentUser();
 
                 //build custom models
-                await GetRevenueViewModel(model, sheet.RevenueData);
+                await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
 
                 //build models from answers
@@ -582,6 +582,19 @@ namespace DealEngine.WebUI.Controllers
                         }
 
                       }
+
+                      if (clientProgramme.BaseProgramme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                      {
+                        ClientAgreementEndorsement cAECLExt = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Social Engineering Fraud Extension");
+
+                        if (cAECLExt != null)
+                        {
+                            cAECLExt.DateDeleted = DateTime.UtcNow;
+                            cAECLExt.DeletedBy = user;
+                        }
+
+                      }
+
                     }
                     await uow.Commit();
                 }
@@ -606,7 +619,16 @@ namespace DealEngine.WebUI.Controllers
                                     cAELPLAIncl.DeletedBy = null;
                                 }
                             }
-                            
+                            if (clientProgramme.BaseProgramme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                            {
+                                ClientAgreementEndorsement cAECLExt = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Social Engineering Fraud Extension");
+                                if (cAECLExt != null)
+                                {
+                                    cAECLExt.DateDeleted = null;
+                                    cAECLExt.DeletedBy = null;
+                                }
+                            }
+
                         }
                     }
 
@@ -940,7 +962,7 @@ namespace DealEngine.WebUI.Controllers
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
                 model.Advisory = await _milestoneService.SetMilestoneFor("Agreement Status - Not Started", user, sheet);
                 //build custom models
-                await GetRevenueViewModel(model, sheet.RevenueData);
+                await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
 
                 //build models from answers
@@ -1089,7 +1111,7 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-        private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData)
+        private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData,Programme programme)
         {
             try
             {
@@ -1098,6 +1120,9 @@ namespace DealEngine.WebUI.Controllers
                     model.RevenueDataViewModel = _mapper.Map<RevenueDataViewModel>(revenueData);
                     model.RevenueDataViewModel.AdditionalActivityViewModel = _mapper.Map<AdditionalActivityViewModel>(revenueData.AdditionalActivityInformation);
                     model.RevenueDataViewModel.AdditionalActivityViewModel.SetOptions();
+                    model.RevenueDataViewModel.IslastFinancialYear = programme.IslastFinancialYear;
+                    model.RevenueDataViewModel.IsCurrentYear = programme.IsCurrentYear;
+                    model.RevenueDataViewModel.IsnextFinancialYear = programme.IsnextFinancialYear;
                 }
             }
             catch (Exception ex)
@@ -1247,6 +1272,8 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+        //string jsonString = JsonSerializer.Serialize(weatherForecast);
         [HttpPost]
         public async Task<IActionResult> SubmitInformation(IFormCollection collection)
         {
@@ -1358,7 +1385,7 @@ namespace DealEngine.WebUI.Controllers
                             await GenerateUWM(user, sheet, sheet.ReferenceId);
                             if (sheet.Programme.BaseProgramme.ProgEnableEmail)
                             {
-                                await _emailService.SendSystemEmailAllSubUISComplete(sheet.Owner, sheet.Programme.BaseProgramme, sheet);
+                           await _emailService.SendSystemEmailAllSubUISComplete(sheet.Owner, sheet.Programme.BaseProgramme, sheet);
                             }
                             //sheet = baseSheet;
                         }
@@ -1367,16 +1394,16 @@ namespace DealEngine.WebUI.Controllers
                     if (sheet.Programme.BaseProgramme.ProgEnableEmail)
                     {
                         //sheet owner is null
-                    //    await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
+                        await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out information sheet submission notification email
-                    //    await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
+                        await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out agreement refer notification email
                         foreach (ClientAgreement agreement in clientProgramme.Agreements)
                         {
                             if (agreement.Status == "Referred")
                             {
-                                await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
-                                await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
+                              await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
+                              await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
                             }
                         }
                     }
@@ -1441,6 +1468,12 @@ namespace DealEngine.WebUI.Controllers
                 ClientProgramme CloneProgramme = await _programmeService.CloneForUpdate(createdBy, formCollection, null);
 
                 var updateType = formCollection["ChangeType"];
+
+                if (CloneProgramme.BaseProgramme.ProgEnableEmail)
+                {
+                    //send out information sheet update notification email
+                    await _emailService.SendSystemEmailUISUpdateNotify(createdBy, CloneProgramme.BaseProgramme, CloneProgramme.InformationSheet, CloneProgramme.InformationSheet.Owner);
+                }
 
                 return (RedirectToAction("EditInformation", new { id = CloneProgramme.Id, updateType = updateType }));
 
@@ -1801,7 +1834,7 @@ namespace DealEngine.WebUI.Controllers
                 var isSubsystem = await _programmeService.IsBaseClass(clientProgramme);
                 var OrgUser = await _userService.GetUserByEmail(clientProgramme.InformationSheet.Owner.Email);
                 List<Organisation> DefaultMarinas = await _organisationService.GetPublicMarinas();
-                List<Organisation> DefaultInstitutes = await _organisationService.GetPublicFinancialInstitutes();
+                List<Organisation> DefaultInstitutes = await _organisationService.GetPublicFinancialInstitutes(); //??error
                 
                 Programme programme = clientProgramme.BaseProgramme;
                 InformationViewModel model = new InformationViewModel(clientProgramme.InformationSheet, OrgUser, user)
@@ -1824,11 +1857,24 @@ namespace DealEngine.WebUI.Controllers
                     foreach (var Institute in DefaultInstitutes)
                     {
                         InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial");
+                        //InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault();
+
+                       // if(unit != null)
                         if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
+
                         {
-                            //model.ClientInformationSheet.Locations.Add(unit.Location);
-                            model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                            if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
+                            {
+                                //model.ClientInformationSheet.Locations.Add(unit.Location);
+                                model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                            }
                         }
+                        //InterestedPartyUnit unit1 = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "CoOwner");
+
+                        //if(unit1 != null)
+                        //{
+                        //    model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                        //}
                     }
                 }
                 model.Name = programme.Name;

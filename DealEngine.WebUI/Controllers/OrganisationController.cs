@@ -495,6 +495,10 @@ namespace DealEngine.WebUI.Controllers
                 string Email = collection["OrganisationEmail"].ToString();
                 string Name = collection["OrganisationName"].ToString();
                 string InsuranceAttribute = collection["InsuranceAttribute"].ToString();
+                //if(InsuranceAttribute == "CoOwner")
+                //{
+                //    InsuranceAttribute = "Financial";
+                //}
                 string OrganisationType = collection["OrganisationTypeName"].ToString();
                 currentUser = await CurrentUser();
                 Guid.TryParse(collection["AnswerSheetId"], out Guid SheetId);
@@ -694,6 +698,27 @@ namespace DealEngine.WebUI.Controllers
 
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> RemoveIsTheBarrister(IFormCollection collection)
+        {
+            User currentUser = await CurrentUser(); 
+            Guid Id = Guid.Parse(collection["ClientInformationSheet.Id"]);
+            ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
+            foreach (var organisation in Sheet.Organisation)
+            {
+                var barristerUnit = (BarristerUnit)organisation.OrganisationalUnits.FirstOrDefault(i => i.Name == "Barrister");
+                if (barristerUnit != null)
+                {
+                    barristerUnit.IsPrincipalBarrister = false;
+                }
+
+                await _organisationService.Update(organisation);
+            }
+
+            return Ok();
+        }
+
 
         public async Task<IActionResult> SetPrimary(Guid id)
         {

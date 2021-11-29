@@ -1,11 +1,13 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 @using DealEngine.Domain.Entities
-@using System 
+@using System
 @{
     IList<Territory> SelectedTerritories = Model.RevenueDataViewModel.Territories.Where(t => t.Selected == true).ToList();
     IList<BusinessActivity> SelectedActivities = Model.RevenueDataViewModel.Activities.Where(t => t.Selected == true).ToList();
+
 }
 
+@*@Html.HiddenFor(m => m.RevenueDataViewModel.IsRevenueData,new { @id="RevenueFlag"})*@
 
     <form class="is-valid" id="RevenueDataViewModel" data-accordianId="Fee Income / Activities">
         <div id="SharedRevenue">
@@ -28,49 +30,49 @@
                                 <label for="territories" class="label required">Please select the territories you trade in</label>
                             </div>
                             <div class="col-8">
-                                <select id="territories" name="RevenueDataViewModel.Territories" form="RevenueDataViewModel" class="chosen-select form-control b" multiple data-rule="BuildSharedTable" data-item="territories,territoriestable" onchange="OnChange(this.id, this.name)" required>
+                                <select id="territories" name="RevenueDataViewModel.Territories" form="RevenueDataViewModel" class="chosen-select form-select b" multiple data-rule="BuildSharedTable" data-item="territories,territoriestable" onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.RevenueDataViewModel.Territories)
                                     {
                                         <option selected="@option.Selected" value="@option.TemplateId.ToString()">@option.Location</option>
                                     }
                                 </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="RevenueDataViewModel.Territories">
-                        <div class="form-group">
-                            <table id="territoriestable" class="table">
-                                <thread class="thead-dark">
-                                    <tr>
-                                        <th>Territories</th>
-                                        <th>Percentage Amount (%)</th>
-                                    </tr>
-                                </thread>
-                                <tbody>
-                                    @foreach (var select in SelectedTerritories)
-                                    {
-                                        <tr>
-                                            <td>
-                                                @select.Location
-                                            </td>
-                                            <td>
-                                                <input class="form-control" type="text" id="@select.Location.Trim()" form="RevenueDataViewModel" name="RevenueDataViewModel.Territories.@select.TemplateId.ToString()" onchange="OnChange(this.id, this.name)" data-rule="ValidateSharedTable" data-item="validatetableterritories" value="@System.Decimal.Round(select.Percentage, 2)" />
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="form-group">
-                            <a class="btn btn-sm btn-primary text-light" onclick="RevenueDataOnSubmit('territories', 'RevenueDataViewModel');">  Continue  </a>
+                            @*</div>*@
                         </div>
                     </div>
                 </div>
-                <div id="RevenueTab2" class="tab-pane" role="tabpanel">
+                <div id="RevenueDataViewModel.Territories">
                     <div class="form-group">
-                        <div class="row">
-                            <div class="container-fluid">
-                                <div class="row">
+                        <table id="territoriestable" class="table">
+                            <thread class="thead-dark">
+                                <tr>
+                                    <th>Territories</th>
+                                    <th>Percentage Amount (%)</th>
+                                </tr>
+                            </thread>
+                            <tbody>
+                                @foreach (var select in SelectedTerritories)
+                                {
+                                    <tr>
+                                        <td>
+                                            @select.Location
+                                        </td>
+                                        <td>
+                                            <input class="form-control" type="text" id="@select.Location.Trim()" form="RevenueDataViewModel" name="RevenueDataViewModel.Territories.@select.TemplateId.ToString()" onchange="OnChange(this.id, this.name)" data-rule="ValidateSharedTable" data-item="validatetableterritories" value="@System.Decimal.Round(select.Percentage, 2)" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="form-group">
+                        <a class="btn btn-sm btn-primary text-light" onclick="RevenueDataOnSubmit('territories', 'RevenueDataViewModel');">  Continue  </a>
+                    </div>
+                </div>
+            </div>
+            <div id="RevenueTab2" class="tab-pane" role="tabpanel">
+                        <div class="row" >
+                            <div class="container-fluid" >
+                                <div class="row" id="lastFinancialYeardiv">
                                     <div class="col-9">
                                         <label for="lastFinancialYear" class="label required">Actual commission / fees for Last completed financial year</label>
                                     </div>
@@ -78,7 +80,7 @@
                                         @Html.TextBoxFor(m => m.RevenueDataViewModel.LastFinancialYearTotal, Decimal.Round(Model.RevenueDataViewModel.LastFinancialYearTotal, 2).ToString(), new { @class = "form-control", @id = "lastFinancialYear", onchange = "OnChange(this.id, this.name)", @placeholder = "$", @required = "" })
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row" id="CurrentYeardiv">
                                     <div class="col-9">
                                         <label for="currentYear" class="label required">Estimated commission / fees for Current year</label>
                                     </div>
@@ -86,7 +88,7 @@
                                         @Html.TextBoxFor(m => m.RevenueDataViewModel.CurrentYearTotal, Decimal.Round(Model.RevenueDataViewModel.CurrentYearTotal, 2).ToString(), new { @class = "form-control", @id = "currentYear", onchange = "OnChange(this.id, this.name)", @placeholder = "$", @required = "" })
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="row" id="nextFinancialYeardiv">
                                     <div class="col-9">
                                         <label for="nextFinancialYear">Estimated commission / fees for Next financial year</label>
                                     </div>
@@ -96,14 +98,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
                     <div class="form-group">
                         <div class="row">
                             <div class="col-4">
                                 <label for="activities">Select Activities</label>
                             </div>
                             <div class="col-8">
-                               
+
                                 <select id="activities" name="RevenueDataViewModel.Activities" multiple class="chosen-select" form="RevenueDataViewModel" data-rule="BuildSharedTable" data-item="activities,activitiestable" onchange="OnChange(this.id, this.name)" required>
                                     @foreach (var option in Model.RevenueDataViewModel.Activities)
                                     {
@@ -165,7 +166,7 @@
                                     <label for="hasinspectionreportoptions">Please describe the nature of these reports and what they would be used for, (examples. Domestic pre-purchase property inspections, Commercial building Inspections for Earthquake Strengthening, Inspections relating to Building Feasibility reports)</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasinspectionreportoptions" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasInspectionReportOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasinspectionreportoptions" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasInspectionReportOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasInspectionReportOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -202,7 +203,7 @@
                                     <label for="hasdisclaimerreports">Do you include limitations of liability clauses and liability disclaimers in your reports?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasdisclaimerreports" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasDisclaimerReportsOptions" form="RevenueDataViewModel" class="custom-select" form="RevenueDataViewModel" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasdisclaimerreports" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasDisclaimerReportsOptions" form="RevenueDataViewModel" class="form-select" form="RevenueDataViewModel" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasDisclaimerReportsOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -224,7 +225,7 @@
                                     <label for="hasobservationservices">Was contracted to provide construction management or observation services?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasobservationservices" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasObservationServicesOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasobservationservices" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasObservationServicesOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasObservationServicesOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -239,7 +240,7 @@
                                     <label for="hasrecommendedcladding">Recommended the use of any cladding product?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasrecommendedcladding" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasRecommendedCladdingOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasrecommendedcladding" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasRecommendedCladdingOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasRecommendedCladdingOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -254,7 +255,7 @@
                                     <label for="hasstateschool">Has undertaken in the past 10 years any work on Ministry of Education State Schools (i.e Not Private, Integrated or Designated Character Schools)?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasstateschool" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasStateSchoolOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasstateschool" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasStateSchoolOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasStateSchoolOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -269,7 +270,7 @@
                                     <label for="hasissuedcertificates">Issued practical completion certificates?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasissuedcertificates" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasIssuedCertificatesOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasissuedcertificates" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasIssuedCertificatesOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasIssuedCertificatesOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -406,5 +407,21 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </form>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+
+        if ("@Model.RevenueDataViewModel.IslastFinancialYear" == "True") {
+            $("#lastFinancialYeardiv").hide('2000');
+        }
+        if ("@Model.RevenueDataViewModel.IsCurrentYear" == "True") {
+            $("#CurrentYeardiv").hide('2000');
+        }
+        if ("@Model.RevenueDataViewModel.IsnextFinancialYear" == "True") {
+            $("#nextFinancialYeardiv").hide('2000');
+        }
+    });
+</script>

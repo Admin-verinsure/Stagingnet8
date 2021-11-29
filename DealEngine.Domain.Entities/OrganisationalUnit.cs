@@ -87,6 +87,52 @@ namespace DealEngine.Domain.Entities
 
     }
 
+    public class EBaristerUnit : OrganisationalUnit
+    {
+        public EBaristerUnit() { }
+        public EBaristerUnit(User User, string Name, string Type, IFormCollection Collection)
+            : base(User, Name, Type, Collection)
+        {
+        }
+        public virtual string OtherInformation { get; set; }
+        [Display(Name = "Title")]
+        public virtual string EInitial { get; set; }
+        [Display(Name = "Honorific")]
+        public virtual string Ehonorific { get; set; }
+
+    }
+
+    public class JBaristerUnit : OrganisationalUnit
+    {
+        public JBaristerUnit() { }
+        public JBaristerUnit(User User, string Name, string Type, IFormCollection Collection)
+            : base(User, Name, Type, Collection)
+        {
+        }
+        public virtual string OtherInformation { get; set; }
+        [Display(Name = "Title")]
+
+        public virtual string JInitial { get; set; }
+        [Display(Name = "Honorific")]
+        public virtual string Jhonorific { get; set; }
+    }
+
+    public class BarristerUnit : OrganisationalUnit
+    {
+        public BarristerUnit() { }
+        public BarristerUnit(User User, string Name, string Type, IFormCollection Collection)
+            : base(User, Name, Type, Collection)
+        {
+        }
+        public virtual string OtherInformation { get; set; }
+        [Display(Name = "Is this individual the Principal Barrister?")]
+        public virtual bool IsPrincipalBarrister { get; set; }
+        [Display(Name = "Title")]
+        public virtual string Initial { get; set; }
+        [Display(Name = "Honorific")]
+        public virtual string honorific { get; set; }
+    }
+
     public class PersonnelUnit : OrganisationalUnit
     {
         public PersonnelUnit() { }

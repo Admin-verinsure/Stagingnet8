@@ -62,7 +62,7 @@
                         </td>
 
                         <td align="left">
-                            <select class="browser-default custom-select custom-select-sm col-sm-3" id="branch">
+                            <select class="form-select browser-default custom-select-sm col-sm-3 " id="branch">
                                 <option selected="selected" value="">-- Select here --</option>
                                 <option value="AKL">AKL</option>
                                 <option value="CHC">CHC</option>
@@ -146,7 +146,7 @@
                                 </td>
 
                                 <td width="20%">
-                                    <a href="#TransactionXMl" aria-hidden="true" style="color:forestgreen" data-toggle="modal" data-trans-xml="@submission.SubmissionRequestXML"><i class="fa fa-edit"> View Transaction XML </i></a>
+                                    <a href="#TransactionXMl" aria-hidden="true" style="color:forestgreen" data-bs-toggle="modal" data-trans-xml="@submission.SubmissionRequestXML"><i class="fa fa-edit"> View Transaction XML </i></a>
                                 </td>
 
                                 <td width="15%">
@@ -169,7 +169,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Transaction Detail</h4>
-                <button data-dismiss="modal" data-backdrop="false" type="button" class="close">&times;</button>
+                <button data-bs-dismiss="modal" data-backdrop="false" type="button" class="close">&times;</button>
             </div>
             <div class="modal-body">
                 <textarea id="textareaID" class="form-control" cols="1" rows="20" name="transxml"></textarea>

@@ -21,7 +21,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasclaimquestions" name="OTViewModel.HasClaimQuestionsOptions" data-rule="OTAlert" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasclaimquestions" name="OTViewModel.HasClaimQuestionsOptions" data-rule="OTAlert" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.OTViewModel.HasClaimQuestionsOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -38,7 +38,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hascircumstance" name="OTViewModel.HasInvolvedTrusteeOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hascircumstance" name="OTViewModel.HasInvolvedTrusteeOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.OTViewModel.HasInvolvedTrusteeOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -69,7 +69,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hascircumstance" name="OTViewModel.HasLessYearsOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hascircumstance" name="OTViewModel.HasLessYearsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.OTViewModel.HasLessYearsOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -86,7 +86,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hascircumstance" name="OTViewModel.HasFinancialObligationsOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hascircumstance" name="OTViewModel.HasFinancialObligationsOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.OTViewModel.HasFinancialObligationsOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>

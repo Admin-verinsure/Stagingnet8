@@ -83,7 +83,7 @@
                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 " id="MarinaLocSec">
                     <label class="label required required">Marina Location</label>
                     <label class="input form-group">
-                        <select onchange="MarinaLocSelected()" class="form-control b" id="WaterLocationMarinaLocation" name="WaterLocationMarinaLocation" required>
+                        <select onchange="MarinaLocSelected()" class="form-select b" id="WaterLocationMarinaLocation" name="WaterLocationMarinaLocation" required>
                             <option selected="selected" value="">-- Select --</option>
                             @foreach (var bwloc in Model.OrganisationViewModel.Organisations)
                             {
@@ -98,7 +98,7 @@
                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 " id="MarinaLocSec">
                     <label class="label required required">Organisational Unit</label>
                     <label class="input form-group">
-                        <select onchange="OUSelected()" class="form-control b" id="OrgUnit" name="OrganisationalUnit" required>
+                        <select onchange="OUSelected()" class="form-select b" id="OrgUnit" name="OrganisationalUnit" required>
                             <option selected="selected" value="">-- Select --</option>
 
                             @*<option value="add">Add Marina Location</option>*@
@@ -111,7 +111,7 @@
                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <label class="label required">Location</label>
                     <label class="input">
-                        <select class="form-control rmv" id="WaterLocationLocation" name="WaterLocationLocation" required>
+                        <select class="form-select rmv" id="WaterLocationLocation" name="WaterLocationLocation" required>
                             <option selected="selected" value="">-- Select --</option>
                             @*@foreach (var wloc in Model.Locations)
                                 {
@@ -140,7 +140,7 @@
                 <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
                     <label class="label cgmodalLabel required">Moored Type</label>
                     <label class="input w100">
-                        <select class="form-control b" data-name="WaterLocationMooringType" id="MooringTypeModal" name="WaterLocationMooringType" required>
+                        <select class="form-select b" data-name="WaterLocationMooringType" id="MooringTypeModal" name="WaterLocationMooringType" required>
                             <option selected="selected" value="">-- Select --</option>
                             <option value="Pile">Pile</option>
                             <option id="MooredTypeMarina" value="Marina">Marina</option>
@@ -175,7 +175,7 @@
                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 " id="AddMarinaLocSec">
                     <label class="label required required">Marina Location</label>
                     <label class="input form-group">
-                        <select onchange="AddMarinaLocSelected()" class="form-control b" id="AddWaterLocationMarinaLocation" name="WaterLocationMarinaLocation" required>
+                        <select onchange="AddMarinaLocSelected()" class="form-select b" id="AddWaterLocationMarinaLocation" name="WaterLocationMarinaLocation" required>
                             <option selected="selected" value="">-- Select --</option>
                             @foreach (var bwloc in Model.OrganisationViewModel.Organisations)
                             {
@@ -191,7 +191,7 @@
                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 " id="MarinaLocSec">
                     <label class="label required required">Organisational Unit</label>
                     <label class="input form-group">
-                        <select onchange="AddOUSelected()" class="form-control b" id="AddOrgUnit" name="OrganisationalUnit" required>
+                        <select onchange="AddOUSelected()" class="form-select b" id="AddOrgUnit" name="OrganisationalUnit" required>
                             <option selected="selected" value="">-- Select --</option>
 
                             <option value="add">Add Marina Location</option>
@@ -205,7 +205,7 @@
                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <label class="label required">Location</label>
                     <label class="input">
-                        <select class="form-control rmv" id="AddWaterLocationLocation" name="WaterLocationLocation" required>
+                        <select class="form-select rmv" id="AddWaterLocationLocation" name="WaterLocationLocation" required>
                             <option selected="selected" value="">-- Select --</option>
                             @*@foreach (var wloc in Model.Locations)
                                 {
@@ -234,7 +234,7 @@
                 <section class="col col-xs-6 col-sm-6 col-md-6 col-lg-6">
                     <label class="label cgmodalLabel required">Moored Type</label>
                     <label class="input w100">
-                        <select class="form-control b" data-name="WaterLocationMooringType" id="AddMooringTypeModal" name="WaterLocationMooringType" required>
+                        <select class="form-select b" data-name="WaterLocationMooringType" id="AddMooringTypeModal" name="WaterLocationMooringType" required>
                             <option selected="selected" value="">-- Select --</option>
                             <option value="Pile">Pile</option>
                             <option id="MooredTypeMarina" value="Marina">Marina</option>

@@ -168,6 +168,24 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> NZBarImportOwners()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportNZBarOwners(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> FANZImportOwners()
         {
@@ -427,6 +445,25 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ApolloImportPIUsers()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportApolloServicePI(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> NZFSGImportPInewUsers()
         {
@@ -499,6 +536,95 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> ApolloImportMLUsers()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportApolloServiceML(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ApolloImportROUsers()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportApolloServiceRO(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> ApolloImportMLUIS()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportApolloServiceMLUIS(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ApolloImportPIUIS()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportApolloServicePIUIS(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ApolloImportROUIS()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportApolloServiceROUIS(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> NZFSGImportMLUsersNewCompany()
         {
@@ -776,6 +902,42 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
                 await _importService.ImportAOEServiceClaims(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> NZBarPreRenewData()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportNZBarPreRenewData(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> NZBarImportClaims()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportNZBarImportClaims(user);
 
                 return RedirectToAction("Index", "Home");
             }
@@ -1168,6 +1330,16 @@ namespace DealEngine.WebUI.Controllers
                     case "UISSubmissionNotificationEmail":
                         {
                             systememailtemplatename = "Information Sheet Submission Notification Email";
+                            break;
+                        }
+                    case "UISUpdateNotificationEmail":
+                        {
+                            systememailtemplatename = "Information Sheet Update Notification Email";
+                            break;
+                        }
+                    case "ClientNumberNotificationEmail":
+                        {
+                            systememailtemplatename = "Client Number Notification Email";
                             break;
                         }
                     case "AgreementReferralNotificationEmail":

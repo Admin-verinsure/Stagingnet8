@@ -20,7 +20,7 @@
                 </div>
                 <div class="form-group">
                     @Html.LabelFor(m => m.Owners, new { @class = "label required" })
-                    <select name="ClientProgrammeId" class="custom-select" required>
+                    <select name="ClientProgrammeId" class="form-select" required>
                         @foreach (var option in Model.Owners)
                         {
                             <option value="@option.Value">@option.Text</option>

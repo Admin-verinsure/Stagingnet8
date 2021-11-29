@@ -107,7 +107,7 @@ namespace DealEngine.WebUI.Controllers
         {
             return View();
         }
-
+     
         public async Task<IActionResult> Index()
         {
             ViewBag.Title = "DealEngine Dashboard";
@@ -147,6 +147,12 @@ namespace DealEngine.WebUI.Controllers
                 model.ProgrammeItems = new List<ProgrammeItem>();
                 if (model.CurrentUserType == "Client")
                 {
+
+                    //var OrganisationsCheck = user.Organisations.Any();
+                    if (user.Organisations == null || user.Organisations.Any() == false)
+                    {
+                        return RedirectToAction("UserWithNoOrganisation", "Error");
+                    }
                     foreach (var clientorg in user.Organisations)
                     {
                         var clientProgList = _programmeService.GetClientProgrammesByOwner(clientorg.Id).Result.GroupBy(bp => bp.BaseProgramme.Name).Select(bp => bp.FirstOrDefault());
@@ -167,13 +173,14 @@ namespace DealEngine.WebUI.Controllers
                     programmeList = await _programmeService.GetAllProgrammes();
                 }
 
-                foreach (Programme programme in programmeList.Distinct().OrderBy(proglist => proglist.DateCreated))
+                foreach (Programme programme in programmeList.Distinct().OrderByDescending(proglist => proglist.DateCreated))
                 {
                     model.ProgrammeItems.Add(new ProgrammeItem(programme)
                     {
                         Languages = languages
                     });
                 }
+
 
                 return View("IndexNew", model);
             }

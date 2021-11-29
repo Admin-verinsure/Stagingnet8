@@ -11,22 +11,36 @@
         var startDate = new Date(currYear, currMonth, 1);
     } else {
         var startDate = new Date(currYear, currMonth, currDate);
-    };
-
-    var mm = d.getMonth()+1; //January is 0 so need to add 1 to make it 1!
-    if(currDate<10){
-        currDate='0'+currDate
-    } 
-    if(mm<10){
-       mm='0'+mm
-      } 
-    d = currYear + '-' + mm + '-' + currDate;
-    if (document.getElementById("dateselected") != null) {
-    document.getElementById("dateselected").setAttribute("min", d);
     }
 
 
-    
+  
+
+
+    var mm = d.getMonth() + 1; //January is 0 so need to add 1 to make it 1!
+    if (currDate < 10) {
+        currDate = '0' + currDate
+    }
+    if (mm < 10) {
+        mm = '0' + mm
+    }
+
+    d = currYear + '-' + mm + '-' + currDate;
+    if (document.getElementById("dateselected") != null) {
+        document.getElementById("dateselected").setAttribute("min", d);
+    }
+
+    debugger;
+
+    var currentDate  = document.getElementsByClassName("currentDate");
+    console.log(currentDate);
+    if (document.getElementsByClassName("currentDate") != null) {
+        
+        //document.getElementsByClassName("currentDate")[0].setAttribute("max", d);
+        $(".currentDate").attr("max", d);
+    }
+
+
 
     $('#FAPCoverStartDate').datepicker({
         dateFormat: "dd/mm/yy",
@@ -37,6 +51,8 @@
     //if (document.getElementById("FAPCoverStartDate") != null) {
     //    document.getElementById("FAPCoverStartDate").setAttribute("min", startDate.toISOString().split('T')[0]);
     //}
+
+    //currentDate
 
     $('#AddBoatEffectiveDate').datepicker({
         dateFormat: "yy-mm-dd",
@@ -93,6 +109,7 @@
     }
 
     function NamedPartyTableRefreshAPI(data, type) {
+        debugger;
         var editbuttonstring = "<button class=\"btn btn-success btn-sm\" onclick=\"OnClick('', 'Organisation', '" + data.id + "', '" + data.id + "')\"><i class=\"fa fa- dit\"></i> Edit</button>";
         var deletebuttonstring = "<button onclick=\"RemoveOrganisation('" + data.id + "', 'Insured Details / Named Parties')\" type=\"button\" class=\" btn btn-danger btn-sm\" id=\"trash\"><span class=\"fa fa-trash\"></span></button>";
         var table = document.getElementById("tblOrganisation");
@@ -170,6 +187,15 @@
                             } else if(Value == "Director") {
                                 Unit = "DirectorUnit";
                                 PopulateOrganisationalUnit(OutPut, Unit);
+                            } else if(Value == "Barrister") {
+                                Unit = "BarristerUnit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
+                            }else if(Value == "EBarrister") {
+                                Unit = "EBaristerUnit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
+                            }else if(Value == "JBarrister") {
+                                Unit = "JBaristerUnit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
                             }else {
                                 if (Unit.length > 0) {
                                     PopulateOrganisationalUnit(OutPut, Unit[0].id);
@@ -234,7 +260,9 @@
                     document.getElementById("Organisation.InsuranceAttribute").disabled = true;
 
                     }
-                    document.getElementById("Else").hidden = false;
+                    if (document.getElementById("Else") != null) { 
+                     document.getElementById("Else").hidden = false;
+                    }
 
                     TradingNameOwnerOnLoad();
 
@@ -242,8 +270,13 @@
                     if (ProgrammeName.value == "NZPI Programme") {
                         NZPIOwnerOnLoad();
                     }
-                    if (ProgrammeName.value == "Apollo Programme" || ProgrammeName.value == "Abbott Financial Advisor Liability Programme") {
+                    if (ProgrammeName.value == "Apollo Programme" || ProgrammeName.value == "Apollo ML Programme" ||
+                        ProgrammeName.value == "Abbott Financial Advisor Liability Programme") {
                         ApolloOwnerOnLoad();
+                    } 
+
+                    if (ProgrammeName.value == "New Zealand Bar Association Liability Programme") {
+                        ABusinessOnChange();
                     } 
                     // if (ProgrammeName.value == "Financial Advice NZ Financial Advice Provider Liability Programme") {
                     //     var TradingName = document.getElementById("Organisation.TradingName");
@@ -269,6 +302,31 @@
         } catch (ex) { debugger; }
     }
 
+    
+     function ABusinessOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+         if (IsJBarristerUnit != null) {
+
+              document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
+         }
+         if (IsBarristerUnit != null) {
+                document.querySelectorAll('.BarristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+             });
+         }
+         if (IsEBarristerUnit != null) {
+             document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
+
+         }
+          
+    }
+
     function TradingNameOwnerOnLoad() {
         debugger;
         var TradingName = document.getElementById("NoTradingName");
@@ -289,6 +347,7 @@
         document.getElementById("Organisation.OrganisationType").disabled = false;
     }
 
+    
     function ApolloOwnerOnLoad(){
         document.getElementById("HideDateofIncorportation").hidden = false;
     }

@@ -33,8 +33,12 @@ namespace DealEngine.WebUI
             Response.StatusCode = 500;
             return View();
         }
-
-		[HttpGet]
+        [HttpGet]
+        public async Task<IActionResult> UserWithNoOrganisation()
+        {
+            return View();
+        }
+        [HttpGet]
 		public ViewResult Antiforgery ()
 		{
             return View();

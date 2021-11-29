@@ -8,7 +8,7 @@
                 <label for="HaveAnyRunOffinsurance" class="label required">Would you like Run Off insurance?</label>
             </div>
             <div class="col-3">
-                <select id="HaveAnyRunOffinsurance" name="PIViewModel.HaveAnyRunOffinsurance" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="HaveAnyRunOffinsurance" name="PIViewModel.HaveAnyRunOffinsurance" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.PIViewModel.HaveAnyRunOffinsurance)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -27,7 +27,7 @@
                     <label for="YearCover" class="label required">How many years of cover would you require?</label>
                 </div>
                 <div class="col-3">
-                    <select id="YearCover" name="PIViewModel.YearCover" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="YearCover" name="PIViewModel.YearCover" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.YearCover)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>

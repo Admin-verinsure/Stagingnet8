@@ -22,11 +22,13 @@ namespace DealEngine.WebUI.Models
                 Programme = ClientInformationSheet.Programme.BaseProgramme;
                 if(Programme.NamedPartyUnitName == "NZFSG Programme" || Programme.NamedPartyUnitName == "TripleA Programme" || Programme.NamedPartyUnitName == "Apollo Programme" || 
                     Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" || 
-                    Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
+                    Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme" || Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
                 {
                     AdvisorUnit = new AdvisorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
                     AdministratorUnit = new AdministratorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
-
+                    EBaristerUnit = new EBaristerUnit(null, null, null, null);
+                    JBaristerUnit = new JBaristerUnit(null, null, null, null);
+                    BarristerUnit = new BarristerUnit(null, null, null, null);
                     if (Programme.NamedPartyUnitName == "NZFSG Programme") 
                     { 
                         InsuranceAttributes = GetAdvisorTypes1(); 
@@ -34,6 +36,10 @@ namespace DealEngine.WebUI.Models
                     else if(Programme.NamedPartyUnitName == "TripleA Programme")
                     {
                         InsuranceAttributes = GetAdvisorTypes2();
+                    }
+                    if (Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                    {
+                        InsuranceAttributes = GetAdvisorTypes5();
                     }
                     else if (Programme.NamedPartyUnitName == "Apollo Programme" || Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" || 
                         Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
@@ -58,6 +64,7 @@ namespace DealEngine.WebUI.Models
                     HasIsTripleAApprovalOptions = GetBooleanSelectOptions();
                     HasIsFAPOptions = GetBooleanSelectOptions();
                     HasInterposedPersonOptions = GetBooleanSelectOptions();
+                    HasBarristerPrincipalOptions = GetBooleanSelectOptions();
 
 
 
@@ -189,6 +196,7 @@ namespace DealEngine.WebUI.Models
             return _Types;
         }
 
+       
         private IList<SelectListItem> GetAssociationOptions2()
         {
             var _Types = new List<SelectListItem>();
@@ -765,6 +773,39 @@ namespace DealEngine.WebUI.Models
             return _Types;
 
         }
+        private IList<SelectListItem> GetAdvisorTypes5()
+        { 
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                    new SelectListItem
+                    {
+                        Text = "-- Select --",
+                        Value = "0"
+                    }, new SelectListItem
+                    {
+                        Text = "Barrister",
+                        Value = "Barrister"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Employee Barrister",
+                        Value = "EBarrister"
+                    },
+
+                    new SelectListItem
+                    {
+                        Text = "Junior Barrister",
+                        Value = "JBarrister"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Associated Business",
+                        Value = "ABusiness"
+                    }
+                };
+            return _Types;
+        }
+
         private IList<SelectListItem> GetAdvisorTypes3()
         {
             
@@ -890,7 +931,11 @@ namespace DealEngine.WebUI.Models
         public AdministratorUnit AdministratorUnit { get; set; }
 
         public DirectorUnit DirectorUnit { get; set; }
-
+        public EBaristerUnit EBaristerUnit { get; set; }
+        public JBaristerUnit JBaristerUnit { get; set; }
+        public BarristerUnit BarristerUnit { get; set; }
+        [JsonIgnore]
+        public IList<SelectListItem> HasBarristerPrincipalOptions { get; set; }
     }
 }
 

@@ -125,6 +125,8 @@ namespace DealEngine.Domain.Entities
         public virtual string Clientmembership { get; set; }
         public virtual bool OrgBeenMoved { get; set; }
         public virtual IList<InsuranceAttribute> InsuranceAttributes { get; set; }
+        [Display(Name = "Initial")]
+      
         //public virtual Organisation CloneForNewSheet(ClientInformationSheet newSheet)
         //{
         //    Organisation newOrganisation = new Organisation();

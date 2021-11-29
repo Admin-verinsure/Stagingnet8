@@ -37,6 +37,11 @@
     });
 
     function OnChange(Id, Name) {
+
+        if (Id == "IsRequirecoverJunior") {
+            debugger;
+        }
+
         var obj = document.getElementById(Id);
         var value = obj.value;
         var dataRule = obj.getAttribute('data-rule');
@@ -71,6 +76,7 @@
     }
 
     function InputValidation(obj, value) {
+        //debugger
         if (obj.type == "number") {
             if (value >= 0) {
                 obj.classList.add("is-valid");
@@ -79,7 +85,9 @@
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
             }
-        } else {
+        }
+        else
+        {
             if (value != "") {
                 obj.classList.add("is-valid");
                 obj.classList.remove("is-invalid");
@@ -90,25 +98,28 @@
         }
     }
 
+
     function SelectValidation(obj, value) {
+        //debugger;
         if (!obj.multiple) {
-            if (value != "0") {
-                obj.classList.add("is-valid");
-                obj.classList.remove("is-invalid");
-            }
-            else {
+            //if (value != "0") {
+            //    obj.classList.add("is-valid");
+            //    obj.classList.remove("is-invalid");
+
+            //}
+              if (value == "0") {
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
+
             }
-        }
-        else {
-            if (value != "") {
-                obj.classList.add("is-valid");
-                obj.classList.remove("is-invalid");
-            }
-            else {
+            else if (value == "") {
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
+
+            }
+            else {
+                obj.classList.add("is-valid");
+                obj.classList.remove("is-invalid");
             }
         }
     }
@@ -474,11 +485,12 @@
         }
         return "0";
     }
-
+    debugger
     function OrganisationTypeOnChange(Value) {
         //reset views to default
+        debugger
         ResetOrganisationUnitView();
-
+        debugger;
         var List = document.getElementById("Organisation.OrganisationType");
         List.disabled = false;
         if (Value == "Advisor" ||
@@ -492,7 +504,12 @@
             Value == "Mentored Advisor" ||
             Value == "Individual" ||
             Value == "Administrator" ||
-            Value == "Director") {
+            Value == "Director"||
+            Value == "EBarrister"||
+            Value == "JBarrister" ||
+            Value == "Barrister"||
+            Value == "IEntity" ||
+            Value =="ABusiness") {
             //readonly Organisation Type personal
             document.getElementById("OwnerFap").hidden = true;
 
@@ -509,6 +526,11 @@
 
             }
 
+            if (Value == "IEntity") {
+                BaristerUnitOnChange();
+            }
+
+           
             if (Value == "Nominated Representative") {
                 AdvisorOnChange();
             }
@@ -526,9 +548,23 @@
                 }
             }
 
+             if (Value == "Barrister") {
+                BarristerOnChange();
+            }
+
+            if (Value == "JBarrister") {
+                JBarristerOnChange();
+            }
+            if (Value == "EBarrister") {
+                EBarristerOnChange();
+            }
+
             if (Value == "Administrator") {
                 AdministratorOnChange();
-             }
+            }
+            if (Value == "ABusiness") {
+                ABusinessOnChange();
+            }
 
             List.disabled = true;
         } else {
@@ -572,17 +608,126 @@
         });
 
 
+    }
 
-        // var IsAdvisorUnit = document.getElementsByClassName("AdvisorUnit");
-        //if (IsAdvisorUnit != null) {
-        //    IsAdvisorUnit.hidden = true;
-        //}
+    function BarristerOnChange() {
+        debugger;
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+
+
+        if (IsBarristerUnit != null) {
+
+              document.querySelectorAll('.BarristerUnit').forEach(function(el) {
+                 el.style.display = 'unset';
+              });
+        }
+        if (IsJBarristerUnit != null) {
+             document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+            });
+        }
+
+        if (IsEBarristerUnit != null) {
+             document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+        });
+        }
+       
+        
+
+    }
+
+     function ABusinessOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+         if (IsJBarristerUnit != null) {
+
+              document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
+         }
+         if (IsBarristerUnit != null) {
+                document.querySelectorAll('.BarristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+             });
+         }
+         if (IsEBarristerUnit != null) {
+             document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
+
+         }
+          
+    }
+
+     function JBarristerOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+         if (IsJBarristerUnit != null) {
+
+              document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
+                 el.style.display = 'unset';
+              });
+         }
+         if (IsBarristerUnit != null) {
+                document.querySelectorAll('.BarristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+             });
+         }
+         if (IsEBarristerUnit != null) {
+             document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'none';
+              });
+
+         }
+          
+    }
+
+    function EBarristerOnChange() {
+        debugger;
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+        var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        if (IsEBarristerUnit != null) {
+              document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
+                 el.style.display = 'unset';
+              });
+        }
+
+        if (IsJBarristerUnit != null) {
+            document.querySelectorAll('.JBaristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+        if (IsBarristerUnit != null) {
+            document.querySelectorAll('.BarristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
 
     }
 
     function AdvisorUnitOnChange() {
         var IsAdvisorUnit = document.getElementsByClassName("AdvisorUnit");
         if (IsAdvisorUnit != null) {
+
+              document.querySelectorAll('.AdvisorUnit').forEach(function(el) {
+                 el.style.display = 'unset';
+        });
+            //IsAdvisorUnit.hidden = false;
+        }
+    }
+    function BaristerUnitOnChange() {
+        debugger;
+        var IsEBaristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsJBaristerUnit = document.getElementsByClassName("JBaristerUnit");
+        var IsBaristerUnit = document.getElementsByClassName("BaristerUnit");
+
+        if (IsEBaristerUnit != null || IsJBaristerUnit != null|| IsBaristerUnit != null) {
 
               document.querySelectorAll('.AdvisorUnit').forEach(function(el) {
                  el.style.display = 'unset';
@@ -627,9 +772,22 @@
 
     }
 
+    debugger;
     function ResetOrganisationUnitView() {
-        document.getElementById("Private").hidden = true;
-        document.getElementById("Else").hidden = true;
+        debugger;
+
+        //document.getElementById("Private").hidden = true;
+        //document.getElementById("Else").hidden = true;
+        var hiddendiv = document.getElementById("Private");
+        var Elsediv = document.getElementById("Else");
+        if (hiddendiv != null) {
+            hiddendiv.hidden = true;
+        }
+        if (Elsediv != null) {
+            Elsediv.hidden = true;
+        }
+
+
         var IsPrincipal = document.getElementById("HidePrincipal");
         if (IsPrincipal != null) {
             IsPrincipal.hidden = false;
@@ -660,6 +818,16 @@
                  el.style.display = 'none';
           });
         }
+
+         var IsEBaristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsJBaristerUnit = document.getElementsByClassName("JBaristerUnit");
+
+        if (IsEBaristerUnit != null || IsJBaristerUnit != null) {
+
+            document.querySelectorAll('.AdvisorUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
     }
 
     function AdditionalActivityInformation(Id) {
@@ -670,7 +838,7 @@
             var additionalactivityId = activities.options[i].value;
             if (additionalactivityId == "CUS0029" || additionalactivityId == "CUS0039" || additionalactivityId == "CUS0044" || additionalactivityId == "CUS0061" ||
                 additionalactivityId == "CUS0076" || additionalactivityId == "customict010" || additionalactivityId == "CUS0081" || additionalactivityId == "CUSFANZ11" || 
-                additionalactivityId == "CUSFANZ21") {
+                additionalactivityId == "CUSFANZ21" || additionalactivityId == "CUSNZBar20") {
                 additionalactivityId = "CUS0018";
             }
             if (activities.options[i].selected === true) {

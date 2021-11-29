@@ -101,6 +101,10 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI.BaseClasses
                 if (ClientProgramme.InformationSheet.IsRenewawl && ClientProgramme.InformationSheet.PreviousInformationSheet != null)
                 {
                     description = Package.DescriptionRenew;
+                }
+                else if (ClientProgramme.InformationSheet.IsRenewawl && ClientProgramme.InformationSheet.PreviousInformationSheet == null)
+                {
+                    description = Package.DescriptionRenew;
                 } else if (ClientProgramme.InformationSheet.IsChange && ClientProgramme.InformationSheet.PreviousInformationSheet != null)
                 {
                     description = Package.DescriptionChange;
@@ -210,10 +214,10 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI.BaseClasses
                 {
                     if (ClientProgramme.InformationSheet.IsRenewawl)
                     {
-                        incomeClass = "Renewal";
+                        incomeClass = "REN";
                     } else
                     {
-                        incomeClass = "New";
+                        incomeClass = "NEW";
                     }
                 }
                 return incomeClass;

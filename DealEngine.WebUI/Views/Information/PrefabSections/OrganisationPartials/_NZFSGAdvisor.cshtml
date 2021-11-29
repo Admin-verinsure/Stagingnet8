@@ -15,7 +15,7 @@
         </div>
         @*<div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.RegisteredStatus, new { @class = "label required" })
-            <select id="AdvisorUnit.RegisteredStatus" name="OrganisationViewModel.AdvisorUnit.RegisteredStatus" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="AdvisorUnit.RegisteredStatus" name="OrganisationViewModel.AdvisorUnit.RegisteredStatus" class="form-select " onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasRegisteredOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">
@@ -28,7 +28,7 @@
     <div class="form-group col-md-6 AdvisorUnit">
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.IsRetiredorDeceased)
-            <select id="AdvisorUnit.IsRetiredorDeceased" name="OrganisationViewModel.AdvisorUnit.IsRetiredorDeceased" data-rule="RetirementDateValidation"  class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="AdvisorUnit.IsRetiredorDeceased" name="OrganisationViewModel.AdvisorUnit.IsRetiredorDeceased" data-rule="RetirementDateValidation"  class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in Model.OrganisationViewModel.HasRetiredorDeceasedOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -49,7 +49,7 @@
 
         <div class="form-group" id="HidePrincipal">
             @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.IsPrincipalAdvisor, new { @class = "label required" })
-            <select id="AdvisorUnit.IsPrincipalAdvisor" name="OrganisationViewModel.AdvisorUnit.IsPrincipalAdvisor" class="custom-select" data-rule="PrincipalAdvisor" onchange="OnChange(this.id, this.name)" required>
+            <select id="AdvisorUnit.IsPrincipalAdvisor" name="OrganisationViewModel.AdvisorUnit.IsPrincipalAdvisor" class="form-select" data-rule="PrincipalAdvisor" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasPrincipalOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">

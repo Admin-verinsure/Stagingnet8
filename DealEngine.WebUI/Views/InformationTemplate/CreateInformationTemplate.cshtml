@@ -12,16 +12,17 @@
             <div class="card-body">
                 <div class="form-group">
                     <div class="accordion" id="accordion">
+                        <div class="accordion-item">
                         <div class="card">
                             <div class="card-header" id="createtemplate">
                                 <h2 class="mb-0">
-                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#create" aria-expanded="true" aria-controls="create">
+                                    <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#create" aria-expanded="true" aria-controls="create">
                                         Create Template
                                     </button>
                                 </h2>
                             </div>
 
-                            <div id="create" class="collapse show" aria-labelledby="createtemplate" data-parent="#accordion">
+                            <div id="create" class="collapse accordion-collapse show" aria-labelledby="createtemplate" data-bs-parent="#accordion">
                                 <div class="card-body" id="section">
                                     <div class="row">
                                         <div class="col-3">
@@ -31,7 +32,7 @@
                                         </div>
                                         <div class="col-3">
                                             <div class="form-group">
-                                                <a class="btn btn-sm btn-primary text-light" data-toggle="modal" data-target="#questionmodal"> Add Question</a>
+                                                <a class="btn btn-sm btn-primary text-light" data-bs-toggle="modal" data-bs-target="#questionmodal"> Add Question</a>
                                             </div>
                                         </div>
                                     </div>
@@ -66,13 +67,13 @@
                                 <div class="card">
                                     <div class="card-header" id="heading_@Model.InformationTemplates.ElementAt(x).Id">
                                         <h2 class="mb-0">
-                                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#accordion_@Model.InformationTemplates.ElementAt(x).Id" aria-expanded="true" aria-controls="accordion_@Model.InformationTemplates.ElementAt(x).Id">
+                                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#accordion_@Model.InformationTemplates.ElementAt(x).Id" aria-expanded="true" aria-controls="accordion_@Model.InformationTemplates.ElementAt(x).Id">
                                                 @Model.InformationTemplates.ElementAt(x).Name
                                             </button>
                                         </h2>
                                     </div>
 
-                                    <div id="accordion_@Model.InformationTemplates.ElementAt(x).Id" class="collapse" aria-labelledby="heading_@Model.InformationTemplates.ElementAt(x).Id" data-parent="#accordion">
+                                    <div id="accordion_@Model.InformationTemplates.ElementAt(x).Id" class="collapse accordion-collapse" aria-labelledby="heading_@Model.InformationTemplates.ElementAt(x).Id" data-bs-parent="#accordion">
                                         <div class="card-body">
                                             <table>
                                                 <tbody>
@@ -96,6 +97,7 @@
                                 </div>
                             }
                         </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -106,7 +108,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Question</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -137,7 +139,7 @@
 
                 </div>
                 <div class="modal-footer" id="questionmodalfooter">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" id="questionModalButton" class="btn btn-primary" onclick="AddQuestion()" hidden>Submit Query</button>
                 </div>
             </div>

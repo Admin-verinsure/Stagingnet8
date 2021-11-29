@@ -119,7 +119,26 @@ namespace DealEngine.WebUI.Models
                 .ForMember(dest => dest.PaymentConfigNotifyProgrammes, map => map.Ignore())
                 .ForMember(dest => dest.InvoiceConfigNotifyProgrammes, map => map.Ignore());
 
+            CreateMap<EBaristerUnit, EBaristerUnit>()
+               .ForMember(dest => dest.Id, map => map.Ignore())
+               .ForMember(dest => dest.DateCreated, map => map.Ignore())
+               .ForMember(dest => dest.Name, map => map.Ignore())
+               .ForMember(dest => dest.Type, map => map.Ignore())
+               .ForMember(dest => dest.CreatedBy, map => map.Ignore());
 
+            CreateMap<JBaristerUnit, JBaristerUnit>()
+                .ForMember(dest => dest.Id, map => map.Ignore())
+                .ForMember(dest => dest.DateCreated, map => map.Ignore())
+                .ForMember(dest => dest.Name, map => map.Ignore())
+                .ForMember(dest => dest.Type, map => map.Ignore())
+                .ForMember(dest => dest.CreatedBy, map => map.Ignore());
+
+            CreateMap<BarristerUnit, BarristerUnit>()
+               .ForMember(dest => dest.Id, map => map.Ignore())
+               .ForMember(dest => dest.DateCreated, map => map.Ignore())
+               .ForMember(dest => dest.Name, map => map.Ignore())
+               .ForMember(dest => dest.Type, map => map.Ignore())
+               .ForMember(dest => dest.CreatedBy, map => map.Ignore());
 
 
             // Admin
@@ -170,7 +189,7 @@ namespace DealEngine.WebUI.Models
 
             CreateMap<AdditionalRoleInformation, AdditionalRoleInformationViewModel>();
             CreateMap<AdditionalActivityInformation, AdditionalActivityViewModel>()
-                .IncludeAllDerived();         
+                .IncludeAllDerived();
 
             //clonesystem
             //CreateMap<SubClientInformationSheet, SubClientInformationSheet>()

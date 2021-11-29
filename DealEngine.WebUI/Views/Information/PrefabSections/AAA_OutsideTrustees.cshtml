@@ -31,6 +31,14 @@
                     </label>
                 </div>
                 <div class="col-3">
+                    @* ==== head ===
+                        <select id="hasoutsideTrustees" name="OTViewModel.HasOutsideTrusteesOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.OTViewModel.HasOutsideTrusteesOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>*@
+
                     @Html.TextBoxFor(m => m.OTViewModel.CompanyName, new { id = "companyname", @class = "form-control", @onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
@@ -79,7 +87,15 @@
                         </label>
                     </div>
                     <div class="col-3">
+                        <select id="hasclaimquestions" name="OTViewModel.HasClaimQuestionsOptions" data-rule="OTAlert" class="form-select" onchange="OnChange(this.id, this.name)"  required>
+                            @foreach (var option in Model.OTViewModel.HasClaimQuestionsOptions)
+                            {
+                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                            }
+                        </select>
+
                         @Html.TextAreaFor(m => m.OTViewModel.ClaimDetails, new { @class = "form-control", @id = "claimdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+
                     </div>
                 </div>
             </div>
