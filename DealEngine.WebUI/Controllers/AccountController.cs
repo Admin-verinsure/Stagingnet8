@@ -29,6 +29,9 @@ using System.Net.Http;
 using System.Text;
 using System.Net.Http.Headers;
 using System.Diagnostics;
+using System.Security.Cryptography;
+using System.IO;
+using System.Web;
 #endregion
 
 namespace DealEngine.WebUI.Controllers
@@ -365,7 +368,6 @@ namespace DealEngine.WebUI.Controllers
                         deUser = await _userManager.FindByNameAsync(userName);
                         await _signInManager.SignOutAsync();
                         deUser = await _userManager.FindByNameAsync(userName);
-
                     }
                     var result = await _signInManager.PasswordSignInAsync(deUser, password, viewModel.RememberMe, lockoutOnFailure: true);
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -418,9 +420,16 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginOktaRegistration()
+        {
+            return View();
+        }
+
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> LoginOkta(AccountLoginModel viewModel)
+        public async Task<IActionResult> LoginOktaRegistration(AccountLoginModel viewModel)
         {
             //Old login method
             if (!ModelState.IsValid)
@@ -509,7 +518,7 @@ namespace DealEngine.WebUI.Controllers
             client.Dispose();
 
             return json;
-            
+
         }
 
         [AllowAnonymous]
@@ -534,42 +543,23 @@ namespace DealEngine.WebUI.Controllers
                 group = "00g12zhd1k9V3G3kG0h8"; // Marsh Client TCDE_external_users
             }
 
-            #region Create JSON objects for upload
-            JObject body =
+            #region Create JSON objects for upload            
+            JObject userJsonObj =
                 new JObject(
                     new JProperty("roptions",
                         new JObject(
                             new JProperty("activate", true)
                         )
                     ),
-                    //new JProperty("profile",
-                    //    new JObject(
-                    //        new JProperty("firstName", "NTestFN4"),
-                    //        new JProperty("lastName", "NTestLN4"),
-                    //        new JProperty("mobilePhone", "+642102735738"), 
-                    //        new JProperty("login", "ntestemail4@techcertain.com"),
-                    //        new JProperty("email", "ntestemail4@techcertain.com"),
-                    //        new JProperty("CIAM_idp", "clientidp")
-                    //    )
-                    //),
-                    //new JProperty("credentials",
-                    //    new JObject(
-                    //        new JProperty("password",
-                    //            new JObject(
-                    //                new JProperty("value", "NTestPw3")
-                    //            )
-                    //        )
-                    //    )
-                    //),
                     new JProperty("profile",
                         new JObject(
                             new JProperty("firstName", user.FirstName),
                             new JProperty("lastName", user.LastName),
-                            new JProperty("mobilePhone", user.MobilePhone),
-                            //new JProperty("secondEmail", "ntestemail2@techcertain.com"),
                             new JProperty("login", user.Email),
                             new JProperty("email", user.Email),
-                            new JProperty("CIAM_idp", "clientidp")
+                            new JProperty("CIAM_idp", "")
+                            // new JProperty("mobilePhone", user.MobilePhone),
+                            // new JProperty("secondEmail", user.Email),
                         )
                     ),
                     new JProperty("credentials",
@@ -585,15 +575,15 @@ namespace DealEngine.WebUI.Controllers
                         new JArray(
                             group
                         )
-                    ));
+            ));
             #endregion
 
-            string bodyToString = body.ToString();
-            var data = new StringContent(body.ToString(), Encoding.UTF8, "application/json");
+            string userJson = userJsonObj.ToString();
+            var data = new StringContent(userJson, Encoding.UTF8, "application/json");
 
             // Fix JSON from access code which Deserializer doesn't like
             json = json.Replace("\n  \"api_product_list\" : \"[AMPS]\",\n  \"api_product_list_json\" : [ \"AMPS\" ],", "");
-            var dict = JsonConvert.DeserializeObject<Dictionary<string,string>>(json);
+            var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             var token = dict["access_token"];
 
             // Create User API
@@ -605,7 +595,7 @@ namespace DealEngine.WebUI.Controllers
             client.BaseAddress = ampsUri;
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                   
+
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "/proxy/amps/v2/uam/users");
             requestMessage.Content = data;
 
@@ -616,61 +606,196 @@ namespace DealEngine.WebUI.Controllers
             return jsonResponse;
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> IdentityLoginOktaCallbackServiceTEST(string json)
-        {
-            return Ok();
-        }
 
+
+
+        //[Consumes("application/json")]
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> IdentityLoginOktaCallbackService(string json)
-        {            
+        {
+            // API that callbackservice was supposed to hit but isn't used anymore
             try
             {
-                if (json != null)
+                //Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                string okta_uid = "00u12zjmjqdu0CYLr0h8";//dict["okta_uid"];
+                //string email = dict["email"];
+                string identityPassword = "00u12zjmjqdu0CYLr0h8" + _appSettingService.OktaIntermediatePassword;
+                //string firstname = dict["firstname"];
+                //string surname = dict["surname"];
+
+                User user = null;
+                IdentityUser identityUser;
+
+                user = await _userService.GetUserByOktaUID(okta_uid);
+                string username = user.UserName;
+
+                // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
+                var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
+
+                if (!identityResult.Succeeded)
                 {
-                    Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    identityUser = await _userManager.FindByNameAsync(user.UserName);
+                    await _userManager.RemovePasswordAsync(identityUser);
+                    await _userManager.AddPasswordAsync(identityUser, identityPassword);
                 }
                 else
                 {
-                    return Ok();
+                    identityUser = await _userManager.FindByNameAsync(username);
+                    await _signInManager.SignOutAsync();
+                    identityUser = await _userManager.FindByNameAsync(username);
                 }
-
+                var result = await _signInManager.PasswordSignInAsync(identityUser, identityPassword, false, lockoutOnFailure: true);
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    user.IsLoggedout = false;
+                    user.LoggedInTime = DateTime.UtcNow;
+                    await uow.Commit();
+                }
+                return Ok();
             }
             catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
                 throw new Exception(ex.Message + " " + ex.StackTrace);//
             }
-            return NotFound();
-
-            //string okta_uid = dict["okta_uid"];
-            //string email = dict["email"];
-            //string identityPassword = dict["okta_uid"] + _appSettingService.OktaIntermediatePassword;
-            //string firstname = dict["firstname"];
-            //string surname = dict["surname"];
-
-            //User user = null;
-
-            //// User Exists with Okta UID
-            //try
-            //{
-            //    user = await _userService.GetUserByOktaUID(okta_uid);
-            //    var identityResult = await DealEngineIdentityUserLogin(user, identityPassword); // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
-            //    return Ok();
-            //}
-            //catch (Exception ex)
-            //{
-            //    await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-            //    throw new Exception(ex.Message + " " + ex.StackTrace);
-            //}
         }
-       
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OIdLogin(string q)
+        {
+            bool isAuth;
+            try
+            {
+                // Check if authenticated to oktacallbackservice
+                isAuth = await CheckAuthenticated();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);//
+            }
+            try
+            {
+                if (isAuth)
+                {
+                    //var oktaUid = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
+                    var oktaUidTime = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
+
+                    string[] oktaUidTimeArray = oktaUidTime.Split("O=");
+                    string oktaUid = oktaUidTimeArray.First();
+                    string stringTime = oktaUidTimeArray.Last();
+
+                    // Login must happen within 15 second after initial Redirect 
+                    DateTime time = DateTime.Parse(stringTime);
+                    DateTime now = DateTime.Now;
+                    var seconds = (now - time).TotalSeconds;
+
+                    if (seconds < 15)
+                    {
+                        string identityPassword = oktaUid + _appSettingService.OktaIntermediatePassword;
+
+                        User user = null;
+                        IdentityUser identityUser;
+
+                        user = await _userService.GetUserByOktaUID(oktaUid);
+                        string username = user.UserName;
+
+                        // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
+                        var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
+
+                        if (!identityResult.Succeeded)
+                        {
+                            identityUser = await _userManager.FindByNameAsync(user.UserName);
+                            await _userManager.RemovePasswordAsync(identityUser);
+                            await _userManager.AddPasswordAsync(identityUser, identityPassword);
+                        }
+                        else
+                        {
+                            identityUser = await _userManager.FindByNameAsync(username);
+                            await _signInManager.SignOutAsync();
+                            identityUser = await _userManager.FindByNameAsync(username);
+                        }
+                        var result = await _signInManager.PasswordSignInAsync(identityUser, identityPassword, false, lockoutOnFailure: true);
+                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                        {
+                            user.IsLoggedout = false;
+                            user.LoggedInTime = DateTime.UtcNow;
+                            await uow.Commit();
+                        }
+                        return LocalRedirect("~/Home/Index");
+                    }
+                    else
+                    {
+                        return LocalRedirect("~/Account/OktaErrorMessage");
+                    }
+
+                }
+                else
+                {
+                    return LocalRedirect("~/Account/OktaErrorMessage");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);//
+            }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        private async Task<bool> CheckAuthenticated()
+        {          
+            var callbackService = "https://"+_appSettingService.oktaCallBackServiceURL;
+            Uri callbackServiceUri = new Uri(callbackService);
+            // Setup client
+            HttpClient client = new HttpClient();
+            client.BaseAddress = callbackServiceUri;
+
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "/Home/CheckAuthenticated");
+            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+            var json = await responseMessage.Content.ReadAsStringAsync();
+            client.Dispose();
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static string DecryptString(string key, string cipherText)
+        {
+            byte[] iv = new byte[16];
+            byte[] buffer = Convert.FromBase64String(cipherText);
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream(buffer))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                        {
+                            return streamReader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+        }
+
         private async Task<SignInResult> DealEngineIdentityUserLogin(User user, string password)
         {
-
             try
             {
                 var deUser = await _userManager.FindByNameAsync(user.UserName);
@@ -883,6 +1008,13 @@ namespace DealEngine.WebUI.Controllers
             return View();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OktaErrorMessage()
+        {
+            return View();
+        }
+
         // GET: /account/error
         [HttpGet]
         [AllowAnonymous]
@@ -991,16 +1123,16 @@ namespace DealEngine.WebUI.Controllers
                 currentUser.LoggedOutTime = DateTime.UtcNow;
                 await uow.Commit();
             }
-           
+
             var identity = new System.Security.Principal.GenericIdentity(HttpContext.User.Identity.Name);
             var principal = new GenericPrincipal(identity, new string[0]);
 
             var jhgh = User.Identity.IsAuthenticated;
             HttpContext.Session.Clear();
-           
+
             HttpContext.Response.Cookies.Delete(".AspNet.Consent");
             HttpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
-          //  Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
+            //  Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
 
             return await RedirectToLocal();
         }

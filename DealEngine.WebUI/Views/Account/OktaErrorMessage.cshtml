@@ -1,9 +1,4 @@
-﻿@model DealEngine.WebUI.Models.AccountLoginModel
-@{
-    ViewBag.PageId = "extr-page";
-    ViewBag.PageClass = "animated fadeInDown";
-}
-
+﻿
 <div id="content" class="container col-sm-12 col-md-6 col-lg-6">
     <div class="container">
         <svg style="margin-top:1em;" version="1.1" id="MarshMcLennan" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="155px" height="34px" viewBox="0 0 854.4680786 147.6064301" style="enable-background:new 0 0 854.4680786 147.6064301;" xml:space="preserve">
@@ -76,17 +71,13 @@
         <div class="col-sm" style="height:max-content">
             <div class="card">
                 <div class="card-body ">
-                    <p style="text-align:center">Marsh use Okta to provide a Multifactor Authentication Process to our clients who utilise this platform. </p>
-					<br />
-                    <p style="text-align:center">To complete a required one-time registration with Okta, please click the <a href="~/Account/LoginOktaRegistration">Registration</a> button.</p>
-					<br />
-                    <p style="text-align:center">If you have previously completed your Okta registration, please click the <a href="https://okta.mnzconnect.com">Sign In</a> button.</p>
+                    <p style="text-align:center">Unfortunately the authentication to your account has failed. </p>
 					<div class="col-sm-12 text-center" style="margin-top:2.5em;">
 						<div style="float:left;" class="col-sm-6">
-							<button onclick="window.location.href='/Account/LoginOktaRegistration';" style="width: 60%; font-size: large; font-weight:bold;" type="button" class="btn btn-primary">Registration</button>
+							<button onclick="window.location.href='/Account/Login';" style="width: 60%; font-size: large; font-weight:bold;" type="button" class="btn btn-danger">Back</button>
 						</div>
 						<div style="float:right;"class="col-sm-6">
-							<button onclick="window.location.href='https://localhost:44314';" style="width: 60%; font-size: large; font-weight: bold;" type="button" class="btn btn-success">Sign In</button>
+							<button onclick="window.location.href='https://okta.mnzconnect.com';" style="width: 60%; font-size: large; font-weight: bold;" type="button" class="btn btn-success">Try Again</button>
 						</div>
 					</div>
                 </div>
@@ -94,9 +85,3 @@
         </div>
     </div>
 </div>
-
-@section pagespecific {
-    <script src="~/jquery/jquery.min.js"></script>
-    <script type="text/javascript">
-    </script>
-}
