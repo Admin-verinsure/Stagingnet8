@@ -688,49 +688,50 @@ namespace DealEngine.WebUI.Controllers
                     string oktaUid = oktaUidTimeArray.First();
                     string stringTime = oktaUidTimeArray.Last();
 
-                    // Login must happen within 15 second after initial Redirect 
-                    DateTime time = DateTime.Parse(stringTime);
-                    DateTime now = DateTime.Now;
-                    var seconds = (now - time).TotalSeconds;
+                    string identityPassword = oktaUid + _appSettingService.OktaIntermediatePassword;
 
-                    if (seconds < 15)
+                    User user = null;
+                    IdentityUser identityUser;
+
+                    user = await _userService.GetUserByOktaUID(oktaUid);
+                    string username = user.UserName;
+
+                    // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
+                    var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
+
+                    if (!identityResult.Succeeded)
                     {
-                        string identityPassword = oktaUid + _appSettingService.OktaIntermediatePassword;
-
-                        User user = null;
-                        IdentityUser identityUser;
-
-                        user = await _userService.GetUserByOktaUID(oktaUid);
-                        string username = user.UserName;
-
-                        // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
-                        var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
-
-                        if (!identityResult.Succeeded)
-                        {
-                            identityUser = await _userManager.FindByNameAsync(user.UserName);
-                            await _userManager.RemovePasswordAsync(identityUser);
-                            await _userManager.AddPasswordAsync(identityUser, identityPassword);
-                        }
-                        else
-                        {
-                            identityUser = await _userManager.FindByNameAsync(username);
-                            await _signInManager.SignOutAsync();
-                            identityUser = await _userManager.FindByNameAsync(username);
-                        }
-                        var result = await _signInManager.PasswordSignInAsync(identityUser, identityPassword, false, lockoutOnFailure: true);
-                        using (var uow = _unitOfWork.BeginUnitOfWork())
-                        {
-                            user.IsLoggedout = false;
-                            user.LoggedInTime = DateTime.UtcNow;
-                            await uow.Commit();
-                        }
-                        return LocalRedirect("~/Home/Index");
+                        identityUser = await _userManager.FindByNameAsync(user.UserName);
+                        await _userManager.RemovePasswordAsync(identityUser);
+                        await _userManager.AddPasswordAsync(identityUser, identityPassword);
                     }
                     else
                     {
-                        return LocalRedirect("~/Account/OktaErrorMessage");
+                        identityUser = await _userManager.FindByNameAsync(username);
+                        await _signInManager.SignOutAsync();
+                        identityUser = await _userManager.FindByNameAsync(username);
                     }
+                    var result = await _signInManager.PasswordSignInAsync(identityUser, identityPassword, false, lockoutOnFailure: true);
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        user.IsLoggedout = false;
+                        user.LoggedInTime = DateTime.UtcNow;
+                        await uow.Commit();
+                    }
+                    return LocalRedirect("~/Home/Index");
+
+                    // Login must happen within 15 second after initial Redirect 
+                    //DateTime time = DateTime.Parse(stringTime);
+                    //DateTime now = DateTime.Now;
+                    //var seconds = (now - time).TotalSeconds;
+
+                    //if (seconds < 15)
+                    //{                        
+                    //}
+                    //else
+                    //{
+                    //    return LocalRedirect("~/Account/OktaErrorMessage");
+                    //}
 
                 }
                 else
