@@ -322,9 +322,13 @@ namespace DealEngine.WebUI.Controllers
                 DomainString = _appSettingService.domainQueryString,
             };
 
-            string nameExtension = _appSettingService.AuthenticationService;
+            string authService = _appSettingService.AuthenticationService;
+            if (authService == "Okta")
+            {
+                viewModel.CallbackDomainString = _appSettingService.oktaCallBackServiceURL;
+            }
 
-            return View("Login" + nameExtension, viewModel);
+            return View("Login" + authService, viewModel);
         }
 
         // POST: /account/login
@@ -605,9 +609,6 @@ namespace DealEngine.WebUI.Controllers
             var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
             return jsonResponse;
         }
-
-
-
 
         //[Consumes("application/json")]
         [HttpPost]

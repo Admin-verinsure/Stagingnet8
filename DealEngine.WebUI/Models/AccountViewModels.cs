@@ -24,6 +24,8 @@ namespace DealEngine.WebUI.Models
         public bool RememberMe { get; set; }
         public string DevicePrint { get; set; }
         public string DomainString { get; set; }
+
+        public string CallbackDomainString { get; set; }
     }
 
     public class AccountResetPasswordModel : BaseViewModel
