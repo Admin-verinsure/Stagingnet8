@@ -788,7 +788,7 @@ namespace DealEngine.WebUI.Models
                     },
                     new SelectListItem
                     {
-                        Text = "Employee Barrister",
+                        Text = "Employed Barrister",
                         Value = "EBarrister"
                     },
 

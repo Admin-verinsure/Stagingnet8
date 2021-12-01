@@ -1,106 +1,118 @@
 ﻿@model DealEngine.WebUI.Models.ProfileViewModel
 <!-- MAIN CONTENT -->
-    <div id="content" class="container">
-        <!-- widget grid -->
-        <div class="row">
-            <h1 class="page-title txt-color-blueDark">
-                <!-- PAGE HEADER -->
-                <i class="fa-fw fa fa-home"></i>
-                <a href="~/Home/Index/"> DashBoard</a>
-                > <span>
-                    Profile
-                </span>
-            </h1>
-        </div>
-        <!-- end col -->
-        <div class="row">
-            <span>
-                <a onclick="location.href='@Url.Action("Index", "Home")'" style="color:dodgerblue;font-size:30px; cursor:pointer"> <span _ngcontent-c7="" class="icon-append fa fa-arrow-circle-left"></span>  </a>
+<div id="content" class="container">
+    <!-- widget grid -->
+    <div class="row">
+        <h1 class="page-title txt-color-blueDark">
+            <!-- PAGE HEADER -->
+            <i class="fa-fw fa fa-home"></i>
+            <a href="~/Home/Index/"> DashBoard</a>
+            > <span>
+                Profile
             </span>
-        </div>
-        <!-- new widget -->
-        <div class="row">
-            <div class="jarviswidget container-fluid" id="wid-id-2"
-                 data-widget-editbutton="false" data-widget-colorbutton="false">
-                <header>
-                    Profile
-                </header>
+        </h1>
+    </div>
+    <!-- end col -->
+    <div class="row">
+        <span>
+            <a onclick="location.href='@Url.Action("Index", "Home")'" style="color:dodgerblue;font-size:30px; cursor:pointer"> <span _ngcontent-c7="" class="icon-append fa fa-arrow-circle-left"></span>  </a>
+        </span>
+    </div>
+    <!-- new widget -->
+    <div class="row">
+        <div class="jarviswidget container-fluid" id="wid-id-2"
+             data-widget-editbutton="false" data-widget-colorbutton="false">
+            <header>
+                Profile
+            </header>
 
-                <table class="table table-bordered table-striped">
-                    <tr>
-                        <td>
-                            Name
-                        </td>
-                        <td>
-                            @Model.FirstName <span class="semi-bold">@Model.LastName</span>
-                        </td>
-                    </tr>
-                    <tr class="table-light">
-                        <td>
-                            Organisation
-                        </td>
-                        <td>
-                            @if (!string.IsNullOrWhiteSpace(Model.PrimaryOrganisationName))
-                            {
-                                @Model.PrimaryOrganisationName
-                            }
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p class="text-muted">
-                                <i class="fa fa-phone"></i>&nbsp;&nbsp;<span class="txt-color-darken">@Model.Phone</span>
-                            </p>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                    <tr class="table-light">
-                        <td>
-                            <p class="text-muted">
-                                <i class="fa fa-envelope"></i>&nbsp;&nbsp;<a href="mailto:@(Model.Email)">@Model.Email</a>
-                            </p>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p class="text-muted">
-                                <i class="fa fa-skype"></i>&nbsp;&nbsp;<span class="txt-color-darken"></span>
-                            </p>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                    <tr class="table-light">
-                        <td>
-                            <p class="font-md">
-                                <i>A little about me...</i>
-                            </p>
-                        </td>
-                        <td>
-                            @Model.Description
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            @if (Model.ViewingSelf)
-                            {
-                                <a href="~/Account/ProfileEditor" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i> Edit</a>
-                            }
-                            else
-                            {
-                                <a href="javascript:void(0);" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> Follow</a>
-                                <a href="javascript:void(0);" class="btn btn-primary btn-sm"><i class="fa fa-link"></i> Connect</a>
-                            }
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
-                </table>
-            </div>
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <td>
+                        Name
+                    </td>
+                    <td>
+                        @Model.FirstName <span class="semi-bold">@Model.LastName</span>
+                    </td>
+                </tr>
+                <tr class="table-light">
+                    <td>
+                        Organisation
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(Model.PrimaryOrganisationName))
+                        {
+                            @Model.PrimaryOrganisationName
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p class="text-muted">
+                            <i class="fa fa-phone"></i>&nbsp;&nbsp;<span class="txt-color-darken">@Model.Phone</span>
+                        </p>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr class="table-light">
+                    <td>
+                        <p class="text-muted">
+                            <i class="fa fa-envelope"></i>&nbsp;&nbsp;<a href="mailto:@(Model.Email)">@Model.Email</a>
+                        </p>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p class="text-muted">
+                            <i class="fa fa-skype"></i>&nbsp;&nbsp;<span class="txt-color-darken"></span>
+                        </p>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr class="table-light">
+                    <td>
+                        <p class="font-md">
+                            <i>A little about me...</i>
+                        </p>
+                    </td>
+                    <td>
+                        @Model.Description
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @if (Model.ViewingSelf)
+                        {
+                            <a href="~/Account/ProfileEditor" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i> Edit</a>
+                        }
+                        else
+                        {
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm"><i class="fa fa-check"></i> Follow</a>
+                            <a href="javascript:void(0);" class="btn btn-primary btn-sm"><i class="fa fa-link"></i> Connect</a>
+                        }
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
+</div>
 
+@section pagespecific {
+   
+    <script>
+        
+        $(window).on("load", function () {
+            debugger;
+             var progId = "@ViewBag.GuidVal";
+            var HttpContext2 = "@ViewBag.HttpContext1";
+        });
+        
+    </script>
+}
 

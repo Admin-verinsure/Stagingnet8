@@ -346,6 +346,7 @@ namespace DealEngine.WebUI.Controllers
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
 
+
             var userName = viewModel.Username.Trim();
 
             try
@@ -1102,6 +1103,7 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CoastguardForm(AccountRegistrationModel model)
+
         {
             // Ensure we have a valid viewModel to work with
             if (!ModelState.IsValid)
@@ -1127,7 +1129,7 @@ namespace DealEngine.WebUI.Controllers
 
             var identity = new System.Security.Principal.GenericIdentity(HttpContext.User.Identity.Name);
             var principal = new GenericPrincipal(identity, new string[0]);
-
+            //CookieSigningOutContext
             var jhgh = User.Identity.IsAuthenticated;
             HttpContext.Session.Clear();
 
@@ -1198,10 +1200,11 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> Profile(string id)
         {
+           
             var currentUser = await CurrentUser();
             var user = string.IsNullOrWhiteSpace(id) ? currentUser : await _userService.GetUser(id);
             if (currentUser.IsLoggedout)
-                return Redirect("~/Home/Index");
+                return PageNotFound();
 
             if (user == null)
                 return PageNotFound();
@@ -1234,7 +1237,9 @@ namespace DealEngine.WebUI.Controllers
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
             }
-
+            //string guid = Guid.NewGuid().ToString();
+            //ViewBag.GuidVal = guid;
+            //ViewBag.HttpContext1 = HttpContext.Session.GetString("user");
             return View(model);
         }
 
