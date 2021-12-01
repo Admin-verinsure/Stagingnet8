@@ -681,12 +681,11 @@ namespace DealEngine.WebUI.Controllers
             {
                 if (isAuth)
                 {
-                    //var oktaUid = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
-                    var oktaUidTime = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
-
-                    string[] oktaUidTimeArray = oktaUidTime.Split("O=");
-                    string oktaUid = oktaUidTimeArray.First();
-                    string stringTime = oktaUidTimeArray.Last();
+                    var oktaUid = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
+                    //var oktaUidTime = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
+                    //string[] oktaUidTimeArray = oktaUidTime.Split("O=");
+                    //string oktaUid = oktaUidTimeArray.First();
+                    //string stringTime = oktaUidTimeArray.Last();
 
                     string identityPassword = oktaUid + _appSettingService.OktaIntermediatePassword;
 
@@ -1136,6 +1135,11 @@ namespace DealEngine.WebUI.Controllers
             HttpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
             //  Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
 
+            if (_appSettingService.AuthenticationService == "Okta")
+            {
+                return await LogoutOkta();
+            }
+
             return await RedirectToLocal();
         }
 
@@ -1406,5 +1410,57 @@ namespace DealEngine.WebUI.Controllers
             //accountModel.UserGroups = new SelectUserGroupsViewModel(user, _permissionsService.GetAllGroups());
             return View(accountModel);
         }
+
+        //[HttpGet]
+        public async Task<IActionResult> LogoutOkta()
+        {
+            var callbackService = _appSettingService.oktaCallBackServiceURL;
+            return Redirect("https://" + callbackService + "/Account/Logout");
+
+            //var callbackService = "https://" + _appSettingService.oktaCallBackServiceURL;
+            //Uri callbackServiceUri = new Uri(callbackService);
+            //// Setup client
+            //HttpClient client = new HttpClient();
+            //client.BaseAddress = callbackServiceUri;
+
+            //HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "/Account/Logout");
+            //HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+            //var json = await responseMessage.Content.ReadAsStringAsync();
+            //client.Dispose();
+
+            //if (responseMessage.IsSuccessStatusCode)
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
+        }
+
+        //[HttpGet]
+        //[AllowAnonymous]
+        //private async Task<bool> CheckAuthenticated()
+        //{
+        //    var callbackService = "https://" + _appSettingService.oktaCallBackServiceURL;
+        //    Uri callbackServiceUri = new Uri(callbackService);
+        //    // Setup client
+        //    HttpClient client = new HttpClient();
+        //    client.BaseAddress = callbackServiceUri;
+
+        //    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "/Home/CheckAuthenticated");
+        //    HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+        //    var json = await responseMessage.Content.ReadAsStringAsync();
+        //    client.Dispose();
+
+        //    if (responseMessage.IsSuccessStatusCode)
+        //    {
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
     }
 }
