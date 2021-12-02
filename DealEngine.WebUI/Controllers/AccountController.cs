@@ -495,8 +495,8 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         private async Task<string> AMPSGetAccessToken()
         {
-            string ampsUrl = "https://staging.api.m2digitalbroker.com";
-            string authenticationString = "VRGMAN4TCUf8EqladxEy7f8mGHAF2ruy:fvsnyFVgbll7VCxe"; // clientid:clientsecret
+            string ampsUrl = _appSettingService.AMPSUrl;
+            string authenticationString = _appSettingService.ClientIdClientSecret;
 
             // Setup client
             Uri ampsUri = new Uri(ampsUrl);
@@ -592,7 +592,7 @@ namespace DealEngine.WebUI.Controllers
             var token = dict["access_token"];
 
             // Create User API
-            string ampsUrl = "https://staging.api.m2digitalbroker.com";
+            string ampsUrl = _appSettingService.AMPSUrl;
 
             // Setup client
             Uri ampsUri = new Uri(ampsUrl);
@@ -1137,10 +1137,10 @@ namespace DealEngine.WebUI.Controllers
             HttpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
             //  Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
 
-            if (_appSettingService.AuthenticationService == "Okta")
-            {
-                return await LogoutOkta();
-            }
+            //if (_appSettingService.AuthenticationService == "Okta")
+            //{
+            //    return await LogoutOkta();
+            //}
 
             return await RedirectToLocal();
         }

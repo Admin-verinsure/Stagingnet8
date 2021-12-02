@@ -64,7 +64,22 @@ namespace DealEngine.Services.Impl
                 return _configuration.GetValue<string>("oktaCallBackServiceURL");
             }
         }
+        public string ClientIdClientSecret
+        {
+            get
+            {
+                return _configuration.GetValue<string>("ClientIdClientSecret");
+            }
+        }
 
+        public string AMPSUrl
+        {
+            get
+            {
+                return _configuration.GetValue<string>("AMPSUrl");
+            }
+        }
+   
         public string CKImagePath
         {
             get
