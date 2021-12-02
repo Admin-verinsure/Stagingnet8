@@ -533,19 +533,19 @@ namespace DealEngine.WebUI.Controllers
             string group = "";
             if (user.PrimaryOrganisation.IsBroker)
             {
-                group = "00g12zhoyi2xdZvH00h8";// Marsh Brokers TCDE_internal_users
+                group = _appSettingService.TCDE_internal_users;
             }
             else if (user.PrimaryOrganisation.IsInsurer)
             {
-                group = "00g138harhtgadwim0h8";// Underwriters TCDE_external_Underwriters
+                group = _appSettingService.TCDE_external_Underwriters;
             }
             else if (user.PrimaryOrganisation.IsTC)
             {
-                group = "00g138goracXIMQre0h8";// Admin TCDE_external_Admins
+                group = _appSettingService.TCDE_external_Admins;
             }
             else
             {
-                group = "00g12zhd1k9V3G3kG0h8"; // Marsh Client TCDE_external_users
+                group = _appSettingService.TCDE_external_users;
             }
 
             #region Create JSON objects for upload            

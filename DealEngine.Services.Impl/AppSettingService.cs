@@ -79,7 +79,39 @@ namespace DealEngine.Services.Impl
                 return _configuration.GetValue<string>("AMPSUrl");
             }
         }
-   
+
+        public string TCDE_internal_users
+        {
+            get
+            {
+                return _configuration.GetValue<string>("TCDE_internal_users");
+            }
+        }
+
+        public string TCDE_external_Underwriters
+        {
+            get
+            {
+                return _configuration.GetValue<string>("TCDE_external_Underwriters");
+            }
+        }
+
+        public string TCDE_external_Admins
+        {
+            get
+            {
+                return _configuration.GetValue<string>("TCDE_external_Admins");
+            }
+        }
+
+        public string TCDE_external_users
+        {
+            get
+            {
+                return _configuration.GetValue<string>("TCDE_external_users");
+            }
+        }
+
         public string CKImagePath
         {
             get
