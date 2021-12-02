@@ -1137,10 +1137,10 @@ namespace DealEngine.WebUI.Controllers
             HttpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
             //  Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
 
-            //if (_appSettingService.AuthenticationService == "Okta")
-            //{
-            //    return await LogoutOkta();
-            //}
+            if (_appSettingService.AuthenticationService == "Okta")
+            {
+                return await LogoutOkta();
+            }
 
             return await RedirectToLocal();
         }
