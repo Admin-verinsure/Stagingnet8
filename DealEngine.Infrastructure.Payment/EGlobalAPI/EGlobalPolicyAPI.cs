@@ -1312,12 +1312,14 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             {
                 pr.CoyPremium = (clientAgreementTerm.PremiumDiffer * EGlobalPolicy.DiscountRate);
                 pr.LeviesB = clientAgreementTerm.FSLDiffer;     //fsl;
-                pr.BrokerAmountDue = clientAgreementTerm.BrokerageDiffer;
+                //pr.BrokerAmountDue = clientAgreementTerm.BrokerageDiffer;
+                pr.BrokerAmountDue = clientAgreementTerm.PremiumDiffer * clientAgreementTerm.ClientAgreement.Brokerage / 100;
             } else
             {
                 pr.CoyPremium = (clientAgreementTerm.Premium * EGlobalPolicy.DiscountRate);
                 pr.LeviesB = clientAgreementTerm.FSL;     //fsl;
-                pr.BrokerAmountDue = clientAgreementTerm.Brokerage;
+                //pr.BrokerAmountDue = clientAgreementTerm.Brokerage;
+                pr.BrokerAmountDue = clientAgreementTerm.Premium * clientAgreementTerm.ClientAgreement.Brokerage / 100;
             }
 
             foreach(ClientAgreementTermExtension extension in clientAgreementTerm.ClientAgreement.ClientAgreementTermExtensions.Where(ext => ext.Bound  == true))
