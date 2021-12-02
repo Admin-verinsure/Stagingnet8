@@ -393,7 +393,9 @@
                     $(prevbutton).hide();
                 }
                 var AnswerSheetId = $('#AnswerSheetId').val();
-                var array = $("#tab_2 :input").serializeArray();
+                //var array = $("#tab_2 :input").serializeArray();
+                var array = $("#tab_2 :input").Array();
+
                 var ids = [];
                 $.each(array, function (i, pair) {
                     ids.push(pair.value);
@@ -609,7 +611,8 @@
                 $.ajax({
                     url: '@Url.Action("SaveInformation", "Information")',
                     type: "POST",
-                    data: $("#tab_1 :input").serialize({ json: true })
+                    //data: $("#tab_1 :input").serialize({ json: true })
+                    data: $("#tab_1 :input")
                 })
                 .done(function (data) {
                     if (ui.oldHeader[0].id == "Investment Product") {
@@ -7133,7 +7136,8 @@
             $.ajax({
                 type: "POST",
                 url: '@Url.ActionLink("GeneratePxPayment", "Agreement")',
-                data: $("#tab_1 :input").serialize({ json: true }),
+                //data: $("#tab_1 :input").serialize({ json: true }),
+                data: $("#tab_1 :input"),
                 complete: function (data) {
                     debugger;
                     window.location = data.responseJSON.url;
@@ -7151,8 +7155,8 @@
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("GenerateEGlobal", "Agreement")',
-                data: $("#tab_1 :input").serialize({ json: true })
-
+                //data: $("#tab_1 :input").serialize({ json: true })
+                data: $("#tab_1 :input")
             })
             .done(function (data) {
                 //$("#documentsSection").on('load', url, function () {
