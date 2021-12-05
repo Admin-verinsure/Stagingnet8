@@ -2821,7 +2821,7 @@ namespace DealEngine.Services.Impl
             string Name = "";
             Guid.TryParse("8b6b0ca4-2ba3-4e40-a196-222c3e4982a2", out Guid ProgrammeId);
             //addresses need to be on one line            
-            var fileName = WorkingDirectory + "nzbarownerdata.csv";
+            var fileName = WorkingDirectory + "nzbaownerdata2021.csv";
 
             using (reader = new StreamReader(fileName))
             {
@@ -2851,15 +2851,16 @@ namespace DealEngine.Services.Impl
                                 Random random = new Random();
                                 int randomNumber = random.Next(10, 99);
                                 userName = userName + randomNumber.ToString();
-                            }
-                            user = new User(currentUser, Guid.NewGuid(), userName);
-                            user.FirstName = parts[1];
-                            user.LastName = parts[2];
-                            user.FullName = parts[1] + " " + parts[2];
-                            user.Email = email;
-                           
+                                user = new User(currentUser, Guid.NewGuid(), userName);
+                                user.FirstName = parts[1];
+                                user.LastName = parts[2];
+                                user.FullName = parts[1] + " " + parts[2];
+                                user.Email = email;
 
-                        type = "Person - Individual";
+                            }
+
+
+                        type = "Corporation – Limited liability";
                         Name = user.FullName;
                         OrganisationType ownerType = new OrganisationType(type);
                         InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, type);
@@ -2869,9 +2870,10 @@ namespace DealEngine.Services.Impl
                             OrganisationType = ownerType,
                             Email = user.Email,
                             Name = Name,
-                            //Initial = parts[2],//////////////
-                            //honorific = parts[2]////kjjhk
-                    };
+                       };
+                        Owner.OrganisationalUnits.Add(ownerUnit);
+                        Owner.InsuranceAttributes.Add(ownerAttribute);
+                        user.Organisations.Add(Owner);
 
                         OrganisationType barristerType = new OrganisationType("Person - Individual");
                         InsuranceAttribute barristerAttribute = new InsuranceAttribute(currentUser, "Barrister");
@@ -2879,8 +2881,8 @@ namespace DealEngine.Services.Impl
                         BarristerUnit BarristerUnit = new BarristerUnit(currentUser, "Barrister", "Person - Individual", null)
                         {
                             IsPrincipalBarrister = true,
-                            Initial = parts[6],
-                            honorific = parts[7]
+                            Initial = parts[9],
+                            honorific = parts[10]
                         };
                         Organisation Barrister = new Organisation(currentUser, Guid.NewGuid())
                         {
@@ -2894,11 +2896,7 @@ namespace DealEngine.Services.Impl
                         Barrister.OrganisationalUnits.Add(BarristerUnit);
                         user.Organisations.Add(Barrister);
 
-
                         user.SetPrimaryOrganisation(Owner);
-
-
-
 
                         await _userService.ApplicationCreateUser(user);
 
@@ -2908,12 +2906,14 @@ namespace DealEngine.Services.Impl
                         var reference = await _referenceService.GetLatestReferenceId();
                         var sheet = await _clientInformationService.IssueInformationFor(user, Owner, clientProgramme, reference);
                         await _referenceService.CreateClientInformationReference(sheet);
+                        clientProgramme.BrokerContactUser = programme.BrokerContactUser;
                         clientProgramme.EGlobalClientNumber = parts[6];
                         clientProgramme.EGlobalExternalContactNumber = parts[7];
                         clientProgramme.EGlobalBranchCode = parts[8];
                         clientProgramme.ClientProgrammeMembershipNumber = parts[4];
                         sheet.IsRenewawl = true;
                         sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(user, sheet, null, programme.Name + "UIS issue Process Completed"));
+                        sheet.Organisation.Add(Barrister);
                         await _programmeService.Update(clientProgramme);
                     }
                     catch (Exception ex)

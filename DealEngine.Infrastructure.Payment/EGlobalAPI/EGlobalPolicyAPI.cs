@@ -86,7 +86,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             // Update Policy fields
             EGlobalPolicy.Policy.PolicyDateTime = DateTime.Now;
-            EGlobalPolicy.Policy.EffectiveDate = DateTime.Now;
+            EGlobalPolicy.Policy.EffectiveDate = EGlobalPolicy.Policy.InceptionDate;
         }
 
         #endregion
@@ -114,7 +114,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             // Update Policy fields
             EGlobalPolicy.Policy.PolicyDateTime = DateTime.Now;
-            EGlobalPolicy.Policy.EffectiveDate = DateTime.Now;
+            EGlobalPolicy.Policy.EffectiveDate = EGlobalPolicy.Policy.InceptionDate;
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             // Update Policy fields
             EGlobalPolicy.Policy.PolicyDateTime = DateTime.Now;
-            EGlobalPolicy.Policy.EffectiveDate = DateTime.Now;
+            EGlobalPolicy.Policy.EffectiveDate = EGlobalPolicy.Policy.InceptionDate;
         }
 
         protected virtual void ReversePolicy()
@@ -1312,12 +1312,14 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             {
                 pr.CoyPremium = (clientAgreementTerm.PremiumDiffer * EGlobalPolicy.DiscountRate);
                 pr.LeviesB = clientAgreementTerm.FSLDiffer;     //fsl;
-                pr.BrokerAmountDue = clientAgreementTerm.BrokerageDiffer;
+                //pr.BrokerAmountDue = clientAgreementTerm.BrokerageDiffer;
+                pr.BrokerAmountDue = clientAgreementTerm.PremiumDiffer * clientAgreementTerm.ClientAgreement.Brokerage / 100;
             } else
             {
                 pr.CoyPremium = (clientAgreementTerm.Premium * EGlobalPolicy.DiscountRate);
                 pr.LeviesB = clientAgreementTerm.FSL;     //fsl;
-                pr.BrokerAmountDue = clientAgreementTerm.Brokerage;
+                //pr.BrokerAmountDue = clientAgreementTerm.Brokerage;
+                pr.BrokerAmountDue = clientAgreementTerm.Premium * clientAgreementTerm.ClientAgreement.Brokerage / 100;
             }
 
             foreach(ClientAgreementTermExtension extension in clientAgreementTerm.ClientAgreement.ClientAgreementTermExtensions.Where(ext => ext.Bound  == true))
