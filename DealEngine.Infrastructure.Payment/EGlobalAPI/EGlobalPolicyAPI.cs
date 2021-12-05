@@ -86,7 +86,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             // Update Policy fields
             EGlobalPolicy.Policy.PolicyDateTime = DateTime.Now;
-            EGlobalPolicy.Policy.EffectiveDate = DateTime.Now;
+            EGlobalPolicy.Policy.EffectiveDate = EGlobalPolicy.Policy.InceptionDate;
         }
 
         #endregion
@@ -114,7 +114,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             // Update Policy fields
             EGlobalPolicy.Policy.PolicyDateTime = DateTime.Now;
-            EGlobalPolicy.Policy.EffectiveDate = DateTime.Now;
+            EGlobalPolicy.Policy.EffectiveDate = EGlobalPolicy.Policy.InceptionDate;
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             // Update Policy fields
             EGlobalPolicy.Policy.PolicyDateTime = DateTime.Now;
-            EGlobalPolicy.Policy.EffectiveDate = DateTime.Now;
+            EGlobalPolicy.Policy.EffectiveDate = EGlobalPolicy.Policy.InceptionDate;
         }
 
         protected virtual void ReversePolicy()
