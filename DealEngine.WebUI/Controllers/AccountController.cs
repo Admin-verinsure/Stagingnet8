@@ -455,6 +455,7 @@ namespace DealEngine.WebUI.Controllers
 
                 // Step 1 validate in  LDap 
                 _ldapService.Validate(userName, password, out resultCode, out resultMessage);
+
                 if (resultCode == 0)
                 {
                     var user = await _userService.GetUser(userName);
@@ -482,6 +483,23 @@ namespace DealEngine.WebUI.Controllers
                         return Redirect("https://" + callbackService);
                     }
                 }
+                else if (resultCode == 49) // LDAP_INVALID_CREDENTIALS
+                {
+                    return LocalRedirect("~/Account/OktaErrorMessage");
+                }
+                else if (resultCode == 51) // LDAP_BUSY
+                {
+
+                }
+                else if (resultCode == 52) // LDAP_UNAVAILABLE
+                {
+
+                }
+                else
+                {
+                    // Generic LDAP error page
+                }
+
             }
             catch (Exception ex)
             {
@@ -611,58 +629,6 @@ namespace DealEngine.WebUI.Controllers
             return jsonResponse;
         }
 
-        //[Consumes("application/json")]
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> IdentityLoginOktaCallbackService(string json)
-        {
-            // API that callbackservice was supposed to hit but isn't used anymore
-            try
-            {
-                //Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                string okta_uid = "00u12zjmjqdu0CYLr0h8";//dict["okta_uid"];
-                //string email = dict["email"];
-                string identityPassword = "00u12zjmjqdu0CYLr0h8" + _appSettingService.OktaIntermediatePassword;
-                //string firstname = dict["firstname"];
-                //string surname = dict["surname"];
-
-                User user = null;
-                IdentityUser identityUser;
-
-                user = await _userService.GetUserByOktaUID(okta_uid);
-                string username = user.UserName;
-
-                // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
-                var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
-
-                if (!identityResult.Succeeded)
-                {
-                    identityUser = await _userManager.FindByNameAsync(user.UserName);
-                    await _userManager.RemovePasswordAsync(identityUser);
-                    await _userManager.AddPasswordAsync(identityUser, identityPassword);
-                }
-                else
-                {
-                    identityUser = await _userManager.FindByNameAsync(username);
-                    await _signInManager.SignOutAsync();
-                    identityUser = await _userManager.FindByNameAsync(username);
-                }
-                var result = await _signInManager.PasswordSignInAsync(identityUser, identityPassword, false, lockoutOnFailure: true);
-                using (var uow = _unitOfWork.BeginUnitOfWork())
-                {
-                    user.IsLoggedout = false;
-                    user.LoggedInTime = DateTime.UtcNow;
-                    await uow.Commit();
-                }
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
-                throw new Exception(ex.Message + " " + ex.StackTrace);//
-            }
-        }
-
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> OIdLogin(string q)
@@ -683,10 +649,13 @@ namespace DealEngine.WebUI.Controllers
                 if (isAuth)
                 {
                     var oktaUid = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
+
+                    #region Time Code where request only valid for 15 seconds, Ubuntu bug and time constraints led to removal.
                     //var oktaUidTime = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
                     //string[] oktaUidTimeArray = oktaUidTime.Split("O=");
                     //string oktaUid = oktaUidTimeArray.First();
                     //string stringTime = oktaUidTimeArray.Last();
+                    #endregion
 
                     string identityPassword = oktaUid + _appSettingService.OktaIntermediatePassword;
 
@@ -726,7 +695,8 @@ namespace DealEngine.WebUI.Controllers
                     //var seconds = (now - time).TotalSeconds;
 
                     //if (seconds < 15)
-                    //{                        
+                    //{
+                    // put identity login in here
                     //}
                     //else
                     //{
@@ -795,6 +765,59 @@ namespace DealEngine.WebUI.Controllers
                 }
             }
         }
+
+        #region API that callbackservice was supposed to hit but isn't used anymore
+        //[Consumes("application/json")]
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> IdentityLoginOktaCallbackService(string json)
+        {
+            try
+            {
+                //Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                string okta_uid = "00u12zjmjqdu0CYLr0h8";//dict["okta_uid"];
+                //string email = dict["email"];
+                string identityPassword = "00u12zjmjqdu0CYLr0h8" + _appSettingService.OktaIntermediatePassword;
+                //string firstname = dict["firstname"];
+                //string surname = dict["surname"];
+
+                User user = null;
+                IdentityUser identityUser;
+
+                user = await _userService.GetUserByOktaUID(okta_uid);
+                string username = user.UserName;
+
+                // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
+                var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
+
+                if (!identityResult.Succeeded)
+                {
+                    identityUser = await _userManager.FindByNameAsync(user.UserName);
+                    await _userManager.RemovePasswordAsync(identityUser);
+                    await _userManager.AddPasswordAsync(identityUser, identityPassword);
+                }
+                else
+                {
+                    identityUser = await _userManager.FindByNameAsync(username);
+                    await _signInManager.SignOutAsync();
+                    identityUser = await _userManager.FindByNameAsync(username);
+                }
+                var result = await _signInManager.PasswordSignInAsync(identityUser, identityPassword, false, lockoutOnFailure: true);
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    user.IsLoggedout = false;
+                    user.LoggedInTime = DateTime.UtcNow;
+                    await uow.Commit();
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);//
+            }
+        }
+        #endregion
 
         private async Task<SignInResult> DealEngineIdentityUserLogin(User user, string password)
         {
