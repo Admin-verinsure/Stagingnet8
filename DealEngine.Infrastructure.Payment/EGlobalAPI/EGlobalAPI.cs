@@ -572,7 +572,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             { get; set; }
 
             [XmlElement("_ClientNo")]
-            public int ClientNo
+            public string ClientNo
             { get; set; }
 
             [XmlElement("_CoverNo")]

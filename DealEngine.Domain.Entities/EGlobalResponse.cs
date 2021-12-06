@@ -27,7 +27,7 @@ namespace DealEngine.Domain.Entities
         public virtual string ResponseText { get; set; }
         public virtual string Company { get; set; }
         public virtual string Branch { get; set; }
-        public virtual int ClientNumber { get; set; }
+        public virtual string ClientNumber { get; set; }
         public virtual int CoverNumber { get; set; }
         public virtual int VersionNumber { get; set; }
         public virtual string Tranident { get; set; }
