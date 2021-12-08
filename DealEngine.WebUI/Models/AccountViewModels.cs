@@ -82,8 +82,8 @@ namespace DealEngine.WebUI.Models
 
     public class AccountErrorViewModel : BaseViewModel
     {
-        //public string errorMessage { get; set; }
-        //public string errorCode { get; set; }
+        public string errorMessage { get; set; }
+        public string errorCode { get; set; }
         //public string reason { get; set; }
         public string message1 { get; set; }
         public string message2 { get; set; }

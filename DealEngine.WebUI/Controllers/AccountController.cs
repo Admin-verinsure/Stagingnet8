@@ -511,8 +511,8 @@ namespace DealEngine.WebUI.Controllers
                                     errorViewModel.message3 = "The password should also not contain any part of your name or email address.";
                                     errorViewModel.message4 = "Please click the link below to reset your password.";
 
-                                    //errorViewModel.errorCode = "400" + " (" + errorCode + ")";
-
+                                    errorViewModel.errorCode = "400" + " (" + errorCode + ")";
+                                    errorViewModel.errorMessage = "AMPS Create User - Bad Request";
                                     return View("ErrorDynamic", errorViewModel);
                                 }
                                 else
@@ -528,6 +528,8 @@ namespace DealEngine.WebUI.Controllers
                                     errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
                                     errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
 
+                                    errorViewModel.errorCode = "400" + " (Unknown)";
+                                    errorViewModel.errorMessage = "AMPS Create User - Bad Request";
                                     return View("ErrorDynamic", errorViewModel);
                                 }
                             }
@@ -544,6 +546,8 @@ namespace DealEngine.WebUI.Controllers
                                 errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
                                 errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
 
+                                errorViewModel.errorCode = "401";
+                                errorViewModel.errorMessage = "AMPS Create User - Unauthorized.";
                                 return View("ErrorDynamic", errorViewModel);
                             }
                             else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.Forbidden)
@@ -559,6 +563,8 @@ namespace DealEngine.WebUI.Controllers
                                 errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
                                 errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
 
+                                errorViewModel.errorCode = "403";
+                                errorViewModel.errorMessage = "AMPS Create User - Unauthorized.";
                                 return View("ErrorDynamic", errorViewModel);
                             }
                             else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -574,6 +580,8 @@ namespace DealEngine.WebUI.Controllers
                                 errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
                                 errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
 
+                                errorViewModel.errorCode = "404";
+                                errorViewModel.errorMessage = "AMPS Create User - Not Found.";
                                 return View("ErrorDynamic", errorViewModel);
                             }
                             else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
@@ -589,11 +597,12 @@ namespace DealEngine.WebUI.Controllers
                                 errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
                                 errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
 
+                                errorViewModel.errorCode = "422";
+                                errorViewModel.errorMessage = "AMPS Create User - Unprocessable Entity.";
                                 return View("ErrorDynamic", errorViewModel);
                             }
                             else
                             {
-                                // Un-covered HTTP Status codes
                                 AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
                                 errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
                                 errorViewModel.backButtonText = "Back";
@@ -605,6 +614,8 @@ namespace DealEngine.WebUI.Controllers
                                 errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
                                 errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
 
+                                errorViewModel.errorCode = "Unknown";
+                                errorViewModel.errorMessage = "AMPS Create User - Unknown Error Code.";
                                 return View("ErrorDynamic", errorViewModel);
                             }
 
@@ -622,6 +633,8 @@ namespace DealEngine.WebUI.Controllers
                             errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
                             errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
 
+                            errorViewModel.errorCode = "401";
+                            errorViewModel.errorMessage = "AMPS Access Code - Unauthorized.";
                             return View("ErrorDynamic", errorViewModel);
                         }
                         else
@@ -637,6 +650,8 @@ namespace DealEngine.WebUI.Controllers
                             errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
                             errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
 
+                            errorViewModel.errorCode = "Unknown";
+                            errorViewModel.errorMessage = "AMPS Access Code - Unknown.";
                             return View("ErrorDynamic", errorViewModel);
                         }
                     }
@@ -647,6 +662,7 @@ namespace DealEngine.WebUI.Controllers
                         return Redirect("https://" + callbackService);
                     }
                 }
+
                 #region LDAP Use Cases
                 //}
                 //else if (resultCode == 49) // LDAP_INVALID_CREDENTIALS
@@ -714,8 +730,6 @@ namespace DealEngine.WebUI.Controllers
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
                 throw new Exception(ex.Message + " " + ex.StackTrace);
             }
-
-            return Ok();
         }
 
         [AllowAnonymous]
