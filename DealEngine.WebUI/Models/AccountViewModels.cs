@@ -24,7 +24,6 @@ namespace DealEngine.WebUI.Models
         public bool RememberMe { get; set; }
         public string DevicePrint { get; set; }
         public string DomainString { get; set; }
-
         public string CallbackDomainString { get; set; }
     }
 
@@ -79,5 +78,20 @@ namespace DealEngine.WebUI.Models
 		[DataType(DataType.Text)]
 		public string LastName { get; set; }
         
+    }
+
+    public class AccountErrorViewModel : BaseViewModel
+    {
+        //public string errorMessage { get; set; }
+        //public string errorCode { get; set; }
+        //public string reason { get; set; }
+        public string message1 { get; set; }
+        public string message2 { get; set; }
+        public string message3 { get; set; }
+        public string message4 { get; set; }
+        public string tryAgainURL { get; set; }
+        public string backURL { get; set; }
+        public string backButtonText { get; set; }
+        public string tryAgainButtonText { get; set; }
     }
 }

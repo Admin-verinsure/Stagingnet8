@@ -460,46 +460,254 @@ namespace DealEngine.WebUI.Controllers
                 {
                     var user = await _userService.GetUser(userName);
 
-                    // No OktaUID
+                    // Doesn't have OktaUID -> Create User AMPS
                     if (user.OktaUID == null)
                     {
-                        var result = await AMPSGetAccessToken();
-                        var result2 = await AMPSCreateUser(result, user, password);
+                        HttpResponseMessage AMPSAccessResponseMessage = await AMPSGetAccessToken();
 
-                        // Get OktaUID
-                        string oktaUID = result2.Substring(7, 20);
-                        user.OktaUID = oktaUID;
-                        await _userRepository.UpdateAsync(user);
+                        if (AMPSAccessResponseMessage.IsSuccessStatusCode)
+                        {
+                            // AMPS Process
+                            var AMPSAccessResponseMessageContent = await AMPSAccessResponseMessage.Content.ReadAsStringAsync();
 
-                        // Redirect User to oktacallbackservice for Login
-                        var callbackService = _appSettingService.oktaCallBackServiceURL;
-                        return Redirect("https://" + callbackService);
+                            HttpResponseMessage AMPSResponseMessage = await AMPSCreateUser(AMPSAccessResponseMessageContent, user, password);
+
+                            if (AMPSResponseMessage.IsSuccessStatusCode)
+                            {
+                                var AMPSResponseMessageContent = await AMPSResponseMessage.Content.ReadAsStringAsync();
+
+                                string oktaUID = AMPSResponseMessageContent.Substring(7, 20);
+                                user.OktaUID = oktaUID;
+                                await _userRepository.UpdateAsync(user);
+
+                                var callbackService = _appSettingService.oktaCallBackServiceURL;
+                                return Redirect("https://" + callbackService);
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                            {
+                                var AMPSResponseMessageContent = await AMPSResponseMessage.Content.ReadAsStringAsync();
+                                int indexErrorCode = AMPSResponseMessageContent.IndexOf("errorCode");
+
+                                string errorCode = AMPSResponseMessageContent.Substring(indexErrorCode + 12, 8);
+
+                                int indexErrorSummary = AMPSResponseMessageContent.LastIndexOf("errorSummary");
+                                int indexErrorSummaryEnd = AMPSResponseMessageContent.IndexOf("}]}");
+
+                                int length = AMPSResponseMessageContent.Length - indexErrorSummary - 25;
+
+                                string errorCause = AMPSResponseMessageContent.Substring(indexErrorSummary + 25, length - 4);
+
+                                if (errorCode == "E0000001")
+                                {
+                                    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                    errorViewModel.backButtonText = "Back";
+
+                                    errorViewModel.tryAgainURL = _appSettingService.domainQueryString + "/Account/ResetPassword";
+                                    errorViewModel.tryAgainButtonText = "Reset Password";
+
+                                    errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed as the password that has been set doesn’t meet the requirements contained in our password policy. ";
+                                    errorViewModel.message2 = "Passwords must have at least 8 characters, a lowercase and an uppercase letter, a number, and a symbol.";
+                                    errorViewModel.message3 = "The password should also not contain any part of your name or email address.";
+                                    errorViewModel.message4 = "Please click the link below to reset your password.";
+
+                                    //errorViewModel.errorCode = "400" + " (" + errorCode + ")";
+
+                                    return View("ErrorDynamic", errorViewModel);
+                                }
+                                else
+                                {
+                                    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                    errorViewModel.backButtonText = "Back";
+
+                                    errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                    errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                    errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                    errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                    errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                    return View("ErrorDynamic", errorViewModel);
+                                }
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                            {
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                            {
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+                            {
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
+                            {
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+                            else
+                            {
+                                // Un-covered HTTP Status codes
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+
+                        }
+                        else if (AMPSAccessResponseMessage.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                            errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                            errorViewModel.backButtonText = "Back";
+
+                            errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                            errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                            errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                            errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                            errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                            return View("ErrorDynamic", errorViewModel);
+                        }
+                        else
+                        {
+                            AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                            errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                            errorViewModel.backButtonText = "Back";
+
+                            errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                            errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                            errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                            errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                            errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                            return View("ErrorDynamic", errorViewModel);
+                        }
                     }
-                    // Yes OktaUID
+                    // Has OktaUID
                     else
                     {
-                        // Redirect User to oktacallbackservice for Login
                         var callbackService = _appSettingService.oktaCallBackServiceURL;
                         return Redirect("https://" + callbackService);
                     }
                 }
-                else if (resultCode == 49) // LDAP_INVALID_CREDENTIALS
-                {
-                    return LocalRedirect("~/Account/OktaErrorMessage");
-                }
-                else if (resultCode == 51) // LDAP_BUSY
-                {
+                #region LDAP Use Cases
+                //}
+                //else if (resultCode == 49) // LDAP_INVALID_CREDENTIALS
+                //{
+                //    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                //    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.tryAgainURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.errorMessage = "Invalid Credentials - Unfortunately the authentication to your LDAP account has failed.";
+                //    errorViewModel.errorCode = "49";
+                //    errorViewModel.backButtonText = "Back";
+                //    errorViewModel.tryAgainButtonText = "Try Again";
 
-                }
-                else if (resultCode == 52) // LDAP_UNAVAILABLE
-                {
+                //    return View("ErrorDynamic", errorViewModel);
+                //}
+                //else if (resultCode == 51) // LDAP_BUSY
+                //{
+                //    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                //    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.tryAgainURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.errorMessage = "LDAP Busy - Unfortunately the authentication to your LDAP account has failed.";
+                //    errorViewModel.errorCode = "51";
+                //    errorViewModel.backButtonText = "Back";
+                //    errorViewModel.tryAgainButtonText = "Try Again";
 
-                }
-                else
-                {
-                    // Generic LDAP error page
-                }
+                //    return View("ErrorDynamic", errorViewModel);
+                //}
+                //else if (resultCode == 52) // LDAP_UNAVAILABLE
+                //{
+                //    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                //    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.tryAgainURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.errorMessage = "LDAP Unavailable - Unfortunately the authentication to your LDAP account has failed.";
+                //    errorViewModel.errorCode = "52";
+                //    errorViewModel.backButtonText = "Back";
+                //    errorViewModel.tryAgainButtonText = "Try Again";
 
+                //    return View("ErrorDynamic", errorViewModel);
+                //}
+                #endregion
+
+                else // ANY OTHER LDAP CODE https://ldapwiki.com/wiki/LDAP%20Result%20Codes 
+                {
+                    ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.");
+                    return View(viewModel);
+                }
+                //else
+                //{
+                //    // Generic LDAP error message
+                //    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                //    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.backButtonText = "Back";
+
+                //    errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                //    errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                //    errorViewModel.message1 = "We are unable to access your account with the username or password provided.";
+                //    errorViewModel.message2 = "You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity.";
+                //    errorViewModel.message3 = "Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.";
+
+                //    return View("ErrorDynamic", errorViewModel);
+                //}
             }
             catch (Exception ex)
             {
@@ -511,7 +719,7 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [AllowAnonymous]
-        private async Task<string> AMPSGetAccessToken()
+        private async Task<HttpResponseMessage> AMPSGetAccessToken()
         {
             string ampsUrl = _appSettingService.AMPSUrl;
             string authenticationString = _appSettingService.ClientIdClientSecret;
@@ -537,15 +745,13 @@ namespace DealEngine.WebUI.Controllers
 
             // Send Request
             HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
-            var json = await responseMessage.Content.ReadAsStringAsync();
-            client.Dispose();
 
-            return json;
+            return responseMessage;
 
         }
 
         [AllowAnonymous]
-        private async Task<string> AMPSCreateUser(string json, User user, string password)
+        private async Task<HttpResponseMessage> AMPSCreateUser(string json, User user, string password)
         {
             // Map the group
             string group = "";
@@ -624,9 +830,7 @@ namespace DealEngine.WebUI.Controllers
 
             // Send Request
             HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
-
-            var jsonResponse = await responseMessage.Content.ReadAsStringAsync();
-            return jsonResponse;
+            return responseMessage;            
         }
 
         [HttpGet]
@@ -1040,6 +1244,13 @@ namespace DealEngine.WebUI.Controllers
             return View();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OktaErrorMessage(AccountLoginModel loginViewModel)
+        {
+            return View(loginViewModel);
+        }
+
         // GET: /account/error
         [HttpGet]
         [AllowAnonymous]
@@ -1049,6 +1260,13 @@ namespace DealEngine.WebUI.Controllers
             EnsureLoggedOut();
 
             return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ErrorDynamic(AccountErrorViewModel accountErrorViewModel)
+        {
+            return View(accountErrorViewModel);
         }
 
         // GET: /account/register

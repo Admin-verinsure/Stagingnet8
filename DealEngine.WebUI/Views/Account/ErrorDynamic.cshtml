@@ -1,0 +1,31 @@
+﻿@model DealEngine.WebUI.Models.AccountErrorViewModel
+
+<div id="content" class="container col-sm-12 col-md-6 col-lg-6">
+    <div class="container" style="height:35px;"></div>
+    <div style="margin-top:1em;" class="container-fluid">
+        <div class="col-sm" style="height:max-content">
+            <div class="card">
+                <div class="card-body ">
+                    <p style="text-align:center">@Model.message1</p>
+                    <br/>
+                    <p style="text-align:center">@Model.message2</p>
+                    <br/>
+                    <p style="text-align:center">@Model.message3</p>
+                    @if (Model.message4 != null)
+                    {
+                    <br/>
+                    <p style="text-align:center">@Model.message4</p>
+                    }
+					<div class="col-sm-12 text-center" style="margin-top:2.5em;">
+						<div style="float:left;" class="col-sm-6">
+							<button onclick="window.location.href = 'https://@Model.backURL';" style="width: 60%; font-size: large; font-weight:bold;" type="button" class="btn btn-danger">@Model.backButtonText</button>
+						</div>
+						<div style="float:right;"class="col-sm-6">
+							<button onclick="window.location.href = 'https://@Model.tryAgainURL';" style="width: 60%; font-size: large; font-weight: bold;" type="button" class="btn btn-success">@Model.tryAgainButtonText</button>
+						</div>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
