@@ -1076,6 +1076,59 @@ namespace DealEngine.WebUI.Controllers
 
 
         [HttpGet]
+        public async Task<IActionResult> ManageFlags(Guid Id)
+        {
+            ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
+            var product = new List<ProductInfoViewModel>();
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                Programme programme = await _programmeService.GetProgrammeById(Id);
+                model.Id = Id;
+                
+                model.Product = product;
+
+                ViewBag.Title = "Add/Edit Programme Email Template";
+
+                return View("ProgrammeFlags", model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateFlags(IFormCollection collection)
+        {
+            User user = null;
+
+            try
+            {
+
+                user = await CurrentUser();
+                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(collection["Id"]));
+
+                //programme.collection["Flag"] = collection["Flag"];
+                programme.PolicyNumberPrefixString = collection["FlagVal"];
+                programme.LastModifiedBy = user;
+                programme.LastModifiedOn = DateTime.UtcNow;
+
+                await _programmeService.Update(programme);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> ManageRules(Guid Id,string RuleType)
         {
             ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
@@ -1230,7 +1283,6 @@ namespace DealEngine.WebUI.Controllers
 
             return model;
         }
-        
 
         [HttpPost]
         public async Task<IActionResult> CreateProgramme(IFormCollection collection)
@@ -1246,7 +1298,7 @@ namespace DealEngine.WebUI.Controllers
                 programme.PolicyNumberPrefixString = collection["PolicyNumberPrefixString"];
                 programme.PolicyNumberPrefixString = collection["Declaration"];
                 programme.PolicyNumberPrefixString = collection["StopAgreementMessage"];
-                programme.PolicyNumberPrefixString = collection["NoPaymentRequiredMessage"];               
+                programme.PolicyNumberPrefixString = collection["NoPaymentRequiredMessage"];
                 programme.LastModifiedBy = user;
                 programme.LastModifiedOn = DateTime.UtcNow;
 
@@ -1254,12 +1306,14 @@ namespace DealEngine.WebUI.Controllers
 
                 return NoContent();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return BadRequest();
-            }                
+            }
         }
+
+       
 
         [HttpPost]
         public async Task<IActionResult> EditProgramme(IFormCollection collection)

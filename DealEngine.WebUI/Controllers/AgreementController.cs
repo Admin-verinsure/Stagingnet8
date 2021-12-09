@@ -4019,7 +4019,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     programme.PaymentType = "Credit Card";
                     programme.Payment = payment;
-                    programme.InformationSheet.Status = "Bound";
+                    //programme.InformationSheet.Status = "Bound";
                     await uow.Commit();
                 }
 
@@ -4106,7 +4106,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     programme.PaymentType = "Credit Card";
                     programme.Payment = payment;
-                    programme.InformationSheet.Status = "Bound";
+                    //programme.InformationSheet.Status = "Bound";
                     await uow.Commit();
                 }
 

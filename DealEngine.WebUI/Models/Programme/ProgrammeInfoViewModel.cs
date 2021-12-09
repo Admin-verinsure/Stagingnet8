@@ -14,6 +14,7 @@ namespace DealEngine.WebUI.Models.Programme
         public ProgrammeInfoViewModel() 
         {
             Brokers = new List<SelectListItem>();
+            Flags = GetSelectListOptions();
         }
         public ProgrammeInfoViewModel(List<User> brokers, Domain.Entities.Programme programme, ClientProgramme clientProgramme)
         {
@@ -53,6 +54,51 @@ namespace DealEngine.WebUI.Models.Programme
             }
             return Brokers;
         }
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "IsPdfDoc", Value = "IsPdfDoc"
+                },
+                 new SelectListItem
+                {
+                    Text = "ProgEnableEmail", Value = "ProgEnableEmail"
+                }, new SelectListItem
+                {
+                    Text = "ProgHideAdminFee", Value = "ProgHideAdminFee"
+                }, new SelectListItem
+                {
+                    Text = "ProgHidePremium", Value = "ProgHidePremium"
+                }, new SelectListItem
+                {
+                    Text = "EnableFullProposalReport", Value = "EnableFullProposalReport"
+                }, new SelectListItem
+                {
+                    Text = "IsFAPOrg", Value = "IsFAPOrg"
+                }, new SelectListItem
+                {
+                    Text = "EnableEDReport", Value = "EnableEDReport"
+                }, new SelectListItem
+                {
+                    Text = "EnablePIReport", Value = "EnablePIReport"
+                }, new SelectListItem
+                {
+                    Text = "EnableCLReport", Value = "EnableCLReport"
+                }, new SelectListItem
+                {
+                    Text = "EnableCyberReport", Value = "EnableCyberReport"
+                }, new SelectListItem
+                {
+                    Text = "EnableFAPReport", Value = "EnableFAPReport"
+                }
+            };
+        }
 
         public Guid Id { get; set; }
         public bool EGlobalIsActiveOrNot { get; set; }
@@ -74,6 +120,8 @@ namespace DealEngine.WebUI.Models.Programme
         public IList<Rule> Rules { get; set; }
         public Guid ProductId { get; set; }
         public List<ProgrammeInfoViewModel> Programmes { get; set; }
+        public IList<SelectListItem> Flags { get; set; }
+
 
 
     }

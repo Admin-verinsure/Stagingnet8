@@ -1162,6 +1162,17 @@ namespace DealEngine.Services.Impl
             await _clientInformationRepository.UpdateAsync(sourceClientProgrammeLastInformationSheet);
 
         }
+
+        //public async Task UpdateFlag(Programme  Prog, String flagname, String flagval)
+        //{
+            
+        //    //await _programmeRepository.UpdateAsync(Prog.Select );
+        //    //person.Select(c => new {
+        //    //    name = c.firstname
+        //    //    //other attributes here 
+        //    //});
+        //}
+
     }
 }
 

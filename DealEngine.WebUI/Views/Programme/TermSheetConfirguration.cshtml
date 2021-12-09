@@ -52,11 +52,11 @@
                         </tr>
                         @if (User.HasClaim("ViewRules", "ViewRules"))
                         {
-                         <tr>
-                             <td>Rules</td>
-                             <td>Configure the Rules</td>
-                             <td><a class="btn btn-success btn-sm" href="@Url.Action("ManageRules", "Programme", new { Id = @Model.Id ,RuleType ="Notification"})"><i class="fa fa-search"></i> View</a></td>
-                          </tr>
+                            <tr>
+                                <td>Rules</td>
+                                <td>Configure the Rules</td>
+                                <td><a class="btn btn-success btn-sm" href="@Url.Action("ManageRules", "Programme", new { Id = @Model.Id ,RuleType ="Notification"})"><i class="fa fa-search"></i> View</a></td>
+                            </tr>
                         }
 
                         @if (User.HasClaim("ViewEmails", "ViewEmails"))
@@ -122,12 +122,12 @@
                         }
                         @if (User.HasClaim("ViewUnderwritingRules", "ViewUnderwritingRules"))
                         {
-                    <tr>
-                        <td>Underwriting Rules</td>
-                        <td>Underwriting Rules</td>
+                            <tr>
+                                <td>Underwriting Rules</td>
+                                <td>Underwriting Rules</td>
 
-                        <td><a class="btn btn-success btn-sm" href="@Url.Action("ManageRules", "Programme", new { Id = @Model.Id ,RuleType ="UnderWriting"})"><i class="fa fa-search"></i> View</a></td>
-                    </tr>
+                                <td><a class="btn btn-success btn-sm" href="@Url.Action("ManageRules", "Programme", new { Id = @Model.Id ,RuleType ="UnderWriting"})"><i class="fa fa-search"></i> View</a></td>
+                            </tr>
                         }
                         @if (User.HasClaim("ViewUsers", "ViewUsers"))
                         {
@@ -150,7 +150,13 @@
                             <td>Images Management</td>
                             <td><a class="btn btn-success btn-sm disabled" href="#"><i class="fa fa-search"></i> In Dev</a></td>
                         </tr>
-
+                       
+                            @*<tr>
+                                <td>Flags</td>
+                                <td>Configure the Flags</td>
+                                <td><a class="btn btn-success btn-sm" href="@Url.Action("ManageFlags", "Programme", new { Id = @Model.Id ,RuleType ="Notification"})"><i class="fa fa-search"></i> View</a></td>
+                            </tr>*@
+                       
                     </tbody>
                 </table>
             </div>

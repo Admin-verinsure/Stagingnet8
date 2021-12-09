@@ -30,6 +30,7 @@
                     <div class="jarviswidget jarviswidget-color-blue" id="wid-id-2" data-widget-editbutton="true" data-widget-colorbutton="false">
                         @Html.HiddenFor(m => m.AnswerSheetId)
                         @Html.HiddenFor(m => m.ClientProgramme.Owner.Id)
+                        @Html.HiddenFor(m => m.Status)
 
                         <header>
                             <span class="widget-icon"> <i class="fa fa--envelope txt-color-white"></i> </span>
@@ -42,7 +43,7 @@
 
                         }
 
-                        
+
 
                     </div>
                 </article>
@@ -62,23 +63,20 @@
                  {
                 debugger;
         
-                    $("select").attr("disabled", "disabled");
-                    $("textarea").attr("disabled", "disabled");
-                 $("input").attr("disabled", "disabled");
-                $(".btn-success").attr("disabled", "disabled");
-                 //$("button").attr("disabled", "disabled");
-                 $(".fa-edit").attr("disabled", "disabled");
-                //$(".btn-sm").removeAttr('disabled');
+                 //$("select").attr("disabled", "disabled");
+                 //$("input").attr("disabled", "disabled");
+                 //$(".btn-success").attr("disabled", "disabled");
+                 ////$("button").attr("disabled", "disabled");
+                 //$(".fa-edit").attr("disabled", "disabled");
+                 //$(".btn-sm").removeAttr('disabled');
                  //$(".btn-danger").attr("disabled", "disabled");
-                 $(".text-light").attr("disabled", "disabled");
-                 $('.updateBoat').attr("disabled", "disabled");
-                 $('.AddClearBoat').attr("disabled", "disabled");
-                 $('.ClearBoat').attr("disabled", "disabled");
-                 $('.updateBoat').attr("hidden",true);
-                 $('.AddClearBoat').prop('hidden', true);
-                 $('.ClearBoat').prop('hidden', true);
-                 $('.btn-primary').attr("hidden",true);
-                      
+                 //$(".text-light").attr("disabled", "disabled");
+                 //$('.updateBoat').attr("disabled", "disabled");
+                 //$('.AddClearBoat').attr("disabled", "disabled");
+                 //$('.updateBoat').attr("hidden",true);
+                 //$('.AddClearBoat').prop('hidden', true);
+                 //$('.btn-primary').attr("hidden",true);
+                       $('.update').prop("disabled", true);
 
                 //$("#PIViewModel :input").prop("disabled", true);
 

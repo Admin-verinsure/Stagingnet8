@@ -53,7 +53,8 @@ namespace DealEngine.Services.Interfaces
         Task<ClientProgramme> GetClientProgrammebyOwnerName(String Programmename , String OwnerName);
         Task<ClientProgramme> GetOriginalClientProgrammeByReferenceNum(String RefrenceNum);
         Task<bool> AddOrganisationByMembershipByProgram(Organisation organisation, string membership,Guid Progid);
-        
+        //Task UpdateFlag(String ProgName, String flagname , String flagval);
+
     }
 }
 

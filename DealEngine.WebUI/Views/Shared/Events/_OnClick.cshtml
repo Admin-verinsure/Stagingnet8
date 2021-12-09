@@ -346,10 +346,16 @@
             form[i].classList.remove('is-invalid');
             form[i].disabled = false;
         }
-
+        ResetSubmitBtn();
          //location.reload();
     }
 
+    function ResetSubmitBtn() {
+        var sheetstatus = document.getElementById("Status");
+        if (sheetstatus.value == "Submitted" ||  sheetstatus.value  == "Bound") {
+            $('.update').prop("disabled", true);
+        }
+    }
     function CreateEditLabel(ObjectLabel) {
         var div = document.createElement("div");
         div.setAttribute("class", "form-group");
