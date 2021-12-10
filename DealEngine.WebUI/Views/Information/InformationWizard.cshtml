@@ -1070,12 +1070,11 @@
             }
 
         if ("@Model.Status" == "Submitted") {
-                //var tagname = document.tagname;
-                if (document.getElementById('fieldset') != null) {
-                    document.getElementById('fieldset').setAttribute("disabled", "disabled");
+            //var tagname = document.tagname;
+            if (document.getElementById('fieldset') != null) {
+                document.getElementById('fieldset').setAttribute("disabled", "disabled");
             }
-            else
-            {
+            else {
                 if (document.getElementById('btn1') != null) {
                     document.getElementById('btn1').removeAttribute("disabled");
                 }
@@ -1084,9 +1083,8 @@
                 //$('.btn-success').addClass("hidden");
                 $('.btn-sm').prop("disabled", false);
                 $('.update').prop("disabled", true);
-
+            }
         }
-
     });
         function CloseAdvisory(clientInformationSheetId) {
             if (typeof clientInformationSheetId !== null) {
