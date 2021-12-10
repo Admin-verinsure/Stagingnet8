@@ -769,22 +769,31 @@ namespace DealEngine.WebUI.Controllers
         {
             // Map the group
             string group = "";
-            if (user.PrimaryOrganisation.IsBroker)
+
+            if (user.PrimaryOrganisation != null)
             {
-                group = _appSettingService.TCDE_internal_users;
-            }
-            else if (user.PrimaryOrganisation.IsInsurer)
-            {
-                group = _appSettingService.TCDE_external_Underwriters;
-            }
-            else if (user.PrimaryOrganisation.IsTC)
-            {
-                group = _appSettingService.TCDE_external_Admins;
+                if (user.PrimaryOrganisation.IsBroker)
+                {
+                    group = _appSettingService.TCDE_internal_users;
+                }
+                else if (user.PrimaryOrganisation.IsInsurer)
+                {
+                    group = _appSettingService.TCDE_external_Underwriters;
+                }
+                else if (user.PrimaryOrganisation.IsTC)
+                {
+                    group = _appSettingService.TCDE_external_Admins;
+                }
+                else
+                {
+                    group = _appSettingService.TCDE_external_users;
+                }
             }
             else
             {
                 group = _appSettingService.TCDE_external_users;
             }
+
 
             #region Create JSON objects for upload            
             JObject userJsonObj =
