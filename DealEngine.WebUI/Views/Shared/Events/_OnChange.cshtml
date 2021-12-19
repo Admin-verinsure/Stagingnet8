@@ -37,9 +37,11 @@
     });
 
     function OnChange(Id, Name) {
+
         if (Id == "IsRequirecoverJunior") {
             debugger;
         }
+
         var obj = document.getElementById(Id);
         var value = obj.value;
         var dataRule = obj.getAttribute('data-rule');
@@ -74,6 +76,7 @@
     }
 
     function InputValidation(obj, value) {
+        //debugger
         if (obj.type == "number") {
             if (value >= 0) {
                 obj.classList.add("is-valid");
@@ -82,7 +85,9 @@
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
             }
-        } else {
+        }
+        else
+        {
             if (value != "") {
                 obj.classList.add("is-valid");
                 obj.classList.remove("is-invalid");
@@ -93,25 +98,28 @@
         }
     }
 
+
     function SelectValidation(obj, value) {
+        //debugger;
         if (!obj.multiple) {
-            if (value != "0") {
-                obj.classList.add("is-valid");
-                obj.classList.remove("is-invalid");
-            }
-            else {
+            //if (value != "0") {
+            //    obj.classList.add("is-valid");
+            //    obj.classList.remove("is-invalid");
+
+            //}
+              if (value == "0") {
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
+
             }
-        }
-        else {
-            if (value != "") {
-                obj.classList.add("is-valid");
-                obj.classList.remove("is-invalid");
-            }
-            else {
+            else if (value == "") {
                 obj.classList.remove("is-valid");
                 obj.classList.add("is-invalid");
+
+            }
+            else {
+                obj.classList.add("is-valid");
+                obj.classList.remove("is-invalid");
             }
         }
     }
@@ -477,9 +485,10 @@
         }
         return "0";
     }
-
+    debugger
     function OrganisationTypeOnChange(Value) {
         //reset views to default
+        debugger
         ResetOrganisationUnitView();
         debugger;
         var List = document.getElementById("Organisation.OrganisationType");
@@ -763,8 +772,10 @@
 
     }
 
+    debugger;
     function ResetOrganisationUnitView() {
         debugger;
+
         //document.getElementById("Private").hidden = true;
         //document.getElementById("Else").hidden = true;
         var hiddendiv = document.getElementById("Private");
@@ -775,6 +786,7 @@
         if (Elsediv != null) {
             Elsediv.hidden = true;
         }
+
 
         var IsPrincipal = document.getElementById("HidePrincipal");
         if (IsPrincipal != null) {

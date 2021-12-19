@@ -1335,11 +1335,12 @@ namespace DealEngine.WebUI.Controllers
                 {
                     BrokerUser = await _userService.GetUserById(BrokerId);
                 }
-                var currentClaim = programme.Claim;
+               //var currentClaim = programme.Claim;
                 Programme jsonProgramme = (Programme) await _serializerationService.GetDeserializedObject(typeof(Programme), collection);
                 programme = await _programmeService.PostProgramme(user, BrokerUser, jsonProgramme, programme);
                 if (string.IsNullOrEmpty(programme.Claim))
                 {
+                    var currentClaim = programme.Claim;
                     if (!string.IsNullOrEmpty(currentClaim))
                     {
                         await _claimService.RemoveClaim(currentClaim);
@@ -1348,8 +1349,9 @@ namespace DealEngine.WebUI.Controllers
                 else
                 {                    
                     await _claimService.AddClaim(new Claim(programme.Claim, programme.Claim));
-                }              
+                }
 
+                //return Ok();
                 return Redirect("/Programme/TermSheetConfirguration/" + programme.Id);
             }
             catch (Exception ex) 

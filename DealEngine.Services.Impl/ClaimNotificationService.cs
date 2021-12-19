@@ -20,6 +20,12 @@ namespace DealEngine.Services.Impl
         {
             return await _claimNotificationRepository.GetByIdAsync(claimId);
         }
+        //np code
+        public async Task UpdateClaimNotification(ClaimNotification claimNotification)
+        {
+            await _claimNotificationRepository.UpdateAsync(claimNotification);
+        }
+
     }
 }
 

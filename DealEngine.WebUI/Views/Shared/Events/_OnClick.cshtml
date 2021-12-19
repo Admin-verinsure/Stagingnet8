@@ -127,14 +127,195 @@
         }
     }
 
-    function Cancel(Form, Tab) {
+    function CancelBoat(Form, Tab) {
         debugger;
         document.getElementById(Form).reset();
+        //AddSelectedBoatUse
+        var AddSelectedBoatUse = document.getElementById('AddSelectedBoatUse');
+        AddSelectedBoatUse.selectedIndex = 0;  
+
+        var AddSelectedInterestedParty = document.getElementById('AddSelectedInterestedParty');
+        AddSelectedInterestedParty.selectedIndex = 0;  
+
+        var AddBoatIdClear = document.getElementById('AddBoatId');
+        AddBoatIdClear.removeAttribute("value");  
+        
+        $('#AddSelectedInterestedParty').val('');
+        $('#AddSelectedInterestedParty').trigger('chosen:updated');
+
+        //AddBoatLandLocationSection, AddBoatLandLocation
+       
+        var AddBoatLandLocationSection1 = document.getElementById("AddBoatLandLocationSection");
+        AddBoatLandLocationSection1.classList.remove("hidden");
+        var AddBoatLandLocation1 = document.getElementById("AddBoatLandLocation");
+        AddBoatLandLocation1.classList.add("required");
+        document.getElementById("AddBoatLandLocation").required = true;
+
+        //AddVesselUseSection
+       // var AddVesselUseSection1 = document.getElementById('AddVesselUseSection');
+        //AddVesselUseSection1.classList.add("hidden");
+        $("#AddVesselUseSection").addClass("hidden");
+       // document.getElementById("AddVesselUseSection").style.display = "none";
+        var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+        AddSelectedBoatUse1.classList.remove("required");
+        document.getElementById("AddSelectedBoatUse").required = false;
+
+
+        //$('#AddSelectTrailerSection').hide('2000');
+        var AddSelectTrailerSection1 = document.getElementById('AddSelectTrailerSection');
+        AddSelectTrailerSection1.style.display = 'none';
+        var AddBoatTrailer1 = document.getElementById("AddBoatTrailer");
+        AddBoatTrailer1.classList.remove("required");
+        document.getElementById("AddBoatTrailer").required = false;
+
+        
+        //var AddHullConstructOtherSection1 = document.getElementById("AddHullConstructOtherSection");
+        //AddHullConstructOtherSection1.classList.add("hidden");
+        $("#AddHullConstructOtherSection").addClass("hidden");
+
+        var AddOtherConstructionType1 = document.getElementById("AddOtherConstructionType");
+        AddOtherConstructionType1.classList.remove("required");
+        document.getElementById("AddOtherConstructionType").required = false;
+
+     
+        //var AddHullConfigurationOtherSection1 = document.getElementById("AddHullConfigurationOtherSection");
+        //AddHullConfigurationOtherSection1.classList.add("hidden");
+        $("#AddHullConfigurationOtherSection").addClass("hidden");
+        var AddOtherHullConfiguration1 = document.getElementById("AddOtherHullConfiguration");
+        AddOtherHullConfiguration1.classList.remove("required");
+        document.getElementById("AddOtherHullConfiguration").required = false;
+
+        //$('#AddBoatWaterLocationSection').hide('2000');
+        //var AddBoatWaterLocationSection1 = document.getElementById('AddBoatWaterLocationSection');
+        //AddBoatWaterLocationSection1.style.display = 'none';
+        //var AddBoatWaterLocationSection1 = document.getElementById("AddBoatWaterLocationSection");
+        //AddBoatWaterLocationSection1.classList.add("hidden");
+        $("#AddBoatWaterLocationSection").addClass("hidden");
+
+        var AddBoatWaterLocation1 = document.getElementById("AddBoatWaterLocation");
+        AddBoatWaterLocation1.classList.remove("required");
+        document.getElementById("AddBoatWaterLocation").required = false;
+
+        //$('#AddothermarinSection').hide('2000');
+       // var AddothermarinSection1 = document.getElementById('AddothermarinSection');
+        //AddothermarinSection1.classList.add("hidden");
+        $("#AddothermarinSection").addClass("hidden");
+        //AddothermarinSection1.style.display = 'none';
+        var AddMooredType1 = document.getElementById("AddMooredType");
+        AddMooredType1.classList.remove("required");
+        document.getElementById("AddMooredType").required = false;
+        
+        //$('#AddRegistrationSection').hide('2000');
+        var AddRegistrationSection1 = document.getElementById('AddRegistrationSection');
+        AddRegistrationSection1.style.display = 'none';
+        var AddVesselArea1 = document.getElementById("AddVesselArea");
+        AddVesselArea1.classList.remove("required");
+        document.getElementById("AddVesselArea").required = false;
+
+        //$('#AddaucklandRegoSection').hide('2000');
+        var AddaucklandRegoSection1 = document.getElementById('AddaucklandRegoSection');
+        AddaucklandRegoSection1.style.display = 'none';
+        var AddAucklandRegistration1 = document.getElementById("AddAucklandRegistration");
+        AddAucklandRegistration1.classList.remove("required");
+        document.getElementById("AddAucklandRegistration").required = false;
+
+        //$('#AddVesselUseSection').hide('2000');
+        var AddVesselUseSection1 = document.getElementById('AddVesselUseSection');
+        AddVesselUseSection1.style.display = 'none';
+        var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+        AddSelectedBoatUse1.classList.remove("required");
+        document.getElementById("AddSelectedBoatUse").required = false;
+
+        //AddBoatMooredTypeSection
+        //var AddBoatMooredTypeSection1 = document.getElementById('AddBoatMooredTypeSection');
+        //AddBoatMooredTypeSection1.classList.add("hidden");
+        $("#AddBoatMooredTypeSection").addClass("hidden");
+        //AddBoatMooredTypeSection1.style.display = 'none';
+        var AddMooredType1 = document.getElementById("AddMooredType");
+        AddMooredType1.classList.remove("required");
+        document.getElementById("AddMooredType").required = false;
+
+        //remove disabled AddBuiltProfessionally,
+        document.getElementById('AddBuiltProfessionally').disabled = false;
+
+      //remove disabled AddHullConfiguration,
+        document.getElementById('AddHullConfiguration').disabled = false;
+
+        //remove disabled  AddMotorType
+        document.getElementById('AddMotorType').disabled = false;
+
+        //AddRiggingTypeSection
+        var AddRiggingTypeSection1 = document.getElementById("AddRiggingTypeSection");
+        AddRiggingTypeSection1.classList.remove("hidden");
+        var AddRiggingType1 = document.getElementById("AddRiggingType");
+        AddRiggingType1.classList.add("required");
+        document.getElementById("AddRiggingType").required = true;
+
+        //AddMastTypeSection
+        var AddMastTypeSection1 = document.getElementById("AddMastTypeSection");
+        AddMastTypeSection1.classList.remove("hidden");
+        var AddMastType1 = document.getElementById("AddMastType");
+        AddMastType1.classList.add("required");
+        document.getElementById("AddMastType").required = true;
+
+
+        //for currency validation
+
+        //$(function () {
+            //$('#AddMaxSumInsured').maskMoney();
+            $("#AddMaxSumInsured").maskMoney({ thousands: ',', decimal: '.', allowZero: true, prefix: ' $' });
+
+
+        //})
+
+
+
         SetCurrentTab(Tab);
     }
 
+    function CancelClaim(Form, Tab) {
+        debugger;
+        document.getElementById(Form).reset();
+
+        var ClaimIdClear = document.getElementById('ClaimId');
+        ClaimIdClear.removeAttribute("value");
+
+        var eleman = document.getElementById("ClaimStatus");
+        ///eleman.setAttribute("disabled", "true");
+        document.getElementById("ClaimStatusFormGroup").style.display = "none";
+
+        var eleman1 = document.getElementById("ClaimBrokerReference");
+        //eleman1.setAttribute("disabled", "true");
+        document.getElementById("ClaimBrokerReferenceFormGroup").style.display = "none";
+
+
+        var eleman2 = document.getElementById("ClaimInsurerReference");
+        //eleman2.setAttribute("disabled", "true");
+        document.getElementById("ClaimInsurerReferenceFormGroup").style.display = "none";
+
+        var eleman3 = document.getElementById("ClaimReserve");
+        //eleman3.setAttribute("disabled", "true");
+        document.getElementById("ClaimReserveFormGroup").style.display = "none";
+
+        var eleman4 = document.getElementById("ClaimPaid");
+        //eleman4.setAttribute("disabled", "true");
+        document.getElementById("ClaimPaidFormGroup").style.display = "none";
+
+        SetCurrentTab(Tab);
+    }
+
+    function Cancel(Form, Tab) {
+        debugger;
+        document.getElementById(Form).reset();
+
+        SetCurrentTab(Tab);
+    }
+
+    debugger;
     function ResetOrganisation() {
+        debugger;
         var form = document.getElementById("organisationViewModel");
+        console.log(form);
         form.reset();
         if (document.getElementById("HideOrganisationType") != null && document.getElementById("HideInsuranceAttribute") != null) {
             document.getElementById("HideOrganisationType").hidden = false;
@@ -206,8 +387,77 @@
         }
         document.getElementById(AddButtonId).innerText = "Add";
         document.getElementById(CancelButtonId).innerText = "Clear and Cancel";
+
+        if (document.getElementById("AddMaxSumInsured") !== null) {
+            $("#AddMaxSumInsured").maskMoney({ thousands: ',', decimal: '.', allowZero: true, prefix: ' $' });
+
+        }
+
+        debugger;
         ResetOrganisation();
     }
+
+
+    function AddClaim() {
+        var form = document.getElementById("ClaimViewModel");
+        var formValid = TableFormValidation(form , "claim");
+        if (formValid) {
+            debugger;
+            sessionStorage.setItem('accordianTrigger', "New Notification");
+            $.ajax({
+                url: '@Url.Action("AddClaim", "Services")',
+                type: "POST",
+                data: $("#tab_1 :input").serialize({ json: true }),
+                async: false
+            })
+
+                .done(function () {
+                    //Save the session and reload
+                    form.reset();
+                    location.reload();
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                });
+            //console.log(data);
+        }
+    }
+
+    function AddVessel() {
+        debugger;
+        var form = document.getElementById("BoatViewModel");
+        var formValid = TableFormValidation(form, "Vessel");
+        //$(function () {
+        //$('#AddMaxSumInsured').maskMoney();
+        $("#AddMaxSumInsured").maskMoney({ thousands: ',', decimal: '.', allowZero: true, prefix: ' $' });
+
+
+         //})
+
+
+        if (formValid) {
+            sessionStorage.setItem('accordianTrigger', 'Vessel');
+
+            //var sumInsured = document.getElementById("AddMaxSumInsured").value;
+            //var sumInsured = sumInsured.replace(/[^0-9\.-]+/g, "");
+        
+            $.ajax({
+                url: '@Url.Action("AddBoat", "Services")',
+                type: "POST",
+                data: $("#tab_1 :input").serialize({ json: true }),
+                async: false
+            })
+                .done(function () {
+                    //Save the session and reload
+                    form.reset();
+                    location.reload();
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                });
+        }
+    }
+
 
     function AddLocation() {
         var form = document.getElementById("LocationViewModel");
@@ -252,13 +502,92 @@
                 });
         }
     }
-    
+
 
     function RemoveLocation(Id) {
         sessionStorage.setItem('accordianTrigger', 'Location');
         var postData = { LocationId: Id };
         $.ajax({
             url: '@Url.Action("RemoveLocation", "Services")',
+            type: "POST",
+            data: postData
+        })
+            .done(function () {
+                //Save the session and reload
+                location.reload();
+            })
+            .fail(function (a, s, d) {
+                debugger;
+            });
+    }
+
+
+    function RemoveVessel(boatId, status, sourceTable, destTable, Modelstatus) {
+        debugger;
+        sessionStorage.setItem('accordianTrigger', 'Vessel');
+        //var postData = { boatId: boatId };
+
+        var _sheetId = $('#AnswerSheetId').val();
+        var postData = {
+            'boatId': boatId,
+            'answerSheetId': _sheetId
+        };
+        $.ajax({
+            url: '@Url.Action("GetOriginalBoat", "Services")',
+            type: "POST",
+            data: postData
+        })
+        //.done(function () {
+        //        location.reload();
+
+        //  })
+            .done(function (data) {
+                debugger;
+                if (data.originalBoatId != "00000000-0000-0000-0000-000000000000") {
+                    if (Modelstatus != "Submitted") {
+                        $('#BoatRemoveModal').show();
+                        $('.modal').css({ "width": "600px", "margin-left": "600px" });
+                        $('#boatID').val(boatId);
+                        $('#status').val(status);
+                        //$('#sourceTable').val(sourceTable);
+                        //$('#destTable').val(destTable);
+                    }
+                    else {
+                        alert("Information Sheet has already been submitted, and cannot be updated.");
+                    }
+                }
+                else {
+                    SetBoatRemovedStatus(boatId, status, sourceTable, destTable);
+                }
+            })
+            .fail(function (a, s, d) {
+                debugger;
+            });
+    }
+
+
+    function RemoveClaimNotification(Id) {
+        sessionStorage.setItem('accordianTrigger', "New Notification");
+        var postData = { claimId: Id };
+        $.ajax({
+            url: '@Url.Action("RemoveClaimNotification", "Services")',
+            type: "POST",
+            data: postData
+        })
+            .done(function () {
+                //Save the session and reload
+                location.reload();
+            })
+            .fail(function (a, s, d) {
+                debugger;
+            });
+    }
+
+    function RestoreCommonClaim(Id) {
+        sessionStorage.setItem('accordianTrigger', "New Notification");
+        var postData = { claimId: Id };
+        $.ajax({
+            url: '@Url.Action("RestoreClaimNotification", "Services")',
             type: "POST",
             data: postData
         })
@@ -301,6 +630,184 @@
         document.getElementById("postcodedetails").value = Postcode;
         SetCurrentTab("locationtab2");
     }
+    //function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, ClaimStatus, ClaimInsurerReference, ClaimPaid, ClaimReserve)
+    function EditClaim(Id, ClaimTitle, ClaimDescription, ClaimReference, ClaimPolicyReference, ClaimInsurerName, ClaimInsuredName, Claimant, ClaimDateOfLoss, ClaimNotifiedDate, ClaimEstimateInsuredLiability, SelectedClaimProducts, SelectedResponsiblePrincipal, ClaimNotes, ClaimBrokerReference, ClaimStatus, ClaimInsurerReference, ClaimReserve, ClaimPaid) {
+        debugger;
+        event.preventDefault();
+        CloneForm("clTabs3", "clTabs2", "ClaimAddButton", "AddClearBoat");
+        document.getElementById("ClaimId").value = Id;
+        document.getElementById("ClaimTitle").value = ClaimTitle;
+        document.getElementById("ClaimDescription").value = ClaimDescription;
+        document.getElementById("ClaimReference").value = ClaimReference;
+        document.getElementById("ClaimPolicyReference").value = ClaimPolicyReference;
+        document.getElementById("ClaimInsurerName").value = ClaimInsurerName;
+        document.getElementById("ClaimInsuredName").value = ClaimInsuredName;
+        document.getElementById("Claimant").value = Claimant;
+        document.getElementById("ClaimDateOfLoss").value = ClaimDateOfLoss.split(' ')[0];
+        document.getElementById("ClaimNotifiedDate").value = ClaimNotifiedDate.split(' ')[0];
+        document.getElementById("ClaimEstimateInsuredLiability").value = ClaimEstimateInsuredLiability;
+        document.getElementById("PrimaryPolicyprod").value = SelectedClaimProducts;
+        document.getElementById("ResponsiblePrincipal").value = SelectedResponsiblePrincipal;
+        document.getElementById("ClaimNotes").value = ClaimNotes;
+        document.getElementById("ClaimBrokerReference").value = ClaimBrokerReference;
+        document.getElementById("ClaimStatus").value = ClaimStatus;
+        //console.log("ClaimStatus = " + ClaimStatus);
+        //d = d.split(' ')[0];
+
+        document.getElementById("ClaimInsurerReference").value = ClaimInsurerReference;
+        document.getElementById("ClaimReserve").value = ClaimReserve;
+
+        document.getElementById("ClaimPaid").value = ClaimPaid;
+
+
+        var eleman = document.getElementById("ClaimStatus");
+        eleman.setAttribute("disabled", "true");
+        document.getElementById("ClaimStatusFormGroup").style.display = "block";
+
+        var eleman1 = document.getElementById("ClaimBrokerReference");
+        eleman1.setAttribute("disabled", "true");
+        document.getElementById("ClaimBrokerReferenceFormGroup").style.display = "block";
+
+
+        var eleman2 = document.getElementById("ClaimInsurerReference");
+        eleman2.setAttribute("disabled", "true");
+        document.getElementById("ClaimInsurerReferenceFormGroup").style.display = "block";
+
+        var eleman3 = document.getElementById("ClaimReserve");
+        eleman3.setAttribute("disabled", "true");
+        document.getElementById("ClaimReserveFormGroup").style.display = "block";
+
+        var eleman4 = document.getElementById("ClaimPaid");
+        eleman4.setAttribute("disabled", "true");
+        document.getElementById("ClaimPaidFormGroup").style.display = "block";
+
+        SetCurrentTab("clTabs2");
+    }
+
+
+
+    function EditVessel(BoatId, BoatName, BoatType1, BoatType2, BoatOperator, VesselArea, AucklandRegistration, BuiltProfessionally, YearOfManufacture, MaxRatedSpeed, RiggingType, BoatMake, BoatModel, HullConstruction, OtherHullConstruction, HullConfiguration, OtherHullConfiguration, MotorType, ModifiedMotor, MastType, MaxSumInsured, BoatQuoteExcessOption, BoatIsTrailered, BoatLandLocation, BoatWaterLocation, OtherMarinaName, WaterLocationMooringType, BoatEffectiveDate, InterestedParties, BoatNotes, BoatIsTrailered, BoatTrailer, SelectedBoatUse) {
+        debugger;
+        event.preventDefault();
+        CloneForm("boatTabs3", "boatTabs2", "updateBoat", "ClearBoat");
+        document.getElementById("AddBoatId").value = BoatId;
+        document.getElementById("AddBoatName").value = BoatName;
+        document.getElementById("AddBoatType1").value = BoatType1;
+        document.getElementById("AddBoatType2").value = BoatType2;
+        document.getElementById("AddBoatOperator").value = BoatOperator;
+        document.getElementById("AddVesselArea").value = VesselArea;
+        document.getElementById("AddAucklandRegistration").value = AucklandRegistration;
+        document.getElementById("AddBuiltProfessionally").value = BuiltProfessionally;
+        document.getElementById("AddYearOfManufacture").value = YearOfManufacture;
+        document.getElementById("AddBoatMake").value = BoatMake;
+        document.getElementById("AddBoatModel").value = BoatModel;
+        document.getElementById("AddHullConstruction").value = HullConstruction;
+        document.getElementById("AddOtherConstructionType").value = OtherHullConstruction;
+        document.getElementById("AddHullConfiguration").value = HullConfiguration;
+        document.getElementById("AddOtherHullConfiguration").value = OtherHullConfiguration;
+        document.getElementById("AddMotorType").value = MotorType;
+        document.getElementById("AddModifiedMotor").value = ModifiedMotor;
+        document.getElementById("AddMaxRatedSpeed").value = MaxRatedSpeed;
+        document.getElementById("AddRiggingType").value = RiggingType;
+        document.getElementById("AddMastType").value = MastType;
+        document.getElementById("AddMaxSumInsured").value = MaxSumInsured;
+        document.getElementById("Addexcess").value = BoatQuoteExcessOption;
+        document.getElementById("AddBoatIsTrailered").value = BoatIsTrailered;
+        document.getElementById("AddBoatLandLocation").value = BoatLandLocation;
+        document.getElementById("AddBoatWaterLocation").value = BoatWaterLocation;
+        document.getElementById("AddOtherBoatWaterLocation").value = OtherMarinaName;
+        document.getElementById("AddMooredType").value = WaterLocationMooringType;
+        document.getElementById("AddBoatEffectiveDate").value = BoatEffectiveDate.split(' ')[0];
+        document.getElementById("AddSelectedInterestedParty").value = InterestedParties;
+        console.log("InterestedParties=" + InterestedParties);
+        document.getElementById("AddBoatNotes").value = BoatNotes;
+
+
+        //document.getElementById("AddBoatTrailer").value = BoatTrailer;// check bottom
+        document.getElementById("AddSelectedBoatUse").value = SelectedBoatUse;
+
+
+        //boat is trailer saw vessel trailer
+        if (BoatIsTrailered == "True")
+        {
+            //AddSelectTrailerSection
+            $('#AddSelectTrailerSection').show('2000');
+            var AddBoatIsTrailered1 = document.getElementById("AddBoatIsTrailered");
+            AddBoatIsTrailered1.classList.add("required");
+            document.getElementById("AddBoatIsTrailered").required = true;
+        }
+
+
+        //from EditBoat
+        if (BoatType1 == "CruisersandLaunches" || BoatType1 == "YachtsandCatamarans") {
+            $('#AddVesselUseSection').show('2000');
+            var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+            AddSelectedBoatUse1.classList.add("required");
+            document.getElementById("AddSelectedBoatUse").required = true;
+
+            //$('#AddSelectedBoatUse').val(data.boatselectedText).trigger('chosen:updated');
+        }
+            var _sheetId = $('#AnswerSheetId').val();
+            var postData =
+            {
+                'boatId': BoatId,
+                'answerSheetId': _sheetId
+	        };
+            $.ajax({
+                url: '@Url.Action("GetBoat", "Services")',
+                type: "Post",
+                data: postData
+            })
+            .done(function (data) {
+                    debugger;
+               // $('#AddSelectedInterestedParty').val(data).trigger('chosen:updated');
+                var AddSelectedInterestedParty = document.getElementById('AddSelectedInterestedParty');
+
+                //for (var i = 0; i < AddSelectedInterestedParty.options.length; i++) {
+                //    if (AddSelectedInterestedParty.options[i].value == data) {
+                //        AddSelectedInterestedParty.options[i].selected = true;
+                //    }
+                //}
+
+                //for (var i = 0; i < data.length; i++) {
+                //    $('#AddSelectedInterestedParty').val(data[i]).trigger('chosen:updated');
+                //}
+
+                $('#AddSelectedInterestedParty').val(data.boatpartyText).trigger('chosen:updated');
+                $('#AddBoatTrailer').val(data.boatTrailer);
+                if (data.boatType1 == "CruisersandLaunches" || data.boatType1 == "YachtsandCatamarans") {
+                    $('#AddVesselUseSection').show('2000');
+                    var AddSelectedBoatUse1 = document.getElementById("AddSelectedBoatUse");
+                    AddSelectedBoatUse1.classList.add("required");
+                    document.getElementById("AddSelectedBoatUse").required = true;
+
+                    $('#AddSelectedBoatUse').val(data.boatselectedText).trigger('chosen:updated');
+                }
+
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                 debugger;
+                 alert("There was an error while trying to save the Boat Use.");
+            });
+
+
+
+       // document.getElementById("ClaimNotifiedDate").value = ClaimNotifiedDate.split(' ')[0];
+
+
+        //console.log("ClaimStatus = " + ClaimStatus);
+        //d = d.split(' ')[0];
+
+
+
+
+        //var eleman = document.getElementById("ClaimStatus");
+        SetCurrentTab("boatTabs2");
+    }
+
+
+
+
 
     function AddJob() {
         debugger;
@@ -333,7 +840,7 @@
         document.getElementById("jobdescription").value = JobDescription;
         document.getElementById("contractoremail").value = ContractorEmail;
         document.getElementById("firstname").value = FirstName;
-        document.getElementById("lastname").value = LastName; 
+        document.getElementById("lastname").value = LastName;
         document.getElementById("jobnumber").value = JobNumber;
         debugger;
         var test = IssueDate.split(' ')[0];
@@ -344,7 +851,7 @@
         //console.log(StartDate);
         //console.log(EndDate);
         //console.log(CertRequiredByDate);
-        
+
         document.getElementById("issuedate").value = IssueDate.split(' ')[0];
         document.getElementById("startdate").value = StartDate.split(' ')[0];
         document.getElementById("enddate").value = EndDate.split(' ')[0];
@@ -494,6 +1001,7 @@
     }
 
     function TableFormValidation(Form, SectionName) {
+        debugger;
         for (var e = 0; e < Form.length; e++) {
             var element = null;
             try {
@@ -512,6 +1020,20 @@
                     window.alert("Please complete "+SectionName+" details");
                     return false;
                 }
+
+                //if (element.required == true && element.hidden == false) {
+                //    if (element.value == "") {
+                //       var  IdElement = element.id;
+                //        var element = document.getElementById(IdElement);
+                //        element.classList.add("is-invalid");
+                //        element.classList.remove("is-valid");
+                //        event.preventDefault();
+                //      event.stopPropagation();
+                //       window.alert("Please complete " + SectionName + " details");
+                //        return false;
+                //    }
+                //}
+
             }
         }
         return true;
@@ -632,7 +1154,7 @@
             } else {
                 sanitised += parts[i] + ' / ';
             }
-            
+
         }
         return sanitised;
     }

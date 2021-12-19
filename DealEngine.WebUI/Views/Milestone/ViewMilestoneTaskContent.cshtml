@@ -1,7 +1,7 @@
 ﻿@model DealEngine.WebUI.Models.Milestone.MilestoneBuilderViewModel
 
 <div id="taskPriority" class="form-group">
-    <select class="form-control b" id="Priortylist" required>
+    <select class="b form-select" id="Priortylist" required>
         <option selected="selected" value="">-- Select Task Priority --</option>
         @foreach (var taskPriorty in Model.Priorities)
         {
@@ -11,7 +11,7 @@
 </div>
 
 <div id="taskDueDate" class="form-group">
-    <select class="form-control b" id="dueDateList" required>
+    <select class="form-select b" id="dueDateList" required>
         <option selected="selected" value="">-- Select Task Due Date (From Date Created) --</option>
         @for (int i = 0; i < 8; i++)
         {

@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+	  <LangVersion>preview</LangVersion>
+    <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>aspnet-DealEngine.WebUI-332DB7AE-7AC6-45DB-8A70-CE31C48F596C</UserSecretsId>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
@@ -181,6 +182,44 @@
     <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\vi.js" />
     <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\zh-cn.js" />
     <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\build\translations\zh.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_alert.scss" Link="_alert.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_background-variant.scss" Link="_background-variant.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_badge.scss" Link="_badge.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_border-radius.scss" Link="_border-radius.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_box-shadow.scss" Link="_box-shadow.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_breakpoints.scss" Link="_breakpoints.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_buttons.scss" Link="_buttons.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_caret.scss" Link="_caret.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_clearfix.scss" Link="_clearfix.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_deprecate.scss" Link="_deprecate.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_float.scss" Link="_float.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_forms.scss" Link="_forms.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_gradients.scss" Link="_gradients.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_grid-framework.scss" Link="_grid-framework.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_grid.scss" Link="_grid.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_hover.scss" Link="_hover.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_image.scss" Link="_image.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_list-group.scss" Link="_list-group.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_lists.scss" Link="_lists.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_nav-divider.scss" Link="_nav-divider.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_pagination.scss" Link="_pagination.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_reset-text.scss" Link="_reset-text.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_resize.scss" Link="_resize.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_screen-reader.scss" Link="_screen-reader.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_size.scss" Link="_size.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_table-row.scss" Link="_table-row.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_text-emphasis.scss" Link="_text-emphasis.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_text-hide.scss" Link="_text-hide.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_text-truncate.scss" Link="_text-truncate.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_transition.scss" Link="_transition.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_visibility.scss" Link="_visibility.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\_grid.scss" Link="_grid.scss" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\lib\bootstrap\js\src\tooltip.js" Link="tooltip.js" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\Scripts\notification\SmartNotification.js" Link="SmartNotification.js" />
+    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\wwwroot\Scripts\notification\SmartNotification.min" Link="SmartNotification.min" />
   </ItemGroup>
 
   <ItemGroup>
@@ -393,28 +432,29 @@
     <PackageReference Include="ClosedXML" Version="0.95.3" />    
     <PackageReference Include="ElmahCore" Version="1.2.5" />
     <PackageReference Include="HtmlToOpenXml.dll" Version="2.0.3" />
+    <PackageReference Include="IO.Swagger" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.9" />
     <PackageReference Include="FastReport.Data.Postgres" Version="2020.2.0" />    
     <PackageReference Include="FastReport.OpenSource" Version="2020.2.9" />    
     <PackageReference Include="FastReport.OpenSource.Data.Postgres" Version="2020.2.0" />    
     <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2020.2.0" />    
     <PackageReference Include="FastReport.OpenSource.Web" Version="2020.2.9" />    
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.9" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.0" />
-    <PackageReference Include="Microsoft.NET.Sdk.Razor" Version="3.1.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Sdk.Razor" Version="3.1.18" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="NLog" Version="4.6.8" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.6.1" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
@@ -425,6 +465,7 @@
     <PackageReference Include="ReflectionIT.Mvc.Paging" Version="4.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
     <PackageReference Include="System.Linq.Dynamic" Version="1.0.7" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="X.PagedList.Mvc" Version="8.0.7" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
   </ItemGroup>
@@ -437,5 +478,7 @@
     <ProjectReference Include="..\DealEngine.Infrastructure.Payment\DealEngine.Infrastructure.Payment.csproj" />
     <ProjectReference Include="..\DealEngine.Services.Impl\DealEngine.Services.Impl.csproj" />
   </ItemGroup>
+
+
 
 </Project>

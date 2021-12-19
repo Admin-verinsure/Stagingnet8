@@ -37,7 +37,7 @@
 
                     @if (@ViewBag.IsTC)
                     {
-                        <a class="btn btn-primary float-right m-1" style="color: #fff !important" data-toggle="modal" data-target="#htmlpdfmodal">Create Template from Local HTML</a>
+                        <a class="btn btn-primary float-right m-1" style="color: #fff !important" data-bs-toggle="modal" data-bs-target="#htmlpdfmodal">Create Template from Local HTML</a>
                     }
 
                 </span>
@@ -100,8 +100,8 @@
                 @*<p>This should probably be modified to instead have an upload function where you give it the document via browser and then make work for PDF too, 
                     would be easier to use and less setup... We don't really want to keep HTML templates in our repo or any Local files for documents.
                     Could then use this for PDF templates that clients give us (which don't require having MergeFields - unless we can figure way to convert PDF to HTML again) just my 2c  - nathan </p>*@
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    @*<span aria-hidden="true">&times;</span>*@
                 </button>
             </div>
             <div class="modal-body">
@@ -119,7 +119,7 @@
                             </label>                       
                     </section>
                     <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                        <select id="documentType" name="DocumentType" class="form-control input-lg">
+                        <select id="documentType" name="DocumentType" class="input-lg form-select">
                             <option value="" selected="">-- Select --</option>
                             <option value="0">Wording</option>
                             <option value="1">Certificate</option>

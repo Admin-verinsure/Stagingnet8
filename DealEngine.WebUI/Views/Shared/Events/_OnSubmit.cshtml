@@ -88,7 +88,9 @@
 
     function InformationSheetSubmit(Programme, Status, Forms) {
         debugger;
-        if (Status === "Started") {
+        //if (Status === "Started" || Status === "Submitted") {
+            if (Status === "Started") {
+
             var formIds = [];
             for (var f = 0; f < Forms.length; f++) {
                 //get each form id

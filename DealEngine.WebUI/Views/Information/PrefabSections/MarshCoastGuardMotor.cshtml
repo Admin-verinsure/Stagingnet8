@@ -44,7 +44,7 @@
 						            { name: "SumInsured", align: 'center' },
 						            { name: "update", align: 'center', width:60, search: false, formatter: function(cellvalue, options, rowobject)
                                     {
-                                        return ('<button onclick="RemoveVehicle(\'' + cellvalue + '\', \'true\', \'#tblRegisteredMV\', \'#tblRemovedRegisteredMV\',\'@Model.ClientInformationSheet.Status\');" type="button"class=" btn btn-danger btn-sm"><span class="fa fa-trash"></span></button>');
+                                        return ('<button onclick="RemoveVehicle(\'' + cellvalue + '\', \'true\', \'#tblRegisteredMV\', \'#tblRemovedRegisteredMV\',\'@Model.ClientInformationSheet.Status\');" type="button"class=" btn btn-danger "><span class="fa fa-trash"></span></button>');
 										}
 										//{ return '<button onclick="alert(&quot;'+cellvalue+'&quot;);" type="button">Edit</button>'; }
 									}
@@ -97,8 +97,8 @@
                     <fieldset>
                         <div class="row" id="update">
                             <section class="col col-6">
-                                <label class="label">Enter plate number</label>
-                                <label class="input">
+                                <label class="label col-12">Enter plate number</label>
+                                <label class="input col-12">
                                     @*<input autocomplete="off" class="form-control" data-provide="typeahead" data-url="/Services/GetVehiclePlates" id="Registration" name="Registration" type="text" placeholder="Plate Number" value="">*@
                                     <input autocomplete="off" class="form-control" data-provide="typeahead" id="Registration" name="Registration" type="text" placeholder="Plate Number" value="">
                                 </label>
@@ -116,36 +116,36 @@
                         <!-- 1st row -->
                         <div class="row">
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Year (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">Year (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="Year" id="Year" name="Year" placeholder="Year (Read-Only)" readonly="true" value="">
                                 </label>
                             </section>
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Make (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">Make (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="Make" id="Make" name="Make" placeholder="Make (Read-Only)" readonly="true" value="">
                                 </label>
                             </section>
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Model (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">Model (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="VehicleModel" id="VehicleModel" name="VehicleModel" placeholder="Model (Read-Only)" readonly="true" value="">
                                 </label>
                             </section>
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">VIN (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">VIN (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="VIN" id="VIN" name="VIN" placeholder="VIN (Read-Only)" readonly="true" value="">
                                 </label>
                             </section>
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Chassis Number (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">Chassis Number (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="ChassisNumber" id="ChassisNumber" name="ChassisNumber" placeholder="Chassis Number (Read-Only)" readonly="true" value="">
                                 </label>
@@ -157,8 +157,8 @@
                         <!-- 2nd rows -->
                         <div class="row">
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">$ Estimated Market Value</label>
-                                <label class="input">
+                                <label class="label required col-12">$ Estimated Market Value</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="SumInsured" id="SumInsured" name="SumInsured" placeholder="$ Estimated Market Value" value="" required>
                                 </label>
@@ -175,7 +175,7 @@
                             <!--section class="col col-xs-12 col-sm-6 col-md-4 col-lg-3">
                             <label class="label">Area of Operation</label>
                             <label class="input">
-                                <select class="form-control rmv" id="AreaOfOperation" name="AreaOfOperation">
+                                <select style="" class="rmv" id="AreaOfOperation" name="AreaOfOperation">
                                     <option selected="selected" value="">-- Select --</option>
                                     <option value="1">Auckland</option>
                                     <option value="2">Wellington</option>
@@ -188,7 +188,7 @@
                             <!--section class="col col-xs-12 col-sm-6 col-md-4 col-lg-3">
                             <label class="label">Type of Vehicle</label>
                             <label class="input">
-                                <select class="form-control rmv" id="VehicleType" name="VehicleType">
+                                <select style="" class="rmv" id="VehicleType" name="VehicleType">
                                     <option value="8">Registered Trailer</option>
                                 </select>
                             </label>
@@ -196,15 +196,15 @@
                             <!--section class="col col-xs-12 col-sm-6 col-md-4 col-lg-3">
                             <label class="label">Use</label>
                             <label class="input">
-                                <select class="form-control rmv" id="Use" name="Use">
+                                <select style="" class="rmv" id="Use" name="Use">
                                     <option value="4">Boat Trailer</option>
                                 </select>
                             </label>
                         </section-->
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Location</label>
-                                <label class="input">
-                                    <select onchange="addTrailerLoc()" class="form-control rmv" id="VehicleLocation" name="VehicleLocation">
+                                <label class="label required col-12">Location</label>
+                                <label class="input col-12">
+                                    <select style="" onchange="addTrailerLoc()" class="rmv form-select" id="VehicleLocation" name="VehicleLocation">
                                         <option selected="selected" value="">-- Select --</option>
 
                                         @foreach (var tloc in Model.LocationViewModel.Locations)
@@ -221,9 +221,9 @@
 
                             <!-- 3rd rows -->
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Effective Date</label>
-                                <label class="input">
-                                    <i class="icon-append fa fa-calendar"></i>
+                                <label class="label required col-12">Effective Date</label>
+                                <label class="input col-12 calender-relative">
+                                    <i class="icon-append fa fa-calendar new-calendar"></i>
                                     <input name="EffectiveDate" placeholder="Effective Date" class="form-control rmv" id="EffectiveDate" type="text" required>
                                 </label>
                                 <p class="validationContainer" id="validateEffectiveDate"></p>
@@ -241,7 +241,7 @@
                                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                     <label class="label">Cease Reason</label>
                                     <label class="input">
-                                        <select class="form-control rmv" id="CeaseReason" name="CeaseReason">
+                                        <select style="" class="rmv" id="CeaseReason" name="CeaseReason">
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="1">Sold</option>
                                             <option value="2">Decommision</option>
@@ -257,7 +257,7 @@
                             @*<section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                 <label class="label">Interested Parties</label>
                                 <label class="input">
-                                    <select class="cselect form-control rmv" data-placeholder="Interested Parties" id="InterestedParties" multiple="multiple" name="InterestedParties" style="display: none;">
+                                    <select style="" class="cselect rmv" data-placeholder="Interested Parties" id="InterestedParties" multiple="multiple" name="InterestedParties" style="display: none;">
                                         @foreach (var trip in Model.InterestedParties.Where(o => o.OrganisationType == "financial"))
                                         {
                                             <option value="@trip.ID">@trip.OrganisationName</option>
@@ -268,8 +268,8 @@
 
                             <!-- 5th row -->
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Additional Information about Registered Trailer</label>
-                                <label class="textarea">
+                                <label class="label col-12">Additional Information about Registered Trailer</label>
+                                <label class="textarea col-12">
                                     <textarea class="form-control rmv" data-type="TEXTAREA" data-name="Notes" id="Notes" name="Notes" placeholder="Additional Information about Registered Trailer" value=""></textarea>
                                 </label>
                             </section>
@@ -301,36 +301,36 @@
                         <!-- 1st row -->
                         <div class="row">
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Year (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">Year (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="Year" id="AddYear" name="Year" placeholder="Year (Read-Only)" readonly="true" value="">
                                 </label>
                             </section>
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Make (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">Make (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="Make" id="AddMake" name="Make" placeholder="Make (Read-Only)" readonly="true" value="">
                                 </label>
                             </section>
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Model (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">Model (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="VehicleModel" id="AddVehicleModel" name="VehicleModel" placeholder="Model (Read-Only)" readonly="true" value="">
                                 </label>
                             </section>
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">VIN (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">VIN (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="VIN" id="AddVIN" name="VIN" placeholder="VIN (Read-Only)" readonly="true" value="">
                                 </label>
                             </section>
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Chassis Number (Read-Only)</label>
-                                <label class="input">
+                                <label class="label col-12">Chassis Number (Read-Only)</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="ChassisNumber" id="AddChassisNumber" name="ChassisNumber" placeholder="Chassis Number (Read-Only)" readonly="true" value="">
                                 </label>
@@ -344,8 +344,8 @@
                         <!-- 2nd rows -->
                         <div class="row">
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">$ Estimated Market Value</label>
-                                <label class="input">
+                                <label class="label required col-12">$ Estimated Market Value</label>
+                                <label class="input col-12">
                                     <i></i>
                                     <input class="form-control rmv" type="text" data-type="TEXTBOX" data-name="SumInsured" id="AddSumInsured" name="SumInsured" placeholder="$ Estimated Market Value" value="" required>
                                 </label>
@@ -355,9 +355,9 @@
                          
 
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Location</label>
-                                <label class="input">
-                                    <select onchange="AddaddTrailerLoc()" class="form-control rmv" id="AddVehicleLocation" name="VehicleLocation">
+                                <label class="label required col-12">Location</label>
+                                <label class="input col-12">
+                                    <select style="" onchange="AddaddTrailerLoc()" class="rmv form-select" id="AddVehicleLocation" name="VehicleLocation">
                                         <option selected="selected" value="">-- Select --</option>
                                         @foreach (var tloc in Model.LocationViewModel.Locations)
                                         {
@@ -373,9 +373,9 @@
 
                             <!-- 3rd rows -->
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label required">Effective Date</label>
-                                <label class="input">
-                                    <i class="icon-append fa fa-calendar"></i>
+                                <label class="label required col-12">Effective Date</label>
+                                <label class="input col-12 calender-relative">
+                                    <i class="icon-append new-calendar fa fa-calendar"></i>
                                     <input name="EffectiveDate" placeholder="Effective Date" class="form-control rmv" id="AddEffectiveDate" type="text" required>
                                 </label> <p class="validationContainer" id="validateAddEffectiveDate"></p>
                             </section>
@@ -391,7 +391,7 @@
                                 <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                     <label class="label">Cease Reason</label>
                                     <label class="input">
-                                        <select class="form-control rmv" id="AddCeaseReason" name="CeaseReason">
+                                        <select style="" class="rmv" id="AddCeaseReason" name="CeaseReason">
                                             <option selected="selected" value="">-- Select --</option>
                                             <option value="1">Sold</option>
                                             <option value="2">Decommision</option>
@@ -407,8 +407,8 @@
 
                             <!-- 5th row -->
                             <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <label class="label">Additional Information about Registered Trailer</label>
-                                <label class="textarea">
+                                <label class="label col-12">Additional Information about Registered Trailer</label>
+                                <label class="textarea col-12">
                                     <textarea class="form-control rmv" data-type="TEXTAREA" data-name="Notes" id="AddNotes" name="Notes" placeholder="Additional Information about Registered Trailer" value=""></textarea>
                                 </label>
                             </section>

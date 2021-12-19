@@ -7,7 +7,7 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PrincipalUnit.IsRetiredorDeceased, new { @class = "label required" })
-            <select id="PrincipalUnit.IsRetiredorDeceased" name="OrganisationViewModel.PrincipalUnit.IsRetiredorDeceased" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="PrincipalUnit.IsRetiredorDeceased" name="OrganisationViewModel.PrincipalUnit.IsRetiredorDeceased" class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasRetiredorDeceasedOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">
@@ -24,7 +24,7 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PrincipalUnit.IsOtherdirectorship, new { @class = "label required" })
-            <select id="PrincipalUnit.IsOtherdirectorship" name="OrganisationViewModel.PrincipalUnit.IsOtherdirectorship" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="PrincipalUnit.IsOtherdirectorship" name="OrganisationViewModel.PrincipalUnit.IsOtherdirectorship" class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasIsOtherdirectorshipOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">
@@ -51,7 +51,7 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PrincipalUnit.IsNZIAmember, new { @class = "label required" })
-            <select id="PrincipalUnit.IsNZIAmember" name="OrganisationViewModel.PrincipalUnit.IsNZIAmember" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="PrincipalUnit.IsNZIAmember" name="OrganisationViewModel.PrincipalUnit.IsNZIAmember" class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasIsNZIAmemberOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">
@@ -68,7 +68,7 @@
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.OrganisationViewModel.PrincipalUnit.IsADNZmember, new { @class = "label required" })
-            <select id="PrincipalUnit.IsADNZmember" name="OrganisationViewModel.PrincipalUnit.IsADNZmember" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+            <select id="PrincipalUnit.IsADNZmember" name="OrganisationViewModel.PrincipalUnit.IsADNZmember" class="form-select " onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.HasIsADNZmemberOptions)
                 {
                     <option selected="@option.Selected" value="@option.Value">

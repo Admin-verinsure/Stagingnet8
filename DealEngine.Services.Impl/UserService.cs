@@ -77,6 +77,46 @@ namespace DealEngine.Services.Impl
 			throw new Exception("User with username '" + username + "' does not exist in the system");
 		}
 
+		public async Task<User> GetMarshUser(string OktaUID)
+		{
+
+            User user = null;
+            try
+            {
+                user = await _userRepository.FindAll().FirstOrDefaultAsync(u => u.OktaUID == OktaUID);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+			return user;
+            //// have a repo user? Return them
+            //if (user != null)
+            //	return user;
+            //user = _ldapService.GetUser(username);
+            //// have a ldap user but no repo? Update NHibernate & return them
+            //if (user != null)
+            //{
+            //	// postgres is case sensitive, while Ldap is case insensitive. So a valid lowercase username will fail the 1st condition, but get here and reimport the user, which isn't what we want to have happen
+            //	// in this case, we'll get the ldap user, and only if the uppercase'd ldap username doesn't exist in postgres, we'll add the user.
+            //	var localUser = _userRepository.FindAll().FirstOrDefault(u => u.UserName == user.UserName);
+            //	if (localUser == null)
+            //		await Update(user);
+            //	return user;
+            //}
+            ////user = _legacyLdapService.GetLegacyUser(username);
+            //// have a legacy ldap user only? Create them in Ldap & NHibernate & return them
+            //if (user != null)
+            //{
+            //	await Create(user);
+            //	return user;
+            //}
+            //// no user at all? Throw exception
+            //throw new Exception("User with username '" + username + "' does not exist in the system");
+
+
+        }
+
 		public async Task<User> GetUserById(Guid userId)
 		{
 			User user = await _userRepository.GetByIdAsync(userId);
@@ -162,6 +202,21 @@ namespace DealEngine.Services.Impl
 			}
 			return user;
 		}
+
+		public async Task<User> GetUserByOktaUID(string uid)
+        {
+			User user = null;
+			try
+			{
+				user = await _userRepository.FindAll().FirstOrDefaultAsync(u => u.OktaUID == uid);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message);
+			}
+
+			return user;
+        }
 
 		public async Task<List<User>> GetAllUsers()
 		{

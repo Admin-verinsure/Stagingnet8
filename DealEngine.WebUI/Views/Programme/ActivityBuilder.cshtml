@@ -18,55 +18,57 @@
         </div>
 
         <div class="accordion" id="accordionExample">
-            <div class="card">
-                <div class="card-header" id="headingOne">
-                    <h2 class="mb-0">
-                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Business Activity for Programme
-                        </button>
-                    </h2>
-                </div>
-                @if (User.HasClaim("EditActivities", "EditActivities"))
-                {
-                    <div class="card">
-                        <div class="card-header" id="headingTwo">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link show" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                    Add Business Activity to Programme
-                                </button>
-                            </h2>
-                        </div>
-                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-                            <div class="card-body">
-                                <form id="activityform" class="needs-validation">
-                                    <div id="smartwizard" class="sw-main sw-theme-circles">
-                                        <ul class="nav nav-tabs step-anchor">
-                                            <li class="nav-item active"><a href="#tab1" class="nav-link">1<br><small>Edit</small></a></li>
-                                            <li class="nav-item"><a href="#tab2" class="nav-link">2<br><small>Submit</small></a></li>
-                                        </ul>
-                                        <div class="sw-container tab-content">
-                                            <div class="tab-pane" id="tab1">
-                                                <div class="card">
-                                                    <div class="card-header">
-                                                        <h3><strong>Setup </strong> - New Business Activity</h3>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        @Html.DisplayFor(m => m.Builder)
-                                                        @Html.DisplayFor(m => m.ActivityAttach)
-                                                    </div>
-                                                </div>
-                                            </div>
-                                                    <div id="tab2" class="tab-pane">
-                                                        <h3 style="align-content:center">Activity Has Been Saved</h3>
-                                                        <a class="btn btn-success btn-sm" href="@Url.Action("ActivityBuilder", "Programme")"><i class="fa fa-arrow-circle-left"></i>Back </a>
+            <div class="accordion-item">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Business Activity for Programme
+                            </button>
+                        </h2>
+                    </div>
+                    @if (User.HasClaim("EditActivities", "EditActivities"))
+                    {
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link show" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                        Add Business Activity to Programme
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapseTwo" class="collapse accordion-collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                                <div class="card-body">
+                                    <form id="activityform" class="needs-validation">
+                                        <div id="smartwizard" class="sw-main sw-theme-circles">
+                                            <ul class="nav nav-tabs step-anchor">
+                                                <li class="nav-item active"><a href="#tab1" class="nav-link">1<br><small>Edit</small></a></li>
+                                                <li class="nav-item"><a href="#tab2" class="nav-link">2<br><small>Submit</small></a></li>
+                                            </ul>
+                                            <div class="sw-container tab-content">
+                                                <div class="tab-pane" id="tab1">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                            <h3><strong>Setup </strong> - New Business Activity</h3>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            @Html.DisplayFor(m => m.Builder)
+                                                            @Html.DisplayFor(m => m.ActivityAttach)
+                                                        </div>
                                                     </div>
                                                 </div>
+                                                <div id="tab2" class="tab-pane">
+                                                    <h3 style="align-content:center">Activity Has Been Saved</h3>
+                                                    <a class="btn btn-success btn-sm" href="@Url.Action("ActivityBuilder", "Programme")"><i class="fa fa-arrow-circle-left"></i>Back </a>
+                                                </div>
                                             </div>
-                                </form>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>                                
-                }
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -184,7 +186,9 @@
         </div>
         <div class="modal-footer">
             <input type="Reset" value="Submit" class="btn btn-success" id="btnActivitySubmit" onclick="SubmitActivity()">
-            <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel<i class="fa fa-close"></i></a>
+            <a href="#" class="btn btn-danger" data-bs-dismiss="modal">
+            Cancel<i class="fa fa-close"></i>
+            </a>
         </div>
     </div>
 </div>

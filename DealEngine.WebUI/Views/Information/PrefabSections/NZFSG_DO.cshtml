@@ -78,7 +78,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasdebts" name="DAOLIViewModel.HasDebtsOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasdebts" name="DAOLIViewModel.HasDebtsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasDebtsOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
