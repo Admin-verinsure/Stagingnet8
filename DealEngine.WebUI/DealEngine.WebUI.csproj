@@ -185,41 +185,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_alert.scss" Link="_alert.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_background-variant.scss" Link="_background-variant.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_badge.scss" Link="_badge.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_border-radius.scss" Link="_border-radius.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_box-shadow.scss" Link="_box-shadow.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_breakpoints.scss" Link="_breakpoints.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_buttons.scss" Link="_buttons.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_caret.scss" Link="_caret.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_clearfix.scss" Link="_clearfix.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_deprecate.scss" Link="_deprecate.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_float.scss" Link="_float.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_forms.scss" Link="_forms.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_gradients.scss" Link="_gradients.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_grid-framework.scss" Link="_grid-framework.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_grid.scss" Link="_grid.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_hover.scss" Link="_hover.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_image.scss" Link="_image.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_list-group.scss" Link="_list-group.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_lists.scss" Link="_lists.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_nav-divider.scss" Link="_nav-divider.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_pagination.scss" Link="_pagination.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_reset-text.scss" Link="_reset-text.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_resize.scss" Link="_resize.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_screen-reader.scss" Link="_screen-reader.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_size.scss" Link="_size.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_table-row.scss" Link="_table-row.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_text-emphasis.scss" Link="_text-emphasis.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_text-hide.scss" Link="_text-hide.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_text-truncate.scss" Link="_text-truncate.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_transition.scss" Link="_transition.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\mixins\_visibility.scss" Link="_visibility.scss" />
-    <Content Include="C:\Users\nidhi\OneDrive\Desktop\training\files\bootstrap\scss\_grid.scss" Link="_grid.scss" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="bundleconfig.json" />
     <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\ckeditor.js" />
     <None Include="wwwroot\ckeditor\ckeditor5-techcertain-document\build\ckeditor.js.map" />
