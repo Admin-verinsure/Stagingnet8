@@ -1204,6 +1204,27 @@ namespace DealEngine.WebUI.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> SubmitProgrammeInformation(IFormCollection collection)
+        {
+            ClientInformationSheet sheet = null;
+            User user = null;
+
+            try
+            {
+              
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return RedirectToAction("Error500", "Error");
+
+        }
+
+
         private async Task<ProgrammeInfoViewModel> GetProgrammeInfoViewModel(Guid id)
         {            
             var brokers = await _userService.GetBrokerUsers();

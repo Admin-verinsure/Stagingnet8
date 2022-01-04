@@ -12,8 +12,8 @@
                         <li class="nav-item active"><a href="#programme1" class="nav-link">1<br><small>Programme</small></a></li>
                         <li class="nav-item"><a href="#programme2" class="nav-link">2<br><small>Product</small></a></li>
                         <li class="nav-item"><a href="#programme3" class="nav-link">3<br><small>Templates</small></a></li>
-                        <li class="nav-item"><a href="#programme4" class="nav-link">3<br><small>Information Sheet</small></a></li>
-                        <li class="nav-item"><a href="#programme5" class="nav-link">3<br><small>Submit</small></a></li>
+                        <li class="nav-item"><a href="#programme4" class="nav-link">4<br><small>Information Sheet</small></a></li>
+                        <li class="nav-item"><a href="#programme5" class="nav-link">5<br><small>Submit</small></a></li>
                     </ul>
 
                     <div class="sw-container tab-content">
@@ -38,3 +38,75 @@
         </div>
     </div>
 </article>
+
+@section pagespecific {
+
+    <script src="~/smartwizard/js/jquery.smartWizard.min.js" defer></script>
+    <link href="~/smartwizard/cc/smart_wizard_theme_circles.css" rel="stylesheet" />
+    <script src="~/ckeditor/ckeditor5-techcertain/build/ckeditor.js"></script>
+    <script src="~/ckeditor/ckeditor5-techcertain/build/selectimportimg.js"></script>
+    <link href="~/ckeditor/ckeditor5-techcertain/build/ckeditor.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+//// DO NOT REMOVE : GLOBAL FUNCTIONS!
+
+    $(document).ready(function () {
+        $('#smartwizardprogramme').smartWizard({
+        selected: 0,  // Initial selected step, 0 = first step
+        keyNavigation:true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+        autoAdjustHeight:false, // Automatically adjust content height
+        cycleSteps: false, // Allows to cycle the navigation of steps
+        backButtonSupport: true, // Enable the back button support
+        useURLhash: true, // Enable selection of the step based on url hash
+        lang: {  // Language variables
+            next: 'Next',
+            previous: 'Previous'
+        },
+        toolbarSettings: {
+            toolbarPosition: 'bottom', // none, top, bottom, both
+            toolbarButtonPosition: 'right', // left, right
+            showNextButton: true, // show/hide a Next button
+            showPreviousButton: true, // show/hide a Previous button
+
+        },
+        anchorSettings: {
+            anchorClickable: true, // Enable/Disable anchor navigation
+            enableAllAnchors: false, // Activates all anchors clickable all times
+            markDoneStep: true, // add done css
+            enableAnchorOnDoneStep: true // Enable/Disable the done steps navigation
+        },
+        contentURL: null, // content url, Enables Ajax content loading. can set as data data-content-url on anchor
+        disabledSteps: [],    // Array Steps disabled
+        errorSteps: [],    // Highlight step with errors
+        theme: 'dots',
+        transitionEffect: 'fade', // Effect on navigation, none/slide/fade
+        transitionSpeed: '400'
+        });
+
+        $("#smartwizardprogramme").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+               debugger;
+               var informationsheetstatus = $('#Status').val();
+               var clientInformationSheet = $('#AnswerSheetId').val();
+
+            if (stepNumber === 0) {
+                 debugger;
+                 $.ajax({
+                    url: '@Url.Action("SubmitProgrammeInformation", "Programme")',
+                    type: "POST",
+                    data: $("#tab_1 :input").serialize({ json: true })
+                })
+                    .done(function (url) {
+                    $('#getAgreementModal').hide();
+                    $("#agreementView").load(url, function () {
+                    });
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                    $('#getAgreementModal').hide();
+                });
+             }
+         });
+    });
+
+    </script>
+}
