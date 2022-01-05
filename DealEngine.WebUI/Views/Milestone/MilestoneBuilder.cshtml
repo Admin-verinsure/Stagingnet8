@@ -18,7 +18,7 @@
 
                     <div class="card-body">
 
-                        <form action="#" id="wizard-1" role="form" data-toggle="validator" method="post" accept-charset="utf-8" novalidate="true">
+                        <form action="#" id="wizard-1" role="form" data-bs-toggle="validator" method="post" accept-charset="utf-8" novalidate="true">
                             <div id="smartwizard" class="sw-main sw-theme-circles">
                                 <ul class="nav nav-tabs step-anchor">
                                     <li class="nav-item active"><a href="#tab1" class="nav-link">1<br><small>Activity Selection</small></a></li>
@@ -35,7 +35,7 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="container-fluid">
-                                                <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                <div class="btn-group btn-group-toggle" data-bs-toggle="buttons">
                                                     @foreach (var activity in Model.MilestoneTemplate.Activities)
                                                     {
                                                         <label class="btn btn-outline-primary" id="milestoneType" for="@activity.Id">
@@ -55,7 +55,7 @@
                                                 <div class="card-body">
                                                     <div class="container">
                                                         <div class="input-group mb-3">
-                                                            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                                            <div class="btn-group btn-group-toggle" data-bs-toggle="buttons">
                                                                 <label class="btn btn-outline-primary">
                                                                     <input style="display:none;" type="radio" name="milestoneOptions" id="Advisory" onchange="PartialView('Advisory')"> Advisory
                                                                 </label>

@@ -23,6 +23,15 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 using DealEngine.Infrastructure.FluentNHibernate;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Principal;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Net.Http.Headers;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.IO;
+using System.Web;
 #endregion
 
 namespace DealEngine.WebUI.Controllers
@@ -45,6 +54,7 @@ namespace DealEngine.WebUI.Controllers
         IAppSettingService _appSettingService;
         IImportService _importService;
         IUnitOfWork _unitOfWork;
+        IMapperSession<User> _userRepository;
 
         public AccountController(
             IUnitOfWork unitOfWork,
@@ -62,6 +72,7 @@ namespace DealEngine.WebUI.Controllers
             IEmailService emailService,
             IFileService fileService,
             IOrganisationalUnitService organisationalUnitService,
+            IMapperSession<User> userRepository,
             IAppSettingService appSettingService) : base(userService)
         {
             _unitOfWork = unitOfWork;
@@ -80,6 +91,7 @@ namespace DealEngine.WebUI.Controllers
             _fileService = fileService;
             _organisationalUnitService = organisationalUnitService;
             _appSettingService = appSettingService;
+            _userRepository = userRepository;
         }
 
         // GET: /account/forgotpassword
@@ -117,7 +129,7 @@ namespace DealEngine.WebUI.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(AccountResetPasswordModel viewModel)
         {
-            User user = null;
+            DealEngine.Domain.Entities.User user = null;
             string errorMessage = @"We have sent you an email to the email address we have recorded in the system, that email address is different from the one you supplied. 
 				Please check the other email addresses you may have used. If you cannot locate our email, 
 				please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details, we can re-establish your account with your broker.";
@@ -217,7 +229,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ChangePassword(Guid id, AccountChangePasswordModel viewModel)
         {
             SingleUseToken st = _authenticationService.GetToken(id);
-            User user = await _userService.GetUserById(st.UserID);
+            DealEngine.Domain.Entities.User user = await _userService.GetUserById(st.UserID);
             try
             {
                 if (id == Guid.Empty)
@@ -310,9 +322,13 @@ namespace DealEngine.WebUI.Controllers
                 DomainString = _appSettingService.domainQueryString,
             };
 
-            string nameExtension = _appSettingService.RequireRSA;
+            string authService = _appSettingService.AuthenticationService;
+            if (authService == "Okta")
+            {
+                viewModel.CallbackDomainString = _appSettingService.oktaCallBackServiceURL;
+            }
 
-            return View("Login" + nameExtension, viewModel);
+            return View("Login" + authService, viewModel);
         }
 
         // POST: /account/login
@@ -357,7 +373,6 @@ namespace DealEngine.WebUI.Controllers
                         deUser = await _userManager.FindByNameAsync(userName);
                         await _signInManager.SignOutAsync();
                         deUser = await _userManager.FindByNameAsync(userName);
-
                     }
                     var result = await _signInManager.PasswordSignInAsync(deUser, password, viewModel.RememberMe, lockoutOnFailure: true);
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -366,35 +381,29 @@ namespace DealEngine.WebUI.Controllers
                         user.LoggedInTime = DateTime.UtcNow;
                         await uow.Commit();
                     }
-                    //string guid = Guid.NewGuid().ToString();
-                    //HttpContext.Session.SetString("user", "user");
-                    //HttpContext.Response.Cookies.Append("DealEngine", guid);
-                    //Response.Cookies.Append("AuthToken", guid);
-                    //ViewBag.HttpContext2 = HttpContext.Session.GetString("user");
-
                     return LocalRedirect("~/Home/Index");
                 }
                 /*
-                                else if (resultCode == 49) //	LDAP_INVALID_CREDENTIALS               
-                                {
-                                    deUser = await _userManager.FindByNameAsync(userName);
-                                    var result = await _signInManager.PasswordSignInAsync(deUser, password, true, lockoutOnFailure: true);                    
-                                    // AccessFailedCount = MaxFailedAccessAttempts                   
-                                    if (result.IsLockedOut == true)
-                                    {
-                                        // tell them they've been locked out
-                                        ModelState.AddModelError(string.Empty, "You are locked out. You can try again in 5 minutes (maybe).");
-                                        // Update record so that we know they're locked out for next time? Should be automatic.
-                                        // what else?
-                                        return View(viewModel);
-                                    }
-                                    // AccessFailedCount < MaxFailedAccessAttempts
-                                    else
-                                    {
-                                        ModelState.AddModelError(string.Empty, "Incorrect password. Please try entering your username or password again, or email support@techcertain.com.");
-                                        return View(viewModel);
-                                    }
-                                }
+                else if (resultCode == 49) //	LDAP_INVALID_CREDENTIALS               
+                {
+                    deUser = await _userManager.FindByNameAsync(userName);
+                    var result = await _signInManager.PasswordSignInAsync(deUser, password, true, lockoutOnFailure: true);                    
+                    // AccessFailedCount = MaxFailedAccessAttempts                   
+                    if (result.IsLockedOut == true)
+                    {
+                        // tell them they've been locked out
+                        ModelState.AddModelError(string.Empty, "You are locked out. You can try again in 5 minutes (maybe).");
+                        // Update record so that we know they're locked out for next time? Should be automatic.
+                        // what else?
+                        return View(viewModel);
+                    }
+                    // AccessFailedCount < MaxFailedAccessAttempts
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Incorrect password. Please try entering your username or password again, or email support@techcertain.com.");
+                        return View(viewModel);
+                    }
+                }
                 */
                 else // ANY OTHER LDAP CODE https://ldapwiki.com/wiki/LDAP%20Result%20Codes 
                 {
@@ -416,9 +425,629 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginOktaRegistration()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginOktaRegistration(AccountLoginModel viewModel)
+        {
+            //Old login method
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
+            if (User.Identity.IsAuthenticated)
+                return await RedirectToLocal();
+
+            var userName = viewModel.Username.Trim();
+
+            try
+            {
+                string password = viewModel.Password.Trim();
+                int resultCode = -1;
+                string resultMessage = "";
+
+                // Step 1 validate in  LDap 
+                _ldapService.Validate(userName, password, out resultCode, out resultMessage);
+
+                if (resultCode == 0)
+                {
+                    var user = await _userService.GetUser(userName);
+
+                    // Doesn't have OktaUID -> Create User AMPS
+                    if (user.OktaUID == null)
+                    {
+                        HttpResponseMessage AMPSAccessResponseMessage = await AMPSGetAccessToken();
+
+                        if (AMPSAccessResponseMessage.IsSuccessStatusCode)
+                        {
+                            // AMPS Process
+                            var AMPSAccessResponseMessageContent = await AMPSAccessResponseMessage.Content.ReadAsStringAsync();
+
+                            HttpResponseMessage AMPSResponseMessage = await AMPSCreateUser(AMPSAccessResponseMessageContent, user, password);
+
+                            if (AMPSResponseMessage.IsSuccessStatusCode)
+                            {
+                                var AMPSResponseMessageContent = await AMPSResponseMessage.Content.ReadAsStringAsync();
+
+                                string oktaUID = AMPSResponseMessageContent.Substring(7, 20);
+                                user.OktaUID = oktaUID;
+                                await _userRepository.UpdateAsync(user);
+
+                                var callbackService = _appSettingService.oktaCallBackServiceURL;
+                                return Redirect("https://" + callbackService);
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                            {
+                                var AMPSResponseMessageContent = await AMPSResponseMessage.Content.ReadAsStringAsync();
+                                int indexErrorCode = AMPSResponseMessageContent.IndexOf("errorCode");
+
+                                string errorCode = AMPSResponseMessageContent.Substring(indexErrorCode + 12, 8);
+
+                                int indexErrorSummary = AMPSResponseMessageContent.LastIndexOf("errorSummary");
+                                int indexErrorSummaryEnd = AMPSResponseMessageContent.IndexOf("}]}");
+
+                                int length = AMPSResponseMessageContent.Length - indexErrorSummary - 25;
+
+                                string errorCause = AMPSResponseMessageContent.Substring(indexErrorSummary + 25, length - 4);
+
+                                if (errorCode == "E0000001")
+                                {
+                                    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                    errorViewModel.backButtonText = "Back";
+
+                                    errorViewModel.tryAgainURL = _appSettingService.domainQueryString + "/Account/ResetPassword";
+                                    errorViewModel.tryAgainButtonText = "Reset Password";
+
+                                    errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed as the password that has been set doesn’t meet the requirements contained in our password policy. ";
+                                    errorViewModel.message2 = "Passwords must have at least 8 characters, a lowercase and an uppercase letter, a number, and a symbol.";
+                                    errorViewModel.message3 = "The password should also not contain any part of your name or email address.";
+                                    errorViewModel.message4 = "Please click the link below to reset your password.";
+
+                                    errorViewModel.errorCode = "400" + " (" + errorCode + ")";
+                                    errorViewModel.errorMessage = "AMPS Create User - Bad Request";
+                                    return View("ErrorDynamic", errorViewModel);
+                                }
+                                else
+                                {
+                                    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                    errorViewModel.backButtonText = "Back";
+
+                                    errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                    errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                    errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                    errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                    errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                    errorViewModel.errorCode = "400" + " (Unknown)";
+                                    errorViewModel.errorMessage = "AMPS Create User - Bad Request";
+                                    return View("ErrorDynamic", errorViewModel);
+                                }
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                            {
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                errorViewModel.errorCode = "401";
+                                errorViewModel.errorMessage = "AMPS Create User - Unauthorized.";
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                            {
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                errorViewModel.errorCode = "403";
+                                errorViewModel.errorMessage = "AMPS Create User - Unauthorized.";
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.NotFound)
+                            {
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                errorViewModel.errorCode = "404";
+                                errorViewModel.errorMessage = "AMPS Create User - Not Found.";
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+                            else if (AMPSResponseMessage.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
+                            {
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                errorViewModel.errorCode = "422";
+                                errorViewModel.errorMessage = "AMPS Create User - Unprocessable Entity.";
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+                            else
+                            {
+                                AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                                errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                                errorViewModel.backButtonText = "Back";
+
+                                errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                                errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                                errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                                errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                                errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                                errorViewModel.errorCode = "Unknown";
+                                errorViewModel.errorMessage = "AMPS Create User - Unknown Error Code.";
+                                return View("ErrorDynamic", errorViewModel);
+                            }
+
+                        }
+                        else if (AMPSAccessResponseMessage.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                            errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                            errorViewModel.backButtonText = "Back";
+
+                            errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                            errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                            errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                            errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                            errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                            errorViewModel.errorCode = "401";
+                            errorViewModel.errorMessage = "AMPS Access Code - Unauthorized.";
+                            return View("ErrorDynamic", errorViewModel);
+                        }
+                        else
+                        {
+                            AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                            errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                            errorViewModel.backButtonText = "Back";
+
+                            errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                            errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                            errorViewModel.message1 = "The Marsh Okta Registration process was unable to be completed at this time.";
+                            errorViewModel.message2 = "We will need to have one of our team review the reason for this and respond to you.";
+                            errorViewModel.message3 = "Please click the link below to log a ticket with the support team.";
+
+                            errorViewModel.errorCode = "Unknown";
+                            errorViewModel.errorMessage = "AMPS Access Code - Unknown.";
+                            return View("ErrorDynamic", errorViewModel);
+                        }
+                    }
+                    // Has OktaUID
+                    else
+                    {
+                        var callbackService = _appSettingService.oktaCallBackServiceURL;
+                        return Redirect("https://" + callbackService);
+                    }
+                }
+
+                #region LDAP Use Cases
+                //}
+                //else if (resultCode == 49) // LDAP_INVALID_CREDENTIALS
+                //{
+                //    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                //    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.tryAgainURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.errorMessage = "Invalid Credentials - Unfortunately the authentication to your LDAP account has failed.";
+                //    errorViewModel.errorCode = "49";
+                //    errorViewModel.backButtonText = "Back";
+                //    errorViewModel.tryAgainButtonText = "Try Again";
+
+                //    return View("ErrorDynamic", errorViewModel);
+                //}
+                //else if (resultCode == 51) // LDAP_BUSY
+                //{
+                //    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                //    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.tryAgainURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.errorMessage = "LDAP Busy - Unfortunately the authentication to your LDAP account has failed.";
+                //    errorViewModel.errorCode = "51";
+                //    errorViewModel.backButtonText = "Back";
+                //    errorViewModel.tryAgainButtonText = "Try Again";
+
+                //    return View("ErrorDynamic", errorViewModel);
+                //}
+                //else if (resultCode == 52) // LDAP_UNAVAILABLE
+                //{
+                //    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                //    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.tryAgainURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.errorMessage = "LDAP Unavailable - Unfortunately the authentication to your LDAP account has failed.";
+                //    errorViewModel.errorCode = "52";
+                //    errorViewModel.backButtonText = "Back";
+                //    errorViewModel.tryAgainButtonText = "Try Again";
+
+                //    return View("ErrorDynamic", errorViewModel);
+                //}
+                #endregion
+
+                else // ANY OTHER LDAP CODE https://ldapwiki.com/wiki/LDAP%20Result%20Codes 
+                {
+                    ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.");
+                    return View(viewModel);
+                }
+                //else
+                //{
+                //    // Generic LDAP error message
+                //    AccountErrorViewModel errorViewModel = new AccountErrorViewModel();
+                //    errorViewModel.backURL = _appSettingService.domainQueryString + "/Account/LoginOktaRegistration";
+                //    errorViewModel.backButtonText = "Back";
+
+                //    errorViewModel.tryAgainURL = "techcertain.com/helpdesk-form";
+                //    errorViewModel.tryAgainButtonText = "Log A Ticket";
+
+                //    errorViewModel.message1 = "We are unable to access your account with the username or password provided.";
+                //    errorViewModel.message2 = "You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity.";
+                //    errorViewModel.message3 = "Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.";
+
+                //    return View("ErrorDynamic", errorViewModel);
+                //}
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);
+            }
+        }
+
+        [AllowAnonymous]
+        private async Task<HttpResponseMessage> AMPSGetAccessToken()
+        {
+            string ampsUrl = _appSettingService.AMPSUrl;
+            string authenticationString = _appSettingService.ClientIdClientSecret;
+
+            // Setup client
+            Uri ampsUri = new Uri(ampsUrl);
+            HttpClient client = new HttpClient();
+
+            client.BaseAddress = ampsUri;
+            client.DefaultRequestHeaders.Add("grant_type", "client_credentials");
+            client.DefaultRequestHeaders.Add("appId", "ecq9V461WeyGzzGYPmT1ALlxXAlDbtkq");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // Empty base64 encoded Content to be Posted
+            string base64EncodedAuthenticationString = Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(authenticationString));
+
+            // HTTP Request Message
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "/proxy/amps/v2/oauth/accesstoken");
+            requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Basic", base64EncodedAuthenticationString);
+            requestMessage.Headers.CacheControl = new CacheControlHeaderValue { NoCache = true };
+            requestMessage.Content = new StringContent("", Encoding.UTF8, "application/x-www-form-urlencoded");
+
+            // Send Request
+            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+
+            return responseMessage;
+
+        }
+
+        [AllowAnonymous]
+        private async Task<HttpResponseMessage> AMPSCreateUser(string json, User user, string password)
+        {
+            // Map the group
+            string group = "";
+
+            if (user.PrimaryOrganisation != null)
+            {
+                if (user.PrimaryOrganisation.IsBroker)
+                {
+                    group = _appSettingService.TCDE_internal_users;
+                }
+                else if (user.PrimaryOrganisation.IsInsurer)
+                {
+                    group = _appSettingService.TCDE_external_Underwriters;
+                }
+                else if (user.PrimaryOrganisation.IsTC)
+                {
+                    group = _appSettingService.TCDE_external_Admins;
+                }
+                else
+                {
+                    group = _appSettingService.TCDE_external_users;
+                }
+            }
+            else
+            {
+                group = _appSettingService.TCDE_external_users;
+            }
+
+
+            #region Create JSON objects for upload            
+            JObject userJsonObj =
+                new JObject(
+                    new JProperty("roptions",
+                        new JObject(
+                            new JProperty("activate", true)
+                        )
+                    ),
+                    new JProperty("profile",
+                        new JObject(
+                            new JProperty("firstName", user.FirstName),
+                            new JProperty("lastName", user.LastName),
+                            new JProperty("login", user.Email),
+                            new JProperty("email", user.Email),
+                            new JProperty("CIAM_idp", "")
+                            // new JProperty("mobilePhone", user.MobilePhone),
+                            // new JProperty("secondEmail", user.Email),
+                        )
+                    ),
+                    new JProperty("credentials",
+                        new JObject(
+                            new JProperty("password",
+                                new JObject(
+                                    new JProperty("value", password)
+                                )
+                            )
+                        )
+                    ),
+                    new JProperty("groupIds",
+                        new JArray(
+                            group
+                        )
+            ));
+            #endregion
+
+            string userJson = userJsonObj.ToString();
+            var data = new StringContent(userJson, Encoding.UTF8, "application/json");
+
+            // Fix JSON from access code which Deserializer doesn't like
+            json = json.Replace("\n  \"api_product_list\" : \"[AMPS]\",\n  \"api_product_list_json\" : [ \"AMPS\" ],", "");
+            var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            var token = dict["access_token"];
+
+            // Create User API
+            string ampsUrl = _appSettingService.AMPSUrl;
+
+            // Setup client
+            Uri ampsUri = new Uri(ampsUrl);
+            HttpClient client = new HttpClient();
+            client.BaseAddress = ampsUri;
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, "/proxy/amps/v2/uam/users");
+            requestMessage.Content = data;
+
+            // Send Request
+            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+            return responseMessage;            
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OIdLogin(string q)
+        {
+            bool isAuth;
+            try
+            {
+                // Check if authenticated to oktacallbackservice
+                isAuth = await CheckAuthenticated();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);//
+            }
+            try
+            {
+                if (isAuth)
+                {
+                    var oktaUid = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
+
+                    #region Time Code where request only valid for 15 seconds, Ubuntu bug and time constraints led to removal.
+                    //var oktaUidTime = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
+                    //string[] oktaUidTimeArray = oktaUidTime.Split("O=");
+                    //string oktaUid = oktaUidTimeArray.First();
+                    //string stringTime = oktaUidTimeArray.Last();
+                    #endregion
+
+                    string identityPassword = oktaUid + _appSettingService.OktaIntermediatePassword;
+
+                    User user = null;
+                    IdentityUser identityUser;
+
+                    user = await _userService.GetUserByOktaUID(oktaUid);
+                    string username = user.UserName;
+
+                    // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
+                    var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
+
+                    if (!identityResult.Succeeded)
+                    {
+                        identityUser = await _userManager.FindByNameAsync(user.UserName);
+                        await _userManager.RemovePasswordAsync(identityUser);
+                        await _userManager.AddPasswordAsync(identityUser, identityPassword);
+                    }
+                    else
+                    {
+                        identityUser = await _userManager.FindByNameAsync(username);
+                        await _signInManager.SignOutAsync();
+                        identityUser = await _userManager.FindByNameAsync(username);
+                    }
+                    var result = await _signInManager.PasswordSignInAsync(identityUser, identityPassword, false, lockoutOnFailure: true);
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        user.IsLoggedout = false;
+                        user.LoggedInTime = DateTime.UtcNow;
+                        await uow.Commit();
+                    }
+                    return LocalRedirect("~/Home/Index");
+
+                    // Login must happen within 15 second after initial Redirect 
+                    //DateTime time = DateTime.Parse(stringTime);
+                    //DateTime now = DateTime.Now;
+                    //var seconds = (now - time).TotalSeconds;
+
+                    //if (seconds < 15)
+                    //{
+                    // put identity login in here
+                    //}
+                    //else
+                    //{
+                    //    return LocalRedirect("~/Account/OktaErrorMessage");
+                    //}
+
+                }
+                else
+                {
+                    return LocalRedirect("~/Account/OktaErrorMessage");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);//
+            }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        private async Task<bool> CheckAuthenticated()
+        {          
+            var callbackService = "https://"+_appSettingService.oktaCallBackServiceURL;
+            Uri callbackServiceUri = new Uri(callbackService);
+            // Setup client
+            HttpClient client = new HttpClient();
+            client.BaseAddress = callbackServiceUri;
+
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "/Home/CheckAuthenticated");
+            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+            var json = await responseMessage.Content.ReadAsStringAsync();
+            client.Dispose();
+
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static string DecryptString(string key, string cipherText)
+        {
+            byte[] iv = new byte[16];
+            byte[] buffer = Convert.FromBase64String(cipherText);
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream(buffer))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                        {
+                            return streamReader.ReadToEnd();
+                        }
+                    }
+                }
+            }
+        }
+
+        #region API that callbackservice was supposed to hit but isn't used anymore
+        //[Consumes("application/json")]
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> IdentityLoginOktaCallbackService(string json)
+        {
+            try
+            {
+                //Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                string okta_uid = "00u12zjmjqdu0CYLr0h8";//dict["okta_uid"];
+                //string email = dict["email"];
+                string identityPassword = "00u12zjmjqdu0CYLr0h8" + _appSettingService.OktaIntermediatePassword;
+                //string firstname = dict["firstname"];
+                //string surname = dict["surname"];
+
+                User user = null;
+                IdentityUser identityUser;
+
+                user = await _userService.GetUserByOktaUID(okta_uid);
+                string username = user.UserName;
+
+                // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
+                var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
+
+                if (!identityResult.Succeeded)
+                {
+                    identityUser = await _userManager.FindByNameAsync(user.UserName);
+                    await _userManager.RemovePasswordAsync(identityUser);
+                    await _userManager.AddPasswordAsync(identityUser, identityPassword);
+                }
+                else
+                {
+                    identityUser = await _userManager.FindByNameAsync(username);
+                    await _signInManager.SignOutAsync();
+                    identityUser = await _userManager.FindByNameAsync(username);
+                }
+                var result = await _signInManager.PasswordSignInAsync(identityUser, identityPassword, false, lockoutOnFailure: true);
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    user.IsLoggedout = false;
+                    user.LoggedInTime = DateTime.UtcNow;
+                    await uow.Commit();
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                throw new Exception(ex.Message + " " + ex.StackTrace);//
+            }
+        }
+        #endregion
+
         private async Task<SignInResult> DealEngineIdentityUserLogin(User user, string password)
         {
-
             try
             {
                 var deUser = await _userManager.FindByNameAsync(user.UserName);
@@ -631,6 +1260,20 @@ namespace DealEngine.WebUI.Controllers
             return View();
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OktaErrorMessage()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OktaErrorMessage(AccountLoginModel loginViewModel)
+        {
+            return View(loginViewModel);
+        }
+
         // GET: /account/error
         [HttpGet]
         [AllowAnonymous]
@@ -640,6 +1283,13 @@ namespace DealEngine.WebUI.Controllers
             EnsureLoggedOut();
 
             return View();
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ErrorDynamic(AccountErrorViewModel accountErrorViewModel)
+        {
+            return View(accountErrorViewModel);
         }
 
         // GET: /account/register
@@ -740,22 +1390,22 @@ namespace DealEngine.WebUI.Controllers
                 currentUser.LoggedOutTime = DateTime.UtcNow;
                 await uow.Commit();
             }
-           
+
             var identity = new System.Security.Principal.GenericIdentity(HttpContext.User.Identity.Name);
             var principal = new GenericPrincipal(identity, new string[0]);
             //CookieSigningOutContext
             var jhgh = User.Identity.IsAuthenticated;
             HttpContext.Session.Clear();
+
             HttpContext.Response.Cookies.Delete(".AspNet.Consent");
             HttpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
-            //HttpContext.Response.Cookies.Expires = DateTime.Now.AddYears(-1);
-            HttpContext.Session.SetString("user", "userloggetout");
-           
-            Response.Cookies.Append("DealEngine", "", new CookieOptions
+            //  Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
+
+            if (_appSettingService.AuthenticationService == "Okta")
             {
-                HttpOnly = true,
-                Secure = false
-            });
+                return await LogoutOkta();
+            }
+
             return await RedirectToLocal();
         }
 
@@ -1026,5 +1676,57 @@ namespace DealEngine.WebUI.Controllers
             //accountModel.UserGroups = new SelectUserGroupsViewModel(user, _permissionsService.GetAllGroups());
             return View(accountModel);
         }
+
+        //[HttpGet]
+        public async Task<IActionResult> LogoutOkta()
+        {
+            var callbackService = _appSettingService.oktaCallBackServiceURL;
+            return Redirect("https://" + callbackService + "/Account/Logout");
+
+            //var callbackService = "https://" + _appSettingService.oktaCallBackServiceURL;
+            //Uri callbackServiceUri = new Uri(callbackService);
+            //// Setup client
+            //HttpClient client = new HttpClient();
+            //client.BaseAddress = callbackServiceUri;
+
+            //HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "/Account/Logout");
+            //HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+            //var json = await responseMessage.Content.ReadAsStringAsync();
+            //client.Dispose();
+
+            //if (responseMessage.IsSuccessStatusCode)
+            //{
+            //    return true;
+            //}
+            //else
+            //{
+            //    return false;
+            //}
+        }
+
+        //[HttpGet]
+        //[AllowAnonymous]
+        //private async Task<bool> CheckAuthenticated()
+        //{
+        //    var callbackService = "https://" + _appSettingService.oktaCallBackServiceURL;
+        //    Uri callbackServiceUri = new Uri(callbackService);
+        //    // Setup client
+        //    HttpClient client = new HttpClient();
+        //    client.BaseAddress = callbackServiceUri;
+
+        //    HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "/Home/CheckAuthenticated");
+        //    HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
+        //    var json = await responseMessage.Content.ReadAsStringAsync();
+        //    client.Dispose();
+
+        //    if (responseMessage.IsSuccessStatusCode)
+        //    {
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
     }
 }

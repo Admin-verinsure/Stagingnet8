@@ -1272,6 +1272,8 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+        //string jsonString = JsonSerializer.Serialize(weatherForecast);
         [HttpPost]
         public async Task<IActionResult> SubmitInformation(IFormCollection collection)
         {
@@ -1832,7 +1834,7 @@ namespace DealEngine.WebUI.Controllers
                 var isSubsystem = await _programmeService.IsBaseClass(clientProgramme);
                 var OrgUser = await _userService.GetUserByEmail(clientProgramme.InformationSheet.Owner.Email);
                 List<Organisation> DefaultMarinas = await _organisationService.GetPublicMarinas();
-                List<Organisation> DefaultInstitutes = await _organisationService.GetPublicFinancialInstitutes();
+                List<Organisation> DefaultInstitutes = await _organisationService.GetPublicFinancialInstitutes(); //??error
                 
                 Programme programme = clientProgramme.BaseProgramme;
                 InformationViewModel model = new InformationViewModel(clientProgramme.InformationSheet, OrgUser, user)
@@ -1855,11 +1857,24 @@ namespace DealEngine.WebUI.Controllers
                     foreach (var Institute in DefaultInstitutes)
                     {
                         InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "Financial");
+                        //InterestedPartyUnit unit = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault();
+
+                       // if(unit != null)
                         if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
+
                         {
-                            //model.ClientInformationSheet.Locations.Add(unit.Location);
-                            model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                            if (!model.ClientInformationSheet.Locations.Contains(unit.Location))
+                            {
+                                //model.ClientInformationSheet.Locations.Add(unit.Location);
+                                model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                            }
                         }
+                        //InterestedPartyUnit unit1 = (InterestedPartyUnit)Institute.OrganisationalUnits.FirstOrDefault(i => i.Name == "CoOwner");
+
+                        //if(unit1 != null)
+                        //{
+                        //    model.OrganisationViewModel.PublicOrganisations.Add(Institute);
+                        //}
                     }
                 }
                 model.Name = programme.Name;

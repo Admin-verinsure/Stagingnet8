@@ -1,10 +1,9 @@
 ﻿@model DealEngine.WebUI.Models.AccountRegistrationModel
-@{
-    ViewBag.PageId = "extr-page";
-}
+@{ ViewBag.PageId = "extr-page"; }
 
 @section topright{
     <span id="extr-page-header-space" class="pull-right"> <span class="hidden-mobile">Already registered?</span> <a href="~/Account/Login" class="btn btn-danger">Sign In</a> </span>
+
 }
 
 <div style="font-family:Arial !important;">
@@ -16,22 +15,23 @@
 
         <div class="container">
             <div hidden>
-                <ul class="nav nav-tabs d-sm-flex" id="tablist" role="tablist"><!--hidden-->
+                <ul class="nav nav-tabs d-sm-flex" id="tablist" role="tablist">
+                    <!--hidden-->
                     <li class="nav-item">
                         <a class="nav-link active" id="step1" data-toggle="tab" href="#step1" role="tab" aria-controls="step1" aria-selected="true"> Step 1</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="step2" data-toggle="tab" href="#step2" role="tab" aria-controls="step2" aria-selected="false"> Step 2</a>
-                    </li>                    
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" id="step3" data-toggle="tab" href="#step3" role="tab" aria-controls="step3" aria-selected="false"> Step 3</a>
-                    </li>                    
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" id="step4" data-toggle="tab" href="#step4" role="tab" aria-controls="step4" aria-selected="false"> Step 4</a>
-                    </li>                    
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" id="step5" data-toggle="tab" href="#step5" role="tab" aria-controls="step5" aria-selected="false"> Step 5</a>
-                    </li>                    
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" id="step6" data-toggle="tab" href="#step6" role="tab" aria-controls="step6" aria-selected="false"> Step 6</a>
                     </li>
@@ -44,7 +44,8 @@
                         <div class="container">
                             <h1 class="text-align-center" style="font-size: 18px;font-weight: 600;font-family: Arial;text-align: center;color: black;padding-bottom: 15px; padding-top:10px" strong id="QuickQuoteText2">Tell us a little bit more about your vessel...</h1>
 
-                            <select onchange="updateLabel()" id="CraftTypeDrop" class="form-control input-lg" hidden style="margin-top: 20px; margin-bottom: 25px;">
+                            @*<select onchange="updateLabel()" id="CraftTypeDrop" class=" input-lg" hidden style="margin-top: 20px; margin-bottom: 25px;">*@
+                            <select onchange="updateLabel()" id="CraftTypeDrop" class="form-select input-lg" hidden style="margin-top: 20px; margin-bottom: 25px;">
                                 <option value="" selected="selected">Pick your highest value vessel.</option>
                                 <option>Roadtrailer</option>
                                 <option>Stored</option>
@@ -81,7 +82,8 @@
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select onchange="updateOptions()" id="vtype" class="form-control input-lg" style="font-size:1.1em;" required>
+                                                    @*<select onchange="updateOptions()" id="vtype" class=" input-lg" style="font-size:1.1em;" required>*@
+                                                    <select onchange="updateOptions()" id="vtype" class="form-select input-lg" style="font-size:1.1em;" required>
                                                         <option id="" value="" selected="selected">-- Select --</option>
                                                         <option id="Powerboats" value="Powerboats">Powerboats</option>
                                                         <option id="Cruisers" value="CruisersandLaunches">Cruisers and Launches</option>
@@ -100,7 +102,8 @@
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select id="ctype" class="form-control input-lg" style="font-size:1.1em;">
+                                                    @*<select id="ctype" class=" input-lg" style="font-size:1.1em;">*@
+                                                    <select id="ctype" class="form-select input-lg" style="font-size:1.1em;">
                                                         <option value="" selected="selected">-- Select --</option>
                                                         <option id="Aluminium" value="Aluminium">Aluminium</option>
                                                         <option id="Steel" value="Steel">Steel</option>
@@ -122,7 +125,8 @@
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select id="hcfig" class="form-control input-lg" style="font-size:1.1em;">
+                                                    @*<select id="hcfig" class=" input-lg" style="font-size:1.1em;">*@
+                                                    <select id="hcfig" class="form-select input-lg" style="font-size:1.1em;">
                                                         <option id="" value="" selected="selected">-- Select --</option>
                                                         <option id="Mono" value="Mono">Mono</option>
                                                         <option id="Catamaran" value="Catamaran">Catamaran</option>
@@ -140,7 +144,8 @@
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select id="mtype" class="form-control input-lg" style="font-size:1.1em;">
+                                                    @*<select id="mtype" class="input-lg" style="font-size:1.1em;">*@
+                                                    <select id="mtype" class="form-select input-lg" style="font-size:1.1em;">
                                                         <option value="" selected="selected">-- Select --</option>
                                                         <option id="Pile" value="Pile">Pile</option>
                                                         <option id="Marina" value="Marina">Marina</option>
@@ -157,7 +162,8 @@
                                         <td class="coastguardformtd">
                                             <div class="form-group">
                                                 <div class="input-group w100">
-                                                    <select id="hastr" class="form-control input-lg" style="font-size:1.1em;">
+                                                    @*<select id="hastr" class="input-lg" style="font-size:1.1em;">*@
+                                                    <select id="hastr" class="form-select input-lg" style="font-size:1.1em;">
                                                         <option value="" selected="selected">-- Select --</option>
                                                         <option id="True" value="True">Yes</option>
                                                         <option id="False" value="False">No</option>
@@ -209,12 +215,12 @@
                             </div>
                             <div style="margin-bottom:50px;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <div role="group" aria-label="First group">
-                                    <button href="#step2" data-toggle="tab" onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary btn-step margin-top-10 w100 hidden">I LIKE IT - LET'S GO!</button>
-                                    <a href="Coastguardreg" style=" width:100%; background-color:#72BF44 !important;color:white;" id="newQuote" class="btn btn-secondary margin-top-10 w100 hidden">Get A New Quote</a>
+                                    <button href="#step2" data-toggle="tab" onclick="saveQuickQuote(); return false;" style="background-color:#72BF44 !important;color:white;" id="next" type="submit" class="btn btn-secondary btn-step margin-top-10 w100 ">I LIKE IT - LET'S GO!</button>
+                                    <a href="Coastguardreg" style=" width:100%; background-color:#72BF44 !important;color:white;" id="newQuote" class="btn btn-secondary margin-top-10 w100 ">Get A New Quote</a>
                                     <button href="#step2" data-toggle="tab" id="pleaseCallMe" style="width:100%;background-color:#004280 !important;color:white;" type="submit" class="btn btn-secondary margin-top-10 w100 btn-step">Please give me a call to discuss</button>
                                     <a style="width:100%; background-color:#F04E45 !important;color:white;" href="Coastguardreg" class="btn btn-secondary margin-top-10 w100 ">No Thanks, I think I'll leave it</a>
                                 </div>
-                            </div>                         
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -224,10 +230,10 @@
                         <h5><b>Financial Advice Disclosures</b></h5>
                         <div>
                             <p>
-                                Marsh Limited (we, our, us) (FSP22364), trading as Marsh, Mercer Marsh Benefits and Marsh JLT Specialty, holds a licence issued 
-                                by the Financial Markets Authority to provide a financial advice service. It is a condition of Marsh's licence that Marsh can 
+                                Marsh Limited (we, our, us) (FSP22364), trading as Marsh, Mercer Marsh Benefits and Marsh JLT Specialty, holds a licence issued
+                                by the Financial Markets Authority to provide a financial advice service. It is a condition of Marsh's licence that Marsh can
                                 only provide financial advice on life and health insurance products and non-life general insurance products.<br>
-                                We engage financial advisers who can provide financial advice to our customers (you, your) on our behalf.<br> 
+                                We engage financial advisers who can provide financial advice to our customers (you, your) on our behalf.<br>
                             </p>
                         </div>
                         <h5><b>Material limitations or restrictions on the scope of this advice: The Coastguard First Mate Insurance Programme</b></h5>
@@ -235,30 +241,30 @@
                             <p>
                                 Marsh has worked with Ando Insurance Group Limited (Ando) to provide two insurance products, Vessel Insurance and Legal Liability
                                 Insurance available to be purchased under the Coastguard First Mate Insurance programme.<br>
-                                Ando Insurance Group Limited is an agent underwriting for and on behalf of certain underwriters at Lloyd’s. Lloyd’s has a financial 
-                                strength rating of A (Excellent) issued by A.M. Best, A+ (Strong) issued by Standard and Poor's,  and AA- (Very Strong) issued by 
+                                Ando Insurance Group Limited is an agent underwriting for and on behalf of certain underwriters at Lloyd’s. Lloyd’s has a financial
+                                strength rating of A (Excellent) issued by A.M. Best, A+ (Strong) issued by Standard and Poor's,  and AA- (Very Strong) issued by
                                 Fitch. Further information on the financial strength rating of Lloyd’s is available at www.lloyds.com/investor-relations/ratings.<br>
                                 The Insurance products offered under this programme are limited to Vessel Insurance and Legal Liability Insurance as provided by Ando
-                                Insurance. Our advice is limited to these insurance products, and solely in relation to cover for the loss or accidental damage to 
+                                Insurance. Our advice is limited to these insurance products, and solely in relation to cover for the loss or accidental damage to
                                 your vessel, or for loss or damage to a third party due to your actions as set out in the Policy Wording. Please note, you must be a
                                 Coastguard member to purchase this product.<br>
                                 If you need advice on other types of insurance products then we can refer you to an appropriate financial adviser within our organisation.<br>
-                                Our financial advisers give advice on behalf of us. You can contact us using the contact information set out at the bottom of this 
+                                Our financial advisers give advice on behalf of us. You can contact us using the contact information set out at the bottom of this
                                 document to find out the name of a financial adviser who can provide financial advice to you on our behalf.<br>
-                            </p>                           
+                            </p>
                         </div>
                         <h5><b>Fees, expenses or other amounts payable</b></h5>
                         <div>
                             <p>
-                                <b>Administration Fee:</b> In addition to Broking Commission, we will charge an Administrative Fee to cover our disbursements and 
-                                expenses incurred in the administration and servicing of clients. This includes recovery of telephone, mobile phone, and general 
-                                office administration overheads which can ordinarily be regarded as disbursements incurred in the day to day running of a client 
+                                <b>Administration Fee:</b> In addition to Broking Commission, we will charge an Administrative Fee to cover our disbursements and
+                                expenses incurred in the administration and servicing of clients. This includes recovery of telephone, mobile phone, and general
+                                office administration overheads which can ordinarily be regarded as disbursements incurred in the day to day running of a client
                                 file. The Administration Fee for this advice will be $25.<br>
                                 <b>Your insurance:</b> You will need to pay certain amounts associated with your insurance policy, such as premiums and claims
                                 excess.  You may also be required to pay certain taxes and, depending on the type of insurance, statutory charges (most notably to
                                 the Earthquake Commission (EQC Levy) and Fire & Emergency New Zealand (FENZ Levy)).<br>
                                 <b>Credit Card Payments:</b> You must purchase the Coastguard First Mate Insurance programme by a credit card payment. When you pay
-                                us by credit card, we will include an additional surcharge of 1.3% of the amount that you are paying us. The full amount of this 
+                                us by credit card, we will include an additional surcharge of 1.3% of the amount that you are paying us. The full amount of this
                                 surcharge is paid to the credit card issuer.<br>
                             </p>
                         </div>
@@ -266,38 +272,38 @@
                         <h5><b>Conflicts of interest and commissions or other incentives </b></h5>
                         <div>
                             <p>
-                            <b>Broking Commission (commonly known as “brokerage”):</b>Broking Commission will be paid to us by an insurer for arranging your insurance
-                            policy. Broking Commission is included in the amount of the premium charged by insurer(s) and is based on a percentage of the premium, less
-                            taxes and statutory charges. When you pay us the premium for your insurance policy, we retain our Broking Commission and pay the balance to
-                            the insurer. The amount of Broking Commission we will receive for your insurance policy is set out below:<br>
-                            <table class="table" style="width:100%;">
-                                <thead>
-                                    <tr>
-                                        <th>Insurance Product</th>
-                                        <th>Broking Commission</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Vessel Insurance </td>
-                                        <td>21.5%</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Legal Liability </td>
-                                        <td>21.5%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <b>Benefits or Compensation:</b> We may, from time to time, participate in insurer funded promotional events or training and development. 
-                            Sometimes we are reimbursed by insurers for our costs related to promotional marketing. Marsh financial advisers may also receive non-monetary
-                            benefits from insurers which may include entertainment and attendance at insurer sponsored functions. These benefits are not generally attributed
-                            to any particular type of insurance or insurance policy. <br>
-                            <b>Other Factors:</b> Our remuneration may be influenced by factors such as the volume of business placed with an insurer or insurer profit from
-                            the business.<br>
-                            To ensure that Marsh financial advisers prioritise your interests above their own, Marsh financial advisers follow an advice process that ensures
-                            their recommendations are made on the basis of your goals and circumstances. All our financial advisers undergo ongoing training about how to 
-                            manage conflicts of interest and we have compliance policies to ensure that the conflicts identified do not create a conflict with your interests.
-                            Marsh undertakes a compliance audit, and a review of our compliance programme by a reputable compliance adviser, on a regular basis.<br>
+                                <b>Broking Commission (commonly known as “brokerage”):</b>Broking Commission will be paid to us by an insurer for arranging your insurance
+                                policy. Broking Commission is included in the amount of the premium charged by insurer(s) and is based on a percentage of the premium, less
+                                taxes and statutory charges. When you pay us the premium for your insurance policy, we retain our Broking Commission and pay the balance to
+                                the insurer. The amount of Broking Commission we will receive for your insurance policy is set out below:<br>
+                                <table class="table" style="width:100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>Insurance Product</th>
+                                            <th>Broking Commission</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Vessel Insurance </td>
+                                            <td>21.5%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Legal Liability </td>
+                                            <td>21.5%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <b>Benefits or Compensation:</b> We may, from time to time, participate in insurer funded promotional events or training and development.
+                                Sometimes we are reimbursed by insurers for our costs related to promotional marketing. Marsh financial advisers may also receive non-monetary
+                                benefits from insurers which may include entertainment and attendance at insurer sponsored functions. These benefits are not generally attributed
+                                to any particular type of insurance or insurance policy. <br>
+                                <b>Other Factors:</b> Our remuneration may be influenced by factors such as the volume of business placed with an insurer or insurer profit from
+                                the business.<br>
+                                To ensure that Marsh financial advisers prioritise your interests above their own, Marsh financial advisers follow an advice process that ensures
+                                their recommendations are made on the basis of your goals and circumstances. All our financial advisers undergo ongoing training about how to
+                                manage conflicts of interest and we have compliance policies to ensure that the conflicts identified do not create a conflict with your interests.
+                                Marsh undertakes a compliance audit, and a review of our compliance programme by a reputable compliance adviser, on a regular basis.<br>
                             </p>
                         </div>
                         <h5><b>Complaints and disputes resolution process </b></h5>
@@ -308,36 +314,38 @@
                         <div>
                             <p>Marsh and our financial advisers are bound by the following duties to:</p>
                             <ul>
-                              <li>meet the standards of competence, knowledge and skill set out in the code of professional conduct for financial advice services (“<b>Code of Conduct</b>”);  </li>
-                              <li>give priority to our customers' interests by taking all reasonable steps to ensure that the advice given to you is not materially influenced by our own interests or the interests of any other person connected with the giving of the advice;  </li>
-                              <li>exercise the care, diligence and skill that a prudent person engaged in the occupation of giving regulated financial advice would exercise in the same circumstances; and  </li>
-                              <li>comply with the standards of ethical behaviour, conduct and client care set out in the Code of Conduct. </li>
+                                <li>meet the standards of competence, knowledge and skill set out in the code of professional conduct for financial advice services (“<b>Code of Conduct</b>”);  </li>
+                                <li>give priority to our customers' interests by taking all reasonable steps to ensure that the advice given to you is not materially influenced by our own interests or the interests of any other person connected with the giving of the advice;  </li>
+                                <li>exercise the care, diligence and skill that a prudent person engaged in the occupation of giving regulated financial advice would exercise in the same circumstances; and  </li>
+                                <li>comply with the standards of ethical behaviour, conduct and client care set out in the Code of Conduct. </li>
                             </ul>
-                            <p>This is only a summary of the duties that we have.  More information is available by contacting us, or by visiting the Financial Markets 
-                            Authority website at https://www.fma.govt.nz.</p>
+                            <p>
+                                This is only a summary of the duties that we have.  More information is available by contacting us, or by visiting the Financial Markets
+                                Authority website at https://www.fma.govt.nz.
+                            </p>
                         </div>
                         <h5><b>Contact details</b></h5>
                         <div>
                             <p>Marsh Limited (FSP22364, trading as Marsh, Mercer Marsh Benefits and Marsh JLT Specialty) is the financial advice provider.<br>You can contact us at:</p>
                             <ul>
-                              <li>Call us on 0800 627 744 between the hours of 8.30am-5pm weekdays. </li>
-                              <li>Mail us at PO Box 2221, Shortland Street, Auckland 1140 </li>
+                                <li>Call us on 0800 627 744 between the hours of 8.30am-5pm weekdays. </li>
+                                <li>Mail us at PO Box 2221, Shortland Street, Auckland 1140 </li>
                             </ul>
                         </div>
-                    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding margin-top-5">
-                        <div class="btn-group w100" style="margin-bottom:50px;" role="group" aria-label="First group">
-                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                <button href="#step1" style="width:100%; background-color:#F04E45 !important;color:white;" type="button" class="btn btn-secondary margin-top-10 btn-step w100 btn-back">BACK</button>
+                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 no-padding margin-top-5">
+                            <div class="btn-group w100" style="margin-bottom:50px;" role="group" aria-label="First group">
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <button href="#step1" style="width:100%; background-color:#F04E45 !important;color:white;" type="button" class="btn btn-secondary margin-top-10 btn-step w100 btn-back">BACK</button>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                                    <button href="#step3" style="width:100%; float:right; background-color:#72BF44 !important;color:white;" id="next" type="button" class="btn btn-secondary margin-top-10 btn-step w100">NEXT</button>
+                                </div>
+                                <!--href="#tab1"-->
+                                <!--href="#tab3"-->
                             </div>
-                            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                                <button href="#step3" style="width:100%; float:right; background-color:#72BF44 !important;color:white;" id="next" type="button" class="btn btn-secondary margin-top-10 btn-step w100">NEXT</button>
-                            </div>
-                            <!--href="#tab1"-->
-                            <!--href="#tab3"-->
-                        </div>
                         </div>
 
-                  </div>
+                    </div>
                 </div>
 
                 <div class="tab-pane fade" id="step3" role="tabpanel" aria-labelledby="step3">
@@ -513,13 +521,15 @@
     </div>
 </div>
 <style>
-    .coastguardformtd{
+    .coastguardformtd {
         width: 1100px;
     }
-    .coastguardformtd1{
+
+    .coastguardformtd1 {
         width: 300px;
     }
 </style>
+
 
 @section pagespecific{
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -700,7 +710,7 @@
             if (!(/^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(Email.value))) {
                 alert("You have entered an invalid email address!");
                 return (false)
-            }	
+            }
             if (hm.value == "" && mb.value == "") { //if both are empty
                 hm.classList.add("requiredVal");
                 mb.classList.add("requiredVal");
@@ -823,7 +833,7 @@
             var href = $(this).attr('href');
             var id = $(this).attr('id');
             var back = $(this).hasClass('btn-back');
-            
+
             if (back == true) {
                 switchStep(href);
             }
@@ -834,8 +844,8 @@
                     // Then its ok to move to step 2, because they have their quote.
                     if (id == "pleaseCallMe") {
                         if (validationCheck()) {
-                            saveQuickQuote(); 
-                            
+                            saveQuickQuote();
+
                             $('#nextButton').hide();
                             document.getElementById("nextButton").hidden = true;
                             $('#vownrfgroup').hidden = true;
@@ -965,7 +975,7 @@
                     $('#qref').hide();
                     $('#indiQuoteSpan').show();
                     $('#quoteInc').show();
-                    $('#next').show();                  
+                    $('#next').show();
                     qref.hidden = true;
                     indiQuoteSpan.hidden = false;
                     quoteInc.hidden = false;
@@ -1218,5 +1228,6 @@
         });
     </script>
 
-    
+
+
 }

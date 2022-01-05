@@ -7,23 +7,23 @@
     <input id="ProjectId" name="ResearchHouseViewModel.ProjectId" hidden />
     <ul class="nav nav-tabs" role="tablist">
         <li class="nav-item" id="tab1">
-            <a class="nav-link active" href="#ResearchHouse1" data-toggle="tab" onclick="ResetForm('ResearchHouse3','ResearchHouse2', 'Project', 'ResearchAddButton', 'ResearchHouseCancelButton')"> List All </a>
+            <a class="nav-link active" href="#ResearchHouse1" data-bs-toggle="tab" onclick="ResetForm('ResearchHouse3','ResearchHouse2', 'Project', 'ResearchAddButton', 'ResearchHouseCancelButton')"> List All </a>
         </li>
         <li class="nav-item" id="tab2">
-            <a class="nav-link" href="#ResearchHouse2" data-toggle="tab"> Edit </a>
+            <a class="nav-link" href="#ResearchHouse2" data-bs-toggle="tab"> Edit </a>
         </li>
         <li class="nav-item" id="tab3">
-            <a class="nav-link" href="#ResearchHouse3" data-toggle="tab" onclick="ResetForm('ResearchHouse3','ResearchHouse2', 'Project', 'ResearchAddButton', 'ResearchHouseCancelButton')"> Add </a>
+            <a class="nav-link" href="#ResearchHouse3" data-bs-toggle="tab" onclick="ResetForm('ResearchHouse3','ResearchHouse2', 'Project', 'ResearchAddButton', 'ResearchHouseCancelButton')"> Add </a>
         </li>
         <li class="nav-item" id="tab4">
-            <a class="nav-link" href="#ResearchHouse4" data-toggle="tab"> List Removed </a>
+            <a class="nav-link" href="#ResearchHouse4" data-bs-toggle="tab"> List Removed </a>
         </li>
     </ul>
     <div class="tab-content">
         <div id="ResearchHouse1" class="tab-pane active" role="tabpanel">
             <table id="tblProject"
                    class="table table-striped" width="100%"
-                   data-show-columns="true"
+                   @*data-show-columns="true"*@
                    data-pagination="true"
                    data-search="true"
                    data-show-jump-to="true">
@@ -98,7 +98,7 @@
         <div id="ResearchHouse4" class="tab-pane" role="tabpanel">
             <table id="tblRemovedProject"
                    class="table table-striped" width="100%"
-                   data-show-columns="true"
+                   @*data-show-columns="true"*@
                    data-pagination="true"
                    data-search="true"
                    data-show-jump-to="true">

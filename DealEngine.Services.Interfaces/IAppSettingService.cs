@@ -9,9 +9,18 @@ namespace DealEngine.Services.Interfaces
         string CarJamEndpoint { get; }
         string CarJamApiKey { get; }
         string IntermediatePassword { get; }
+        string OktaIntermediatePassword { get; }
         string domainQueryString { get; }
+        string oktaCallBackServiceURL { get; }
+        string ClientIdClientSecret { get; }
+        string AMPSUrl { get; }
         string CKImagePath { get; }
+        string TCDE_internal_users { get; }
+        string TCDE_external_Underwriters { get; }
+        string TCDE_external_Admins { get; }
+        string TCDE_external_users { get; }
         string RequireRSA { get; }
+        string AuthenticationService { get; }
         string GetMarineInsuranceSpecialistEmail { get; }
         string GetCompanyTitle { get; }
         string GetConnectionString { get; }

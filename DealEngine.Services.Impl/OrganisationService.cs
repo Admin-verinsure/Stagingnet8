@@ -79,7 +79,7 @@ namespace DealEngine.Services.Impl
             // we don't want to query ldap. That way lies timeouts. Or Dragons.
             return await _organisationRepository.FindAll().ToListAsync();
         }
-        public async Task UpdateOrganisationsEmail(String Email , String NewEmail)
+        public async Task UpdateOrganisationsEmail(String Email, String NewEmail)
         {
             foreach (Organisation org in await GetAllOrganisationsByEmail(Email))
             {
@@ -115,7 +115,7 @@ namespace DealEngine.Services.Impl
             if (organisation.Email != collection["OrganisationViewModel.User.Email"])
             {
                 UpdateOrganisationsEmail(organisation.Email, collection["OrganisationViewModel.User.Email"]);
-               
+
             }
             organisation = await UpdateOrganisation(collection, organisation);
 
@@ -147,9 +147,9 @@ namespace DealEngine.Services.Impl
             var UnitName = "";
             if (InsuranceAttribute == "Administrator")
             {
-                 UnitName = collection["AdministratorUnit"].ToString();
+                UnitName = collection["AdministratorUnit"].ToString();
             }
-            else if(InsuranceAttribute == "Director")
+            else if (InsuranceAttribute == "Director")
             {
                 UnitName = collection["DirectorUnit"].ToString();
             }
@@ -169,14 +169,14 @@ namespace DealEngine.Services.Impl
             }
             else
             {
-                 UnitName = collection["Unit"].ToString();
+                UnitName = collection["Unit"].ToString();
 
             }
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             Type UnitType = Type.GetType(UnitName);
             try
             {
-                var jsonUnit = (OrganisationalUnit) await _serializerationService.GetDeserializedObject(UnitType, collection);
+                var jsonUnit = (OrganisationalUnit)await _serializerationService.GetDeserializedObject(UnitType, collection);
                 var unit = organisation.OrganisationalUnits.FirstOrDefault(ou => ou.GetType() == jsonUnit.GetType());
                 if (unit != null)
                 {
@@ -191,7 +191,7 @@ namespace DealEngine.Services.Impl
                     organisation.OrganisationalUnits.Add(unit);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 new Exception("Failed to add Organisational Unit " + ex.Message);
             }
@@ -199,7 +199,7 @@ namespace DealEngine.Services.Impl
 
         private async Task<User> UpdateOrganisationUser(IFormCollection collection, Organisation organisation)
         {
-            var jsonUser = (User) await _serializerationService.GetDeserializedObject(typeof(User), collection);
+            var jsonUser = (User)await _serializerationService.GetDeserializedObject(typeof(User), collection);
 
             Guid.TryParse(collection["OrganisationViewModel.User.Id"], out Guid UserId);
             if (UserId != Guid.Empty)
@@ -210,7 +210,7 @@ namespace DealEngine.Services.Impl
                     var bool1 = user.Organisations.Contains(organisation);
                     foreach (var org in user.Organisations)
                     {
-                        if(org.Id == organisation.Id)
+                        if (org.Id == organisation.Id)
                         {
                             user = _mapper.Map(jsonUser, user);
                             await _userService.Update(user);
@@ -273,8 +273,8 @@ namespace DealEngine.Services.Impl
 
             if (!string.IsNullOrWhiteSpace(OrganisationType))
             {
-                organisation.OrganisationType.Name = OrganisationType;                
-            }           
+                organisation.OrganisationType.Name = OrganisationType;
+            }
 
             return organisation;
         }
@@ -289,10 +289,11 @@ namespace DealEngine.Services.Impl
             var list = await _organisationRepository.FindAll().ToListAsync();
             Organisation organisation = new Organisation();
 
-            foreach(Organisation org in list)
+            foreach (Organisation org in list)
             {
                 var foundIt = org.OrganisationalUnits.FirstOrDefault(u => u.Id == organisationalUnitId);
-                if (foundIt != null){
+                if (foundIt != null)
+                {
                     organisation = org;
                     break;
                 }
@@ -382,7 +383,7 @@ namespace DealEngine.Services.Impl
                     }
                     else
                     {
-                        if(!string.IsNullOrWhiteSpace(FirstName) || !string.IsNullOrWhiteSpace(LastName))
+                        if (!string.IsNullOrWhiteSpace(FirstName) || !string.IsNullOrWhiteSpace(LastName))
                             User = new User(Creator, Guid.NewGuid(), collection);
                     }
                 }
@@ -392,14 +393,14 @@ namespace DealEngine.Services.Impl
                 foundOrg = CreateNewOrganisation(Creator, Email, OrganisationName, OrganisationType, OrganisationalUnits, InsuranceAttribute);
                 if (User != null)
                 {
-                    if(!User.Organisations.Any(o=>o.InsuranceAttributes.Any(i=>i.Name == Type) && o.Name == OrganisationName))
+                    if (!User.Organisations.Any(o => o.InsuranceAttributes.Any(i => i.Name == Type) && o.Name == OrganisationName))
                         User.Organisations.Add(foundOrg);
 
-                    if(Type != "Administrator" && User.PrimaryOrganisation == null)
+                    if (Type != "Administrator" && User.PrimaryOrganisation == null)
                     {
                         User.SetPrimaryOrganisation(foundOrg);
                     }
-                    
+
                     await _userService.Create(User);
                 }
             }
@@ -512,16 +513,16 @@ namespace DealEngine.Services.Impl
             var guids = collection["OrganisationId"].ToString().Split(',');
             var DODates = collection["DORetroactiveDate"].ToString().Split(',');
             var PIDates = collection["PIRetroactiveDate"].ToString().Split(',');
-            for (int i = 0; i < guids.Count(); i++) 
+            for (int i = 0; i < guids.Count(); i++)
             {
                 Guid.TryParse(guids[i], out Guid OrganisationId);
                 if (OrganisationId != Guid.Empty)
                 {
                     var organisation = await GetOrganisation(OrganisationId);
-                    if(organisation != null)
+                    if (organisation != null)
                     {
                         var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor");
-                        if(unit != null)
+                        if (unit != null)
                         {
                             unit.DORetroactivedate = DODates[i];
                             unit.PIRetroactivedate = PIDates[i];
@@ -532,14 +533,14 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async  Task<List<Organisation>> GetPublicMarinas()
+        public async Task<List<Organisation>> GetPublicMarinas()
         {
             List<Organisation> organisations = new List<Organisation>();
             var marinas = await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "Marina")).ToListAsync();
-            foreach(var marina in marinas)
+            foreach (var marina in marinas)
             {
                 var unit = (MarinaUnit)marina.OrganisationalUnits.FirstOrDefault();
-                if(unit != null)
+                if (unit != null)
                 {
                     if (unit.WaterLocation != null)
                     {
@@ -581,7 +582,7 @@ namespace DealEngine.Services.Impl
         {
             var marinas = await GetAllMarinas();
             foreach (var marina in marinas)
-            {                
+            {
                 var unit = (MarinaUnit)marina.OrganisationalUnits.FirstOrDefault();
                 if (unit != null)
                 {
@@ -596,7 +597,7 @@ namespace DealEngine.Services.Impl
 
         public async Task<List<Organisation>> GetAllMarinas()
         {
-            return  await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "Marina")).ToListAsync();
+            return await _organisationRepository.FindAll().Where(o => o.InsuranceAttributes.Any(i => i.Name == "Marina")).ToListAsync();
         }
 
         public async Task<List<Organisation>> GetFinancialInstitutes()
@@ -635,7 +636,7 @@ namespace DealEngine.Services.Impl
                 organisation.OrganisationalUnits.Add(marinaUnit);
             }
 
-            await Update(organisation);            
+            await Update(organisation);
         }
 
         public async Task PostInstitute(IFormCollection model)

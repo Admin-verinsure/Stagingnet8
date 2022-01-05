@@ -495,6 +495,10 @@ namespace DealEngine.WebUI.Controllers
                 string Email = collection["OrganisationEmail"].ToString();
                 string Name = collection["OrganisationName"].ToString();
                 string InsuranceAttribute = collection["InsuranceAttribute"].ToString();
+                //if(InsuranceAttribute == "CoOwner")
+                //{
+                //    InsuranceAttribute = "Financial";
+                //}
                 string OrganisationType = collection["OrganisationTypeName"].ToString();
                 currentUser = await CurrentUser();
                 Guid.TryParse(collection["AnswerSheetId"], out Guid SheetId);

@@ -86,7 +86,7 @@
                     <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 nonownersec">
                         <label class=" label required">Type</label>
                         <label class="input">
-                            <select id="CommonEditType" onchange="CommonTypeSelected('CommonEditType','CommonEdit')" class="form-control b" name="Type">
+                            <select id="CommonEditType" onchange="CommonTypeSelected('CommonEditType','CommonEdit')" class="b form-select" name="Type">
                                 <option selected="selected" value="">-- Select --</option>
                                 <option value="Advisor">Advisor</option>
                                 <option value="NominatedRepresentative">Nominated Representative</option>
@@ -100,7 +100,7 @@
                     <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6 nonownersec">
                         <label class=" label required">Organisation Type</label>
                         <label class="input">
-                            <select id="CommonEditOrgType" class="form-control b" name="OrganisationTypeName">
+                            <select id="CommonEditOrgType" class="b form-select" name="OrganisationTypeName">
                                 <option selected="selected" value="">-- Select --</option>
                                 <option value="Person - Individual">Private</option>
                             </select>
@@ -166,7 +166,7 @@
                         <label class="label required">Registered Status AFA,RFA or N/A</label>
                         <label class="input">
                             <i></i>
-                            <select id="CommonEditRegStatus" class="form-control b" name="RegisteredStatus">
+                            <select id="CommonEditRegStatus" class="b form-select" name="RegisteredStatus">
                                 <option selected="selected" value="">-- Select --</option>
                                 <option value="AFA">AFA</option>
                                 <option value="RFA">RFA</option>
@@ -213,7 +213,7 @@
                     <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                         <label class=" label required">Type</label>
                         <label class="input">
-                            <select id="types" name="Type" class="custom-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
+                            <select id="types" name="Type" class="form-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
                                 @foreach (var option in Model.OrganisationViewModel.InsuranceAttributes)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -227,7 +227,7 @@
                     <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                         <label class=" label required">Organisation Type</label>
                         <label class="input">
-                            <select id="CommonOrgType" class="form-control b" name="OrganisationTypeName">
+                            <select id="CommonOrgType" class="b form-select" name="OrganisationTypeName">
                                 <option selected="selected" value="">-- Select --</option>
                                 <option value="Person - Individual">Private</option>
                             </select>
@@ -279,7 +279,7 @@
                         <label class="label required">Registered Status AFA,RFA or N/A</label>
                         <label class="input">
                             <i></i>
-                            <select id="CommonRegStatus" class="form-control b" name="RegisteredStatus">
+                            <select id="CommonRegStatus" class="b form-select" name="RegisteredStatus">
                                 <option selected="selected" value="">-- Select --</option>
                                 <option value="AFA">AFA</option>
                                 <option value="RFA">RFA</option>

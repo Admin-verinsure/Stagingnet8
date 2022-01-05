@@ -15,7 +15,6 @@ namespace DealEngine.Domain.Entities
         private Organisation _primaryOrganisation;
 
         protected User() : this(null) { }
-
         protected User (User createdBy)
 			: base (null)
 		{
@@ -36,8 +35,18 @@ namespace DealEngine.Domain.Entities
             //InitialNameOptions = GetInitialSelectOptions();
         }
 
+        public User(string oktaUid, string email, string firstname, string surname)
+        : this()
+        {
+            OktaUID = oktaUid;
+            Email = email;
+            FirstName = firstname;
+            LastName = surname;
+        }
+
         public virtual OrganisationalUnit DefaultOU { get; set; }
         public virtual string UserName { get; set; }
+        public virtual string OktaUID { get; set; }
         public virtual string SalesPersonUserName { get; set; }
         public virtual string JobTitle { get; set; }
         public virtual string EmployeeNumber { get; set; }

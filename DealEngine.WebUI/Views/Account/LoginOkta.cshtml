@@ -1,0 +1,36 @@
+﻿@model DealEngine.WebUI.Models.AccountLoginModel
+@{
+    ViewBag.PageId = "extr-page";
+    ViewBag.PageClass = "animated fadeInDown";
+}
+
+<div id="content" class="container col-sm-12 col-md-6 col-lg-6">
+    <div class="container" style="height:35px;"></div>
+    <div style="margin-top:1em;" class="container-fluid">
+        <div class="col-sm" style="height:max-content">
+            <div class="card">
+                <div class="card-body ">
+                    <p style="text-align:center">Marsh use Okta to provide a Multifactor Authentication Process to our clients who utilise this platform. </p>
+					<br />
+                    <p style="text-align:center">To complete a required one-time registration with Okta, please click the <a href="~/Account/LoginOktaRegistration">Registration</a> button.</p>
+					<br />
+                    <p style="text-align:center">If you have previously completed your Okta registration, please click the <a href="https://@Model.CallbackDomainString">Sign In</a> button.</p>
+					<div class="col-sm-12 text-center" style="margin-top:2.5em;">
+						<div style="float:left;" class="col-sm-6">
+							<button onclick="window.location.href='/Account/LoginOktaRegistration';" style="width: 60%; font-size: large; font-weight:bold;" type="button" class="btn btn-primary">Registration</button>
+						</div>
+						<div style="float:right;"class="col-sm-6">
+							<button onclick="window.location.href='https://@Model.CallbackDomainString'" style="width: 60%; font-size: large; font-weight: bold;" type="button" class="btn btn-success">Sign In</button>
+						</div>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section pagespecific {
+    <script src="~/jquery/jquery.min.js"></script>
+    <script type="text/javascript">
+    </script>
+}

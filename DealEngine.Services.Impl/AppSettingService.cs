@@ -43,11 +43,72 @@ namespace DealEngine.Services.Impl
             }
         }
 
+        public string OktaIntermediatePassword
+        {
+            get
+            {
+                return _configuration.GetValue<string>("OktaIntermediatePassword");
+            }
+        }
         public string domainQueryString
         {
             get
             {
                 return _configuration.GetValue<string>("domainQueryString");
+            }
+        }
+        public string oktaCallBackServiceURL
+        {
+            get
+            {
+                return _configuration.GetValue<string>("oktaCallBackServiceURL");
+            }
+        }
+        public string ClientIdClientSecret
+        {
+            get
+            {
+                return _configuration.GetValue<string>("ClientIdClientSecret");
+            }
+        }
+
+        public string AMPSUrl
+        {
+            get
+            {
+                return _configuration.GetValue<string>("AMPSUrl");
+            }
+        }
+
+        public string TCDE_internal_users
+        {
+            get
+            {
+                return _configuration.GetValue<string>("TCDE_internal_users");
+            }
+        }
+
+        public string TCDE_external_Underwriters
+        {
+            get
+            {
+                return _configuration.GetValue<string>("TCDE_external_Underwriters");
+            }
+        }
+
+        public string TCDE_external_Admins
+        {
+            get
+            {
+                return _configuration.GetValue<string>("TCDE_external_Admins");
+            }
+        }
+
+        public string TCDE_external_users
+        {
+            get
+            {
+                return _configuration.GetValue<string>("TCDE_external_users");
             }
         }
 
@@ -95,6 +156,14 @@ namespace DealEngine.Services.Impl
             get
             {
                 return _configuration.GetValue<string>("RequireRSA");
+            }
+        }
+
+        public string AuthenticationService
+        {
+            get
+            {
+                return _configuration.GetValue<string>("AuthenticationService");
             }
         }
 

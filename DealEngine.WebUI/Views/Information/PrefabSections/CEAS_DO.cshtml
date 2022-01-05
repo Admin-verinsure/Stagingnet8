@@ -18,7 +18,7 @@
                         </label>
                     </div>
                     <div class="col-3">
-                        <select id="HasDAOLI" name="DAOLIViewModel.HasDAOLIOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="HasDAOLI" name="DAOLIViewModel.HasDAOLIOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.DAOLIViewModel.HasDAOLIOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -37,7 +37,7 @@
                             </label>
                         </div>
                         <div class="col-3">
-                            <select id="hasexistingDOpolicy" name="DAOLIViewModel.HasExistingPolicyOptions" class="custom-select" onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                            <select id="hasexistingDOpolicy" name="DAOLIViewModel.HasExistingPolicyOptions" class="form-select " onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
                                 @foreach (var option in Model.DAOLIViewModel.HasExistingPolicyOptions)
                                 {
                                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>

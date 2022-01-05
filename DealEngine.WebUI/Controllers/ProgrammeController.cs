@@ -480,12 +480,18 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
                 ClientProgramme programme = await _programmeService.GetClientProgramme(programmeId);
-                if (programme.EGlobalClientNumber == null)
-                {
-                    throw new NullReferenceException("Client number is null");
-                }
 
                 var eGlobalSerializer = new EGlobalSerializerAPI();
+
+                if (string.IsNullOrEmpty(programme.PaymentType))
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        programme.PaymentType = "Invoice";
+                        await uow.Commit();
+                    }
+                }
+
                 string paymentType = programme.PaymentType;
                 Guid transactionreferenceid = Guid.NewGuid();
 
@@ -1350,11 +1356,12 @@ namespace DealEngine.WebUI.Controllers
                 {
                     BrokerUser = await _userService.GetUserById(BrokerId);
                 }
-                var currentClaim = programme.Claim;
+               //var currentClaim = programme.Claim;
                 Programme jsonProgramme = (Programme) await _serializerationService.GetDeserializedObject(typeof(Programme), collection);
                 programme = await _programmeService.PostProgramme(user, BrokerUser, jsonProgramme, programme);
                 if (string.IsNullOrEmpty(programme.Claim))
                 {
+                    var currentClaim = programme.Claim;
                     if (!string.IsNullOrEmpty(currentClaim))
                     {
                         await _claimService.RemoveClaim(currentClaim);
@@ -1363,8 +1370,9 @@ namespace DealEngine.WebUI.Controllers
                 else
                 {                    
                     await _claimService.AddClaim(new Claim(programme.Claim, programme.Claim));
-                }              
+                }
 
+                //return Ok();
                 return Redirect("/Programme/TermSheetConfirguration/" + programme.Id);
             }
             catch (Exception ex) 

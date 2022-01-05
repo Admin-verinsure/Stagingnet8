@@ -9,36 +9,34 @@
 
 @*@Html.HiddenFor(m => m.RevenueDataViewModel.IsRevenueData,new { @id="RevenueFlag"})*@
 
-
-  
-
-<form class="is-valid" id="RevenueDataViewModel" data-accordianId="Fee Income / Activities">
-    <div id="SharedRevenue">
-        <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item" id="tab1">
-                <a class="nav-link active" href="#RevenueTab1" data-toggle="tab"> Territory </a>
-            </li>
-            <li class="nav-item" id="tab2">
-                <a class="nav-link" href="#RevenueTab2" data-toggle="tab"> Activities </a>
-            </li>
-            <li class="nav-item" id="tab3">
-                <a class="nav-link" href="#RevenueTab3" data-toggle="tab"> Additional Information </a>
-            </li>
-        </ul>
-        <div class="tab-content">
-            <div id="RevenueTab1" class="tab-pane active" role="tabpanel">
-                <div class="form-group">
-                    <div class="row">
-                        <div class="col-4">
-                            <label for="territories" class="label required">Please select the territories you trade in</label>
-                        </div>
-                        <div class="col-8">
-                            <select id="territories" name="RevenueDataViewModel.Territories" form="RevenueDataViewModel" class="chosen-select form-control b" multiple data-rule="BuildSharedTable" data-item="territories,territoriestable" onchange="OnChange(this.id, this.name)" required>
-                                @foreach (var option in Model.RevenueDataViewModel.Territories)
-                                {
-                                    <option selected="@option.Selected" value="@option.TemplateId.ToString()">@option.Location</option>
-                                }
-                            </select>
+    <form class="is-valid" id="RevenueDataViewModel" data-accordianId="Fee Income / Activities">
+        <div id="SharedRevenue">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item" id="tab1">
+                    <a class="nav-link active" href="#RevenueTab1" data-toggle="tab"> Territory </a>
+                </li>
+                <li class="nav-item" id="tab2">
+                    <a class="nav-link" href="#RevenueTab2" data-toggle="tab"> Activities </a>
+                </li>
+                <li class="nav-item" id="tab3">
+                    <a class="nav-link" href="#RevenueTab3" data-toggle="tab"> Additional Information </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="RevenueTab1" class="tab-pane active" role="tabpanel">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-4">
+                                <label for="territories" class="label required">Please select the territories you trade in</label>
+                            </div>
+                            <div class="col-8">
+                                <select id="territories" name="RevenueDataViewModel.Territories" form="RevenueDataViewModel" class="chosen-select form-select b" multiple data-rule="BuildSharedTable" data-item="territories,territoriestable" onchange="OnChange(this.id, this.name)" required>
+                                    @foreach (var option in Model.RevenueDataViewModel.Territories)
+                                    {
+                                        <option selected="@option.Selected" value="@option.TemplateId.ToString()">@option.Location</option>
+                                    }
+                                </select>
+                            @*</div>*@
                         </div>
                     </div>
                 </div>
@@ -168,7 +166,7 @@
                                     <label for="hasinspectionreportoptions">Please describe the nature of these reports and what they would be used for, (examples. Domestic pre-purchase property inspections, Commercial building Inspections for Earthquake Strengthening, Inspections relating to Building Feasibility reports)</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasinspectionreportoptions" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasInspectionReportOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasinspectionreportoptions" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasInspectionReportOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasInspectionReportOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -205,7 +203,7 @@
                                     <label for="hasdisclaimerreports">Do you include limitations of liability clauses and liability disclaimers in your reports?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasdisclaimerreports" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasDisclaimerReportsOptions" form="RevenueDataViewModel" class="custom-select" form="RevenueDataViewModel" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasdisclaimerreports" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasDisclaimerReportsOptions" form="RevenueDataViewModel" class="form-select" form="RevenueDataViewModel" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasDisclaimerReportsOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -227,7 +225,7 @@
                                     <label for="hasobservationservices">Was contracted to provide construction management or observation services?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasobservationservices" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasObservationServicesOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasobservationservices" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasObservationServicesOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasObservationServicesOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -242,7 +240,7 @@
                                     <label for="hasrecommendedcladding">Recommended the use of any cladding product?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasrecommendedcladding" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasRecommendedCladdingOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasrecommendedcladding" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasRecommendedCladdingOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasRecommendedCladdingOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -257,7 +255,7 @@
                                     <label for="hasstateschool">Has undertaken in the past 10 years any work on Ministry of Education State Schools (i.e Not Private, Integrated or Designated Character Schools)?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasstateschool" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasStateSchoolOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasstateschool" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasStateSchoolOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasStateSchoolOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -272,7 +270,7 @@
                                     <label for="hasissuedcertificates">Issued practical completion certificates?</label>
                                 </div>
                                 <div class="col-3">
-                                    <select id="hasissuedcertificates" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasIssuedCertificatesOptions" form="RevenueDataViewModel" class="custom-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
+                                    <select id="hasissuedcertificates" name="RevenueByActivityViewModel.AdditionalActivityViewModel.HasIssuedCertificatesOptions" form="RevenueDataViewModel" class="form-select" data-item="validateadditional" onchange="OnChange(this.id, this.name)" required>
                                         @foreach (var option in Model.RevenueDataViewModel.AdditionalActivityViewModel.HasIssuedCertificatesOptions)
                                         {
                                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
