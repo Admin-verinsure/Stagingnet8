@@ -64,7 +64,17 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
 
             int coverperiodindaysforchange = 0;
-            coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+            //coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+            if (agreement.ClientInformationSheet.IsChange)
+            {
+                if (agreement.ClientInformationSheet.Programme.ChangeReason != null)
+                {
+                    if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate > DateTime.MinValue)
+                    {
+                        coverperiodindaysforchange = (agreement.ExpiryDate - agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate).Days;
+                    }
+                }
+            }
 
             //For 1st year set up
             string strretrodate = "";
@@ -157,10 +167,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         if (termfidtermoption.TermLimit == term.TermLimit && termfidtermoption.Excess == term.Excess)
                         {
                             termfidtermoption.Bound = true;
-                        }
-                        if (termfidtermoption.PremiumDiffer < 0)
-                        {
-                            termfidtermoption.PremiumDiffer = 0;
                         }
                     }
                 }
