@@ -7,13 +7,17 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="ElmahCore" Version="1.2.5" />
     <PackageReference Include="ElmahCore.Postgresql" Version="1.2.5" />
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="NReco.PdfGenerator.LT" Version="1.1.17" />
+    <PackageReference Include="Quartz" Version="3.3.3" />
+    <PackageReference Include="Quartz.NetCore.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="ServiceStack.Client" Version="5.7.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.20" />
+    <PackageReference Include="Unity" Version="5.11.10" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
   </ItemGroup>
   <ItemGroup>

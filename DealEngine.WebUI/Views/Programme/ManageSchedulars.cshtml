@@ -1,0 +1,92 @@
+﻿@model DealEngine.WebUI.Models.Programme.ProgrammeInfoViewModel
+<!-- MAIN CONTENT -->
+
+<div class="container">
+    <form id="ReportForm" method="POST" action="~/Home/CheckAvailabilty" novalidate>
+        <input type="text" class="form-control" value="@Model.Programme.Id" id="programmeId" name="ProgrammeId" hidden>
+        <input type="text" class="form-control" value="@Model.Programme.Name" id="programmeName" name="ProgrammeName" hidden>
+        <input type="text" class="form-control" value="@Model.Programme.NamedPartyUnitName" id="programmeNamedPartyUnitName" name="ProgrammeNamedPartyUnitName" hidden>
+        <div class="card">
+            <div class="card-header">
+                <h5>
+                    This page lists the reports available for this programme.
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="container">
+                    <thread>
+                        <tr>
+                            <th>
+
+                                Name
+                            </th>
+
+                        </tr>
+                    </thread>
+                    <tbody>
+                        <tr>
+
+                            <td>
+
+                                <select class="form-control b" id="ClientProg" name="queryselect">
+                                    <option selected="selected" value="">-- Select --</option>
+                                    @foreach (var product in Model.Programme.Products)
+                                    {
+                                        var productcode = @product.UnderwritingModuleCode.Substring(@product.UnderwritingModuleCode.IndexOf("_") + 1);
+                                        if (@productcode.IndexOf("_") > 0)
+                                        {
+                                            <option value=@productcode.Substring(0, @productcode.IndexOf("_"))>@product.Name  Premium report</option>
+                                        }
+                                        else
+                                        {
+                                            <option value=@productcode>@product.Name  Premium report</option>
+
+                                        }
+                                    }
+
+                                    @{
+                                        if (Model.Programme.EnableFAPReport)
+                                        {
+                                            <option value="FAP">FAP Report</option>
+
+                                        }
+                                    }
+                                    @{
+                                        if (Model.Programme.EnableRevenueActivity)
+                                        {
+                                            <option value="RevenueActivity">RevenueActivity Report</option>
+                                        }
+                                    }
+                                </select>
+
+                            </td>
+                            <td>
+                                <input type="checkbox" value="@Model.IsOnline">IsOnline
+                            </td>
+
+                            <td>
+                                <input type="checkbox" value="@Model.IsOndemand">IsOndemand
+                            </td>
+                            <td>
+                                <input type="checkbox" value="@Model.IsOffline">IsOffline
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary btn-xs" id="submit" type="submit">View</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+@section pagespecific {
+    @Html.Partial("_ProgrammeScripts")
+
+
+}

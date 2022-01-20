@@ -1,0 +1,97 @@
+@model DealEngine.WebUI.Models.Agreement.ViewAgreementViewModel
+<!-- NEW WIDGET START -->
+<div class="container">
+    <form method="POST" action="~/Agreement/RenderCOC" >
+        <input type="text" class="form-control" value="@Model.InformationSheetId" id="InformationSheetId" name="InformationSheetId" hidden>
+        <div class="card">
+            <div class="card-header">
+                <h5>
+                    This page lists the Advisors from this programme. Please select the Advisor and click on Render to render the Named Party COC.
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="container">
+                    <thread>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="select-all" aria-label="checkbox button for following text input">
+
+                                Name
+                            </th>
+                           
+                            @*<th>
+                                Issued Date
+                            </th>*@
+                        </tr>
+                    </thread>
+                    <tbody>
+                        @foreach (var advisor in Model.Organisations)
+                        {
+                            <tr>
+                                <td>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <input type="checkbox" aria-label="checkbox button for following text input" name="@advisor.Value" value="@advisor.Value">
+                                            </div>
+                                        </div>
+                                        <input type="text" class="form-control" aria-label="Text input with radio button" value="@advisor.Text" readonly>
+                                    </div>
+
+
+                                    @*<input type="checkbox"  value="@advisor.Value"> @advisor.Text*@
+                                </td>
+
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary btn-xs" onclick="RenderDocs()">Render COC</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section pagespecific {
+    <script type="text/javascript">
+
+
+        $('#select-all').on('click', function () {
+            debugger;
+            // Get all rows with search applied
+            $('input[type="checkbox"]').prop('checked', this.checked);
+
+
+        });
+
+        function RenderDocs() {
+            debugger;
+            var arrdata = [];
+            var agreementid = @Model.ClientAgreementId;
+            $(':checkbox:checked').each(function (i) {
+                arrdata[i] = ""+$(this).val();
+            });
+            var postdata = {
+                "arrdata": arrdata,
+                "agreementid":agreementid
+            }
+
+            $.ajax({
+                type: "Post",
+                url:"/Agreement/RenderCOC",
+                data: postdata,
+                success: function () {
+
+                }
+
+            })
+
+        }
+
+    </script>
+
+}

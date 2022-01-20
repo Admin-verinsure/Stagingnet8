@@ -21,6 +21,8 @@ using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 using Document = DealEngine.Domain.Entities.Document;
 using NReco.PdfGenerator;
+using Quartz;
+//using DealEngine.WebUI.Tasks;
 #endregion
 
 namespace DealEngine.WebUI.Controllers
@@ -49,7 +51,7 @@ namespace DealEngine.WebUI.Controllers
         IFileService _fileService;
         IUpdateTypeService _updateTypeServices;
         IMilestoneService _milestoneService;
-
+        //private readonly IScheduler _scheduler;
 
         public HomeController(
             UserManager<IdentityUser> userManager,
@@ -99,7 +101,6 @@ namespace DealEngine.WebUI.Controllers
             _updateTypeServices = updateTypeService;
             _fileService = fileService;
             _milestoneService = milestoneService;
-
         }
 
         // GET: home/index
@@ -1713,10 +1714,27 @@ namespace DealEngine.WebUI.Controllers
             return ListReport;
 
         }
+        ///cronjob test
+        //public async Task<IActionResult> CheckAvailabilty()
+        //{
+        //    ITrigger trigger = TriggerBuilder.Create()
+        //        .WithIdentity($"Check Availability - {DateTime.Now}")
+        //        .StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
+        //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(5))
+        //        .WithPriority(1)
+        //        .Build();
 
+        //    IJobDetail job = JobBuilder.Create<DealEngine.WebUI.Helpers.ReportSchedular>()
+        //        .WithIdentity("Check Availability")
+        //        .Build();
+        //    await _scheduler.ScheduleJob(job, trigger);
+        //    return RedirectToAction("Index");
+        //}
 
         [HttpPost]
-        public async Task<IActionResult> GetReportView(IFormCollection formCollection , string IsReport)
+        //public async Task<IActionResult> GetReportView(IFormCollection formCollection, string IsReport)
+
+        public async Task<IActionResult> GetReportView(Guid ProgrammeId, string IsReport)
         {
 
             User user = null;
@@ -1726,12 +1744,13 @@ namespace DealEngine.WebUI.Controllers
          
                 try
             {
-                Guid ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
+                //Guid ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
                 Programme programme = await _programmeService.GetProgrammeById(ProgrammeId);
+                    //string queryselect = formCollection["queryselect"];
 
-                string queryselect = formCollection["queryselect"];
+                    string queryselect = "PI";
                 ViewBag.reportName = queryselect;
-                ViewBag.ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
+                //ViewBag.ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
                 //PropertyDescriptorCollection props = generatequeryField(queryselect);
 
                 List<PIReport> reportset = new List<PIReport>();

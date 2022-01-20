@@ -20,6 +20,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Quartz;
+using System.Collections.Specialized;
+using Quartz.Impl;
+using Quartz.Spi;
+using DealEngine.WebUI.Helpers;
+using DealEngine.Services.Interfaces;
+using DealEngine.Services.Impl;
+using System.Collections.Generic;
 
 namespace DealEngine.WebUI
 {
@@ -95,6 +103,37 @@ namespace DealEngine.WebUI
                 options.IncludeSubDomains = true;
                 options.Preload = true;
             });
+            //services.AddSingleton(provider => Startup.GetSchedular());
+            //  var serviceCollection = new ServiceCollection();
+            ///working services.AddSingleton<IJobFactory, JobFactory> ();
+            ///workingservices.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+            ///working services.AddSingleton<ReportSchedular>();
+            ///workingservices.AddScoped<IReportBuilderService, ReportBuilderService>();
+            //services.AddSingleton<IReportBuilderService, ReportBuilderService>();
+            //List<JobMetadata> jobMetadatas = new List<JobMetadata>();
+            //var serviceProvider = serviceCollection.BuildServiceProvider();
+            ///working  services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/5 * * * * ?"));
+            //services.AddSingleton(jobMetadatas);
+            ///workingservices.AddHostedService<JobSchedular>();
+            ///            services.AddSingleton<IReportBuilderService, ReportBuilderService>();
+            ///            
+
+            // Register job
+            services.AddTransient<ReportSchedular>();
+            // Register job dependencies
+            services.AddTransient<IReportBuilderService, ReportBuilderService>();
+            var container = services.BuildServiceProvider();
+
+            // Create an instance of the job factory
+            services.AddHostedService<JobSchedular>();
+            services.AddSingleton<IJobFactory, JobFactory>();
+            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+            //services.AddScoped<IReportBuilderService>();
+           // services.AddSingleton<IReportBuilderService, ReportBuilderService>();
+
+            //services.AddSingleton<ReportSchedular>();
+
+            services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/5 * * * * ?"));
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -130,10 +169,31 @@ namespace DealEngine.WebUI
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();                
             });
+
         }
+
+
+        public static  IScheduler GetSchedular()
+        {
+            var properties = new NameValueCollection
+            {
+                // Normal scheduler properties
+                ["quartz.scheduler.instanceName"] = "ReportSchedular",
+                ["quartz.scheduler.type"] = "Quartz.Simpl.SimpleThreadPool, Quartz",
+                ["quartz.scheduler.threadcount"] = "3",
+                ["quartz.jobStore.type"] = "Quartz.Simpl.RamJobStore, Quartz"
+            };
+
+            var sf = new StdSchedulerFactory();
+            var scheduler = sf.GetScheduler().Result;
+            scheduler.Start();
+            return scheduler;
+        }
+
     }
 
 }
+
 
 public sealed class SecurityHeadersMiddleware
 {

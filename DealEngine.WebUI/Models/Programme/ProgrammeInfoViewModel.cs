@@ -123,7 +123,12 @@ namespace DealEngine.WebUI.Models.Programme
         public IList<SelectListItem> Flags { get; set; }
         public string EGlobalBranchCode { get; set; }
         public string EGlobalClientNumber { get; set; }
-
+        //Report Schedular
+        public  bool ReportName { get; set; }
+        public  bool IsOffline { get; set; }
+        public  bool IsOnline { get; set; }
+        public  bool IsOndemand { get; set; }
+        public  DateTime OndemadTime { get; set; }
 
     }
 }

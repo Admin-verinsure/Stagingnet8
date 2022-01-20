@@ -19,6 +19,8 @@ using System.Threading.Tasks;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
 using NReco.PdfGenerator;
+using Quartz;
+//using DealEngine.WebUI.Tasks;
 
 //using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -50,6 +52,7 @@ namespace DealEngine.WebUI.Controllers
         ISerializerationService _serializerationService;
         IUpdateTypeService _updateTypeServices;
         IAppSettingService _appSettingService;
+        private readonly IScheduler _scheduler;
         public ProgrammeController(
             ISerializerationService serializerationService,
             IClaimService claimService,
@@ -74,7 +77,8 @@ namespace DealEngine.WebUI.Controllers
             IHttpClientService httpClientService,
             IEGlobalSubmissionService eGlobalSubmissionService,
                     IUpdateTypeService updateTypeService,
-                    IAppSettingService appSettingService
+                    IAppSettingService appSettingService,
+                    IScheduler factory
             )
             : base(userRepository)
         {
@@ -102,6 +106,7 @@ namespace DealEngine.WebUI.Controllers
             _eGlobalSubmissionService = eGlobalSubmissionService;
             _updateTypeServices = updateTypeService;
             _appSettingService = appSettingService;
+            _scheduler = factory;
         }
 
         [HttpGet]
@@ -1094,6 +1099,45 @@ namespace DealEngine.WebUI.Controllers
                 ViewBag.Title = "Add/Edit Programme Email Template";
 
                 return View("ProgrammeFlags", model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        //public async Task<IActionResult> CheckAvailabilty()
+        //{
+        //    ITrigger trigger = TriggerBuilder.Create()
+        //        .WithIdentity($"Check Availability - {DateTime.Now}")
+        //        .StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(15)))
+        //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).WithRepeatCount(10))
+        //        .WithPriority(1)
+        //        .Build();
+
+        //    IJobDetail job = JobBuilder.Create<CheckAvailabilityTask>()
+        //        .WithIdentity("Check Availability")
+        //        .Build();
+        //    await _scheduler.ScheduleJob(job, trigger);
+        //    return RedirectToAction("Index");
+        //}
+        public async Task<IActionResult> ManageSchedulars(Guid Id)
+        {
+            ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
+            var product = new List<ProductInfoViewModel>();
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                Programme programme = await _programmeService.GetProgrammeById(Id);
+                //model.Id = Id;
+                model.Programme = programme;
+
+                ViewBag.Title = "Edit Report Schedular";
+
+                return View("ManageSchedulars", model);
             }
             catch (Exception ex)
             {
