@@ -1,6 +1,4 @@
 # Runner server requires following for build!
-# dotnet-sdk-3.1
-# dotnet-sdk-2.2
 # useful for first time connection (- ssh -o StrictHostKeyChecking=no ubuntu@"$URLmpak" 'command')
 
 stages:
@@ -60,10 +58,10 @@ deploy_stagingaibgrouponline:
   - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLstagingaibgrouponline"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
   - eval "$(ssh-agent -s)"
   - ssh-add <(echo "$PKgitlab")
-  - ssh ubuntu@"$URLstagingaibgrouponline" './DE-DeployPrep.sh'
+  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLstagingaibgrouponline" './DE-DeployPrep.sh'
   - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/netcoreapp3.1/ ubuntu@$URLstagingaibgrouponline:/home/ubuntu/projects/dealengine
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLstagingaibgrouponline:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLstagingaibgrouponline" './DE-DeployFin.sh'
   environment:
     name: stagingaibgrouponline
@@ -227,10 +225,10 @@ deploy_professionalrisks:
   - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLprorisks"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
   - eval "$(ssh-agent -s)"
   - ssh-add <(echo "$PKgitlab")
-  - ssh ubuntu@"$URLprorisks" './DE-DeployPrep.sh'
+  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLprorisks" './DE-DeployPrep.sh'
   - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/netcoreapp3.1/ ubuntu@$URLprorisks:/home/ubuntu/projects/dealengine
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLprorisks:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLprorisks" './DE-DeployFin.sh'
   environment:
     name: professionalrisks
@@ -264,10 +262,10 @@ deploy_aibgrouponline:
   - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLaibgrouponline"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
   - eval "$(ssh-agent -s)"
   - ssh-add <(echo "$PKgitlab")
-  - ssh ubuntu@"$URLaibgrouponline" './DE-DeployPrep.sh'
+  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLaibgrouponline" './DE-DeployPrep.sh'
   - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/netcoreapp3.1/ ubuntu@$URLaibgrouponline:/home/ubuntu/projects/dealengine
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLaibgrouponline:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLaibgrouponline" './DE-DeployFin.sh'
   environment:
     name: aibgrouponline
