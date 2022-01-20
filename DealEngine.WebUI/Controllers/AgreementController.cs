@@ -60,6 +60,7 @@ namespace DealEngine.WebUI.Controllers
         IClientAgreementTermCanService _clientAgreementTermCanService;
         IClientAgreementBVTermCanService _clientAgreementBVTermCanService;
         ISerializerationService _serializationService;
+        IUpdateTypeService _updateTypeService;
 
         //convert to service?
         IMapperSession<Rule> _ruleRepository;
@@ -100,7 +101,8 @@ namespace DealEngine.WebUI.Controllers
             IAppSettingService appSettingService,
             IEGlobalSubmissionService eGlobalSubmissionService,
             IClientAgreementTermCanService clientAgreementTermCanService,
-            IClientAgreementBVTermCanService clientAgreementBVTermCanService
+            IClientAgreementBVTermCanService clientAgreementBVTermCanService,
+            IUpdateTypeService updateTypeService
             )
             : base(userRepository)
         {
@@ -137,8 +139,9 @@ namespace DealEngine.WebUI.Controllers
             _clientAgreementTermCanService = clientAgreementTermCanService;
             _clientAgreementBVTermCanService = clientAgreementBVTermCanService;
             _serializationService = serializerationService;
+            _updateTypeService = updateTypeService;
 
-            ViewBag.Title = "Wellness and Health Associated Professionals Agreement";
+            ViewBag.Title = "";
         }
 
         [HttpGet]
@@ -2422,6 +2425,81 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ViewAgreementChangeReason(Guid id)
+        {
+            ViewAgreementChangeReasonViewModel model = new ViewAgreementChangeReasonViewModel();
+            User user = null;
+            try
+            {
+                ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
+                ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
+                Organisation insured = answerSheet.Owner;
+                ClientProgramme programme = answerSheet.Programme;
+                user = await CurrentUser();
+
+                model.InformationSheetID = answerSheet.Id;
+                model.ClientAgreementID = agreement.Id;
+                model.ClientProgrammeID = programme.Id;
+
+                if (programme.ChangeReason != null)
+                {
+                    model.EffectiveDate = LocalizeTimeDate(programme.ChangeReason.EffectiveDate, "dd-mm-yyyy");
+                    model.Reason = programme.ChangeReason.Reason;
+                    model.Description = programme.ChangeReason.Description;
+                    model.ChangeType = programme.ChangeReason.ChangeType;
+                    UpdateType updateTypeForChangeReason = await _updateTypeService.GetUpdateTypeByTypeValue(programme.ChangeReason.ChangeType);
+                    if (updateTypeForChangeReason != null)
+                        model.ChangeType = updateTypeForChangeReason.TypeName;
+                }
+
+                ViewBag.Title = answerSheet.Programme.BaseProgramme.Name + " View Agreement Update Reason for " + insured.Name;
+
+                return View("ViewAgreementChangeReason", model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ViewAgreementChangeReason(ViewAgreementChangeReasonViewModel model)
+        {
+            User user = null;
+            try
+            {
+                ClientAgreement agreement = await _clientAgreementService.GetAgreement(model.ClientAgreementID);
+                ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
+                ClientProgramme programme = answerSheet.Programme;
+                user = await CurrentUser();
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+
+                    if (programme.ChangeReason != null)
+                    {
+                        TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById(UserTimeZone);
+                        programme.ChangeReason.EffectiveDate = DateTime.Parse(model.EffectiveDate, CultureInfo.CreateSpecificCulture("en-NZ")).ToUniversalTime();
+                    }
+
+                    string auditLogDetail = "Update reason details have been modified by " + user.FullName;
+                    AuditLog auditLog = new AuditLog(user, answerSheet, agreement, auditLogDetail);
+                    agreement.ClientAgreementAuditLogs.Add(auditLog);
+
+                    await uow.Commit();
+                }
+
+                return Redirect("/Agreement/ViewAcceptedAgreement/" + answerSheet.Programme.Id);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> ViewAgreementRule(Guid id)

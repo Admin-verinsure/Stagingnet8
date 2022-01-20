@@ -185,6 +185,12 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                         <a href="~/Agreement/ResumeGeneratePxPayment/@item.ClientInformationSheet.Id" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Payment Option </a>
                                     </li>
                                 }
+                                @if (@item.IsChange && item.CurrentUser.PrimaryOrganisation.IsTC)
+                                {
+                                    <li class="nav-item">
+                                        <a href="~/Agreement/ViewAgreementChangeReason/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Update Reason </a>
+                                    </li>
+                                }
                             }
                             else if (item.CurrentUser.PrimaryOrganisation.IsInsurer)
                             {
@@ -273,6 +279,13 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                     </li>
                                 }
 
+                                @if (@item.IsChange)
+                                {
+                                    <li class="nav-item">
+                                        <a href="~/Agreement/ViewAgreementChangeReason/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Update Reason </a>
+                                    </li>
+                                }
+
                             }
                             else if (item.CurrentUser.PrimaryOrganisation.IsProgrammeManager)
                             {
@@ -281,7 +294,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                 </li>
                             }
 
-                        
+
 
                             <li class="nav-item" id="SendReport">
                                 <a class="btn btn-success btn-sm fullreport" href="~/Agreement/SendFullProposalReport?id=@item.InformationSheetId&sendUser=@true">

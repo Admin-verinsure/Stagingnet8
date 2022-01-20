@@ -69,6 +69,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int coverperiodindaysforchange = 0;
             bool bolinvalidchangeeffectivedate = false;
             //coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+            int intchangePriodInDaysFromInception = 0;
+            intchangePriodInDaysFromInception = agreement.ClientInformationSheet.Programme.BaseProgramme.ChangePriodInDaysFromInception;
+            int intchangePriodInDaysToExpiry = 0;
+            intchangePriodInDaysToExpiry = agreement.ClientInformationSheet.Programme.BaseProgramme.ChangePriodInDaysToExpiry * -1;
             if (agreement.ClientInformationSheet.IsChange)
             {
                 if (agreement.ClientInformationSheet.Programme.ChangeReason != null)
@@ -76,7 +80,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate > DateTime.MinValue)
                     {
                         coverperiodindaysforchange = (agreement.ExpiryDate - agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate).Days;
-                        if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate < agreement.InceptionDate)
+                        if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate < agreement.InceptionDate.AddDays(intchangePriodInDaysFromInception) ||
+                            agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate > agreement.InceptionDate.AddDays(intchangePriodInDaysToExpiry))
                         {
                             bolinvalidchangeeffectivedate = true;
                         }
@@ -892,7 +897,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
-        void uwrfchangeeffectivedate(User underwritingUser, ClientAgreement agreement, bool bolrunoffcoverrequired)
+        void uwrfchangeeffectivedate(User underwritingUser, ClientAgreement agreement, bool bolinvalidchangeeffectivedate)
         {
             if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedate" && cref.DateDeleted == null) == null)
             {
@@ -908,7 +913,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedate" && cref.DateDeleted == null).Status != "Pending")
                 {
-                    if (bolrunoffcoverrequired) //Change effective date entered prior the inception date referral
+                    if (bolinvalidchangeeffectivedate) //Change effective date
                     {
                         agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedate" && cref.DateDeleted == null).Status = "Pending";
                     }
