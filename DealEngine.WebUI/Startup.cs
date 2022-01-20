@@ -119,9 +119,9 @@ namespace DealEngine.WebUI
             ///            
 
             // Register job
-            services.AddTransient<ReportSchedular>();
+           // services.AddTransient<ReportSchedular>();
             // Register job dependencies
-            services.AddTransient<IReportBuilderService, ReportBuilderService>();
+           // services.AddTransient<IReportBuilderService, ReportBuilderService>();
             var container = services.BuildServiceProvider();
 
             // Create an instance of the job factory
@@ -129,9 +129,10 @@ namespace DealEngine.WebUI
             services.AddSingleton<IJobFactory, JobFactory>();
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
             //services.AddScoped<IReportBuilderService>();
-           // services.AddSingleton<IReportBuilderService, ReportBuilderService>();
+            services.AddSingleton<IReportBuilderService, ReportBuilderService>();
 
-            //services.AddSingleton<ReportSchedular>();
+            services.AddSingleton<ReportSchedular>();
+
 
             services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/5 * * * * ?"));
         }
