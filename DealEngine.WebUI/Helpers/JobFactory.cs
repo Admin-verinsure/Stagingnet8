@@ -32,32 +32,53 @@ namespace DealEngine.WebUI.Helpers
     //    {
     //    }
     //}
-    public class JobFactory: IJobFactory
-    {
+    //public class JobFactory: IJobFactory
+    //{
 
-        private readonly IServiceProvider service;
-        //private readonly IReportBuilderService _ReportBuilderService;
+    //    private readonly IServiceProvider service;
+    //    //private readonly IReportBuilderService _ReportBuilderService;
 
-        public JobFactory(IServiceProvider serviceprovider)
+    //    public JobFactory(IServiceProvider serviceprovider)
+    //{
+    //    service = serviceprovider;
+    //}
+
+    //public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
+    //{
+
+    //    IJobDetail jobDetail = bundle.JobDetail;
+    //        // Type jobType = jobDetail.JobType;
+    //        // return service.GetRequiredService<QuartzJobRunner>();
+
+    //        return (IJob)service.GetService(jobDetail.JobType);
+    //    //return service.GetService(jobType) as IJob;
+    //    //return service.GetService(ReportSchedular) as IJob;
+    //}
+
+    //public void ReturnJob(IJob job)
+    //{
+    //    throw new NotImplementedException();
+    //}
+
+
+    public class JobFactory : IJobFactory
     {
-        service = serviceprovider;
+        protected readonly IServiceProvider Container;
+
+        public JobFactory(IServiceProvider container)
+        {
+            Container = container;
+        }
+
+        public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
+        {
+            return Container.GetService(bundle.JobDetail.JobType) as IJob;
+        }
+
+        public void ReturnJob(IJob job)
+        {
+            // i couldn't find a way to release services with your preferred DI, 
+            // its up to you to google such things
+        }
     }
-
-    public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
-    {
-
-        IJobDetail jobDetail = bundle.JobDetail;
-            // Type jobType = jobDetail.JobType;
-            // return service.GetRequiredService<QuartzJobRunner>();
-
-            return (IJob)service.GetService(jobDetail.JobType);
-        //return service.GetService(jobType) as IJob;
-        //return service.GetService(ReportSchedular) as IJob;
-    }
-
-    public void ReturnJob(IJob job)
-    {
-        throw new NotImplementedException();
-    }
-}
 }

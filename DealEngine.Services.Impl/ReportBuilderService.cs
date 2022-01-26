@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace DealEngine.Services.Impl
 {
-    public class ReportBuilderService : IReportBuilderService
+    public class ReportBuilderService :IReportBuilderService
     {
         IProgrammeService _programmeService;
         IUserService _userService;
@@ -26,12 +26,11 @@ namespace DealEngine.Services.Impl
         {
 
             Debug.WriteLine("in report view Available");
-            User user = null;
+
             List<PIReport> reportset = new List<PIReport>();
             DataTable table = new DataTable();
             List<List<string>> Lreportset = new List<List<string>>();
-            if (user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer)
-            {
+            
                
                 try
                 {
@@ -154,11 +153,7 @@ namespace DealEngine.Services.Impl
                     //return RedirectToAction("Error500", "Error");
                 }
 
-            }
-            else
-            {
-                //return RedirectToAction("Error404", "Error");
-            }
+            
 
             return Lreportset;
 

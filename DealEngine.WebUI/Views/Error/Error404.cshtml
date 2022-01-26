@@ -3,14 +3,15 @@
     {
         ViewBag.PageId = "extr-page";
         ViewBag.PageClass = "animated fadeInDown";
+
     }
 }
 
 @section topright{
     @*@if (!Request.IsAuthenticated && Html.DemoEnvironment())
-    {
-        <span id="extr-page-header-space"> <span class="hidden-mobile">Need an account?</span> <a href="~/Account/Register" class="btn btn-danger">Create account</a> </span>
-    }*@
+        {
+            <span id="extr-page-header-space"> <span class="hidden-mobile">Need an account?</span> <a href="~/Account/Register" class="btn btn-danger">Create account</a> </span>
+        }*@
 }
 
 <!-- MAIN CONTENT -->
@@ -40,13 +41,13 @@
                                     </li>
                                     <li>
                                         .
-                                    </li>   
+                                    </li>
                                     <li>
                                         &nbsp;<a href="~/Home/Index">Dashbaord</a>&nbsp;
-                                    </li>                                    
+                                    </li>
                                     <li>
                                         .
-                                    </li>                                   
+                                    </li>
                                     <li>
                                         &nbsp;<a href="javascript:void(0);">My Profile</a>&nbsp;
                                     </li>
@@ -539,3 +540,24 @@
         }
     }
 </style>
+
+
+
+@section pagespecific {
+  
+    <script>
+
+        $(window).on("load", function () {
+            document.getElementById("header").innerHTML = "";
+
+        });
+
+        $('.Startdate').datepicker({
+            dateFormat: "dd/mm/yy"
+        });
+
+    </script>
+
+}
+
+

@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="NReco.PdfGenerator.LT" Version="1.1.17" />
     <PackageReference Include="Quartz" Version="3.3.3" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
     <PackageReference Include="Quartz.NetCore.DependencyInjection" Version="5.0.0" />
     <PackageReference Include="ServiceStack.Client" Version="5.7.0" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.0.20" />

@@ -30,10 +30,10 @@ using Microsoft.Extensions.DependencyInjection;
 namespace DealEngine.WebUI.Helpers
 {
 
-    public class ReportSchedular : IJob
+    public class ReportSchedular : BaseController, IJob
     {
 
-        //IUserService _userService;
+        IUserService _userService;
         ////private readonly IServiceProvider _provider;
         //public ReportSchedular(IReportBuilderService ReportBuilderService)
         //{
@@ -84,22 +84,43 @@ namespace DealEngine.WebUI.Helpers
         private readonly IReportBuilderService _ReportBuilderService;
 
         private readonly ILogger<ReportSchedular> _logger;
-        //private readonly  IProgrammeService _programmeService;
+        private readonly  IProgrammeService _programmeService;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         Guid progid = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
-        public ReportSchedular(IReportBuilderService reportBuilderService)
-        {
-            _ReportBuilderService = reportBuilderService;
-        }
-        //public ReportSchedular(ILogger<ReportSchedular> logger)
+        //public ReportSchedular(IReportBuilderService reportBuilderService)
         //{
-        //    this._logger = logger;
+        //    _ReportBuilderService = reportBuilderService;
         //}
-            public async Task Execute(IJobExecutionContext context)
+        public ReportSchedular(ILogger<ReportSchedular> logger, IReportBuilderService ReportBuilderService, IUserService userRepository,
+            IServiceScopeFactory serviceScopeFactory) : base(userRepository)
+        {
+            this._logger = logger;
+            //_programmeService = programmeService;
+            _ReportBuilderService = ReportBuilderService;
+            _userService = userRepository;
+
+            _serviceScopeFactory = serviceScopeFactory;
+        }
+        public async Task Execute(IJobExecutionContext context)
         {
             Debug.WriteLine("reports Available #############");
+            //String user = _httpContextAccessor.HttpContext.User.Identity.Name;
             // _logger.LogInformation($"Notification Job: Notify User at {DateTime.Now} and Jobtype: {context.JobDetail.JobType}");
-           // await _ReportBuilderService.GetReportView(progid, "false");
+            // await _ReportBuilderService.GetReportView(progid, "false");
+            List<List<string>> Lreportset = new List<List<string>>();
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var myScopedService = scope.ServiceProvider.GetService<IReportBuilderService>();
+                Lreportset = await myScopedService.GetReportView(progid, "false");
+
+            }
             await Task.CompletedTask;
+        }
+
+        public async Task<User> getuser()
+        {
+            User user = await CurrentUser();
+            return user;
         }
 
         //public async Task Execute(IJobExecutionContext context)

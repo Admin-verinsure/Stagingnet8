@@ -127,14 +127,29 @@ namespace DealEngine.WebUI
             // Create an instance of the job factory
             services.AddHostedService<JobSchedular>();
             services.AddSingleton<IJobFactory, JobFactory>();
-            services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
+            //services.AddSingleton<ISchedulerFactory, ISchedulerFactory>();
             //services.AddScoped<IReportBuilderService>();
-            services.AddSingleton<IReportBuilderService, ReportBuilderService>();
+            //services.AddSingleton<IReportBuilderService, ReportBuilderService>();
 
-            services.AddSingleton<ReportSchedular>();
+            //services.AddSingleton<ReportSchedular>();
 
-
-            services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/5 * * * * ?"));
+            services.AddTransient<ReportSchedular>();
+            services.AddScoped<IReportBuilderService, ReportBuilderService>();
+            //services.AddScoped<IUserService, UserService>();
+           // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            var jobKey = new JobKey("ReportSchedular");
+            services.AddQuartz(q =>
+            {
+                q.UseMicrosoftDependencyInjectionScopedJobFactory();
+                
+            });
+            services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));
+            services.AddHttpContextAccessor();
+            services.AddQuartzHostedService();
+            //services.AddQuartzServer(options =>
+            //{
+            //    options.WaitForJobsToComplete = true;
+            //});
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -153,7 +168,15 @@ namespace DealEngine.WebUI
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
-
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = "/Account/Login";
+                    await next();
+                }
+            });
             app.UseRequestLocalization();
             app.UseElmah();
             app.UseHttpsRedirection();

@@ -423,6 +423,7 @@
     <PackageReference Include="NReco.PdfGenerator.LT" Version="1.1.17" />
     <PackageReference Include="PagedList.Mvc" Version="4.5.0" />
     <PackageReference Include="Quartz" Version="3.3.3" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
     <PackageReference Include="ReflectionIT.Mvc.Paging" Version="4.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
     <PackageReference Include="System.Linq.Dynamic" Version="1.0.7" />
