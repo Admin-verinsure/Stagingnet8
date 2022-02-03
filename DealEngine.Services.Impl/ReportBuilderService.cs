@@ -36,7 +36,6 @@ namespace DealEngine.Services.Impl
                 {
                     Programme programme = await _programmeService.GetProgrammeById(ProgrammeId);
                     string queryselect = "PI";
-                    
                     if (programme.NamedPartyUnitName == "NZFSG Programme" && queryselect == "FAP")
                     {
                         //ViewBag.Title = "Financial Advice Provider(FAP)";
@@ -64,82 +63,83 @@ namespace DealEngine.Services.Impl
                     }
 
 
-                    try
-                    {
-                        for (int i = 0; i < Lreportset[0].Count; i++)
-                        {
-                            table.Columns.Add(Lreportset[0][i]);
-                        }
+                    //try
 
-                    }
-                    catch (Exception ex)
-                    {
-                        if (table.Columns.Contains("Id"))
-                            table.Columns.Remove("Id");
-                    }
+                    //{
+                    //    for (int i = 0; i < Lreportset[0].Count; i++)
+                    //    {
+                    //        table.Columns.Add(Lreportset[0][i]);
+                    //    }
 
-                    //object[] values = new object[props.Count];
-                    object[] values1 = new object[table.Columns.Count];
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    if (table.Columns.Contains("Id"))
+                    //        table.Columns.Remove("Id");
+                    //}
 
-                    for (int i = 1; i <= Lreportset.Count - 1; i++)
-                    {
-                        try
-                        {
+                    ////object[] values = new object[props.Count];
+                    //object[] values1 = new object[table.Columns.Count];
 
-                            var count = 0;
-                            for (int j = 0; j < Lreportset[i].Count; j++)
-                            {
-                                try
-                                {
-                                    var val = Lreportset[i].ElementAt(j);
+                    //for (int i = 1; i <= Lreportset.Count - 1; i++)
+                    //{
+                    //    try
+                    //    {
 
-                                    if (val != null)
-                                    {
-                                        values1[count] = val;
-                                        count++;
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                }
-                            }
-                            table.Rows.Add(values1);
+                    //        var count = 0;
+                    //        for (int j = 0; j < Lreportset[i].Count; j++)
+                    //        {
+                    //            try
+                    //            {
+                    //                var val = Lreportset[i].ElementAt(j);
 
-                        }
-                        catch (Exception ex)
-                        {
-                        }
-                    }
+                    //                if (val != null)
+                    //                {
+                    //                    values1[count] = val;
+                    //                    count++;
+                    //                }
+                    //            }
+                    //            catch (Exception ex)
+                    //            {
+                    //            }
+                    //        }
+                    //        table.Rows.Add(values1);
+
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //    }
+                    //}
 
 
-                        table.TableName = "MyDt";
-                        try
-                        {
-                            XLWorkbook workbook = new XLWorkbook();
-                            workbook.Worksheets.Add(table, "WorksheetName");
-                            // wb.SaveAs(@"C:\\Users\\Public\\DataImport\\Students1.xlsx");
+                    //    table.TableName = "MyDt";
+                    //    try
+                    //    {
+                    //        XLWorkbook workbook = new XLWorkbook();
+                    //        workbook.Worksheets.Add(table, "WorksheetName");
+                    //        // wb.SaveAs(@"C:\\Users\\Public\\DataImport\\Students1.xlsx");
 
-                            //Defining the ContentType for excel file.
-                            string ContentType = "Application/msexcel";
+                    //        //Defining the ContentType for excel file.
+                    //        string ContentType = "Application/msexcel";
 
-                            //Define the file name.
-                            string fileName = queryselect + "Report.xlsx";
+                    //        //Define the file name.
+                    //        string fileName = queryselect + "Report.xlsx";
 
-                            //Creating stream object.
-                            MemoryStream stream = new MemoryStream();
+                    //        //Creating stream object.
+                    //        MemoryStream stream = new MemoryStream();
 
-                            //Saving the workbook to stream in XLSX format
-                            workbook.SaveAs(stream);
+                    //        //Saving the workbook to stream in XLSX format
+                    //        workbook.SaveAs(stream);
 
-                            stream.Position = 0;
+                    //        stream.Position = 0;
 
-                          //  return File(stream, ContentType, fileName);
+                    //        return File(stream, ContentType, fileName);
 
-                        }
-                        catch (Exception ex)
-                        {
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
 
-                        }
+                    //    }
 
                         //return View(table);
 
@@ -163,10 +163,10 @@ namespace DealEngine.Services.Impl
 
         public async Task<List<List<string>>> GetPremiumLimitReportSet(Guid programmeId, string reportName)
         {
-            Programme programme = await _programmeService.GetProgrammeById(programmeId);
             List<List<string>> ListReportSet = new List<List<string>>();
             List<String> ListReport = new List<String>();
-
+            try { 
+            Programme programme = await _programmeService.GetProgrammeById(programmeId);
             ListReport.Add("Insured");
             ListReport.Add("Is Change");
             ListReport.Add("Reference Id");
@@ -177,12 +177,13 @@ namespace DealEngine.Services.Impl
             ListReport.Add("Excess");
             ListReport.Add("Premium");
             ListReport.Add("Premium Difference");
+            //List<ClientProgramme> lClientProgrammes = programme.ClientProgrammes.ToList();
+                //var clients = programme.ClientProgrammes;
+             List<ClientProgramme> clientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programmeId);
 
+                ListReportSet.Add(ListReport);
 
-
-            ListReportSet.Add(ListReport);
-
-            foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null && o.InformationSheet.Status == "Bound"))
+            foreach (var cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null && o.InformationSheet.Status == "Submitted"))
             {
                 try
                 {
@@ -200,6 +201,10 @@ namespace DealEngine.Services.Impl
                 catch (Exception ex)
                 { }
             }
+            }
+            catch (Exception ex)
+            { }
+
             return ListReportSet;
         }
 

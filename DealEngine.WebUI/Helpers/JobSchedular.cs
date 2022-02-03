@@ -48,11 +48,23 @@ namespace DealEngine.WebUI.Helpers
 
         private ITrigger CreateTrigger(JobMetadata jobMetadata)
         {
+            // ITrigger trigger = TriggerBuilder.Create()
+            //        .WithIdentity($"Check Availability - {DateTime.Now}")
+            //        .StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
+            //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(5))
+            //        .WithPriority(1)
+            //        .Build();
+
+
+
             return TriggerBuilder.Create()
                 .WithIdentity(jobMetadata.JobId.ToString())
-                .WithCronSchedule(jobMetadata.CronExpression)
+                .StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
+                //.WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1))
                 .WithDescription(jobMetadata.JobName)
                 .Build();
+            //.WithCronSchedule(jobMetadata.CronExpression)
+
         }
 
         private IJobDetail CreateJob(JobMetadata jobMetadata)

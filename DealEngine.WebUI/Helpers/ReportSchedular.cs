@@ -34,71 +34,30 @@ namespace DealEngine.WebUI.Helpers
     {
 
         IUserService _userService;
-        ////private readonly IServiceProvider _provider;
-        //public ReportSchedular(IReportBuilderService ReportBuilderService)
-        //{
-        //    _ReportBuilderService = ReportBuilderService;
-        //}
-        //    {
-        //        _ReportBuilderService = reportBuilderService;
-        //    }
-        //public ReportSchedular(IServiceProvider provider)
-        //{
-        //    _provider = provider;
-        //}
-        //public  Task Execute(IJobExecutionContext jobcontext)
-        //{
-        //   // Guid progid = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
-        //   // List<List<string>> Lreportset = new List<List<string>>();
-        //    try
-        //    {
-        //        //using (var scope = _provider.CreateScope())
-        //        //{
-        //        //    var jobType = jobcontext.JobDetail.JobType;
-        //        //    var job = scope.ServiceProvider.GetRequiredService(jobType) as IJob;
+        IEmailService _emailService;
 
-        //        //    var _ReportBuilderService = scope.ServiceProvider.GetService<ReportBuilderService>();
-        //        //    await job.Execute(jobcontext);
-        //        //    // fetch customers, send email, update DB
-        //        //}
-        //        //using (var scope = _ReportBuilderService.CreateScope())
-        //        //{
-        //        //    // Resolve the Scoped service
-        //        //    var service = scope.ServiceProvider.GetService<IScopedService>();
-        //        //    _logger.LogInformation("Hello world!");
-        //        //}
-        //        Debug.WriteLine("reports Available #############");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex);
-        //    }
-
-        //    //await ReportBuilderService.GetReportView(progid, "false");
-        //   return await Task.CompletedTask;
-        //}
-
-
-        //}
+      
 
         private readonly IReportBuilderService _ReportBuilderService;
 
         private readonly ILogger<ReportSchedular> _logger;
         private readonly  IProgrammeService _programmeService;
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        Guid progid = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
+        //Guid progid = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
+         Guid progid = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
+
         //public ReportSchedular(IReportBuilderService reportBuilderService)
         //{
         //    _ReportBuilderService = reportBuilderService;
         //}
-        public ReportSchedular(ILogger<ReportSchedular> logger, IReportBuilderService ReportBuilderService, IUserService userRepository,
-            IServiceScopeFactory serviceScopeFactory) : base(userRepository)
+        public ReportSchedular(ILogger<ReportSchedular> logger, IReportBuilderService ReportBuilderService, IUserService userRepository, IProgrammeService programmeService, IEmailService emailService,
+        IServiceScopeFactory serviceScopeFactory) : base(userRepository)
         {
             this._logger = logger;
-            //_programmeService = programmeService;
+            _programmeService = programmeService;
             _ReportBuilderService = ReportBuilderService;
             _userService = userRepository;
-
+            _emailService = emailService;
             _serviceScopeFactory = serviceScopeFactory;
         }
         public async Task Execute(IJobExecutionContext context)
@@ -108,14 +67,111 @@ namespace DealEngine.WebUI.Helpers
             // _logger.LogInformation($"Notification Job: Notify User at {DateTime.Now} and Jobtype: {context.JobDetail.JobType}");
             // await _ReportBuilderService.GetReportView(progid, "false");
             List<List<string>> Lreportset = new List<List<string>>();
+            DataTable table = new DataTable();
+            
+            Programme programme = await _programmeService.GetProgrammeById(progid);
+
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var myScopedService = scope.ServiceProvider.GetService<IReportBuilderService>();
                 Lreportset = await myScopedService.GetReportView(progid, "false");
 
+
+
             }
+
+            try
+            {
+                for (int i = 0; i < Lreportset[0].Count; i++)
+                {
+                    table.Columns.Add(Lreportset[0][i]);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                if (table.Columns.Contains("Id"))
+                    table.Columns.Remove("Id");
+            }
+
+            //object[] values = new object[props.Count];
+            object[] values1 = new object[table.Columns.Count];
+
+            for (int i = 1; i <= Lreportset.Count - 1; i++)
+            {
+                try
+                {
+
+                    var count = 0;
+                    for (int j = 0; j < Lreportset[i].Count; j++)
+                    {
+                        try
+                        {
+                            var val = Lreportset[i].ElementAt(j);
+
+                            if (val != null)
+                            {
+                                values1[count] = val;
+                                count++;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    }
+                    table.Rows.Add(values1);
+
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+
+
+                table.TableName = "MyDt";
+               
+                    XLWorkbook workbook = new XLWorkbook();
+                    workbook.Worksheets.Add(table, "WorksheetName");
+                    // wb.SaveAs(@"C:\\Users\\Public\\DataImport\\Students1.xlsx");
+
+                    //Defining the ContentType for excel file.
+                    string ContentType = "Application/msexcel";
+
+            //Define the file name.
+            string file = "C:\\Users\\Public\\Report.xlsx";
+           // string fileName = "Report.xlsx";
+
+                    //Creating stream object.
+                    MemoryStream stream = new MemoryStream();
+
+                    //Saving the workbook to stream in XLSX format
+                    workbook.SaveAs(file);
+
+                    stream.Position = 0;
+
+            //EmailTemplate emailTemplate = null;
+            await _emailService.SendReportsViaEmail("Ashu@techcertain.com", file);
+
+            //if (emailTemplate != null)
+            //{
+               
+            //        await _emailService.SendReportsViaEmail("Ashu@techcertain.com", file);
+              
+
+            //}
+            //return File(stream, ContentType, fileName);
+
+            // Domain.Entities.File file = File(stream, ContentType, fileName).;
+
+            // return File(stream, ContentType, fileName);
+
+
+
             await Task.CompletedTask;
+
+
         }
+
 
         public async Task<User> getuser()
         {

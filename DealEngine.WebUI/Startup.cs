@@ -135,8 +135,11 @@ namespace DealEngine.WebUI
 
             services.AddTransient<ReportSchedular>();
             services.AddScoped<IReportBuilderService, ReportBuilderService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped< IProgrammeService, ProgrammeService>();
+
             //services.AddScoped<IUserService, UserService>();
-           // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             var jobKey = new JobKey("ReportSchedular");
             services.AddQuartz(q =>
             {
