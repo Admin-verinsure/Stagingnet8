@@ -199,11 +199,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             {
                                 termSEFextension.Bound = true;
                             }
-                            if (termSEFextension.PremiumDiffer < 0)
-                            {
-                                termSEFextension.PremiumDiffer = 0;
-                            }
-
                         } else
                         {
                             termSEFextension.PremiumDiffer = decSEFPremium * coverperiodindaysforchange / agreementperiodindays;
@@ -300,35 +295,44 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.Where(a => a.DateDeleted == null).
                     FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "CL"));
-                foreach (var term in PreviousAgreement.ClientAgreementTerms)
+                if (PreviousAgreement != null)
                 {
-                    if (term.Bound)
+                    foreach (var term in PreviousAgreement.ClientAgreementTerms)
                     {
-                        var PreviousBoundPremium = term.Premium;
-                        if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
+                        if (term.Bound)
                         {
-                            PreviousBoundPremium = term.BasePremium;
-                        }
-                        termiltermoption250k.PremiumDiffer = (TermPremium250k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
-                        termiltermoption250k.PremiumPre = PreviousBoundPremium;
-                        if (termiltermoption250k.TermLimit == term.TermLimit && termiltermoption250k.Excess == term.Excess)
-                        {
-                            termiltermoption250k.Bound = true;
-                        }
-                        termiltermoption500k.PremiumDiffer = (TermPremium500k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
-                        termiltermoption500k.PremiumPre = PreviousBoundPremium;
-                        if (termiltermoption500k.TermLimit == term.TermLimit && termiltermoption500k.Excess == term.Excess)
-                        {
-                            termiltermoption500k.Bound = true;
-                        }
-                        termiltermoption1mil.PremiumDiffer = (TermPremium1mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
-                        termiltermoption1mil.PremiumPre = PreviousBoundPremium;
-                        if (termiltermoption1mil.TermLimit == term.TermLimit && termiltermoption1mil.Excess == term.Excess)
-                        {
-                            termiltermoption1mil.Bound = true;
+                            var PreviousBoundPremium = term.Premium;
+                            if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
+                            {
+                                PreviousBoundPremium = term.BasePremium;
+                            }
+                            termiltermoption250k.PremiumDiffer = (TermPremium250k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                            termiltermoption250k.PremiumPre = PreviousBoundPremium;
+                            if (termiltermoption250k.TermLimit == term.TermLimit && termiltermoption250k.Excess == term.Excess)
+                            {
+                                termiltermoption250k.Bound = true;
+                            }
+                            termiltermoption500k.PremiumDiffer = (TermPremium500k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                            termiltermoption500k.PremiumPre = PreviousBoundPremium;
+                            if (termiltermoption500k.TermLimit == term.TermLimit && termiltermoption500k.Excess == term.Excess)
+                            {
+                                termiltermoption500k.Bound = true;
+                            }
+                            termiltermoption1mil.PremiumDiffer = (TermPremium1mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                            termiltermoption1mil.PremiumPre = PreviousBoundPremium;
+                            if (termiltermoption1mil.TermLimit == term.TermLimit && termiltermoption1mil.Excess == term.Excess)
+                            {
+                                termiltermoption1mil.Bound = true;
+                            }
                         }
                     }
+                } else
+                {
+                    termiltermoption250k.PremiumDiffer = TermPremium250k;
+                    termiltermoption500k.PremiumDiffer = TermPremium500k;
+                    termiltermoption1mil.PremiumDiffer = TermPremium1mil;
                 }
+                
             }
 
             //Referral points per agreement
