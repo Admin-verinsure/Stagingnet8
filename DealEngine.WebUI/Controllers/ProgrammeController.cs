@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
 using NReco.PdfGenerator;
-using Quartz;
+//using Quartz;
 //using DealEngine.WebUI.Tasks;
 
 //using DocumentFormat.OpenXml.Wordprocessing;
@@ -52,7 +52,6 @@ namespace DealEngine.WebUI.Controllers
         ISerializerationService _serializerationService;
         IUpdateTypeService _updateTypeServices;
         IAppSettingService _appSettingService;
-        private readonly IScheduler _scheduler;
         public ProgrammeController(
             ISerializerationService serializerationService,
             IClaimService claimService,
@@ -77,8 +76,7 @@ namespace DealEngine.WebUI.Controllers
             IHttpClientService httpClientService,
             IEGlobalSubmissionService eGlobalSubmissionService,
                     IUpdateTypeService updateTypeService,
-                    IAppSettingService appSettingService,
-                    IScheduler factory
+                    IAppSettingService appSettingService
             )
             : base(userRepository)
         {
@@ -106,7 +104,6 @@ namespace DealEngine.WebUI.Controllers
             _eGlobalSubmissionService = eGlobalSubmissionService;
             _updateTypeServices = updateTypeService;
             _appSettingService = appSettingService;
-            _scheduler = factory;
         }
 
         [HttpGet]
