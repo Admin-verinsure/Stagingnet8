@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
   <PropertyGroup>
-	  <LangVersion>preview</LangVersion>
+    <LangVersion>preview</LangVersion>
     <TargetFramework>net5.0</TargetFramework>
     <FileUpgradeFlags>40</FileUpgradeFlags>
     <UpgradeBackupLocation>C:\inetpub\wwwroot\DealEngine2019core\Backup\DealEngine.Infrastructure.AuthorizationRSA\</UpgradeBackupLocation>
@@ -8,15 +8,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
-<<<<<<< .mine
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.12" />
-=======
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
->>>>>>> .theirs
     <PackageReference Include="NLog" Version="4.6.8" />
-    <PackageReference Include="Quartz" Version="3.3.3" />
-    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
-    <PackageReference Include="Unity" Version="5.11.10" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
   </ItemGroup>
   <ItemGroup>
