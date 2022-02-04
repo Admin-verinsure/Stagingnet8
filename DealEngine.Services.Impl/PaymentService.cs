@@ -51,7 +51,7 @@ namespace DealEngine.Services.Impl
 
         public async Task<Payment> GetPayment(Guid clientProgrammeID)
         {
-            return await _paymentRepository.FindAll().FirstOrDefaultAsync(p => p.PaymentClientProgramme.Id == clientProgrammeID);
+            return await _paymentRepository.FindAll().FirstOrDefaultAsync(p => p.PaymentClientProgramme.Id == clientProgrammeID && p.DateDeleted == null);
         }
 
     }

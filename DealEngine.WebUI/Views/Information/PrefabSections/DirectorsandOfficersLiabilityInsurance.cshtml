@@ -9,7 +9,7 @@
                     </label>
                 </div>
                 <div class="col-6">
-                    <select id="HasDAOLI" name="DAOLIViewModel.HasDAOLIOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="HasDAOLI" name="DAOLIViewModel.HasDAOLIOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasDAOLIOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -28,7 +28,7 @@
                         </label>
                     </div>
                     <div class="col-6">
-                        <select id="hasdebts" name="DAOLIViewModel.HasDebtsOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="hasdebts" name="DAOLIViewModel.HasDebtsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.DAOLIViewModel.HasDebtsOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -45,7 +45,7 @@
                         </label>
                     </div>
                     <div class="col-6">
-                        <select id="hasexistingpolicy" name="DAOLIViewModel.HasExistingPolicyOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                        <select id="hasexistingpolicy" name="DAOLIViewModel.HasExistingPolicyOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                             @foreach (var option in Model.DAOLIViewModel.HasExistingPolicyOptions)
                             {
                                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>

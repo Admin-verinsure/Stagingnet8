@@ -5,6 +5,7 @@
             var questionmodal = document.getElementById('questionmodal').innerHTML;
 
             $('#smartwizardprogramme').smartWizard({
+                //debugger;
                 selected: 0,  // Initial selected step, 0 = first step
                 keyNavigation: true, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
                 autoAdjustHeight: true, // Automatically adjust content height
@@ -69,8 +70,10 @@
             });
 
             $("#smartwizardprogramme").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+                debugger;
                 if (stepDirection == "forward") {
                     if (stepNumber == 0) {
+                        debugger;
                         var form = document.getElementById('programmeform');
                         form.classList.add('was-validated');
                         if (form.checkValidity() === false) {
@@ -81,6 +84,7 @@
                         }
                     }
                     else if (stepNumber == 1) {
+                        debugger;
                         var form = document.getElementById('productform');
                         form.classList.add('was-validated');
                         if (form.checkValidity() === false) {
@@ -91,6 +95,7 @@
                         }
                     }
                     else if (stepNumber == 2) {
+                        debugger;
                         var form = document.getElementById('templateform');
                         form.classList.add('was-validated');
                         form.submit();
@@ -163,7 +168,7 @@
                 }
                 select.id = 'triggeranswer';
                 select.name = 'triggeranswer';
-                select.classList.add("custom-select");
+                select.classList.add("form-select");
                 return select;
             }
             else {
@@ -181,7 +186,7 @@
                 select.options.add(option);
                 select.id = 'triggeranswer';
                 select.name = 'triggeranswer';
-                select.classList.add("custom-select");
+                select.classList.add("form-select");
                 return select;
             }
             return
@@ -251,7 +256,7 @@
             }
             else {
                 obj = document.createElement("select");
-                obj.setAttribute("class", "custom-select");
+                obj.setAttribute("class", "form-select");
                 var opt = document.createElement('option');
                 // create text node to add to option element (opt)
                 opt.appendChild(document.createTextNode(questiontext));
@@ -278,7 +283,7 @@
             cell2.innerHTML = 'delete button';
 
             if (hasConditional === true) {
-                cell3.innerHTML = '<a class="btn btn-sm btn-primary text-light" data-toggle="modal" data-target="#conditionalquestionmodal' + itemId + '"> need to change this to edit!</a>';
+                cell3.innerHTML = '<a class="btn btn-sm btn-primary text-light" data-bs-toggle="modal" data-bs-target="#conditionalquestionmodal' + itemId + '"> need to change this to edit!</a>';
             }
         }
 

@@ -54,6 +54,8 @@ namespace DealEngine.Domain.Entities
         public virtual string BoatIsTrailered { get; set; }
         public virtual IList<Vehicle> BoatTrailers { get; set;}
         public virtual Organisation BoatOperator { get; set; }
+        public virtual IList<Organisation> BoatOperators { get; set; }
+
         public virtual IList<BoatUse> BoatUses { get; set; }
         public virtual decimal BoatQuickQuotePremium { get; set; }
         public virtual int BoatQuoteExcessOption { get; set; }

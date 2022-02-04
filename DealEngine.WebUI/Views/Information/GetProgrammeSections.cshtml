@@ -9,74 +9,77 @@
 
                     <div  class="col-xs-12 col-sm-7 col-md-7 col-lg-9">
                         <div id="accordion">
-                            <!-- NEW WIDGET START -->
-                            <!-- Widget ID (each widget will need unique ID)-->
-                            <div id="wid-id-2" class="padding-10 jarviswidget jarviswidget-color-blue jarviswidget-sortable">
+                            <div class="accordion-item">
+                                <!-- NEW WIDGET START -->
+                                <!-- Widget ID (each widget will need unique ID)-->
+                                <div id="wid-id-2" class="padding-10 jarviswidget jarviswidget-color-blue jarviswidget-sortable">
 
-                                <!-- widget div-->
-                                <div>
+                                    <!-- widget div-->
+                                    <div>
 
-                                    <h3>
-                                        <Strong>Details</Strong>
-                                        -Complete Information
+                                        <h3>
+                                            <Strong>Details</Strong>
+                                            -Complete Information
 
-                                    </h3>
+                                        </h3>
 
-                                    @*<div id="later" class="hidden">
-            @foreach (var Section in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position > 5))
-            {
-                <h4 style="background-color:#00A8C8; color:white" id="@Section.Name">@Section.Name</h4>
-                if (!string.IsNullOrWhiteSpace(Section.CustomView))
-                {
-                    @Html.Partial("PrefabSections/" + Section.CustomView, Model)
+                                        @*<div id="later" class="hidden">
+                        @foreach (var Section in Model.Sections.OrderBy(s => s.Position).Where(s => s.Position > 5))
+                        {
+                            <h4 style="background-color:#00A8C8; color:white" id="@Section.Name">@Section.Name</h4>
+                            if (!string.IsNullOrWhiteSpace(Section.CustomView))
+                            {
+                                @Html.Partial("PrefabSections/" + Section.CustomView, Model)
 
-                }
-            }
-        </div>*@
-                                    
-                                    @foreach (var item in Model.informationitem)
-                                    {
+                            }
+                        }
+                    </div>*@
 
-                                        <h4 style="background-color:#00A8C8; color:white" id="@item.Name" onclick="CreateSection('@item.Id');">@item.Name</h4>
+                                        @foreach (var item in Model.informationitem)
+                                        {
 
-                                        @*<button class="btn btn-primary text-align-left" style="background-color:#00A8C8; color:white ;height:35px;width:800px;" onclick="CreateSection('@item.Id');">@item.Name</button>*@
-                                        <div id="proposalcreate-form" class="smart-form" novalidate="novalidate">
+                                            <h4 style="background-color:#00A8C8; color:white" id="@item.Name" onclick="CreateSection('@item.Id');">@item.Name</h4>
 
-                                            <fieldset id="fieldset">
-                                                <form data-toggle="validator" role="form" id="boatForm" class="needs-validation">
-                                                    <input id="BoatId" class="b" name="BoatId" type="hidden">
-                                                    <input id="openModal" class="b" name="openModal" type="hidden">
-                                                    <!-- 1st group -->
+                                            @*<button class="btn btn-primary text-align-left" style="background-color:#00A8C8; color:white ;height:35px;width:800px;" onclick="CreateSection('@item.Id');">@item.Name</button>*@
+                                            <div id="proposalcreate-form" class="smart-form" novalidate="novalidate">
+
+                                                <fieldset id="fieldset">
+                                                    <form data-bs-toggle="validator" role="form" id="boatForm" class="needs-validation">
+                                                        <input id="BoatId" class="b" name="BoatId" type="hidden">
+                                                        <input id="openModal" class="b" name="openModal" type="hidden">
+                                                        <!-- 1st group -->
 
 
-                                                    <div class="row ">
+                                                        <div class="row ">
 
-                                                        @*<section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">*@
+                                                            @*<section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">*@
                                                             <div id="@item.Id">
 
                                                             </div>
 
-                                                        @*</section>*@
+                                                            @*</section>*@
 
-                                                    </div>
+                                                        </div>
 
-                                                </form>
-
-
-                                            </fieldset>
-
-                                        </div>
+                                                    </form>
 
 
+                                                </fieldset>
 
-                                    }
+                                            </div>
 
 
+
+                                        }
+
+
+
+                                    </div>
 
                                 </div>
 
-                            </div>
 
+                            </div>
                         </div>
                     </div>
                 </div>

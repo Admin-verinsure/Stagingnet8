@@ -561,6 +561,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Custom Endorsement renew
             uwrfcustomendorsementrenew(underwritingUser, agreement, bolcustomendorsementrenew);
 
+            if (informationSheet.IsChange) //change agreement referrals
+            {
+
+            }
+
             //Update agreement Status
             if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
             {

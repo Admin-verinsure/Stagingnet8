@@ -9,7 +9,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hascontractingservices" name="PIViewModel.ContractingServicesOptions" multiple data-rule="ContractingService" data-item='PIViewModel.ContractingServicesOptions' class="chosen-select custom-select b" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hascontractingservices" name="PIViewModel.ContractingServicesOptions" multiple data-rule="ContractingService" data-item='PIViewModel.ContractingServicesOptions' class="chosen-select b form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.ContractingServicesOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -44,7 +44,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasstardardterms" name="PIViewModel.HasStandardTermsOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasstardardterms" name="PIViewModel.HasStandardTermsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasStandardTermsOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -61,7 +61,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasnegotiate" name="PIViewModel.HasNegotiateOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasnegotiate" name="PIViewModel.HasNegotiateOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasNegotiateOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -78,7 +78,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasnoagreementoptions" name="PIViewModel.HasNoAgreementOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasnoagreementoptions" name="PIViewModel.HasNoAgreementOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasNoAgreementOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -100,7 +100,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasownPI" name="PIViewModel.HasOwnPIOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasownPI" name="PIViewModel.HasOwnPIOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasOwnPIOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -117,7 +117,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasboundcontract" name="PIViewModel.HasBoundContractOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasboundcontract" name="PIViewModel.HasBoundContractOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasBoundContractOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -134,7 +134,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasrecorded" name="PIViewModel.HasRecordedOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasrecorded" name="PIViewModel.HasRecordedOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasRecordedOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -151,7 +151,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasdairyrecord" name="PIViewModel.HasDiaryRecordOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasdairyrecord" name="PIViewModel.HasDiaryRecordOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasDiaryRecordOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -192,7 +192,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hascomplaint" name="PIViewModel.HasComplaintOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hascomplaint" name="PIViewModel.HasComplaintOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasComplaintOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -209,7 +209,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasengage" name="PIViewModel.HasEngageOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasengage" name="PIViewModel.HasEngageOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasEngageOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -240,7 +240,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasdisciplinary" name="PIViewModel.HasDisciplinaryOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasdisciplinary" name="PIViewModel.HasDisciplinaryOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasDisciplinaryOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -271,7 +271,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasclaimsagainst" name="PIViewModel.HasClaimsAgainstOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasclaimsagainst" name="PIViewModel.HasClaimsAgainstOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasClaimsAgainstOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -302,7 +302,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasresponsible" name="PIViewModel.HasResponsibleOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasresponsible" name="PIViewModel.HasResponsibleOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasResponsibleOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -333,7 +333,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasclaimsagainst2" name="PIViewModel.HasClaimsAgainstOptions2" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasclaimsagainst2" name="PIViewModel.HasClaimsAgainstOptions2" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasClaimsAgainstOptions2)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -365,7 +365,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasrefund" name="PIViewModel.HasRefundOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasrefund" name="PIViewModel.HasRefundOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasRefundOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -396,7 +396,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hassued" name="PIViewModel.HasSuedOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hassued" name="PIViewModel.HasSuedOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasSuedOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -427,7 +427,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasdispute" name="PIViewModel.HasDisputeOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasdispute" name="PIViewModel.HasDisputeOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasDisputeOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -458,7 +458,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="haspenalty" name="PIViewModel.HasPenaltyOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="haspenalty" name="PIViewModel.HasPenaltyOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasPenaltyOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -487,7 +487,7 @@
                     <label for="hasengineer" class="label required">Do you or have you acted in the capacity of an Engineer to the Contract?</label>
                 </div>
                 <div class="col-3">
-                    <select id="hasengineer" name="PIViewModel.HasEngineerOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                    <select id="hasengineer" name="PIViewModel.HasEngineerOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                         @foreach (var option in Model.PIViewModel.HasEngineerOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -516,7 +516,7 @@
                     <label for="hasincludeddesign" class="label required">Do you engage in any Component Specification activities and or design (not including design management activities)?</label>
                 </div>
                 <div class="col-3">
-                    <select id="hasincludeddesign" name="PIViewModel.HasIncludedDesignOptions" class="custom-select" onchange="OnChange(this.id, this.name)">
+                    <select id="hasincludeddesign" name="PIViewModel.HasIncludedDesignOptions" class="form-select" onchange="OnChange(this.id, this.name)">
                         @foreach (var option in Model.PIViewModel.HasIncludedDesignOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -545,7 +545,7 @@
                     <label for="hasmanagedprojects" class="label required">Have you managed any projects in the past three years?</label>
                 </div>
                 <div class="col-3">
-                    <select id="hasmanagedprojects" name="PIViewModel.HasManagedProjectOptions" data-rule="ReverseValidateOnSubmit" data-item='PIViewModel.HasManagedProjectOptions,tblProject' class="custom-select" onchange="OnChange(this.id, this.name)">
+                    <select id="hasmanagedprojects" name="PIViewModel.HasManagedProjectOptions" data-rule="ReverseValidateOnSubmit" data-item='PIViewModel.HasManagedProjectOptions,tblProject' class="form-select" onchange="OnChange(this.id, this.name)">
                         @foreach (var option in Model.PIViewModel.HasManagedProjectOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>

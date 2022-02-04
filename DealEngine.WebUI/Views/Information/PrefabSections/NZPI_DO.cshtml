@@ -11,7 +11,7 @@
                     </label>
                 </div>
                 <div class="col-3" hidden>
-                    <select id="HasDAOLI" name="DAOLIViewModel.HasDAOLIOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="HasDAOLI" name="DAOLIViewModel.HasDAOLIOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         <option value="2">No</option>
                     </select>
                 </div>
@@ -28,7 +28,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="HasDAOLI" name="DAOLIViewModel.HasDAOLIOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="HasDAOLI" name="DAOLIViewModel.HasDAOLIOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasDAOLIOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -114,7 +114,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasclaim" name="DAOLIViewModel.HasClaimOptions" class="custom-select" data-rule="DNOOptional" data-item="hasclaim,hascircumstance" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasclaim" name="DAOLIViewModel.HasClaimOptions" class="form-select" data-rule="DNOOptional" data-item="hasclaim,hascircumstance" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasClaimOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -131,7 +131,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hascircumstance" name="DAOLIViewModel.HasCircumstanceOptions" class="custom-select" data-rule="CyberOptional" data-item="hasclaim,hascircumstance" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hascircumstance" name="DAOLIViewModel.HasCircumstanceOptions" class="form-select" data-rule="CyberOptional" data-item="hasclaim,hascircumstance" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasCircumstanceOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -162,7 +162,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasinvestigation" name="DAOLIViewModel.HasInvestigationOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasinvestigation" name="DAOLIViewModel.HasInvestigationOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasInvestigationOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -193,7 +193,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasdeclined" name="DAOLIViewModel.HasDeclinedOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasdeclined" name="DAOLIViewModel.HasDeclinedOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasDeclinedOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -224,7 +224,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasreceivership" name="DAOLIViewModel.HasReceivershipOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasreceivership" name="DAOLIViewModel.HasReceivershipOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasReceivershipOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -255,7 +255,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hascriminal" name="DAOLIViewModel.HasCriminalOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hascriminal" name="DAOLIViewModel.HasCriminalOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasCriminalOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -286,7 +286,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasprocecution" name="DAOLIViewModel.HasProcecutionOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasprocecution" name="DAOLIViewModel.HasProcecutionOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasProcecutionOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -317,7 +317,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasobligation" name="DAOLIViewModel.HasObligationOptions" class="custom-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasobligation" name="DAOLIViewModel.HasObligationOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.DAOLIViewModel.HasObligationOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>

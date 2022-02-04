@@ -1,22 +1,23 @@
 @model DealEngine.WebUI.Models.InformationViewModel
 
+
 <div id="content" style="background-color: #A6E2EF">
     <!-- widget grid -->
     <section id="widget-grid" class="">
         <!-- row -->
         <div class="row">
-            <!-- NEW WIDGET START -->
+            <!-- NEW WIDGET START Info -->
             <article class="container">
                 <!-- Widget ID (each widget will need unique ID)-->
                 <div id="container" class="container-fluid">
                     <div aria-live="polite" aria-atomic="true">
-                        <div class="toast" id="toast" style="position: fixed; top: 0; right: 0;" data-delay="3000">
+                        <div class="toast" id="toast" style="position: fixed; top: 10%; right: 0; z-index: 100;" data-delay="3000">
                             <div class="toast-header">
                                 <i class="fa fa-globe">
                                     <strong class="mr-auto"> Success </strong>
                                     <small class="text-muted"> just now </small>
-                                    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
+                                    <button type="button" class="ml-2 mb-1 btn-close" data-bs-dismiss="toast" aria-label="Close">
+                                        @*<span aria-hidden="true">&times;</span>*@
                                     </button>
                                 </i>
                             </div>
@@ -66,11 +67,14 @@
                                         <div id="tab_1" class="tab-pane step-content" style="display: block;">
                                             <h3>
                                                 <strong> @Model.Wizardsteps.ElementAt(0) </strong> - Complete Information
-                                                <button type="button" class="btn btn-sm pull-right text-white" data-toggle="modal" data-target="#advisoryModal" style="background-color: #00A8C8">
-                                                    <i class="bi bi-node-plus"></i>Advisory
+                                                @*<button type="button" class="btn btn-sm pull-right text-white" data-toggle="modal" data-target="#advisoryModal" style="background-color: #00A8C8">
+                                                        <i class="bi bi-node-plus"></i>Advisory
+                                                    </button>*@
+                                                <button type="button" class="btn btn-sm pull-right text-white" data-bs-toggle="modal" data-bs-target="#advisoryModal" data-bs-whatever="mdo" style="background-color: #00A8C8">
+                                                    Advisory
                                                 </button>
                                             </h3>
-                                            <div id="form-step-0" role="form" data-toggle="validator">
+                                            <div id="form-step-0" role="form" data-bs-toggle="validator">
                                                 <div class="form-group">
                                                     <div class="row">
                                                         @{ await Html.RenderPartialAsync("_ViewInformation"); }
@@ -131,12 +135,12 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Marina Location</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="ModalMarinaLocSelected()" class="form-control b" id="WaterLocationMarinaLocationModal" name="WaterLocationMarinaLocation" required>
+                                                                                    <select style="" onchange="ModalMarinaLocSelected()" class="form-select b" id="WaterLocationMarinaLocationModal" name="WaterLocationMarinaLocation" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         @*@foreach (var bwloc in Model.MarinaLocations)
-                                                                        {
-                                                                            <option value="@bwloc.ID">@string.Join(", ", bwloc.Organisation.Name)</option>
-                                                                        }*@
+                                                                                            {
+                                                                                                <option value="@bwloc.ID">@string.Join(", ", bwloc.Organisation.Name)</option>
+                                                                                            }*@
                                                                                         <option value="add">Add Marina Location</option>
                                                                                     </select>
                                                                                 </label>
@@ -145,7 +149,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Organisational Unit</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="ModalOUSelected()" class="form-control b" id="OrgUnitModal" name="OrganisationalUnit" required>
+                                                                                    <select style="" onchange="ModalOUSelected()" class="form-select b" id="OrgUnitModal" name="OrganisationalUnit" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                     </select>
                                                                                 </label>
@@ -154,7 +158,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12" style="border-bottom:.5px solid #e5e5e5; padding-bottom:18px; margin-bottom:20px;">
                                                                                 <label class="label cgmodalLabel">Location</label>
                                                                                 <label class="input w100">
-                                                                                    <select onchange="addNewLoc()" class="form-control b" id="WaterLocationLocationModal" name="WaterLocationLocation">
+                                                                                    <select style="" onchange="addNewLoc()" class="form-select b" id="WaterLocationLocationModal" name="WaterLocationLocation">
                                                                                         <option selected="selected" value="00000000-0000-0000-0000-000000000000">-- Select --</option>
                                                                                         @foreach (var wloc in Model.LocationViewModel.Locations)
                                                                                         {
@@ -175,7 +179,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel">Moored Type</label>
                                                                                 <label class="input w100">
-                                                                                    <select class="form-control b" data-name="WaterLocationMooringType" id="MooredTypeModal" name="WaterLocationMooringType">
+                                                                                    <select style="" class="form-select b" data-name="WaterLocationMooringType" id="MooredTypeModal" name="WaterLocationMooringType">
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         <option value="Pile">Pile</option>
                                                                                         <option id="MooredTypeMarina" value="Marina">Marina</option>
@@ -219,7 +223,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel required">Storage Type</label>
                                                                                 <label class="input w100">
-                                                                                    <select class="form-control b" data-name="BuildingCategory" id="BuildingCategoryModal" name="BuildingCategory" required>
+                                                                                    <select style="" class="form-select b" data-name="BuildingCategory" id="BuildingCategoryModal" name="BuildingCategory" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         <option value="Lockup">Lockup At Address</option>
                                                                                         <option value="Open Park">Open Park At Address</option>
@@ -300,7 +304,7 @@
                                                                                         <label>Organisation Type</label>
                                                                                     </section>
                                                                                     <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                                                                        <select class="form-control" data-name="organisationType" id="OrganisationTypeName" name="OrganisationTypeName" value="" required>
+                                                                                        <select style="" class="form-select" data-name="organisationType" id="OrganisationTypeName" name="OrganisationTypeName" value="" style="color:#fff" required>
                                                                                             <option selected>--Select---</option>
                                                                                             <option>Person - Individual</option>
                                                                                             <option>Corporation – Limited liability</option>
@@ -462,7 +466,7 @@
                                                                                 <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                     <label class="label cgmodalLabel required ">Race Category</label>
                                                                                     <label class="input cgmodalInput">
-                                                                                        <select class="form-control b" id="BoatUseRaceCategoryModal" name="BoatUseRaceCategory" required>
+                                                                                        <select style="" class="form-select b" id="BoatUseRaceCategoryModal" name="BoatUseRaceCategory" required>
                                                                                             <option selected="selected" value="">-- Select --</option>
                                                                                             <option value="YachtClubSocialRacingupto50nm">Yacht Club Social Racing up to 50nm</option>
                                                                                             <option value="Yachtracingupto200nm">Yacht racing up to 200nm</option>
@@ -474,7 +478,7 @@
                                                                                 <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                     <label class="label cgmodalLabel required">Do you use spinnakers and/or extras?</label>
                                                                                     <label class="input cgmodalInput">
-                                                                                        <select class="form-control b" id="BoatUseRaceUseSpinnakersModal" name="BoatUseRaceUseSpinnakers" required>
+                                                                                        <select style="" class="form-select b" id="BoatUseRaceUseSpinnakersModal" name="BoatUseRaceUseSpinnakers" required>
                                                                                             <option selected="selected" value="">-- Select --</option>
                                                                                             <option value="True">Yes</option>
                                                                                             <option value="False">No</option>
@@ -581,7 +585,7 @@
                                                                                 <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12" id="VesselTrailerLoc" style="display:none;">
                                                                                     <label class="label cgmodalLabel required">Location</label>
                                                                                     <label class="input cgmodalInput">
-                                                                                        <select onchange="addNewTrailerLoc()" class="form-control b" id="VehicleLocationModal" name="VehicleLocation" required>
+                                                                                        <select style="" onchange="addNewTrailerLoc()" class="form-select b" id="VehicleLocationModal" name="VehicleLocation" required>
                                                                                             <option selected="selected" value="">-- Select --</option>
                                                                                             @foreach (var tloc in Model.LocationViewModel.Locations)
                                                                                             {
@@ -672,7 +676,7 @@
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label for="CeaseReason" class="label cgmodalLabel required" style="color:black; font-size:100%;">Cease Reason</label>
                                                                             <label class="input cgmodalInput">
-                                                                                <select class="form-control b" id="VehicleCeaseReason" name="VehicleCeaseReason">
+                                                                                <select style="" class="form-select b" id="VehicleCeaseReason" name="VehicleCeaseReason">
                                                                                     <option selected="selected" value="">-- Select --</option>
                                                                                     <option value="1">Sold</option>
                                                                                     <option value="2">Decommision</option>
@@ -724,7 +728,7 @@
                                                                         <section class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
                                                                             <label for="CeaseReason" class="label cgmodalLabel required" style="color:black; font-size:100%;">Cease Reason</label>
                                                                             <label class="input cgmodalInput">
-                                                                                <select class="form-control b" id="RemoveCeaseReason" name="BoatCeaseReason" required>
+                                                                                <select style="" class="form-select b" id="RemoveCeaseReason" name="BoatCeaseReason" required>
                                                                                     <option selected="selected" value="">-- Select --</option>
                                                                                     <option value="1">Sold</option>
                                                                                     <option value="2">Decommision</option>
@@ -742,17 +746,19 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="modal" id="advisoryModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
-                                                            <div class="modal-dialog" role="document">
+                                                        <div class="modal fade" id="advisoryModal" aria-labelledby="advisoryModalLabel" tabindex="-1" role="dialog" aria-hidden="true">
+                                                            <div class="modal-dialog">
                                                                 <div class="modal-content">
                                                                     <div class="modal-header">
-                                                                        <h5 class="modal-title">Advisory</h5>
+                                                                        <h5 class="modal-title" id="advisoryModalLabel">Advisory</h5>
                                                                     </div>
                                                                     <div class="modal-body">
                                                                         @Html.Raw(Model.Advisory)
                                                                     </div>
                                                                     <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+                                                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">ok</button>
+
+                                                                        @*<button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>*@
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -770,7 +776,7 @@
                                                                             <section class="col col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                                                                 <label class="label cgmodalLabel required">Location Type</label>
                                                                                 <label class="input w100">
-                                                                                    <select class="form-control b" id="LocationTypeModal" name="LocationType" required>
+                                                                                    <select style="" class="form-select b" id="LocationTypeModal" name="LocationType" required>
                                                                                         <option selected="selected" value="">-- Select --</option>
                                                                                         <option value="Residential">Residential</option>
                                                                                         <option value="Commercial">Commercial</option>
@@ -839,23 +845,24 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div id="tab_2" class="tab-pane step-content">
+                                        <div id="tab_2" class="tab-pane step-content" style="display:none">
                                             <h3><strong> @Model.Wizardsteps.ElementAt(1) </strong></h3>
-                                            <div id="agreementView" class="row">
+                                            <div id="agreementView" class="row test">
+                                                @*  for test-1 tab-2*@
                                             </div>
                                         </div>
                                         @if (Model.Wizardsteps.Count > 2)
                                         {
-                                            <div id="tab_3" class="tab-pane step-content">
+                                            <div id="tab_3" class="tab-pane step-content" style="display:none">
                                                 <h3><strong> @Model.Wizardsteps.ElementAt(2) </strong></h3>
                                                 <div id="agreementDeclarationView" class="row">
                                                 </div>
                                             </div>
-                                            <div id="tab_4" class="tab-pane step-content">
+                                            <div id="tab_4" class="tab-pane step-content" style="display:none">
                                                 <h3><strong> @Model.Wizardsteps.ElementAt(3)</strong></h3>
                                                 <div id="pxpaymentView"></div>
                                             </div>
-                                            <div id="tab_5" class="tab-pane step-content">
+                                            <div id="tab_5" class="tab-pane step-content" style="display:none">
                                                 <h3><strong> @Model.Wizardsteps.ElementAt(4) </strong></h3>
                                                 <div class="row">
                                                     <div class="col-sm-12">
@@ -1000,9 +1007,46 @@
     </section>
 </div>
 
-@section pagespecific {
-    <link rel="stylesheet" href="~/css/smartadmin-production.min.css">
 
+
+
+@section pagespecific {
+    @*<link rel="stylesheet" href="~/css/smartadmin-production.min.css">*@
+    <style>
+        body {
+            margin: 0;
+            /* padding: 0;*/
+            min-height: 100%;
+            /*background: url(../img/mybg.png) #fff;*/
+            background-color: #f3f0f0;
+            direction: ltr;
+        }
+
+        #header {
+            display: block;
+            /* height: 49px;*/
+            margin: 0;
+            padding: 0 13px 0 0;
+            background-color: #f3f3f3;
+            background-image: -moz-linear-gradient(top, #f3f3f3, #e2e2e2);
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f3f3f3), to(#e2e2e2));
+            background-image: -webkit-linear-gradient(top, #f3f3f3, #e2e2e2);
+            background-image: -o-linear-gradient(top, #f3f3f3, #e2e2e2);
+            background-image: linear-gradient(to bottom, #f3f3f3, #e2e2e2);
+            background-repeat: repeat-x;
+            position: relative;
+            z-index: 905;
+        }
+
+        html {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            /* background: url(../img/mybg.png) #fff;*/
+            background-color: #f3f0f0;
+            position: relative;
+        }
+    </style>
     @await Html.PartialAsync("_InformationWizardScripts")
     @await Html.PartialAsync("_DataTableScripts")
 <script>
@@ -1018,7 +1062,7 @@
                 sessionStorage.removeItem("accordianTrigger");
             }
 
-            advisoryModal = document.getElementById('advisoryModal');
+         advisoryModal = document.getElementById('advisoryModal');
             if ("@Model.Status" === "Not Started") {
                 if ("@Model.Advisory" !== "") {
                     $("#advisoryModal").modal('show');
@@ -1026,10 +1070,12 @@
             }
 
         if ("@Model.Status" == "Submitted") {
-               // var tagname = document.tagname
-                if (document.getElementById('fieldset') != null) {
-                    document.getElementById('fieldset').setAttribute("disabled", "disabled");
-                } else {
+            //var tagname = document.tagname;
+            if (document.getElementById('fieldset') != null) {
+                document.getElementById('fieldset').setAttribute("disabled", "disabled");
+            }
+            else {
+                if (document.getElementById('btn1') != null) {
                     document.getElementById('btn1').removeAttribute("disabled");
                 }
                 //$('.btn-sm').addClass("hidden");
@@ -1037,9 +1083,8 @@
                 //$('.btn-success').addClass("hidden");
                 $('.btn-sm').prop("disabled", false);
                 $('.update').prop("disabled", true);
-
+            }
         }
-
     });
         function CloseAdvisory(clientInformationSheetId) {
             if (typeof clientInformationSheetId !== null) {
@@ -1058,7 +1103,9 @@
                     });
             }
             else {
-                $('#advisoryModal').modal('hide');
+                //var advisoryModal = new bootstrap.Modal(document.getElementById('advisoryModal'));
+                //$('#advisoryModal').modal('hide');
+                advisoryModal.hide()
             }
     }
 
@@ -1069,7 +1116,7 @@
          debugger;
 
         var slectedUpdateType = "@Model.selectedUpdateType.First()";
-    
+
          if (slectedUpdateType == "TC_add_edit_remove_location") {
                // $("#Location").trigger("click");
              //$("[id='Location']").trigger("click");
@@ -1082,30 +1129,30 @@
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat"]');
              test1[0].click();
          }
-      
+
          if (slectedUpdateType == "TC_amendInsuredPerson") {
              var test1 = document.querySelectorAll('[data-newId="AddOrganisation"]');
              test1[0].click();
-             
+
          }
 
          if (slectedUpdateType == "TC_addNotification") {
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat4"]');
              test1[0].click();
          }
-        
+
          if (slectedUpdateType == "TC_addEditDeleteRegTrailer") {
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat0"]');
              test1[0].click();
          }
- 
+
          if (slectedUpdateType == "TC_addEditDeleteNonRegTrailer") {
              var test1 = document.querySelectorAll('[data-newId="MarshCoastGuardBoat1"]');
              test1[0].click();
          }
         });
 
-</script>
+    </script>
 
 }
 

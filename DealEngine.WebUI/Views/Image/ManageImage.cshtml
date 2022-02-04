@@ -34,7 +34,8 @@
 
             <div class="col-sm-12" style="overflow-y:auto; height:44vh; width:100%;text-align:center;">
                 <form enctype="multipart/form-data" asp-controller="Image" asp-action="Upload" method="post" class="mt-3">
-                    <div>
+                    <div style="display: flex; flex-wrap: wrap;
+">
                         @foreach (var img in Model.Item)
                         {
                             <div class="col-sm-3 float-left">
@@ -52,8 +53,15 @@
                 <div class="form-group col-sm-9 float-right">
                     <div class="btn-group float-right col-sm-12" role="group">
                         <div class="col-sm-12 float-right" style="margin-top:.75rem;">
-                            <button id="ckuploadbtn" onclick="" type="submit" class="btn btn-primary mr-2 float-right">Upload Image</button>
-                            <button id="ckuploadbtnfile" onclick="" type="submit" class="btn btn-primary mr-2 float-right">Upload File</button>
+                            @*<button id="ckuploadbtn" onclick="" type="submit" class="btn btn-primary mr-2 float-right">Upload Image</button>
+        <button id="ckuploadbtnfile" onclick="" type="submit" class="btn btn-primary mr-2 float-right">Upload File</button>*@
+                            @*<a href="uploadmodal" onclick="" type="button" class="btn btn-primary mr-2 float-right">Upload Image</a>*@
+                            <a class="btn btn-primary btn-sm" href="#uploadmodal" aria-hidden="true" style="color:white" data-bs-toggle="modal">
+                                Upload Image
+                            </a>
+                            <a class="btn btn-primary btn-sm" href="#uploadmodalfile" aria-hidden="true" style="color:white" data-bs-toggle="modal">
+                                Upload File
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -70,7 +78,7 @@
             <!-- Modal Header -->
             <div class="modal-header">
                 <h4 class="modal-title">Select an Image</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <form enctype="multipart/form-data" asp-controller="Image" asp-action="Upload" method="post" class="mt-3">              
@@ -89,7 +97,7 @@
                         <div class="col-sm-10">
                             <div class="custom-file">
                                 <input asp-for="Image" class="form-control custom-file-input" name="Image" id="fileUpload" />
-                                <label class="custom-file-label" id="custom-file-label">Choose Image...</label>
+                                @*<label class="custom-file-label" id="custom-file-label">Choose Image...</label>*@
                             </div>                            
                         </div>
                         <div class="col-sm-12 mt-3" style="text-align:center;">
@@ -117,7 +125,7 @@
             <!-- Modal Header -->
             <div class="modal-header">
                 <h4 class="modal-title">Select a File</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <form enctype="multipart/form-data" asp-controller="Image" asp-action="UploadDoc" method="post" class="mt-3">              
@@ -136,7 +144,7 @@
                         <div class="col-sm-10">
                             <div class="custom-file">
                                 <input asp-for="File" class="form-control custom-file-input" name="File" id="fileUploaddoc" />
-                                <label class="custom-file-label" id="custom-file-label">Choose File...</label>
+                                @*<label class="custom-file-label" id="custom-file-label">Choose File...</label>*@
                             </div>                            
                         </div>              
                     </div>
@@ -145,7 +153,7 @@
                         <label for="sel1" class="col-sm-2 col-form-label">Product</label>
                         <div class="col-sm-10">
                             <div class="form-group">
-                                <select asp-for="Product" class="form-control form-control" id="sel1">
+                                <select asp-for="Product" class="form-select" id="sel1">
                                     @foreach (var product in Model.Products)
                                     {
                                         <option value="@product.Id">@product.Name @product.UnderwritingModuleCode</option>
@@ -174,14 +182,39 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
+            console.log("tttttt");
+            debugger;
 
-            $("#ckuploadbtn").click(function () {
+            //$("#ckuploadbtn").click(function () {
+            //    debugger
+            //    console.log("test1");
+            //    $("#uploadmodal").modal({
+            //        console.log("test1modal");
+            //        backdrop: true
+            //    });
+            //});
+
+            $("#ckuploadbtn").on("click", function () {
+                   console.log("test1");
                 $("#uploadmodal").modal({
+                    console.log("test1modal");
                     backdrop: true
-                });
+               });
             });
-            $("#ckuploadbtnfile").click(function () {
+
+
+            //$("#ckuploadbtnfile").click(function () {
+            //    debugger
+            //    console.log("test2");
+            //    $("#uploadmodalfile").modal({
+            //        console.log("test2modal");
+            //        backdrop: true
+            //    });
+            //});
+            $("#ckuploadbtnfile").on("click", function () {
+                console.log("test2");
                 $("#uploadmodalfile").modal({
+                    console.log("test2modal");
                     backdrop: true
                 });
             });

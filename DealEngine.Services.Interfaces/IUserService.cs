@@ -12,6 +12,7 @@ namespace DealEngine.Services.Interfaces
         Task<User> GetUserById (Guid userId);
         Task<User> GetUserByEmail (string email);
         Task<User> GetUserByUserName(string userName);
+        Task<User> GetUserByOktaUID(string uid);
         Task<List<User>> GetAllUsers ();
         Task ApplicationCreateUser(User user);
         Task Create(User user);
@@ -22,6 +23,6 @@ namespace DealEngine.Services.Interfaces
         Task<List<User>> GetBrokerUsers();
         Task<User> PostCreateUser(User jsonUser, User currentUser, IFormCollection form);
         Task<User> GetApplicationUserByEmail(string email);
-
+        Task<User> GetMarshUser(string okta_uid);
     }
 }
