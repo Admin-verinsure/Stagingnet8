@@ -19,7 +19,6 @@ namespace DealEngine.Infrastructure.FluentNHibernate
             if (!_session.IsOpen)
                 _session = _sessionFactory.OpenSession();
             _transaction = _session.BeginTransaction();
-
         }
 
         public async Task Commit()

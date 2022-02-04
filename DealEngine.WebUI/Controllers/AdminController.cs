@@ -20,6 +20,21 @@ using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
 
+using System;
+using System.Data;
+using System.Linq;
+using System.Reflection;
+
+//using HibernatingRhinos.Profiler.Appender.NHibernate;
+using NHibernate.Cfg;
+using NHibernate.Criterion;
+using NHibernate.Dialect;
+using NHibernate.Driver;
+using NHibernate.Linq;
+using HibernatingRhinos.Profiler.Appender.NHibernate;
+using NHibernate;
+using DealEngine.Infrastructure.FluentNHibernate;
+
 namespace DealEngine.WebUI.Controllers
 {
     [Authorize]
@@ -39,6 +54,8 @@ namespace DealEngine.WebUI.Controllers
         ISystemEmailService _systemEmailService;
         IReferenceService _referenceService;
         IMapper _mapper;
+        IMapperSession<Boat> _boatRepository;
+        IMapperSession<Object> _objectRepository;
         ILogger<AdminController> _logger;
         IApplicationLoggingService _applicationLoggingService;
         IImportService _importService;
@@ -46,6 +63,7 @@ namespace DealEngine.WebUI.Controllers
         IOrganisationService _organisationService;
         SignInManager<IdentityUser> _signInManager;
         UserManager<IdentityUser> _userManager;
+        IMapperSession<User> _userRepository;
         // IUpdateTypeService _updateTypeService;
         IUpdateTypeService _updateTypeServices;
         public AdminController(
@@ -70,7 +88,10 @@ namespace DealEngine.WebUI.Controllers
             IMapper mapper, 
             IPaymentGatewayService paymentGatewayService,
             IMerchantService merchantService, 
-            ISystemEmailService systemEmailService, 
+            ISystemEmailService systemEmailService,
+            IMapperSession<Object> objectRepository,
+            IMapperSession<Boat> boatRepository,
+            IMapperSession<User> userRepository2,
             IReferenceService referenceService)
 			: base (userRepository)
 		{
@@ -95,7 +116,9 @@ namespace DealEngine.WebUI.Controllers
             _systemEmailService = systemEmailService;
             _referenceService = referenceService;
             _developerToolService = developerToolService;
-            //
+            _boatRepository = boatRepository;
+            _userRepository = userRepository2;
+            _objectRepository = objectRepository;
             _updateTypeServices = updateTypeService;
         }
 
@@ -1455,6 +1478,49 @@ namespace DealEngine.WebUI.Controllers
         {
             UserViewModel userViewModel = new UserViewModel();
             return View(userViewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> HQLTest()
+        {
+            List<Object> objects = new List<Object>();
+            objects = await _objectRepository.QueryHQLAsync("select b from Boat b where b.BoatName like '%'");
+
+            HQLTestViewModel model = new HQLTestViewModel();
+            model.Objects = objects;
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> StoredProcedureTest()
+        {
+            List<Object> objects = new List<Object>();
+
+            //_objectRepository.
+
+            StoredProcedureViewModel model = new StoredProcedureViewModel();
+            model.Objects = objects;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StoredProcedureTest(StoredProcedureViewModel model)
+        {
+
+            List<Object> objects = new List<Object>();
+            //objects = await _boatRepository.TestHQLAsync("select u from User u where u.FirstName like 'N%'");
+            //objects = await _userRepository.TestHQLAsync("select u from User u where u.FirstName like 'N%'");
+            //objects = await _objectRepository.QueryHQLAsync("select u from User u where u.FirstName like 'N%'");
+            bool result = await _objectRepository.GetStoredProcedure(model.Id,model.BoatName); //QueryHQLAsync("select b from Boat b where b.BoatName like '%'");
+
+            //_objectRepository.
+
+            //StoredProcedureViewModel model = new StoredProcedureViewModel();
+            //model.Objects = objects;
+
+            return View(model);
         }
 
         [HttpGet]
