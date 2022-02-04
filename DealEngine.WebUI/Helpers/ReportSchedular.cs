@@ -44,7 +44,7 @@ namespace DealEngine.WebUI.Helpers
         private readonly  IProgrammeService _programmeService;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         //Guid progid = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
-         Guid progid = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
+         Guid progid = Guid.Parse("bbcd7ef3-64c3-4759-9144-49cac816f425");
 
         //public ReportSchedular(IReportBuilderService reportBuilderService)
         //{
@@ -138,7 +138,7 @@ namespace DealEngine.WebUI.Helpers
                     string ContentType = "Application/msexcel";
 
             //Define the file name.
-            string file = "C:\\Users\\Public\\Report.xlsx";
+            string file = " / tmp / Report.xlsx";
            // string fileName = "Report.xlsx";
 
                     //Creating stream object.
