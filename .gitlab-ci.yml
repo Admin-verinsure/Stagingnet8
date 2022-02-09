@@ -19,7 +19,7 @@ deploy_demo:
   - ssh-add <(echo "$PKgitlab")
   - ssh ubuntu@"$URLdemo" './DE-DeployPrep.sh'
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/netcoreapp3.1/ ubuntu@$URLdemo:/home/ubuntu/projects/dealengine
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLdemo:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLdemo" './DE-DeployFin.sh'
   environment:
     name: demo
