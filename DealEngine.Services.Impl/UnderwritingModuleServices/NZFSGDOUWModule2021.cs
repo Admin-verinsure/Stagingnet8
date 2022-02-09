@@ -298,10 +298,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         {
                             termdotermoption.Bound = true;
                         }
-                        if (termdotermoption.PremiumDiffer < 0)
-                        {
-                            termdotermoption.PremiumDiffer = 0;
-                        }
                     }
                 }
             }
