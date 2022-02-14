@@ -89,7 +89,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     {
                         coverperiodindaysforchange = (agreement.ExpiryDate - agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate).Days;
                         if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate < agreement.InceptionDate.AddDays(intchangePriodInDaysFromInception) ||
-                            agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate > agreement.InceptionDate.AddDays(intchangePriodInDaysToExpiry))
+                            agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate > agreement.ExpiryDate.AddDays(intchangePriodInDaysToExpiry))
                         {
                             bolinvalidchangeeffectivedate = true;
                         }
