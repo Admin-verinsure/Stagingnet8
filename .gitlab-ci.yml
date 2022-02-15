@@ -123,7 +123,7 @@ deploy_stagingprofessionalrisks:
   - ssh ubuntu@"$URLstagingprorisks" './DE-DeployPrep.sh'
   - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLstagingprorisks:/home/ubuntu/projects/dealengine
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLstagingprorisks:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLstagingprorisks" './DE-DeployFin.sh'
   environment:
     name: stagingprofessionalrisks
