@@ -1183,7 +1183,8 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             // Fill in its fields
             gv_strUISReference = EGlobalPolicy.ClientProgramme.InformationSheet.ReferenceId;
-            if (objClientAgreement.ClientInformationSheet.IsRenewawl && objClientAgreement.ClientInformationSheet.PreviousInformationSheet == null)
+            if (objClientAgreement.ClientInformationSheet.IsRenewawl && objClientAgreement.ClientInformationSheet.PreviousInformationSheet == null && 
+                objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber != null)
             {
                 gv_strMasterAgreementReference = objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber;
             }
@@ -1193,7 +1194,12 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             } else { 
                 gv_strMasterAgreementReference = objClientAgreement.ReferenceId; 
             }
-            
+
+            if (objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber != null) // for both renew and change
+            {
+                gv_strMasterAgreementReference = objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber;
+            }
+
             // Dates
             EBixPolicy.PolicyDateTime = DateTime.Now;
             if (canceltran)
@@ -1221,8 +1227,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             EBixPolicy.StatementDescription = EGlobalPolicy.GetDescription2;    // Invoice description
             EBixPolicy.MultiRisk = EGlobalPolicy.MultiRisk;                                   // set multisk flag
             EBixPolicy.ExternalSystemContractID = String.Format("TCDE-{0}-{1}", gv_strMasterAgreementReference, EGlobalPolicy.ExtensionCode);
-            if (objClientAgreement.ClientInformationSheet.IsRenewawl && objClientAgreement.ClientInformationSheet.PreviousInformationSheet == null &&
-                !string.IsNullOrEmpty(objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber))
+            if (!string.IsNullOrEmpty(objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber)) //for both renew and change
             {
                 EBixPolicy.ExternalSystemContractID = objClientAgreement.ClientInformationSheet.Programme.EGlobalExternalContactNumber;
             }

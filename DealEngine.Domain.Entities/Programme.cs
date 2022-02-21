@@ -97,6 +97,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsnextFinancialYear { get; set; }
         public virtual int ChangePriodInDaysFromInception { get; set; }
         public virtual int ChangePriodInDaysToExpiry { get; set; }
+        public virtual int ChangePriodInDaysToSubmission { get; set; }
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)
