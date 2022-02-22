@@ -91,10 +91,21 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         {
                             bolinvalidchangeeffectivedate = true;
                         }
-                        if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate < agreement.ClientInformationSheet.SubmitDate.AddDays(intchangePriodInDaysToSubmission))
+                        if (agreement.ClientInformationSheet.SubmitDate > DateTime.MinValue)
                         {
-                            bolinvalidchangeeffectivedatesubmission = true;
+                            if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate < agreement.ClientInformationSheet.SubmitDate.AddDays(intchangePriodInDaysToSubmission))
+                            {
+                                bolinvalidchangeeffectivedatesubmission = true;
+                            }
+                        } else
+                        {
+                            if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate < DateTime.UtcNow.AddDays(intchangePriodInDaysToSubmission))
+                            {
+                                bolinvalidchangeeffectivedatesubmission = true;
+                            }
                         }
+
+                        
                     }
                 }
             }

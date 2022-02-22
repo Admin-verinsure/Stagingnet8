@@ -910,7 +910,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
 
             do
             {
-                if (ClientUIS.PreviousInformationSheet == null && ClientUIS.IsRenewawl)
+                if (!bolTransactionTypeCalculated && ClientUIS.PreviousInformationSheet == null && ClientUIS.IsRenewawl)
                 {
                     gv_transactionType = 3;//renew
                     break;
@@ -936,6 +936,9 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
                         if (ClientUIS.PreviousInformationSheet.IsRenewawl)
                             gv_transactionType = 3;
                         else
+                            gv_transactionType = 2;
+
+                        if (ClientUIS.IsChange)
                             gv_transactionType = 2;
 
                         bolTransactionTypeCalculated = true;
