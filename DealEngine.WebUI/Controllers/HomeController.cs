@@ -51,6 +51,7 @@ namespace DealEngine.WebUI.Controllers
         IFileService _fileService;
         IUpdateTypeService _updateTypeServices;
         IMilestoneService _milestoneService;
+        ISchedularJobService _schedularjobService;
         //private readonly IScheduler _scheduler;
 
         public HomeController(
@@ -74,7 +75,8 @@ namespace DealEngine.WebUI.Controllers
             IClientInformationAnswerService clientInformationAnswer,
             IFileService fileService,
             IUpdateTypeService updateTypeService,
-            IMilestoneService milestoneService
+            IMilestoneService milestoneService,
+            ISchedularJobService schedularjobService
 
             )
 
@@ -101,6 +103,7 @@ namespace DealEngine.WebUI.Controllers
             _updateTypeServices = updateTypeService;
             _fileService = fileService;
             _milestoneService = milestoneService;
+            _schedularjobService = schedularjobService;
         }
 
         // GET: home/index
@@ -1722,22 +1725,31 @@ namespace DealEngine.WebUI.Controllers
             return ListReport;
 
         }
-        ///cronjob test
-        //public async Task<IActionResult> CheckAvailabilty()
-        //{
-        //    ITrigger trigger = TriggerBuilder.Create()
-        //        .WithIdentity($"Check Availability - {DateTime.Now}")
-        //        .StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
-        //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(5))
-        //        .WithPriority(1)
-        //        .Build();
 
-        //    IJobDetail job = JobBuilder.Create<DealEngine.WebUI.Helpers.ReportSchedular>()
-        //        .WithIdentity("Check Availability")
-        //        .Build();
-        //    await _scheduler.ScheduleJob(job, trigger);
-        //    return RedirectToAction("Index");
-        //}
+
+        ///cronjob test
+        public async Task<IActionResult> AddReportData(IFormCollection formCollection)
+        {
+            User user = await CurrentUser();
+            using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+            {
+
+                var ProgrammeId = formCollection["ProgrammeId"];
+                var JobName = formCollection["ProgrammeName"];
+                var JobDate = formCollection["ReportSchedularTime"];
+                var JobTime = formCollection["start_hour"];
+                var JobFunctionName = formCollection["ProgrammeName"];
+                var ScheduleFrequency = formCollection["ScheduleFrequency"];
+                var ReportName = formCollection["ReportName"];
+
+                SchedularJob schedularjob = new SchedularJob(JobName, ProgrammeId, JobDate, JobTime, JobFunctionName, ScheduleFrequency, "Active" ,typeof(SchedularJob),ReportName, user);
+                await _schedularjobService.AddJob(schedularjob);
+
+            }
+
+
+                return RedirectToAction("Index");
+        }
 
         [HttpPost]
         //public async Task<IActionResult> GetReportView(IFormCollection formCollection, string IsReport)

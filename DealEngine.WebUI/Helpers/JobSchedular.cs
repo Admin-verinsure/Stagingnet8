@@ -1,4 +1,7 @@
-﻿using DealEngine.WebUI.Models;
+﻿using DealEngine.Domain.Entities;
+using DealEngine.Services.Interfaces;
+using DealEngine.WebUI.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Quartz;
 using Quartz.Spi;
@@ -14,16 +17,19 @@ namespace DealEngine.WebUI.Helpers
     {
         public IScheduler Scheduler { get; set; }
         private readonly IJobFactory jobFactory;
-        private readonly JobMetadata jobMetadata;
+        // private readonly JobMetadata jobMetadata;
         private readonly ISchedulerFactory schedulerFactory;
-        private readonly IEnumerable<JobMetadata> _jobMetadatas;
-
-        public JobSchedular(ISchedulerFactory schedulerFactory, JobMetadata jobMetadata, IJobFactory jobFactory, IEnumerable<JobMetadata> JobMetadatas)
+        //private readonly IEnumerable<JobMetadata> _jobMetadatas;
+       // private readonly ISchedularJobService _schedularjobService;
+        private readonly IServiceProvider _serviceProvider;
+        public JobSchedular(ISchedulerFactory schedulerFactory, IJobFactory jobFactory,  IServiceProvider serviceProvider)
         {
             this.jobFactory = jobFactory;
             this.schedulerFactory = schedulerFactory;
-            this.jobMetadata = jobMetadata;
-            this._jobMetadatas = JobMetadatas;
+            //this.jobMetadata = jobMetadata;
+            // this._jobMetadatas = JobMetadatas;
+           // this._schedularjobService = schedularjobService;
+            _serviceProvider = serviceProvider;
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -37,16 +43,29 @@ namespace DealEngine.WebUI.Helpers
             ///working await Scheduler.ScheduleJob(jobDetails, trigger);
             //start schedular
 
-            foreach (var jobSchedule in _jobMetadatas)
+            //foreach (var jobSchedule in _jobMetadatas)
+            //{
+            using (var scope = _serviceProvider.CreateScope())
             {
-                var job = CreateJob(jobSchedule);
-                var trigger = CreateTrigger(jobSchedule);
-                await Scheduler.ScheduleJob(job, trigger, cancellationToken);
+                ISchedularJobService _schedularjobService = scope.ServiceProvider.GetService<ISchedularJobService>();   //  (ISchedularJobService)scope.ServiceProvider;
+                List<SchedularJob> LSchedularJob = _schedularjobService.GetJob();
+
+
+                foreach (var job in LSchedularJob)
+                {
+                    var scheduledjob = CreateJob(job);
+
+                    var trigger = CreateTrigger(job);
+                    await Scheduler.ScheduleJob(scheduledjob, trigger, cancellationToken);
+
+                }
             }
+
+            // }
             await Scheduler.Start(cancellationToken);
         }
 
-        private ITrigger CreateTrigger(JobMetadata jobMetadata)
+        private static ITrigger CreateTrigger(SchedularJob schedularjob)
         {
             // ITrigger trigger = TriggerBuilder.Create()
             //        .WithIdentity($"Check Availability - {DateTime.Now}")
@@ -55,23 +74,36 @@ namespace DealEngine.WebUI.Helpers
             //        .WithPriority(1)
             //        .Build();
 
+            //List<SchedularJob> LSchedularJob =    _schedularjobService.GetJob();
+            //// foreach(var job in LSchedularJob)
+            //{
+
+            DateTime datetime = Convert.ToDateTime(schedularjob.JobDate +" "+ "10:45");
+             // DateTime datetime2 = DateTime.Parse("16/02/2022 04:00");
+
+            //DateTime datetime = DateTime.Parse("02/16/2022 04:00", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"));
+           // DateTime datetime = DateTime.Now;
 
 
             return TriggerBuilder.Create()
-                .WithIdentity(jobMetadata.JobId.ToString())
-                .StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
-                //.WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1))
-                .WithDescription(jobMetadata.JobName)
-                .Build();
+            .WithIdentity(schedularjob.Id.ToString())
+           .StartAt(datetime)
+           //.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
+           //.WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1))
+           .WithDescription(schedularjob.ReportName)
+           .Build();
+            // }
+            //return ok;
+
             //.WithCronSchedule(jobMetadata.CronExpression)
 
         }
 
-        private IJobDetail CreateJob(JobMetadata jobMetadata)
+        private static IJobDetail CreateJob(SchedularJob schedularjob)
         {
-            return JobBuilder.Create(jobMetadata.JobType)
-                .WithIdentity(jobMetadata.JobId.ToString())
-                .WithDescription(jobMetadata.JobName)
+            return JobBuilder.Create<ReportSchedular>()
+                .WithIdentity(schedularjob.Id.ToString())
+                .WithDescription(schedularjob.ReportName)
                 .Build();
         }
 
@@ -80,4 +112,5 @@ namespace DealEngine.WebUI.Helpers
             await Scheduler.Shutdown();
         }
     }
+	
 }

@@ -2,7 +2,7 @@
 <!-- MAIN CONTENT -->
 
 <div class="container">
-    <form id="ReportForm" method="POST" action="~/Home/CheckAvailabilty" novalidate>
+    <form id="ReportForm" method="POST" action="~/Home/AddReportData" novalidate>
         <input type="text" class="form-control" value="@Model.Programme.Id" id="programmeId" name="ProgrammeId" hidden>
         <input type="text" class="form-control" value="@Model.Programme.Name" id="programmeName" name="ProgrammeName" hidden>
         <input type="text" class="form-control" value="@Model.Programme.NamedPartyUnitName" id="programmeNamedPartyUnitName" name="ProgrammeNamedPartyUnitName" hidden>
@@ -13,65 +13,107 @@
                 </h5>
             </div>
             <div class="card-body">
-                <table class="container">
-                    <thread>
+                <table class="table table-bordered table-striped " >
+                    @*<thread>
                         <tr>
-                            <th>
 
-                                Name
+                            <th>
+                                <section class="col col-3">
+                                    Report
+                                </section>
                             </th>
 
                         </tr>
-                    </thread>
+                    </thread>*@
                     <tbody>
                         <tr>
-
                             <td>
+                                <div class="row">
+                                    <section class="col col-3">
 
-                                <select class="form-control b" id="ClientProg" name="queryselect">
-                                    <option selected="selected" value="">-- Select --</option>
-                                    @foreach (var product in Model.Programme.Products)
-                                    {
-                                        var productcode = @product.UnderwritingModuleCode.Substring(@product.UnderwritingModuleCode.IndexOf("_") + 1);
-                                        if (@productcode.IndexOf("_") > 0)
-                                        {
-                                            <option value=@productcode.Substring(0, @productcode.IndexOf("_"))>@product.Name  Premium report</option>
-                                        }
-                                        else
-                                        {
-                                            <option value=@productcode>@product.Name  Premium report</option>
+                                        <label>Reports </label>
+                                    </section>
+                                    <section class="col col-3">
 
-                                        }
-                                    }
+                                        <select class="form-control b" id="ReportName" name="ReportName">
 
-                                    @{
-                                        if (Model.Programme.EnableFAPReport)
-                                        {
-                                            <option value="FAP">FAP Report</option>
+                                            @foreach (var option in Model.ReportsAvailable)
+                                            {
+                                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                            }
 
-                                        }
-                                    }
-                                    @{
-                                        if (Model.Programme.EnableRevenueActivity)
-                                        {
-                                            <option value="RevenueActivity">RevenueActivity Report</option>
-                                        }
-                                    }
-                                </select>
+                                        </select>
+                                    </section>
+                                </div>
 
                             </td>
+                           
+                        </tr>
+                        <tr>
                             <td>
-                                <input type="checkbox" value="@Model.IsOnline">IsOnline
-                            </td>
+                                <div class="row">
+                                    <section class="col col-3">
 
-                            <td>
-                                <input type="checkbox" value="@Model.IsOndemand">IsOndemand
+                                        <label>First Run Day </label>
+                                    </section>
+                                    <section class="col col-3">
+
+                                        <input type="text" value="@Model.ReportSchedularTime" name="ReportSchedularTime" id="ReportSchedularTime">
+                                    </section>
+                                </div>
                             </td>
+                            
+                        </tr>
+                        <tr>
                             <td>
-                                <input type="checkbox" value="@Model.IsOffline">IsOffline
+                                <div class="row">
+                                    <section class="col col-3">
+
+                                        <label>First Run Time </label>
+                                    </section>
+                                    <section class="col col-3">
+                                        <select name="start_hour" id="start_hour" class="form-control bmg-hrs-mins-input"> </select>
+                                    </section>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <section class="col col-3">
+
+                                        <label>Frequency </label>
+                                    </section>
+                                    <section class="col col-3">
+                                        <select class="form-control b" id="ScheduleFrequency" name="ScheduleFrequency">
+
+                                            @foreach (var option in Model.ScheduleFrequency)
+                                            {
+                                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                            }
+
+                                        </select>
+                                    </section>
+                                    <section class="col col-2">
+
+                                        <button name="RunNow" value="@Model.RunNow">Run Now </button>
+                                    </section>
+                                </div>
+
+
                             </td>
 
                         </tr>
+                        @*<tr>
+                            <td>
+                                <div class="row">
+                                    <button name="RunNow" value="@Model.RunNow">Run Now </button>
+                                </div>
+
+                            </td>
+
+                        </tr>*@
+
 
                     </tbody>
                 </table>
@@ -84,9 +126,29 @@
 </div>
 
 
-
+<script src="jquery.datetimepicker.js"></script>
 @section pagespecific {
     @Html.Partial("_ProgrammeScripts")
 
+<script>
 
+    $('#ReportSchedularTime').datepicker({
+        dateFormat: 'dd/mm/yy'
+       /* controls: ['calendar', 'time']*/
+
+    });
+
+    $(document).ready(function () {
+        var hr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+        var mi = ['00','5','10','15','20','25', '30'];
+        for (i = 0; i < hr.length; i++) {
+            $("#start_hour").append('<option val="' + hr[i] + ':' + mi[0] + '">' + hr[i] + ':' + mi[0] + '</option>');
+            $("#start_hour").append('<option val="' + hr[i] + ':' + mi[1] + '">' + hr[i] + ':' + mi[1] + '</option>');
+        }
+    })
+    //$('#ReportSchedularTime').datetimepicker({
+    //    format: 'H:i'
+    //});
+</script>
+  
 }

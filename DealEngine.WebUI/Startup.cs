@@ -119,9 +119,9 @@ namespace DealEngine.WebUI
             ///            
 
             // Register job
-           // services.AddTransient<ReportSchedular>();
+            // services.AddTransient<ReportSchedular>();
             // Register job dependencies
-           // services.AddTransient<IReportBuilderService, ReportBuilderService>();
+            // services.AddTransient<IReportBuilderService, ReportBuilderService>();
             var container = services.BuildServiceProvider();
 
             // Create an instance of the job factory
@@ -133,10 +133,10 @@ namespace DealEngine.WebUI
 
             //services.AddSingleton<ReportSchedular>();
 
-            services.AddTransient<ReportSchedular>();
+           // services.AddTransient<ReportSchedular>();
             services.AddScoped<IReportBuilderService, ReportBuilderService>();
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped< IProgrammeService, ProgrammeService>();
+            services.AddScoped<IProgrammeService, ProgrammeService>();
 
             //services.AddScoped<IUserService, UserService>();
             // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -144,7 +144,7 @@ namespace DealEngine.WebUI
             services.AddQuartz(q =>
             {
                 q.UseMicrosoftDependencyInjectionScopedJobFactory();
-                
+
             });
             services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));
             services.AddHttpContextAccessor();
@@ -159,11 +159,11 @@ namespace DealEngine.WebUI
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();              
+                app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");                
+                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
@@ -194,13 +194,13 @@ namespace DealEngine.WebUI
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();                
+                endpoints.MapRazorPages();
             });
 
         }
 
 
-        public static  IScheduler GetSchedular()
+        public static IScheduler GetSchedular()
         {
             var properties = new NameValueCollection
             {
@@ -296,39 +296,39 @@ public sealed class SecurityHeadersMiddleware
             #endregion
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-            context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
+            //context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
             // https://content-security-policy.com/unsafe-inline/
-            context.Response.Headers.Add("Content-Security-Policy", new StringValues(
-                "base-uri 'self';" +
-                "block-all-mixed-content;" +
-                "default-src 'self';" +
-                "frame-ancestors 'none';" +
-                "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
-                "img-src 'self' data: https:;" +
-                "script-src 'self' 'unsafe-inline';" +
-                "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
-                "upgrade-insecure-requests;"
+            //context.Response.Headers.Add("Content-Security-Policy", new StringValues(
+            //    "base-uri 'self';" +
+            //    "block-all-mixed-content;" +
+            //    "default-src 'self';" +
+            //    "frame-ancestors 'none';" +
+            //    "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
+            //    "img-src 'self' data: https:;" +
+            //    "script-src 'self' 'unsafe-inline';" +
+            //    "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
+            //    "upgrade-insecure-requests;"
 
-                #region Other Directives that can be used
-                //"child-src 'none';" +
-                //"connect-src 'self';" +
-                //"object-src 'self';" +
-                //"form-action 'self' ;" +
-                //"frame-src 'none';" +
-                //"manifest-src 'none';" +
-                //"media-src 'none';" +
-                //"sandbox allow-scripts allow-forms;" +
-                //"script-src-elem 'self' 'unsafe-inline';" +
-                //"style-src-attr 'self' 'unsafe-inline';" +
-                //"style-src-elem 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com  ;" +
-                //"worker-src 'self';"
-                #endregion
+            #region Other Directives that can be used
+            //"child-src 'none';" +
+            //"connect-src 'self';" +
+            //"object-src 'self';" +
+            //"form-action 'self' ;" +
+            //"frame-src 'none';" +
+            //"manifest-src 'none';" +
+            //"media-src 'none';" +
+            //"sandbox allow-scripts allow-forms;" +
+            //"script-src-elem 'self' 'unsafe-inline';" +
+            //"style-src-attr 'self' 'unsafe-inline';" +
+            //"style-src-elem 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com  ;" +
+            //"worker-src 'self';"
+            #endregion
 
-            ));
+            //));
         }
-    return _next(context);
+        return _next(context);
     }
 }

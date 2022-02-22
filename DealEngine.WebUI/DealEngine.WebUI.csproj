@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Compile Remove="bin\**" />
+    <Compile Remove="Models\Schedular\**" />
     <Compile Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
     <Compile Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <Compile Remove="wwwroot\Data\**" />
@@ -19,6 +20,7 @@
     <Compile Remove="wwwroot\NewFolder\**" />
     <Compile Remove="wwwroot\Report\**" />
     <Content Remove="bin\**" />
+    <Content Remove="Models\Schedular\**" />
     <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
     <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <Content Remove="wwwroot\Data\**" />
@@ -29,6 +31,7 @@
     <Content Remove="wwwroot\NewFolder\**" />
     <Content Remove="wwwroot\Report\**" />
     <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="Models\Schedular\**" />
     <EmbeddedResource Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
     <EmbeddedResource Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <EmbeddedResource Remove="wwwroot\Data\**" />
@@ -39,6 +42,7 @@
     <EmbeddedResource Remove="wwwroot\NewFolder\**" />
     <EmbeddedResource Remove="wwwroot\Report\**" />
     <None Remove="bin\**" />
+    <None Remove="Models\Schedular\**" />
     <None Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
     <None Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <None Remove="wwwroot\Data\**" />
@@ -442,9 +446,6 @@
     <ProjectReference Include="..\DealEngine.Infrastructure.FluentNHibernate\DealEngine.Infrastructure.FluentNHibernate.csproj" />
     <ProjectReference Include="..\DealEngine.Infrastructure.Payment\DealEngine.Infrastructure.Payment.csproj" />
     <ProjectReference Include="..\DealEngine.Services.Impl\DealEngine.Services.Impl.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\Schedular\" />
   </ItemGroup>
 
 </Project>

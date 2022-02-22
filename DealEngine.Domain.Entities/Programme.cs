@@ -95,6 +95,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool IslastFinancialYear { get; set; }
         public virtual bool IsCurrentYear { get; set; }
         public virtual bool IsnextFinancialYear { get; set; }
+        public virtual DateTime ReportSchedularTime { get; set; }
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)

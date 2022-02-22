@@ -59,6 +59,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsOptionalProductWithoutSelectOption { get; set; }
         public virtual string NoCoverRequiredAnswer { get; set; }
         public virtual bool IsExtentionOption { get; set; }
+        public virtual bool ProductInfofunc { get; set; }
 
         protected Product() : base(null) { }
 
