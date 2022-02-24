@@ -49,7 +49,7 @@ namespace DealEngine.WebUI.Helpers
         private readonly ISessionFactory _sessionFactory;
         private NHibernate.ISession _session;
         //Guid progid = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
-        Guid progid = Guid.Parse("bbcd7ef3-64c3-4759-9144-49cac816f425");
+       // Guid progid = Guid.Parse("bbcd7ef3-64c3-4759-9144-49cac816f425");
 
         //public ReportSchedular(IReportBuilderService reportBuilderService)
         //{
@@ -71,11 +71,12 @@ namespace DealEngine.WebUI.Helpers
         public async Task Execute(IJobExecutionContext context)
         {
             Debug.WriteLine("reports Available #############");
+            var reportname = context.JobDetail.Description+"()";
             //EntityManager em 
             //String user = _httpContextAccessor.HttpContext.User.Identity.Name;
             // _logger.LogInformation($"Notification Job: Notify User at {DateTime.Now} and Jobtype: {context.JobDetail.JobType}");
             // await _ReportBuilderService.GetReportView(progid, "false");
-          //  List<List<string>> Lreportset = new List<List<string>>();
+            //  List<List<string>> Lreportset = new List<List<string>>();
             DataTable table = new DataTable();
              object[] values1 = new object[table.Columns.Count];
 
@@ -127,7 +128,7 @@ namespace DealEngine.WebUI.Helpers
                 using (var tx = _session.BeginTransaction())
                 {
                     //var sql = String.Format("SELECT  {0}", table);
-                    query = _session.CreateSQLQuery("CALL public.proc_GetPIDataClass1277()");
+                    query = _session.CreateSQLQuery("CALL public."+ reportname);
                     //var result = query.List();
                     IList results = query.List();
                     // var datatable = new DataTable();

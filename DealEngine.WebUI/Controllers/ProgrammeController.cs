@@ -1125,6 +1125,8 @@ namespace DealEngine.WebUI.Controllers
         //    await _scheduler.ScheduleJob(job, trigger);
         //    return RedirectToAction("Index");
         //}
+
+
         public async Task<IActionResult> ManageSchedulars(Guid Id)
         {
             ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();

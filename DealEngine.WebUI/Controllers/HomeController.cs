@@ -52,8 +52,9 @@ namespace DealEngine.WebUI.Controllers
         IUpdateTypeService _updateTypeServices;
         IMilestoneService _milestoneService;
         ISchedularJobService _schedularjobService;
-        //private readonly IScheduler _scheduler;
-
+        private readonly ISchedulerFactory schedulerFactory;
+        // IScheduler _scheduler;
+        public IScheduler Scheduler;
         public HomeController(
             UserManager<IdentityUser> userManager,
             IOrganisationService organisationService,
@@ -76,7 +77,9 @@ namespace DealEngine.WebUI.Controllers
             IFileService fileService,
             IUpdateTypeService updateTypeService,
             IMilestoneService milestoneService,
-            ISchedularJobService schedularjobService
+            ISchedularJobService schedularjobService,
+            ISchedulerFactory schedulerFactory
+            // IScheduler scheduler
 
             )
 
@@ -104,6 +107,9 @@ namespace DealEngine.WebUI.Controllers
             _fileService = fileService;
             _milestoneService = milestoneService;
             _schedularjobService = schedularjobService;
+            this.schedulerFactory = schedulerFactory;
+            ;
+            // _scheduler = scheduler;
         }
 
         // GET: home/index
@@ -1731,6 +1737,9 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> AddReportData(IFormCollection formCollection)
         {
             User user = await CurrentUser();
+            Scheduler = await schedulerFactory.GetScheduler();
+
+            //_scheduler = schedulerFactory.GetScheduler();
             using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
             {
 
@@ -1745,10 +1754,55 @@ namespace DealEngine.WebUI.Controllers
                 SchedularJob schedularjob = new SchedularJob(JobName, ProgrammeId, JobDate, JobTime, JobFunctionName, ScheduleFrequency, "Active" ,typeof(SchedularJob),ReportName, user);
                 await _schedularjobService.AddJob(schedularjob);
 
+
+
+                DateTime datetime = Convert.ToDateTime(schedularjob.JobDate + " " + "00:32");
+
+
+                //        ITrigger trigger = TriggerBuilder.Create()
+                ////        .WithIdentity($"Check Availability - {DateTime.Now}")
+                ////        .StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(15)))
+                ////        .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).WithRepeatCount(10))
+                ////        .WithPriority(1)
+                ////        .Build();
+
+                //        //    IJobDetail job = JobBuilder.Create<CheckAvailabilityTask>()
+                //        //        .WithIdentity("Check Availability")
+                //        //        .Build();
+
+
+          //      TriggerBuilder.Create()
+          // .WithIdentity(schedularjob.Id.ToString())
+          //.StartAt(datetime)
+          ////.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
+          ////.WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1))
+          //.WithDescription(schedularjob.ReportName)
+          //.Build();
+
+                ITrigger trigger = TriggerBuilder.Create()
+                .WithIdentity(schedularjob.Id.ToString())
+               .StartAt(datetime)
+               //.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
+               //.WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1))
+               .WithDescription(schedularjob.ReportName)
+               .Build();
+
+
+                IJobDetail job = JobBuilder.Create<DealEngine.WebUI.Helpers.ReportSchedular>()
+              .WithIdentity(schedularjob.Id.ToString())
+              .WithDescription(schedularjob.ReportName)
+              .Build();
+
+                await Scheduler.ScheduleJob(job, trigger);
+                Scheduler.Start();
+                //Scheduler.ScheduleJob(scheduledjob, trigger, cancellationToken);
+
+                // new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?");
+
             }
 
 
-                return RedirectToAction("Index");
+            return RedirectToAction("Index");
         }
 
         [HttpPost]

@@ -35,7 +35,7 @@ namespace DealEngine.Services.Impl
 
         { //var joblist = new List<SchedularJob>();
 
-           var  joblist = _schedularjobRepository.FindAll().Where(job => job.JobStatus == "Active").ToList();
+           var  joblist = _schedularjobRepository.FindAll().Where(job => job.JobStatus == "Active1").ToList();
             return joblist;
         }
     }
