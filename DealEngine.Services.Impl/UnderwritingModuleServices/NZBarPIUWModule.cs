@@ -66,6 +66,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int coverperiodindays = 0;
             coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
 
+            bool bolmultichanges = false;
             int coverperiodindaysforchange = 0;
             bool bolinvalidchangeeffectivedate = false;
             bool bolinvalidchangeeffectivedatesubmission = false;
@@ -431,6 +432,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 //set admin fee $0
                 agreement.BrokerFee = 0M;
 
+                if (agreement.ClientInformationSheet.PreviousInformationSheet.IsChange)
+                {
+                    bolmultichanges = true;
+                }
+
                 var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PI"));
                 foreach (var term in PreviousAgreement.ClientAgreementTerms)
                 {
@@ -530,6 +536,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 termpitermoption10millimit10kexcess.DateDeleted = null;
                 termpitermoption10millimit10kexcess.DeletedBy = null;
 
+                
                 //Change policy premium calculation
                 if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
                 {
@@ -584,6 +591,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 uwrfchangeeffectivedate(underwritingUser, agreement, bolinvalidchangeeffectivedate);
                 //Change effective date entered prior the submission date
                 uwrfchangeeffectivedatesubmission(underwritingUser, agreement, bolinvalidchangeeffectivedatesubmission);
+                //Multiple changes
+                uwrfmultichanges(underwritingUser, agreement, bolmultichanges);
             }
 
             //Update agreement Status
@@ -976,6 +985,36 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedatesubmission" && cref.DateDeleted == null).DoNotCheckForRenew)
                 {
                     agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedatesubmission" && cref.DateDeleted == null).Status = "";
+                }
+            }
+        }
+
+        void uwrfmultichanges(User underwritingUser, ClientAgreement agreement, bool bolmultichanges)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfmultichanges" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfmultichanges") != null)
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfmultichanges").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfmultichanges").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfmultichanges").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfmultichanges").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfmultichanges").DoNotCheckForRenew));
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfmultichanges" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (bolmultichanges) //Multiple changes
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfmultichanges" && cref.DateDeleted == null).Status = "Pending";
+                    }
+                }
+
+                if (agreement.ClientInformationSheet.IsRenewawl
+                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfmultichanges" && cref.DateDeleted == null).DoNotCheckForRenew)
+                {
+                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfmultichanges" && cref.DateDeleted == null).Status = "";
                 }
             }
         }
