@@ -29,12 +29,12 @@
                         <tr>
                             <td>
                                 <div class="row">
-                                    <section class="col col-3">
+                                    <section class="col col-2">
 
                                         <label>Reports </label>
                                     </section>
                                     <section class="col col-3">
-
+                                        <label>Report Name </label>
                                         <select class="form-control b" id="ReportName" name="ReportName">
 
                                             @foreach (var option in Model.ReportsAvailable)
@@ -44,10 +44,34 @@
 
                                         </select>
                                     </section>
+
+                                    <section class="col col-2">
+                                        <label>Description</label>
+                                        <input type="text" value="@Model.ReportSchedularTime" name="ReportSchedularTime" id="">
+                                    </section>
+
+
+                                <section class="col col-2">
+                                    <br />
+                                     <button name="RunNow" value="@Model.RunNow">Run Now </button>
+                                </section>
+
+                                <section class="col col-2">
+                                    <br />                                  
+                                    <button name="RunNow" value="RunOptions">Run Options </button>
+                                </section>
+                                   
                                 </div>
 
                             </td>
                            
+                        </tr>
+
+                        <tr style="border-style: double;">
+                            <td>
+                                <label>Configure Auto-Run Schedule</label>
+                            </td> 
+
                         </tr>
                         <tr>
                             <td>
@@ -94,25 +118,14 @@
 
                                         </select>
                                     </section>
-                                    <section class="col col-2">
-
-                                        <button name="RunNow" value="@Model.RunNow">Run Now </button>
-                                    </section>
+                                   
                                 </div>
 
 
                             </td>
 
                         </tr>
-                        @*<tr>
-                            <td>
-                                <div class="row">
-                                    <button name="RunNow" value="@Model.RunNow">Run Now </button>
-                                </div>
-
-                            </td>
-
-                        </tr>*@
+                       
 
 
                     </tbody>

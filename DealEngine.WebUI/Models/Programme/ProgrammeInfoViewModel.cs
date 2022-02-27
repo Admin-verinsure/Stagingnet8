@@ -85,7 +85,7 @@ namespace DealEngine.WebUI.Models.Programme
                 },
                 new SelectListItem
                 {
-                    Text = "PI Data of Class 1 / Class 2 FAPs", Value = "proc_getpidataclass12"
+                    Text = "PI Data of Class 1 / Class 2 FAPs", Value = "proc_getpidataclass1234"
                 }
                 //new SelectListItem
                 //{ Text = "ML and CL Data for PI Programme", Value = "proc_MLCLPIPRog" },

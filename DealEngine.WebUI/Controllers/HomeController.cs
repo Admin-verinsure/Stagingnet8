@@ -1756,7 +1756,7 @@ namespace DealEngine.WebUI.Controllers
 
 
 
-                DateTime datetime = Convert.ToDateTime(schedularjob.JobDate + " " + "00:32");
+                DateTime datetime = Convert.ToDateTime(schedularjob.JobDate + " " + "22:25");
 
 
                 //        ITrigger trigger = TriggerBuilder.Create()
