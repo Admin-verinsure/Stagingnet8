@@ -54,7 +54,7 @@ namespace DealEngine.WebUI.Helpers
         //    _ReportBuilderService = reportBuilderService;
         //}public ReportSchedular(ILogger<ReportSchedular> logger, IReportBuilderService ReportBuilderService, IUserService userRepository, IProgrammeService programmeService, IEmailService emailService,
         //IServiceScopeFactory serviceScopeFactory) : base(userRepository)
-        public ReportSchedular(ILogger<ReportSchedular> logger, IReportBuilderService ReportBuilderService, IUserService userRepository, IProgrammeService programmeService, IEmailService emailService
+        public ReportSchedular(ILogger<ReportSchedular> logger, IReportBuilderService ReportBuilderService, IUserService userRepository, IProgrammeService programmeService, IEmailService emailService,
              NHibernate.ISession session, ISessionFactory sessionFactory) : base(userRepository)
         {
             this._logger = logger;
@@ -79,7 +79,10 @@ namespace DealEngine.WebUI.Helpers
                     query.SetString("progid","a808421f-59ff-436c-9250-ae49008bdc4a");
                     IList results = query.List();
 
+
+                    //// here file should target to place we want to save file on server
                     string file = " / tmp / Report.xlsx";
+                    /// here filename should be out parameters from function that we save from function call
                     string fileName = "Report.xlsx";
 
                     //Creating stream object.
@@ -99,12 +102,12 @@ namespace DealEngine.WebUI.Helpers
                     stream.Position = 0;
 
                     EmailTemplate emailTemplate = null;
-                    await _emailService.SendReportsViaEmail("Ashu@techcertain.com", file);
+                    await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
 
                     if (emailTemplate != null)
                     {
 
-                        await _emailService.SendReportsViaEmail("Ashu@techcertain.com", file);
+                        await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
 
 
                     }

@@ -1750,13 +1750,17 @@ namespace DealEngine.WebUI.Controllers
                 var JobFunctionName = formCollection["ProgrammeName"];
                 var ScheduleFrequency = formCollection["ScheduleFrequency"];
                 var ReportName = formCollection["ReportName"];
+                // DateTime datetime = Convert.ToDateTime(schedularjob.JobDate + " " + "11:46";
+                DateTime datetime = DateTime.Now;
 
                 SchedularJob schedularjob = new SchedularJob(JobName, ProgrammeId, JobDate, JobTime, JobFunctionName, ScheduleFrequency, "Active" ,typeof(SchedularJob),ReportName, user);
                 await _schedularjobService.AddJob(schedularjob);
 
+                if (JobDate.Count > 0)
+                {
+                    datetime = Convert.ToDateTime(schedularjob.JobDate + " " + schedularjob.JobTime);
 
-
-                DateTime datetime = Convert.ToDateTime(schedularjob.JobDate + " " + "22:25");
+                }
 
 
                 //        ITrigger trigger = TriggerBuilder.Create()
@@ -1771,19 +1775,19 @@ namespace DealEngine.WebUI.Controllers
                 //        //        .Build();
 
 
-          //      TriggerBuilder.Create()
-          // .WithIdentity(schedularjob.Id.ToString())
-          //.StartAt(datetime)
-          ////.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
-          ////.WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1))
-          //.WithDescription(schedularjob.ReportName)
-          //.Build();
+                //      TriggerBuilder.Create()
+                // .WithIdentity(schedularjob.Id.ToString())
+                //.StartAt(datetime)
+                ////.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
+                ////.WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1))
+                //.WithDescription(schedularjob.ReportName)
+                //.Build();
 
                 ITrigger trigger = TriggerBuilder.Create()
                 .WithIdentity(schedularjob.Id.ToString())
                .StartAt(datetime)
                //.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
-               //.WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1))
+              // .WithSimpleSchedule(x => x.WithInterval(ScheduleFrequency))
                .WithDescription(schedularjob.ReportName)
                .Build();
 
