@@ -120,8 +120,8 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
-                //if (user.IsLoggedout)
-                // return PageNotFound();
+                if (user.IsLoggedout)
+                    return PageNotFound();
 
                 model.UserTasks = user.UserTasks.Where(t=>t.Completed == false && t.Removed == false).ToList();
                 model.DisplayDeals = true;
@@ -689,11 +689,18 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> ViewProgramme(Guid id)
         {
-            List<DealItem> deals = new List<DealItem>();
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
+            List<DealItem> deals = new List<DealItem>();
+            
             try
             {
-                user = await CurrentUser();
                 Programme programme = await _programmeService.GetProgrammeById(id);
                 
                 IList<ClientProgramme> clientList = new List<ClientProgramme>();
