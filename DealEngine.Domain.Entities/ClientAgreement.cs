@@ -124,6 +124,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsFullProposalDocSend { get; set; }
         public virtual decimal PlacementFee { get; set; }
         public virtual decimal AdditionalCertFee { get; set; }
+        public virtual DateTime FixedRetroactiveDate { get; set; }
         public virtual IList<ClientAgreementTermExtension> ClientAgreementTermExtensions { get; set; }
 
         public virtual List<Document> GetDocuments()
