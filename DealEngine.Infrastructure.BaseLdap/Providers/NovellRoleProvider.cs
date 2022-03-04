@@ -146,7 +146,7 @@ namespace DealEngine.Infrastructure.BaseLdap.Providers
 			LdapConnection connection = new LdapConnection ();
 			connection.Connect (ServerAddress, ServerPort);
 
-			string adminUserDN = string.Format (ConfigurationManager.AppSettings ["OpenLdapBindDN"], BaseDN);
+			string adminUserDN = string.Format(ConfigurationManager.AppSettings["OpenLdapBindDN"]);//, BaseDN);
 			string adminUserPassword = ConfigurationManager.AppSettings ["OpenLdapBindPW"];
 			connection.Bind (adminUserDN, adminUserPassword);
 

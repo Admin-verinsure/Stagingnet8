@@ -34,7 +34,7 @@ namespace DealEngine.Infrastructure.BaseLdap.Services
 
 		public string AdminBindDN {
 			get {
-				return string.Format(GetConfigValue("OpenLdapBindDN"), BaseDN);
+				return string.Format(GetConfigValue("OpenLdapBindDN"));//, BaseDN);
 			}
 		}
 

@@ -380,7 +380,7 @@ namespace DealEngine.Infrastructure.BaseLdap.Providers
 
 		LdapConnection GetConnection ()
 		{
-			string adminUserDN = string.Format (ConfigurationManager.AppSettings ["OpenLdapBindDN"], BaseDN);
+			string adminUserDN = string.Format(ConfigurationManager.AppSettings["OpenLdapBindDN"]);//, BaseDN);
 			string adminUserPassword = ConfigurationManager.AppSettings ["OpenLdapBindPW"];
 
 			return GetConnection (adminUserDN, adminUserPassword);

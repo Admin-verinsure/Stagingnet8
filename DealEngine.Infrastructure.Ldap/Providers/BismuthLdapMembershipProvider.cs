@@ -304,7 +304,7 @@ namespace DealEngine.Infrastructure.Ldap.Providers
 		LdapClient GetLdapConnection ()
 		{
 			string baseDN = ConfigurationManager.AppSettings ["OpenLdapBaseDN"];
-			string adminUserDN = string.Format (ConfigurationManager.AppSettings ["OpenLdapBindDN"], baseDN);
+			string adminUserDN = string.Format(ConfigurationManager.AppSettings["OpenLdapBindDN"]);//, baseDN);
 			string adminUserPassword = ConfigurationManager.AppSettings ["OpenLdapBindPW"];
 
 			return GetLdapConnection (adminUserDN, adminUserPassword);

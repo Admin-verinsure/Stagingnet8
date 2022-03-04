@@ -14,7 +14,7 @@ namespace DealEngine.Infrastructure.Ldap
         
 		public string AdminDn {
 			get {
-                return (_configuration.GetValue<string>("OpenLdapBindDN") + BaseDn);
+                return _configuration.GetValue<string>("OpenLdapBindDN");// + BaseDn);
                 //return string.Format (ConfigurationManager.AppSettings ["OpenLdapBindDN"], BaseDn);
 			}
 		}
