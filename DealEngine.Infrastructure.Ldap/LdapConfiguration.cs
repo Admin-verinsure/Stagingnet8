@@ -14,44 +14,45 @@ namespace DealEngine.Infrastructure.Ldap
         
 		public string AdminDn {
 			get {
-                return _configuration.GetValue<string>("OpenLdapBindDN");// + BaseDn);
+                //return _configuration.GetValue<string>("OpenLdapBindDN"), BaseDn);
+                return _configuration.GetValue<string>("ApacheLdapBindDN");// + BaseDn);
                 //return string.Format (ConfigurationManager.AppSettings ["OpenLdapBindDN"], BaseDn);
 			}
 		}
 
 		public string AdminPassword {
 			get {
-                return _configuration.GetValue<string>("OpenLdapBindPW");
+                return _configuration.GetValue<string>("ApacheLdapBindPW"); // OpenLdapBindPw
                 //return ConfigurationManager.AppSettings ["OpenLdapBindPW"];
             }
 		}
 
 		public string LdapHost {
 			get {
-                return _configuration.GetValue<string>("OpenLdapServer");
+                return _configuration.GetValue<string>("ApacheLdapServer"); // OpenLdapServer
                 //return ConfigurationManager.AppSettings ["OpenLdapServer"];
-			}
+            }
 		}
 
 		public int LdapPort {
 			get {
-                return _configuration.GetValue<int>("OpenLdapPort");
+                return _configuration.GetValue<int>("ApacheLdapPort"); // OpenLdapPort
                 //return int.Parse (ConfigurationManager.AppSettings ["OpenLdapPort"]);
-			}
+            }
 		}
 
 		public string BaseDn {
 			get {
-                return _configuration.GetValue<string>("OpenLdapBaseDN");
+                return _configuration.GetValue<string>("ApacheLdapBaseDN"); // OpenLdapBaseDN
                 //return ConfigurationManager.AppSettings ["OpenLdapBaseDN"];
-			}
+            }
 		}
 
         public string UserDN
         {
             get
             {
-                string baseDN = _configuration.GetValue<string>("OpenLdapBaseDN");
+                string baseDN = _configuration.GetValue<string>("ApacheLdapBaseDN"); // OpenLdapBaseDN
                 return string.Format(_configuration.GetValue<string>("OpenLdapBaseUserDN"), baseDN);
             }
         }
