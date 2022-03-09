@@ -1,571 +1,642 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
-    <form id="PIViewModel" class="is-valid" data-accordianId="Professional Indemnity">
+<form id="PIViewModel" class="is-valid" data-accordianId="Professional Indemnity">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hascontractingservices" class="label required">
+                    Please select the areas you provide contracting services from the following:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hascontractingservices" name="PIViewModel.ContractingServicesOptions" multiple data-rule="ContractingService" data-item='PIViewModel.ContractingServicesOptions' class="chosen-select b form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.ContractingServicesOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.ContractingServicesOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hascontractingservices" class="label required">
-                        Please select the areas you provide contracting services from the following:
+                    <label for="contractingservicesdetails" class="label required">
+                        Please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hascontractingservices" name="PIViewModel.ContractingServicesOptions" multiple data-rule="ContractingService" data-item='PIViewModel.ContractingServicesOptions' class="chosen-select b form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.ContractingServicesOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.ContractingServicesDetails, new { @class = "form-control", @id = "contractingservicesdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
-        <div id="PIViewModel.ContractingServicesOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="contractingservicesdetails" class="label required">
-                            Please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.ContractingServicesDetails, new { @class = "form-control", @id = "contractingservicesdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
+    </div>
+    <div class="form-group">
+        <label class="label">
+            <strong>Insurance History</strong><br />
+            <strong>Have you ever had any:</strong>
+        </label>
+        <div class="row">
+            <div class="col-9">
+                <label for="hasstardardterms" class="label required">
+                    Do you have standard terms upon which you supply your professional services?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasstardardterms" name="PIViewModel.HasStandardTermsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasStandardTermsOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
             </div>
         </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasnegotiate" class="label required">
+                    Do you ever negotiate contracts with your customers in which you accept liability for liquidated and/or consequential damages?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasnegotiate" name="PIViewModel.HasNegotiateOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasNegotiateOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasnoagreementoptions" class="label required">
+                    Do you ever commence any assignment/project where there is no written agreement or contract?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasnoagreementoptions" name="PIViewModel.HasNoAgreementOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasNoAgreementOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="label">
+            When engaging consultants or contractors, do you ensure that those consultants/contractors:
+        </label>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasownPI" class="label required">
+                    Maintain their own professional indemnity insurance?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasownPI" name="PIViewModel.HasOwnPIOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasOwnPIOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasboundcontract" class="label required">
+                    Are bound by contract to accept full responsibility for their own actions?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasboundcontract" name="PIViewModel.HasBoundContractOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasBoundContractOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasrecorded" class="label required">
+                    Do you always record amended or additional instructions from your client?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasrecorded" name="PIViewModel.HasRecordedOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasRecordedOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasdairyrecord" class="label required">
+                    Do you have a master diary system for recording all deadlines?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasdairyrecord" name="PIViewModel.HasDiaryRecordOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasDiaryRecordOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hascomplaint" class="label required">
+                    Do you have a complaints process that if a client complains, relevant factors are promptly considered and documents, including:
+                    <br />
+                    <span>
+                        Documenting the complaint to the Client
+                    </span>
+                    <br />
+                    <span>
+                        Whether a conflict of interest has arisen
+                    </span>
+                    <br />
+                    <span>
+                        Whether you should notify your Broker/Insurer
+                    </span>
+                    <br />
+                    <span>
+                        Whether the complaint's impact can be minimised
+                    </span>
+                    <br />
+                    <span>
+                        Whether reputational risk ia a factor
+                    </span>
+                    <br />
+                    <span>
+                        Whether another party or the Client might have contributed to the problem
+                    </span>
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hascomplaint" name="PIViewModel.HasComplaintOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasComplaintOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasengage" class="label required">
+                    Do you engage in any Component Specification activities and or design ( not including design management activities)?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasengage" name="PIViewModel.HasEngageOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasEngageOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasEngageOptions" hidden>
         <div class="form-group">
-            <label class="label">
-                <strong>Insurance History</strong><br />
-                <strong>Have you ever had any:</strong>
-            </label>
             <div class="row">
                 <div class="col-9">
-                    <label for="hasstardardterms" class="label required">
-                        Do you have standard terms upon which you supply your professional services?
+                    <label for="engagedetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasstardardterms" name="PIViewModel.HasStandardTermsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasStandardTermsOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.EngageDetails, new { @class = "form-control", @id = "engagedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasdisciplinary" class="label required">
+                    Has any Partner, Principal, Director or staff member ever been the subject of disciplinary proceedings for professional misconduct?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasdisciplinary" name="PIViewModel.HasDisciplinaryOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasDisciplinaryOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasDisciplinaryOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasnegotiate" class="label required">
-                        Do you ever negotiate contracts with your customers in which you accept liability for liquidated and/or consequential damages?
+                    <label for="disciplinarydetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasnegotiate" name="PIViewModel.HasNegotiateOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasNegotiateOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.DisciplinaryDetails, new { @class = "form-control", @id = "disciplinarydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasclaimsagainst" class="label required">
+                    Have any claims ever been made against you, your predecessors in business, or any present or former Partner, Principal, Director or Employee of the business?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasclaimsagainst" name="PIViewModel.HasClaimsAgainstOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasClaimsAgainstOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasClaimsAgainstOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasnoagreementoptions" class="label required">
-                        Do you ever commence any assignment/project where there is no written agreement or contract?
+                    <label for="claimdetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasnoagreementoptions" name="PIViewModel.HasNoAgreementOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasNoAgreementOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.ClaimDetails, new { @class = "form-control", @id = "claimdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <label class="label">
-                When engaging consultants or contractors, do you ensure that those consultants/contractors:
-            </label>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasresponsible" class="label required">
+                    Have you or your sub-contractors been responsible for any delays or past due contracts?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasresponsible" name="PIViewModel.HasResponsibleOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasResponsibleOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
         </div>
+    </div>
+    <div id="PIViewModel.HasResponsibleOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasownPI" class="label required">
-                        Maintain their own professional indemnity insurance?
+                    <label for="responsibledetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasownPI" name="PIViewModel.HasOwnPIOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasOwnPIOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.ResponsibleDetails, new { @class = "form-control", @id = "responsibledetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasclaimsagainst2" class="label required">
+                    Have any claims ever been made against you, your predecessors in business, or any present or former Partner, Principal, Director or Employee of the business?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasclaimsagainst2" name="PIViewModel.HasClaimsAgainstOptions2" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasClaimsAgainstOptions2)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasClaimsAgainstOptions2" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasboundcontract" class="label required">
-                        Are bound by contract to accept full responsibility for their own actions?
+                    <label for="claimdetails2" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasboundcontract" name="PIViewModel.HasBoundContractOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasBoundContractOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.ClaimDetails2, new { @class = "form-control", @id = "claimdetails2", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasrefund" class="label required">
+                    Within the past three years, have any customers withheld payments or requested a refund because your products or services did not meet the Customer's performance expectations
+                    or did not perform the compliance with your warranties or representations?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasrefund" name="PIViewModel.HasRefundOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasRefundOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasClaimsAgainstOptions2" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasrecorded" class="label required">
-                        Do you always record amended or additional instructions from your client?
+                    <label for="refunddetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasrecorded" name="PIViewModel.HasRecordedOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasRecordedOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.RefundDetails, new { @class = "form-control", @id = "refunddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hassued" class="label required">
+                    Within the past three years, have you sued any customers for non-payment of contracts?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hassued" name="PIViewModel.HasSuedOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasSuedOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasSuedOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasdairyrecord" class="label required">
-                        Do you have a master diary system for recording all deadlines?
+                    <label for="sueddetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasdairyrecord" name="PIViewModel.HasDiaryRecordOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasDiaryRecordOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.SuedDetails, new { @class = "form-control", @id = "sueddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasdispute" class="label required">
+                    Are you aware of any act, error or omission, unresolved contract dispute or any other circumstance aileging non-performance of contract or non-performance of your products or services?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasdispute" name="PIViewModel.HasDisputeOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasDisputeOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasDisputeOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hascomplaint" class="label required">
-                        Do you have a complaints process that if a client complains, relevant factors are promptly considered and documents, including:
-                        <br />
-                        <span>
-                            Documenting the complaint to the Client
-                        </span>
-                        <br />
-                        <span>
-                            Whether a conflict of interest has arisen
-                        </span>
-                        <br />
-                        <span>
-                            Whether you should notify your Broker/Insurer
-                        </span>
-                        <br />
-                        <span>
-                            Whether the complaint's impact can be minimised
-                        </span>
-                        <br />
-                        <span>
-                            Whether reputational risk ia a factor
-                        </span>
-                        <br />
-                        <span>
-                            Whether another party or the Client might have contributed to the problem
-                        </span>
+                    <label for="disputedetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hascomplaint" name="PIViewModel.HasComplaintOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasComplaintOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.DisputeDetails, new { @class = "form-control", @id = "disputedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="haspenalty" class="label required">
+                    Have you ever had a penalty imposed under the Health & Safety in Employment Act?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="haspenalty" name="PIViewModel.HasPenaltyOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasPenaltyOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasPenaltyOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasengage" class="label required">
-                        Do you engage in any Component Specification activities and or design ( not including design management activities)?
+                    <label for="penaltydetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasengage" name="PIViewModel.HasEngageOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasEngageOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.PenaltyDetails, new { @class = "form-control", @id = "penaltydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
-        <div id="PIViewModel.HasEngageOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="engagedetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.EngageDetails, new { @class = "form-control", @id = "engagedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasengineer" class="label required">Do you or have you acted in the capacity of an Engineer to the Contract?</label>
+            </div>
+            <div class="col-3">
+                <select id="hasengineer" name="PIViewModel.HasEngineerOptions" class="form-select" onchange="OnChange(this.id, this.name)">
+                    @foreach (var option in Model.PIViewModel.HasEngineerOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
             </div>
         </div>
+    </div>
+    <div id="PIViewModel.HasEngineerOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasdisciplinary" class="label required">
-                        Has any Partner, Principal, Director or staff member ever been the subject of disciplinary proceedings for professional misconduct?
+                    <label for="engineerdetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasdisciplinary" name="PIViewModel.HasDisciplinaryOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasDisciplinaryOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.EngineerDetails, new { @class = "form-control", @id = "engineerdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
-        <div id="PIViewModel.HasDisciplinaryOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="disciplinarydetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.DisciplinaryDetails, new { @class = "form-control", @id = "disciplinarydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasincludeddesign" class="label required">Do you engage in any Component Specification activities and or design (not including design management activities)?</label>
+            </div>
+            <div class="col-3">
+                <select id="hasincludeddesign" name="PIViewModel.HasIncludedDesignOptions" class="form-select" onchange="OnChange(this.id, this.name)">
+                    @foreach (var option in Model.PIViewModel.HasIncludedDesignOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
             </div>
         </div>
+    </div>
+    <div id="PIViewModel.HasIncludedDesignOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasclaimsagainst" class="label required">
-                        Have any claims ever been made against you, your predecessors in business, or any present or former Partner, Principal, Director or Employee of the business?
+                    <label for="includeddesigndetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasclaimsagainst" name="PIViewModel.HasClaimsAgainstOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasClaimsAgainstOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.IncludedDesignDetails, new { @class = "form-control", @id = "includeddesigndetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
-        <div id="PIViewModel.HasClaimsAgainstOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="claimdetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.ClaimDetails, new { @class = "form-control", @id = "claimdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasmanagedprojects" class="label required">Have you managed any projects in the past three years?</label>
+            </div>
+            <div class="col-3">
+                <select id="hasmanagedprojects" name="PIViewModel.HasManagedProjectOptions" data-rule="ReverseValidateOnSubmit" data-item='PIViewModel.HasManagedProjectOptions,tblProject' class="form-select" onchange="OnChange(this.id, this.name)">
+                    @foreach (var option in Model.PIViewModel.HasManagedProjectOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
             </div>
         </div>
+    </div>
+    <div id="PIViewModel.HasManagedProjectOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasresponsible" class="label required">
-                        Have you or your sub-contractors been responsible for any delays or past due contracts?
+                    <label for="managedprojectdetails" class="label required">
+                        <strong>You have answered "No" </strong>, please provide full details:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasresponsible" name="PIViewModel.HasResponsibleOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasResponsibleOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextAreaFor(m => m.PIViewModel.ManagedProjectDetails, new { @class = "form-control", @id = "managedprojectdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
-        <div id="PIViewModel.HasResponsibleOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="responsibledetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.ResponsibleDetails, new { @class = "form-control", @id = "responsibledetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasrenewalpi" class="label required">
+                    Is this a renewal of an existing Professional Indemnity policy placed with @Model.Programme.NamedPartyUnitName ?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasrenewalpi" name="PIViewModel.HasExistingPolicyOptionsPIRenew" class="form-select " onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                    @foreach (var option in Model.PIViewModel.HasExistingPolicyOptionsPIRenew)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
             </div>
         </div>
+    </div>
+
+    <div id="PIViewModel.HasExistingPolicyOptionsPIRenew" hidden>
+        <h3 style="font-size:15px;font-weight:bold;color:black">Details of Previous Insurance</h3>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasclaimsagainst2" class="label required">
-                        Have any claims ever been made against you, your predecessors in business, or any present or former Partner, Principal, Director or Employee of the business?
+                    <label for="coveramount" class="label required">
+                        $ Amount of Cover:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasclaimsagainst2" name="PIViewModel.HasClaimsAgainstOptions2" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasClaimsAgainstOptions2)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div id="PIViewModel.HasClaimsAgainstOptions2" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="claimdetails2" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.ClaimDetails2, new { @class = "form-control", @id = "claimdetails2", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
+                    @Html.TextBoxFor(m => m.PIViewModel.CoverAmount, new { @class = "form-control", @id = "coveramount", @type = "number", onchange = "OnChange(this.id, this.name)", @required = "" })
                 </div>
             </div>
         </div>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasrefund" class="label required">
-                        Within the past three years, have any customers withheld payments or requested a refund because your products or services did not meet the Customer's performance expectations
-                        or did not perform the compliance with your warranties or representations?
+                    <label for="datelapsed" class="label required">
+                        When Lapsed:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasrefund" name="PIViewModel.HasRefundOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasRefundOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div id="PIViewModel.HasClaimsAgainstOptions2" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="refunddetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.RefundDetails, new { @class = "form-control", @id = "refunddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
+                    @Html.TextBoxFor(m => m.PIViewModel.DateLapsed, new { @class = "form-control", @id = "datelapsed", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
                 </div>
             </div>
         </div>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hassued" class="label required">
-                        Within the past three years, have you sued any customers for non-payment of contracts?
+                    <label for="insurername" class="label required">
+                        Name of Insurer:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hassued" name="PIViewModel.HasSuedOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasSuedOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div id="PIViewModel.HasSuedOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="sueddetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.SuedDetails, new { @class = "form-control", @id = "sueddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
+                    @Html.TextBoxFor(m => m.PIViewModel.InsurerName, new { @class = "form-control", @id = "insurername", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
                 </div>
             </div>
         </div>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasdispute" class="label required">
-                        Are you aware of any act, error or omission, unresolved contract dispute or any other circumstance aileging non-performance of contract or non-performance of your products or services?
+                    <label for="retroactivedate" class="label required">
+                        Retroactive date:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasdispute" name="PIViewModel.HasDisputeOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasDisputeOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
+                    @Html.TextBoxFor(m => m.PIViewModel.RetroactiveDate, new { @class = "form-control", @id = "retroactivedate", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
                 </div>
             </div>
         </div>
-        <div id="PIViewModel.HasDisputeOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="disputedetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.DisputeDetails, new { @class = "form-control", @id = "disputedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="haspenalty" class="label required">
-                        Have you ever had a penalty imposed under the Health & Safety in Employment Act?
-                    </label>
-                </div>
-                <div class="col-3">
-                    <select id="haspenalty" name="PIViewModel.HasPenaltyOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.PIViewModel.HasPenaltyOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div id="PIViewModel.HasPenaltyOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="penaltydetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.PenaltyDetails, new { @class = "form-control", @id = "penaltydetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="hasengineer" class="label required">Do you or have you acted in the capacity of an Engineer to the Contract?</label>
-                </div>
-                <div class="col-3">
-                    <select id="hasengineer" name="PIViewModel.HasEngineerOptions" class="form-select" onchange="OnChange(this.id, this.name)">
-                        @foreach (var option in Model.PIViewModel.HasEngineerOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div id="PIViewModel.HasEngineerOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="engineerdetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.EngineerDetails, new { @class = "form-control", @id = "engineerdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="hasincludeddesign" class="label required">Do you engage in any Component Specification activities and or design (not including design management activities)?</label>
-                </div>
-                <div class="col-3">
-                    <select id="hasincludeddesign" name="PIViewModel.HasIncludedDesignOptions" class="form-select" onchange="OnChange(this.id, this.name)">
-                        @foreach (var option in Model.PIViewModel.HasIncludedDesignOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div id="PIViewModel.HasIncludedDesignOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="includeddesigndetails" class="label required">
-                            <strong>You have answered "Yes" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.IncludedDesignDetails, new { @class = "form-control", @id = "includeddesigndetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="hasmanagedprojects" class="label required">Have you managed any projects in the past three years?</label>
-                </div>
-                <div class="col-3">
-                    <select id="hasmanagedprojects" name="PIViewModel.HasManagedProjectOptions" data-rule="ReverseValidateOnSubmit" data-item='PIViewModel.HasManagedProjectOptions,tblProject' class="form-select" onchange="OnChange(this.id, this.name)">
-                        @foreach (var option in Model.PIViewModel.HasManagedProjectOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div id="PIViewModel.HasManagedProjectOptions" hidden>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                        <label for="managedprojectdetails" class="label required">
-                            <strong>You have answered "No" </strong>, please provide full details:
-                        </label>
-                    </div>
-                    <div class="col-3">
-                        @Html.TextAreaFor(m => m.PIViewModel.ManagedProjectDetails, new { @class = "form-control", @id = "managedprojectdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form>
+    </div>
+
+</form>

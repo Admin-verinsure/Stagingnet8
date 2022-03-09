@@ -421,9 +421,27 @@ namespace DealEngine.WebUI.Models
             IssuingFundtransferYN = GetSelectListOptions();
             ReconcilingStatementsYN = GetSelectListOptions();
             AmendingFundsYN = GetSelectListOptions();
-
+            HasExistingPolicyOptionsEPLRenew = GetSelectListOptionsEPLRenew();
         }
 
+        private IList<SelectListItem> GetSelectListOptionsEPLRenew()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" },
+                new SelectListItem
+                { Text = "Never had Employment Practices Liability", Value = "3" }
+            };
+        }
         private IList<SelectListItem> GetSelectListOptions()
         {
             return new List<SelectListItem>()
@@ -455,6 +473,7 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> IssuingFundtransferYN { get; set; }
         public IList<SelectListItem> ReconcilingStatementsYN { get; set; }
         public IList<SelectListItem> AmendingFundsYN { get; set; }
+        public IList<SelectListItem> HasExistingPolicyOptionsEPLRenew { get; set; }
 
         public int CoverAmount { get; set; }
         public string DateLapsed { get; set; }
@@ -693,6 +712,7 @@ namespace DealEngine.WebUI.Models
             HasPracticeClaimOptions = GetSelectListOptions();
             HasThirdPartyOptions = GetSelectListOptions();
             HasExistingPolicyOptions = GetSelectListOptions();
+            HasExistingPolicyOptionsPIRenew = GetSelectListOptionsPIRenew();
             HasDANZOptions = GetSelectListOptions();
             HasComplaintAlternativeOptions = GetAlternativeSelectListOptions();
             HasSalesRelateOptions = GetSelectListOptions();
@@ -743,6 +763,25 @@ namespace DealEngine.WebUI.Models
             HasPreviouslyUndertaken = GetSelectListOptions();
             hasClaimsMade = GetSelectListOptions();
             IsRequirecoverJunior = GetSelectListOptions();
+        }
+
+        private IList<SelectListItem> GetSelectListOptionsPIRenew()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" },
+                new SelectListItem
+                { Text = "Never had Professional Indemnity", Value = "3" }
+            };
         }
 
         private IList<SelectListItem> GetRunOffYearCoverSelectListOptions()
@@ -1069,6 +1108,7 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasPracticeClaimOptions { get; set; }
         public IList<SelectListItem> HasThirdPartyOptions { get; set; }
         public IList<SelectListItem> HasExistingPolicyOptions { get; set; }
+        public IList<SelectListItem> HasExistingPolicyOptionsPIRenew { get; set; }
         public IList<SelectListItem> HasDANZOptions { get; set; }
         public IList<SelectListItem> HasSalesRelateOptions { get; set; }
         public IList<SelectListItem> HasSubstantialChangeOptions { get; set; }
@@ -1193,6 +1233,7 @@ namespace DealEngine.WebUI.Models
             HasDebtsOptions = GetSelectListOptions();
             HasOtherDAOOptions = GetSelectListOptions();
             HasExistingPolicyOptions = GetSelectListOptions();
+            HasExistingPolicyOptionsDORenew = GetSelectListOptionsDORenew();
             FormDate = DateTime.Now;
         }
 
@@ -1208,8 +1249,7 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasDebtsOptions { get; set; }
         public IList<SelectListItem> HasExistingPolicyOptions { get; set; }
         public IList<SelectListItem> HasOtherDAOOptions { get; set; }
-
-        
+        public IList<SelectListItem> HasExistingPolicyOptionsDORenew { get; set; }
 
         public int ShareholderTotal { get; set; }
         public int AssetTotal { get; set; }
@@ -1231,7 +1271,24 @@ namespace DealEngine.WebUI.Models
         public string DateLapsed { get; set; }
         public string RetroactiveDate { get; set; }
         public string InsurerName { get; set; }
-       
+        private IList<SelectListItem> GetSelectListOptionsDORenew()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" },
+                new SelectListItem
+                { Text = "Never had Directors and Officers Liability", Value = "3" }
+            };
+        }
         private IList<SelectListItem> GetSelectListOptions()
         {
             return new List<SelectListItem>()
