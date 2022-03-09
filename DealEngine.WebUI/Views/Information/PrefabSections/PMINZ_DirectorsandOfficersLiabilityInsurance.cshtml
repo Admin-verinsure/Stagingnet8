@@ -319,5 +319,76 @@
                     </div>
                 </div>
             </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasrenewaldo" class="label required">
+                            Is this a renewal of an existing Directors and Officers Liability policy placed with @Model.Programme.NamedPartyUnitName ?
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        <select id="hasrenewaldo" name="DAOLIViewModel.HasExistingPolicyOptionsDORenew" class="form-select " onchange="OnChange(this.id, this.name)" data-rule="Reverse" required>
+                            @foreach (var option in Model.DAOLIViewModel.HasExistingPolicyOptionsDORenew)
+                            {
+                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="DAOLIViewModel.HasExistingPolicyOptionsDORenew" hidden>
+                <h3 style="font-size:15px;font-weight:bold;color:black">Details of Previous Insurance</h3>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="coveramount" class="label required">
+                                $ Amount of Cover:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextBoxFor(m => m.DAOLIViewModel.CoverAmount, new { @class = "form-control", @id = "coveramount", @type = "number", onchange = "OnChange(this.id, this.name)", @required = "" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="datelapsed" class="label required">
+                                When Lapsed:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextBoxFor(m => m.DAOLIViewModel.DateLapsed, new { @class = "form-control", @id = "datelapsed", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="insurername" class="label required">
+                                Name of Insurer:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextBoxFor(m => m.DAOLIViewModel.InsurerName, new { @class = "form-control", @id = "insurername", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="retroactivedate" class="label required">
+                                Retroactive date:
+                            </label>
+                        </div>
+                        <div class="col-3">
+                            @Html.TextBoxFor(m => m.DAOLIViewModel.RetroactiveDate, new { @class = "form-control", @id = "retroactivedate", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </form>
