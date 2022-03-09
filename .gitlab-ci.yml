@@ -125,7 +125,7 @@ deploy_stagingprofessionalrisks:
   - ssh ubuntu@"$URLstagingprorisks" './DE-DeployPrep.sh'
   - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/netcoreapp3.1/ ubuntu@$URLstagingprorisks:/home/ubuntu/projects/dealengine
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLstagingprorisks:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLstagingprorisks" './DE-DeployFin.sh'
   environment:
     name: stagingprofessionalrisks
@@ -230,7 +230,7 @@ deploy_professionalrisks:
   - ssh ubuntu@"$URLprorisks" './DE-DeployPrep.sh'
   - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/netcoreapp3.1/ ubuntu@$URLprorisks:/home/ubuntu/projects/dealengine
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLprorisks:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLprorisks" './DE-DeployFin.sh'
   environment:
     name: professionalrisks
@@ -267,7 +267,7 @@ deploy_aibgrouponline:
   - ssh ubuntu@"$URLaibgrouponline" './DE-DeployPrep.sh'
   - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/netcoreapp3.1/ ubuntu@$URLaibgrouponline:/home/ubuntu/projects/dealengine
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLaibgrouponline:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLaibgrouponline" './DE-DeployFin.sh'
   environment:
     name: aibgrouponline
