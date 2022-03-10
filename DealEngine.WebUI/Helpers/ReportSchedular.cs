@@ -80,10 +80,12 @@ namespace DealEngine.WebUI.Helpers
                     IList results = query.List();
 
 
-                    //// here file should target to place we want to save file on server
-                    string file = " / tmp / Report.xlsx";
-                    /// here filename should be out parameters from function that we save from function call
+                    /// here filename should be out parameters fr
                     string fileName = "Report.xlsx";
+                    string filepath = "/ tmp /";
+
+                    //// here file should target to place we want to save file on server
+                    string file = filepath + fileName;
 
                     //Creating stream object.
                     MemoryStream stream = new MemoryStream();
