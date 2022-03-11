@@ -75,17 +75,19 @@ namespace DealEngine.WebUI.Helpers
             {
                 using (var tx = _session.BeginTransaction())
                 {
-                    query = _session.CreateSQLQuery("CALL public."+ reportname);
-                    query.SetString("progid","a808421f-59ff-436c-9250-ae49008bdc4a");
+                    //query = _session.CreateSQLQuery("CALL public."+ reportname)
+                    query = _session.CreateSQLQuery("SELECT public.getusernameorg('''a808421f-59ff-436c-9250-ae49008bdc4a''')");
+
+                    //query.SetString("progid","a808421f-59ff-436c-9250-ae49008bdc4a");
                     IList results = query.List();
 
 
                     /// here filename should be out parameters fr
                     string fileName = "Report.xlsx";
-                    string filepath = "/ tmp /";
-
-                    //// here file should target to place we want to save file on server
-                    string file = filepath + fileName;
+                    // string filepath = "/ tmp /";
+                    string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv";
+                     //// here file should target to place we want to save file on server
+                     string file = filepath + fileName;
 
                     //Creating stream object.
                     MemoryStream stream = new MemoryStream();
@@ -104,12 +106,12 @@ namespace DealEngine.WebUI.Helpers
                     stream.Position = 0;
 
                     EmailTemplate emailTemplate = null;
-                    await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
+                  //  await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
 
                     if (emailTemplate != null)
                     {
 
-                        await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
+                       // await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
 
 
                     }

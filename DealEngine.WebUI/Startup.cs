@@ -125,7 +125,7 @@ namespace DealEngine.WebUI
             var container = services.BuildServiceProvider();
 
             // Create an instance of the job factory
-           // services.AddHostedService<JobSchedular>();
+            services.AddHostedService<JobSchedular>();
             services.AddSingleton<IJobFactory, JobFactory>();
             //services.AddSingleton<ISchedulerFactory, ISchedulerFactory>();
             //services.AddScoped<IReportBuilderService>();
@@ -146,7 +146,7 @@ namespace DealEngine.WebUI
                 q.UseMicrosoftDependencyInjectionScopedJobFactory();
 
             });
-           // services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));
+            services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));
             services.AddHttpContextAccessor();
             services.AddQuartzHostedService();
             //services.AddQuartzServer(options =>
