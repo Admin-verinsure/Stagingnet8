@@ -50,7 +50,7 @@ namespace DealEngine.Infrastructure.Ldap
         {
             get
             {
-                string baseDN = _configuration.GetValue<string>("ApacheLdapBaseDN"); // OpenLdapBaseDN
+                string baseDN = _configuration.GetValue<string>("OpenLdapBaseDN"); // ApacheLdapBaseDN
                 return string.Format(_configuration.GetValue<string>("OpenLdapBaseUserDN"), baseDN);
             }
         }

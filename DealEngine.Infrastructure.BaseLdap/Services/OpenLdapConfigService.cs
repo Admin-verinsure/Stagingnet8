@@ -10,13 +10,13 @@ namespace DealEngine.Infrastructure.BaseLdap.Services
 
 		public string ServerAddress {
 			get {
-				return GetConfigValue("ApacheLdapServer"); // OpenLdapServer
+				return GetConfigValue("OpenLdapServer"); // ApacheLdapServer
 			}
 		}
 
 		public int ServerPort {
 			get {
-				return Convert.ToInt32(GetConfigValue("ApacheLdapPort")); // OpenLdapPort
+				return Convert.ToInt32(GetConfigValue("OpenLdapPort")); // ApacheLdapPort
 			}
 		}
 
@@ -28,21 +28,21 @@ namespace DealEngine.Infrastructure.BaseLdap.Services
 
 		public string BaseDN {
 			get {
-				return GetConfigValue("ApacheLdapBaseDN"); // OpenLdapBaseDN
+				return GetConfigValue("OpenLdapBaseDN"); // ApacheLdapBaseDN
 			}
 		}
 
 		public string AdminBindDN {
 			get {
-				//return string.Format(GetConfigValue("OpenLdapBindDN")), BaseDN);
-				return string.Format(GetConfigValue("ApacheLdapBindDN"));
+				return string.Format(GetConfigValue("OpenLdapBindDN"), BaseDN);
+				//return string.Format(GetConfigValue("ApacheLdapBindDN"));
 
 			}
 		}
 
 		public string AdminBindPassword {
 			get {
-				return GetConfigValue("ApacheLdapBindPW"); // OpenLdapBindPW
+				return GetConfigValue("OpenLdapBindPW"); // ApacheLdapBindPW
 			}
 		}
 

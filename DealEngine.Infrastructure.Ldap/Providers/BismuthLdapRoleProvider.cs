@@ -15,26 +15,26 @@ namespace DealEngine.Infrastructure.Ldap.Providers
 	{
 		protected string ServerAddress {
 			get {
-				return ConfigurationManager.AppSettings ["ApacheLdapServer"]; // OpenLdapServer
+				return ConfigurationManager.AppSettings ["OpenLdapServer"]; // ApacheLdapServer
 			}
 		}
 
 		protected int ServerPort {
 			get {
-				return Convert.ToInt32 (ConfigurationManager.AppSettings ["ApacheLdapPort"]); // OpenLdapPort
+				return Convert.ToInt32 (ConfigurationManager.AppSettings ["OpenLdapPort"]); // ApacheLdapPort
 			}
 		}
 
 		protected string UserDN {
 			get {
-				string baseDN = ConfigurationManager.AppSettings ["ApacheLdapBaseDN"]; // OpenLdapBaseDN
+				string baseDN = ConfigurationManager.AppSettings ["OpenLdapBaseDN"]; // ApacheLdapBaseDN
 				return string.Format (ConfigurationManager.AppSettings ["OpenLdapBaseUserDN"], baseDN);
 			}
 		}
 
 		protected string OrganisationDN {
 			get {
-				string baseDN = ConfigurationManager.AppSettings["ApacheLdapBaseDN"]; // OpenLdapBaseDN
+				string baseDN = ConfigurationManager.AppSettings["OpenLdapBaseDN"]; // ApacheLdapBaseDN
 				return string.Format (ConfigurationManager.AppSettings ["OpenLdapBaseOrganisationDN"], baseDN);
 			}
 		}
@@ -76,10 +76,10 @@ namespace DealEngine.Infrastructure.Ldap.Providers
 
 		LdapClient GetLdapConnection ()
 		{
-			string baseDN = ConfigurationManager.AppSettings["ApacheLdapBaseDN"]; // OpenLdapBaseDN
-			//string adminUserDN = string.Format(ConfigurationManager.AppSettings["OpenLdapBindDN"], baseDN);
-			string adminUserDN = string.Format(ConfigurationManager.AppSettings["ApacheLdapBindDN"]);		
-			string adminUserPassword = ConfigurationManager.AppSettings ["ApacheLdapBindPW"]; // OpenLdapBindPW
+			string baseDN = ConfigurationManager.AppSettings["OpenLdapBaseDN"]; // ApacheLdapBaseDN
+			string adminUserDN = string.Format(ConfigurationManager.AppSettings["OpenLdapBindDN"], baseDN);
+			//string adminUserDN = string.Format(ConfigurationManager.AppSettings["ApacheLdapBindDN"]);		
+			string adminUserPassword = ConfigurationManager.AppSettings ["OpenLdapBindPW"]; // ApacheLdapBindPW
 
 			return GetLdapConnection (adminUserDN, adminUserPassword);
 		}

@@ -9,15 +9,15 @@ namespace DealEngine.Infrastructure.BaseLdap.Providers
 		protected string ServerAddress
 		{
 			get {
-				string serverPort = ConfigurationManager.AppSettings["ApacheLdapPort"]; // OpenLdapPort
-				return "LDAP://" + ConfigurationManager.AppSettings["ApacheLdapServer"] + ":" + serverPort; // OpenLdapServer
+				string serverPort = ConfigurationManager.AppSettings["OpenLdapPort"]; // ApacheLdapPort
+				return "LDAP://" + ConfigurationManager.AppSettings["OpenLdapServer"] + ":" + serverPort; // ApacheLdapServer
 			}
 		}
 
 		protected string UserDN
 		{
 			get {
-				string baseDN = ConfigurationManager.AppSettings["ApacheLdapBaseDN"]; // OpenLdapBaseDN
+				string baseDN = ConfigurationManager.AppSettings["OpenLdapBaseDN"]; // ApacheLdapBaseDN
 				return string.Format(ConfigurationManager.AppSettings["OpenLdapBaseUserDN"], baseDN);
 			}
 		}
@@ -25,7 +25,7 @@ namespace DealEngine.Infrastructure.BaseLdap.Providers
 		protected string OrganisationDN
 		{
 			get {
-				string baseDN = ConfigurationManager.AppSettings["ApacheLdapBaseDN"]; // OpenLdapBaseDN
+				string baseDN = ConfigurationManager.AppSettings["OpenLdapBaseDN"]; // ApacheLdapBaseDN
 				return string.Format(ConfigurationManager.AppSettings["OpenLdapBaseOrganisationDN"], baseDN);
 			}
 		}
