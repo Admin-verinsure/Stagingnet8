@@ -11,15 +11,15 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 	{
 		public User FromLdap (LdapEntry entry)
 		{
-			Guid id = Guid.Parse (entry.GetAttributeValue ("employeeNumber"));                  // Need to swap this to use 'uniqueIdentifier'
+			Guid id = Guid.Parse (entry.GetAttributeValue ("employeenumber"));                  // Need to swap this to use 'uniqueIdentifier'
 			string userName = entry.GetAttributeValue ("uid");
 
 			User user = new User (null, id, userName);
-			user.FirstName = entry.GetAttributeValue ("givenName");
+			user.FirstName = entry.GetAttributeValue ("givenname");
 			user.LastName = entry.GetAttributeValue ("sn");
 			user.FullName = entry.GetAttributeValue ("cn");
 			user.Email = entry.GetAttributeValue ("mail");
-			user.Phone = entry.GetAttributeValue ("telephoneNumber");
+			user.Phone = entry.GetAttributeValue ("telephonenumber");
 			user.Description = entry.GetAttributeValue ("description");
 
 			return user;
@@ -37,12 +37,12 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 
 			LdapEntry entry = new LdapEntry (GetDn (entity, baseDn))
 				.AddAttribute ("uid", entity.UserName)
-				.AddAttribute ("objectClass", "top", "person", "organizationalPerson", "inetOrgPerson")
-				.AddAttribute ("employeeNumber", entity.Id.ToString ());
+				.AddAttribute ("objectclass", "top", "person", "organizationalPerson", "inetOrgPerson")
+				.AddAttribute ("employeenumber", entity.Id.ToString ());
 				//.AddAttribute ("uniqueIdentifier", entity.Id.ToString ());		// Removed in RFC4524 schema
 			AddNonNullAttribute (entry, "mail", entity.Email);
 			AddNonNullAttribute (entry, "sn", entity.LastName);
-			AddNonNullAttribute (entry, "givenName", entity.FirstName);
+			AddNonNullAttribute (entry, "givenname", entity.FirstName);
 			AddNonNullAttribute(entry, "cn", entity.FirstName + " " + entity.LastName);
 			// TODO - add org Id map here
 			//entry.AddAttribute ("o", entity.Organisations.Select (o => o.Id.ToString ()).ToArray());
@@ -54,10 +54,10 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 		{
 			var userMods = new List<ModifyAttribute> ();
 			AddNonNullAttribute (userMods, "mail", ModificationType.Replace, entity.Email);
-			AddNonNullAttribute (userMods, "givenName", ModificationType.Replace, entity.FirstName);
+			AddNonNullAttribute (userMods, "givenname", ModificationType.Replace, entity.FirstName);
 			AddNonNullAttribute (userMods, "sn", ModificationType.Replace, entity.LastName);
 			AddNonNullAttribute (userMods, "cn", ModificationType.Replace, entity.FullName);
-			AddNonNullAttribute (userMods, "telephoneNumber", ModificationType.Replace, entity.Phone);
+			AddNonNullAttribute (userMods, "telephonenumber", ModificationType.Replace, entity.Phone);
 			AddNonNullAttribute (userMods, "description", ModificationType.Replace, entity.Description);
 			//AddNonNullAttribute (userMods, "uniqueIdentifier", ModificationType.Replace, entity.Id.ToString ());		// Removed in RFC4524 schema
 			// TODO - add org Id map here

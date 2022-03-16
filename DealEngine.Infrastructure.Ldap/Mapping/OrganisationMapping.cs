@@ -11,15 +11,15 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 		public Organisation FromLdap (LdapEntry entry)
 		{
 			Guid id = Guid.Parse (entry.GetAttributeValue ("o"));					// Need to swap this to use 'uniqueIdentifier'
-			string orgName = entry.GetAttributeValue ("buildingName");              // Need to swap this to use 'o'
+			string orgName = entry.GetAttributeValue ("buildingname");              // Need to swap this to use 'o'
 
             Organisation organisation = new Organisation(null, id, orgName)
             {
-                Domain = entry.GetAttributeValue("associatedDomain"),
-                Phone = entry.GetAttributeValue("telephoneNumber"),
+                Domain = entry.GetAttributeValue("associateddomain"),
+                Phone = entry.GetAttributeValue("telephonenumber"),
                 Description = entry.GetAttributeValue("description")
             };
-            string organisationType = entry.GetAttributeValue ("businessCategory");
+            string organisationType = entry.GetAttributeValue ("businesscategory");
 
 			return organisation;
 		}
@@ -33,16 +33,16 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 		{
 			LdapEntry entry = new LdapEntry (GetDn (entity, baseDn))
 				.AddAttribute ("o", entity.Id.ToString ())
-				.AddAttribute ("objectClass", "top", "pilotOrganization", "domainRelatedObject");
+				.AddAttribute ("objectclass", "top", "pilotOrganization", "domainRelatedObject");
 				//.AddAttribute ("uniqueIdentifier", entity.Id.ToString());       // Removed in RFC4524 schema
 
 			AddNonNullAttribute (entry, "ou", "organisation");
-			AddNonNullAttribute (entry, "buildingName", entity.Name);
+			AddNonNullAttribute (entry, "buildingname", entity.Name);
 			AddNonNullAttribute (entry, "description", entity.Description);
-			AddNonNullAttribute (entry, "telephoneNumber", entity.Phone);
-			AddDefaultAttribute (entry, "associatedDomain", entity.Domain, "#");
+			AddNonNullAttribute (entry, "telephonenumber", entity.Phone);
+			AddDefaultAttribute (entry, "associateddomain", entity.Domain, "#");
 			if (entity.OrganisationType != null)
-				AddNonNullAttribute (entry, "businessCategory", entity.OrganisationType.Name);
+				AddNonNullAttribute (entry, "businesscategory", entity.OrganisationType.Name);
 
 			return entry;
 		}
@@ -50,11 +50,11 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 		public List<ModifyAttribute> ToModify (Organisation entity)
 		{
 			var orgMods = new List<ModifyAttribute> ();
-			AddNonNullAttribute (orgMods, "telephoneNumber", ModificationType.Replace, entity.Phone);
+			AddNonNullAttribute (orgMods, "telephonenumber", ModificationType.Replace, entity.Phone);
 			AddNonNullAttribute (orgMods, "description", ModificationType.Replace, entity.Description);
-			AddNonNullAttribute (orgMods, "associatedDomain", ModificationType.Replace, entity.Domain);
+			AddNonNullAttribute (orgMods, "associateddomain", ModificationType.Replace, entity.Domain);
 			if (entity.OrganisationType != null)
-				AddNonNullAttribute (orgMods, "businessCategory", ModificationType.Replace, entity.OrganisationType.Name);
+				AddNonNullAttribute (orgMods, "businesscategory", ModificationType.Replace, entity.OrganisationType.Name);
 			return orgMods;
 		}
 	}

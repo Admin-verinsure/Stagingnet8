@@ -14,19 +14,19 @@ namespace DealEngine.Infrastructure.Ldap.Providers
 	{
 		protected string ServerAddress {
 			get {
-				return ConfigurationManager.AppSettings ["OpenLdapServer"]; // ApacheLdapServer
+				return ConfigurationManager.AppSettings ["ApacheLdapServer"]; // OpenLdapServer
 			}
 		}
 
 		protected int ServerPort {
 			get {
-				return Convert.ToInt32 (ConfigurationManager.AppSettings ["OpenLdapPort"]); // ApacheLdapPort
+				return Convert.ToInt32 (ConfigurationManager.AppSettings ["ApacheLdapPort"]); // OpenLdapPort
 			}
 		}
 
 		protected string UserDN {
 			get {
-				string baseDN = ConfigurationManager.AppSettings ["OpenLdapBaseDN"]; // ApacheLdapBaseDN
+				string baseDN = ConfigurationManager.AppSettings ["ApacheLdapBaseDN"]; // OpenLdapBaseDN
 				return string.Format (ConfigurationManager.AppSettings ["OpenLdapBaseUserDN"], baseDN);
 			}
 		}
@@ -303,10 +303,10 @@ namespace DealEngine.Infrastructure.Ldap.Providers
 
 		LdapClient GetLdapConnection ()
 		{
-			string baseDN = ConfigurationManager.AppSettings ["OpenLdapBaseDN"]; // ApacheLdapBaseDN
-			string adminUserDN = string.Format(ConfigurationManager.AppSettings["OpenLdapBindDN"], baseDN); 
-			//string adminUserDN = string.Format(ConfigurationManager.AppSettings["ApacheLdapBindDN"]);
-			string adminUserPassword = ConfigurationManager.AppSettings ["OpenLdapBindPW"]; // ApacheLdapBindPW
+			//string baseDN = ConfigurationManager.AppSettings ["OpenLdapBaseDN"]; // ApacheLdapBaseDN
+			//string adminUserDN = string.Format(ConfigurationManager.AppSettings["OpenLdapBindDN"], baseDN); 
+			string adminUserDN = string.Format(ConfigurationManager.AppSettings["ApacheLdapBindDN"]);
+			string adminUserPassword = ConfigurationManager.AppSettings ["ApacheLdapBindPW"]; // OpenLdapBindPW
 
 			return GetLdapConnection (adminUserDN, adminUserPassword);
 		}
