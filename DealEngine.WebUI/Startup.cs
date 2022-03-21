@@ -103,56 +103,27 @@ namespace DealEngine.WebUI
                 options.IncludeSubDomains = true;
                 options.Preload = true;
             });
-            //services.AddSingleton(provider => Startup.GetSchedular());
-            //  var serviceCollection = new ServiceCollection();
-            ///working services.AddSingleton<IJobFactory, JobFactory> ();
-            ///workingservices.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
-            ///working services.AddSingleton<ReportSchedular>();
-            ///workingservices.AddScoped<IReportBuilderService, ReportBuilderService>();
-            //services.AddSingleton<IReportBuilderService, ReportBuilderService>();
-            //List<JobMetadata> jobMetadatas = new List<JobMetadata>();
-            //var serviceProvider = serviceCollection.BuildServiceProvider();
-            ///working  services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/5 * * * * ?"));
-            //services.AddSingleton(jobMetadatas);
-            ///workingservices.AddHostedService<JobSchedular>();
-            ///            services.AddSingleton<IReportBuilderService, ReportBuilderService>();
-            ///            
-
-            // Register job
-            // services.AddTransient<ReportSchedular>();
-            // Register job dependencies
-            // services.AddTransient<IReportBuilderService, ReportBuilderService>();
+           
             var container = services.BuildServiceProvider();
 
             // Create an instance of the job factory
-            services.AddHostedService<JobSchedular>();
+          //  services.AddHostedService<JobSchedular>();
             services.AddSingleton<IJobFactory, JobFactory>();
-            //services.AddSingleton<ISchedulerFactory, ISchedulerFactory>();
-            //services.AddScoped<IReportBuilderService>();
-            //services.AddSingleton<IReportBuilderService, ReportBuilderService>();
-
-            //services.AddSingleton<ReportSchedular>();
-
-            // services.AddTransient<ReportSchedular>();
+           
             services.AddScoped<IReportBuilderService, ReportBuilderService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
 
-            //services.AddScoped<IUserService, UserService>();
-            // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            var jobKey = new JobKey("ReportSchedular");
+            //var jobKey = new JobKey("ReportSchedular");.......
             services.AddQuartz(q =>
             {
                 q.UseMicrosoftDependencyInjectionScopedJobFactory();
 
             });
-            services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));
+            //services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));.....
             services.AddHttpContextAccessor();
             services.AddQuartzHostedService();
-            //services.AddQuartzServer(options =>
-            //{
-            //    options.WaitForJobsToComplete = true;
-            //});
+            
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -85,12 +85,12 @@ namespace DealEngine.WebUI.Models.Programme
                 },
                 new SelectListItem
                 {
-                    Text = "PI Data of Class 1 / Class 2 FAPs", Value = "proc_getpidataclass1234"
-                }
-                //new SelectListItem
-                //{ Text = "ML and CL Data for PI Programme", Value = "proc_MLCLPIPRog" },
-                //new SelectListItem
-                //{ Text = "ML and CL Data for ML Programme", Value = "procMLCLMLProg" },
+                    Text = "PI Data of Class 1 / Class 2 FAPs", Value = "PI_Data_Class1_Class2_FAPs"
+                },
+                new SelectListItem
+                { Text = "LibraryPIFAPReport", Value = "LibraryPIFAPReport" },
+                new SelectListItem
+                { Text = "LibraryMLReport", Value = "LibraryMLReport" },
                 //new SelectListItem
                 //{ Text = "PI Run off Programme for Newly-bound", Value = "proc_PIRunOff" },
                 //new SelectListItem
@@ -172,6 +172,8 @@ namespace DealEngine.WebUI.Models.Programme
         //Report Schedular
         public  bool ReportName { get; set; }
         public  bool IsYearly { get; set; }
+
+        
         //public  bool IsWeekly { get; set; }
         //public  bool IsMonthly { get; set; }
         //public bool IsSchedule { get; set; }
@@ -181,6 +183,9 @@ namespace DealEngine.WebUI.Models.Programme
         //public DateTime OndemadTime { get; set; }
         public string ReportSchedularTime { get; set; }
         public IList<SelectListItem> ReportsAvailable { get; set; }
+        public virtual List<ProgrammeReports> ProgrammeReports { get; set; }
+        public bool ifreportAvailable { get; set; }
+        public string Description { get; set; }
         //public IList<SelectListItem> ScheduleFrequency { get; set; }
     }
 }

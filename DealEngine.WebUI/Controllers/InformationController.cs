@@ -954,9 +954,14 @@ namespace DealEngine.WebUI.Controllers
         {
             User user = null;
 
+            user = await CurrentUser();
+
+            if (user.IsLoggedout)
+                return PageNotFound();
+
             try
             {
-                user = await CurrentUser();
+                
                 var clientProgramme = await _programmeService.GetClientProgramme(id);
                 var sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);

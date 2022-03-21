@@ -13,33 +13,35 @@
                 </h5>
             </div>
             <div class="card-body">
-                <table class="table table-bordered table-striped " >
+                <table class="table table-bordered table-striped ">
                     @*<thread>
-                        <tr>
+            <tr>
 
-                            <th>
-                                <section class="col col-3">
-                                    Report
-                                </section>
-                            </th>
+                <th>
+                    <section class="col col-3">
+                        Report
+                    </section>
+                </th>
 
-                        </tr>
-                    </thread>*@
+            </tr>
+        </thread>*@
                     <tbody>
                         <tr>
                             <td>
                                 <div class="row">
-                                    <section class="col col-2">
+                                    <section class="col col-1">
 
                                         <label>Reports </label>
                                     </section>
-                                    <section class="col col-3">
+                                    <section class="col col-2">
                                         <label>Report Name </label>
-                                        <select class="form-control b" id="ReportName" name="ReportName">
+                                        @*<select onchange="updateLabel()" id="CraftTypeDrop" class="form-select input-lg" hidden style="margin-top: 20px; margin-bottom: 25px;">*@
 
-                                            @foreach (var option in Model.ReportsAvailable)
+                                        <select onchange="SelectedReport()" class="form-select input-lg" id="ReportName" name="ReportName">
+                                            <option selected="selected" value="Select">---Select---</option>
+                                            @foreach (var option in Model.ProgrammeReports)
                                             {
-                                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                                <option value="@option.Id">@option.progreportsName</option>
                                             }
 
                                         </select>
@@ -47,30 +49,43 @@
 
                                     <section class="col col-2">
                                         <label>Description</label>
-                                        <input type="text" value="@Model.ReportSchedularTime" name="ReportSchedularTime" id="">
+                                        <input type="text" id="Description">
+
+                                    </section>
+                                    <section class="col col-1">
+                                    </section>
+                                    <section class="col col-1">
+                                        <label>Availability</label>
+
+                                        <select onchange="SendProgReportsEmail()" id="ReportAvailability">
+                                            @*<option onchange="SendProgReportsEmail()" id="ReportAvailability" selected="selected" value="Select">---Select---</option>*@
+                                            <option value="yes">Yes</option>
+                                            <option value="no">No</option>
+
+                                        </select>
                                     </section>
 
+                                    <section class="col col-2">
+                                        <br />
+                                        <button class="configure" name="RunNow" value="@Model.RunNow">Run Now </button>
+                                    </section>
 
-                                <section class="col col-2">
-                                    <br />
-                                     <button name="RunNow" value="@Model.RunNow">Run Now </button>
-                                </section>
+                                    <section class="col col-2">
+                                        <br />
+                                        <button type="button" onclick="$('#RunOptionsDiv').show();"   class="configure"  value="RunOptions">Run Options </button>
+                                    </section>
 
-                                <section class="col col-2">
-                                    <br />                                  
-                                    <button name="RunNow" value="RunOptions">Run Options </button>
-                                </section>
-                                   
                                 </div>
 
                             </td>
-                           
-                        </tr>
 
+                        </tr>
+                    </tbody>
+                       <tbody id="RunOptionsDiv" style="display:none" class="configure" >
                         <tr style="border-style: double;">
                             <td>
                                 <label><b>Configure Auto-Run Schedule</b></label>
-                            </td> 
+                            </td>
 
                         </tr>
                         <tr>
@@ -86,7 +101,7 @@
                                     </section>
                                 </div>
                             </td>
-                            
+
                         </tr>
                         <tr>
                             <td>
@@ -118,21 +133,21 @@
 
                                         </select>
                                     </section>
-                                   
+
                                 </div>
 
 
                             </td>
 
                         </tr>
-                       
 
-
-                    </tbody>
+  
+                       </tbody>
+                   
                 </table>
             </div>
-            <div class="card-footer">
-                <button class="btn btn-primary btn-xs" id="submit" type="submit">View</button>
+            <div class="card-footer configure">
+                <button class="btn btn-primary btn-xs configure" id="submit" type="submit">Save Auto Run</button>
             </div>
         </div>
     </form>
@@ -153,12 +168,14 @@
 
     $(document).ready(function () {
         var hr = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
-        var mi = ['00','5','10','15','20','25', '30'];
+        var mi = ['00','30'];
         for (i = 0; i < hr.length; i++) {
             $("#start_hour").append('<option val="' + hr[i] + ':' + mi[0] + '">' + hr[i] + ':' + mi[0] + '</option>');
             $("#start_hour").append('<option val="' + hr[i] + ':' + mi[1] + '">' + hr[i] + ':' + mi[1] + '</option>');
         }
     })
+
+    
     //$('#ReportSchedularTime').datetimepicker({
     //    format: 'H:i'
     //});

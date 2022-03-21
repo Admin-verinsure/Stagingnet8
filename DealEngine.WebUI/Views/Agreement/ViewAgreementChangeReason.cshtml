@@ -1,0 +1,139 @@
+﻿@model DealEngine.WebUI.Models.Agreement.ViewAgreementChangeReasonViewModel
+
+<div class="container">
+    <div class="row">
+        <h1 class="page-title txt-color-blueDark">
+            <!-- PAGE HEADER -->
+            <i class="fa-fw fa fa-home"></i>
+            <a href="~/Agreement/ViewAcceptedAgreement/@Model.ClientProgrammeID"> Agreement</a>
+            > <span>Edit Agreement Update Reason</span>
+        </h1>
+    </div>
+
+    <div class="row">
+        <span>
+            <a onclick="location.href='@Url.Action("ViewAcceptedAgreement", "Agreement",new { Id =@Model.ClientProgrammeID })'" style="color:dodgerblue;font-size:30px; cursor:pointer"> <span _ngcontent-c7="" class="icon-append fa fa-arrow-circle-left"></span>  </a>
+        </span>
+    </div>
+
+    <div class="row">
+        <div class="jarviswidget container-fluid" id="wid-id-10"
+             data="false"
+             data-widget-editbutton="false"
+             data-widget-togglebutton="false"
+             data-widget-deletebutton="false"
+             data-widget-custombutton="false"
+             data-widget-sortable="false">
+            <header>
+                <span class="widget-icon"> <i class="fa fa-list-alt"></i> </span>
+                <h2>@ViewBag.Title </h2>
+            </header>
+
+            <!-- widget div-->
+            <form action="~/Agreement/ViewAgreementChangeReason/@Model.ClientAgreementID" method="POST" id="update-form" enctype="multipart/form-data">
+                @Html.HiddenFor(m => m.ClientAgreementID)
+                @Html.HiddenFor(m => m.ClientProgrammeID)
+                <table class="table table-striped table-bordered">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label class="label"><strong>Update Type (Read Only): </strong></label>
+                            </td>
+                            <td>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.ChangeType, new { @readonly = "readonly" })
+                                </label>
+                            </td>
+                        </tr>
+                        @*<tr>
+                            <td>
+                                <label class="label"><strong>Reason  (Read Only): </strong></label>
+                            </td>
+                            <td>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.Reason)
+                                </label>
+                            </td>
+                        </tr>*@
+                        <tr>
+                            <td>
+                                <label class="label"><strong>Reason Description (Read Only): </strong></label>
+                            </td>
+                            <td>
+                                <label class="input">
+                                    @Html.TextBoxFor(m => m.Description, new { @readonly = "readonly" })
+                                </label>
+                            </td>
+                        </tr>
+                        <tr class="table-light">
+                            <td>
+                                <label class="label"><strong>Effective Date: </strong></label>
+                            </td>
+                            <td>
+                                <label class="input">
+                                    @Html.EditorFor(model => model.EffectiveDate, new { htmlAttributes = new { @class = "EffectiveDate", dateFormat = "dd/mm/yy" } })
+
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Save</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a href="~/Agreement/ViewAcceptedAgreement/@Model.ClientProgrammeID" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Cancel</a>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+    <!-- end widget -->
+</div>
+<!-- WIDGET END -->
+@section pagespecific {
+
+    <script src="~/smartwizard/js/jquery.smartWizard.min.js" defer></script>
+    <link href="~/smartwizard/cc/smart_wizard_theme_circles.css" rel="stylesheet" />
+    <script src="~/ckeditor/ckeditor5-techcertain/build/ckeditor.js"></script>
+    <script src="~/ckeditor/ckeditor5-techcertain/build/selectimportimg.js"></script>
+    <link href="~/ckeditor/ckeditor5-techcertain/build/ckeditor.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+
+
+    </script>
+
+    <script>
+    //$(function () {
+    //    $('[ data-bs-toggle="popover"]').popover();
+    //});
+    $(document).ready(function () {
+        $('[ data-bs-toggle="popover"]').popover({
+            trigger: 'manual',
+            html: true,
+            animation: false
+        }).on('mouseenter', function () {
+
+            var _this = this;
+            $(this).popover('show');
+            $('.popover').on('mouseleave', function () {
+
+                console.log(_this);
+                $(_this).popover('hide');
+            });
+        }).on('mouseleave', function () {
+            var _this = this;
+            setTimeout(function () {
+                if (!$('.popover:hover').length) {
+                    $(_this).popover('hide');
+                }
+            }, 450);
+        });
+    });
+    </script>
+
+}
+

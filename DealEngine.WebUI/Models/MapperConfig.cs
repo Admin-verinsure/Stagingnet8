@@ -191,6 +191,7 @@ namespace DealEngine.WebUI.Models
             CreateMap<AdditionalActivityInformation, AdditionalActivityViewModel>()
                 .IncludeAllDerived();
 
+
             //clonesystem
             //CreateMap<SubClientInformationSheet, SubClientInformationSheet>()
             //    .ForMember(dest => dest.Programme, map => map.Ignore())

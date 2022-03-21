@@ -52,6 +52,7 @@ namespace DealEngine.WebUI.Controllers
         ISerializerationService _serializerationService;
         IUpdateTypeService _updateTypeServices;
         IAppSettingService _appSettingService;
+        IProgrammeReportsService _programmeReportsService;
         public ProgrammeController(
             ISerializerationService serializerationService,
             IClaimService claimService,
@@ -76,7 +77,8 @@ namespace DealEngine.WebUI.Controllers
             IHttpClientService httpClientService,
             IEGlobalSubmissionService eGlobalSubmissionService,
                     IUpdateTypeService updateTypeService,
-                    IAppSettingService appSettingService
+                    IAppSettingService appSettingService,
+                    IProgrammeReportsService programmeReportsService
             )
             : base(userRepository)
         {
@@ -104,6 +106,7 @@ namespace DealEngine.WebUI.Controllers
             _eGlobalSubmissionService = eGlobalSubmissionService;
             _updateTypeServices = updateTypeService;
             _appSettingService = appSettingService;
+            _programmeReportsService = programmeReportsService;
         }
 
         [HttpGet]
@@ -1132,14 +1135,14 @@ namespace DealEngine.WebUI.Controllers
             ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
             var product = new List<ProductInfoViewModel>();
             User user = null;
-
+            //var programmeReports = new List<ProgrammeReports>();
             try
             {
                 user = await CurrentUser();
                 Programme programme = await _programmeService.GetProgrammeById(Id);
-                //model.Id = Id;
+                var programmeReports = await _programmeReportsService.GetAllProgrammeReports();
                 model.Programme = programme;
-
+                model.ProgrammeReports = programmeReports;
                 ViewBag.Title = "Edit Report Schedular";
 
                 return View("ManageSchedulars", model);
@@ -1151,6 +1154,61 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> GetReportInfo(Guid id , Guid progid)
+        {
+            List<string> productname = new List<string>();
+            User user = null;
+            ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
+                        model.ifreportAvailable = false;
+
+            try
+            {
+                user = await CurrentUser();
+                ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
+                Programme prog = await _programmeService.GetProgrammeById(progid);
+                
+                if (programmeReports.programme.Contains(prog))
+                {
+                    model.ifreportAvailable = true;
+                }
+                //ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
+                model.Description = programmeReports.progreportsDescription;
+                return Json(model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendProgReportsEmail(Guid id, String ReportAvailability, Guid progid)
+        {
+            List<string> productname = new List<string>();
+            User user = null;
+            ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
+
+            try
+            {
+                user = await CurrentUser();
+                ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
+                Programme prog = await _programmeService.GetProgrammeById(progid);
+                String EmailSubject = "User wants to add" + programmeReports.progreportsName + " to programme with id: " + prog.Id;
+                if (!programmeReports.programme.Contains(prog))
+                {
+                    _emailService.ContactSupport(user.Email, EmailSubject, EmailSubject);
+                }
+                return Json("Success");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> UpdateFlags(IFormCollection collection)
         {

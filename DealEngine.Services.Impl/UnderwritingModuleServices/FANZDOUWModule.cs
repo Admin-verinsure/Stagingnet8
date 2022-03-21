@@ -60,6 +60,32 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             agreement.QuoteDate = DateTime.UtcNow;
 
+            int coverperiodindays = 0;
+            coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
+
+            int coverperiodindaysforchange = 0;
+            bool bolinvalidchangeeffectivedate = false;
+            //coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+            int intchangePriodInDaysFromInception = 0;
+            intchangePriodInDaysFromInception = agreement.ClientInformationSheet.Programme.BaseProgramme.ChangePriodInDaysFromInception;
+            int intchangePriodInDaysToExpiry = 0;
+            intchangePriodInDaysToExpiry = agreement.ClientInformationSheet.Programme.BaseProgramme.ChangePriodInDaysToExpiry * -1;
+            if (agreement.ClientInformationSheet.IsChange)
+            {
+                if (agreement.ClientInformationSheet.Programme.ChangeReason != null)
+                {
+                    if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate > DateTime.MinValue)
+                    {
+                        coverperiodindaysforchange = (agreement.ExpiryDate - agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate).Days;
+                        if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate < agreement.InceptionDate.AddDays(intchangePriodInDaysFromInception) ||
+                            agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate > agreement.ExpiryDate.AddDays(intchangePriodInDaysToExpiry))
+                        {
+                            bolinvalidchangeeffectivedate = true;
+                        }
+                    }
+                }
+            }
+
             string strretrodate = "";
             if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
             {

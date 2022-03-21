@@ -1,5 +1,7 @@
-﻿using NHibernate;
+﻿using DealEngine.Domain.Entities;
+using NHibernate;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,5 +16,9 @@ namespace DealEngine.Infrastructure.FluentNHibernate
         Task UpdateAsync(TEntity entity);
         Task AddAsync(TEntity entity);
         //Task SaveAsync(TEntity entity);
+        Task<List<Object>> QueryHQLAsync(string query);
+        Task<bool> GetStoredProcedure(Guid Id, string BoatName);
+
+
     }
 }

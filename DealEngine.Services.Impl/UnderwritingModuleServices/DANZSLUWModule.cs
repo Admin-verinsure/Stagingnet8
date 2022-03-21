@@ -167,13 +167,34 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
 
             agreement.ProfessionalBusiness = "Building Design Practitioner, Architectural Design, Mechanical Design, Electrical Design, Structural Design, Civil Design, Draughting and associated ancillary activities";
-            string retrodate = "Policy Inception";
+            string retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy"); //"Policy Inception"
             agreement.TerritoryLimit = "New Zealand";
             agreement.Jurisdiction = "New Zealand";
             agreement.RetroactiveDate = retrodate;
             if (!String.IsNullOrEmpty(strretrodate))
             {
                 agreement.RetroactiveDate = strretrodate;
+            }
+
+            if ((agreement.ClientInformationSheet.IsChange || agreement.ClientInformationSheet.IsRenewawl) && agreement.ClientInformationSheet.PreviousInformationSheet != null)
+            {
+                var PreviousAgreement1 = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "SL"));
+                if (PreviousAgreement1 != null && !PreviousAgreement1.Bound)
+                {
+                    if (PreviousAgreement1.FixedRetroactiveDate > DateTime.MinValue)
+                    {
+                        agreement.FixedRetroactiveDate = PreviousAgreement1.FixedRetroactiveDate;
+                    }
+
+                }
+                else
+                {
+                    agreement.FixedRetroactiveDate = agreement.InceptionDate;
+                }
+            }
+            else
+            {
+                agreement.FixedRetroactiveDate = agreement.InceptionDate;
             }
 
             agreement.InsuredName = informationSheet.Owner.Name;

@@ -1514,7 +1514,7 @@ namespace DealEngine.WebUI.Controllers
             var user = await CurrentUser();
 
             if (user.IsLoggedout)
-                return Redirect("~/Home/Index");
+                return PageNotFound();
 
             if (user == null)
                 return PageNotFound();

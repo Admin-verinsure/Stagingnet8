@@ -68,7 +68,11 @@ namespace DealEngine.WebUI.Helpers
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            var reportname = context.JobDetail.Description+"(?)";
+            var reportname = context.JobDetail.Description;
+            string dbfunctionname = reportname.Substring(0, reportname.IndexOf(","));
+            string progid = reportname.Substring(reportname.IndexOf(",")+1);
+            //  var progid= context.JobDetail.Key
+           // string programme = _programmeService
             IQuery query;
         
             try
@@ -76,16 +80,17 @@ namespace DealEngine.WebUI.Helpers
                 using (var tx = _session.BeginTransaction())
                 {
                     //query = _session.CreateSQLQuery("CALL public."+ reportname)
-                    query = _session.CreateSQLQuery("SELECT public.getusernameorg('''a808421f-59ff-436c-9250-ae49008bdc4a''')");
+                    query = _session.CreateSQLQuery("SELECT public."+ dbfunctionname+"('''"+ progid + "''')");
 
                     //query.SetString("progid","a808421f-59ff-436c-9250-ae49008bdc4a");
-                    IList results = query.List();
+                     query.ExecuteUpdate();
 
 
                     /// here filename should be out parameters fr
-                    string fileName = "Report.xlsx";
+                    string fileName = dbfunctionname+DateTime.Now+".csv";
                     // string filepath = "/ tmp /";
-                    string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv";
+                    //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv";
+                    string filepath = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/Reports";
                      //// here file should target to place we want to save file on server
                      string file = filepath + fileName;
 
@@ -98,7 +103,7 @@ namespace DealEngine.WebUI.Helpers
                     //         // wb.SaveAs(@"C:\\Users\\Public\\DataImport\\Students1.xlsx");
 
                     //         //Defining the ContentType for excel file.
-                   string ContentType = "Application/msexcel";
+                   string ContentType = "text/csv";
 
                     // //Define the file name.
                     // string file = " / tmp / Report.xlsx";
@@ -106,12 +111,12 @@ namespace DealEngine.WebUI.Helpers
                     stream.Position = 0;
 
                     EmailTemplate emailTemplate = null;
-                  //  await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
+                    await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
 
                     if (emailTemplate != null)
                     {
 
-                       // await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
+                        await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
 
 
                     }

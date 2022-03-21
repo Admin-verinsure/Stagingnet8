@@ -53,6 +53,8 @@ namespace DealEngine.WebUI.Controllers
         IMilestoneService _milestoneService;
         ISchedularJobService _schedularjobService;
         private readonly ISchedulerFactory schedulerFactory;
+        IProgrammeReportsService _programmeReportsService;
+
         // IScheduler _scheduler;
         public IScheduler Scheduler;
         public HomeController(
@@ -78,7 +80,9 @@ namespace DealEngine.WebUI.Controllers
             IUpdateTypeService updateTypeService,
             IMilestoneService milestoneService,
             ISchedularJobService schedularjobService,
-            ISchedulerFactory schedulerFactory
+            ISchedulerFactory schedulerFactory,
+            IProgrammeReportsService programmeReportsService
+
             // IScheduler scheduler
 
             )
@@ -107,6 +111,7 @@ namespace DealEngine.WebUI.Controllers
             _fileService = fileService;
             _milestoneService = milestoneService;
             _schedularjobService = schedularjobService;
+            _programmeReportsService = programmeReportsService;
             this.schedulerFactory = schedulerFactory;
             ;
             // _scheduler = scheduler;
@@ -131,8 +136,6 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
 
-              //  if (user.IsLoggedout)
-               //  return PageNotFound();
 
                 model.UserTasks = user.UserTasks.Where(t=>t.Completed == false && t.Removed == false).ToList();
                 model.DisplayDeals = true;
@@ -700,11 +703,18 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> ViewProgramme(Guid id)
         {
-            List<DealItem> deals = new List<DealItem>();
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
+            List<DealItem> deals = new List<DealItem>();
+            
             try
             {
-                user = await CurrentUser();
                 Programme programme = await _programmeService.GetProgrammeById(id);
                 
                 IList<ClientProgramme> clientList = new List<ClientProgramme>();
@@ -1749,52 +1759,28 @@ namespace DealEngine.WebUI.Controllers
                 var JobTime = formCollection["start_hour"];
                 var JobFunctionName = formCollection["ProgrammeName"];
                 var ScheduleFrequency = formCollection["ScheduleFrequency"];
-                var ReportName = formCollection["ReportName"];
+                var ReportId = formCollection["ReportName"];
+
                 // DateTime datetime = Convert.ToDateTime(schedularjob.JobDate + " " + "11:46";
                 DateTime datetime = DateTime.Now;
+                ProgrammeReports programmeReport = await _programmeReportsService.GetProgrammeReportsById(Guid.Parse(ReportId));
 
-                SchedularJob schedularjob = new SchedularJob(JobName, ProgrammeId, JobDate, JobTime, JobFunctionName, ScheduleFrequency, "Active" ,typeof(SchedularJob),ReportName, user);
+                SchedularJob schedularjob = new SchedularJob(JobName, ProgrammeId, JobDate, JobTime, JobFunctionName, ScheduleFrequency, "Active" ,typeof(SchedularJob), programmeReport.progreportsName, user);
                 await _schedularjobService.AddJob(schedularjob);
 
-                if (JobDate.Count > 0)
-                {
-                    datetime = Convert.ToDateTime(schedularjob.JobDate + " " + schedularjob.JobTime);
-
-                }
-
-
-                //        ITrigger trigger = TriggerBuilder.Create()
-                ////        .WithIdentity($"Check Availability - {DateTime.Now}")
-                ////        .StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(15)))
-                ////        .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).WithRepeatCount(10))
-                ////        .WithPriority(1)
-                ////        .Build();
-
-                //        //    IJobDetail job = JobBuilder.Create<CheckAvailabilityTask>()
-                //        //        .WithIdentity("Check Availability")
-                //        //        .Build();
-
-
-                //      TriggerBuilder.Create()
-                // .WithIdentity(schedularjob.Id.ToString())
-                //.StartAt(datetime)
-                ////.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
-                ////.WithSimpleSchedule(x => x.WithIntervalInSeconds(5).WithRepeatCount(1))
-                //.WithDescription(schedularjob.ReportName)
-                //.Build();
 
                 ITrigger trigger = TriggerBuilder.Create()
                 .WithIdentity(schedularjob.Id.ToString())
                .StartAt(datetime)
-               //.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
+              //.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
               // .WithSimpleSchedule(x => x.WithInterval(ScheduleFrequency))
-               .WithDescription(schedularjob.ReportName)
+              .WithDescription(programmeReport.progreportsValue + "," + schedularjob.ProgrammeId)
                .Build();
 
 
                 IJobDetail job = JobBuilder.Create<DealEngine.WebUI.Helpers.ReportSchedular>()
               .WithIdentity(schedularjob.Id.ToString())
-              .WithDescription(schedularjob.ReportName)
+              .WithDescription(programmeReport.progreportsValue + ","+schedularjob.ProgrammeId)
               .Build();
 
                 await Scheduler.ScheduleJob(job, trigger);

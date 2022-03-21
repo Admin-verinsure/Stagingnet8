@@ -64,9 +64,29 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
 
             int coverperiodindaysforchange = 0;
-            coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+            bool bolinvalidchangeeffectivedate = false;
+            //coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+            int intchangePriodInDaysFromInception = 0;
+            intchangePriodInDaysFromInception = agreement.ClientInformationSheet.Programme.BaseProgramme.ChangePriodInDaysFromInception;
+            int intchangePriodInDaysToExpiry = 0;
+            intchangePriodInDaysToExpiry = agreement.ClientInformationSheet.Programme.BaseProgramme.ChangePriodInDaysToExpiry * -1;
+            if (agreement.ClientInformationSheet.IsChange)
+            {
+                if (agreement.ClientInformationSheet.Programme.ChangeReason != null)
+                {
+                    if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate > DateTime.MinValue)
+                    {
+                        coverperiodindaysforchange = (agreement.ExpiryDate - agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate).Days;
+                        if (agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate < agreement.InceptionDate.AddDays(intchangePriodInDaysFromInception) ||
+                            agreement.ClientInformationSheet.Programme.ChangeReason.EffectiveDate > agreement.ExpiryDate.AddDays(intchangePriodInDaysToExpiry))
+                        {
+                            bolinvalidchangeeffectivedate = true;
+                        }
+                    }
+                }
+            }
 
-            
+
             //Programme specific term
 
             //Default Professional Business, Retroactive Date, TerritoryLimit, Jurisdiction, AuditLog Detail
@@ -219,10 +239,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         {
                             termlimitpremiumoption.Bound = true;
                         }
-                        if (termlimitpremiumoption.PremiumDiffer < 0)
-                        {
-                            termlimitpremiumoption.PremiumDiffer = 0;
-                        }
                     }
 
                 }
@@ -232,6 +248,12 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Referral points per agreement
             //Claims / Insurance History
             uwrfpriorinsurance(underwritingUser, agreement);
+
+            if (informationSheet.IsChange) //change agreement referrals
+            {
+                //Change effective date entered prior the inception date
+                uwrfchangeeffectivedate(underwritingUser, agreement, bolinvalidchangeeffectivedate);
+            }
 
             //Update agreement Status
             if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
@@ -381,6 +403,35 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
+        void uwrfchangeeffectivedate(User underwritingUser, ClientAgreement agreement, bool bolinvalidchangeeffectivedate)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedate" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfchangeeffectivedate") != null)
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfchangeeffectivedate").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfchangeeffectivedate").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfchangeeffectivedate").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfchangeeffectivedate").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null && cr.Value == "uwrfchangeeffectivedate").DoNotCheckForRenew));
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedate" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (bolinvalidchangeeffectivedate) //Change effective date
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedate" && cref.DateDeleted == null).Status = "Pending";
+                    }
+                }
+
+                if (agreement.ClientInformationSheet.IsRenewawl
+                            && agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedate" && cref.DateDeleted == null).DoNotCheckForRenew)
+                {
+                    agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfchangeeffectivedate" && cref.DateDeleted == null).Status = "";
+                }
+            }
+        }
 
 
 
