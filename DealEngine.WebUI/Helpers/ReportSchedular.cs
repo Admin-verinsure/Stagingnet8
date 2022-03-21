@@ -87,7 +87,7 @@ namespace DealEngine.WebUI.Helpers
 
 
                     /// here filename should be out parameters fr
-                    string fileName = dbfunctionname+DateTime.Now+".csv";
+                    string fileName = dbfunctionname+".csv";
                     // string filepath = "/ tmp /";
                     //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv";
                     string filepath = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/Reports";
@@ -97,12 +97,6 @@ namespace DealEngine.WebUI.Helpers
                     //Creating stream object.
                     MemoryStream stream = new MemoryStream();
 
-                    //Saving the workbook to stream in XLSX format
-                    //workbook.SaveAs(file);
-                  //  workbook.Worksheets.Add(table, "WorksheetName");
-                    //         // wb.SaveAs(@"C:\\Users\\Public\\DataImport\\Students1.xlsx");
-
-                    //         //Defining the ContentType for excel file.
                    string ContentType = "text/csv";
 
                     // //Define the file name.

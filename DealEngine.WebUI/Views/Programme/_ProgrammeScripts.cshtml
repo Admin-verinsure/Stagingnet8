@@ -588,17 +588,23 @@
                         debugger;
                         $('#Description').val(data.description);
                         var ele = document.getElementsByClassName("configure");
-
+                        var runbtn = document.getElementsByClassName("RunOptions");
                         if (data.ifreportAvailable == false) {
                             for (var i = 0; i < ele.length; i++) {
                                 ele[i].style.display = 'none';
                             }
-
+                            for (var i = 0; i < runbtn.length; i++) {
+                                runbtn[i].style.display = 'none';
+                            }
                             $("#ReportAvailability").val("no");
 
-                        } else {
-                            for (var i = 0; i < ele.length; i++) {
-                                ele[i].style.display = '';
+                        } 
+                        else {
+                            //for (var i = 0; i < ele.length; i++) {
+                            //    ele[i].style.display = '';
+                            //}
+                            for (var i = 0; i < runbtn.length; i++) {
+                                runbtn[i].style.display = '';
                             }
                             $("#ReportAvailability").val("yes");
 
