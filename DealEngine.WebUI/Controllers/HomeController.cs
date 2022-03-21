@@ -1764,11 +1764,15 @@ namespace DealEngine.WebUI.Controllers
                 // DateTime datetime = Convert.ToDateTime(schedularjob.JobDate + " " + "11:46";
                 DateTime datetime = DateTime.Now;
                 ProgrammeReports programmeReport = await _programmeReportsService.GetProgrammeReportsById(Guid.Parse(ReportId));
-
+               
                 SchedularJob schedularjob = new SchedularJob(JobName, ProgrammeId, JobDate, JobTime, JobFunctionName, ScheduleFrequency, "Active" ,typeof(SchedularJob), programmeReport.progreportsName, user);
                 await _schedularjobService.AddJob(schedularjob);
 
+                if (JobDate.Count > 0)
+                {
+                    datetime = Convert.ToDateTime(schedularjob.JobDate + " " + schedularjob.JobTime);
 
+                }
                 ITrigger trigger = TriggerBuilder.Create()
                 .WithIdentity(schedularjob.Id.ToString())
                .StartAt(datetime)
