@@ -311,7 +311,7 @@ namespace DealEngine.Services.Impl
                                 DataTable dt9 = new DataTable();
                                 dt9.Columns.Add("Endorsement Name");
                                 dt9.Columns.Add("Product Name");
-                                dt9.Columns.Add("Endorsement Text");
+                                dt9.Columns.Add("Endorsement Details");
 
                                 foreach (ClientAgreementEndorsement ClientAgreementEndorsement in agreementlist.ClientAgreementEndorsements)
                                 {
@@ -325,7 +325,7 @@ namespace DealEngine.Services.Impl
                                             dr9["Product Name"] = agreementlist.Product.Name;
                                         }
 
-                                        dr9["Endorsement Text"] = ClientAgreementEndorsement.Value;
+                                        dr9["Endorsement Details"] = ClientAgreementEndorsement.Value;
 
                                         dt9.Rows.Add(dr9);
                                     }
@@ -1600,7 +1600,7 @@ namespace DealEngine.Services.Impl
                 DataTable dt = new DataTable();
                 dt.Columns.Add("Endorsement Name");
                 //dt.Columns.Add("Product Name");
-                dt.Columns.Add("Endorsement Text");
+                dt.Columns.Add("Endorsement Details");
 
                 foreach (ClientAgreementEndorsement ClientAgreementEndorsement in agreement.ClientAgreementEndorsements)
                 {
@@ -1614,7 +1614,7 @@ namespace DealEngine.Services.Impl
                         //    dr["Product Name"] = agreement.ClientInformationSheet.Product.Name;
                         //}
 
-                        dr["Endorsement Text"] = ClientAgreementEndorsement.Value;
+                        dr["Endorsement Details"] = ClientAgreementEndorsement.Value;
 
                         dt.Rows.Add(dr);
                     }
