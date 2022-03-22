@@ -20,6 +20,14 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Quartz;
+using System.Collections.Specialized;
+using Quartz.Impl;
+using Quartz.Spi;
+using DealEngine.WebUI.Helpers;
+using DealEngine.Services.Interfaces;
+using DealEngine.Services.Impl;
+using System.Collections.Generic;
 
 namespace DealEngine.WebUI
 {
@@ -95,17 +103,38 @@ namespace DealEngine.WebUI
                 options.IncludeSubDomains = true;
                 options.Preload = true;
             });
+           
+            var container = services.BuildServiceProvider();
+
+            // Create an instance of the job factory
+          //  services.AddHostedService<JobSchedular>();
+            services.AddSingleton<IJobFactory, JobFactory>();
+           
+            services.AddScoped<IReportBuilderService, ReportBuilderService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IProgrammeService, ProgrammeService>();
+
+            //var jobKey = new JobKey("ReportSchedular");.......
+            services.AddQuartz(q =>
+            {
+                q.UseMicrosoftDependencyInjectionScopedJobFactory();
+
+            });
+            //services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));.....
+            services.AddHttpContextAccessor();
+            services.AddQuartzHostedService();
+            
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();              
+                app.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");                
+                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 
@@ -113,7 +142,15 @@ namespace DealEngine.WebUI
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
-
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = "/Account/Login";
+                    await next();
+                }
+            });
             app.UseRequestLocalization();
             app.UseElmah();
             app.UseHttpsRedirection();
@@ -128,12 +165,33 @@ namespace DealEngine.WebUI
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();                
+                endpoints.MapRazorPages();
             });
+
         }
+
+
+        public static IScheduler GetSchedular()
+        {
+            var properties = new NameValueCollection
+            {
+                // Normal scheduler properties
+                ["quartz.scheduler.instanceName"] = "ReportSchedular",
+                ["quartz.scheduler.type"] = "Quartz.Simpl.SimpleThreadPool, Quartz",
+                ["quartz.scheduler.threadcount"] = "3",
+                ["quartz.jobStore.type"] = "Quartz.Simpl.RamJobStore, Quartz"
+            };
+
+            var sf = new StdSchedulerFactory();
+            var scheduler = sf.GetScheduler().Result;
+            scheduler.Start();
+            return scheduler;
+        }
+
     }
 
 }
+
 
 public sealed class SecurityHeadersMiddleware
 {
@@ -209,39 +267,39 @@ public sealed class SecurityHeadersMiddleware
             #endregion
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-            context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
+            //context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
             // https://content-security-policy.com/unsafe-inline/
-            context.Response.Headers.Add("Content-Security-Policy", new StringValues(
-                "base-uri 'self';" +
-                "block-all-mixed-content;" +
-                "default-src 'self';" +
-                "frame-ancestors 'none';" +
-                "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
-                "img-src 'self' data: https:;" +
-                "script-src 'self' 'unsafe-inline';" +
-                "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
-                "upgrade-insecure-requests;"
+            //context.Response.Headers.Add("Content-Security-Policy", new StringValues(
+            //    "base-uri 'self';" +
+            //    "block-all-mixed-content;" +
+            //    "default-src 'self';" +
+            //    "frame-ancestors 'none';" +
+            //    "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
+            //    "img-src 'self' data: https:;" +
+            //    "script-src 'self' 'unsafe-inline';" +
+            //    "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
+            //    "upgrade-insecure-requests;"
 
-                #region Other Directives that can be used
-                //"child-src 'none';" +
-                //"connect-src 'self';" +
-                //"object-src 'self';" +
-                //"form-action 'self' ;" +
-                //"frame-src 'none';" +
-                //"manifest-src 'none';" +
-                //"media-src 'none';" +
-                //"sandbox allow-scripts allow-forms;" +
-                //"script-src-elem 'self' 'unsafe-inline';" +
-                //"style-src-attr 'self' 'unsafe-inline';" +
-                //"style-src-elem 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com  ;" +
-                //"worker-src 'self';"
-                #endregion
+            #region Other Directives that can be used
+            //"child-src 'none';" +
+            //"connect-src 'self';" +
+            //"object-src 'self';" +
+            //"form-action 'self' ;" +
+            //"frame-src 'none';" +
+            //"manifest-src 'none';" +
+            //"media-src 'none';" +
+            //"sandbox allow-scripts allow-forms;" +
+            //"script-src-elem 'self' 'unsafe-inline';" +
+            //"style-src-attr 'self' 'unsafe-inline';" +
+            //"style-src-elem 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com  ;" +
+            //"worker-src 'self';"
+            #endregion
 
-            ));
+            //));
         }
-    return _next(context);
+        return _next(context);
     }
 }

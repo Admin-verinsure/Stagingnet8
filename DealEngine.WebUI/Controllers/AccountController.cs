@@ -1399,7 +1399,6 @@ namespace DealEngine.WebUI.Controllers
 
             HttpContext.Response.Cookies.Delete(".AspNet.Consent");
             HttpContext.Response.Cookies.Delete(".AspNetCore.Cookies");
-            //  Response.Cookies[FormsAuthentication.FormsCookieName].Expires = DateTime.Now.AddYears(-1);
 
             if (_appSettingService.AuthenticationService == "Okta")
             {
@@ -1464,7 +1463,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> Profile(string id)
         {
-           
+
             var currentUser = await CurrentUser();
             var user = string.IsNullOrWhiteSpace(id) ? currentUser : await _userService.GetUser(id);
             if (currentUser.IsLoggedout)
@@ -1508,6 +1507,8 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpGet]
+        [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> ProfileEditor()
         {
             var user = await CurrentUser();
@@ -1557,6 +1558,7 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProfileEditor(ProfileViewModel model)
         {
             var user = await CurrentUser();
