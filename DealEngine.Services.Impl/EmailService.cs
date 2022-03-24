@@ -424,7 +424,7 @@ namespace DealEngine.Services.Impl
 		{
 			string subjectPrefix = "Support Request: ";
 
-			EmailBuilder email = await GetLocalizedEmailBuilder(sender, "support@techcertain.com");
+			EmailBuilder email = await GetLocalizedEmailBuilder(sender, "ashu@techcertain.com");
 			email.From (sender);
             email.WithSubject (subjectPrefix + subject);
             email.WithBody (body);
