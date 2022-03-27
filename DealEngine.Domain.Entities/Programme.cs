@@ -95,9 +95,12 @@ namespace DealEngine.Domain.Entities
         public virtual bool IslastFinancialYear { get; set; }
         public virtual bool IsCurrentYear { get; set; }
         public virtual bool IsnextFinancialYear { get; set; }
+        public virtual DateTime ReportSchedularTime { get; set; }
         public virtual int ChangePriodInDaysFromInception { get; set; }
         public virtual int ChangePriodInDaysToExpiry { get; set; }
         public virtual int ChangePriodInDaysToSubmission { get; set; }
+        public virtual string Reportspath { get; set; }
+        public virtual IList<ProgrammeReports> ProgrammeReports { get; set; }
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)
@@ -122,6 +125,7 @@ namespace DealEngine.Domain.Entities
             Packages = new List<Package>();
             UISUpdateNotifyUsers = new List<User>();
             ClientNumberNotifyUsers = new List<User>();
+            ProgrammeReports = new List<ProgrammeReports>();
         }
 
         public virtual ClientProgramme IssueFor(Organisation clientOrganisation)

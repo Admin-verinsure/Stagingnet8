@@ -3,6 +3,7 @@
     {
         ViewBag.PageId = "extr-page";
         ViewBag.PageClass = "animated fadeInDown";
+
     }
 }
 
@@ -540,3 +541,24 @@
         }
     }
 </style>
+
+
+
+@section pagespecific {
+  
+    <script>
+
+        $(window).on("load", function () {
+            document.getElementById("header").innerHTML = "";
+
+        });
+
+        $('.Startdate').datepicker({
+            dateFormat: "dd/mm/yy"
+        });
+
+    </script>
+
+}
+
+

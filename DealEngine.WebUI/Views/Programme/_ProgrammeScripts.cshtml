@@ -1,8 +1,10 @@
 ﻿<script type="text/javascript">
 
         $(document).ready(function () {
+            if (document.getElementById('questionmodal') != null) {
+                var questionmodal = document.getElementById('questionmodal').innerHTML;
 
-            var questionmodal = document.getElementById('questionmodal').innerHTML;
+            }
 
             $('#smartwizardprogramme').smartWizard({
                 //debugger;
@@ -513,11 +515,11 @@
 
         //var RuleId = $("#RuleId").val();
         var UpdateTypeName = $("#updateTypeName").val();
-        
+
 
         var updateTypeData = {
             "Name": UpdateTypeName,
-         
+
         };
 
           $.ajax({
@@ -539,6 +541,78 @@
             });
 
 
+    }
+
+
+    function  SendProgReportsEmail () {
+        debugger;
+        var selectedvalue = $("#ReportName :selected").val();
+        var reportAvailability = $("#ReportAvailability :selected").val();
+        var progid = $("#programmeId").val();
+        var postdata = { id: selectedvalue, ReportAvailability: reportAvailability, progid: progid };
+
+             $.ajax({
+                    url: '@Url.Action("SendProgReportsEmail", "Programme")',
+                    type: "POST",
+                    async: false,
+                    data: postdata
+                })
+                 .done(function (data) {
+                     if (data == "Success") {
+                         alert("Email has been sent to respective team. They will contact you shortly.");
+
+                     }
+                        debugger;
+
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                });
+        
+
+    }
+
+    function SelectedReport(selectedreport) {
+        debugger;
+        var selectedvalue = $("#ReportName :selected").val();
+        var progid = $("#programmeId").val();
+        var postdata = { id: selectedvalue, progid: progid };
+
+	            $.ajax({
+                    url: '@Url.Action("GetReportInfo", "Programme")',
+                    type: "POST",
+                    async: false,
+                    data: postdata
+                })
+                    .done(function (data) {
+                        debugger;
+                        $('#Description').val(data.description);
+                        var ele = document.getElementsByClassName("configure");
+                        var runbtn = document.getElementsByClassName("RunOptions");
+                        if (data.ifreportAvailable == false) {
+                            for (var i = 0; i < ele.length; i++) {
+                                ele[i].style.display = 'none';
+                            }
+                            for (var i = 0; i < runbtn.length; i++) {
+                                runbtn[i].style.display = 'none';
+                            }
+                            $("#ReportAvailability").val("no");
+
+                        } 
+                        else {
+                            //for (var i = 0; i < ele.length; i++) {
+                            //    ele[i].style.display = '';
+                            //}
+                            for (var i = 0; i < runbtn.length; i++) {
+                                runbtn[i].style.display = '';
+                            }
+                            $("#ReportAvailability").val("yes");
+
+                        }
+                })
+                .fail(function (a, s, d) {
+                    debugger;
+                });
     }
 
 

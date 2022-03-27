@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using ClosedXML.Excel;
 
 namespace DealEngine.Services.Impl
 {
@@ -423,7 +424,7 @@ namespace DealEngine.Services.Impl
 		{
 			string subjectPrefix = "Support Request: ";
 
-			EmailBuilder email = await GetLocalizedEmailBuilder(sender, "support@techcertain.com");
+			EmailBuilder email = await GetLocalizedEmailBuilder(sender, "ashu@techcertain.com,staff@techcertain.com");
 			email.From (sender);
             email.WithSubject (subjectPrefix + subject);
             email.WithBody (body);
@@ -1309,6 +1310,31 @@ namespace DealEngine.Services.Impl
             email.UseHtmlBody(true);
             email.WithBody(body);
             email.Send();
+        }
+
+        public async Task SendReportsViaEmail(string recipent, string workbook)
+        {
+            var user = await _userService.GetUserByEmail(recipent);
+            List<KeyValuePair<string, string>> mergeFields;
+            Programme baseProgramme = null;
+            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
+            email.From(DefaultSender);
+            email.WithSubject("Report subject");
+            email.WithBody("report body");
+            email.UseHtmlBody(true);
+            if (workbook != null)
+            {
+                var attachment = new Attachment(workbook);
+                attachment.ContentType = new ContentType("application/vnd.ms-excel");
+                email.Attachments(attachment);
+               // var documentsList = await ToAttachments(documents);
+                //email.Attachments(documentsList.ToArray());
+                email.Send();
+            }
+            else
+            {
+                email.Send();
+            }
         }
 
         public async Task RemoveOrganisationUserEmail(User removedUser, User programmeOwnerUser, ClientInformationSheet sheet)

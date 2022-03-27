@@ -15,6 +15,8 @@ namespace DealEngine.WebUI.Models.Programme
         {
             Brokers = new List<SelectListItem>();
             Flags = GetSelectListOptions();
+            ScheduleFrequency = GetSchedularSelectListOptions();
+            ReportsAvailable = GetReportsAvailable();
         }
         public ProgrammeInfoViewModel(List<User> brokers, Domain.Entities.Programme programme, ClientProgramme clientProgramme)
         {
@@ -54,6 +56,50 @@ namespace DealEngine.WebUI.Models.Programme
             }
             return Brokers;
         }
+        private IList<SelectListItem> GetSchedularSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "IsMonthly", Value = "IsMonthly"
+                },
+                new SelectListItem
+                { Text = "IsWeekly", Value = "IsWeekly" },
+                new SelectListItem
+                { Text = "IsYearly", Value = "IsYearly" }
+            };
+        }
+
+        private IList<SelectListItem> GetReportsAvailable()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "PI Data of Class 1 / Class 2 FAPs", Value = "PI_Data_Class1_Class2_FAPs"
+                },
+                new SelectListItem
+                { Text = "LibraryPIFAPReport", Value = "LibraryPIFAPReport" },
+                new SelectListItem
+                { Text = "LibraryMLReport", Value = "LibraryMLReport" },
+                //new SelectListItem
+                //{ Text = "PI Run off Programme for Newly-bound", Value = "proc_PIRunOff" },
+                //new SelectListItem
+                //{ Text = "PIFaptermreport", Value = "proc_Fapreport" }
+            };
+
+        }
+
+
         private IList<SelectListItem> GetSelectListOptions()
         {
             return new List<SelectListItem>()
@@ -123,8 +169,24 @@ namespace DealEngine.WebUI.Models.Programme
         public IList<SelectListItem> Flags { get; set; }
         public string EGlobalBranchCode { get; set; }
         public string EGlobalClientNumber { get; set; }
+        //Report Schedular
+        public  bool ReportName { get; set; }
+        public  bool IsYearly { get; set; }
 
+        
+        //public  bool IsWeekly { get; set; }
+        //public  bool IsMonthly { get; set; }
+        //public bool IsSchedule { get; set; }
+        public IList<SelectListItem> ScheduleFrequency { get; set; }
+        public bool RunNow { get; set; }
 
+        //public DateTime OndemadTime { get; set; }
+        public string ReportSchedularTime { get; set; }
+        public IList<SelectListItem> ReportsAvailable { get; set; }
+        public virtual List<ProgrammeReports> ProgrammeReports { get; set; }
+        public bool ifreportAvailable { get; set; }
+        public string Description { get; set; }
+        //public IList<SelectListItem> ScheduleFrequency { get; set; }
     }
 }
 

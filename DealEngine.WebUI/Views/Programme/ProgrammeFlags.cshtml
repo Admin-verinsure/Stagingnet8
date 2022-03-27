@@ -1,0 +1,72 @@
+﻿@model DealEngine.WebUI.Models.Programme.ProgrammeInfoViewModel
+<!-- MAIN CONTENT -->
+<div id="content" class="container">
+    <div class="form-group">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa-fw fa fa-home"></i>  <span>
+                <a href="~/Programme/TermSheetConfirguration/@Model.Id">Package Term Sheet</a>
+                > Manage Flags
+            </span>
+        </h1>
+    </div>
+    <div class="form-group">
+        <span>
+            <a class="btn btn-primary btn-xs text-white" onclick="location.href='@Url.Action("TermSheetConfirguration", "Programme",new { Id =@Model.Id })'" id="backbutton"><i class="fa fa-home"></i> Back </a>            
+        </span>
+    </div>
+
+    <div class="form-group">
+        <div class="card">
+            <div class="card-header">
+                <span class="widget-icon">                    
+                    <h2><i class="fa fa-comment"></i>Manage Flags</h2>
+                </span>
+            </div>
+            <div class="card-body">
+                <form action="~/Programme/UpdateFlags" method="POST">
+                    <table class="table table-bordered table-striped ">
+                        @Html.HiddenFor(m => m.Id)
+
+                        <tr>
+                            <td align="left">
+                                Select Flag
+                            </td>
+                            <td>
+                                <div class="col-8">
+                                    <select id="Flags" class="custom-select" name="Flags" required>
+
+                                        @foreach (var option in Model.Flags)
+                                        {
+                                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="col-8">
+                                    <select id="FlagVal" class="custom-select" name="FlagVal" required>
+
+                                        <option selected="selected" value="Selected">--Select--</option>
+                                        <option value="True">True</option>
+                                        <option value="False">False</option>
+
+                                    </select>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr class="table-light">
+                            <td>
+                                <button type="submit" class="btn btn-primary">
+                                    Submit
+                                </button>
+                            </td>
+                        </tr>
+
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
