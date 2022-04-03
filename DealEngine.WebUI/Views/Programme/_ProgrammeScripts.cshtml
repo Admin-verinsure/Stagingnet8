@@ -600,13 +600,16 @@
 
                         } 
                         else {
-                            //for (var i = 0; i < ele.length; i++) {
-                            //    ele[i].style.display = '';
-                            //}
                             for (var i = 0; i < runbtn.length; i++) {
                                 runbtn[i].style.display = '';
                             }
                             $("#ReportAvailability").val("yes");
+                            if (data.isBoundField) {
+                                $('.boundoption').show();
+                            } else {
+                                $('.boundoption').hide();
+
+                            }
 
                         }
                 })
