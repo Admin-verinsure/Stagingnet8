@@ -43,86 +43,70 @@ namespace DealEngine.WebUI.Helpers
 
         private readonly ILogger<ReportSchedular> _logger;
         private readonly  IProgrammeService _programmeService;
-       // private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ISessionFactory _sessionFactory;
         private NHibernate.ISession _session;
-        //Guid progid = Guid.Parse("62aea93b-8f7e-4554-b037-bb6726bc3c2d");
-       // Guid progid = Guid.Parse("bbcd7ef3-64c3-4759-9144-49cac816f425");
-
+        ISchedularJobService _schedularjobService;
         //public ReportSchedular(IReportBuilderService reportBuilderService)
         //{
         //    _ReportBuilderService = reportBuilderService;
         //}public ReportSchedular(ILogger<ReportSchedular> logger, IReportBuilderService ReportBuilderService, IUserService userRepository, IProgrammeService programmeService, IEmailService emailService,
         //IServiceScopeFactory serviceScopeFactory) : base(userRepository)
         public ReportSchedular(ILogger<ReportSchedular> logger, IReportBuilderService ReportBuilderService, IUserService userRepository, IProgrammeService programmeService, IEmailService emailService,
-             NHibernate.ISession session, ISessionFactory sessionFactory) : base(userRepository)
+             NHibernate.ISession session, ISessionFactory sessionFactory, ISchedularJobService schedularjobService) : base(userRepository)
         {
             this._logger = logger;
             _programmeService = programmeService;
             _ReportBuilderService = ReportBuilderService;
             _userService = userRepository;
             _emailService = emailService;
-           // _serviceScopeFactory = serviceScopeFactory;
+            _schedularjobService = schedularjobService;
+            // _serviceScopeFactory = serviceScopeFactory;
             _sessionFactory = sessionFactory;
             _session = session;
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            var reportname = context.JobDetail.Description;
-            string dbfunctionname = reportname.Substring(0, reportname.IndexOf(","));
-            string progid = reportname.Substring(reportname.IndexOf(",")+1);
-            //  var progid= context.JobDetail.Key
-           // string programme = _programmeService
+            var reportId = context.JobDetail.Description;
+            SchedularJob schedularJob = await _schedularjobService.GetJobById(Guid.Parse(reportId));
             IQuery query;
         
             try
             {
                 using (var tx = _session.BeginTransaction())
                 {
-                    //query = _session.CreateSQLQuery("CALL public."+ reportname)
-                    query = _session.CreateSQLQuery("SELECT public."+ dbfunctionname+"('''"+ progid + "''')");
+                    if (schedularJob.BoundDateFrom != "")
+                    {
+                        query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.BoundDateFrom + "'''   ,'''" + schedularJob.BoundDateTo + "''' )   ");
+                    }
+                    if (schedularJob.ReportType == "Library")
+                    {
+                        query = _session.CreateSQLQuery("   SELECT public.LibraryReports"+ "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.ReportName + "''' )   ");
+                    }
+                    else
+                    {
+                        query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' )   ");
+                    }
 
-                    //query.SetString("progid","a808421f-59ff-436c-9250-ae49008bdc4a");
-                     query.ExecuteUpdate();
-
-
-                    /// here filename should be out parameters fr
-                    string fileName = dbfunctionname+".csv";
-                    // string filepath = "/ tmp /";
-                    //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv";
-                    string filepath = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/Reports";
-                     //// here file should target to place we want to save file on server
+                    Programme prog = await _programmeService.GetProgrammeById(Guid.Parse(schedularJob.ProgrammeId));
+                    
+                    query.ExecuteUpdate();
+                    string fileName = schedularJob.ReportName + ".csv";
+                    string filepath = prog.Reportspath;
+                   //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv\\";
                      string file = filepath + fileName;
 
-                    //Creating stream object.
                     MemoryStream stream = new MemoryStream();
-
                    string ContentType = "text/csv";
-
-                    // //Define the file name.
-                    // string file = " / tmp / Report.xlsx";
-                    ////
                     stream.Position = 0;
-
                     EmailTemplate emailTemplate = null;
-                    await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
+                    await _emailService.SendReportsViaEmail(schedularJob.EmailIds, file);
 
                     if (emailTemplate != null)
                     {
 
-                        await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
-
+                        await _emailService.SendReportsViaEmail(schedularJob.EmailIds, file);
 
                     }
-
-                    //return File(stream, ContentType, fileName);
-
-                    //Domain.Entities.File file = File(stream, ContentType, fileName);
-
-                    //return File(stream, ContentType, fileName);
-
-
-
 
                 }
             }

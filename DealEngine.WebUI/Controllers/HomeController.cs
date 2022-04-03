@@ -1748,8 +1748,6 @@ namespace DealEngine.WebUI.Controllers
         {
             User user = await CurrentUser();
             Scheduler = await schedulerFactory.GetScheduler();
-
-            //_scheduler = schedulerFactory.GetScheduler();
             using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
             {
 
@@ -1760,12 +1758,16 @@ namespace DealEngine.WebUI.Controllers
                 var JobFunctionName = formCollection["ProgrammeName"];
                 var ScheduleFrequency = formCollection["ScheduleFrequency"];
                 var ReportId = formCollection["ReportName"];
+                var BoundDateFrom = formCollection["BoundDateFrom"];
+                var BoundDateTo = formCollection["BoundDateTo"];
 
                 // DateTime datetime = Convert.ToDateTime(schedularjob.JobDate + " " + "11:46";
                 DateTime datetime = DateTime.Now;
                 ProgrammeReports programmeReport = await _programmeReportsService.GetProgrammeReportsById(Guid.Parse(ReportId));
                
-                SchedularJob schedularjob = new SchedularJob(JobName, ProgrammeId, JobDate, JobTime, JobFunctionName, ScheduleFrequency, "Active" ,typeof(SchedularJob), programmeReport.progreportsName, user);
+                SchedularJob schedularjob = new SchedularJob(JobName, ProgrammeId, JobDate, JobTime, programmeReport.progreportsValue,
+                                                ScheduleFrequency, "Active" ,typeof(SchedularJob), programmeReport.progreportsName,
+                                                formCollection["EmailIds"], BoundDateFrom, BoundDateTo, programmeReport.ReportType, user);
                 await _schedularjobService.AddJob(schedularjob);
 
                 if (JobDate.Count > 0)
@@ -1776,15 +1778,17 @@ namespace DealEngine.WebUI.Controllers
                 ITrigger trigger = TriggerBuilder.Create()
                 .WithIdentity(schedularjob.Id.ToString())
                .StartAt(datetime)
-              //.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
-              // .WithSimpleSchedule(x => x.WithInterval(ScheduleFrequency))
-              .WithDescription(programmeReport.progreportsValue + "," + schedularjob.ProgrammeId)
+                            //.StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(10)))
+                            // .WithSimpleSchedule(x => x.WithInterval(ScheduleFrequency))
+                           // .WithDescription(programmeReport.progreportsValue + "," + schedularjob.ProgrammeId)
+
+              .WithDescription(schedularjob.Id.ToString())
                .Build();
 
 
                 IJobDetail job = JobBuilder.Create<DealEngine.WebUI.Helpers.ReportSchedular>()
               .WithIdentity(schedularjob.Id.ToString())
-              .WithDescription(programmeReport.progreportsValue + ","+schedularjob.ProgrammeId)
+              .WithDescription(schedularjob.Id.ToString())
               .Build();
 
                 await Scheduler.ScheduleJob(job, trigger);
@@ -1800,9 +1804,9 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
-        //public async Task<IActionResult> GetReportView(IFormCollection formCollection, string IsReport)
+        public async Task<IActionResult> GetReportView(IFormCollection formCollection, string IsReport)
 
-        public async Task<IActionResult> GetReportView(Guid ProgrammeId, string IsReport)
+        //public async Task<IActionResult> GetReportView(Guid ProgrammeId, string IsReport)
         {
 
             User user = null;
@@ -1812,11 +1816,11 @@ namespace DealEngine.WebUI.Controllers
          
                 try
             {
-                //Guid ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
+                Guid ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
                 Programme programme = await _programmeService.GetProgrammeById(ProgrammeId);
-                    //string queryselect = formCollection["queryselect"];
+                   string queryselect = formCollection["queryselect"];
 
-                    string queryselect = "PI";
+                    //string queryselect = "PI";
                 ViewBag.reportName = queryselect;
                 //ViewBag.ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
                 //PropertyDescriptorCollection props = generatequeryField(queryselect);

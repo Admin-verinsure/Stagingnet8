@@ -1173,8 +1173,8 @@ namespace DealEngine.WebUI.Controllers
                 {
                     model.ifreportAvailable = true;
                 }
-                //ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
                 model.Description = programmeReports.progreportsDescription;
+                model.IsBoundField = programmeReports.IsBoundField;
                 return Json(model);
             }
             catch (Exception ex)
