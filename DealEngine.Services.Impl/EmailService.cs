@@ -1185,11 +1185,14 @@ namespace DealEngine.Services.Impl
 		{
             EmailBuilder email = new EmailBuilder(DefaultSender);
             //EmailBuilder email = new EmailBuilder (DefaultSender);
-            if (string.IsNullOrWhiteSpace(CatchAllEmail))
+            var shd = string.IsNullOrWhiteSpace(CatchAllEmail);
+            if (!string.IsNullOrWhiteSpace(CatchAllEmail))
             {
                 if (!string.IsNullOrWhiteSpace(recipient))
-                {                    
-                    email.To(recipient);
+                {
+                    string[] EmailIds = recipient.Split(new string[] { "," },
+                                  StringSplitOptions.None);
+                    email.To(EmailIds);
                     if(!string.IsNullOrWhiteSpace(BCCEmail))
                     {
                         email.BCC(BCCEmail);
