@@ -72,34 +72,44 @@ namespace DealEngine.WebUI.Helpers
         
             try
             {
+                Programme prog = await _programmeService.GetProgrammeById(Guid.Parse(schedularJob.ProgrammeId));
+                string fileName = schedularJob.ReportName + ".csv";
+                string filepath = prog.Reportspath;
+                //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv\\";
+                string file = filepath + fileName;
+
                 using (var tx = _session.BeginTransaction())
                 {
                     if (schedularJob.BoundDateFrom != "")
                     {
-                        query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.BoundDateFrom + "'''   ,'''" + schedularJob.BoundDateTo + "''' )   ");
+                        query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.BoundDateFrom + "'''   ,'''" + schedularJob.BoundDateTo + "''','''" + file + "'''  )   ");
                     }
                     if (schedularJob.ReportType == "Library")
                     {
-                        query = _session.CreateSQLQuery("   SELECT public.LibraryReports"+ "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.ReportName + "''' )   ");
+                        query = _session.CreateSQLQuery("   SELECT public.LibraryReports"+ "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.ReportName + "''','''" + file + "'''  )   ");
                     }
                     else
                     {
-                        query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' )   ");
+                        query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + file + "''' )   ");
                     }
 
-                    Programme prog = await _programmeService.GetProgrammeById(Guid.Parse(schedularJob.ProgrammeId));
                     
                     query.ExecuteUpdate();
-                    string fileName = schedularJob.ReportName + ".csv";
-                    string filepath = prog.Reportspath;
-                   //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv\\";
-                     string file = filepath + fileName;
+                  
 
                     MemoryStream stream = new MemoryStream();
                    string ContentType = "text/csv";
                     stream.Position = 0;
                     EmailTemplate emailTemplate = null;
-                    await _emailService.SendReportsViaEmail(schedularJob.EmailIds, file);
+                    if(schedularJob.EmailIds != null)
+                    {
+                        await _emailService.SendReportsViaEmail(schedularJob.EmailIds, file);
+                    }
+                    else
+                    {
+                        await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
+                    }
+
 
                     if (emailTemplate != null)
                     {
