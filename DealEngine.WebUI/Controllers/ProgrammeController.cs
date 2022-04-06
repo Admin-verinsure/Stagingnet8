@@ -19,6 +19,8 @@ using System.Threading.Tasks;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
 using NReco.PdfGenerator;
+//using Quartz;
+//using DealEngine.WebUI.Tasks;
 
 //using DocumentFormat.OpenXml.Wordprocessing;
 
@@ -50,6 +52,7 @@ namespace DealEngine.WebUI.Controllers
         ISerializerationService _serializerationService;
         IUpdateTypeService _updateTypeServices;
         IAppSettingService _appSettingService;
+        IProgrammeReportsService _programmeReportsService;
         public ProgrammeController(
             ISerializerationService serializerationService,
             IClaimService claimService,
@@ -74,7 +77,8 @@ namespace DealEngine.WebUI.Controllers
             IHttpClientService httpClientService,
             IEGlobalSubmissionService eGlobalSubmissionService,
                     IUpdateTypeService updateTypeService,
-                    IAppSettingService appSettingService
+                    IAppSettingService appSettingService,
+                    IProgrammeReportsService programmeReportsService
             )
             : base(userRepository)
         {
@@ -102,6 +106,7 @@ namespace DealEngine.WebUI.Controllers
             _eGlobalSubmissionService = eGlobalSubmissionService;
             _updateTypeServices = updateTypeService;
             _appSettingService = appSettingService;
+            _programmeReportsService = programmeReportsService;
         }
 
         [HttpGet]
@@ -1108,6 +1113,102 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        //public async Task<IActionResult> CheckAvailabilty()
+        //{
+        //    ITrigger trigger = TriggerBuilder.Create()
+        //        .WithIdentity($"Check Availability - {DateTime.Now}")
+        //        .StartAt(new DateTimeOffset(DateTime.Now.AddSeconds(15)))
+        //        .WithSimpleSchedule(x => x.WithIntervalInSeconds(10).WithRepeatCount(10))
+        //        .WithPriority(1)
+        //        .Build();
+
+        //    IJobDetail job = JobBuilder.Create<CheckAvailabilityTask>()
+        //        .WithIdentity("Check Availability")
+        //        .Build();
+        //    await _scheduler.ScheduleJob(job, trigger);
+        //    return RedirectToAction("Index");
+        //}
+
+
+        public async Task<IActionResult> ManageSchedulars(Guid Id)
+        {
+            ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
+            var product = new List<ProductInfoViewModel>();
+            User user = null;
+            //var programmeReports = new List<ProgrammeReports>();
+            try
+            {
+                user = await CurrentUser();
+                Programme programme = await _programmeService.GetProgrammeById(Id);
+                var programmeReports = await _programmeReportsService.GetAllProgrammeReports();
+                model.Programme = programme;
+                model.ProgrammeReports = programmeReports;
+                ViewBag.Title = "Edit Report Schedular";
+
+                return View("ManageSchedulars", model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetReportInfo(Guid id , Guid progid)
+        {
+            List<string> productname = new List<string>();
+            User user = null;
+            ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
+                        model.ifreportAvailable = false;
+
+            try
+            {
+                user = await CurrentUser();
+                ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
+                Programme prog = await _programmeService.GetProgrammeById(progid);
+                
+                if (programmeReports.programme.Contains(prog))
+                {
+                    model.ifreportAvailable = true;
+                }
+                //ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
+                model.Description = programmeReports.progreportsDescription;
+                return Json(model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendProgReportsEmail(Guid id, String ReportAvailability, Guid progid)
+        {
+            List<string> productname = new List<string>();
+            User user = null;
+            ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
+
+            try
+            {
+                user = await CurrentUser();
+                ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
+                Programme prog = await _programmeService.GetProgrammeById(progid);
+                String EmailSubject = "User wants to add" + programmeReports.progreportsName + " to programme with id: " + prog.Id;
+                if (!programmeReports.programme.Contains(prog))
+                {
+                    _emailService.ContactSupport(user.Email, EmailSubject, EmailSubject);
+                }
+                return Json("Success");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> UpdateFlags(IFormCollection collection)
         {
@@ -1209,6 +1310,27 @@ namespace DealEngine.WebUI.Controllers
             model.InformationBuilderViewModel = await GetInformationBuilderViewModel();
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitProgrammeInformation(IFormCollection collection)
+        {
+            ClientInformationSheet sheet = null;
+            User user = null;
+
+            try
+            {
+              
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return RedirectToAction("Error500", "Error");
+
+        }
+
 
         private async Task<ProgrammeInfoViewModel> GetProgrammeInfoViewModel(Guid id)
         {            

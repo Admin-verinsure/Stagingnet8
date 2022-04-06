@@ -3279,12 +3279,16 @@ namespace DealEngine.WebUI.Controllers
 
                                 renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
                                 renderedDoc.RenderToPDF = template.RenderToPDF;
+
+                                // Testing image alignment fix for generated doc
+                                renderedDoc = await _fileService.FormatCKHTMLforConversion(renderedDoc);
+
                                 if (programme.BaseProgramme.IsPdfDoc)
                                 {
                                     if (renderedDoc.IsTemplate == true)
                                     {
-                                        renderedDoc = await _fileService.FormatCKHTMLforConversion(renderedDoc);
                                         renderedDoc = await _fileService.ConvertHTMLToPDF(renderedDoc);
+                                        //renderedDoc = await _fileService.FormatCKHTMLforConversion(renderedDoc);
                                     }
                                 }
                                 agreement.Documents.Add(renderedDoc);

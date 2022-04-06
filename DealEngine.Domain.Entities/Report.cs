@@ -55,6 +55,21 @@ namespace DealEngine.Domain.Entities
         public virtual string Hasadditionaltraditionallicence { get; set; }
 
     }
+
+    public class ReportSchedular : EntityBase
+    {
+        public ReportSchedular() : this(null) { }
+        public ReportSchedular(User createdBy) : base(createdBy)
+        {
+        }
+        public virtual bool ReportName { get; set; }
+        public virtual bool IsOffline { get; set; }
+        public virtual bool IsOnline { get; set; }
+        public virtual bool IsOndemand { get; set; }
+        public virtual DateTime OndemadTime { get; set; }
+        public virtual Programme programme { get; set; }
+
+    }
 }
 
 

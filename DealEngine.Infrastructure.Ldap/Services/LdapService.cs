@@ -39,7 +39,7 @@ namespace DealEngine.Infrastructure.Ldap.Services
 		public User GetUser (Guid userId)
 		{
 			using (LdapClient client = GetLdapServer (false)) {
-				LdapEntry entry = SearchForSingle (client, "(employeeNumber=" + userId + ")", "ou=users," + _ldapConfiguration.BaseDn);
+				LdapEntry entry = SearchForSingle (client, "(employeenumber=" + userId + ")", "ou=users," + _ldapConfiguration.BaseDn);
 				if (entry != null) {
 					User user = _userMapping.FromLdap (entry);
 					//user.Organisations = GetOrganisationsForUser (client, user.UserName);
@@ -78,7 +78,7 @@ namespace DealEngine.Infrastructure.Ldap.Services
 		public Organisation GetOrganisation (string organisationName)
 		{
 			using (LdapClient client = GetLdapServer (false)) {
-				LdapEntry entry = SearchForSingle (client, "(buildingName=" + organisationName + ")", "ou=organisations," + _ldapConfiguration.BaseDn);
+				LdapEntry entry = SearchForSingle (client, "(buildingname=" + organisationName + ")", "ou=organisations," + _ldapConfiguration.BaseDn);
 				if (entry != null)
 					return _organisationMapping.FromLdap (entry);
 			}
@@ -276,10 +276,12 @@ namespace DealEngine.Infrastructure.Ldap.Services
             string bindDN = userDN;
             string bindPw = oldPassword;
             Console.WriteLine(username + " " + oldPassword + " " + newPassword);
-            if (string.IsNullOrWhiteSpace(oldPassword))
+            
+			if (string.IsNullOrWhiteSpace(oldPassword))
             {
-                string baseDN = _ldapConfiguration.BaseDn;
-                bindDN = string.Format(_ldapConfiguration.AdminDn, baseDN);
+				//string baseDN = _ldapConfiguration.BaseDn;
+				//bindDN = string.Format(_ldapConfiguration.AdminDn, baseDN);
+				bindDN = string.Format(_ldapConfiguration.AdminDn);
                 bindPw = _ldapConfiguration.AdminPassword;
             }
 

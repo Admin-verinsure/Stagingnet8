@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Compile Remove="bin\**" />
+    <Compile Remove="Models\Schedular\**" />
     <Compile Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
     <Compile Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <Compile Remove="wwwroot\Data\**" />
@@ -19,6 +20,7 @@
     <Compile Remove="wwwroot\NewFolder\**" />
     <Compile Remove="wwwroot\Report\**" />
     <Content Remove="bin\**" />
+    <Content Remove="Models\Schedular\**" />
     <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
     <Content Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <Content Remove="wwwroot\Data\**" />
@@ -29,6 +31,7 @@
     <Content Remove="wwwroot\NewFolder\**" />
     <Content Remove="wwwroot\Report\**" />
     <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="Models\Schedular\**" />
     <EmbeddedResource Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
     <EmbeddedResource Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <EmbeddedResource Remove="wwwroot\Data\**" />
@@ -39,6 +42,7 @@
     <EmbeddedResource Remove="wwwroot\NewFolder\**" />
     <EmbeddedResource Remove="wwwroot\Report\**" />
     <None Remove="bin\**" />
+    <None Remove="Models\Schedular\**" />
     <None Remove="wwwroot\ckeditor\ckeditor5-techcertain-email\images\**" />
     <None Remove="wwwroot\ckeditor\ckeditor5-techcertain\images\**" />
     <None Remove="wwwroot\Data\**" />
@@ -391,7 +395,7 @@
 
   <ItemGroup>    
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />    
-    <PackageReference Include="ClosedXML" Version="0.95.3" />    
+    <PackageReference Include="ClosedXML" Version="0.95.4" />    
     <PackageReference Include="ElmahCore" Version="1.2.5" />
     <PackageReference Include="HtmlToOpenXml.dll" Version="2.0.3" />
     <PackageReference Include="IO.Swagger" Version="1.0.0" />
@@ -425,9 +429,12 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
     <PackageReference Include="NReco.PdfGenerator.LT" Version="1.1.17" />
     <PackageReference Include="PagedList.Mvc" Version="4.5.0" />
+    <PackageReference Include="Quartz" Version="3.3.3" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
     <PackageReference Include="ReflectionIT.Mvc.Paging" Version="4.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
     <PackageReference Include="System.Linq.Dynamic" Version="1.0.7" />
+    <PackageReference Include="Unity" Version="5.11.10" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="X.PagedList.Mvc" Version="8.0.7" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
@@ -441,7 +448,5 @@
     <ProjectReference Include="..\DealEngine.Infrastructure.Payment\DealEngine.Infrastructure.Payment.csproj" />
     <ProjectReference Include="..\DealEngine.Services.Impl\DealEngine.Services.Impl.csproj" />
   </ItemGroup>
-
-
 
 </Project>

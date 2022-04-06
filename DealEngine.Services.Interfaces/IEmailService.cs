@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using DealEngine.Domain.Entities;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 
@@ -50,6 +51,8 @@ namespace DealEngine.Services.Interfaces
         Task JoinOrganisationEmail(User organisationUser);
         Task RemoveOrganisationUserEmail(User removedUser, User brokerContactUser, ClientInformationSheet sheet);
         Task RsaNotificationEmail(string recipient, string rsausername);
+        Task SendReportsViaEmail(string recipent, string workbook);
+
     }
 }
 
