@@ -11,15 +11,15 @@ namespace DealEngine.Infrastructure.BaseLdap.Providers
 		protected string ServerAddress
 		{
 			get {
-				string serverPort = ConfigurationManager.AppSettings["OpenLdapPort"]; // ApacheLdapPort
-				return "LDAP://" + ConfigurationManager.AppSettings["OpenLdapServer"] + ":" + serverPort; // ApacheLdapServer
+				string serverPort = ConfigurationManager.AppSettings["ApacheLdapPort"]; // OpenLdapPort
+				return "LDAP://" + ConfigurationManager.AppSettings["ApacheLdapServer"] + ":" + serverPort; // OpenLdapServer
 			}
 		}
 
 		protected string UserDN
 		{
 			get {
-				string baseDN = ConfigurationManager.AppSettings["OpenLdapBaseDN"]; // ApacheLdapBaseDN
+				string baseDN = ConfigurationManager.AppSettings["ApacheLdapBaseDN"]; // OpenLdapBaseDN
 				return string.Format(ConfigurationManager.AppSettings["OpenLdapBaseUserDN"], baseDN);
 			}
 		}
@@ -506,19 +506,19 @@ namespace DealEngine.Infrastructure.BaseLdap.Providers
 
 		DirectoryEntry GetLdapConnection()
 		{
-			string baseDN = ConfigurationManager.AppSettings["OpenLdapBaseDN"];
-			string adminUserDN = string.Format(ConfigurationManager.AppSettings["OpenLdapBindDN"], baseDN);
-			//string adminUserDN = string.Format(ConfigurationManager.AppSettings["ApacheLdapBindDN"]);
-			string adminUserPassword = ConfigurationManager.AppSettings["OpenLdapBindPW"]; // ApacheLdapBindPW
+			//string baseDN = ConfigurationManager.AppSettings["OpenLdapBaseDN"];
+			//string adminUserDN = string.Format(ConfigurationManager.AppSettings["OpenLdapBindDN"], baseDN);
+			string adminUserDN = string.Format(ConfigurationManager.AppSettings["ApacheLdapBindDN"]);
+			string adminUserPassword = ConfigurationManager.AppSettings["ApacheLdapBindPW"]; // OpenLdapBindPW
 
 			return GetLdapConnection (adminUserDN, adminUserPassword);
 		}
 
 		DirectoryEntry GetLdapConnection(string ldapUser, string password)
 		{
-			string serverPort = ConfigurationManager.AppSettings["OpenLdapPort"]; // ApacheLdapPort
-			string serverAddress = "LDAP://" + ConfigurationManager.AppSettings["OpenLdapServer"] + ":" + serverPort; // OpenLdapServer
-			string baseDN = ConfigurationManager.AppSettings["OpenLdapBaseDN"]; // ApacheLdapBaseDN
+			string serverPort = ConfigurationManager.AppSettings["ApacheLdapPort"]; // OpenLdapPort
+			string serverAddress = "LDAP://" + ConfigurationManager.AppSettings["ApacheLdapServer"] + ":" + serverPort; // OpenLdapServer
+			string baseDN = ConfigurationManager.AppSettings["ApacheLdapBaseDN"]; // OpenLdapBaseDN
 
 			return new DirectoryEntry(serverAddress + "/" + baseDN, ldapUser, password, AuthenticationTypes.Secure);
 		}

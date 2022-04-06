@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "SmartAdmin.WebUI": {
+    "DealEngine.WebUI": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

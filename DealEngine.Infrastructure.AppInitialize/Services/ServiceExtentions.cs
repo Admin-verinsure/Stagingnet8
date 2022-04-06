@@ -27,7 +27,6 @@ namespace DealEngine.Infrastructure.AppInitialize.Services
             services.AddTransient<IUnderwritingModule, ICIBARCCOUWModule>();
             services.AddTransient<IUnderwritingModule, ICIBHIANZUWModule>();
             services.AddTransient<IUnderwritingModule, MarshCoastGuardUWModule>();
-
             return services;
         }
     }
