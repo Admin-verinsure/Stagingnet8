@@ -6,6 +6,7 @@
         <input type="text" class="form-control" value="@Model.Programme.Id" id="programmeId" name="ProgrammeId" hidden>
         <input type="text" class="form-control" value="@Model.Programme.Name" id="programmeName" name="ProgrammeName" hidden>
         <input type="text" class="form-control" value="@Model.Programme.NamedPartyUnitName" id="programmeNamedPartyUnitName" name="ProgrammeNamedPartyUnitName" hidden>
+
         <div class="card">
             <div class="card-header">
                 <h5>
@@ -14,17 +15,7 @@
             </div>
             <div class="card-body">
                 <table class="table table-bordered table-striped ">
-                    @*<thread>
-            <tr>
 
-                <th>
-                    <section class="col col-3">
-                        Report
-                    </section>
-                </th>
-
-            </tr>
-        </thread>*@
                     <tbody>
                         <tr>
                             <td>
@@ -35,13 +26,12 @@
                                     </section>
                                     <section class="col col-2">
                                         <label>Report Name </label>
-                                        @*<select onchange="updateLabel()" id="CraftTypeDrop" class="form-select input-lg" hidden style="margin-top: 20px; margin-bottom: 25px;">*@
 
                                         <select onchange="SelectedReport()" class="form-select input-lg" id="ReportName" name="ReportName">
                                             <option selected="selected" value="Select">---Select---</option>
                                             @foreach (var option in Model.ProgrammeReports)
                                             {
-                                                <option value="@option.Id">@option.progreportsName</option>
+                                                <option value="@option.Id">@Model.Programme.Claim  @option.progreportsName</option>
                                             }
 
                                         </select>
@@ -58,12 +48,78 @@
                                         <label>Availability</label>
 
                                         <select onchange="SendProgReportsEmail()" id="ReportAvailability">
-                                            @*<option onchange="SendProgReportsEmail()" id="ReportAvailability" selected="selected" value="Select">---Select---</option>*@
                                             <option value="yes">Yes</option>
                                             <option value="no">No</option>
 
                                         </select>
                                     </section>
+
+                                    @*<section class="col col-2">
+                                        <br />
+                                        <button class="RunOptions" name="RunNow" value="@Model.RunNow">Run Now </button>
+                                    </section>
+
+                                    <section class="col col-2">
+                                        <br />
+                                        <button type="button" style="display:none" onclick="$('#RunOptionsDiv').show();" class="RunOptions" value="RunOptions">Run Options </button>
+                                    </section>*@
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    </tbody>
+                    <tbody>
+
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <section class="col col-3">
+
+                                        <label>Email To: </label>
+                                    </section>
+                                    <section class="col col-3">
+
+                                        <input type="text" value="@Model.EmailIds" name="EmailIds" id="EmailIds">
+                                    </section>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="row boundoption" style="display:none" >
+                                    <section class="col col-3">
+
+                                        <label>Bound From: </label>
+                                    </section>
+                                    <section class="col col-3">
+
+                                        <input type="text" value="@Model.BoundDateFrom" name="BoundDateFrom" class="ReportSchedularTime">
+                                    </section>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="row boundoption"  style="display:none" >
+                                    <section class="col col-3">
+
+                                        <label>Bound To: </label>
+                                    </section>
+                                    <section class="col col-3">
+
+                                        <input type="text" value="@Model.BoundDateTo" name="BoundDateTo" class="ReportSchedularTime">
+                                    </section>
+                                </div>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="row">
 
                                     <section class="col col-2">
                                         <br />
@@ -72,16 +128,18 @@
 
                                     <section class="col col-2">
                                         <br />
-                                        <button type="button" style="display:none" onclick="$('#RunOptionsDiv').show();"   class="RunOptions"  value="RunOptions">Run Options </button>
+                                        <button type="button" style="display:none" onclick="$('#RunOptionsDiv').show();" class="RunOptions" value="RunOptions">Run Options </button>
                                     </section>
-
                                 </div>
-
                             </td>
 
                         </tr>
+
+
                     </tbody>
-                       <tbody id="RunOptionsDiv" style="display:none" class="configure" >
+
+
+                    <tbody id="RunOptionsDiv" style="display:none" class="configure">
                         <tr style="border-style: double;">
                             <td>
                                 <label><b>Configure Auto-Run Schedule</b></label>
@@ -97,7 +155,7 @@
                                     </section>
                                     <section class="col col-3">
 
-                                        <input type="text" value="@Model.ReportSchedularTime" name="ReportSchedularTime" id="ReportSchedularTime">
+                                        <input type="text" value="@Model.ReportSchedularTime" name="ReportSchedularTime" class="ReportSchedularTime">
                                     </section>
                                 </div>
                             </td>
@@ -140,19 +198,19 @@
                             </td>
 
                         </tr>
-                           <tr>
-                               <td>
-                                   <div class="card-footer">
-                                       <button class="btn btn-primary btn-xs " id="submit" type="submit">Save Auto Run</button>
-                                   </div>
-                               </td>
-                           </tr>
-                       
-                       </tbody>
-                   
+                        <tr>
+                            <td>
+                                <div class="card-footer">
+                                    <button class="btn btn-primary btn-xs " id="submit" type="submit">Save Auto Run</button>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
                 </table>
             </div>
-            
+
         </div>
     </form>
 </div>
@@ -164,7 +222,7 @@
 
 <script>
 
-    $('#ReportSchedularTime').datepicker({
+    $('.ReportSchedularTime').datepicker({
         dateFormat: 'dd/mm/yy'
        /* controls: ['calendar', 'time']*/
 

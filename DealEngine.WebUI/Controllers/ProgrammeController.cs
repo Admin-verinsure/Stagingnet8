@@ -1173,8 +1173,8 @@ namespace DealEngine.WebUI.Controllers
                 {
                     model.ifreportAvailable = true;
                 }
-                //ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
                 model.Description = programmeReports.progreportsDescription;
+                model.IsBoundField = programmeReports.IsBoundField;
                 return Json(model);
             }
             catch (Exception ex)
@@ -1196,7 +1196,7 @@ namespace DealEngine.WebUI.Controllers
                 user = await CurrentUser();
                 ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
                 Programme prog = await _programmeService.GetProgrammeById(progid);
-                String EmailSubject = "User wants to add" + programmeReports.progreportsName + " to programme with id: " + prog.Id;
+                String EmailSubject = "User with userid = "+ user.UserName+ " wants to add" + programmeReports.progreportsName + " to programme with id: " + prog.Id;
                 if (!programmeReports.programme.Contains(prog))
                 {
                     _emailService.ContactSupport(user.Email, EmailSubject, EmailSubject);

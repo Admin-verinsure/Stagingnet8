@@ -186,6 +186,11 @@ namespace DealEngine.WebUI.Models.Programme
         public virtual List<ProgrammeReports> ProgrammeReports { get; set; }
         public bool ifreportAvailable { get; set; }
         public string Description { get; set; }
+        public string EmailIds { get; set; }
+        public string BoundDateFrom { get; set; }
+        public string BoundDateTo { get; set; }
+        public  Boolean IsBoundField { get; set; }
+
         //public IList<SelectListItem> ScheduleFrequency { get; set; }
     }
 }
