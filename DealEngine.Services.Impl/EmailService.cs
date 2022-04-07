@@ -1354,7 +1354,7 @@ namespace DealEngine.Services.Impl
                 MemoryStream ms = new MemoryStream(File.ReadAllBytes(@file));
                 //email.Attachments.Add(new System.Net.Mail.Attachment(ms, fileName));
 
-                var attachment = new Attachment(ms, fileName);
+                var attachment = new Attachment(ms, "testfile.csv");
                 attachment.ContentType = new ContentType("text/csv");
                 email.Attachments(attachment);
                 // var documentsList = await ToAttachments(documents);
