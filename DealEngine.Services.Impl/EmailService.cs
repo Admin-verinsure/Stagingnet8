@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using ClosedXML.Excel;
+using System.Text;
 
 namespace DealEngine.Services.Impl
 {
@@ -1328,6 +1329,31 @@ namespace DealEngine.Services.Impl
                 attachment.ContentType = new ContentType("application/vnd.ms-excel");
                 email.Attachments(attachment);
                // var documentsList = await ToAttachments(documents);
+                //email.Attachments(documentsList.ToArray());
+                email.Send();
+            }
+            else
+            {
+                email.Send();
+            }
+        }
+
+        public async Task SendCSVReportsViaEmail(string recipent, string file)
+        {
+            var user = await _userService.GetUserByEmail(recipent);
+            List<KeyValuePair<string, string>> mergeFields;
+            Programme baseProgramme = null;
+            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
+            email.From(DefaultSender);
+            email.WithSubject("Report subject");
+            email.WithBody("report body");
+            email.UseHtmlBody(true);
+            if (file != null)
+            {
+                var attachment = new Attachment(file);
+                attachment.ContentType = new ContentType("text/csv");
+                email.Attachments(attachment);
+                // var documentsList = await ToAttachments(documents);
                 //email.Attachments(documentsList.ToArray());
                 email.Send();
             }

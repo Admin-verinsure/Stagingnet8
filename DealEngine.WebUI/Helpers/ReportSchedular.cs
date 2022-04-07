@@ -103,6 +103,7 @@ namespace DealEngine.WebUI.Helpers
                     string ContentType = "text/csv";
                     stream.Position = 0;
                     EmailTemplate emailTemplate = null;
+
                     if (schedularJob.EmailIds != "")
                     {
                         await _emailService.SendReportsViaEmail(schedularJob.EmailIds, file);
