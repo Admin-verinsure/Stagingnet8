@@ -1185,15 +1185,12 @@ namespace DealEngine.Services.Impl
 		{
             EmailBuilder email = new EmailBuilder(DefaultSender);
             //EmailBuilder email = new EmailBuilder (DefaultSender);
-            var shd = string.IsNullOrWhiteSpace(CatchAllEmail);
-            if (!string.IsNullOrWhiteSpace(CatchAllEmail))
+            if (string.IsNullOrWhiteSpace(CatchAllEmail))
             {
                 if (!string.IsNullOrWhiteSpace(recipient))
                 {
-                    string[] EmailIds = recipient.Split(new string[] { "," },
-                                  StringSplitOptions.None);
-                    email.To(EmailIds);
-                    if(!string.IsNullOrWhiteSpace(BCCEmail))
+                    email.To(recipient);
+                    if (!string.IsNullOrWhiteSpace(BCCEmail))
                     {
                         email.BCC(BCCEmail);
                     }
@@ -1208,8 +1205,8 @@ namespace DealEngine.Services.Impl
             {
                 email.To(CatchAllEmail);
             }
-			return email;
-		}
+            return email;
+        }
 
         public async Task<Attachment> ToAttachment (SystemDocument document)
 		{
