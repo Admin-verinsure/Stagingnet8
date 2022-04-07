@@ -1338,7 +1338,7 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async Task SendCSVReportsViaEmail(string recipent, string file)
+        public async Task SendCSVReportsViaEmail(string recipent, string file,string fileName)
         {
             var user = await _userService.GetUserByEmail(recipent);
             List<KeyValuePair<string, string>> mergeFields;
@@ -1350,7 +1350,11 @@ namespace DealEngine.Services.Impl
             email.UseHtmlBody(true);
             if (file != null)
             {
-                var attachment = new Attachment(file);
+
+                MemoryStream ms = new MemoryStream(File.ReadAllBytes(@file));
+                //email.Attachments.Add(new System.Net.Mail.Attachment(ms, fileName));
+
+                var attachment = new Attachment(ms, fileName);
                 attachment.ContentType = new ContentType("text/csv");
                 email.Attachments(attachment);
                 // var documentsList = await ToAttachments(documents);
