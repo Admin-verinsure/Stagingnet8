@@ -37,12 +37,12 @@ namespace DealEngine.WebUI.Helpers
     {
 
         IUserService _userService;
-       IEmailService _emailService;
+        IEmailService _emailService;
 
         private readonly IReportBuilderService _ReportBuilderService;
 
         private readonly ILogger<ReportSchedular> _logger;
-        private readonly  IProgrammeService _programmeService;
+        private readonly IProgrammeService _programmeService;
         private readonly ISessionFactory _sessionFactory;
         private NHibernate.ISession _session;
         ISchedularJobService _schedularjobService;
@@ -69,11 +69,13 @@ namespace DealEngine.WebUI.Helpers
             var reportId = context.JobDetail.Description;
             SchedularJob schedularJob = await _schedularjobService.GetJobById(Guid.Parse(reportId));
             IQuery query;
-        
+
             try
             {
                 Programme prog = await _programmeService.GetProgrammeById(Guid.Parse(schedularJob.ProgrammeId));
-                string fileName = schedularJob.ReportName + ".csv";
+                //string fileName = schedularJob.ReportName+DateTime.Now.ToString("'dd'-'MM'")+ ".csv";
+                string fileName = schedularJob.ReportName + DateTime.Now.ToString("MM-dd") + ".csv";
+
                 string filepath = prog.Reportspath;
                 //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv\\";
                 string file = filepath + fileName;
@@ -86,22 +88,22 @@ namespace DealEngine.WebUI.Helpers
                     }
                     if (schedularJob.ReportType == "Library")
                     {
-                        query = _session.CreateSQLQuery("   SELECT public.LibraryReports"+ "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.ReportName + "''','''" + file + "'''  )   ");
+                        query = _session.CreateSQLQuery("   SELECT public.LibraryReports" + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.ReportName + "''','''" + file + "'''  )   ");
                     }
                     else
                     {
                         query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + file + "''' )   ");
                     }
 
-                    
+
                     query.ExecuteUpdate();
-                  
+
 
                     MemoryStream stream = new MemoryStream();
-                   string ContentType = "text/csv";
+                    string ContentType = "text/csv";
                     stream.Position = 0;
                     EmailTemplate emailTemplate = null;
-                    if(schedularJob.EmailIds != null)
+                    if (schedularJob.EmailIds != "")
                     {
                         await _emailService.SendReportsViaEmail(schedularJob.EmailIds, file);
                     }
