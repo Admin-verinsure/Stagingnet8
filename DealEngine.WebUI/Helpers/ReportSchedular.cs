@@ -74,7 +74,7 @@ namespace DealEngine.WebUI.Helpers
             {
                 Programme prog = await _programmeService.GetProgrammeById(Guid.Parse(schedularJob.ProgrammeId));
                 //string fileName = schedularJob.ReportName+DateTime.Now.ToString("'dd'-'MM'")+ ".csv";
-                string fileName = schedularJob.ReportName + DateTime.Now.ToString("MM-dd") + ".csv";
+                string fileName = schedularJob.ReportName + DateTime.Now.ToString("MM-dd") + ".xls";
 
                 string filepath = prog.Reportspath;
                 //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv\\";
@@ -98,7 +98,8 @@ namespace DealEngine.WebUI.Helpers
 
                     query.ExecuteUpdate();
                     MemoryStream stream = new MemoryStream();
-                    string ContentType = "text/csv";
+                    //string ContentType = "text/csv";
+                    string ContentType = "Application/msexcel";
                     stream.Position = 0;
                     EmailTemplate emailTemplate = null;
                     if (schedularJob.EmailIds != "")
@@ -110,13 +111,6 @@ namespace DealEngine.WebUI.Helpers
                         await _emailService.SendCSVReportsViaEmail("staff@techcertain.com", file, fileName);
                     }
 
-
-                    //if (emailTemplate != null)
-                    //{
-
-                    //    await _emailService.SendReportsViaEmail(schedularJob.EmailIds, file);
-
-                    //}
 
                 }
             }

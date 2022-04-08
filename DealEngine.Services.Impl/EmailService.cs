@@ -1209,6 +1209,37 @@ namespace DealEngine.Services.Impl
             return email;
         }
 
+
+        public async Task<EmailBuilder> GetLocalizedReportEmailBuilder(string defaultSender, string recipient)
+        {
+            EmailBuilder email = new EmailBuilder(DefaultSender);
+            //EmailBuilder email = new EmailBuilder (DefaultSender);
+            var shd = string.IsNullOrWhiteSpace(CatchAllEmail);
+            if (!string.IsNullOrWhiteSpace(CatchAllEmail))
+            {
+                if (!string.IsNullOrWhiteSpace(recipient))
+                {
+                    string[] EmailIds = recipient.Split(new string[] { "," },
+                                  StringSplitOptions.None);
+                    email.To(EmailIds);
+                    if (!string.IsNullOrWhiteSpace(BCCEmail))
+                    {
+                        email.BCC(BCCEmail);
+                    }
+                    //email.To(recipient).BCC(SystemEmail);
+                    if (!string.IsNullOrWhiteSpace(ReplyToEmail))
+                    {
+                        email.ReplyTo(ReplyToEmail);
+                    }
+                }
+            }
+            else
+            {
+                email.To(CatchAllEmail);
+            }
+            return email;
+        }
+
         public async Task<Attachment> ToAttachment (SystemDocument document)
 		{
             string html = _fileService.FromBytes(document.Contents);
@@ -1343,7 +1374,7 @@ namespace DealEngine.Services.Impl
             var user = await _userService.GetUserByEmail(recipent);
             List<KeyValuePair<string, string>> mergeFields;
             Programme baseProgramme = null;
-            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
+            EmailBuilder email = await GetLocalizedReportEmailBuilder(DefaultSender, recipent);
             email.From(DefaultSender);
             email.WithSubject("Report subject");
             email.WithBody("report body");
