@@ -1369,33 +1369,33 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async Task SendCSVReportsViaEmail(string recipent, string file,string fileName)
+        public async Task SendCSVReportsViaEmail(string recipent, string file,string workbook)
         {
             var user = await _userService.GetUserByEmail(recipent);
-            List<KeyValuePair<string, string>> mergeFields;
             Programme baseProgramme = null;
             EmailBuilder email = await GetLocalizedReportEmailBuilder(DefaultSender, recipent);
-            email.From(DefaultSender);
-            email.WithSubject("Report subject");
-            email.WithBody("report body");
-            email.UseHtmlBody(true);
-            if (file != null)
-            {
+            //email.From(DefaultSender);
+           
 
-                MemoryStream ms = new MemoryStream(File.ReadAllBytes(@file));
-                //email.Attachments.Add(new System.Net.Mail.Attachment(ms, fileName));
+                email.From(DefaultSender);
+                email.WithSubject("Report subject");
+                email.WithBody("report body");
+                email.UseHtmlBody(true);
+                if (workbook != null)
+                {
+                    var attachment = new Attachment(workbook);
+                    attachment.ContentType = new ContentType("application/vnd.ms-excel");
+                    email.Attachments(attachment);
+                    // var documentsList = await ToAttachments(documents);
+                    //email.Attachments(documentsList.ToArray());
+                    email.Send();
+                }
+                else
+                {
+                    email.Send();
+                }
 
-                var attachment = new Attachment(ms, "testfile.csv");
-                attachment.ContentType = new ContentType("text/csv");
-                email.Attachments(attachment);
-                // var documentsList = await ToAttachments(documents);
-                //email.Attachments(documentsList.ToArray());
-                email.Send();
-            }
-            else
-            {
-                email.Send();
-            }
+
         }
 
         public async Task RemoveOrganisationUserEmail(User removedUser, User programmeOwnerUser, ClientInformationSheet sheet)
