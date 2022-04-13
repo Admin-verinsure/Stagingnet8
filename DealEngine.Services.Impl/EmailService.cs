@@ -1369,7 +1369,7 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async Task SendCSVReportsViaEmail(string recipent, string file,string workbook)
+        public async Task SendCSVReportsViaEmail(string recipent,string workbook)
         {
             var user = await _userService.GetUserByEmail(recipent);
             Programme baseProgramme = null;
