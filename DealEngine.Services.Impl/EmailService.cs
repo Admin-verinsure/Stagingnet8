@@ -1373,7 +1373,7 @@ namespace DealEngine.Services.Impl
         {
             var user = await _userService.GetUserByEmail(recipent);
             Programme baseProgramme = null;
-            EmailBuilder email = await GetLocalizedReportEmailBuilder(DefaultSender, recipent);
+            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
             //email.From(DefaultSender);
            
 
