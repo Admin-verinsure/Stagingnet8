@@ -74,7 +74,7 @@ namespace DealEngine.WebUI.Helpers
             {
                 Programme prog = await _programmeService.GetProgrammeById(Guid.Parse(schedularJob.ProgrammeId));
                 //string fileName = schedularJob.ReportName+DateTime.Now.ToString("'dd'-'MM'")+ ".csv";
-                string fileName = schedularJob.ReportName + DateTime.Now.ToString("MM-dd") + ".xlsx";
+                string fileName = schedularJob.ReportName + DateTime.Now.ToString("MM-dd") + ".xls";
 
                 string filepath = prog.Reportspath;
                 //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv\\";
@@ -105,11 +105,11 @@ namespace DealEngine.WebUI.Helpers
 
                     if (schedularJob.EmailIds != "")
                     {
-                        await _emailService.SendReportsViaEmail(schedularJob.EmailIds, file);
+                        await _emailService.SendCSVReportsViaEmail(schedularJob.EmailIds, file);
                     }
                     else
                     {
-                        await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
+                        await _emailService.SendCSVReportsViaEmail("staff@techcertain.com", file);
                     }
 
 

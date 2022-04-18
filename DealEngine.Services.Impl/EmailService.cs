@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using ClosedXML.Excel;
 using System.Text;
+using System.Data;
 
 namespace DealEngine.Services.Impl
 {
@@ -1386,11 +1387,28 @@ namespace DealEngine.Services.Impl
                     var attachment = new Attachment(workbook);
                 //string ContentType = "Application/msexcel";
 
-                attachment.ContentType = new ContentType("Application/msexcel");
-                   // email.Attachments.Add(new Attachment(workbook));
-                    // var documentsList = await ToAttachments(documents);
-                    //email.Attachments(documentsList.ToArray());
-                    email.Send();
+                attachment.ContentType = new ContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                // email.Attachments.Add(new Attachment(workbook));
+                // var documentsList = await ToAttachments(documents);
+                //email.Attachments(documentsList.ToArray());
+
+
+
+                //  DataTable dt = (DataTable)ReadToEnd(filepath);
+                // string sFilename = fname.Substring(0, fname.IndexOf("."));
+                //  sFilename = sFilename + ".xlsx";
+                //  MemoryStream ms = DataTableToExcelXlsx(dt, "Sheet1");
+                //  ms.WriteTo(HttpContext.Current.Response.OutputStream);
+                //HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                //HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment;filename=" + sFilename);
+                //HttpContext.Current.Response.StatusCode = 200;
+                //HttpContext.Current.Response.End();
+
+
+
+
+
+                email.Send();
                 }
                 else
                 {
