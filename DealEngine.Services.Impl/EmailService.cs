@@ -1391,7 +1391,7 @@ namespace DealEngine.Services.Impl
                 // email.Attachments.Add(new Attachment(workbook));
                 // var documentsList = await ToAttachments(documents);
                 //email.Attachments(documentsList.ToArray());
-
+                email.Attachments(attachment);
 
 
                 //  DataTable dt = (DataTable)ReadToEnd(filepath);
