@@ -1387,7 +1387,7 @@ namespace DealEngine.Services.Impl
                 //string ContentType = "Application/msexcel";
 
                 attachment.ContentType = new ContentType("Application/msexcel");
-                    email.Attachments(attachment);
+                   // email.Attachments.Add(new Attachment(workbook));
                     // var documentsList = await ToAttachments(documents);
                     //email.Attachments(documentsList.ToArray());
                     email.Send();

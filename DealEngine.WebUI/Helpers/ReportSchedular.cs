@@ -99,15 +99,17 @@ namespace DealEngine.WebUI.Helpers
                     query.ExecuteUpdate();
                     MemoryStream stream = new MemoryStream();
                     //string ContentType = "text/csv";
+
                     stream.Position = 0;
                     EmailTemplate emailTemplate = null;
+
                     if (schedularJob.EmailIds != "")
                     {
-                        await _emailService.SendCSVReportsViaEmail(schedularJob.EmailIds, file);
+                        await _emailService.SendReportsViaEmail(schedularJob.EmailIds, file);
                     }
                     else
                     {
-                        await _emailService.SendCSVReportsViaEmail("staff@techcertain.com", file);
+                        await _emailService.SendReportsViaEmail("staff@techcertain.com", file);
                     }
 
 
