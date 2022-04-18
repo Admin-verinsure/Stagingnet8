@@ -99,7 +99,6 @@ namespace DealEngine.WebUI.Helpers
                     query.ExecuteUpdate();
                     MemoryStream stream = new MemoryStream();
                     //string ContentType = "text/csv";
-                    string ContentType = "Application/msexcel";
                     stream.Position = 0;
                     EmailTemplate emailTemplate = null;
                     if (schedularJob.EmailIds != "")
