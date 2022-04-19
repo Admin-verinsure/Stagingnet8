@@ -1217,7 +1217,7 @@ namespace DealEngine.Services.Impl
             EmailBuilder email = new EmailBuilder(DefaultSender);
             //EmailBuilder email = new EmailBuilder (DefaultSender);
             var shd = string.IsNullOrWhiteSpace(CatchAllEmail);
-            if (!string.IsNullOrWhiteSpace(CatchAllEmail))
+            if (string.IsNullOrWhiteSpace(CatchAllEmail))
             {
                 if (!string.IsNullOrWhiteSpace(recipient))
                 {
