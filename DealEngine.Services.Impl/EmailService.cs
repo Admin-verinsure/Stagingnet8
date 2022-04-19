@@ -1371,14 +1371,11 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async Task SendCSVReportsViaEmail(string recipent,string workbook)
+        public async Task SendCSVReportsViaEmail(string recipent,string workbook,string fileName)
         {
             var user = await _userService.GetUserByEmail(recipent);
             Programme baseProgramme = null;
-            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
-            //email.From(DefaultSender);
-           
-
+            EmailBuilder email = await GetLocalizedReportEmailBuilder(DefaultSender, recipent);
                 email.From(DefaultSender);
                 email.WithSubject("Report subject");
                 email.WithBody("report body");
@@ -1386,40 +1383,11 @@ namespace DealEngine.Services.Impl
 
                 if (workbook != null)
                 {
-
-               // WebClient myClient = new WebClient();
-                //byte[] bytes = myClient.DownloadData(workbook);
-               // System.IO.MemoryStream webPdf = new MemoryStream(bytes);
-
-
-               // var attachment = new Attachment(webPdf, "Application/msexcel");
-                //string ContentType = "Application/msexcel";
-
-              //  attachment.ContentType = new ContentType("Application/msexcel");
-                // email.Attachments.Add(new Attachment(workbook));
-                // var documentsList = await ToAttachments(documents);
-                //email.Attachments(documentsList.ToArray());
-               // email.Attachments(attachment);
-
                 FileStream fs = File.OpenRead(workbook);
 
-                Attachment attachment = new Attachment(fs, "preseaintake.xls", "application/vnd.ms-excel");
+                Attachment attachment = new Attachment(fs, fileName, "application/vnd.ms-excel");
                 email.Attachments(attachment);
-                //email.Attachments.Add(attachment);
-                //  DataTable dt = (DataTable)ReadToEnd(filepath);
-                // string sFilename = fname.Substring(0, fname.IndexOf("."));
-                //  sFilename = sFilename + ".xlsx";
-                //  MemoryStream ms = DataTableToExcelXlsx(dt, "Sheet1");
-                //  ms.WriteTo(HttpContext.Current.Response.OutputStream);
-                //HttpContext.Current.Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                //HttpContext.Current.Response.AddHeader("Content-Disposition", "attachment;filename=" + sFilename);
-                //HttpContext.Current.Response.StatusCode = 200;
-                //HttpContext.Current.Response.End();
-
-
-
-
-
+                
                 email.Send();
                 }
                 else
