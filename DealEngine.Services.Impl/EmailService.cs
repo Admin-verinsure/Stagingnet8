@@ -1403,7 +1403,7 @@ namespace DealEngine.Services.Impl
 
                 FileStream fs = File.OpenRead(workbook);
 
-                Attachment attachment = new Attachment(fs, "preseaintake", "application/vnd.ms-excel");
+                Attachment attachment = new Attachment(fs, "preseaintake.xls", "application/vnd.ms-excel");
                 email.Attachments(attachment);
                 //email.Attachments.Add(attachment);
                 //  DataTable dt = (DataTable)ReadToEnd(filepath);
