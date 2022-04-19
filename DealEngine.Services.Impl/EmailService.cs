@@ -1387,21 +1387,25 @@ namespace DealEngine.Services.Impl
                 if (workbook != null)
                 {
 
-                WebClient myClient = new WebClient();
-                byte[] bytes = myClient.DownloadData(workbook);
-                System.IO.MemoryStream webPdf = new MemoryStream(bytes);
+               // WebClient myClient = new WebClient();
+                //byte[] bytes = myClient.DownloadData(workbook);
+               // System.IO.MemoryStream webPdf = new MemoryStream(bytes);
 
 
-                var attachment = new Attachment(webPdf, "Application/msexcel");
+               // var attachment = new Attachment(webPdf, "Application/msexcel");
                 //string ContentType = "Application/msexcel";
 
               //  attachment.ContentType = new ContentType("Application/msexcel");
                 // email.Attachments.Add(new Attachment(workbook));
                 // var documentsList = await ToAttachments(documents);
                 //email.Attachments(documentsList.ToArray());
+               // email.Attachments(attachment);
+
+                FileStream fs = File.OpenRead(workbook);
+
+                Attachment attachment = new Attachment(fs, "preseaintake", "application/vnd.ms-excel");
                 email.Attachments(attachment);
-
-
+                //email.Attachments.Add(attachment);
                 //  DataTable dt = (DataTable)ReadToEnd(filepath);
                 // string sFilename = fname.Substring(0, fname.IndexOf("."));
                 //  sFilename = sFilename + ".xlsx";
