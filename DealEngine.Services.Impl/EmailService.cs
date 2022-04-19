@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Mvc;
 using ClosedXML.Excel;
 using System.Text;
 using System.Data;
+using System.Net;
 
 namespace DealEngine.Services.Impl
 {
@@ -1382,12 +1383,19 @@ namespace DealEngine.Services.Impl
                 email.WithSubject("Report subject");
                 email.WithBody("report body");
                 email.UseHtmlBody(true);
+
                 if (workbook != null)
                 {
-                    var attachment = new Attachment(workbook);
+
+                WebClient myClient = new WebClient();
+                byte[] bytes = myClient.DownloadData(workbook);
+                System.IO.MemoryStream webPdf = new MemoryStream(bytes);
+
+
+                var attachment = new Attachment(webPdf, "Application/msexcel");
                 //string ContentType = "Application/msexcel";
 
-                attachment.ContentType = new ContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+              //  attachment.ContentType = new ContentType("Application/msexcel");
                 // email.Attachments.Add(new Attachment(workbook));
                 // var documentsList = await ToAttachments(documents);
                 //email.Attachments(documentsList.ToArray());
