@@ -85,6 +85,11 @@
             </span>
         </div>
         <div class="card-body">
+            @if (!User.IsInRole("Client"))
+            {
+            <p>You can use this search box to find anything - just type any word in the client name or status etc.</p>
+            }
+            
             @await Html.PartialAsync("_ClientProgrammeTablePartial", @Model)
         </div>
     </div>
