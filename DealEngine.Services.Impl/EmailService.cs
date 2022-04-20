@@ -19,6 +19,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using ClosedXML.Excel;
+using System.Text;
+using System.Data;
+using System.Net;
 
 namespace DealEngine.Services.Impl
 {
@@ -1208,6 +1211,37 @@ namespace DealEngine.Services.Impl
             return email;
         }
 
+
+        public async Task<EmailBuilder> GetLocalizedReportEmailBuilder(string defaultSender, string recipient)
+        {
+            EmailBuilder email = new EmailBuilder(DefaultSender);
+            //EmailBuilder email = new EmailBuilder (DefaultSender);
+            var shd = string.IsNullOrWhiteSpace(CatchAllEmail);
+            if (string.IsNullOrWhiteSpace(CatchAllEmail))
+            {
+                if (!string.IsNullOrWhiteSpace(recipient))
+                {
+                    string[] EmailIds = recipient.Split(new string[] { "," },
+                                  StringSplitOptions.None);
+                    email.To(EmailIds);
+                    if (!string.IsNullOrWhiteSpace(BCCEmail))
+                    {
+                        email.BCC(BCCEmail);
+                    }
+                    //email.To(recipient).BCC(SystemEmail);
+                    if (!string.IsNullOrWhiteSpace(ReplyToEmail))
+                    {
+                        email.ReplyTo(ReplyToEmail);
+                    }
+                }
+            }
+            else
+            {
+                email.To(CatchAllEmail);
+            }
+            return email;
+        }
+
         public async Task<Attachment> ToAttachment (SystemDocument document)
 		{
             string html = _fileService.FromBytes(document.Contents);
@@ -1335,6 +1369,33 @@ namespace DealEngine.Services.Impl
             {
                 email.Send();
             }
+        }
+
+        public async Task SendCSVReportsViaEmail(string recipent,string workbook,string fileName)
+        {
+            var user = await _userService.GetUserByEmail(recipent);
+            Programme baseProgramme = null;
+            EmailBuilder email = await GetLocalizedReportEmailBuilder(DefaultSender, recipent);
+                email.From(DefaultSender);
+                email.WithSubject("Report subject");
+                email.WithBody("report body");
+                email.UseHtmlBody(true);
+
+                if (workbook != null)
+                {
+                FileStream fs = File.OpenRead(workbook);
+
+                Attachment attachment = new Attachment(fs, fileName, "application/vnd.ms-excel");
+                email.Attachments(attachment);
+                
+                email.Send();
+                }
+                else
+                {
+                    email.Send();
+                }
+
+
         }
 
         public async Task RemoveOrganisationUserEmail(User removedUser, User programmeOwnerUser, ClientInformationSheet sheet)

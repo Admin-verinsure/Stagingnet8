@@ -52,6 +52,9 @@ namespace DealEngine.Services.Interfaces
         Task RemoveOrganisationUserEmail(User removedUser, User brokerContactUser, ClientInformationSheet sheet);
         Task RsaNotificationEmail(string recipient, string rsausername);
         Task SendReportsViaEmail(string recipent, string workbook);
+        Task SendCSVReportsViaEmail(string recipent, string workbook,string fileName);
+
+        
 
     }
 }
