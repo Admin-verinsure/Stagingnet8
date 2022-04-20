@@ -638,8 +638,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             uwrfsitelicensecategory3(underwritingUser, agreement, bolsitelicensecategory3);
             //DANZ Member
             uwrfnotdanzmember(underwritingUser, agreement);
-            //Excluded Activities (I.e. Inspection reports, Valuation, Other)
-            uwrfexcludedactivities(underwritingUser, agreement, decOther);
+            //Excluded Activities (I.e. Structural Engineer, Building Services Engineer, Inspection reports, Valuations, Other)
+            uwrfexcludedactivities(underwritingUser, agreement, decBSS, decSE, decIR, decVal, decOther);
             //Over 10% Allied Professions Activities (Structural Engineer, Quantity Surveying, Building Services Engineer, Architect and Town Planning, Urban Planning , 
             //Environmental planning, Inspection reports, Project Management, Resource Management, Local government Policy advice and Valuations)
             uwrfover10perap(underwritingUser, agreement, decSE, decQS, decBSS, decTP, decUP, decEP, decIR, decProjM, decRM, decVal);
@@ -1097,7 +1097,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
-        void uwrfexcludedactivities(User underwritingUser, ClientAgreement agreement, decimal decOther)
+        void uwrfexcludedactivities(User underwritingUser, ClientAgreement agreement, decimal decBSS, decimal decSE, decimal decIR, decimal decVal, decimal decOther)
         {
             if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfexcludedactivities" && cref.DateDeleted == null) == null)
             {
@@ -1113,7 +1113,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfexcludedactivities" && cref.DateDeleted == null).Status != "Pending")
                 {
-                    if ( decOther > 0)
+                    if (decBSS > 0 || decSE > 0 || decIR > 0|| decVal > 0 || decOther > 0)
                     {
                         agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfexcludedactivities" && cref.DateDeleted == null).Status = "Pending";
                     }
