@@ -86,7 +86,7 @@ namespace DealEngine.WebUI.Helpers
                     {
                         query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.BoundDateFrom + "'''   ,'''" + schedularJob.BoundDateTo + "''','''" + file + "'''  )   ");
                     }
-                    if (schedularJob.ReportType == "Library")
+                    else if (schedularJob.ReportType == "Library")
                     {
                         query = _session.CreateSQLQuery("   SELECT public.LibraryReports" + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.ReportName + "''','''" + file + "'''  )   ");
                     }
