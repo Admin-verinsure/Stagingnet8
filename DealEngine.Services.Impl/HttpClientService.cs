@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Services.Interfaces;
+//using EServices.AccountProxy;
 
 namespace DealEngine.Services.Impl
 {
