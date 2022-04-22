@@ -66,6 +66,7 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<User> _userRepository;
         // IUpdateTypeService _updateTypeService;
         IUpdateTypeService _updateTypeServices;
+        IHttpClientService _httpClientService;
         public AdminController(
             IUpdateTypeService updateTypeService,
             IOrganisationService organisationService,
@@ -92,7 +93,8 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<Object> objectRepository,
             IMapperSession<Boat> boatRepository,
             IMapperSession<User> userRepository2,
-            IReferenceService referenceService)
+            IReferenceService referenceService,
+            IHttpClientService httpClientService)
 			: base (userRepository)
 		{
             _organisationService = organisationService;
@@ -120,6 +122,7 @@ namespace DealEngine.WebUI.Controllers
             _userRepository = userRepository2;
             _objectRepository = objectRepository;
             _updateTypeServices = updateTypeService;
+            _httpClientService = httpClientService;
         }
 
 		[HttpGet]
@@ -1521,6 +1524,39 @@ namespace DealEngine.WebUI.Controllers
             //model.Objects = objects;
 
             return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> MarshEliteSOAPTest()
+        {
+            string xml = "<?xml version=\"1.0\" encoding=\"utf - 16\"?>" +
+                "<GetAccountRequestTO xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+                    "<Account>" +
+                        "<ExternalAccountID>c93e0dfc-69aa-4d6e-ade9-8b0651f36a14</ExternalAccountID>" +
+                        "<ContactTO>" +
+                            "<AccountSubType>TC_company</AccountSubType>" +
+                            "<OrganizationName>0TCMEISTestCompany01</OrganizationName>" +
+                            "<City>Auckland</City>" +
+                            "<AddressLine1>1 Queen Street</AddressLine1>" +
+                            "<Suburb />" +
+                            "<Country>TC_NZ</Country>" +
+                            "<AddressType xsi:nil=\"true\" />" +
+                            "<PostCode>1111</PostCode>" +
+                            "<PrimaryPhoneChoice xsi:nil=\"true\" />" +
+                            "<State xsi:nil=\"true\" />" +
+                        "</ContactTO>" +
+                        "<ProducerCode>MarshMicroWB1</ProducerCode>" +
+                        "<AccountOrgType>TC_company</AccountOrgType>" +
+                        "<BusOpsDesc />" +
+                    "</Account>" +
+                "</GetAccountRequestTO>";
+
+            // HTTP
+
+            var byteResponse = await _httpClientService.MEISGetAccount(xml);
+
+            return Ok();
         }
 
         [HttpGet]

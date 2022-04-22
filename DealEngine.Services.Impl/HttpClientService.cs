@@ -312,6 +312,56 @@ namespace DealEngine.Services.Impl
             return result.Body.getEGlobalSiteStatusResponse;
         }
 
+        public async Task<string> MEISGetAccount(string xmlPayload)
+        {
+            string responseMessage;
+            string endpoint = "stg.eglobalinvp.marsh.com/services/invoice/service"; // Update me
+            string SOAPAction = @"http://www.example.org/invoice-service/createInvoice"; // Update me
+            string service = "https://" + endpoint;
+
+            var body = generateBody(xmlPayload); // Update me
+            HttpResponseMessage response;
+            SocketsHttpHandler _socketsHttpHandler;
+            HttpRequestMessage _httpRequestMessage;
+
+            _socketsHttpHandler = new SocketsHttpHandler()
+            {
+                Credentials = new NetworkCredential(_appSettingService.MarshEglobalUsername, _appSettingService.MarshEglobalPassword), // Update me
+            };
+
+            _httpRequestMessage = new HttpRequestMessage
+            {
+                RequestUri = new Uri(service),
+                Method = HttpMethod.Post,
+                Content = new StringContent(body, Encoding.UTF8, "text/xml"),
+            };
+            _httpRequestMessage.Headers.Add("SOAPAction", SOAPAction);
+
+            try
+            {
+                HttpClient client = new HttpClient(_socketsHttpHandler);
+                // client.Timeout = TimeSpan.FromSeconds(300);
+                response = await client.SendAsync(_httpRequestMessage);
+                // response = await client.SendAsync(_httpRequestMessage, HttpCompletionOption.ResponseHeadersRead);
+                Thread.Sleep(1000);
+                response.EnsureSuccessStatusCode();
+                responseMessage = await response.Content.ReadAsStringAsync();
+                client.Dispose();
+            }
+            catch (HttpRequestException e)
+            {
+                responseMessage = e.Message + " status code not 200";
+            }
+            catch (Exception ex)
+            {
+                responseMessage = ex.Message + ex.InnerException + ex.StackTrace;
+            }
+            _socketsHttpHandler.Dispose();
+            _httpRequestMessage.Dispose();
+
+            return responseMessage;
+        }
+
         private string generateBody(string xmlPayload)
         {
             //var formattedString = xmlPayload.Remove(0, 22);
