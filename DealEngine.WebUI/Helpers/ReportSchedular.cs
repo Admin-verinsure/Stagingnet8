@@ -74,7 +74,7 @@ namespace DealEngine.WebUI.Helpers
             {
                 Programme prog = await _programmeService.GetProgrammeById(Guid.Parse(schedularJob.ProgrammeId));
                 //string fileName = schedularJob.ReportName+DateTime.Now.ToString("'dd'-'MM'")+ ".csv";
-                string fileName = schedularJob.ReportName + DateTime.Now.ToString("MM-dd") + ".xls";
+                string fileName = schedularJob.ReportName + DateTime.Now.ToString("MM-dd") + ".csv";
 
                 string filepath = prog.Reportspath;
                 //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv\\";
@@ -87,6 +87,7 @@ namespace DealEngine.WebUI.Helpers
                         query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.BoundDateFrom + "'''   ,'''" + schedularJob.BoundDateTo + "''','''" + file + "'''  )   ");
                     }
                     else if(schedularJob.ReportType == "Library")
+
                     {
                         query = _session.CreateSQLQuery("   SELECT public.LibraryReports" + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.ReportName + "''','''" + file + "'''  )   ");
                     }

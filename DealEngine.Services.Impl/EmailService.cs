@@ -1385,7 +1385,7 @@ namespace DealEngine.Services.Impl
                 {
                 FileStream fs = File.OpenRead(workbook);
 
-                Attachment attachment = new Attachment(fs, fileName, "application/vnd.ms-excel");
+                Attachment attachment = new Attachment(fs, fileName, "application/csv");
                 email.Attachments(attachment);
                 
                 email.Send();
