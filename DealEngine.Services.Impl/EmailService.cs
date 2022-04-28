@@ -1371,14 +1371,14 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async Task SendCSVReportsViaEmail(string recipent,string workbook,string fileName)
+        public async Task SendCSVReportsViaEmail(string recipent,string workbook,string fileName,string ProgName)
         {
             var user = await _userService.GetUserByEmail(recipent);
             Programme baseProgramme = null;
             EmailBuilder email = await GetLocalizedReportEmailBuilder(DefaultSender, recipent);
                 email.From(DefaultSender);
-                email.WithSubject("Report subject");
-                email.WithBody("report body");
+                email.WithSubject(fileName + " for " +ProgName +" generated on " +DateTime.Now);
+                email.WithBody("Attached is the "+ fileName + " for "+ ProgName+ " generated on "+DateTime.Now);
                 email.UseHtmlBody(true);
 
                 if (workbook != null)
