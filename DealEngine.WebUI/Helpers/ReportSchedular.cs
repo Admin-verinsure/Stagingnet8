@@ -106,11 +106,11 @@ namespace DealEngine.WebUI.Helpers
 
                     if (schedularJob.EmailIds != "")
                     {
-                        await _emailService.SendCSVReportsViaEmail(schedularJob.EmailIds, file, fileName);
+                        await _emailService.SendCSVReportsViaEmail(schedularJob.EmailIds, file, fileName, prog.Name);
                     }
                     else
                     {
-                        await _emailService.SendCSVReportsViaEmail("staff@techcertain.com", file, fileName);
+                        await _emailService.SendCSVReportsViaEmail("staff@techcertain.com", file, fileName, prog.Name);
                     }
 
 
