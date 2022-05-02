@@ -128,6 +128,14 @@ namespace DealEngine.WebUI.Controllers
             AdminViewModel model = new AdminViewModel();
             var user = await CurrentUser();
 
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
+
+
             if (user.PrimaryOrganisation.IsTC)
             {
                 try

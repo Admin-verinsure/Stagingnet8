@@ -242,6 +242,8 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(agreementId);
                 model.InformationSheetId = sheetId;
                 model.ClientAgreementId = agreementId;
@@ -290,6 +292,9 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(agreementId);
                 ClientProgramme clientprog = await _programmeService.GetClientProgrammebyId(programmeId);
                 Programme programme = clientprog.BaseProgramme;
@@ -533,6 +538,9 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
@@ -924,6 +932,9 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementViewModel model = new ViewAgreementViewModel();
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
             ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
             ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
             ClientProgramme programme = answerSheet.Programme;
@@ -1021,6 +1032,9 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
@@ -1053,6 +1067,8 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
@@ -1123,6 +1139,9 @@ namespace DealEngine.WebUI.Controllers
             {
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
                 if (agreement != null)
                 {
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -1430,6 +1449,9 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> EditExtensionTerms(Guid id, String productname = null)
         {
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
             ViewAgreementViewModel model = new ViewAgreementViewModel();
             try
             {
@@ -1470,6 +1492,9 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> EditTerms(Guid id, String productname = null)
         {
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
             ViewAgreementViewModel model = new ViewAgreementViewModel();
             try
             {
@@ -1827,6 +1852,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ViewAgreementViewModel model;
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(id);
                 Organisation insured = clientProgramme.Owner;
@@ -2081,6 +2111,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 var clientProgramme = await _programmeService.GetClientProgrammebyId(id);
                 Organisation insured = clientProgramme.Owner;
                 ClientInformationSheet answerSheet = clientProgramme.InformationSheet;
@@ -2145,7 +2180,13 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ViewAgreementDeclarationReport(String id)
         {
             var models = new BaseListViewModel<ViewAgreementViewModel>();
+
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
 
             try
             {
@@ -2211,6 +2252,11 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ViewPayment(Guid id)
         {
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
 
             try
             {
@@ -2350,6 +2396,12 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementViewModel model = new ViewAgreementViewModel();
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
@@ -2431,6 +2483,12 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementChangeReasonViewModel model = new ViewAgreementChangeReasonViewModel();
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
@@ -2506,6 +2564,11 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementRuleViewModel model = new ViewAgreementRuleViewModel();
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
                 user = await CurrentUser();
@@ -2551,6 +2614,11 @@ namespace DealEngine.WebUI.Controllers
         {
             ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
                 user = await CurrentUser();
@@ -2624,6 +2692,11 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementEndorsementViewModel model = new ViewAgreementEndorsementViewModel();
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
                 user = await CurrentUser();
@@ -2788,6 +2861,12 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> AcceptAgreement(Guid Id)
         {
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             List<AgreementDocumentViewModel> models = new List<AgreementDocumentViewModel>();
             try
             {
@@ -2853,6 +2932,11 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> RerenderDocs(string ProgrammeId, string ClientProgId = null)
         {
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             ViewAgreementViewModel viewAgreementViewModel = new ViewAgreementViewModel();
             List<Product> listAgreementProduct = new List<Product>();
             try
@@ -2915,6 +2999,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<List<Product>> GetAgreementProduct(string ProgrammeId)
         {
             User user = null;
+
             List<Product> listProduct = new List<Product>();
 
             try
@@ -3683,6 +3768,12 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> SendPolicyDocuments(Guid id, bool sendUser)
         {
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 ClientInformationSheet sheet = await _customerInformationService.GetInformation(id);
@@ -3704,6 +3795,12 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> SendFullProposalReport(Guid id, bool sendUser)
         {
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 ClientInformationSheet sheet = await _customerInformationService.GetInformation(id);
@@ -4472,6 +4569,11 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ProcessRequestConfiguration(Guid Id)
         {
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
                 string queryString = HttpContext.Request.Query["result"].ToString();
@@ -4770,6 +4872,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 PartialViewResult result = (PartialViewResult)await ViewAgreement(id);
                 var models = (BaseListViewModel<ViewAgreementViewModel>)result.Model;
                 var agreeDocList = new List<Document>();
@@ -4807,9 +4914,15 @@ namespace DealEngine.WebUI.Controllers
 
             try
             {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 PartialViewResult result = (PartialViewResult)await ViewAgreement(id);
                 var models = (BaseListViewModel<ViewAgreementViewModel>)result.Model;
-                user = await CurrentUser();
+
                 var agreeDocList = new List<Document>();
 
                 foreach (ViewAgreementViewModel model in models)

@@ -986,6 +986,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientInformationSheet sheet = await _clientInformationService.GetInformation(informationId);
                 if (sheet == null)
                     throw new Exception("No valid information for id " + informationId);
@@ -1046,6 +1051,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 var organisationalUnitNameList = await _organisationalUnitService.GetAllOrganisationalUnitsName();
                 var results = organisationalUnitNameList.Where(n => n.ToLower().Contains(term.ToLower()));
 
@@ -1380,6 +1391,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 ClientInformationSheet sheet = await _clientInformationService.GetInformation(informationId);
                 if (sheet == null)
                     throw new Exception("No valid information for id " + informationId);

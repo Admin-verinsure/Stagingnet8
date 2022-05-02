@@ -405,6 +405,13 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductIndex(string Programme)
         {
+            var user = await CurrentUser();
+
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             var productList = new List<Product>();
             var programme = await _programmeService.GetProgramme(Guid.Parse(Programme));
             productList = programme.Products.ToList();
@@ -516,6 +523,11 @@ namespace DealEngine.WebUI.Controllers
         {
             DocumentViewModel model = new DocumentViewModel();
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
                 if (string.IsNullOrWhiteSpace(id))
@@ -598,6 +610,11 @@ namespace DealEngine.WebUI.Controllers
         {
             BaseListViewModel<DocumentInfoViewModel> models = new BaseListViewModel<DocumentInfoViewModel>();
             User user = null;
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
                 user = await CurrentUser();
