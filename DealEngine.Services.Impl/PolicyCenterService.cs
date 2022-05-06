@@ -1,0 +1,153 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System;
+using System.Net;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
+using System.Text;
+using System.Threading.Tasks;
+using DealEngine.Domain.Entities;
+using DealEngine.Services.Interfaces;
+using EServices.AccountProxy;
+
+namespace DealEngine.Services.Impl
+{
+    public class PolicyCenterService : IPolicyCenterService
+    {
+        IAppSettingService _appSettingService;
+        IClientInformationService _clientInformationService;
+        protected readonly string NS = "http://www.guidewire.com/soap";
+        protected readonly string ACTOR = "http://schemas.xmlsoap.org/soap/actor/next";
+        protected readonly string USER_PROP = "gw_auth_user_prop";
+        protected readonly string PW_PROP = "gw_auth_password_prop";
+
+        public PolicyCenterService()
+        {
+
+        }
+        public async Task<bool> GetAccount(Organisation organisation)
+        {
+            bool success = false;
+
+            GetAccountRequestTO request = new GetAccountRequestTO();
+            request.Account = new AccountTO();
+            request.Account.ProducerCode = "MarshMicro"; // MANDATORY
+
+            /* One of: MarshMicroWB1, MarshMicroDUN, MarshMicroAKL, MarshMicroACB, MarshMicro
+            This corresponds to the Branch in DE that would be in Organisational Unit */
+
+            request.Account.ContactTO = await SetUpContact(organisation);
+            request.Account.ExternalAccountID = organisation.Id.ToString();
+            request.Account.BusOpsDesc = "Business Operations Description"; // Not allowed to be null - In Varchar table was just "
+            request.Account.AccountOrgType = (AccountOrgType)Enum.Parse(typeof(AccountOrgType), "Account Organisation Type");
+
+            AccountServiceClient client = null;
+            string requestID = organisation.Id.ToString();
+
+            //TC_Shared.LogEvent(TC_Shared.EventType.Information, "Request ID: " + requestID, request.XmlSerializeToString());
+
+            try
+            {
+                #region TODO Log
+                //TCInsuranceSystemUser objInsuranceSystemUser = objInsuranceSystemAccount.InsuranceSystem.InsuranceSystemUsers
+                //    .FirstOrDefault(cw => cw.AccountID == objInsuranceSystemAccount.Proposal.BrokerUser.AccountID);
+
+                //if (objInsuranceSystemUser == null)
+                //{
+                //    TC_Shared.LogEvent(TC_Shared.EventType.Warning, "Insurance System User is null.");
+                //}
+                //else
+                //{
+                //    TC_Shared.LogEvent(TC_Shared.EventType.Information, "AccountID: " + objInsuranceSystemUser.AccountID,
+                //        "Username: " + objInsuranceSystemUser.Username + " | Password: " + objInsuranceSystemUser.Password);
+                //}
+                #endregion
+
+                // objInsuranceSystemUser retrieval and potential values
+                //TCInsuranceSystemUser objInsuranceSystemUser = objInsuranceSystemAccount.InsuranceSystem.InsuranceSystemUsers
+                //    .FirstOrDefault(cw => cw.AccountID == objInsuranceSystemAccount.Proposal.BrokerUser.AccountID); // We want the Users Account ID mapped to Broker's accountID
+
+                //id                                      accountid                               insurancesystemid                       username                password 
+                //"b13006c5-a2a2-46c9-8bfd-131bc02e1042"  "4d10e0d3-8f96-461f-97e8-a0be6189014e"  "c68d136b-22a8-4df2-abc7-fcb3b1406c8b"  "svc_gw6_marshmicro"    "gw"
+                //"e717a189-2510-48cc-b0b7-06f52eb5c989"  "c6b11984-3f41-41c2-ba8d-1cfc19a41e12"  "c68d136b-22a8-4df2-abc7-fcb3b1406c8b"  "svc_gw6_marshmicro_a"  "iV4L13vy59"
+                //"e717a192-2510-48cc-b0b7-06f52eb5c989"  "6705086a-5c41-11e1-9f3c-3c0754251e27"  "c68d136b-22a8-4df2-abc7-fcb3b1406c8b"  "svc_gw6_marshmicro_a"  "iV4L13vy59"
+
+                client = new AccountServiceClient();
+                client.ClientCredentials.UserName.UserName = "LDDMZDV\\St_eServicesUser"; // Actually > LDDMZDV\St_eServicesUser in database
+                client.ClientCredentials.UserName.Password = "Usersrv!=";
+
+                // Binding (base) - https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.binding?view=dotnet-plat-ext-6.0
+                // Custom Binding - https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.custombinding?view=dotnet-plat-ext-6.0
+                CustomBinding customBinding = new CustomBinding(client.Endpoint.Binding);
+
+                // HttpTransportBindingElement - https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.httpstransportbindingelement?view=dotnet-plat-ext-6.0
+                HttpTransportBindingElement transportElement = new HttpTransportBindingElement();
+
+                customBinding.Elements.Find<HttpTransportBindingElement>();
+                transportElement.KeepAliveEnabled = false; //Set Keep Alive to false
+
+                client.Endpoint.Binding = customBinding;  // Set Endpoint Binding to our new Binding
+
+                HttpRequestMessageProperty httpRequestProperty = new HttpRequestMessageProperty();
+                httpRequestProperty.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(client.ClientCredentials.UserName.UserName + ":" + client.ClientCredentials.UserName.Password));
+
+                using (OperationContextScope scope = new OperationContextScope(client.InnerChannel))
+                {
+                    // set the message in header
+                    // TCAPIAccount objAPIAccount = TCAPIAccount.GetAPIAccount(ID.ToString());
+
+                    string APIAccountURL = "https://eservicesdemo.proposalonline.com:4443/soap11";
+                    string APIAccountUsername = "MEISSSA_user";
+                    string APIAccountPassword = "@RXjMr|V=OTah~|Z2eTfM|7Em";
+                    string SystemUserUsername = "svc_gw6_marshmicro";       // was objInsuranceSystemUser.Username
+                    string SystemUserPassword = "gw";                       // was objInsuranceSystemUser.Password
+
+                    OperationContext.Current.OutgoingMessageProperties[HttpRequestMessageProperty.Name] = httpRequestProperty;
+                    OperationContext.Current.OutgoingMessageHeaders.Add(MessageHeader.CreateHeader("RequestID", NS, requestID, false, ACTOR));
+                    OperationContext.Current.OutgoingMessageHeaders.Add(MessageHeader.CreateHeader("ResponseEndpointAddress", NS, APIAccountURL, false, ACTOR));
+                    OperationContext.Current.OutgoingMessageHeaders.Add(MessageHeader.CreateHeader("ResponseEndpointUsername", NS, APIAccountUsername, false, ACTOR));
+                    OperationContext.Current.OutgoingMessageHeaders.Add(MessageHeader.CreateHeader("ResponseEndpointPassword", NS, APIAccountPassword, false, ACTOR));
+                    OperationContext.Current.OutgoingMessageHeaders.Add(MessageHeader.CreateHeader(USER_PROP, NS, SystemUserUsername, false, ACTOR)); // username for programme broker
+                    OperationContext.Current.OutgoingMessageHeaders.Add(MessageHeader.CreateHeader(PW_PROP, NS, SystemUserPassword, false, ACTOR));   // password for programme broker
+
+                    if (client.State == CommunicationState.Closed)
+                        client.Open();
+
+                    client.GetAccount(request);
+                    client.Close();
+
+                    // Log Console.Log("requestID, "Sent - GetAccount", request.XmlSerializeToString());"
+
+                    success = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                //Log
+                client.Abort();
+            }
+
+            return success;
+
+        }
+        private async Task<ContactTO> SetUpContact(Organisation organisation)
+        {
+            ContactTO contact = new ContactTO();
+            //ClientInformationSheet sheet = await _clientInformationService.GetClientInformationSheetFromOrganisation(organisation);
+            //Location location = sheet.Locations[0]; // First location added is correct one?
+
+            contact.OrganizationName = organisation.Name;
+            contact.AccountSubType = (ContactType)Enum.Parse(typeof(ContactType), "TC_company");
+            contact.AddressLine1 = "Street";// MANDATORY
+            //contact.Suburb = 
+            contact.City = "Auckland";// MANDATORY 
+            //contact.PostCode = 
+            contact.Country = (EServices.AccountProxy.Country)Enum.Parse(typeof(EServices.AccountProxy.Country), "TC_NZ"); // MANDATORY
+
+            return contact;
+        }
+    }
+}
