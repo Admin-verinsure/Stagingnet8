@@ -446,7 +446,8 @@
     <ProjectReference Include="..\DealEngine.Domain.Entities\DealEngine.Domain.Entities.csproj" />
     <ProjectReference Include="..\DealEngine.Infrastructure.FluentNHibernate\DealEngine.Infrastructure.FluentNHibernate.csproj" />
     <ProjectReference Include="..\DealEngine.Infrastructure.Payment\DealEngine.Infrastructure.Payment.csproj" />
-    <ProjectReference Include="..\DealEngine.Services.Impl\DealEngine.Services.Impl.csproj" />
+    <ProjectReference Include="..\DealEngine.Infrastructure.PolicyCenter\DealEngine.Infrastructure.PolicyCenter.csproj" />
+	<ProjectReference Include="..\DealEngine.Services.Impl\DealEngine.Services.Impl.csproj" />
   </ItemGroup>
 
 </Project>

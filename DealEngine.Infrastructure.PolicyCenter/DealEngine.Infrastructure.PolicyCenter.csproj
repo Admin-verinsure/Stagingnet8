@@ -9,4 +9,9 @@
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DealEngine.Domain.Entities\DealEngine.Domain.Entities.csproj" />
+    <ProjectReference Include="..\DealEngine.Services.Interfaces\DealEngine.Services.Interfaces.csproj" />
+  </ItemGroup>
+
 </Project>

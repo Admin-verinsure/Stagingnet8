@@ -19,6 +19,8 @@ using Microsoft.AspNetCore.Http;
 using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
+using DealEngine.Infrastructure.PolicyCenter;
+
 
 using System;
 using System.Data;
@@ -1527,7 +1529,7 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> MarshEliteSOAPTest()
         {
             string xml = "<?xml version=\"1.0\" encoding=\"utf - 16\"?>" +
@@ -1554,7 +1556,9 @@ namespace DealEngine.WebUI.Controllers
 
             // HTTP
 
-            var byteResponse = await _httpClientService.MEISGetAccount(xml);
+            //var byteResponse = await _httpClientService.MEISGetAccount(xml);
+            PolicyCenter policyCenter = new PolicyCenter();
+            GetAccount
 
             return Ok();
         }

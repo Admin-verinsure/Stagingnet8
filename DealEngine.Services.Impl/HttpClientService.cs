@@ -316,8 +316,18 @@ namespace DealEngine.Services.Impl
         public async Task<string> MEISGetAccount(string xmlPayload)
         {
             string responseMessage;
-            string endpoint = "stg.eglobalinvp.marsh.com/services/invoice/service"; // Update me
-            string SOAPAction = @"http://www.example.org/invoice-service/createInvoice"; // Update me
+            string endpoint = "testeservices.iag.co.nz:24443/AccountService.svc";
+            // Previous syntax doesn't have .svc extension... stg.eglobalinvp.marsh.com/services/invoice/service
+            // production endpoint:         https://eservices.iag.co.nz:14443/AccountService.svc
+            // staging endpoint:            https://testeservices.iag.co.nz:24443/AccountService.svc
+            // in EServices April release:  http://aklvdv052:8083/AccountService.svc 
+
+            string SOAPAction = @"urn:nz.co.lumley:eservices:20130618/IAccountService/GetAccount";
+            //string SOAPAction = @"http://www.example.org/invoice-service/createInvoice"; 
+            //string SOAPAction = @"urn:nz.co.lumley:eservices:20130618/IAccountService/GetAccount";
+            //string SOAPAction = @"http://eservices.lumley.co.nz/eservices/IAccountService/GetAccount";
+
+
             string service = "https://" + endpoint;
 
             var body = generateBody(xmlPayload); // Update me
@@ -327,7 +337,10 @@ namespace DealEngine.Services.Impl
 
             _socketsHttpHandler = new SocketsHttpHandler()
             {
-                Credentials = new NetworkCredential(_appSettingService.MarshEglobalUsername, _appSettingService.MarshEglobalPassword), // Update me
+                // In PO user/pw is objInsuranceSystemAccount.InsuranceSystem.Username which atm we think is 
+                // User.salespersonusername
+                // User.insurersalespersonusername
+                Credentials = new NetworkCredential("rchand", "julie.eastall_micro"), // _appSettingService.MarshEglobalUsername
             };
 
             _httpRequestMessage = new HttpRequestMessage
