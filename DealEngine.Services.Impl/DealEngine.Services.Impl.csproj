@@ -27,6 +27,7 @@
     <ProjectReference Include="..\DealEngine.Infrastructure.Email\DealEngine.Infrastructure.Email.csproj" />
     <ProjectReference Include="..\DealEngine.Infrastructure.FluentNHibernate\DealEngine.Infrastructure.FluentNHibernate.csproj" />
     <ProjectReference Include="..\DealEngine.Infrastructure.Ldap\DealEngine.Infrastructure.Ldap.csproj" />
+    <ProjectReference Include="..\DealEngine.Infrastructure.PolicyCenter\DealEngine.Infrastructure.PolicyCenter.csproj" />
     <ProjectReference Include="..\DealEngine.Services.Interfaces\DealEngine.Services.Interfaces.csproj" />
   </ItemGroup>
 </Project>

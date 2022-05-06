@@ -2,12 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
-using File = System.IO.File ;
 using System.Collections.Generic;
 using System.Linq;
 using DealEngine.Domain.Entities;
-using SystemDocument = DealEngine.Domain.Entities.Document;
-using Document = DealEngine.Domain.Entities.Document;
 using DealEngine.Services.Interfaces;
 using DealEngine.WebUI.Models;
 using DealEngine.Infrastructure.FluentNHibernate;
@@ -19,23 +16,8 @@ using Microsoft.AspNetCore.Http;
 using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
-using DealEngine.Infrastructure.PolicyCenter;
-
-
-using System;
 using System.Data;
-using System.Linq;
-using System.Reflection;
-
-//using HibernatingRhinos.Profiler.Appender.NHibernate;
-using NHibernate.Cfg;
-using NHibernate.Criterion;
-using NHibernate.Dialect;
-using NHibernate.Driver;
-using NHibernate.Linq;
-using HibernatingRhinos.Profiler.Appender.NHibernate;
-using NHibernate;
-using DealEngine.Infrastructure.FluentNHibernate;
+using DealEngine.Services.Impl;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -66,9 +48,8 @@ namespace DealEngine.WebUI.Controllers
         SignInManager<IdentityUser> _signInManager;
         UserManager<IdentityUser> _userManager;
         IMapperSession<User> _userRepository;
-        // IUpdateTypeService _updateTypeService;
         IUpdateTypeService _updateTypeServices;
-        IHttpClientService _httpClientService;
+        IPolicyCenterService _policyCenterService;
         public AdminController(
             IUpdateTypeService updateTypeService,
             IOrganisationService organisationService,
@@ -96,7 +77,8 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<Boat> boatRepository,
             IMapperSession<User> userRepository2,
             IReferenceService referenceService,
-            IHttpClientService httpClientService)
+            IPolicyCenterService policyCenterService
+            )
 			: base (userRepository)
 		{
             _organisationService = organisationService;
@@ -124,7 +106,7 @@ namespace DealEngine.WebUI.Controllers
             _userRepository = userRepository2;
             _objectRepository = objectRepository;
             _updateTypeServices = updateTypeService;
-            _httpClientService = httpClientService;
+            _policyCenterService = policyCenterService;
         }
 
 		[HttpGet]
@@ -1532,33 +1514,44 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> MarshEliteSOAPTest()
         {
-            string xml = "<?xml version=\"1.0\" encoding=\"utf - 16\"?>" +
-                "<GetAccountRequestTO xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-                    "<Account>" +
-                        "<ExternalAccountID>c93e0dfc-69aa-4d6e-ade9-8b0651f36a14</ExternalAccountID>" +
-                        "<ContactTO>" +
-                            "<AccountSubType>TC_company</AccountSubType>" +
-                            "<OrganizationName>0TCMEISTestCompany01</OrganizationName>" +
-                            "<City>Auckland</City>" +
-                            "<AddressLine1>1 Queen Street</AddressLine1>" +
-                            "<Suburb />" +
-                            "<Country>TC_NZ</Country>" +
-                            "<AddressType xsi:nil=\"true\" />" +
-                            "<PostCode>1111</PostCode>" +
-                            "<PrimaryPhoneChoice xsi:nil=\"true\" />" +
-                            "<State xsi:nil=\"true\" />" +
-                        "</ContactTO>" +
-                        "<ProducerCode>MarshMicroWB1</ProducerCode>" +
-                        "<AccountOrgType>TC_company</AccountOrgType>" +
-                        "<BusOpsDesc />" +
-                    "</Account>" +
-                "</GetAccountRequestTO>";
+            #region Ignore me
+            //string xml = "<?xml version=\"1.0\" encoding=\"utf - 16\"?>" +
+            //    "<GetAccountRequestTO xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            //        "<Account>" +
+            //            "<ExternalAccountID>c93e0dfc-69aa-4d6e-ade9-8b0651f36a14</ExternalAccountID>" +
+            //            "<ContactTO>" +
+            //                "<AccountSubType>TC_company</AccountSubType>" +
+            //                "<OrganizationName>0TCMEISTestCompany01</OrganizationName>" +
+            //                "<City>Auckland</City>" +
+            //                "<AddressLine1>1 Queen Street</AddressLine1>" +
+            //                "<Suburb />" +
+            //                "<Country>TC_NZ</Country>" +
+            //                "<AddressType xsi:nil=\"true\" />" +
+            //                "<PostCode>1111</PostCode>" +
+            //                "<PrimaryPhoneChoice xsi:nil=\"true\" />" +
+            //                "<State xsi:nil=\"true\" />" +
+            //            "</ContactTO>" +
+            //            "<ProducerCode>MarshMicroWB1</ProducerCode>" +
+            //            "<AccountOrgType>TC_company</AccountOrgType>" +
+            //            "<BusOpsDesc />" +
+            //        "</Account>" +
+            //    "</GetAccountRequestTO>";
 
-            // HTTP
+            //// HTTP
+            ////var byteResponse = await _httpClientService.MEISGetAccount(xml);
+            #endregion
 
-            //var byteResponse = await _httpClientService.MEISGetAccount(xml);
-            PolicyCenter policyCenter = new PolicyCenter();
-            GetAccount
+            // Get org by id
+            // Get location by id 
+
+            bool x = Guid.TryParse("9188616b-ee0b-4bb3-98d2-58b02630dd7d", out Guid result);
+            
+            Organisation org = new Organisation();
+            if (x)
+                org.Id = result;
+            org.Name = "GetAccountTestOrg1";
+
+            bool succeed = await _policyCenterService.GetAccount(org);
 
             return Ok();
         }

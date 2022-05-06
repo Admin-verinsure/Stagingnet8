@@ -10,7 +10,7 @@ using DealEngine.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
-
+using EServices.AccountProxy;
 
 namespace DealEngine.Services.Impl
 {
@@ -21,6 +21,7 @@ namespace DealEngine.Services.Impl
         IOrganisationTypeService _organisationTypeService;
         ILdapService _ldapService;
         IUserService _userService;
+        IClientInformationService _clientInformationService;
         ILogger<OrganisationService> _logger;
         IMapper _mapper;
 
@@ -30,6 +31,7 @@ namespace DealEngine.Services.Impl
             IUserService userService,
             IOrganisationTypeService organisationTypeService,
             ILdapService ldapService,
+            IClientInformationService clientInformationService,
             ILogger<OrganisationService> logger
             )
         {
@@ -40,6 +42,7 @@ namespace DealEngine.Services.Impl
             _organisationTypeService = organisationTypeService;
             _organisationRepository = organisationRepository;
             _ldapService = ldapService;
+            _clientInformationService = clientInformationService;
         }
 
         public async Task<Organisation> CreateNewOrganisation(Organisation organisation)
@@ -670,8 +673,7 @@ namespace DealEngine.Services.Impl
                 organisation.OrganisationalUnits.Add(partyUnit);
             }
             await Update(organisation);
-        }
+        }        
     }
-
 }
 
