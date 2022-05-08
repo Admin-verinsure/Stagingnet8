@@ -1828,6 +1828,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 Programme programme = await _programmeService.GetProgrammeById(Id);
                 EmailTemplate emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == type);
 

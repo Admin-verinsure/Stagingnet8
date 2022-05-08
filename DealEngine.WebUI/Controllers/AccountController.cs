@@ -327,9 +327,9 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> Login(string returnUrl)
         {
 
-            var currentUser = await CurrentUser();
-            if (currentUser.IsLoggedout)
-                return PageNotFound();
+            //var currentUser = await CurrentUser();
+            //if (currentUser.IsLoggedout)
+            //    return PageNotFound();
            
 
             var viewModel = new AccountLoginModel
@@ -445,9 +445,7 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginOktaRegistration()
         {
-            var currentUser = await CurrentUser();
-            if (currentUser.IsLoggedout)
-                return PageNotFound();
+          
 
             return View();
         }
