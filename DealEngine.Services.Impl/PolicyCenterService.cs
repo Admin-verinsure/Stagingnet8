@@ -31,6 +31,7 @@ namespace DealEngine.Services.Impl
         public async Task<bool> GetAccount(Organisation organisation)
         {
             bool success = false;
+            AccountServiceClient client = null;
 
             GetAccountRequestTO request = new GetAccountRequestTO();
             request.Account = new AccountTO();
@@ -42,16 +43,24 @@ namespace DealEngine.Services.Impl
             request.Account.ContactTO = await SetUpContact(organisation);
             request.Account.ExternalAccountID = organisation.Id.ToString();
             request.Account.BusOpsDesc = "Business Operations Description"; // Not allowed to be null - In Varchar table was just "
-            request.Account.AccountOrgType = (AccountOrgType)Enum.Parse(typeof(AccountOrgType), "Account Organisation Type");
+            request.Account.AccountOrgType = (AccountOrgType)Enum.Parse(typeof(AccountOrgType), "TC_company");
 
-            AccountServiceClient client = null;
+            EndpointAddress remoteAddressEndpoint = new EndpointAddress("https://testeservices.iag.co.nz:24443/AccountService.svc");
+
+            // Binding (base) - https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.binding?view=dotnet-plat-ext-6.0
+            // Custom Binding - https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.custombinding?view=dotnet-plat-ext-6.0
+            BasicHttpBinding binding = new BasicHttpBinding();
+            binding.Name = "InternetFacingServiceBinding";
+            binding.Security.Mode = BasicHttpSecurityMode.None;
+            binding.MaxReceivedMessageSize = 2147483647;
+            binding.SendTimeout = TimeSpan.FromMinutes(5);
+            binding.ReceiveTimeout = TimeSpan.FromMinutes(5);
+
             string requestID = organisation.Id.ToString();
-
-            //TC_Shared.LogEvent(TC_Shared.EventType.Information, "Request ID: " + requestID, request.XmlSerializeToString());
 
             try
             {
-                #region TODO Log
+                #region TODO Log and SystemUserUsername / SystemUserPassword values
                 //TCInsuranceSystemUser objInsuranceSystemUser = objInsuranceSystemAccount.InsuranceSystem.InsuranceSystemUsers
                 //    .FirstOrDefault(cw => cw.AccountID == objInsuranceSystemAccount.Proposal.BrokerUser.AccountID);
 
@@ -64,7 +73,6 @@ namespace DealEngine.Services.Impl
                 //    TC_Shared.LogEvent(TC_Shared.EventType.Information, "AccountID: " + objInsuranceSystemUser.AccountID,
                 //        "Username: " + objInsuranceSystemUser.Username + " | Password: " + objInsuranceSystemUser.Password);
                 //}
-                #endregion
 
                 // objInsuranceSystemUser retrieval and potential values
                 //TCInsuranceSystemUser objInsuranceSystemUser = objInsuranceSystemAccount.InsuranceSystem.InsuranceSystemUsers
@@ -74,22 +82,18 @@ namespace DealEngine.Services.Impl
                 //"b13006c5-a2a2-46c9-8bfd-131bc02e1042"  "4d10e0d3-8f96-461f-97e8-a0be6189014e"  "c68d136b-22a8-4df2-abc7-fcb3b1406c8b"  "svc_gw6_marshmicro"    "gw"
                 //"e717a189-2510-48cc-b0b7-06f52eb5c989"  "c6b11984-3f41-41c2-ba8d-1cfc19a41e12"  "c68d136b-22a8-4df2-abc7-fcb3b1406c8b"  "svc_gw6_marshmicro_a"  "iV4L13vy59"
                 //"e717a192-2510-48cc-b0b7-06f52eb5c989"  "6705086a-5c41-11e1-9f3c-3c0754251e27"  "c68d136b-22a8-4df2-abc7-fcb3b1406c8b"  "svc_gw6_marshmicro_a"  "iV4L13vy59"
+                #endregion
+                
+                CustomBinding customBinding = new CustomBinding(binding);
 
-                client = new AccountServiceClient();
-                client.ClientCredentials.UserName.UserName = "LDDMZDV\\St_eServicesUser"; // Actually > LDDMZDV\St_eServicesUser in database
-                client.ClientCredentials.UserName.Password = "Usersrv!=";
-
-                // Binding (base) - https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.binding?view=dotnet-plat-ext-6.0
-                // Custom Binding - https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.custombinding?view=dotnet-plat-ext-6.0
-                CustomBinding customBinding = new CustomBinding(client.Endpoint.Binding);
-
-                // HttpTransportBindingElement - https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.httpstransportbindingelement?view=dotnet-plat-ext-6.0
                 HttpTransportBindingElement transportElement = new HttpTransportBindingElement();
-
                 customBinding.Elements.Find<HttpTransportBindingElement>();
                 transportElement.KeepAliveEnabled = false; //Set Keep Alive to false
 
+                client = new AccountServiceClient(binding, remoteAddressEndpoint);
                 client.Endpoint.Binding = customBinding;  // Set Endpoint Binding to our new Binding
+                client.ClientCredentials.UserName.UserName = "LDDMZDV\\St_eServicesUser"; // Actually > LDDMZDV\St_eServicesUser in database
+                client.ClientCredentials.UserName.Password = "Usersrv!=";
 
                 HttpRequestMessageProperty httpRequestProperty = new HttpRequestMessageProperty();
                 httpRequestProperty.Headers[HttpRequestHeader.Authorization] = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes(client.ClientCredentials.UserName.UserName + ":" + client.ClientCredentials.UserName.Password));
