@@ -1551,7 +1551,7 @@ namespace DealEngine.WebUI.Controllers
                 org.Id = result;
             org.Name = "GetAccountTestOrg1";
 
-            bool succeed = await _policyCenterService.GetAccount(org);
+            bool succeed = await _policyCenterService.GetAccountWCF(org);
 
             return Ok();
         }
