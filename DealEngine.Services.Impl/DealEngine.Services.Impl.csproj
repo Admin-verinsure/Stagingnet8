@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="ClosedXML" Version="0.95.4" />
+    <PackageReference Include="CoreWCF.Http" Version="1.0.1" />
+    <PackageReference Include="CoreWCF.Primitives" Version="1.0.1" />
     <PackageReference Include="ElmahCore" Version="1.2.5" />
     <PackageReference Include="ElmahCore.Postgresql" Version="1.2.5" />
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
