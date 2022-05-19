@@ -101,6 +101,7 @@ namespace DealEngine.Domain.Entities
         public virtual int ChangePriodInDaysToSubmission { get; set; }
         public virtual string Reportspath { get; set; }
         public virtual IList<ProgrammeReports> ProgrammeReports { get; set; }
+        public virtual bool ProgDisableClaimInsHistoryPanel { get; set; }
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)
