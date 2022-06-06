@@ -502,6 +502,7 @@ namespace DealEngine.WebUI.Models
             HasExistingPolicyOptions = GetSelectListOptionsCyberRenew();
             HasLocationOptions = GetSelectListOptions();
             HasOptionalUltraOptions = GetSelectListOptions();
+            HasSoftwareUpdates = GetSelectListOptions();
         }
         private IList<SelectListItem> GetSelectListOptions()
         {
@@ -570,7 +571,8 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasOptionalUltraOptions { get; set; }
 
         public IList<SelectListItem> HasLocationOptions { get; set; }
-
+        public IList<SelectListItem> HasSoftwareUpdates { get; set; }
+         
         public int CoverAmount { get; set; }
         public string DateLapsed { get; set; }
         public string RetroactiveDate { get; set; }
@@ -1386,6 +1388,7 @@ namespace DealEngine.WebUI.Models
             HasAblePayOptions = GetSelectListOptions();
             HasAnyLawBreachOptions = GetSelectListOptions();
             HasAnyClaimMadeOptions = GetSelectListOptions();
+            HasMLOptions = GetSelectListOptions();
         }
 
         public int AssetTotal { get; set; }
@@ -1400,8 +1403,10 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasAblePayOptions { get; set; }
         public IList<SelectListItem> HasAnyLawBreachOptions { get; set; }
         public IList<SelectListItem> HasAnyClaimMadeOptions { get; set; }
+        public IList<SelectListItem> HasMLOptions { get; set; }
 
         
+
 
 
         private IList<SelectListItem> GetSelectListOptions()
