@@ -1,0 +1,119 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="CLIViewModel" class="is-valid" data-accordianId="Cyber Liability Insurance">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hassoftwareupdates" class="label required">
+                    We regularly update (at least monthly) firewalls and virus protection software that we have
+                    in place within our networks.
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hassoftwareupdates" name="CLIViewModel.HasSoftwareUpdates" class="form-select "  onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.CLIViewModel.HasSoftwareUpdates)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasbackup" class="label required">
+                    We have a Business Continuity Plan (BCP) in place, including back-ups stored off-site or through a cloud storage
+                    provider, which is tested or reviewed at least annually.
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasbackup" name="CLIViewModel.HasBackupOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.CLIViewModel.HasBackupOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasaccesscontrol" class="label required">
+                    Any personally identifiable and confidential information that is removed from our premises in
+                    any electronic format is secured by means of password protection, encryption, fingerprint ID
+                    and/or multi-factor authentication.
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasaccesscontrol" name="CLIViewModel.HasAccessControlOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.CLIViewModel.HasAccessControlOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="haslocation" class="label required">
+                    We do not have any domiciled operations or derive revenue from anywhere outside of New Zealand.
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="haslocation" name="CLIViewModel.HasLocationOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.CLIViewModel.HasLocationOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasactivity" class="label required">
+                    Our business is not classified in any of the following industries:
+                    Financial Institutions, Call Centers, Telemarketing, Data Processing, Internet Service, Telecommunications,
+                    Social Networking Firms, Credit Bureaux, Payment Processors, Gaming Companies, Cloud Providers, Software Providers,
+                    Mortgage Brokers, Financial Advisors (including Investment and Life), Pawn Shops, Sports Teams, Cryptocurrencies.
+                    We have not sustained any single loss or losses, including any Administrative or Regulatory Fines, of
+                    any type covered by a data protection, cyber or network security insurance policy for which this
+                    proposal form has been completed.
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasactivity" name="CLIViewModel.HasActivityOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.CLIViewModel.HasActivityOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasknowledge" class="label required">
+                    After full enquiry of the business owners, directors and/or officers, we do not have any knowledge
+                    of any act, omission, fact, event or circumstance which might give rise to a loss under this proposed
+                    cyber insurance.
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasknowledge" name="CLIViewModel.HasKnowledgeOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.CLIViewModel.HasKnowledgeOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+</form>
