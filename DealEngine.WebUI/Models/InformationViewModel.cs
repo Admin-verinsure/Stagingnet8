@@ -302,6 +302,18 @@ namespace DealEngine.WebUI.Models
             HasRefusedOptions = GetSelectListOptions();
             HasStatutoryOffenceOptions = GetSelectListOptions();
             HasLiquidationOptions = GetSelectListOptions();
+            HasDeclinedProposal = GetSelectListOptions();
+            HasSpecialTermsOptions = GetSelectListOptions();
+            HasCancelledOptions = GetSelectListOptions();
+            HasFraudEmployeeOptions = GetSelectListOptions();
+            HasEmployeeAloneChequesOptions = GetSelectListOptions();
+            HasMonthlyCheckOptions = GetSelectListOptions();
+            HasAnnualAccountsOptions = GetSelectListOptions();
+            HasWrittenProceduresOptions = GetSelectListOptions();
+            HasEverInvestigateOptions = GetSelectListOptions();
+            HasAnyAllegationsOptions = GetSelectListOptions();
+            HasCivilAllegationsOptions = GetSelectListOptions();
+            HasOtherRiskOptions = GetSelectListOptions();
         }
 
         public string DamageLossDetails { get; set; }
@@ -309,11 +321,49 @@ namespace DealEngine.WebUI.Models
         public string RefusedDetails { get; set; }
         public string StatutoryOffenceDetails { get; set; }
         public string LiquidationDetails { get; set; }
+        public string DeclinedProposalDetails { get; set; }
+        public string SpecialTermsDetails { get; set; }
+        public string cancelledDetails { get; set; }
+        public string FraudEmployeeDetails { get; set; }
+        public string EmployeeAloneDetails { get; set; }
+        public string CashInHandDetails { get; set; }
+        public string MonthlyCheckDetails { get; set; }
+        public string AnnualAccountsDetails { get; set; }
+        public string WrittenProceduresDetails { get; set; }
+        public string EverInvestigateDetails { get; set; }
+        public string AnyAllegationsDetails { get; set; }
+        public string CivilAllegationsDetails { get; set; }
+        public string OtherRiskDetails { get; set; }
+
+        
+
+
+
         public IList<SelectListItem> HasDamageLossOptions { get; set; }
         public IList<SelectListItem> HasWithdrawnOptions { get; set; }
         public IList<SelectListItem> HasRefusedOptions { get; set; }
         public IList<SelectListItem> HasStatutoryOffenceOptions { get; set; }
         public IList<SelectListItem> HasLiquidationOptions { get; set; }
+        public IList<SelectListItem> HasDeclinedProposal { get; set; }
+        public IList<SelectListItem> HasSpecialTermsOptions { get; set; }
+        public IList<SelectListItem> HasCancelledOptions { get; set; }
+        public IList<SelectListItem> HasFraudEmployeeOptions { get; set; }
+        public IList<SelectListItem> HasEmployeeAloneChequesOptions { get; set; }
+        public IList<SelectListItem> HasMonthlyCheckOptions { get; set; }
+        public IList<SelectListItem> HasAnnualAccountsOptions { get; set; }
+        public IList<SelectListItem> HasWrittenProceduresOptions { get; set; }
+        public IList<SelectListItem> HasEverInvestigateOptions { get; set; }
+        public IList<SelectListItem> HasAnyAllegationsOptions { get; set; }
+        public IList<SelectListItem> HasCivilAllegationsOptions { get; set; }
+        public IList<SelectListItem> HasOtherRiskOptions { get; set; }
+
+        
+
+
+
+
+
+
         private IList<SelectListItem> GetSelectListOptions()
         {
             return new List<SelectListItem>()
