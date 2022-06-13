@@ -875,6 +875,7 @@ namespace DealEngine.Services.Impl
                     newclientAgreement.Jurisdiction = oldclientagreement.Jurisdiction;
                     newclientAgreement.TerritoryLimit = oldclientagreement.TerritoryLimit;
                     newclientAgreement.RetroactiveDate = oldclientagreement.RetroactiveDate;
+                    newclientAgreement.ContinuityDate = oldclientagreement.ContinuityDate;
                     newclientAgreement.MasterAgreement = oldclientagreement.MasterAgreement;
                     newclientAgreement.PlacementFee = oldclientagreement.PlacementFee;
                     newclientAgreement.AdditionalCertFee = oldclientagreement.AdditionalCertFee;

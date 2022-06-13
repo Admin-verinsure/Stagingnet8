@@ -164,7 +164,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             //Calculate premium option
 
-            int TermLimit = 0;
+            int TermLimit = 150000;
             decimal TermPremium = 0M;
             decimal TermBasePremium = 0M;
             decimal TermBrokerage = 0M;
