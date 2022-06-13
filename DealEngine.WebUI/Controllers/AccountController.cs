@@ -878,9 +878,9 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> OIdLogin(string q)
         {
-            var currentUser = await CurrentUser();
-            if (currentUser.IsLoggedout)
-                return PageNotFound();
+            //var currentUser = await CurrentUser();
+            //if (currentUser.IsLoggedout)
+            //    return PageNotFound();
 
 
             bool isAuth;
