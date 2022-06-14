@@ -127,6 +127,13 @@ namespace DealEngine.WebUI.Models
                     OwnershipOptions = GetOwnershipOptions();
                 }
 
+                if (Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                {
+                    RealEstateDirectorUnit = new RealEstateDirectorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
+                    InsuranceAttributes = GetMarshRE();
+                    
+                }
+
                 Organisation = ClientInformationSheet.Owner;
                 //if (Organisations.Any(o => o.Id != (ClientInformationSheet.Owner.Id)))
                 Organisations.Add(ClientInformationSheet.Owner);
@@ -368,6 +375,34 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Co Owner",
                         Value = "Co Owner"
+                    }
+                };
+            return _Types;
+        }
+
+        private IList<SelectListItem> GetMarshRE()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                    new SelectListItem
+                    {
+                        Text = "-- Select --",
+                        Value = "0"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Personnel",
+                        Value = "Personnel"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Director",
+                        Value = "MREDirector"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Subsidiary Company organisation",
+                        Value = "Subsidiary Company organisation"
                     }
                 };
             return _Types;
@@ -936,6 +971,8 @@ namespace DealEngine.WebUI.Models
         public BarristerUnit BarristerUnit { get; set; }
         [JsonIgnore]
         public IList<SelectListItem> HasBarristerPrincipalOptions { get; set; }
+        public RealEstateDirectorUnit RealEstateDirectorUnit { get; set; }
+
     }
 }
 

@@ -276,6 +276,12 @@
 
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/NZBar_AddOrganisation", Model)
                 }
+                else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                {
+
+                    @Html.Hidden("RealEstateDirectorUnit", Model.OrganisationViewModel.RealEstateDirectorUnit.GetType().AssemblyQualifiedName, new { @id = "RealEstateDirectorUnit" })
+                    @await Html.PartialAsync("PrefabSections/OrganisationPartials/RealEstate_AddOrganisation", Model)
+                }
                 <div class="form-group">
                     <button class="btn btn-success update" type="submit" id="OrganisationSubmitBtn" onclick="OnOrganisationSubmit('organisationViewModel', 'Insured Details / Named Parties')">Add</button>
                     <button class="btn btn-danger" id="OrganisationClearButton" onclick="ResetOrganisation('organisationViewModel');location.reload();"> Clear</button>

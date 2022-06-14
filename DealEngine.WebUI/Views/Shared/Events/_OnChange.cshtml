@@ -509,7 +509,8 @@
             Value == "JBarrister" ||
             Value == "Barrister"||
             Value == "IEntity" ||
-            Value =="ABusiness") {
+            Value == "ABusiness" ||
+            Value=="MREDirector") {
             //readonly Organisation Type personal
             document.getElementById("OwnerFap").hidden = true;
 
@@ -536,7 +537,10 @@
             }
 
 
+            if (Value == "MREDirector") {
+                MEDirectorOnChange();
 
+            }
             if (Value == "Contractor") {
                 ContractorOnChange();
             }
@@ -636,6 +640,21 @@
         }
        
         
+
+    }
+
+    function MEDirectorOnChange() {
+        debugger;
+        var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+      
+
+        if (IsDirectorUnit != null) {
+            document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+
+
 
     }
 
