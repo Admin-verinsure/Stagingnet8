@@ -557,6 +557,9 @@ namespace DealEngine.WebUI.Models
             HasLocationOptions = GetSelectListOptions();
             HasOptionalUltraOptions = GetSelectListOptions();
             HasSoftwareUpdates = GetSelectListOptions();
+            HasCLOptions = GetSelectListOptions();
+            HasNoLossOptions = GetSelectListOptions();
+
         }
         private IList<SelectListItem> GetSelectListOptions()
         {
@@ -626,7 +629,11 @@ namespace DealEngine.WebUI.Models
 
         public IList<SelectListItem> HasLocationOptions { get; set; }
         public IList<SelectListItem> HasSoftwareUpdates { get; set; }
-         
+        public IList<SelectListItem> HasCLOptions { get; set; }
+        public IList<SelectListItem> HasNoLossOptions { get; set; }
+
+        
+
         public int CoverAmount { get; set; }
         public string DateLapsed { get; set; }
         public string RetroactiveDate { get; set; }

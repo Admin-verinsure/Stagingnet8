@@ -47,28 +47,29 @@
     </div>
 
 
-    <div class="form-group">
-        <div class="row">
-            <div class="col-9">
-                <label for="HasInsolvency" class="label required">
-                    Apply 
-                    Exclusion?
-                </label>
-            </div>
-            <div class="col-3">
-                <select id="HasInsolvencyOptions" name="MLViewModel.HasInsolvencyOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                    @foreach (var option in Model.MLViewModel.HasInsolvencyOptions)
-                    {
-                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                    }
-                </select>
+    
+
+
+    <div id="MLViewModel.HasMLOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="HasInsolvency" class="label required">
+                        Apply Insolvency Exclusion?
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="HasInsolvencyOptions" name="MLViewModel.HasInsolvencyOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.MLViewModel.HasInsolvencyOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
 
 
-
-    <div id="MLViewModel.HasInsolvencyOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">

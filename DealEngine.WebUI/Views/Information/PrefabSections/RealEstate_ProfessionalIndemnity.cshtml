@@ -2,16 +2,17 @@
 
 <form id="PIViewModel" class="is-valid" data-accordianId="Professional Indemnity">
    
+
+
     <div class="form-group">
         <div class="row">
             <div class="col-9">
-                <label for="HasInsolvency" class="label required">
-                    Apply
-                    Exclusion?
+                <label for="hasjointventureactivities" class="label required">
+                    Does the firm engage in joint venture activities (other than conjunctional sales)?
                 </label>
             </div>
             <div class="col-3">
-                <select id="HasJointVentureActivitiesOptions" name="PIViewModel.HasJointVentureActivitiesOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasjointventureactivities" name="PIViewModel.HasJointVentureActivitiesOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.PIViewModel.HasJointVentureActivitiesOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -21,6 +22,25 @@
         </div>
     </div>
 
+    @*<div id="PIViewModel.HasJointVentureActivitiesOptions" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasactivitiesinsured" class="label required">
+                            You have answered "Yes" above, is insurance cover required for this activity?
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        <select id="hasactivitiesinsured" name="PIViewModel.HasActivitiesInsuredOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                            @foreach (var option in Model.PIViewModel.HasActivitiesInsuredOptions)
+                            {
+                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>*@
     <div id="PIViewModel.HasJointVentureActivitiesOptions" hidden>
         <div class="form-group">
             <div class="row">
@@ -36,6 +56,11 @@
         </div>
     </div>
 
+
+
+
+
+
     <div class="form-group">
         <div class="row">
             <div class="col-9">
@@ -44,7 +69,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="HasFirmEngageOptions" name="PIViewModel.HasFirmEngageOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="hasfirmengage" name="PIViewModel.HasFirmEngageOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.PIViewModel.HasFirmEngageOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -63,7 +88,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="HasFirmEngageInsuredOptions" name="PIViewModel.HasFirmEngageInsuredOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasfirmengageinsured" name="PIViewModel.HasFirmEngageInsuredOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasFirmEngageInsuredOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -89,6 +114,8 @@
     </div>
 
 
+
+
     <div>
         <div class="form-group">
             <div class="row">
@@ -98,7 +125,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="HasStructuralConditionOptions" name="PIViewModel.HasStructuralConditionOptions" data-rule="Reverse" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasstructuralcondition" name="PIViewModel.HasStructuralConditionOptions" data-rule="Reverse" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasStructuralConditionOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -123,6 +150,9 @@
         </div>
     </div>
 
+
+
+
     <div>
         <div class="form-group">
             <div class="row">
@@ -133,7 +163,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="HasRiskProceduresOptions" name="PIViewModel.HasRiskProceduresOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasriskprocedures" name="PIViewModel.HasRiskProceduresOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.PIViewModel.HasRiskProceduresOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
