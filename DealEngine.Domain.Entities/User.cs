@@ -47,6 +47,7 @@ namespace DealEngine.Domain.Entities
         public virtual OrganisationalUnit DefaultOU { get; set; }
         public virtual string UserName { get; set; }
         public virtual string OktaUID { get; set; }
+        public virtual string OktaSingleUseToken { get; set; }
         public virtual string SalesPersonUserName { get; set; }
         public virtual string JobTitle { get; set; }
         public virtual string EmployeeNumber { get; set; }

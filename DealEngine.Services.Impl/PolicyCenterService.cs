@@ -7,7 +7,7 @@ using System.Net;
 using DealEngine.Domain.Entities;
 using DealEngine.Services.Interfaces;
 //using EServices.AccountProxy;
-using ServiceReference1;
+//using ServiceReference1;
 using CoreWCF;
 using CoreWCF.Channels;
 
@@ -17,15 +17,12 @@ namespace DealEngine.Services.Impl
     {
         IAppSettingService _appSettingService;
         IClientInformationService _clientInformationService;
-        protected readonly string NS = "http://www.guidewire.com/soap";
-        protected readonly string ACTOR = "http://schemas.xmlsoap.org/soap/actor/next";
-        protected readonly string USER_PROP = "gw_auth_user_prop";
-        protected readonly string PW_PROP = "gw_auth_password_prop";
 
         public PolicyCenterService()
         {
 
         }
+        #region Old Code from attempt at implementing consumption of legacy SOAP APIs
         //public async Task<bool> GetAccount(Organisation organisation)
         //{
         //    bool success = false;
@@ -135,22 +132,22 @@ namespace DealEngine.Services.Impl
         //    return success;
 
         //}
-        private async Task<ContactTO> SetUpContact(Organisation organisation)
-        {
-            ContactTO contact = new ContactTO();
-            //ClientInformationSheet sheet = await _clientInformationService.GetClientInformationSheetFromOrganisation(organisation);
-            //Location location = sheet.Locations[0]; // First location added is correct one?
+        //private async Task<ContactTO> SetUpContact(Organisation organisation)
+        //{
+        //    ContactTO contact = new ContactTO();
+        //    //ClientInformationSheet sheet = await _clientInformationService.GetClientInformationSheetFromOrganisation(organisation);
+        //    //Location location = sheet.Locations[0]; // First location added is correct one?
 
-            contact.OrganizationName = organisation.Name;
-            contact.AccountSubType = (ContactType)Enum.Parse(typeof(ContactType), "TC_company");
-            contact.AddressLine1 = "Street";// MANDATORY
-            //contact.Suburb = 
-            contact.City = "Auckland";// MANDATORY 
-            //contact.PostCode = 
-            contact.Country = (ServiceReference1.Country)Enum.Parse(typeof(ServiceReference1.Country), "TC_NZ"); // MANDATORY
+        //    contact.OrganizationName = organisation.Name;
+        //    contact.AccountSubType = (ContactType)Enum.Parse(typeof(ContactType), "TC_company");
+        //    contact.AddressLine1 = "Street";// MANDATORY
+        //    //contact.Suburb = 
+        //    contact.City = "Auckland";// MANDATORY 
+        //    //contact.PostCode = 
+        //    contact.Country = (ServiceReference1.Country)Enum.Parse(typeof(ServiceReference1.Country), "TC_NZ"); // MANDATORY
 
-            return contact;
-        }
+        //    return contact;
+        //}
 
         //public async Task<bool> GetAccountWCFOld(Organisation organisation)
         //{
@@ -262,89 +259,87 @@ namespace DealEngine.Services.Impl
 
         //    return success;
         //}
-        public async Task<bool> GetAccountWCF(Organisation organisation)
-        {
-            EndpointAddress remoteAddressEndpoint = new EndpointAddress("https://testeservices.iag.co.nz:24443/AccountService.svc");
-            Task result;
+        //public async Task<bool> GetAccountWCF(Organisation organisation)
+        //{
+        //    EndpointAddress remoteAddressEndpoint = new EndpointAddress("https://testeservices.iag.co.nz:24443/AccountService.svc");
+        //    Task result;
 
-            BasicHttpBinding binding = new BasicHttpBinding();
-            binding.Name = "InternetFacingServiceBinding";
-            binding.Security.Mode = BasicHttpSecurityMode.Transport;
-            binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-            binding.OpenTimeout = TimeSpan.FromMinutes(10);
-            binding.ReceiveTimeout = TimeSpan.FromMinutes(15);
-            binding.SendTimeout = TimeSpan.FromMinutes(15);
-            binding.CloseTimeout = TimeSpan.FromMinutes(15);
-            binding.MaxReceivedMessageSize = int.MaxValue;
-            binding.MaxBufferSize = int.MaxValue;
-            //binding.MaxBufferPoolSize = int.MaxValue;
-            binding.ReaderQuotas.MaxDepth = int.MaxValue;
-            binding.ReaderQuotas.MaxStringContentLength = int.MaxValue;
-            binding.ReaderQuotas.MaxArrayLength = int.MaxValue;
-            binding.ReaderQuotas.MaxBytesPerRead = int.MaxValue;
-            binding.ReaderQuotas.MaxNameTableCharCount = int.MaxValue;
+        //    BasicHttpBinding binding = new BasicHttpBinding();
+        //    binding.Name = "InternetFacingServiceBinding";
+        //    binding.Security.Mode = BasicHttpSecurityMode.Transport;
+        //    binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
+        //    binding.OpenTimeout = TimeSpan.FromMinutes(10);
+        //    binding.ReceiveTimeout = TimeSpan.FromMinutes(15);
+        //    binding.SendTimeout = TimeSpan.FromMinutes(15);
+        //    binding.CloseTimeout = TimeSpan.FromMinutes(15);
+        //    binding.MaxReceivedMessageSize = int.MaxValue;
+        //    binding.MaxBufferSize = int.MaxValue;
+        //    //binding.MaxBufferPoolSize = int.MaxValue;
+        //    binding.ReaderQuotas.MaxDepth = int.MaxValue;
+        //    binding.ReaderQuotas.MaxStringContentLength = int.MaxValue;
+        //    binding.ReaderQuotas.MaxArrayLength = int.MaxValue;
+        //    binding.ReaderQuotas.MaxBytesPerRead = int.MaxValue;
+        //    binding.ReaderQuotas.MaxNameTableCharCount = int.MaxValue;
 
-            CustomBinding customBinding = new CustomBinding(binding);
-            HttpTransportBindingElement transportElement = customBinding.Elements.Find<HttpTransportBindingElement>();
-            transportElement.KeepAliveEnabled = false;
+        //    CustomBinding customBinding = new CustomBinding(binding);
+        //    HttpTransportBindingElement transportElement = customBinding.Elements.Find<HttpTransportBindingElement>();
+        //    transportElement.KeepAliveEnabled = false;
 
-            // System.ServiceModel.Channels.WebSocketTransportSettings.DisablePayloadMasking throws Exception, isn't available in .NET 5
-            // See https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.websockettransportsettings.disablepayloadmasking?view=dotnet-plat-ext-6.0
-            // transportElement.WebSocketSettings = null; // Can't be null
-            transportElement.WebSocketSettings.DisablePayloadMasking = true; // This attribute isn't available in .NET 5
+        //    // System.ServiceModel.Channels.WebSocketTransportSettings.DisablePayloadMasking throws Exception, isn't available in .NET 5
+        //    // See https://docs.microsoft.com/en-us/dotnet/api/system.servicemodel.channels.websockettransportsettings.disablepayloadmasking?view=dotnet-plat-ext-6.0
+        //    // transportElement.WebSocketSettings = null; // Can't be null
+        //    transportElement.WebSocketSettings.DisablePayloadMasking = true; // This attribute isn't available in .NET 5
 
-            try
-            {
-                //AccountServiceClient client = new AccountServiceClient(customBinding, remoteAddressEndpoint); //
-                //client.Open();
-                //client.Close();
-            }
-            catch (Exception ex)
-            {
-                throw new FaultException(ex.Message);
-            }
+        //    try
+        //    {
+        //        //AccountServiceClient client = new AccountServiceClient(customBinding, remoteAddressEndpoint); //
+        //        //client.Open();
+        //        //client.Close();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new FaultException(ex.Message);
+        //    }
 
-            //AccountServiceClient client = new AccountServiceClient(AccountServiceClient.EndpointConfiguration.BasicHttpBinding_IAccountService, remoteAddressEndpoint);
-            //AccountServiceClient client = new AccountServiceClient(binding, remoteAddressEndpoint);
+        //    //AccountServiceClient client = new AccountServiceClient(AccountServiceClient.EndpointConfiguration.BasicHttpBinding_IAccountService, remoteAddressEndpoint);
+        //    //AccountServiceClient client = new AccountServiceClient(binding, remoteAddressEndpoint);
 
 
-            //client.ClientCredentials.UserName.UserName = "LDDMZDV\\St_eServicesUser";
-            //client.ClientCredentials.UserName.Password = "Usersrv!=";
+        //    //client.ClientCredentials.UserName.UserName = "LDDMZDV\\St_eServicesUser";
+        //    //client.ClientCredentials.UserName.Password = "Usersrv!=";
 
-            ////https://stackoverflow.com/questions/2763592/the-communication-object-system-servicemodel-channels-servicechannel-cannot-be
-            //client.ChannelFactory.Credentials.UserName.UserName = 
+        //    ////https://stackoverflow.com/questions/2763592/the-communication-object-system-servicemodel-channels-servicechannel-cannot-be
+        //    //client.ChannelFactory.Credentials.UserName.UserName = 
 
-            //GetAccountRequestTO request = new GetAccountRequestTO();
-            //request.Account = new AccountTO();
-            //request.Account.ProducerCode = "MarshMicro"; // MANDATORY
+        //    //GetAccountRequestTO request = new GetAccountRequestTO();
+        //    //request.Account = new AccountTO();
+        //    //request.Account.ProducerCode = "MarshMicro"; // MANDATORY
 
-            ///* One of: MarshMicroWB1, MarshMicroDUN, MarshMicroAKL, MarshMicroACB, MarshMicro
-            //This corresponds to the Branch in DE that would be in Organisational Unit */
+        //    ///* One of: MarshMicroWB1, MarshMicroDUN, MarshMicroAKL, MarshMicroACB, MarshMicro
+        //    //This corresponds to the Branch in DE that would be in Organisational Unit */
 
-            //request.Account.ContactTO = await SetUpContact(organisation);
-            //request.Account.ExternalAccountID = organisation.Id.ToString();
-            //request.Account.BusOpsDesc = "Business Operations Description"; // Not allowed to be null - In Varchar table was just "
-            //request.Account.AccountOrgType = (AccountOrgType)Enum.Parse(typeof(AccountOrgType), "TC_company");
+        //    //request.Account.ContactTO = await SetUpContact(organisation);
+        //    //request.Account.ExternalAccountID = organisation.Id.ToString();
+        //    //request.Account.BusOpsDesc = "Business Operations Description"; // Not allowed to be null - In Varchar table was just "
+        //    //request.Account.AccountOrgType = (AccountOrgType)Enum.Parse(typeof(AccountOrgType), "TC_company");
 
-            //if (client.InnerChannel.State != System.ServiceModel.CommunicationState.Faulted)
-            //{
-            //    // call service - everything's fine
-            //    result = client.GetAccountAsync(request);
-            //}
-            //else
-            //{
-            //    // channel faulted - re-create your client and then try again
-            //    client.Close();
-            //    //result = GetAccountWCF(organisation);
-            //}
-            //client.Close();
+        //    //if (client.InnerChannel.State != System.ServiceModel.CommunicationState.Faulted)
+        //    //{
+        //    //    // call service - everything's fine
+        //    //    result = client.GetAccountAsync(request);
+        //    //}
+        //    //else
+        //    //{
+        //    //    // channel faulted - re-create your client and then try again
+        //    //    client.Close();
+        //    //    //result = GetAccountWCF(organisation);
+        //    //}
+        //    //client.Close();
 
-            ////Console.WriteLine(result);
+        //    ////Console.WriteLine(result);
 
-            return true;
-        }
-
+        //    return true;
+        //}
+        #endregion
     }
-
-
 }

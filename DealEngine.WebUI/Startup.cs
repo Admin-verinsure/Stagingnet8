@@ -123,7 +123,8 @@ namespace DealEngine.WebUI
             //services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));.....
             services.AddHttpContextAccessor();
             services.AddQuartzHostedService();
-            
+            services.AddControllers()
+                .AddXmlSerializerFormatters();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -170,7 +171,6 @@ namespace DealEngine.WebUI
 
         }
 
-
         public static IScheduler GetSchedular()
         {
             var properties = new NameValueCollection
@@ -191,7 +191,6 @@ namespace DealEngine.WebUI
     }
 
 }
-
 
 public sealed class SecurityHeadersMiddleware
 {

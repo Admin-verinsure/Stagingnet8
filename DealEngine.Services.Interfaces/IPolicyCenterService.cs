@@ -7,7 +7,6 @@ namespace DealEngine.Services.Interfaces
     {
         //Task<bool> GetAccount(Organisation organisation);
         //Task<bool> GetAccountWCFOld(Organisation organisation);
-        Task<bool> GetAccountWCF(Organisation organisation);
-
+        //Task<bool> GetAccountWCF(Organisation organisation);
     }
 }

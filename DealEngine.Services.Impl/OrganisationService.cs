@@ -10,7 +10,6 @@ using DealEngine.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
-using EServices.AccountProxy;
 
 namespace DealEngine.Services.Impl
 {
