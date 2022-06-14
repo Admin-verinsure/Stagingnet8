@@ -8,7 +8,9 @@
                     <label for="forFirmDate" class="label required">Date the Firm was established:</label>
                 </div>
                 <div class="col-3">
-                    @Html.TextBoxFor(m => m.BIViewModel.FirmDate, new { @class = "form-control", @id = "FirmDate", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                    @Html.TextBoxFor(m => m.BIViewModel.FirmDate, "{0:yyyy-MM-dd}", new { @class = "dateInput form-control", @id = "firmdate", @type = "date", onchange = "OnChange(this.id, this.name)", @required = "" })
+
+                    @*@Html.TextBoxFor(m => m.BIViewModel.FirmDate, new { @class = "form-control", @id = "FirmDate", @type = "text", onchange = "OnChange(this.id, this.name)" })*@
                 </div>
             </div>
         </div>
