@@ -1519,50 +1519,50 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<IActionResult> MarshEliteSOAPTest()
-        {
-            #region Ignore me
-            //string xml = "<?xml version=\"1.0\" encoding=\"utf - 16\"?>" +
-            //    "<GetAccountRequestTO xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-            //        "<Account>" +
-            //            "<ExternalAccountID>c93e0dfc-69aa-4d6e-ade9-8b0651f36a14</ExternalAccountID>" +
-            //            "<ContactTO>" +
-            //                "<AccountSubType>TC_company</AccountSubType>" +
-            //                "<OrganizationName>0TCMEISTestCompany01</OrganizationName>" +
-            //                "<City>Auckland</City>" +
-            //                "<AddressLine1>1 Queen Street</AddressLine1>" +
-            //                "<Suburb />" +
-            //                "<Country>TC_NZ</Country>" +
-            //                "<AddressType xsi:nil=\"true\" />" +
-            //                "<PostCode>1111</PostCode>" +
-            //                "<PrimaryPhoneChoice xsi:nil=\"true\" />" +
-            //                "<State xsi:nil=\"true\" />" +
-            //            "</ContactTO>" +
-            //            "<ProducerCode>MarshMicroWB1</ProducerCode>" +
-            //            "<AccountOrgType>TC_company</AccountOrgType>" +
-            //            "<BusOpsDesc />" +
-            //        "</Account>" +
-            //    "</GetAccountRequestTO>";
+        //[HttpGet]
+        //public async Task<IActionResult> MarshEliteSOAPTest()
+        //{
+        //    #region Ignore me
+        //    //string xml = "<?xml version=\"1.0\" encoding=\"utf - 16\"?>" +
+        //    //    "<GetAccountRequestTO xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        //    //        "<Account>" +
+        //    //            "<ExternalAccountID>c93e0dfc-69aa-4d6e-ade9-8b0651f36a14</ExternalAccountID>" +
+        //    //            "<ContactTO>" +
+        //    //                "<AccountSubType>TC_company</AccountSubType>" +
+        //    //                "<OrganizationName>0TCMEISTestCompany01</OrganizationName>" +
+        //    //                "<City>Auckland</City>" +
+        //    //                "<AddressLine1>1 Queen Street</AddressLine1>" +
+        //    //                "<Suburb />" +
+        //    //                "<Country>TC_NZ</Country>" +
+        //    //                "<AddressType xsi:nil=\"true\" />" +
+        //    //                "<PostCode>1111</PostCode>" +
+        //    //                "<PrimaryPhoneChoice xsi:nil=\"true\" />" +
+        //    //                "<State xsi:nil=\"true\" />" +
+        //    //            "</ContactTO>" +
+        //    //            "<ProducerCode>MarshMicroWB1</ProducerCode>" +
+        //    //            "<AccountOrgType>TC_company</AccountOrgType>" +
+        //    //            "<BusOpsDesc />" +
+        //    //        "</Account>" +
+        //    //    "</GetAccountRequestTO>";
 
-            //// HTTP
-            ////var byteResponse = await _httpClientService.MEISGetAccount(xml);
-            #endregion
+        //    //// HTTP
+        //    ////var byteResponse = await _httpClientService.MEISGetAccount(xml);
+        //    #endregion
 
-            // Get org by id
-            // Get location by id 
+        //    // Get org by id
+        //    // Get location by id 
 
-            bool x = Guid.TryParse("9188616b-ee0b-4bb3-98d2-58b02630dd7d", out Guid result);
+        //    bool x = Guid.TryParse("9188616b-ee0b-4bb3-98d2-58b02630dd7d", out Guid result);
             
-            Organisation org = new Organisation();
-            if (x)
-                org.Id = result;
-            org.Name = "GetAccountTestOrg1";
+        //    Organisation org = new Organisation();
+        //    if (x)
+        //        org.Id = result;
+        //    org.Name = "GetAccountTestOrg1";
 
-            bool succeed = await _policyCenterService.GetAccountWCF(org);
+        //    bool succeed = await _policyCenterService.GetAccountWCF(org);
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
         [HttpGet]
         public async Task<IActionResult> ModifyCKEditor()
