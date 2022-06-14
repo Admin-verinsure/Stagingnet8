@@ -20,6 +20,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 using ClosedXML.Excel;
 using System.Text;
+using System.Data;
+using System.Net;
 
 namespace DealEngine.Services.Impl
 {
@@ -1215,7 +1217,7 @@ namespace DealEngine.Services.Impl
             EmailBuilder email = new EmailBuilder(DefaultSender);
             //EmailBuilder email = new EmailBuilder (DefaultSender);
             var shd = string.IsNullOrWhiteSpace(CatchAllEmail);
-            if (!string.IsNullOrWhiteSpace(CatchAllEmail))
+            if (string.IsNullOrWhiteSpace(CatchAllEmail))
             {
                 if (!string.IsNullOrWhiteSpace(recipient))
                 {
@@ -1369,26 +1371,24 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async Task SendCSVReportsViaEmail(string recipent,string workbook)
+        public async Task SendCSVReportsViaEmail(string recipent,string workbook,string fileName,string ProgName)
         {
             var user = await _userService.GetUserByEmail(recipent);
             Programme baseProgramme = null;
-            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
-            //email.From(DefaultSender);
-           
-
+            EmailBuilder email = await GetLocalizedReportEmailBuilder(DefaultSender, recipent);
                 email.From(DefaultSender);
-                email.WithSubject("Report subject");
-                email.WithBody("report body");
+                email.WithSubject(fileName + " for " +ProgName +" generated on " +DateTime.Now);
+                email.WithBody("Attached is the "+ fileName + " for "+ ProgName+ " generated on "+DateTime.Now);
                 email.UseHtmlBody(true);
+
                 if (workbook != null)
                 {
-                    var attachment = new Attachment(workbook);
-                    attachment.ContentType = new ContentType("application/vnd.ms-excel");
-                    email.Attachments(attachment);
-                    // var documentsList = await ToAttachments(documents);
-                    //email.Attachments(documentsList.ToArray());
-                    email.Send();
+                FileStream fs = File.OpenRead(workbook);
+
+                Attachment attachment = new Attachment(fs, fileName, "application/csv");
+                email.Attachments(attachment);
+                
+                email.Send();
                 }
                 else
                 {

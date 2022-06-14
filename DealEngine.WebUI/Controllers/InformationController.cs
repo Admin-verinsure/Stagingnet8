@@ -10,6 +10,7 @@ using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Programme;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using DealEngine.Infrastructure.FluentNHibernate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
@@ -168,6 +169,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 foreach (var item in template.Sections)
                 {
                     Litems.Add(new InformationItems() { Id = item.Id, Name = item.Name });
@@ -191,6 +197,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 InformationViewModel model = await GetClientInformationSheetViewModel(id);
 
                 return View(model);
@@ -239,6 +250,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(Id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
@@ -272,6 +288,12 @@ namespace DealEngine.WebUI.Controllers
 
             try
             {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
@@ -280,8 +302,7 @@ namespace DealEngine.WebUI.Controllers
                 model.SectionView = name;
                 model.ListSection = viewlist;
                 model.ClientProgramme = clientProgramme;
-                user = await CurrentUser();
-
+                
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
@@ -959,6 +980,9 @@ namespace DealEngine.WebUI.Controllers
             if (user.IsLoggedout)
                 return PageNotFound();
 
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 
@@ -1191,6 +1215,13 @@ namespace DealEngine.WebUI.Controllers
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 user = await CurrentUser();
+
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (sheet != null)
                 {
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -1224,6 +1255,12 @@ namespace DealEngine.WebUI.Controllers
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (sheet != null)
                 {
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -1366,6 +1403,13 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(id));                
                 var sheet = clientProgramme.InformationSheet;
                 var isBaseSheet = await _clientInformationService.IsBaseClass(sheet);
@@ -1495,6 +1539,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<ViewResult> MoveAdvisors(Guid id)
         {
+
             ClientProgramme clientProgramme = await _clientProgrammeRepository.GetByIdAsync(id);
             Programme programme = clientProgramme.BaseProgramme;
             ClientInformationSheet lastInformationSheet = clientProgramme.InformationSheet;
@@ -1783,6 +1828,12 @@ namespace DealEngine.WebUI.Controllers
             {
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (clientProgramme == null)
                     throw new Exception("ClientProgramme (" + id + ") doesn't belong to User " + user.UserName);
 
@@ -1807,6 +1858,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (!string.IsNullOrWhiteSpace(id))
                     user = await _userService.GetUser(id);
 

@@ -121,6 +121,12 @@ namespace DealEngine.WebUI.Controllers
         {
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            if (User == null)
+                return PageNotFound();
 
             // We do not want to use any existing identity information
             EnsureLoggedOut();
@@ -313,6 +319,10 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PasswordChanged()
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+            /////
             return View();
         }
 
@@ -321,6 +331,12 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl)
         {
+
+            //var currentUser = await CurrentUser();
+            //if (currentUser.IsLoggedout)
+            //    return PageNotFound();
+           
+
             var viewModel = new AccountLoginModel
             {
                 ReturnUrl = returnUrl,
@@ -434,6 +450,8 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginOktaRegistration()
         {
+          
+
             return View();
         }
 
@@ -874,9 +892,16 @@ namespace DealEngine.WebUI.Controllers
             user = await _userService.GetUserByOktaUID(oktaUid);
 
             // Check if the token is valid.
-            if (user.OktaSingleUseToken.Equals(oktaSingleUseToken))
+            if (user != null)
             {
-                isAuth = true;
+                if (user.OktaSingleUseToken.Equals(oktaSingleUseToken))
+                {
+                    isAuth = true;
+                }
+            }
+            else
+            {
+                return LocalRedirect("~/Account/OktaErrorMessage");
             }
 
             // Delete old SingleUseToken from User so it can't be re-used.
@@ -947,7 +972,6 @@ namespace DealEngine.WebUI.Controllers
                 
                 // Save token against User
                 user.OktaSingleUseToken = tokenString;
-                // Update User
                 await _userService.Update(user);
             }
             catch (Exception ex)
@@ -1220,6 +1244,10 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> OTPFailMessage()
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
             return View();
         }
 
@@ -1227,20 +1255,32 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RSAErrorMessage()
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+            
             return View();
         }
 
-        //[HttpGet]
-        //[AllowAnonymous]
-        //public async Task<IActionResult> OktaErrorMessage()
-        //{
-        //    return View();
-        //}
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> OktaErrorMessage()
+        {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            return View();
+        }
 
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> OktaErrorMessage(AccountLoginModel loginViewModel)
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
             return View(loginViewModel);
         }
 
@@ -1250,6 +1290,10 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> Error()
         {
             // We do not want to use any existing identity information
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
             EnsureLoggedOut();
 
             return View();
@@ -1259,6 +1303,11 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ErrorDynamic(AccountErrorViewModel accountErrorViewModel)
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+
             return View(accountErrorViewModel);
         }
 
@@ -1270,6 +1319,12 @@ namespace DealEngine.WebUI.Controllers
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
 
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            if (User == null)
+                return PageNotFound();
             // We do not want to use any existing identity information
             EnsureLoggedOut();
 
@@ -1297,6 +1352,13 @@ namespace DealEngine.WebUI.Controllers
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
 
+            var currentUser = await CurrentUser();
+
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            if (User == null)
+                return PageNotFound();
             // We do not want to use any existing identity information
             EnsureLoggedOut();
 
@@ -1325,7 +1387,13 @@ namespace DealEngine.WebUI.Controllers
         {
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
+            var currentUser = await CurrentUser();
 
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            if (User == null)
+                return PageNotFound();
             // We do not want to use any existing identity information
             EnsureLoggedOut();
 
@@ -1593,6 +1661,11 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangeOwnPassword()
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+
             return PartialView("_ChangeOwnPassword");
         }
 
@@ -1630,6 +1703,14 @@ namespace DealEngine.WebUI.Controllers
         {
             var user = await _userService.GetUserById(Id);
             var accountModel = new ManageUserViewModel(user);
+
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             //accountModel.UserGroups = new SelectUserGroupsViewModel(user, _permissionsService.GetAllGroups());
 
             SingleUseToken passwordToken = null;// _authenticationService.GetTokensFor(Id).OrderByDescending(t => t.DateCreated.GetValueOrDefault()).FirstOrDefault();

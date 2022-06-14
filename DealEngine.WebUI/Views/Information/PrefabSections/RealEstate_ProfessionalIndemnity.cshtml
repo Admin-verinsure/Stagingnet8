@@ -1,0 +1,261 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="PIViewModel" class="is-valid" data-accordianId="Professional Indemnity">
+    @*<div >
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="forFirmDate" class="label required">Date the Firm was established:</label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.PIViewModel.FirmDate, new { @class = "form-control", @id = "FirmDate", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="HasAnyMerger" class="label required">
+                    During the past year has the name been changed or has any other business been purchased or any merger or consolidation taken place?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasAnyMerger" name="PIViewModel.HasAnyMerger" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasAnyMerger)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasAnyMerger" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="mergerdetails" class="label required">
+                        If "Yes", please provide full details: *
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.mergerdetails, new { @class = "form-control", @id = "mergerdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label>
+                    We note that you are currently affiliated with Ray White. (dropdown list pre set up options are Professionals; LJ Hooker; Bayleys; Century 21; Remax; Nationwide; Ray White; First National; Unaffiliated Agents)
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="AgentsDetails" class="label required">
+                    If there have been any changes, please provide full details:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextAreaFor(m => m.PIViewModel.AgentsDetails, new { @class = "form-control", @id = "AgentsDetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+            </div>
+        </div>
+    </div>*@
+
+
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasjointventureactivities" class="label required">
+                    Does the firm engage in joint venture activities (other than conjunctional sales)?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasjointventureactivities" name="PIViewModel.HasJointVentureActivitiesOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasJointVentureActivitiesOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    @*<div id="PIViewModel.HasJointVentureActivitiesOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasactivitiesinsured" class="label required">
+                        You have answered "Yes" above, is insurance cover required for this activity?
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasactivitiesinsured" name="PIViewModel.HasActivitiesInsuredOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.PIViewModel.HasActivitiesInsuredOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>*@
+    <div id="PIViewModel.HasJointVentureActivitiesOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasactivitiesinsureddetails" class="label required">
+                        You have answered "Yes" above, please provide details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.ActivitiesInsuredDetails, new { @class = "form-control", @id = "activitiesinsureddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasfirmengage" class="label required">
+                    Does the firm engage in construction activities?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasfirmengage" name="PIViewModel.HasFirmEngageOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.HasFirmEngageOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="PIViewModel.HasFirmEngageOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasfirmengageinsured" class="label required">
+                        You have answered "Yes" above, is insurance cover required for this activity?
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasfirmengageinsured" name="PIViewModel.HasFirmEngageInsuredOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.PIViewModel.HasFirmEngageInsuredOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasFirmEngageInsuredOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="firmengagedetails" class="label required">
+                        You have answered "Yes" above, please provide details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.FirmEngageDetails, new { @class = "form-control", @id = "firmengagedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasstructuralcondition" class="label required">
+                        Does the firm have a clearly communicated policy of NOT  making representations regarding the structural condition and / or water tightness of properties for sale?
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasstructuralcondition" name="PIViewModel.HasStructuralConditionOptions" data-rule="Reverse"  class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.PIViewModel.HasStructuralConditionOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasStructuralConditionOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="riskexposuredetails" class="label required">
+                        You have answered "No" above, please provide details of your firm's management of this risk exposure:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.RiskExposureDetails, new { @class = "form-control", @id = "riskexposuredetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasriskprocedures" class="label required">
+                        Does the firm have internal risk management procedures in place to help identify identify dwellings contaminated by methamphetamine, cannabis or other illegal
+                        substances?
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasriskprocedures" name="PIViewModel.HasRiskProceduresOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.PIViewModel.HasRiskProceduresOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.HasRiskProceduresOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="riskproceduresdetails" class="label required">
+                        You have answered "Yes" above, please advise what procedures are followed - ie. REINZ Best Practice Guide, or if own internal risk management procedures, please provide details below:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.RiskProceduresDetails, new { @class = "form-control", @id = "riskproceduresdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>

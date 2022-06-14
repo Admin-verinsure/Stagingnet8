@@ -37,6 +37,7 @@ namespace DealEngine.WebUI.Models
             Status = clientInformationSheet.Status;
             AnswerSheetId = clientInformationSheet.Id;
             ClientProgramme = clientInformationSheet.Programme;
+            MLViewModel = new MLViewModel();
         }
         public User User { get; set; }
         public OrganisationViewModel OrganisationViewModel { get; set; }
@@ -87,8 +88,7 @@ namespace DealEngine.WebUI.Models
         public OTViewModel OTViewModel { get; internal set; }
         public IPViewModel IPViewModel { get; internal set; }
         public GeneralViewModel GeneralViewModel { get; internal set; }
-
-        
+        public MLViewModel MLViewModel { get; internal set; }
     }
 
 
@@ -302,6 +302,18 @@ namespace DealEngine.WebUI.Models
             HasRefusedOptions = GetSelectListOptions();
             HasStatutoryOffenceOptions = GetSelectListOptions();
             HasLiquidationOptions = GetSelectListOptions();
+            HasDeclinedProposal = GetSelectListOptions();
+            HasSpecialTermsOptions = GetSelectListOptions();
+            HasCancelledOptions = GetSelectListOptions();
+            HasFraudEmployeeOptions = GetSelectListOptions();
+            HasEmployeeAloneChequesOptions = GetSelectListOptions();
+            HasMonthlyCheckOptions = GetSelectListOptions();
+            HasAnnualAccountsOptions = GetSelectListOptions();
+            HasWrittenProceduresOptions = GetSelectListOptions();
+            HasEverInvestigateOptions = GetSelectListOptions();
+            HasAnyAllegationsOptions = GetSelectListOptions();
+            HasCivilAllegationsOptions = GetSelectListOptions();
+            HasOtherRiskOptions = GetSelectListOptions();
         }
 
         public string DamageLossDetails { get; set; }
@@ -309,11 +321,49 @@ namespace DealEngine.WebUI.Models
         public string RefusedDetails { get; set; }
         public string StatutoryOffenceDetails { get; set; }
         public string LiquidationDetails { get; set; }
+        public string DeclinedProposalDetails { get; set; }
+        public string SpecialTermsDetails { get; set; }
+        public string cancelledDetails { get; set; }
+        public string FraudEmployeeDetails { get; set; }
+        public string EmployeeAloneDetails { get; set; }
+        public string CashInHandDetails { get; set; }
+        public string MonthlyCheckDetails { get; set; }
+        public string AnnualAccountsDetails { get; set; }
+        public string WrittenProceduresDetails { get; set; }
+        public string EverInvestigateDetails { get; set; }
+        public string AnyAllegationsDetails { get; set; }
+        public string CivilAllegationsDetails { get; set; }
+        public string OtherRiskDetails { get; set; }
+
+        
+
+
+
         public IList<SelectListItem> HasDamageLossOptions { get; set; }
         public IList<SelectListItem> HasWithdrawnOptions { get; set; }
         public IList<SelectListItem> HasRefusedOptions { get; set; }
         public IList<SelectListItem> HasStatutoryOffenceOptions { get; set; }
         public IList<SelectListItem> HasLiquidationOptions { get; set; }
+        public IList<SelectListItem> HasDeclinedProposal { get; set; }
+        public IList<SelectListItem> HasSpecialTermsOptions { get; set; }
+        public IList<SelectListItem> HasCancelledOptions { get; set; }
+        public IList<SelectListItem> HasFraudEmployeeOptions { get; set; }
+        public IList<SelectListItem> HasEmployeeAloneChequesOptions { get; set; }
+        public IList<SelectListItem> HasMonthlyCheckOptions { get; set; }
+        public IList<SelectListItem> HasAnnualAccountsOptions { get; set; }
+        public IList<SelectListItem> HasWrittenProceduresOptions { get; set; }
+        public IList<SelectListItem> HasEverInvestigateOptions { get; set; }
+        public IList<SelectListItem> HasAnyAllegationsOptions { get; set; }
+        public IList<SelectListItem> HasCivilAllegationsOptions { get; set; }
+        public IList<SelectListItem> HasOtherRiskOptions { get; set; }
+
+        
+
+
+
+
+
+
         private IList<SelectListItem> GetSelectListOptions()
         {
             return new List<SelectListItem>()
@@ -502,6 +552,7 @@ namespace DealEngine.WebUI.Models
             HasExistingPolicyOptions = GetSelectListOptionsCyberRenew();
             HasLocationOptions = GetSelectListOptions();
             HasOptionalUltraOptions = GetSelectListOptions();
+            HasSoftwareUpdates = GetSelectListOptions();
         }
         private IList<SelectListItem> GetSelectListOptions()
         {
@@ -570,7 +621,8 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasOptionalUltraOptions { get; set; }
 
         public IList<SelectListItem> HasLocationOptions { get; set; }
-
+        public IList<SelectListItem> HasSoftwareUpdates { get; set; }
+         
         public int CoverAmount { get; set; }
         public string DateLapsed { get; set; }
         public string RetroactiveDate { get; set; }
@@ -763,6 +815,13 @@ namespace DealEngine.WebUI.Models
             HasPreviouslyUndertaken = GetSelectListOptions();
             hasClaimsMade = GetSelectListOptions();
             IsRequirecoverJunior = GetSelectListOptions();
+            HasAnyMerger = GetSelectListOptions();
+            HasJointVentureActivitiesOptions = GetSelectListOptions();
+            HasActivitiesInsuredOptions = GetSelectListOptions();
+            HasFirmEngageOptions = GetSelectListOptions();
+            HasFirmEngageInsuredOptions = GetSelectListOptions();
+            HasStructuralConditionOptions = GetSelectListOptions();
+            HasRiskProceduresOptions = GetSelectListOptions();
         }
 
         private IList<SelectListItem> GetSelectListOptionsPIRenew()
@@ -783,6 +842,11 @@ namespace DealEngine.WebUI.Models
                 { Text = "Never had Professional Indemnity", Value = "3" }
             };
         }
+
+
+
+
+
 
         private IList<SelectListItem> GetRunOffYearCoverSelectListOptions()
         {
@@ -1158,8 +1222,16 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasPreviouslyUndertaken { get; set; }
         public IList<SelectListItem> hasClaimsMade { get; set; }
         public IList<SelectListItem> IsRequirecoverJunior { get; set; }
+        public IList<SelectListItem> HasAnyMerger { get; set; }
+        public IList<SelectListItem> HasJointVentureActivitiesOptions { get; set; }
+        public IList<SelectListItem> HasActivitiesInsuredOptions { get; set; }
+        public IList<SelectListItem> HasFirmEngageOptions { get; set; }
+        public IList<SelectListItem> HasFirmEngageInsuredOptions { get; set; }
+        public IList<SelectListItem> HasStructuralConditionOptions { get; set; }
+        public IList<SelectListItem> HasRiskProceduresOptions { get; set; }
+        public IList<SelectListItem> HasExistingCyberPolicy { get; set; }
 
-        
+
 
         public string ProcedureManagedDetails { get; set; }
         public string BusinessChangesDetails { get; set; }        
@@ -1216,6 +1288,15 @@ namespace DealEngine.WebUI.Models
         public decimal AnnualFee { get; set; }
         public decimal AnnualPremium { get; set; }
         public string ClaimsMadedetails { get; set; }
+        public string FirmDate { get; set; }
+        public string AgentsDetails { get; set; }
+
+        public string mergerdetails { get; set; }
+        public string FirmEngageDetails { get; set; }
+        public string ActivitiesInsuredDetails { get; set; }
+        public string RiskExposureDetails { get; set; }
+        public string RiskProceduresDetails { get; set; }
+
     }
     public class DAOLIViewModel
     {
@@ -1306,7 +1387,6 @@ namespace DealEngine.WebUI.Models
             };
         }      
     }
-
     public class OTViewModel
     {
         public OTViewModel()
@@ -1330,6 +1410,54 @@ namespace DealEngine.WebUI.Models
         public string ClaimDetails { get; set; }
         public string InvolvedTrusteeDetails { get; set; }
         public string FinancialObligationsDetails { get; set; }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+
+    }
+    public class MLViewModel
+    {
+        public MLViewModel()
+        {
+            HasDebtsOptions = GetSelectListOptions();
+            HasAblePayOptions = GetSelectListOptions();
+            HasAnyLawBreachOptions = GetSelectListOptions();
+            HasAnyClaimMadeOptions = GetSelectListOptions();
+            HasMLOptions = GetSelectListOptions();
+        }
+
+        public int AssetTotal { get; set; }
+        public int AssetCurrent { get; set; }
+        public int AfterTaxNumber { get; set; }
+        public string MLLevel { get; set; }
+        public string AnyClaimMadeDetails { get; set; }
+
+        
+
+        public IList<SelectListItem> HasDebtsOptions { get; set; }
+        public IList<SelectListItem> HasAblePayOptions { get; set; }
+        public IList<SelectListItem> HasAnyLawBreachOptions { get; set; }
+        public IList<SelectListItem> HasAnyClaimMadeOptions { get; set; }
+        public IList<SelectListItem> HasMLOptions { get; set; }
+
+        
+
+
 
         private IList<SelectListItem> GetSelectListOptions()
         {

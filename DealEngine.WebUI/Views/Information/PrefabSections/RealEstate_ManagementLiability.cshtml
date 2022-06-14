@@ -1,0 +1,192 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="MLViewModel" class="is-valid" data-accordianId="Management Liability">
+    @*<div class="form-group">
+            <div class="row">
+                <div class="col-12">
+                    <label class="label">
+                        Please complete this section for an obligation free quote.
+                        This cover offers extra protection for directors and owners of the company.
+                        Click here for details of this policy.
+
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="mllevel" class="label">
+                        Please indicate the level of Management Liability Insurance cover that your require:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.MLViewModel.MLLevel, new { @class = "form-control", @id = "mllevel", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                </div>
+            </div>
+        </div>*@
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="HasML" class="label required">
+                    Would you like Management Liability Insurance?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasML" name="MLViewModel.HasELOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.HasMLOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+ 
+    
+    
+    <div id="ELViewModel.HasMLOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasablepay" class="label required">
+                        Please confirm that the Business is able to pay any or all of its debts as and when they
+                        fall due?
+
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasablepay" name="MLViewModel.HasAblePayOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.MLViewModel.HasAblePayOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-12">
+                    <label class="label">
+                        Please provide the following financial information:
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="assetcurrent" class="label">
+                        Current Assets:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.MLViewModel.AssetCurrent, new { @class = "form-control", @id = "assetcurrent", @type = "number", onchange = "OnChange(this.id, this.name)" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="assettotal" class="label">
+                        Total Assets:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.MLViewModel.AssetTotal, new { @class = "form-control", @id = "assettotal", @type = "number", onchange = "OnChange(this.id, this.name)" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="aftertaxnumber" class="label">
+                        Current Liabilities:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.MLViewModel.AfterTaxNumber, new { @class = "form-control", @id = "aftertaxnumber", @type = "number", onchange = "OnChange(this.id, this.name)" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasdebts" class="label required">
+                        Total Liabilities:
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasdebts" name="MLViewModel.HasDebtsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.MLViewModel.HasDebtsOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasanylawbreach" class="label required">
+                        Has any director, officer or partners of the business ever had proceedings (civil or criminal) threatened or instigated against them alleging misconduct or breaches of the law in their capacity as a director or officer?
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasanylawbreach" name="MLViewModel.HasAnyLawBreachOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.MLViewModel.HasAnyLawBreachOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasanyclaimmade" class="label required">
+                        Have any claims been made against you or any past or present executive officers directors, employees, contractors or any predecessors during the past five years in business?
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasanyclaimmade" name="MLViewModel.HasAnyClaimMadeOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.MLViewModel.HasAnyClaimMadeOptions)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="MLViewModel.HasAnyClaimMadeOptions" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="anyclaimmadedetails" class="label required">
+                            You have answered ‘Yes’ to the above question, please provide full details including the name of the claimant, the nature of the allegation and amounts paid for any judgements, settlements, claimants’ costs and defence costs:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        @Html.TextAreaFor(m => m.MLViewModel.AnyClaimMadeDetails, new { @class = "form-control", @id = "firmengagedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>

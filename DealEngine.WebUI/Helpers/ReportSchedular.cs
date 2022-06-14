@@ -74,7 +74,7 @@ namespace DealEngine.WebUI.Helpers
             {
                 Programme prog = await _programmeService.GetProgrammeById(Guid.Parse(schedularJob.ProgrammeId));
                 //string fileName = schedularJob.ReportName+DateTime.Now.ToString("'dd'-'MM'")+ ".csv";
-                string fileName = schedularJob.ReportName + DateTime.Now.ToString("MM-dd") + ".xls";
+                string fileName = schedularJob.ReportName + DateTime.Now.ToString("MM-dd") + ".csv";
 
                 string filepath = prog.Reportspath;
                 //string filepath = "C:\\inetpub\\wwwroot\\dealengine\\DealEngine.WebUI\\cv\\";
@@ -86,7 +86,7 @@ namespace DealEngine.WebUI.Helpers
                     {
                         query = _session.CreateSQLQuery("   SELECT public." + schedularJob.JobFunctionName + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.BoundDateFrom + "'''   ,'''" + schedularJob.BoundDateTo + "''','''" + file + "'''  )   ");
                     }
-                    if (schedularJob.ReportType == "Library")
+                    else if (schedularJob.ReportType == "Library")
                     {
                         query = _session.CreateSQLQuery("   SELECT public.LibraryReports" + "(  '''" + schedularJob.ProgrammeId + "''' ,'''" + schedularJob.ReportName + "''','''" + file + "'''  )   ");
                     }
@@ -99,16 +99,17 @@ namespace DealEngine.WebUI.Helpers
                     query.ExecuteUpdate();
                     MemoryStream stream = new MemoryStream();
                     //string ContentType = "text/csv";
-                    string ContentType = "Application/msexcel";
+
                     stream.Position = 0;
                     EmailTemplate emailTemplate = null;
+
                     if (schedularJob.EmailIds != "")
                     {
-                        await _emailService.SendCSVReportsViaEmail(schedularJob.EmailIds, file);
+                        await _emailService.SendCSVReportsViaEmail(schedularJob.EmailIds, file, fileName, prog.Name);
                     }
                     else
                     {
-                        await _emailService.SendCSVReportsViaEmail("staff@techcertain.com", file);
+                        await _emailService.SendCSVReportsViaEmail("staff@techcertain.com", file, fileName, prog.Name);
                     }
 
 

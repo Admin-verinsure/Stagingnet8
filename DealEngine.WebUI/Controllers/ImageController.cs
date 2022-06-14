@@ -61,12 +61,26 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllImages()
         {
+            var user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             var model = await _ckimageService.GetAllImages();
             return View(model);
         }
         [HttpGet]
         public async Task<IActionResult> CKGetAllImages()
         {
+            var user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             var model = await _ckimageService.GetAllImages();
             return Json(model);
         }

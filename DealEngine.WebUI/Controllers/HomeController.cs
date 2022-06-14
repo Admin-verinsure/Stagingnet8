@@ -213,6 +213,13 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> Search()
         {
+            var user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             var Programmes = await _programmeService.GetAllProgrammes();
             SearchViewModel model = new SearchViewModel(Programmes);
             return View("Search", model);
@@ -423,6 +430,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientProgramme clientprogramme = await _programmeService.GetClientProgramme(Guid.Parse(clientProgrammeId));
                 if (clientprogramme.SubClientProgrammes.Any())
                 {
@@ -683,10 +695,17 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ViewSubClientProgramme(Guid subClientProgrammeId)
         {
             User user = null;
+            
+
             var clientList = new List<ClientProgramme>();
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 SubClientProgramme subClientprogramme = await _programmeService.GetSubClientProgrammebyId(subClientProgrammeId);
                 clientList.Add(subClientprogramme);
                 ProgrammeItem model = new ProgrammeItem(clientList.FirstOrDefault().BaseProgramme);
@@ -787,9 +806,16 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> NTUcreate(string ProgrammeId, string actionname)
         {
             User user = null;
+
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 NTUcreateViewModel model = new NTUcreateViewModel();
                 var clientProgrammes = new List<ClientProgramme>();
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
@@ -868,6 +894,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 RestoreNTUViewModel model = new RestoreNTUViewModel();
                 var clientProgrammes = new List<ClientProgramme>();
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
@@ -937,9 +969,15 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> IssueUIS(string ProgrammeId, string actionname)
         {
             User user = null;
+            
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 IssueUISViewModel model = new IssueUISViewModel();
                 var clientProgrammes = new List<ClientProgramme>();
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
@@ -976,9 +1014,15 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> IssueSubUIS(string ProgrammeId)
         {
             User user = null;
+            
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 IssueUISViewModel model = new IssueUISViewModel();
                 var clientProgrammes = new List<ClientProgramme>();
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
@@ -1052,6 +1096,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 IssueUISViewModel model = new IssueUISViewModel();
                 var clientProgrammes = new List<ClientProgramme>();
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
@@ -1094,6 +1144,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 IssueUISViewModel model = new IssueUISViewModel();
                 var clientProgrammes = new List<ClientProgramme>();
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
@@ -1142,6 +1197,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 IssueUISViewModel model = new IssueUISViewModel();
                 Programme programme = await _programmeService.GetProgrammeById(new Guid(ProgrammeId));
                 model.programme = programme;
@@ -2124,6 +2185,11 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> RenewNotification(Guid renewFromProgrammeBaseId, Guid OrganisationId, Guid ProgrammeId)
         {
             User user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             Programme currentProgramme = await _programmeService.GetProgramme(ProgrammeId);
             ClientProgramme renewFromProgrammeBase = await _programmeService.GetClientProgramme(renewFromProgrammeBaseId);
             Organisation renewClientOrg = await _organisationService.GetOrganisation(OrganisationId);
@@ -2162,6 +2228,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
                 EditClientsViewModel model = new EditClientsViewModel(programme);
                 return View(model);                
@@ -2352,6 +2423,13 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetBreakdown(string ProgrammeId)
         {
+            var user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             Guid.TryParse(ProgrammeId, out Guid Id);
             Programme programme = await _programmeService.GetProgrammeById(Id);
             BreakdownModel model = new BreakdownModel(programme);

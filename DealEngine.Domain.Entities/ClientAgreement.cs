@@ -126,7 +126,7 @@ namespace DealEngine.Domain.Entities
         public virtual decimal AdditionalCertFee { get; set; }
         public virtual DateTime FixedRetroactiveDate { get; set; }
         public virtual IList<ClientAgreementTermExtension> ClientAgreementTermExtensions { get; set; }
-
+        public virtual string ContinuityDate { get; set; }
         public virtual List<Document> GetDocuments()
         {
             return Documents.Where(d => d.DateDeleted == null).ToList();                        

@@ -602,6 +602,23 @@ namespace DealEngine.Services.Impl
                 foreach (ClientInformationAnswer answer in oldClientProgramme.InformationSheet.Answers)
                 {
                     ClientInformationAnswer newClientInformationAnswer = answer.CloneForNewSheet(newClientInformationSheet);
+
+                    if (newClientInformationSheet.Programme.BaseProgramme.ProgDisableClaimInsHistoryPanel)
+                    {
+                        if (answer.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions" ||
+                            answer.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions" ||
+                            answer.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")
+                        {
+                            newClientInformationAnswer.Value = "0";
+                        }
+                        if (answer.ItemName == "ClaimsHistoryViewModel.DamageLossDetails" || answer.ItemName == "ClaimsHistoryViewModel.WithdrawnDetails" ||
+                        answer.ItemName == "ClaimsHistoryViewModel.RefusedDetails" || answer.ItemName == "ClaimsHistoryViewModel.StatutoryOffenceDetails" ||
+                        answer.ItemName == "ClaimsHistoryViewModel.LiquidationDetails")
+                        {
+                            newClientInformationAnswer.Value = "";
+                        }
+                    }
+
                     newClientInformationSheet.Answers.Add(newClientInformationAnswer);
                 }
             }
@@ -753,6 +770,23 @@ namespace DealEngine.Services.Impl
                 foreach (ClientInformationAnswer answer in oldClientProgramme.InformationSheet.Answers)
                 {
                     ClientInformationAnswer newClientInformationAnswer = answer.CloneForNewSheet(newClientInformationSheet);
+                    
+                    if (newClientInformationSheet.Programme.BaseProgramme.ProgDisableClaimInsHistoryPanel)
+                    {
+                        if (answer.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions" || 
+                            answer.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions" || 
+                            answer.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")
+                        {
+                            newClientInformationAnswer.Value = "0";
+                        }
+                        if (answer.ItemName == "ClaimsHistoryViewModel.DamageLossDetails" || answer.ItemName == "ClaimsHistoryViewModel.WithdrawnDetails" ||
+                        answer.ItemName == "ClaimsHistoryViewModel.RefusedDetails" || answer.ItemName == "ClaimsHistoryViewModel.StatutoryOffenceDetails" ||
+                        answer.ItemName == "ClaimsHistoryViewModel.LiquidationDetails")
+                        {
+                            newClientInformationAnswer.Value = "";
+                        }
+                    }
+
                     newClientInformationSheet.Answers.Add(newClientInformationAnswer);
                 }
             }
@@ -841,6 +875,7 @@ namespace DealEngine.Services.Impl
                     newclientAgreement.Jurisdiction = oldclientagreement.Jurisdiction;
                     newclientAgreement.TerritoryLimit = oldclientagreement.TerritoryLimit;
                     newclientAgreement.RetroactiveDate = oldclientagreement.RetroactiveDate;
+                    newclientAgreement.ContinuityDate = oldclientagreement.ContinuityDate;
                     newclientAgreement.MasterAgreement = oldclientagreement.MasterAgreement;
                     newclientAgreement.PlacementFee = oldclientagreement.PlacementFee;
                     newclientAgreement.AdditionalCertFee = oldclientagreement.AdditionalCertFee;
