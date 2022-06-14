@@ -132,6 +132,9 @@ namespace DealEngine.Services.Impl
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("IPViewModel", StringComparison.CurrentCulture)));
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("OTViewModel", StringComparison.CurrentCulture))); 
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));
+            SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("MLViewModel", StringComparison.CurrentCulture)));
+            SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
+
         }
 
         private void AnswerFromUserDetails(User user, IFormCollection collection, IEnumerable<string> enumerable)

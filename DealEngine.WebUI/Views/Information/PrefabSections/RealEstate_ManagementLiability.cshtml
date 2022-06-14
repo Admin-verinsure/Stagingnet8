@@ -36,7 +36,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="HasML" name="MLViewModel.HasELOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="HasMLOptions" name="MLViewModel.HasMLOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.MLViewModel.HasMLOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -46,10 +46,29 @@
         </div>
     </div>
 
- 
-    
-    
-    <div id="ELViewModel.HasMLOptions" hidden>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="HasInsolvency" class="label required">
+                    Apply 
+                    Exclusion?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasInsolvencyOptions" name="MLViewModel.HasInsolvencyOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.HasInsolvencyOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div id="MLViewModel.HasInsolvencyOptions" hidden>
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
@@ -84,7 +103,7 @@
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="assetcurrent" class="label">
+                    <label for="assetcurrent" class="label required">
                         Current Assets:
                     </label>
                 </div>
@@ -96,7 +115,7 @@
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="assettotal" class="label">
+                    <label for="assettotal" class="label required">
                         Total Assets:
                     </label>
                 </div>
@@ -108,7 +127,7 @@
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="aftertaxnumber" class="label">
+                    <label for="liabilitiescurrent" class="label required">
                         Current Liabilities:
                     </label>
                 </div>
@@ -120,17 +139,19 @@
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
-                    <label for="hasdebts" class="label required">
+                    <label for="liabilitiestotal" class="label required">
                         Total Liabilities:
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasdebts" name="MLViewModel.HasDebtsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @Html.TextBoxFor(m => m.MLViewModel.TotalLiability, new { @class = "form-control", @id = "aftertaxnumber", @type = "number", onchange = "OnChange(this.id, this.name)" })
+
+                    @*<select id="hasdebts" name="MLViewModel.HasDebtsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.MLViewModel.HasDebtsOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                         }
-                    </select>
+                    </select>*@
                 </div>
             </div>
         </div>

@@ -43,7 +43,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="haswithdrawn" name="ClaimsHistoryViewModel.HasSpecialTerms" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                <select id="HasSpecialTermsOptions" name="ClaimsHistoryViewModel.HasSpecialTermsOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.ClaimsHistoryViewModel.HasSpecialTermsOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -221,7 +221,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasmonthlycheck" name="ClaimsHistoryViewModel.HasMonthlyCheckOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                <select id="hasmonthlycheck" name="ClaimsHistoryViewModel.HasMonthlyCheckOptions" class="form-select " data-rule="Reverse"   onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.ClaimsHistoryViewModel.HasMonthlyCheckOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -253,7 +253,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="hasannualaccounts" name="ClaimsHistoryViewModel.HasAnnualAccountsOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                <select id="hasannualaccounts" name="ClaimsHistoryViewModel.HasAnnualAccountsOptions" class="form-select "  data-rule="Reverse"   onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.ClaimsHistoryViewModel.HasAnnualAccountsOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -286,7 +286,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="haswrittenprocedures" name="ClaimsHistoryViewModel.HasWrittenProceduresOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                <select id="haswrittenprocedures" name="ClaimsHistoryViewModel.HasWrittenProceduresOptions" class="form-select " data-rule="Reverse"   onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.ClaimsHistoryViewModel.HasWrittenProceduresOptions)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>

@@ -1,0 +1,101 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="BIViewModel" class="is-valid" data-accordianId="Business Information">
+    <div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="forFirmDate" class="label required">Date the Firm was established:</label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.BIViewModel.FirmDate, new { @class = "form-control", @id = "FirmDate", @type = "text", onchange = "OnChange(this.id, this.name)" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="HasAnyMerger" class="label required">
+                    During the past year has the name been changed or has any other business been purchased or any merger or consolidation taken place?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasAnyMerger" name="BIViewModel.HasAnyMerger" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.BIViewModel.HasAnyMerger)
+                    {
+                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="BIViewModel.HasAnyMerger" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="mergerdetails" class="label required">
+                        If "Yes", please provide full details: *
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.BIViewModel.mergerdetails, new { @class = "form-control", @id = "mergerdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label>
+                    Is the firm currently affiliated with any group or Franchise.
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasFirmAffiliated" name="BIViewModel.HasFirmAffiliated" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.BIViewModel.HasFirmAffiliated)
+                    {
+                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="BIViewModel.HasFirmAffiliated" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="mergerdetails" class="label required">
+                        Please select which group or Franchise.
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="FranchiseListOptions" name="BIViewModel.FranchiseListOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.BIViewModel.FranchiseListOptions)
+                        {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="AgentsDetails" class="label">
+                    If other, please provide full details:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextAreaFor(m => m.BIViewModel.AgentsDetails, new { @class = "form-control", @id = "AgentsDetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+            </div>
+        </div>
+    </div>
+</form>

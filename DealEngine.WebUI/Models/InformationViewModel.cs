@@ -38,6 +38,8 @@ namespace DealEngine.WebUI.Models
             AnswerSheetId = clientInformationSheet.Id;
             ClientProgramme = clientInformationSheet.Programme;
             MLViewModel = new MLViewModel();
+            BIViewModel = new BIViewModel(); //Business Information
+
         }
         public User User { get; set; }
         public OrganisationViewModel OrganisationViewModel { get; set; }
@@ -89,6 +91,8 @@ namespace DealEngine.WebUI.Models
         public IPViewModel IPViewModel { get; internal set; }
         public GeneralViewModel GeneralViewModel { get; internal set; }
         public MLViewModel MLViewModel { get; internal set; }
+        public BIViewModel BIViewModel { get; set; }
+
     }
 
 
@@ -815,7 +819,6 @@ namespace DealEngine.WebUI.Models
             HasPreviouslyUndertaken = GetSelectListOptions();
             hasClaimsMade = GetSelectListOptions();
             IsRequirecoverJunior = GetSelectListOptions();
-            HasAnyMerger = GetSelectListOptions();
             HasJointVentureActivitiesOptions = GetSelectListOptions();
             HasActivitiesInsuredOptions = GetSelectListOptions();
             HasFirmEngageOptions = GetSelectListOptions();
@@ -1222,7 +1225,6 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasPreviouslyUndertaken { get; set; }
         public IList<SelectListItem> hasClaimsMade { get; set; }
         public IList<SelectListItem> IsRequirecoverJunior { get; set; }
-        public IList<SelectListItem> HasAnyMerger { get; set; }
         public IList<SelectListItem> HasJointVentureActivitiesOptions { get; set; }
         public IList<SelectListItem> HasActivitiesInsuredOptions { get; set; }
         public IList<SelectListItem> HasFirmEngageOptions { get; set; }
@@ -1288,10 +1290,6 @@ namespace DealEngine.WebUI.Models
         public decimal AnnualFee { get; set; }
         public decimal AnnualPremium { get; set; }
         public string ClaimsMadedetails { get; set; }
-        public string FirmDate { get; set; }
-        public string AgentsDetails { get; set; }
-
-        public string mergerdetails { get; set; }
         public string FirmEngageDetails { get; set; }
         public string ActivitiesInsuredDetails { get; set; }
         public string RiskExposureDetails { get; set; }
@@ -1430,6 +1428,81 @@ namespace DealEngine.WebUI.Models
 
 
     }
+
+
+    public class BIViewModel
+    {
+        public BIViewModel()
+        {
+            HasAnyMerger = GetSelectListOptions();
+            HasFirmAffiliated = GetSelectListOptions();
+            FranchiseListOptions = GetFranchiseListOptions();
+        }
+
+        private IList<SelectListItem> GetFranchiseListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Bayleys", Value = "Bayleys"
+                },
+                new SelectListItem
+                { Text = "Century 21", Value = "Century 21" },
+                new SelectListItem
+                {
+                    Text = "First National", Value = "First National"
+                },
+                new SelectListItem
+                { Text = "Harcourts;", Value = "Harcourts;" },
+                new SelectListItem
+                {
+                    Text = "LJ Hooker", Value = "LJ Hooker"
+                },
+                new SelectListItem
+                {
+                    Text = "Professionals", Value = "Professionals"
+                },
+                new SelectListItem
+                { Text = "Ray White", Value = "Ray White" },
+                new SelectListItem
+                { Text = "Remax", Value = "Remax" },
+                new SelectListItem
+                { Text = "Other", Value = "Other" }
+            };
+        }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+        public IList<SelectListItem> HasAnyMerger { get; set; }
+        public IList<SelectListItem> HasFirmAffiliated { get; set; }
+        public IList<SelectListItem> FranchiseListOptions { get; set; }
+
+        public string FirmDate { get; set; }
+        public string AgentsDetails { get; set; }
+
+        public string mergerdetails { get; set; }
+
+    }
+
     public class MLViewModel
     {
         public MLViewModel()
@@ -1439,11 +1512,15 @@ namespace DealEngine.WebUI.Models
             HasAnyLawBreachOptions = GetSelectListOptions();
             HasAnyClaimMadeOptions = GetSelectListOptions();
             HasMLOptions = GetSelectListOptions();
+            HasInsolvencyOptions = GetSelectListOptions();
         }
 
         public int AssetTotal { get; set; }
         public int AssetCurrent { get; set; }
+        
         public int AfterTaxNumber { get; set; }
+        public int TotalLiability { get; set; }
+
         public string MLLevel { get; set; }
         public string AnyClaimMadeDetails { get; set; }
 
@@ -1454,6 +1531,7 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasAnyLawBreachOptions { get; set; }
         public IList<SelectListItem> HasAnyClaimMadeOptions { get; set; }
         public IList<SelectListItem> HasMLOptions { get; set; }
+        public IList<SelectListItem> HasInsolvencyOptions { get; set; }
 
         
 
