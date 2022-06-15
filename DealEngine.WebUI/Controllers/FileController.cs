@@ -522,7 +522,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> CreateDocument(string id, string productId)
         {
             DocumentViewModel model = new DocumentViewModel();
-            User user = null;
+            User user =  await CurrentUser(); 
             if (user.IsLoggedout)
                 return PageNotFound();
 
@@ -610,14 +610,15 @@ namespace DealEngine.WebUI.Controllers
         {
             BaseListViewModel<DocumentInfoViewModel> models = new BaseListViewModel<DocumentInfoViewModel>();
             User user = null;
-            if (user.IsLoggedout)
-                return PageNotFound();
-
-            if (user == null)
-                return PageNotFound();
+           
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 List<SystemDocument> docs = _documentRepository.FindAll().Where(d => d.DateDeleted == null && user.PrimaryOrganisation == d.OwnerOrganisation && d.IsTemplate).ToList();
 
                 if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsInsurer)

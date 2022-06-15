@@ -266,21 +266,21 @@ public sealed class SecurityHeadersMiddleware
             #endregion
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-            //context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
+            context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
             // https://content-security-policy.com/unsafe-inline/
-            //context.Response.Headers.Add("Content-Security-Policy", new StringValues(
-            //    "base-uri 'self';" +
-            //    "block-all-mixed-content;" +
-            //    "default-src 'self';" +
-            //    "frame-ancestors 'none';" +
-            //    "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
-            //    "img-src 'self' data: https:;" +
-            //    "script-src 'self' 'unsafe-inline';" +
-            //    "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
-            //    "upgrade-insecure-requests;"
+            context.Response.Headers.Add("Content-Security-Policy", new StringValues(
+                "base-uri 'self';" +
+                "block-all-mixed-content;" +
+                "default-src 'self';" +
+                "frame-ancestors 'none';" +
+                "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
+                "img-src 'self' data: https:;" +
+                "script-src 'self' 'unsafe-inline';" +
+                "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
+                "upgrade-insecure-requests;"
 
             #region Other Directives that can be used
             //"child-src 'none';" +
@@ -297,7 +297,7 @@ public sealed class SecurityHeadersMiddleware
             //"worker-src 'self';"
             #endregion
 
-            //));
+            ));
         }
         return _next(context);
     }

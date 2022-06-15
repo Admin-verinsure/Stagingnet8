@@ -189,12 +189,6 @@ namespace DealEngine.WebUI.Controllers
         {
             ProgrammeInfoViewModel model;
             User user = null;
-            if (user.IsLoggedout)
-                return PageNotFound();
-
-            if (user == null)
-                return PageNotFound();
-
             List<ClientProgramme> clientProgrammes = new List<ClientProgramme>();
             List<Organisation> Owners = new List<Organisation>();
             List<Organisation> Ownerlist = new List<Organisation>();
@@ -202,7 +196,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
-                
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 var clientProgrammeList = await _programmeService.GetClientProgrammesForProgramme(Id);
                 model = new ProgrammeInfoViewModel(null, clientProgrammeList.FirstOrDefault().BaseProgramme, null);
                 foreach (var programme in clientProgrammeList.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker"))
