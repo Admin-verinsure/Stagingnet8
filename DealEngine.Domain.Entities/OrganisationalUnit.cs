@@ -353,7 +353,7 @@ namespace DealEngine.Domain.Entities
         }
 
         [Display(Name = "Email")]
-        public virtual bool Email { get; set; }
+        public virtual string Email { get; set; }
         [Display(Name = "Qualification")]
 
         public virtual string Qualification { get; set; }

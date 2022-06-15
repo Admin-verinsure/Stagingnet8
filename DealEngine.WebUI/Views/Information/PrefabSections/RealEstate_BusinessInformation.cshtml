@@ -27,7 +27,7 @@
                 <select id="HasAnyMerger" name="BIViewModel.HasAnyMerger" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.BIViewModel.HasAnyMerger)
                     {
-                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                     }
                 </select>
             </div>
@@ -60,7 +60,7 @@
                 <select id="HasFirmAffiliated" name="BIViewModel.HasFirmAffiliated" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.BIViewModel.HasFirmAffiliated)
                     {
-                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                     }
                 </select>
             </div>
@@ -79,7 +79,7 @@
                     <select id="FranchiseListOptions" name="BIViewModel.FranchiseListOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.BIViewModel.FranchiseListOptions)
                         {
-                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                         }
                     </select>
                 </div>
@@ -88,16 +88,16 @@
     </div>
 
 
-    <div class="form-group">
-        <div class="row">
-            <div class="col-9">
-                <label for="AgentsDetails" class="label">
-                    If other, please provide full details:
-                </label>
-            </div>
-            <div class="col-3">
-                @Html.TextAreaFor(m => m.BIViewModel.AgentsDetails, new { @class = "form-control", @id = "AgentsDetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+        <div class="form-group" id="BIViewModel.FranchiseListOptions" hidden>
+            <div class="row">
+                <div class="col-9">
+                    <label for="AgentsDetails" class="label">
+                        If other, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.BIViewModel.AgentsDetails, new { @class = "form-control", @id = "AgentsDetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
             </div>
         </div>
-    </div>
 </form>

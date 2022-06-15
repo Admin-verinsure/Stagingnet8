@@ -196,6 +196,9 @@
                             }else if(Value == "JBarrister") {
                                 Unit = "JBaristerUnit";
                                 PopulateOrganisationalUnit(OutPut, Unit);
+                            } else if (Value == "MREDirector") {
+                                Unit = "MREDirectorUnit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
                             }else {
                                 if (Unit.length > 0) {
                                     PopulateOrganisationalUnit(OutPut, Unit[0].id);

@@ -131,7 +131,8 @@ namespace DealEngine.WebUI.Models
                 {
                     RealEstateDirectorUnit = new RealEstateDirectorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
                     InsuranceAttributes = GetMarshRE();
-                    
+                    OrganisationTypes = GetMREOrganisationTypes();
+
                 }
 
                 Organisation = ClientInformationSheet.Owner;
@@ -391,7 +392,7 @@ namespace DealEngine.WebUI.Models
                     },
                     new SelectListItem
                     {
-                        Text = "Personnel",
+                        Text = "Private",
                         Value = "Personnel"
                     },
                     new SelectListItem
@@ -694,6 +695,36 @@ namespace DealEngine.WebUI.Models
                         Text = "Financial Institution",
                         Value = "Financial Institution"
                     }
+                };
+            return _Types;
+        }
+
+        private IList<SelectListItem> GetMREOrganisationTypes()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                   
+                    new SelectListItem
+                    {
+                        Text = "Private ",
+                        Value = "Personnel"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Director ",
+                        Value = "MREDirector "
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Other Subsidiary Company",
+                        Value = "Other Subsidiary Company"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Run Off",
+                        Value = "Run Off"
+                    }
+                    
                 };
             return _Types;
         }

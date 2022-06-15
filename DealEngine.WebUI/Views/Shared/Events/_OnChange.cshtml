@@ -585,6 +585,16 @@
                 }
             }
 
+            if (Value == "Other Subsidiary Company") {
+                var NoTradingName = document.getElementById("NoTradingName");
+                if (NoTradingName != null) {
+                    document.getElementById("TradingName").hidden = false;
+                    var TradingName = document.getElementById("Organisation.TradingName");
+                    TradingName.hidden = false;
+                    TradingName.removeAttribute("required");
+                }
+            }
+
             var NoTradingNameValidation = document.getElementById("NoTradingNameValidation");
                     var TradingName = document.getElementById("Organisation.TradingName");
                     if (NoTradingNameValidation != null && NoTradingNameValidation.value == "True") {
@@ -650,7 +660,7 @@
 
         if (IsDirectorUnit != null) {
             document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
-                el.style.display = 'none';
+                el.style.display = 'unset';
             });
         }
 

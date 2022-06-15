@@ -390,7 +390,7 @@ namespace DealEngine.Services.Impl
                 InsuranceAttribute InsuranceAttribute = new InsuranceAttribute(Creator, Type);
                 OrganisationType OrganisationType = await _organisationTypeService.GetOrganisationTypeByName(OrganisationTypeName);
                 foundOrg = CreateNewOrganisation(Creator, Email, OrganisationName, OrganisationType, OrganisationalUnits, InsuranceAttribute);
-                if (User != null)
+                if (User != null && Type != "MREDirector")
                 {
                     if (!User.Organisations.Any(o => o.InsuranceAttributes.Any(i => i.Name == Type) && o.Name == OrganisationName))
                         User.Organisations.Add(foundOrg);

@@ -1465,7 +1465,7 @@ namespace DealEngine.WebUI.Models
                     Text = "First National", Value = "First National"
                 },
                 new SelectListItem
-                { Text = "Harcourts;", Value = "Harcourts;" },
+                { Text = "Harcourts;", Value = "Harcourts" },
                 new SelectListItem
                 {
                     Text = "LJ Hooker", Value = "LJ Hooker"
@@ -1479,7 +1479,7 @@ namespace DealEngine.WebUI.Models
                 new SelectListItem
                 { Text = "Remax", Value = "Remax" },
                 new SelectListItem
-                { Text = "Other", Value = "Other" }
+                { Text = "Other", Value = "1" }
             };
         }
 

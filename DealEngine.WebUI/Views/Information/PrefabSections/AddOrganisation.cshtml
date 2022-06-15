@@ -17,6 +17,7 @@
         </li>
     </ul>
     <div class="tab-content">
+
         <div id="OrganisationTab1" class="tab-pane active" role="tabpanel">
             <table id="tblOrganisation"
                    class="table table-striped" width="100%"
@@ -279,7 +280,7 @@
                 else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
                 {
 
-                    @Html.Hidden("RealEstateDirectorUnit", Model.OrganisationViewModel.RealEstateDirectorUnit.GetType().AssemblyQualifiedName, new { @id = "RealEstateDirectorUnit" })
+                    @Html.Hidden("MREDirectorUnit", Model.OrganisationViewModel.RealEstateDirectorUnit.GetType().AssemblyQualifiedName, new { @id = "MREDirectorUnit" })
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/RealEstate_AddOrganisation", Model)
                 }
                 <div class="form-group">

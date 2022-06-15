@@ -80,6 +80,13 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
                                                             else
                                                             {
                                         @Html.Hidden("NoTradingNameValidation", false)}}
+
+     @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                                                            {
+                                        @Html.Hidden("NoTradingNameValidation", true) }
+                                                            else
+                                                            {
+                                        @Html.Hidden("NoTradingNameValidation", false)}}
 </div>}
 </div>
 

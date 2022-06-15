@@ -2,7 +2,8 @@
 
 
 <div class="form-group">
-    <div class="form-group row" >
+    @await Html.PartialAsync("PrefabSections/OrganisationPartials/_OrganisationTypes", Model)
+    <div class="form-group row" id="Private" hidden>
         <div class="form-group col-md-6">
             <div class="form-group">
                 @Html.LabelFor(m => m.OrganisationViewModel.User.FirstName, new { @class = "label required" })
@@ -15,6 +16,9 @@
                 @Html.TextBoxFor(m => m.OrganisationViewModel.User.LastName, new { @class = "form-control", @id = "User.LastName", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
+       
+        @await Html.PartialAsync("PrefabSections/OrganisationPartials/MRE_Director", Model)
+
     </div>
 </div>
 
