@@ -129,6 +129,7 @@ namespace DealEngine.WebUI.Models
 
                 if (Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
                 {
+                    RealEstateRunOffUnit = new RealEstateRunOffUnit();
                     RealEstateDirectorUnit = new RealEstateDirectorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
                     InsuranceAttributes = GetMarshRE();
                     OrganisationTypes = GetMREOrganisationTypes();
@@ -404,6 +405,11 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Subsidiary Company organisation",
                         Value = "Subsidiary Company organisation"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Run Off",
+                        Value = "Run Off"
                     }
                 };
             return _Types;
@@ -722,7 +728,7 @@ namespace DealEngine.WebUI.Models
                     new SelectListItem
                     {
                         Text = "Run Off",
-                        Value = "Run Off"
+                        Value = "RunOff"
                     }
                     
                 };
@@ -1003,7 +1009,7 @@ namespace DealEngine.WebUI.Models
         [JsonIgnore]
         public IList<SelectListItem> HasBarristerPrincipalOptions { get; set; }
         public RealEstateDirectorUnit RealEstateDirectorUnit { get; set; }
-
+        public RealEstateRunOffUnit RealEstateRunOffUnit { get; set; }
     }
 }
 

@@ -166,6 +166,11 @@ namespace DealEngine.Services.Impl
                 UnitName = collection["BarristerUnit"].ToString();
 
             }
+            else if (InsuranceAttribute == "MREDirector")
+            {
+                UnitName = collection["MREDirectorUnit"].ToString();
+
+            }
             else
             {
                 UnitName = collection["Unit"].ToString();
@@ -437,8 +442,7 @@ namespace DealEngine.Services.Impl
                     Type == "Administration" ||
                     Type == "Other Consulting Business" ||
                     Type == "Mentored Advisor" ||
-                    Type == "Director"
-                    )
+                    Type == "Director" )
                 {
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new AdvisorUnit(User, Type, OrganisationTypeName, collection));
@@ -469,11 +473,15 @@ namespace DealEngine.Services.Impl
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new EBaristerUnit(User, Type, OrganisationTypeName, collection));
                 }
-                if (Type == "Barrister" 
-                   )
+                if (Type == "Barrister" )
                 {
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new BarristerUnit(User, Type, OrganisationTypeName, collection));
+                }
+                if (Type == "MREDirector" )
+                {
+                    OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
+                    OrganisationalUnits.Add(new RealEstateDirectorUnit(User, Type, OrganisationTypeName, collection));
                 }
             }
 

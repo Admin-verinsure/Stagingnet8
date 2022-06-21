@@ -365,6 +365,25 @@ namespace DealEngine.Domain.Entities
 
 
     }
+
+
+
+
+
+    public class RealEstateRunOffUnit : OrganisationalUnit
+    {
+        public RealEstateRunOffUnit() { }
+       
+        [Display(Name = "EffectiveDate")]
+        public virtual string EffectiveDate { get; set; }
+
+
+        [Display(Name = "Name")]
+        public virtual string Name { get; set; }
+
+
+
+    }
 }
 
 
