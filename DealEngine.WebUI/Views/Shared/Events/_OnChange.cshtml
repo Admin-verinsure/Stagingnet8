@@ -510,8 +510,7 @@
             Value == "Barrister"||
             Value == "IEntity" ||
             Value == "ABusiness" ||
-            Value == "MREDirector" ||
-            Value == "Run Off") {
+            Value == "MREDirector" ) {
             //readonly Organisation Type personal
             document.getElementById("OwnerFap").hidden = true;
 
@@ -546,32 +545,32 @@
                 ContractorOnChange();
             }
 
-            if (Value == "Run Off") {
-                debugger;
-                var RunOffUnit = document.getElementById("RunOffUnit");
-                if (RunOffUnit != null) {
-                    document.getElementById("RunOffUnit").hidden = false;
-                    var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
-                    TradingName.addAttribute("required");
-                }
-                var Email = document.getElementById("User.Email");
-                if (Email != null) {
-                    document.getElementById("User.Email").hidden = true;
-                    Email.removeAttribute("required");
-                }
-            } else {
-                var RunOffUnit = document.getElementById("RunOffUnit");
-                if (RunOffUnit != null) {
-                    document.getElementById("RunOffUnit").hidden = true;
-                    var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
-                    TradingName.removeAttribute("required");
-                }
-                var Email = document.getElementById("User.Email");
-                if (Email != null) {
-                    document.getElementById("User.Email").hidden = false;
-                //    Email.addAttribute("required");
-                }
-            }
+            //if (Value == "Run Off") {
+            //    debugger;
+            //    var RunOffUnit = document.getElementById("RunOffUnit");
+            //    if (RunOffUnit != null) {
+            //        document.getElementById("RunOffUnit").hidden = false;
+            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+            //        //TradingName.addAttribute("required");
+            //    }
+            //    var Email = document.getElementById("EmailDiv");
+            //    if (Email != null) {
+            //        document.getElementById("EmailDiv").hidden = true;
+            //        Email.removeAttribute("required");
+            //    }
+            //} else {
+            //    var RunOffUnit = document.getElementById("RunOffUnit");
+            //    if (RunOffUnit != null) {
+            //        document.getElementById("RunOffUnit").hidden = true;
+            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+            //        TradingName.removeAttribute("required");
+            //    }
+            //    var Email = document.getElementById("EmailDiv");
+            //    if (Email != null) {
+            //        document.getElementById("EmailDiv").hidden = false;
+            //    //    Email.addAttribute("required");
+            //    }
+            //}
 
 
             for (var i = 0; i < List.options.length; i++) {
@@ -624,15 +623,31 @@
                 }
             }
 
-            if (Value != "Run Off") {
-
+            if (Value == "Run Off") {
+                debugger;
+                var RunOffUnit = document.getElementById("RunOffUnit");
+                if (RunOffUnit != null) {
+                    document.getElementById("RunOffUnit").hidden = false;
+                    var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                    //TradingName.addAttribute("required");
+                }
+                //var Email = document.getElementById("EmailDiv");
+                //if (Email != null) {
+                //    document.getElementById("EmailDiv").hidden = true;
+                //    Email.removeAttribute("required");
+                //}
+            } else {
                 var RunOffUnit = document.getElementById("RunOffUnit");
                 if (RunOffUnit != null) {
                     document.getElementById("RunOffUnit").hidden = true;
                     var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
                     TradingName.removeAttribute("required");
                 }
-               
+                //var Email = document.getElementById("EmailDiv");
+                //if (Email != null) {
+                //    document.getElementById("EmailDiv").hidden = false;
+                //    //    Email.addAttribute("required");
+                //}
             }
 
 

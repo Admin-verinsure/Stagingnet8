@@ -267,7 +267,7 @@ public sealed class SecurityHeadersMiddleware
             #endregion
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-            context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            //context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
             context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
