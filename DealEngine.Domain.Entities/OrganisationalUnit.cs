@@ -351,7 +351,8 @@ namespace DealEngine.Domain.Entities
             : base(User, Name, Type, Collection)
         {
         }
-
+        //[Display(Name = "Name")]
+        //public virtual string Name { get; set; }
         [Display(Name = "Email")]
         public virtual string Email { get; set; }
         [Display(Name = "Qualification")]
@@ -373,13 +374,12 @@ namespace DealEngine.Domain.Entities
     public class RealEstateRunOffUnit : OrganisationalUnit
     {
         public RealEstateRunOffUnit() { }
-       
+        public RealEstateRunOffUnit(User User, string Name, string Type, IFormCollection Collection)
+             : base(User, Name, Type, Collection)
+        {
+        }
         [Display(Name = "EffectiveDate")]
         public virtual string EffectiveDate { get; set; }
-
-
-        [Display(Name = "Name")]
-        public virtual string Name { get; set; }
 
 
 

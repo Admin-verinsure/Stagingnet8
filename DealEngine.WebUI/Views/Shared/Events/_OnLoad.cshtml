@@ -197,7 +197,10 @@
                                 Unit = "JBaristerUnit";
                                 PopulateOrganisationalUnit(OutPut, Unit);
                             } else if (Value == "MREDirector") {
-                                Unit = "MREDirectorUnit";
+                                Unit = "RealEstateDirectorUnit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
+                            } else if (Value == "Run Off") {
+                                Unit = "RealEstateRunOffUnit";
                                 PopulateOrganisationalUnit(OutPut, Unit);
                             }else {
                                 if (Unit.length > 0) {
@@ -266,6 +269,11 @@
                     if (document.getElementById("Else") != null) { 
                      document.getElementById("Else").hidden = false;
                     }
+
+                    if (document.getElementById("EmailDiv") != null) {
+                        document.getElementById("EmailDiv").hidden = false;
+                    }
+
 
                     TradingNameOwnerOnLoad();
 

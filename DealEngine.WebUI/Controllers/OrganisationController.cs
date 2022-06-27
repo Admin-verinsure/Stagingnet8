@@ -334,6 +334,7 @@ namespace DealEngine.WebUI.Controllers
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             string OrganisationTypeName = collection["OrganisationViewModel.OrganisationType"].ToString();
             Organisation organisation = await _organisationService.GetOrganisation(OrganisationId);
+            
             try
             {
 

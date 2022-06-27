@@ -104,13 +104,13 @@ namespace DealEngine.WebUI
                 options.IncludeSubDomains = true;
                 options.Preload = true;
             });
-           
+
             var container = services.BuildServiceProvider();
 
             // Create an instance of the job factory
-          //  services.AddHostedService<JobSchedular>();
+            //  services.AddHostedService<JobSchedular>();
             services.AddSingleton<IJobFactory, JobFactory>();
-           
+
             services.AddScoped<IReportBuilderService, ReportBuilderService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
@@ -130,6 +130,8 @@ namespace DealEngine.WebUI
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<SecurityHeadersMiddleware>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -161,7 +163,6 @@ namespace DealEngine.WebUI
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();
-            app.UseMiddleware<SecurityHeadersMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
