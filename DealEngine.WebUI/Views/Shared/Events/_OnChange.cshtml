@@ -537,10 +537,7 @@
             }
 
 
-            if (Value == "MREDirector") {
-                MEDirectorOnChange();
-
-            }
+          
             if (Value == "Contractor") {
                 ContractorOnChange();
             }
@@ -597,7 +594,10 @@
             if (Value == "ABusiness") {
                 ABusinessOnChange();
             }
+            if (Value == "MREDirector") {
+                MEDirectorOnChange();
 
+            }
             List.disabled = true;
         } else {
             document.getElementById("Else").hidden = false;

@@ -351,8 +351,8 @@ namespace DealEngine.Domain.Entities
             : base(User, Name, Type, Collection)
         {
         }
-        [Display(Name = "Name")]
-        public virtual string Name { get; set; }
+        //[Display(Name = "Name")]
+        //public virtual string Name { get; set; }
         [Display(Name = "Email")]
         public virtual string Email { get; set; }
         [Display(Name = "Qualification")]

@@ -280,7 +280,7 @@
                 else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
                 {
 
-                    @Html.Hidden("MREDirectorUnit", Model.OrganisationViewModel.MREDirectorUnit.GetType().AssemblyQualifiedName, new { @id = "MREDirectorUnit" })
+                    @Html.Hidden("MREDirectorUnit", Model.OrganisationViewModel.RealEstateDirectorUnit.GetType().AssemblyQualifiedName, new { @id = "MREDirectorUnit" })
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/RealEstate_AddOrganisation", Model)
                 }
                 <div class="form-group">
