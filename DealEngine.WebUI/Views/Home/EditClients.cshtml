@@ -56,7 +56,8 @@
                                 @Html.DropDownListFor(m => m.ClientProgramme.Tier, Model.Tiers, new { @class = "form-select b", @id = "ClientProgramme.Tier", @required = "", @size = 1 })
                             </div>
                         }
-                        @if (Model.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                        @if (Model.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme" ||
+                           Model.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
                         {
                             <div class="form-group">
                                 <label class="label">EGlobal Client Branch Code</label><br />

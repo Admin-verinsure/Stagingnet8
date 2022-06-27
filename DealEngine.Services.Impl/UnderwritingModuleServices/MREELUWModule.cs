@@ -273,24 +273,34 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 DateTime inceptionDate = (product.DefaultInceptionDate > DateTime.MinValue) ? product.DefaultInceptionDate : DateTime.UtcNow;
                 DateTime expiryDate = (product.DefaultExpiryDate > DateTime.MinValue) ? product.DefaultExpiryDate : DateTime.UtcNow.AddYears(1);
 
-                //Inception date rule (turned on after implementing change, any remaining policy and new policy will use submission date as inception date)
-                if (informationSheet.IsRenewawl)
+                ////Inception date rule (turned on after implementing change, any remaining policy and new policy will use submission date as inception date)
+                //if (informationSheet.IsRenewawl)
+                //{
+                //    int renewalgraceperiodindays = 0;
+                //    renewalgraceperiodindays = programme.BaseProgramme.RenewGracePriodInDays;
+                //    if (DateTime.UtcNow > product.DefaultInceptionDate.AddDays(renewalgraceperiodindays))
+                //    {
+                //        inceptionDate = DateTime.UtcNow;
+                //    }
+                //}
+                //else
+                //{
+                //    int newalgraceperiodindays = 0;
+                //    newalgraceperiodindays = programme.BaseProgramme.NewGracePriodInDays;
+                //    if (DateTime.UtcNow > product.DefaultInceptionDate.AddDays(newalgraceperiodindays))
+                //    {
+                //        inceptionDate = DateTime.UtcNow;
+                //    }
+                //}
+
+                //inception date and expiry date from uis data
+                if (informationSheet.Answers.Where(sa => sa.ItemName == "GeneralViewModel.PolicyStartDate").Any())
                 {
-                    int renewalgraceperiodindays = 0;
-                    renewalgraceperiodindays = programme.BaseProgramme.RenewGracePriodInDays;
-                    if (DateTime.UtcNow > product.DefaultInceptionDate.AddDays(renewalgraceperiodindays))
-                    {
-                        inceptionDate = DateTime.UtcNow;
-                    }
+                    inceptionDate = Convert.ToDateTime(informationSheet.Answers.Where(sa => sa.ItemName == "GeneralViewModel.PolicyStartDate").First().Value);
                 }
-                else
+                if (informationSheet.Answers.Where(sa => sa.ItemName == "GeneralViewModel.PolicyEndDate").Any())
                 {
-                    int newalgraceperiodindays = 0;
-                    newalgraceperiodindays = programme.BaseProgramme.NewGracePriodInDays;
-                    if (DateTime.UtcNow > product.DefaultInceptionDate.AddDays(newalgraceperiodindays))
-                    {
-                        inceptionDate = DateTime.UtcNow;
-                    }
+                    expiryDate = Convert.ToDateTime(informationSheet.Answers.Where(sa => sa.ItemName == "GeneralViewModel.PolicyEndDate").First().Value).AddYears(1);
                 }
 
                 if (informationSheet.IsChange) //change agreement to keep the original inception date and expiry date
