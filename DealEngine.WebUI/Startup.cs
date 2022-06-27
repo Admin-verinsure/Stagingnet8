@@ -104,13 +104,13 @@ namespace DealEngine.WebUI
                 options.IncludeSubDomains = true;
                 options.Preload = true;
             });
-           
+
             var container = services.BuildServiceProvider();
 
             // Create an instance of the job factory
-          //  services.AddHostedService<JobSchedular>();
+            //  services.AddHostedService<JobSchedular>();
             services.AddSingleton<IJobFactory, JobFactory>();
-           
+
             services.AddScoped<IReportBuilderService, ReportBuilderService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
@@ -130,6 +130,8 @@ namespace DealEngine.WebUI
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<SecurityHeadersMiddleware>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -161,7 +163,6 @@ namespace DealEngine.WebUI
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();
-            app.UseMiddleware<SecurityHeadersMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -267,39 +268,39 @@ public sealed class SecurityHeadersMiddleware
             #endregion
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-            //context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
-           // context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
+            context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
             // https://content-security-policy.com/unsafe-inline/
-            //context.Response.Headers.Add("Content-Security-Policy", new StringValues(
-            //    "base-uri 'self';" +
-            //    "block-all-mixed-content;" +
-            //    "default-src 'self';" +
-            //    "frame-ancestors 'none';" +
-            //    "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
-            //    "img-src 'self' data: https:;" +
-            //    "script-src 'self' 'unsafe-inline';" +
-            //    "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
-            //    "upgrade-insecure-requests;"
+            context.Response.Headers.Add("Content-Security-Policy", new StringValues(
+                "base-uri 'self';" +
+                "block-all-mixed-content;" +
+                "default-src 'self';" +
+                "frame-ancestors 'none';" +
+                "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
+                "img-src 'self' data: https:;" +
+                "script-src 'self' 'unsafe-inline';" +
+                "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
+                "upgrade-insecure-requests;"
 
-            //#region Other Directives that can be used
-            ////"child-src 'none';" +
-            ////"connect-src 'self';" +
-            ////"object-src 'self';" +
-            ////"form-action 'self' ;" +
-            ////"frame-src 'none';" +
-            ////"manifest-src 'none';" +
-            ////"media-src 'none';" +
-            ////"sandbox allow-scripts allow-forms;" +
-            ////"script-src-elem 'self' 'unsafe-inline';" +
-            ////"style-src-attr 'self' 'unsafe-inline';" +
-            ////"style-src-elem 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com  ;" +
-            ////"worker-src 'self';"
-            //#endregion
+            #region Other Directives that can be used
+            //"child-src 'none';" +
+            //"connect-src 'self';" +
+            //"object-src 'self';" +
+            //"form-action 'self' ;" +
+            //"frame-src 'none';" +
+            //"manifest-src 'none';" +
+            //"media-src 'none';" +
+            //"sandbox allow-scripts allow-forms;" +
+            //"script-src-elem 'self' 'unsafe-inline';" +
+            //"style-src-attr 'self' 'unsafe-inline';" +
+            //"style-src-elem 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com  ;" +
+            //"worker-src 'self';"
+            #endregion
 
-            //));
+            ));
         }
         return _next(context);
     }
