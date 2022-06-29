@@ -367,7 +367,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
                 if (informationSheet.Answers.Where(sa => sa.ItemName == "GeneralViewModel.PolicyEndDate").Any())
                 {
-                    expiryDate = Convert.ToDateTime(informationSheet.Answers.Where(sa => sa.ItemName == "GeneralViewModel.PolicyEndDate").First().Value).AddYears(1);
+                    expiryDate = Convert.ToDateTime(informationSheet.Answers.Where(sa => sa.ItemName == "GeneralViewModel.PolicyEndDate").First().Value);
                 }
 
                 if (informationSheet.IsChange) //change agreement to keep the original inception date and expiry date
