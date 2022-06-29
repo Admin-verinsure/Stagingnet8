@@ -1484,12 +1484,14 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
                 {
                     if (eGlobalPolicyRiskConfig.RiskCode == risk.RiskCode)
                     {
-                        foreach (EGlobalSubAgent eGlobalSubAgent in eGlobalPolicyRiskConfig.SubAgents)
+                        if (eGlobalPolicyRiskConfig.SubAgents != null)
                         {
-                            subAgents.Add(eGlobalSubAgent.CalculateSubAgent(EGlobalPolicy.ClientProgramme.InformationSheet, risk));
+                            foreach (EGlobalSubAgent eGlobalSubAgent in eGlobalPolicyRiskConfig.SubAgents)
+                            {
+                                subAgents.Add(eGlobalSubAgent.CalculateSubAgent(EGlobalPolicy.ClientProgramme.InformationSheet, risk));
+                            }
                         }
                     }
-
                 }              
             }
             return subAgents;
