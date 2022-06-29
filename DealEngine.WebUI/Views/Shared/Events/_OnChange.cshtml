@@ -571,9 +571,19 @@
 
 
             for (var i = 0; i < List.options.length; i++) {
-                if (List.options[i].text == "Private") {
+                if (List.options[i].text == "Private" && Value != "MREDirector") {
                     List.options[i].selected = true;
                     document.getElementById("Private").hidden = false;
+
+
+                    var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+
+                    if (IsDirectorUnit != null) {
+                        document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                            el.style.display = 'none';
+                        });
+                    }
+
                 }
             }
 
@@ -613,13 +623,22 @@
                 }
             }
 
-            if (Value == "Other Subsidiary Company") {
+            if (Value == "Subsidiary Company organisation") {
+                debugger;
                 var NoTradingName = document.getElementById("NoTradingName");
                 if (NoTradingName != null) {
                     document.getElementById("TradingName").hidden = false;
                     var TradingName = document.getElementById("Organisation.TradingName");
                     TradingName.hidden = false;
                     TradingName.removeAttribute("required");
+                }
+
+                var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+
+                if (IsDirectorUnit != null) {
+                    document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                        el.style.display = 'none';
+                    });
                 }
             }
 
@@ -631,11 +650,14 @@
                     var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
                     //TradingName.addAttribute("required");
                 }
-                //var Email = document.getElementById("EmailDiv");
-                //if (Email != null) {
-                //    document.getElementById("EmailDiv").hidden = true;
-                //    Email.removeAttribute("required");
-                //}
+                var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+
+                if (IsDirectorUnit != null) {
+                    document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                        el.style.display = 'none';
+                    });
+                }
+
             } else {
                 var RunOffUnit = document.getElementById("RunOffUnit");
                 if (RunOffUnit != null) {
