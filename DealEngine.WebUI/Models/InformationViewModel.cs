@@ -39,7 +39,7 @@ namespace DealEngine.WebUI.Models
             ClientProgramme = clientInformationSheet.Programme;
             MLViewModel = new MLViewModel();
             BIViewModel = new BIViewModel(); //Business Information
-
+            RVViewModel = new RVViewModel();
         }
         public User User { get; set; }
         public OrganisationViewModel OrganisationViewModel { get; set; }
@@ -92,6 +92,7 @@ namespace DealEngine.WebUI.Models
         public GeneralViewModel GeneralViewModel { get; internal set; }
         public MLViewModel MLViewModel { get; internal set; }
         public BIViewModel BIViewModel { get; set; }
+        public RVViewModel RVViewModel { get; set; }
 
     }
 
@@ -1794,4 +1795,207 @@ namespace DealEngine.WebUI.Models
         public DateTime PolicyEndDate { get; set; }
 
     }
+
+    public class RVViewModel
+    {
+        public RVViewModel()
+        {
+            HasRegisteredNumber = GetSelectListOptions();
+            TypeOfCover = GetCoverOptions();
+            AreaOfOperation = GetAreaOptions();
+            ClaimsGrade = GetGradeOptions();
+            VehicleType = GetVehicleOptions();
+        }
+        [Display(Name = "Has Registered Number?")]
+        public IList<SelectListItem> HasRegisteredNumber { get; set; }
+        [Display(Name = "Type of cover:")]
+        public IList<SelectListItem> TypeOfCover { get; set; }
+
+        [Display(Name = "Area Of Operation:")]
+        public IList<SelectListItem> AreaOfOperation { get; set; }
+
+
+        [Display(Name = "Claims Grade:")]
+        public IList<SelectListItem> ClaimsGrade { get; set; }
+
+
+        [Display(Name = "Type Of Vehicle:")]
+        public IList<SelectListItem> VehicleType { get; set; }
+
+
+
+
+
+        [Display(Name = "Registration Number?")]
+        public string RegistrationNumber { get; set; }
+
+        [Display(Name = "Year:")]
+        public string Year { get; set; }
+        [Display(Name = "Make:")]
+        public string Make { get; set; }
+        [Display(Name = "Model:")]
+        public string Model { get; set; }
+
+        [Display(Name = "Estimated Market Value:")]
+        public string MarketValue { get; set; }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+        private IList<SelectListItem> GetCoverOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                { 
+                    Text = "Full Cover", Value = "FullCover" 
+                },
+                new SelectListItem
+                {
+                    Text = "Third party, fire and theft (TPFT)", Value = "TPFT"
+                },
+                new SelectListItem
+                {
+                     Text = "Third party only(TP)", Value = "TP"
+                }
+            };
+        }
+
+        private IList<SelectListItem> GetGradeOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "1", Value = "1"
+                },
+                new SelectListItem
+                {
+                    Text = "2", Value = "2"
+                },
+                new SelectListItem
+                {
+                     Text = "3", Value = "3"
+                },
+                new SelectListItem
+                {
+                     Text = "4", Value = "4"
+                }
+            };
+        }
+
+        private IList<SelectListItem> GetVehicleOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Light Vehicle", Value = "LightVehicle"
+                }
+            };
+        }
+
+
+        private IList<SelectListItem> GetAreaOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "NorthLand", Value = "NorthLand"
+                },
+                new SelectListItem
+                {
+                    Text = "Auckland", Value = "Auckland"
+                },
+                new SelectListItem
+                {
+                     Text = "Waikato", Value = "Waikato"
+                },
+                new SelectListItem
+                {
+                    Text = "Bay Of Plenty", Value = "Bay Of Plenty"
+                },
+                new SelectListItem
+                {
+                    Text = "Gisborne", Value = "Gisborne"
+                },
+                new SelectListItem
+                {
+                     Text = "Hawke's Bay", Value = "Hawke's Bay"
+                },
+                new SelectListItem
+                {
+                    Text = "Taranaki", Value = "Taranaki"
+                },
+                new SelectListItem
+                {
+                    Text = "Manawatu-Wanga", Value = "Manawatu-Wanga"
+                },
+                new SelectListItem
+                {
+                     Text = "Malborough", Value = "Malborough"
+                },
+                new SelectListItem
+                {
+                     Text = "Nelson-Tasman", Value = "Nelson-Tasman"
+                },
+                new SelectListItem
+                {
+                    Text = "West Coast", Value = "West Coast"
+                },
+                new SelectListItem
+                {
+                    Text = "Canterbury", Value = "Canterbury"
+                },
+                new SelectListItem
+                {
+                     Text = "Otago", Value = "Otago"
+                },
+                new SelectListItem
+                {
+                    Text = "Southland", Value = "Southland"
+                },
+                new SelectListItem
+                {
+                    Text = "Australia", Value = "Australia"
+                },
+                new SelectListItem
+                {
+                     Text = "South Pacific", Value = "South Pacific"
+                }
+            };
+        }
+    }
+
 }
