@@ -575,13 +575,23 @@
                     List.options[i].selected = true;
                     document.getElementById("Private").hidden = false;
 
-
                     var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
-
                     if (IsDirectorUnit != null) {
                         document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
                             el.style.display = 'none';
                         });
+                    }
+
+                    var Email = document.getElementById("EmailDiv");
+                    if (Email != null) {
+                      document.getElementById("EmailDiv").hidden = false;
+                    }
+
+                    var RunOffUnit = document.getElementById("RunOffUnit");
+                    if (RunOffUnit != null) {
+                        document.getElementById("RunOffUnit").hidden = true;
+                        var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                        effectivedate.removeAttribute("required");
                     }
 
                 }
@@ -640,6 +650,13 @@
                         el.style.display = 'none';
                     });
                 }
+
+                var Email = document.getElementById("EmailDiv");
+                if (Email != null) {
+                    document.getElementById("EmailDiv").hidden = true;
+                }
+
+
             }
 
             if (Value == "Run Off") {
@@ -647,7 +664,7 @@
                 var RunOffUnit = document.getElementById("RunOffUnit");
                 if (RunOffUnit != null) {
                     document.getElementById("RunOffUnit").hidden = false;
-                    var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                    //var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
                     //TradingName.addAttribute("required");
                 }
                 var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
@@ -658,18 +675,20 @@
                     });
                 }
 
+                var Email = document.getElementById("EmailDiv");
+                if (Email != null) {
+                    document.getElementById("EmailDiv").hidden = true;
+                }
+
+
             } else {
                 var RunOffUnit = document.getElementById("RunOffUnit");
                 if (RunOffUnit != null) {
                     document.getElementById("RunOffUnit").hidden = true;
-                    var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
-                    TradingName.removeAttribute("required");
+                    var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                    effectivedate.removeAttribute("required");
                 }
-                //var Email = document.getElementById("EmailDiv");
-                //if (Email != null) {
-                //    document.getElementById("EmailDiv").hidden = false;
-                //    //    Email.addAttribute("required");
-                //}
+               
             }
 
 
@@ -760,7 +779,17 @@
             });
         }
 
+        var Email = document.getElementById("EmailDiv");
+        if (Email != null) {
+            document.getElementById("EmailDiv").hidden = true;
+        }
 
+        var RunOffUnit = document.getElementById("RunOffUnit");
+        if (RunOffUnit != null) {
+            document.getElementById("RunOffUnit").hidden = true;
+            var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+            effectivedate.removeAttribute("required");
+        }
 
     }
 
