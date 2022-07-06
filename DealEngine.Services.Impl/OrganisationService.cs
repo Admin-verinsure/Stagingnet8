@@ -166,9 +166,13 @@ namespace DealEngine.Services.Impl
                 UnitName = collection["BarristerUnit"].ToString();
 
             }
-            else if (InsuranceAttribute == "MREDirector" || InsuranceAttribute == "Subsidiary Company organisation")
+            else if (InsuranceAttribute == "MREDirector")
             {
                 UnitName = collection["MREDirectorUnit"].ToString();
+
+            }else if (InsuranceAttribute == "Subsidiary Company organisation")
+            {
+                UnitName = collection["SubsidiaryUnit"].ToString();
 
             }
             else if ( InsuranceAttribute == "Run Off")

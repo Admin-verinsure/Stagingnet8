@@ -39,7 +39,7 @@ namespace DealEngine.WebUI.Models
             ClientProgramme = clientInformationSheet.Programme;
             MLViewModel = new MLViewModel();
             BIViewModel = new BIViewModel(); //Business Information
-            RVViewModel = new RVViewModel();
+            RVViewModel = new RVViewModel(clientInformationSheet, OrgUser);
         }
         public User User { get; set; }
         public OrganisationViewModel OrganisationViewModel { get; set; }
@@ -1798,14 +1798,23 @@ namespace DealEngine.WebUI.Models
 
     public class RVViewModel
     {
-        public RVViewModel()
+        public RVViewModel(ClientInformationSheet clientInformationSheet, User OrgUser)
         {
             HasRegisteredNumber = GetSelectListOptions();
             TypeOfCover = GetCoverOptions();
             AreaOfOperation = GetAreaOptions();
             ClaimsGrade = GetGradeOptions();
             VehicleType = GetVehicleOptions();
+            vehicles = new List<Domain.Entities.Vehicle>();
+
+            foreach (var vehicle in clientInformationSheet.Vehicles)
+            {
+                vehicles.Add(vehicle);
+            }
         }
+        //[JsonIgnore]
+        public IList<Domain.Entities.Vehicle> vehicles { get; set; }
+
         [Display(Name = "Has Registered Number?")]
         public IList<SelectListItem> HasRegisteredNumber { get; set; }
         [Display(Name = "Type of cover:")]
@@ -1822,10 +1831,7 @@ namespace DealEngine.WebUI.Models
         [Display(Name = "Type Of Vehicle:")]
         public IList<SelectListItem> VehicleType { get; set; }
 
-
-
-
-
+  
         [Display(Name = "Registration Number?")]
         public string RegistrationNumber { get; set; }
 

@@ -56,6 +56,7 @@ namespace DealEngine.WebUI.Controllers
         IBusinessContractService _businessContractService;
         IResearchHouseService _researchHouseService;
         IApplicationLoggingService _applicationLoggingService;
+        ISerializerationService _serialiserService;
         ILogger<ServicesController> _logger;
         IMapper _mapper;
         Infrastructure.Ldap.Interfaces.ILdapService _ldapService;
@@ -92,6 +93,7 @@ namespace DealEngine.WebUI.Controllers
             IEmailService emailService,
             IUnitOfWork unitOfWork,
             IReferenceService referenceService,
+            ISerializerationService serialiserService,
             IResearchHouseService researchHouseService
             )
 
@@ -127,6 +129,8 @@ namespace DealEngine.WebUI.Controllers
             _businessContractService = businessContractService;
             _researchHouseService = researchHouseService;
             _vehicleRepository = vehicleRepository;
+            _serialiserService = serialiserService;
+
         }
 
         #region Vehicle
@@ -232,6 +236,8 @@ namespace DealEngine.WebUI.Controllers
         {
             VehicleViewModel model = new VehicleViewModel();
             User user = null;
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+
             try
             {
                 user = await CurrentUser();
@@ -253,7 +259,12 @@ namespace DealEngine.WebUI.Controllers
                     model.EngineNumber = vehicle.EngineNumber;
                     model.GrossVehicleMass = vehicle.GrossVehicleMass.ToString();
                 }
-                return Json(model);
+
+                JsonObjects.Add("Vehicle", model);
+                var jsonObj = await _serialiserService.GetSerializedObject(JsonObjects);
+
+
+                return Json(jsonObj);
             }
             catch (Exception ex)
             {

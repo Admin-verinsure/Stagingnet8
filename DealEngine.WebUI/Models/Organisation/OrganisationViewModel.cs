@@ -129,6 +129,7 @@ namespace DealEngine.WebUI.Models
 
                 if (Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
                 {
+                    SubsidiaryUnit = new SubsidiaryUnit(null, null, null, null);
                     RealEstateRunOffUnit = new RealEstateRunOffUnit(null, null, null, null);
                     RealEstateDirectorUnit = new RealEstateDirectorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
                     InsuranceAttributes = GetMarshRE();
@@ -1010,6 +1011,8 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasBarristerPrincipalOptions { get; set; }
         public RealEstateDirectorUnit RealEstateDirectorUnit { get; set; }
         public RealEstateRunOffUnit RealEstateRunOffUnit { get; set; }
+        public SubsidiaryUnit SubsidiaryUnit { get; set; }
+
     }
 }
 

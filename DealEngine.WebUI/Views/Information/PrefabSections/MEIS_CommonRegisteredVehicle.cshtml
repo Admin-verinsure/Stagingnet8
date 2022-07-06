@@ -1,0 +1,133 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<div id="AddOrganisation">
+    <ul class="nav nav-tabs" role="tablist">
+
+        <li class="nav-item" id="tab1">
+            <a class="nav-link active" href="#RegisteredTab1" data-toggle="tab" onclick="ResetForm('RegisteredTab4','RegisteredTab3', 'Vehicle', 'RegisteredVehicleSubmitBtn', 'RegisteredVehicleClearButton')"> List All </a>
+        </li>
+        <li class="nav-item" id="tab2">
+            <a class="nav-link" href="#RegisteredTab2" data-toggle="tab"> Search </a>
+        </li>
+        <li class="nav-item" id="tab3">
+            <a class="nav-link" href="#RegisteredTab3" data-toggle="tab"> Edit </a>
+        </li>
+        <li class="nav-item" id="tab4">
+            <a class="nav-link" href="#RegisteredTab4" data-toggle="tab" onclick="ResetForm('RegisteredTab4','RegisteredTab3', 'Vehicle', 'RegisteredVehicleSubmitBtn', 'RegisteredVehicleClearButton')"> Add </a>
+        </li>
+        <li class="nav-item" id="tab5">
+            <a class="nav-link" href="#RegisteredTab5" data-toggle="tab"> Removed </a>
+        </li>
+
+    </ul>
+
+    <div class="tab-content">
+
+        <div id="RegisteredTab1" class="tab-pane active" role="tabpanel">
+
+            <table id="tblOrganisation"
+                   class="table table-striped" width="100%"
+                   data-show-columns="true"
+                   data-pagination="true"
+                   data-search="true"
+                   data-show-jump-to="true">
+
+                <thead>
+                    <tr>
+                        <th data-field="editButton" data-sortable="false"></th>
+                        <th data-field="RegisteredMotorYear" data-sortable="true">Year</th>
+                        <th data-field="RegisteredMotorRegistration" data-sortable="true">Registration</th>
+                        <th data-field="RegisteredMotorMake" data-sortable="true">Make</th>
+                        <th data-field="RegisteredMotorModel" data-sortable="true">Model</th>
+                        <th data-field="RegisteredMotorSum" data-sortable="true">Sum Insured</th>
+                        <th data-field="deleteButton" data-sortable="false"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var vehicle in Model.RVViewModel.vehicles.Where(o => o.DateDeleted == null).ToList())
+                    {
+                        <tr>
+                            <td>
+                                <button class="btn btn-success btn-sm" onclick="OnClick('', 'Vehicle', '@vehicle.Id', '@Model.ClientInformationSheet.Id')"><i class="fa fa-edit"></i> Edit</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @vehicle.Year
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @vehicle.Registration
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @vehicle.Make
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @vehicle.Model
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                @vehicle.GroupSumInsured
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button onclick="RemoveOrganisation('@vehicle.Id', 'Insured Details / Named Parties')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+                            </td>
+                        </tr>
+
+                    }
+
+                </tbody>
+
+
+
+
+
+            </table>
+
+        </div>
+
+        <div id="RegisteredTab2" class="tab-pane" role="tabpanel">
+            <div class="form-group row">
+                <section class="col col-6">
+                    <label class="label col-12">Enter plate number</label>
+                    <label class="input col-12">
+                        @Html.TextBoxFor(m => m.RVViewModel.RegistrationNumber, new { @class = "form-control", @id = "RegistrationNumber", onchange = "OnChange(this.id, this.name)" })
+                    </label>
+                    <button class="btn btn-success update" type="submit" id="RegisteredVehicleSearchBtn" onclick="OnClick('', 'RegisteredVehicleSearch','RegistrationNumber','@Model.ClientInformationSheet.Id')">Search</button>
+                </section>
+
+            </div>
+        </div>
+        <div id="RegisteredTab3" class="tab-pane" role="tabpanel">
+            <div class="form-group">
+                <label>Search Registration number on Search Panel and Click Search Button</label>
+            </div>
+        </div>
+
+        <div id="RegisteredTab4" class="tab-pane" role="tabpanel">
+            @using (Html.BeginForm("AddRegisteredVehicle", "Vehicle", FormMethod.Post, new { @id = "RVViewModel", @name = "RVViewModel" }))
+            {
+
+                <div class="form-group">
+                    <button class="btn btn-success update" type="submit" id="RegisteredVehicleSubmitBtn" onclick="OnOrganisationSubmit('RVViewModel', 'Registered Vehicle')">Add</button>
+                    <button class="btn btn-danger" id="RegisteredVehicleClearButton" onclick="ResetOrganisation('RVViewModel');location.reload();"> Clear</button>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

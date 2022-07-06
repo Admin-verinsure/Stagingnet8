@@ -1,0 +1,194 @@
+﻿@*@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="RVViewModel" class="is-valid" data-accordianId="Registered Vehicle">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Does your vehicle have a Registration Number?
+                </label>
+            </div>
+            <div class="col-3">
+
+                <select id="hasRegisteredNumber" name="RVViewModel.HasRegisteredNumber" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.RVViewModel.HasRegisteredNumber)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group" id="RVViewModel.HasRegisteredNumber" hidden>
+        <div class="row">
+            <div class="col-9">
+                <label for="registrationnumber" class="label required">
+                    Registration Number:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextAreaFor(m => m.RVViewModel.RegistrationNumber, new { @class = "form-control", @id = "RegistrationNumber", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="year" class="label">
+                    Year:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextAreaFor(m => m.RVViewModel.Year, new { @class = "form-control", @id = "Year", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="make" class="label">
+                    Make:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextAreaFor(m => m.RVViewModel.Make, new { @class = "form-control", @id = "Make", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="model" class="label">
+                    Model:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextAreaFor(m => m.RVViewModel.Model, new { @class = "form-control", @id = "Model", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="marketvalue" class="label">
+                    Estimated Market Value:
+                </label>
+            </div>
+            <div class="col-3">
+                $ @Html.TextAreaFor(m => m.RVViewModel.MarketValue, new { @class = "form-control", @id = "MarketValue", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="typeofcover" class="label required">
+                    Type of cover:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="typeofcover" name="RVViewModel.TypeOfCover" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.RVViewModel.TypeOfCover)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="areaofoperation" class="label required">
+                    Type of cover:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="areaofoperation" name="RVViewModel.AreaOfOperation" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.RVViewModel.AreaOfOperation)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="claimsgrade" class="label required">
+                    Claims Grade:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="claimsgrade" name="RVViewModel.AreaOfOperation" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.RVViewModel.AreaOfOperation)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="vehicletype" class="label required">
+                    Type Of Vehicle:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="vehicletype" name="RVViewModel.AreaOfOperation" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.RVViewModel.AreaOfOperation)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasdirectagencies" class="label required">
+                    With regard to fire & general insurance, do you hold direct agencies with the likes of Vero, Lumley, QBE for the placement of this business or do you refer this business through another broker?
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextAreaFor(m => m.PIViewModel.hasdirectagencies, new { @class = "form-control", @id = "hasdirectagencies", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+            </div>
+        </div>
+    </div>
+
+
+</form>*@
