@@ -19,6 +19,29 @@
             });
             EditOrganisation();
         }
+
+        if (Type == "RegisteredVehicleSearch") {
+            var plate = $('#'+Id).val();
+            var postData = {
+                'registration': plate
+            };
+            $.ajax({
+                 url: '@Url.Action("SearchVehicle", "Services")',
+                type: "POST",
+                data: postData,
+                success: function (Data) {
+                    try {
+                        var OutPut = JSON.parse(Data);
+                        CloneForm("RegisteredTab4", "RegisteredTab3", "RegisteredVehicleSubmitBtn", "RegisteredVehicleClearButton");
+                        PopulateVehicleView(Method, OutPut);
+                    } catch (e) {
+                        debugger;
+                    }
+                }, error: function (request, error) {
+                    debugger;
+                }
+            });
+        }
     }
 
     function UnhideEdit(tabId) {
@@ -132,19 +155,19 @@
         document.getElementById(Form).reset();
         //AddSelectedBoatUse
         var AddSelectedBoatUse = document.getElementById('AddSelectedBoatUse');
-        AddSelectedBoatUse.selectedIndex = 0;  
+        AddSelectedBoatUse.selectedIndex = 0;
 
         var AddSelectedInterestedParty = document.getElementById('AddSelectedInterestedParty');
-        AddSelectedInterestedParty.selectedIndex = 0;  
+        AddSelectedInterestedParty.selectedIndex = 0;
 
         var AddBoatIdClear = document.getElementById('AddBoatId');
-        AddBoatIdClear.removeAttribute("value");  
-        
+        AddBoatIdClear.removeAttribute("value");
+
         $('#AddSelectedInterestedParty').val('');
         $('#AddSelectedInterestedParty').trigger('chosen:updated');
 
         //AddBoatLandLocationSection, AddBoatLandLocation
-       
+
         var AddBoatLandLocationSection1 = document.getElementById("AddBoatLandLocationSection");
         AddBoatLandLocationSection1.classList.remove("hidden");
         var AddBoatLandLocation1 = document.getElementById("AddBoatLandLocation");
@@ -168,7 +191,7 @@
         AddBoatTrailer1.classList.remove("required");
         document.getElementById("AddBoatTrailer").required = false;
 
-        
+
         //var AddHullConstructOtherSection1 = document.getElementById("AddHullConstructOtherSection");
         //AddHullConstructOtherSection1.classList.add("hidden");
         $("#AddHullConstructOtherSection").addClass("hidden");
@@ -177,7 +200,7 @@
         AddOtherConstructionType1.classList.remove("required");
         document.getElementById("AddOtherConstructionType").required = false;
 
-     
+
         //var AddHullConfigurationOtherSection1 = document.getElementById("AddHullConfigurationOtherSection");
         //AddHullConfigurationOtherSection1.classList.add("hidden");
         $("#AddHullConfigurationOtherSection").addClass("hidden");
@@ -204,7 +227,7 @@
         var AddMooredType1 = document.getElementById("AddMooredType");
         AddMooredType1.classList.remove("required");
         document.getElementById("AddMooredType").required = false;
-        
+
         //$('#AddRegistrationSection').hide('2000');
         var AddRegistrationSection1 = document.getElementById('AddRegistrationSection');
         AddRegistrationSection1.style.display = 'none';
@@ -394,7 +417,7 @@
         }
 
         debugger;
-        if (AddTabId.contains("Organisation"))
+        //if (AddTabId.contains("Organisation"))
         ResetOrganisation();
     }
 
@@ -441,7 +464,7 @@
 
             //var sumInsured = document.getElementById("AddMaxSumInsured").value;
             //var sumInsured = sumInsured.replace(/[^0-9\.-]+/g, "");
-        
+
             $.ajax({
                 url: '@Url.Action("AddBoat", "Services")',
                 type: "POST",

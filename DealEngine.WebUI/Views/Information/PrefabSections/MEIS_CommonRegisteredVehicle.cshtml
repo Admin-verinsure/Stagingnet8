@@ -2,6 +2,7 @@
 
 <div id="AddOrganisation">
     <ul class="nav nav-tabs" role="tablist">
+
         <li class="nav-item" id="tab1">
             <a class="nav-link active" href="#RegisteredTab1" data-toggle="tab" onclick="ResetForm('RegisteredTab4','RegisteredTab3', 'Vehicle', 'RegisteredVehicleSubmitBtn', 'RegisteredVehicleClearButton')"> List All </a>
         </li>
@@ -17,6 +18,7 @@
         <li class="nav-item" id="tab5">
             <a class="nav-link" href="#RegisteredTab5" data-toggle="tab"> Removed </a>
         </li>
+
     </ul>
 
     <div class="tab-content">
@@ -104,7 +106,7 @@
                     <label class="input col-12">
                         @Html.TextBoxFor(m => m.RVViewModel.RegistrationNumber, new { @class = "form-control", @id = "RegistrationNumber", onchange = "OnChange(this.id, this.name)" })
                     </label>
-                    <button class="btn btn-success update" type="submit" id="RegisteredVehicleSearchBtn" onclick="OnOrganisationSubmit('RVViewModel', 'Registered Vehicle')">Search</button>
+                    <button class="btn btn-success update" type="submit" id="RegisteredVehicleSearchBtn" onclick="OnClick('', 'RegisteredVehicleSearch','RegistrationNumber','@Model.ClientInformationSheet.Id')">Search</button>
                 </section>
 
             </div>

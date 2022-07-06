@@ -384,6 +384,17 @@ namespace DealEngine.Domain.Entities
 
 
     }
+
+    public class SubsidiaryUnit : OrganisationalUnit
+    {
+        public SubsidiaryUnit() { }
+        public SubsidiaryUnit(User User, string Name, string Type, IFormCollection Collection)
+             : base(User, Name, Type, Collection)
+        {
+        }
+       
+
+    }
 }
 
 
