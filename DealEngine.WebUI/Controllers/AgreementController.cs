@@ -4946,6 +4946,7 @@ namespace DealEngine.WebUI.Controllers
                     model.InformationSheetId = programme.InformationSheet.Id;
                     model.ProgrammeName = programme.BaseProgramme.Name;
                     model.ProgrammeNamedPartyName = programme.BaseProgramme.NamedPartyUnitName;
+                    model.ProgEnableBrokerUW = programme.BaseProgramme.ProgEnableBrokerUW;
                     model.UsesEglobal = programme.BaseProgramme.UsesEGlobal;
                     model.HasCCPayment = programme.BaseProgramme.HasCCPayment;
                     model.HasInvoicePayment = programme.BaseProgramme.HasInvoicePayment;

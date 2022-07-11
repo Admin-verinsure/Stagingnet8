@@ -103,6 +103,8 @@ namespace DealEngine.Domain.Entities
         public virtual IList<ProgrammeReports> ProgrammeReports { get; set; }
         public virtual bool ProgDisableClaimInsHistoryPanel { get; set; }
         public virtual bool ProgEnableBrokerUW { get; set; }
+        public virtual bool ProgMultiPolicyMode { get; set; }
+
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)

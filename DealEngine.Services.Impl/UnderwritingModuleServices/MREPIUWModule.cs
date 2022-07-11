@@ -255,6 +255,12 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 agreement.RetroactiveDate = strretrodate;
             }
 
+            if (agreement.ClientInformationSheet.Programme.BaseProgramme.ProgMultiPolicyMode)
+            {
+                agreement.ClientInformationSheet.Programme.ClientProgrammeInceptionDate = agreement.InceptionDate;
+                agreement.ClientInformationSheet.Programme.ClientProgrammeExpiryDate = agreement.ExpiryDate;
+            }
+
             //Create agreement audit log
             string auditLogDetail = "MRE PI UW created/modified";
             AuditLog auditLog = new AuditLog(underwritingUser, informationSheet, agreement, auditLogDetail);

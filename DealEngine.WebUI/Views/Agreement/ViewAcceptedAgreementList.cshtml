@@ -44,7 +44,7 @@
                 {
                     <div class="form-group">
                         <ul class="nav nav-pills" id="pills-tab" role="tablist">
-                            @if (item.CurrentUser.PrimaryOrganisation.IsBroker || item.CurrentUser.PrimaryOrganisation.IsTC)
+                            @if ((item.CurrentUser.PrimaryOrganisation.IsBroker && !item.ProgEnableBrokerUW) || item.CurrentUser.PrimaryOrganisation.IsTC)
                             {
                                 <li class="nav-item">
                                     <a href='@Url.Action("PartialViewProgramme", "Information",new { id = @item.ClientProgrammeId, viewlist="ListView"})' class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Information for all Products </a>
@@ -192,7 +192,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                     </li>
                                 }
                             }
-                            else if (item.CurrentUser.PrimaryOrganisation.IsInsurer)
+                            else if (item.CurrentUser.PrimaryOrganisation.IsInsurer || (item.CurrentUser.PrimaryOrganisation.IsBroker && item.ProgEnableBrokerUW))
                             {
                                 <li class="nav-item">
                                     <a href="~/Information/ViewProgrammeDetails/@item.ClientProgrammeId" class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Information for all Products </a>
