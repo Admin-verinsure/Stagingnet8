@@ -2924,6 +2924,128 @@ namespace DealEngine.Services.Impl
                 }
             }
         }
+
+        public async Task ImportMEISOwners(User CreatedUser)
+        {
+            var currentUser = CreatedUser;
+            StreamReader reader;
+            User user = null;
+            Organisation organisation = null;
+            bool readFirstLine = false;
+            string line;
+            string email;
+            string userName;
+            string type = "";
+            string Name = "";
+            Guid.TryParse("b69c2fe4-bb08-4fb3-810b-58fd4a3149cc", out Guid ProgrammeId);
+            //addresses need to be on one line            
+            var fileName = WorkingDirectory + "MREPolicy.csv";
+
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+                    //if has a title row
+                    if (!readFirstLine)
+                    {
+                        line = reader.ReadLine();
+                        readFirstLine = true;
+                    }
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    try
+                    {
+                        userName = parts[3];
+                        email = parts[6];
+
+
+                        try
+                        {
+                            user = await _userService.GetUser(userName);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Random random = new Random();
+                            int randomNumber = random.Next(10, 99);
+                            userName = userName + randomNumber.ToString();
+                            user = new User(currentUser, Guid.NewGuid(), userName);
+                            user.FirstName = parts[4];
+                            user.LastName = parts[5];
+                            user.FullName = parts[4] + " " + parts[5];
+                            user.Email = email;
+
+                        }
+
+
+                        type = "Corporation – Limited liability";
+                        Name = user.FullName;
+                        OrganisationType ownerType = new OrganisationType(type);
+                        InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, type);
+                        OrganisationalUnit ownerUnit = new OrganisationalUnit(currentUser, type, "Head Office", null);
+                        Organisation Owner = new Organisation(currentUser, Guid.NewGuid())
+                        {
+                            OrganisationType = ownerType,
+                            Email = user.Email,
+                            Name = Name,
+                        };
+                        Owner.OrganisationalUnits.Add(ownerUnit);
+                        Owner.InsuranceAttributes.Add(ownerAttribute);
+                        user.Organisations.Add(Owner);
+
+                        OrganisationType PersonnelType = new OrganisationType("Person - Individual");
+                        InsuranceAttribute PersonalAttribute = new InsuranceAttribute(currentUser, "Personnel");
+                        OrganisationalUnit defaultUnit = new OrganisationalUnit(currentUser, "Person - Individual", "Person - Individual", null);
+                        //PersonnelUnit PersonnelUnit = new PersonnelUnit(currentUser, "PersonnelUnit", "Person - Individual", null);
+                        //{
+                        //    IsPrincipalBarrister = true,
+                        //    Initial = parts[9],
+                        //    honorific = parts[10]
+                        //};
+                        Organisation Personnelorganisation = new Organisation(currentUser, Guid.NewGuid())
+                        {
+                            OrganisationType = PersonnelType,
+                            Email = user.Email,
+                            Name = user.FullName
+                        };
+                        Personnelorganisation.InsuranceAttributes.Add(PersonalAttribute);
+                        Personnelorganisation.OrganisationalUnits.Add(defaultUnit);
+                        //PersonnelUnit..Add(barristerAttribute);
+                        //PersonnelUnit.OrganisationalUnits.Add(defaultUnit);
+                        //PersonnelUnit.OrganisationalUnits.Add(BarristerUnit);
+                        user.Organisations.Add(Personnelorganisation);
+
+                        user.SetPrimaryOrganisation(Owner);
+
+                        await _userService.ApplicationCreateUser(user);
+
+                        var programme = await _programmeService.GetProgramme(ProgrammeId);
+                        var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, user, Owner);
+
+                        var reference = await _referenceService.GetLatestReferenceId();
+                        var sheet = await _clientInformationService.IssueInformationFor(user, Owner, clientProgramme, reference);
+                        await _referenceService.CreateClientInformationReference(sheet);
+                        clientProgramme.BrokerContactUser = programme.BrokerContactUser;
+                        clientProgramme.EGlobalClientNumber = parts[9];
+                        clientProgramme.EGlobalExternalContactNumber = parts[11];
+                        clientProgramme.EGlobalBranchCode = parts[8];
+                        clientProgramme.ClientProgrammeMembershipNumber = parts[0];
+                        sheet.IsRenewawl = true;
+                        sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(user, sheet, null, programme.Name + "UIS issue Process Completed"));
+                        sheet.Organisation.Add(Personnelorganisation);
+                        await _programmeService.Update(clientProgramme);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+
+                }
+            }
+        }
+
+
+
         public async Task ImportNZPIImportOwners(User CreatedUser)
         {
             var currentUser = CreatedUser;

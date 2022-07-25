@@ -95,12 +95,24 @@ namespace DealEngine.Domain.Entities
 			get;
 			set;
 		}
-
+		//MeiS
+		public virtual string AreaOperation
+		{
+			get;
+			set;
+		}
 		public virtual int VehicleType {
 			get;
 			set;
 		}
-
+		/// <summary>
+		/// meis
+		/// </summary>
+		public virtual string TypeOfVehicle
+		{
+			get;
+			set;
+		}
 		public virtual int UseType {
 			get;
 			set;
@@ -166,6 +178,14 @@ namespace DealEngine.Domain.Entities
 			set;
 		}
 
+		public virtual string TypeOfCover
+		{
+			get;
+			set;
+		}
+
+
+
 		#region Unused
 		public virtual bool DetailsUnknown {
 			get;
@@ -197,11 +217,16 @@ namespace DealEngine.Domain.Entities
 			protected set;
 		}
 
-		public virtual string TypeOfCover {
+		//public virtual string TypeOfCover {
+		//	get;
+		//	protected set;
+		//}
+		
+		public virtual string hasdirectagencies
+		{
 			get;
 			protected set;
 		}
-
 		public virtual bool LossOfUseRentalCosts {
 			get;
 			protected set;

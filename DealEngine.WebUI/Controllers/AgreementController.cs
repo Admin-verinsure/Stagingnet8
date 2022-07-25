@@ -1578,6 +1578,7 @@ namespace DealEngine.WebUI.Controllers
                         TermType = subtypeterm.SubTermType,
                         TermLimit = subtypeterm.TermLimit,
                         Excess = Convert.ToInt32(subtypeterm.Excess),
+                        AggregateLimit = Convert.ToInt32(subtypeterm.AggregateLimit),
                         Premium = subtypeterm.Premium,
                         BasePremium = subtypeterm.BasePremium,
                         PremiumDiffer = subtypeterm.PremiumDiffer
@@ -1722,6 +1723,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         term.Premium = clientAgreementSubTerm.Premium;
                         term.TermLimit = clientAgreementSubTerm.TermLimit;
+                        term.AggregateLimit = clientAgreementSubTerm.AggregateLimit;
                         term.Excess = clientAgreementSubTerm.Excess;
                         term.PremiumDiffer = clientAgreementSubTerm.PremiumDiffer;
                         await uow.Commit();
@@ -1733,7 +1735,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         decimal brokeragerate = agreement.Product.DefaultBrokerage;
                         decimal Brokerage = clientAgreementSubTerm.Premium * agreement.Product.DefaultBrokerage / 100;
-                        _clientAgreementTermService.AddAgreementTerm(user, clientAgreementSubTerm.TermLimit, clientAgreementSubTerm.Excess, clientAgreementSubTerm.Premium, 0.0m, brokeragerate, Brokerage, agreement, clientAgreementSubTerm.TermType);
+                        _clientAgreementTermService.AddAgreementTerm(user, clientAgreementSubTerm.TermLimit,clientAgreementSubTerm.AggregateLimit, clientAgreementSubTerm.Excess, clientAgreementSubTerm.Premium, 0.0m, brokeragerate, Brokerage, agreement, clientAgreementSubTerm.TermType);
                         await uow.Commit();
                     }
                 }

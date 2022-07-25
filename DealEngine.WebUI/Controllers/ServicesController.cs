@@ -260,7 +260,7 @@ namespace DealEngine.WebUI.Controllers
                     model.GrossVehicleMass = vehicle.GrossVehicleMass.ToString();
                 }
 
-                JsonObjects.Add("Vehicle", model);
+                JsonObjects.Add("RVViewModel", model);
                 var jsonObj = await _serialiserService.GetSerializedObject(JsonObjects);
 
 
@@ -271,6 +271,26 @@ namespace DealEngine.WebUI.Controllers
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetVehicleById(string VehicleId, string sheetId)
+        {
+            ClientInformationSheet sheet = await _clientInformationService.GetInformation(Guid.Parse(sheetId));
+            Vehicle vehicle = sheet.Vehicles.FirstOrDefault(v => v.Id == Guid.Parse(VehicleId));
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+            // have a repo vehicle? Return it
+            if (vehicle != null)
+            {
+                JsonObjects.Add("RVViewModel", vehicle);
+                var jsonObj = await _serialiserService.GetSerializedObject(JsonObjects);
+                return Json(jsonObj);
+
+            }
+
+
+            throw new Exception("vehicle with id [" + VehicleId + "] does not exist in the system");
+            
+            return null;
         }
 
         [HttpPost]
@@ -318,6 +338,51 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> AddMeisRegisteredVehicle(IFormCollection collection)
+        {
+            User user = null;
+            try
+            {
+                Guid.TryParse(collection["RVViewModel.Id"], out Guid VehicleId);
+                Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid Id);
+                ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
+                var jsonVehicle = (Vehicle)await _serialiserService.GetDeserializedObject(typeof(Vehicle), collection);
+                Vehicle vehicle = await _vehicleService.GetVehicleById(VehicleId);
+                user = await CurrentUser();
+                string Registration = collection["RVViewModel.RegistrationNumber"].ToString();
+                string Make = collection["RVViewModel.Make"].ToString();
+                string VehicleModel = collection["RVViewModel.Model"].ToString();
+                string Year = collection["RVViewModel.Year"].ToString();
+
+                string MarketValue = collection["RVViewModel.MarketValue"].ToString();
+                string TypeOfCover = collection["RVViewModel.TypeOfCover"].ToString();
+                string AreaOfOperation = collection["RVViewModel.AreaOfOperation"].ToString();
+
+                string hasdirectagencies = collection["RVViewModel.hasdirectagencies"].ToString();
+                if (vehicle == null)
+                {
+                    vehicle =  _vehicleService.CreateNewVehicle(user, Registration, Make, VehicleModel);
+                }
+
+                vehicle = await _vehicleService.PostVehicle(collection, vehicle);
+
+                if (!Sheet.Vehicles.Contains(vehicle))
+                    Sheet.Vehicles.Add(vehicle);
+
+                await _vehicleRepository.UpdateAsync(vehicle);
+                return Redirect("../Information/EditInformation?Id=" + Sheet.Programme.Id.ToString());
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+
+        }
+
+
+
+        [HttpPost]
         public async Task<IActionResult> GetVehicle(Guid answerSheetId, Guid vehicleId)
         {
             VehicleViewModel model = new VehicleViewModel();
@@ -342,6 +407,8 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetVehicles(Guid informationId, bool validated, bool removed, bool transfered, bool _search, string nd, int rows, int page, string sidx, string sord,

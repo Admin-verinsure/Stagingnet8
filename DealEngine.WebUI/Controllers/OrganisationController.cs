@@ -329,7 +329,7 @@ namespace DealEngine.WebUI.Controllers
             Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid Id);
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
 
-            var jsonOrganisation = (Organisation)await _serialiserService.GetDeserializedObject(typeof(Organisation), collection);
+            var jsonOrganisation = (Organisation)await _serialiserService.GetDeserializedObject(typeof(Organisation), collection); 
             var jsonUser = (User)await _serialiserService.GetDeserializedObject(typeof(User), collection);
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             string OrganisationTypeName = collection["OrganisationViewModel.OrganisationType"].ToString();
