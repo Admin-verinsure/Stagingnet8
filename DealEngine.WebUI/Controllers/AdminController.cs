@@ -204,6 +204,26 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ImportMEISOwners()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportMEISOwners(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> FANZImportOwners()
         {

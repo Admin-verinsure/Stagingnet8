@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using DealEngine.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace DealEngine.WebUI.Models
 {
@@ -1466,7 +1467,7 @@ namespace DealEngine.WebUI.Models
                     Text = "First National", Value = "First National"
                 },
                 new SelectListItem
-                { Text = "Harcourts;", Value = "Harcourts" },
+                { Text = "Harcourts", Value = "Harcourts" },
                 new SelectListItem
                 {
                     Text = "LJ Hooker", Value = "LJ Hooker"
@@ -1796,15 +1797,15 @@ namespace DealEngine.WebUI.Models
 
     }
 
-    public class RVViewModel
+    public class RVViewModel : BaseViewModel
     {
         public RVViewModel(ClientInformationSheet clientInformationSheet, User OrgUser)
         {
             HasRegisteredNumber = GetSelectListOptions();
             TypeOfCover = GetCoverOptions();
-            AreaOfOperation = GetAreaOptions();
-            ClaimsGrade = GetGradeOptions();
-            VehicleType = GetVehicleOptions();
+            AreaOperation = GetAreaOptions();
+            Grade = GetGradeOptions();
+            TypeOfVehicle = GetVehicleOptions();
             vehicles = new List<Domain.Entities.Vehicle>();
 
             foreach (var vehicle in clientInformationSheet.Vehicles)
@@ -1812,7 +1813,9 @@ namespace DealEngine.WebUI.Models
                 vehicles.Add(vehicle);
             }
         }
-        //[JsonIgnore]
+        [JsonIgnore]
+        public Guid Id { get; set; }
+
         public IList<Domain.Entities.Vehicle> vehicles { get; set; }
 
         [Display(Name = "Has Registered Number?")]
@@ -1821,19 +1824,19 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> TypeOfCover { get; set; }
 
         [Display(Name = "Area Of Operation:")]
-        public IList<SelectListItem> AreaOfOperation { get; set; }
+        public IList<SelectListItem> AreaOperation { get; set; }
 
 
         [Display(Name = "Claims Grade:")]
-        public IList<SelectListItem> ClaimsGrade { get; set; }
+        public IList<SelectListItem> Grade { get; set; }
 
 
         [Display(Name = "Type Of Vehicle:")]
-        public IList<SelectListItem> VehicleType { get; set; }
-
+        public IList<SelectListItem> TypeOfVehicle { get; set; }
+        
   
         [Display(Name = "Registration Number?")]
-        public string RegistrationNumber { get; set; }
+        public string Registration { get; set; }
 
         [Display(Name = "Year:")]
         public string Year { get; set; }
@@ -1843,7 +1846,7 @@ namespace DealEngine.WebUI.Models
         public string Model { get; set; }
 
         [Display(Name = "Estimated Market Value:")]
-        public string MarketValue { get; set; }
+        public string GroupSumInsured { get; set; }
 
         private IList<SelectListItem> GetSelectListOptions()
         {

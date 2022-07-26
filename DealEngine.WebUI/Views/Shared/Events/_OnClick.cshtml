@@ -42,6 +42,32 @@
                 }
             });
         }
+        if (Type == "GetVehicleById") {
+
+            var postData = {
+                'vehicleID': Id,
+                'sheetId': SheetId
+            };
+            $.ajax({
+                 url: '@Url.Action("GetVehicleById", "Services")',
+                type: "POST",
+                data: postData,
+                success: function (Data) {
+                    try {
+                        var OutPut = JSON.parse(Data);
+                        CloneForm("RegisteredTab4", "RegisteredTab3", "RegisteredVehicleSubmitBtn", "RegisteredVehicleClearButton");
+                        PopulateVehicleView(Method, OutPut);
+                    } catch (e) {
+                        debugger;
+                    }
+                }, error: function (request, error) {
+                    debugger;
+                }
+            });
+        }
+
+
+
     }
 
     function UnhideEdit(tabId) {
@@ -86,6 +112,27 @@
         });
     }
 
+     function RemoveVehicle(VehicleId) {
+        //var programmeId = document.getElementById("Programme_Id").value;
+        //var clientInformationId = document.getElementById("AnswerSheetId").value;
+        //sessionStorage.setItem('accordianTrigger', AccordionId);
+        $.ajax({
+            url: '@Url.Action("SetVehicleRemovedStatus", "Services")',
+            type: "POST",
+            data: { vehicleId: VehicleId, status : "true"},
+            success: function (Data) {
+                try {
+                    location.reload();
+                } catch (e) {
+                    debugger;
+                }
+            }, error: function (request, error) {
+                window.alert("There is no User record for this Organisation.");
+                debugger;
+            }
+        });
+    }
+
     function RestoreOrganisation(organisationId, AccordionId) {
         sessionStorage.setItem('accordianTrigger', AccordionId);
         $.ajax({
@@ -114,6 +161,7 @@
         $("#" + EditTabId).append(obj);
         form = document.getElementById(editTabHTML.firstElementChild.id);
         addTabHTML.innerHTML = "";
+        var item = document.getElementById(AddButtonId);
         document.getElementById(AddButtonId).innerText = "Update";
         document.getElementById(CancelButtonId).innerText = "Cancel Update";
         SetCurrentTab(EditTabId);

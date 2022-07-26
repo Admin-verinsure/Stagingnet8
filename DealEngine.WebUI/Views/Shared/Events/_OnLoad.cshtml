@@ -416,4 +416,53 @@
         }
     }
 
+
+    function PopulateVehicleView(Method, OutPut) {
+        debugger;
+        try {
+            for (obj in OutPut) {
+                var model = OutPut[obj];
+                var Type = obj;
+                for (var Field in model) {
+                    var Element = null;
+                    var Value = "";
+
+                    if (Element == null) {
+                        var Id = Type + "_" + Field;
+                        Element = document.getElementById(Id);
+                        Value = OutPut[obj][Field];
+                    }
+                    if (Element != null) {
+                        if (Element.tagName == "INPUT") {
+                            if (Element.type == "date") {
+                                var date = Value.substring(0, 10);
+                                if (date == "0001-01-01") {
+                                    Element.value = null;
+                                } else {
+                                    Element.value = date;
+                                }
+                            }
+                            else {
+                                Element.value = Value;
+                            }
+                        }
+                        else if (Element.tagName == "SELECT") {
+                            for (var o = 0; o < Element.options.length; o++) {
+                                if (Element.options[o].value == Value.toString()) {
+                                    Element.options[o].selected = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            Element.value = Value;
+                        }
+                        OnChange(Element.id, Element.name);
+                    }
+                    
+                }
+
+
+            }
+        } catch (ex) { debugger; }
+    }
 </script>
