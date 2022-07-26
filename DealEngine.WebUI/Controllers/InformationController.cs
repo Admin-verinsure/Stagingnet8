@@ -1449,14 +1449,14 @@ namespace DealEngine.WebUI.Controllers
                         await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out information sheet submission notification email
                         await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
-                        //send out agreement refer notification email
-                        foreach (ClientAgreement agreement in clientProgramme.Agreements)
+                    }
+                    //send out agreement refer notification email
+                    foreach (ClientAgreement agreement in clientProgramme.Agreements)
+                    {
+                        if (agreement.Status == "Referred")
                         {
-                            if (agreement.Status == "Referred")
-                            {
-                              await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
-                              await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
-                            }
+                            await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
+                            await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
                         }
                     }
                 }

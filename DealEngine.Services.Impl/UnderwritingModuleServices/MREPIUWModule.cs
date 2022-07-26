@@ -161,6 +161,63 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             //}
 
+            //Endorsement
+
+            if (agreement.ClientAgreementEndorsements != null)
+            {
+                foreach (var endorsement in agreement.ClientAgreementEndorsements.Where(endo => endo.DateDeleted == null))
+                {
+                    if (endorsement.Name == "Deemed Subsidiary Endorsement" || endorsement.Name == "Run Off Endorsement")
+                    {
+                        endorsement.DateDeleted = DateTime.UtcNow;
+                        endorsement.DeletedBy = underwritingUser;
+                    }
+                }
+            }
+
+            string SubsidiaryOrg = "";
+            string RunOffOrg = "";
+            string RunOffEff = "";
+            if (agreement.ClientInformationSheet.Organisation.Count > 0)
+            {
+                foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
+                {
+                    var unit = (SubsidiaryUnit)uisorg.OrganisationalUnits.FirstOrDefault(o => o.Name == "Subsidiary Company organisation");
+                    if (unit != null)
+                    {
+                        if (string.IsNullOrEmpty(SubsidiaryOrg))
+                        {
+                            SubsidiaryOrg += uisorg.Name;
+                        }
+                        else
+                        {
+                            SubsidiaryOrg += ", " + uisorg.Name;
+                        }
+                    }
+                    var unit2 = (RealEstateRunOffUnit)uisorg.OrganisationalUnits.FirstOrDefault(o => o.Name == "Run Off");
+                    if (unit2 != null)
+                    {
+                        if (string.IsNullOrEmpty(RunOffOrg))
+                        {
+                            RunOffOrg += uisorg.Name;
+                        }
+                        else
+                        {
+                            RunOffOrg += ", " + uisorg.Name;
+                        }
+                        if (string.IsNullOrEmpty(RunOffEff))
+                        {
+                            RunOffEff += unit2.EffectiveDate;
+                        }
+                        else
+                        {
+                            RunOffEff += ", " + unit2.EffectiveDate;
+                        }
+                    }
+                }
+            }
+
+
 
             //Calculate premium option
 

@@ -168,7 +168,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             decimal TermPremium = 0M;
             decimal TermBasePremium = 0M;
             decimal TermBrokerage = 0M;
-            decimal TermExcess = 0;
+            decimal TermExcess = 10000;
 
             TermPremium = TermPremium * agreementperiodindays / coverperiodindays;
             TermBrokerage = TermPremium * agreement.Brokerage / 100;

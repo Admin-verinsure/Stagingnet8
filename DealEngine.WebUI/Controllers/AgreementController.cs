@@ -370,7 +370,8 @@ namespace DealEngine.WebUI.Controllers
                     }
                     await uow.Commit();
                 }
-                if (model.Content != null && agreement.ClientInformationSheet.Programme.BaseProgramme.ProgEnableEmail)
+                //removed programme sending email check as user requested, issue to broker should always send out email
+                if (model.Content != null) // && agreement.ClientInformationSheet.Programme.BaseProgramme.ProgEnableEmail 
                 {
                     await _emailService.IssueToBrokerSendEmail(model.issuetobrokerto, model.Content, agreement.ClientInformationSheet, agreement, user);
                 }
