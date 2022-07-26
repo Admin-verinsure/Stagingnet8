@@ -1,6 +1,13 @@
-﻿@*@model DealEngine.WebUI.Models.InformationViewModel
+﻿@model DealEngine.WebUI.Models.InformationViewModel
 
 <form id="RVViewModel" class="is-valid" data-accordianId="Registered Vehicle">
+
+    @Html.HiddenFor(m => m.OrganisationViewModel.Organisation.Id, new { id = "Organisation.Id" })
+    @Html.HiddenFor(m => m.OrganisationViewModel.User.Id, new { id = "User.Id" })
+    @Html.HiddenFor(m => m.ClientInformationSheet.Id)
+    @Html.HiddenFor(m => m.RVViewModel.Id)
+
+
     <div class="form-group">
         <div class="row">
             <div class="col-9">
@@ -10,7 +17,7 @@
             </div>
             <div class="col-3">
 
-                <select id="hasRegisteredNumber" name="RVViewModel.HasRegisteredNumber" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="RVViewModel_HasRegisteredNumber" name="RVViewModel.HasRegisteredNumber" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.RVViewModel.HasRegisteredNumber)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -29,7 +36,7 @@
                 </label>
             </div>
             <div class="col-3">
-                @Html.TextAreaFor(m => m.RVViewModel.RegistrationNumber, new { @class = "form-control", @id = "RegistrationNumber", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                @Html.TextAreaFor(m => m.RVViewModel.Registration, new { @class = "form-control", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
     </div>
@@ -44,7 +51,7 @@
                 </label>
             </div>
             <div class="col-3">
-                @Html.TextAreaFor(m => m.RVViewModel.Year, new { @class = "form-control", @id = "Year", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                @Html.TextAreaFor(m => m.RVViewModel.Year, new { @class = "form-control", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
     </div>
@@ -59,7 +66,7 @@
                 </label>
             </div>
             <div class="col-3">
-                @Html.TextAreaFor(m => m.RVViewModel.Make, new { @class = "form-control", @id = "Make", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                @Html.TextAreaFor(m => m.RVViewModel.Make, new { @class = "form-control", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
     </div>
@@ -74,7 +81,7 @@
                 </label>
             </div>
             <div class="col-3">
-                @Html.TextAreaFor(m => m.RVViewModel.Model, new { @class = "form-control", @id = "Model", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                @Html.TextAreaFor(m => m.RVViewModel.Model, new { @class = "form-control", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
     </div>
@@ -89,7 +96,7 @@
                 </label>
             </div>
             <div class="col-3">
-                $ @Html.TextAreaFor(m => m.RVViewModel.MarketValue, new { @class = "form-control", @id = "MarketValue", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                $ @Html.TextAreaFor(m => m.RVViewModel.GroupSumInsured, new { @class = "form-control", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
     </div>
@@ -104,7 +111,7 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="typeofcover" name="RVViewModel.TypeOfCover" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                <select id="RVViewModel_TypeOfCover" name="RVViewModel.TypeOfCover" class="form-select" onchange="OnChange(this.id, this.name)" required>
                     @foreach (var option in Model.RVViewModel.TypeOfCover)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -121,12 +128,12 @@
         <div class="row">
             <div class="col-9">
                 <label for="areaofoperation" class="label required">
-                    Type of cover:
+                    Area of Operation:
                 </label>
             </div>
             <div class="col-3">
-                <select id="areaofoperation" name="RVViewModel.AreaOfOperation" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                    @foreach (var option in Model.RVViewModel.AreaOfOperation)
+                <select id="RVViewModel_AreaOperation" name="RVViewModel.AreaOperation" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.RVViewModel.AreaOperation)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                     }
@@ -143,8 +150,8 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="claimsgrade" name="RVViewModel.AreaOfOperation" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                    @foreach (var option in Model.RVViewModel.AreaOfOperation)
+                <select id="RVViewModel_Grade" name="RVViewModel.Grade" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.RVViewModel.Grade)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                     }
@@ -161,8 +168,8 @@
                 </label>
             </div>
             <div class="col-3">
-                <select id="vehicletype" name="RVViewModel.AreaOfOperation" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                    @foreach (var option in Model.RVViewModel.AreaOfOperation)
+                <select id="RVViewModel_TypeOfVehicle" name="RVViewModel.TypeOfVehicle" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.RVViewModel.TypeOfVehicle)
                     {
                         <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                     }
@@ -185,10 +192,13 @@
                 </label>
             </div>
             <div class="col-3">
-                @Html.TextAreaFor(m => m.PIViewModel.hasdirectagencies, new { @class = "form-control", @id = "hasdirectagencies", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                @Html.TextAreaFor(m => m.PIViewModel.hasdirectagencies, new { @class = "form-control", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
             </div>
         </div>
     </div>
 
-
-</form>*@
+    <div class="form-group">
+        <button class="btn btn-success update" type="submit" id="RegisteredVehicleSubmitBtn" onclick="OnVehicleSubmit('RVViewModel', 'Registered Vehicle')">Add</button>
+        <button class="btn btn-danger" id="RegisteredVehicleClearButton" onclick="ResetOrganisation('RVViewModel');location.reload();"> Clear</button>
+    </div>
+</form>
