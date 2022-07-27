@@ -249,6 +249,7 @@ namespace DealEngine.Services.Impl
                             mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                             mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundLimit_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                             mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundAggregateLimit_{0}]]", term.SubTermType), term.AggregateLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
                             mergeFields.Remove(new KeyValuePair<string, string>(string.Format("[[PolicyStatus_{0}]]", term.SubTermType), "Not Insured"));
                             mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[PolicyStatus_{0}]]", term.SubTermType), "Insured"));
@@ -1386,6 +1387,7 @@ namespace DealEngine.Services.Impl
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx4_{0}]]", term.SubTermType), (term.TermLimit * 4).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx5_{0}]]", term.SubTermType), (term.TermLimit * 5).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                    mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundAggregateLimit_{0}]]", term.SubTermType), term.AggregateLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
                     if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
                     {

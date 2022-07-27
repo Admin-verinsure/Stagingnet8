@@ -1277,6 +1277,22 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             } else
             {
                 BrokerFeeTotal = objClientAgreement.BrokerFee;
+
+                if (objClientAgreement.ClientInformationSheet.Programme.Agreements.Where(clientagreement => clientagreement.DateDeleted == null && 
+                (clientagreement.Status == "Quoted" || clientagreement.Status == "Bound" || clientagreement.Status == "Bound and pending payment" || clientagreement.Status == "Bound and invoice pending" || 
+                clientagreement.Status == "Bound and invoiced")).Count() > 1)
+                {
+                    BrokerFeeTotal = 0;
+                    foreach (var ca in objClientAgreement.ClientInformationSheet.Programme.Agreements.Where(clientagreement => clientagreement.DateDeleted == null &&
+                                                                                                           (clientagreement.Status == "Quoted" || clientagreement.Status == "Bound" || 
+                                                                                                            clientagreement.Status == "Bound and pending payment" || 
+                                                                                                            clientagreement.Status == "Bound and invoice pending" ||
+                                                                                                            clientagreement.Status == "Bound and invoiced")))
+                    {
+                        BrokerFeeTotal += ca.BrokerFee;
+                    }
+                    
+                }
             }
             
             CalculateInvoiceSummary(EBixPolicy, BrokerFeeTotal);
