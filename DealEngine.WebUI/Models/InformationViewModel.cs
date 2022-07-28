@@ -639,7 +639,14 @@ namespace DealEngine.WebUI.Models
         public int CoverAmount { get; set; }
         public string DateLapsed { get; set; }
         public string RetroactiveDate { get; set; }
-        public string InsurerName { get; set; }        
+        public string InsurerName { get; set; }
+        public string SoftwareUpdatesDetails { get; set; }
+        public string BackupOptionsDetails { get; set; }
+        public string AccessControlOptionsDetails { get; set; }
+        public string LocationOptionsDetails { get; set; }
+        public string ActivityOptionsDetails { get; set; }
+        public string NoLossOptionsDetails { get; set; }
+        public string KnowledgeOptionsDetails { get; set; }
     }
     public class FAPViewModel
     {
@@ -1815,7 +1822,6 @@ namespace DealEngine.WebUI.Models
                 vehicles.Add(vehicle);
             }
         }
-        [JsonIgnore]
         public Guid Id { get; set; }
 
         public IList<Domain.Entities.Vehicle> vehicles { get; set; }

@@ -37,7 +37,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hassoftwareupdates" name="CLIViewModel.HasSoftwareUpdates" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    <select id="hassoftwareupdates" name="CLIViewModel.HasSoftwareUpdates" data-rule="Reverse" class="form-select " onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.CLIViewModel.HasSoftwareUpdates)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -46,6 +46,23 @@
                 </div>
             </div>
         </div>
+
+        <div id="CLIViewModel.HasSoftwareUpdates" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="Hassoftwareupdates" class="label required">
+                            You have answered "No" above, please provide details:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        @Html.TextAreaFor(m => m.CLIViewModel.SoftwareUpdatesDetails, new { @class = "form-control", @id = "activitiesinsureddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
@@ -55,7 +72,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasbackup" name="CLIViewModel.HasBackupOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasbackup" name="CLIViewModel.HasBackupOptions" data-rule="Reverse" class="form-select " onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.CLIViewModel.HasBackupOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -64,6 +81,23 @@
                 </div>
             </div>
         </div>
+
+        <div id="CLIViewModel.HasBackupOptions" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasbackupoptions" class="label required">
+                            You have answered "No" above, please provide details:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        @Html.TextAreaFor(m => m.CLIViewModel.BackupOptionsDetails, new { @class = "form-control", @id = "activitiesinsureddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
@@ -74,7 +108,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasaccesscontrol" name="CLIViewModel.HasAccessControlOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasaccesscontrol" name="CLIViewModel.HasAccessControlOptions" data-rule="Reverse" class="form-select " onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.CLIViewModel.HasAccessControlOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -83,6 +117,23 @@
                 </div>
             </div>
         </div>
+
+        <div id="CLIViewModel.HasAccessControlOptions" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasaccesscontroloptions" class="label required">
+                            You have answered "No" above, please provide details:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        @Html.TextAreaFor(m => m.CLIViewModel.AccessControlOptionsDetails, new { @class = "form-control", @id = "activitiesinsureddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
@@ -91,7 +142,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="haslocation" name="CLIViewModel.HasLocationOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    <select id="haslocation" name="CLIViewModel.HasLocationOptions" data-rule="Reverse" class="form-select " onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.CLIViewModel.HasLocationOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -100,6 +151,24 @@
                 </div>
             </div>
         </div>
+
+        <div id="CLIViewModel.HasLocationOptions" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="haslocationoptions" class="label required">
+                            You have answered "No" above, please provide details:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        @Html.TextAreaFor(m => m.CLIViewModel.LocationOptionsDetails, new { @class = "form-control", @id = "activitiesinsureddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
@@ -114,7 +183,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasactivity" name="CLIViewModel.HasActivityOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasactivity" name="CLIViewModel.HasActivityOptions" data-rule="Reverse" class="form-select " onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.CLIViewModel.HasActivityOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -124,6 +193,25 @@
             </div>
         </div>
 
+        <div id="CLIViewModel.HasActivityOptions" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="Hasactivityoptions" class="label required">
+                            You have answered "No" above, please provide details:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        @Html.TextAreaFor(m => m.CLIViewModel.ActivityOptionsDetails, new { @class = "form-control", @id = "activitiesinsureddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
         <div class="form-group">
             <div class="row">
                 <div class="col-9">
@@ -132,7 +220,7 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasnoloss" name="CLIViewModel.HasNoLossOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasnoloss" name="CLIViewModel.HasNoLossOptions" data-rule="Reverse" class="form-select " onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.CLIViewModel.HasNoLossOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -141,6 +229,21 @@
                 </div>
             </div>
         </div>
+        <div id="CLIViewModel.HasNoLossOptions" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasnolossoptions" class="label required">
+                            You have answered "No" above, please provide details:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        @Html.TextAreaFor(m => m.CLIViewModel.NoLossOptionsDetails, new { @class = "form-control", @id = "activitiesinsureddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 
         <div class="form-group">
@@ -153,12 +256,27 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    <select id="hasknowledge" name="CLIViewModel.HasKnowledgeOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    <select id="hasknowledge" name="CLIViewModel.HasKnowledgeOptions" data-rule="Reverse" class="form-select " onchange="OnChange(this.id, this.name)" required>
                         @foreach (var option in Model.CLIViewModel.HasKnowledgeOptions)
                         {
                             <option selected="@option.Selected" value="@option.Value">@option.Text</option>
                         }
                     </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="CLIViewModel.HasKnowledgeOptions" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasknowledgeoptions" class="label required">
+                            You have answered "No" above, please provide details:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        @Html.TextAreaFor(m => m.CLIViewModel.KnowledgeOptionsDetails, new { @class = "form-control", @id = "activitiesinsureddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
                 </div>
             </div>
         </div>
