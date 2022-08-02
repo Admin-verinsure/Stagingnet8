@@ -184,44 +184,47 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
                 {
-                    var unit = (SubsidiaryUnit)uisorg.OrganisationalUnits.FirstOrDefault(o => o.Name == "Subsidiary Company organisation");
-                    if (unit != null)
+                    if (!uisorg.Removed && uisorg.DateDeleted == null)
                     {
-                        if (string.IsNullOrEmpty(SubsidiaryOrg))
+                        var unit = (SubsidiaryUnit)uisorg.OrganisationalUnits.FirstOrDefault(o => o.Name == "Subsidiary Company organisation");
+                        if (unit != null)
                         {
-                            SubsidiaryOrg += uisorg.Name;
-                        }
-                        else
-                        {
-                            SubsidiaryOrg += ", " + uisorg.Name;
-                        }
+                            if (string.IsNullOrEmpty(SubsidiaryOrg))
+                            {
+                                SubsidiaryOrg += uisorg.Name;
+                            }
+                            else
+                            {
+                                SubsidiaryOrg += ", " + uisorg.Name;
+                            }
 
-                        SubsidiaryEndorsementTxt = "Subsidiary means any entity of which the Policyholder has Control either directly or indirectly through one or more other entities on or before the inception date of this policy.In addition, the following named entity or entities are also deemed to be a Subsidiary for the purposes of this policy: " + SubsidiaryOrg + "<br/ > All other terms, conditions and exclusions remain unchanged.";
-                        ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, "Deemed Subsidiary Endorsement", "Exclusion", product, SubsidiaryEndorsementTxt, 110, agreement);
-                        agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
-                    }
-                    var unit2 = (RealEstateRunOffUnit)uisorg.OrganisationalUnits.FirstOrDefault(o => o.Name == "Run Off");
-                    if (unit2 != null)
-                    {
-                        if (string.IsNullOrEmpty(RunOffOrg))
-                        {
-                            RunOffOrg += uisorg.Name;
+                            SubsidiaryEndorsementTxt = "Subsidiary means any entity of which the Policyholder has Control either directly or indirectly through one or more other entities on or before the inception date of this policy.In addition, the following named entity or entities are also deemed to be a Subsidiary for the purposes of this policy: " + SubsidiaryOrg + "<br/ > All other terms, conditions and exclusions remain unchanged.";
+                            ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, "Deemed Subsidiary Endorsement", "Exclusion", product, SubsidiaryEndorsementTxt, 110, agreement);
+                            agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
                         }
-                        else
+                        var unit2 = (RealEstateRunOffUnit)uisorg.OrganisationalUnits.FirstOrDefault(o => o.Name == "Run Off");
+                        if (unit2 != null)
                         {
-                            RunOffOrg += ", " + uisorg.Name;
+                            if (string.IsNullOrEmpty(RunOffOrg))
+                            {
+                                RunOffOrg += uisorg.Name;
+                            }
+                            else
+                            {
+                                RunOffOrg += ", " + uisorg.Name;
+                            }
+                            if (string.IsNullOrEmpty(RunOffEff))
+                            {
+                                RunOffEff += unit2.EffectiveDate;
+                            }
+                            else
+                            {
+                                RunOffEff += ", " + unit2.EffectiveDate;
+                            }
+                            RunOffEndorsementTxt = "Run off It is hereby declared and agreed that the policy shall not indemnify the " + RunOffOrg + " against any Claim or loss arising from any civil liability committed or alleged to have been committed on the part of the Insured in or about the conduct of any Professional Business after" + RunOffEff + ". <br/ >All other terms, conditions and exclusions remain unchanged.";
+                            ClientAgreementEndorsement clientAgreementEndorsement1 = new ClientAgreementEndorsement(underwritingUser, "Run Off Endorsement", "Exclusion", product, RunOffEndorsementTxt, 111, agreement);
+                            agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement1);
                         }
-                        if (string.IsNullOrEmpty(RunOffEff))
-                        {
-                            RunOffEff += unit2.EffectiveDate;
-                        }
-                        else
-                        {
-                            RunOffEff += ", " + unit2.EffectiveDate;
-                        }
-                        RunOffEndorsementTxt = "Run off It is hereby declared and agreed that the policy shall not indemnify the " + RunOffOrg + " against any Claim or loss arising from any civil liability committed or alleged to have been committed on the part of the Insured in or about the conduct of any Professional Business after" + RunOffEff + ". <br/ >All other terms, conditions and exclusions remain unchanged.";
-                        ClientAgreementEndorsement clientAgreementEndorsement1 = new ClientAgreementEndorsement(underwritingUser, "Run Off Endorsement", "Exclusion", product, RunOffEndorsementTxt, 111, agreement);
-                        agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement1);
                     }
                 }
             }
@@ -277,6 +280,19 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                     }
 
+                }
+
+                strretrodate = PreviousAgreement.RetroactiveDate;
+
+                foreach (var renewendorsement in PreviousAgreement.ClientAgreementEndorsements)
+                {
+
+                    if (renewendorsement.DateDeleted == null && renewendorsement.Name != "Deemed Subsidiary Endorsement" && renewendorsement.Name != "Run Off Endorsement")
+                    {
+                        ClientAgreementEndorsement newclientendorsement =
+                            new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
+                        agreement.ClientAgreementEndorsements.Add(newclientendorsement);
+                    }
                 }
             }
 

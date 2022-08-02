@@ -545,7 +545,13 @@ namespace DealEngine.Services.Impl
             await _referenceRepository.AddAsync(new Reference(newClientInformationSheet.Id, newClientInformationSheet.ReferenceId));
 
             ClientProgramme newClientProgramme = new ClientProgramme(createdBy, oldClientProgramme.Owner, oldClientProgramme.BaseProgramme);
-            newClientProgramme.BrokerContactUser = oldClientProgramme.BaseProgramme.BrokerContactUser;
+            if (newClientProgramme.BaseProgramme.ProgMultBrokerMode)
+            {
+                newClientProgramme.BrokerContactUser = oldClientProgramme.BrokerContactUser;
+            } else
+            {
+                newClientProgramme.BrokerContactUser = oldClientProgramme.BaseProgramme.BrokerContactUser;
+            }
             newClientProgramme.ChangeReason = changeReason;
             newClientProgramme.InformationSheet = newClientInformationSheet;
             newClientProgramme.InformationSheet.Programme = newClientProgramme;
@@ -704,7 +710,14 @@ namespace DealEngine.Services.Impl
             await _referenceRepository.AddAsync(new Reference(newClientInformationSheet.Id, newClientInformationSheet.ReferenceId));
 
             ClientProgramme newClientProgramme = new ClientProgramme(createdBy, oldClientProgramme.Owner, oldClientProgramme.BaseProgramme);
-            newClientProgramme.BrokerContactUser = currentProgramme.BrokerContactUser;
+            if (newClientProgramme.BaseProgramme.ProgMultBrokerMode)
+            {
+                newClientProgramme.BrokerContactUser = oldClientProgramme.BrokerContactUser;
+            }
+            else
+            {
+                newClientProgramme.BrokerContactUser = oldClientProgramme.BaseProgramme.BrokerContactUser;
+            }
             newClientProgramme.RenewFromClientProgramme = oldClientProgramme;
             newClientProgramme.InformationSheet = newClientInformationSheet;
             newClientProgramme.InformationSheet.Programme = newClientProgramme;

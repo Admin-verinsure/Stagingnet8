@@ -1450,7 +1450,11 @@ namespace DealEngine.Services.Impl
                 {
                     mergeFields.Add(new KeyValuePair<string, string>("[[ContactBrokerName]]", programme.BrokerContactUser.FullName));
                 }
-                
+                if (clientInformationSheet.Programme.BrokerContactUser != null)
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[ContactBrokerName]]", clientInformationSheet.Programme.BrokerContactUser.FullName));
+                }
+
             }
             if(insuredOrg != null)
             {
