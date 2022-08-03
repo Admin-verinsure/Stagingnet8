@@ -128,9 +128,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //        foreach (var renewendorsement in renewFromAgreement.ClientAgreementEndorsements)
             //        {
 
-            //            if (renewendorsement.DateDeleted == null  &&
-            //                renewendorsement.Name != "Data Recovery and Business Interruption Exclusion (DRB)" && renewendorsement.Name != "Unencrypted Portable Media Exclusion (UPM)"
-            //                 && renewendorsement.Name != "Social Engineering Fraud Extension")
+            //            if (renewendorsement.DateDeleted == null  && renewendorsement.Name != "Unencrypted Portable Media Exclusion (UPM)")
             //            {
             //                ClientAgreementEndorsement newclientendorsement =
             //                    new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
@@ -280,6 +278,19 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             if (termcl2millimitoption.TermLimit == term.TermLimit && termcl2millimitoption.Excess == term.Excess)
                             {
                                 termcl2millimitoption.Bound = true;
+                            }
+                        }
+
+                        strretrodate = PreviousAgreement.RetroactiveDate;
+
+                        foreach (var renewendorsement in PreviousAgreement.ClientAgreementEndorsements)
+                        {
+
+                            if (renewendorsement.DateDeleted == null && renewendorsement.Name != "Unencrypted Portable Media Exclusion (UPM)")
+                            {
+                                ClientAgreementEndorsement newclientendorsement =
+                                    new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
+                                agreement.ClientAgreementEndorsements.Add(newclientendorsement);
                             }
                         }
 

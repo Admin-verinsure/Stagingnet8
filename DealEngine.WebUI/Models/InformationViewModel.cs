@@ -1491,6 +1491,8 @@ namespace DealEngine.WebUI.Models
                 new SelectListItem
                 { Text = "Remax", Value = "Remax" },
                 new SelectListItem
+                { Text = "Sothebys", Value = "Sothebys" },
+                new SelectListItem
                 { Text = "Other", Value = "1" }
             };
         }

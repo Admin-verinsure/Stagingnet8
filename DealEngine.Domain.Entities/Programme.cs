@@ -104,6 +104,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool ProgDisableClaimInsHistoryPanel { get; set; }
         public virtual bool ProgEnableBrokerUW { get; set; }
         public virtual bool ProgMultiPolicyMode { get; set; }
+        public virtual bool ProgMultBrokerMode { get; set; }
 
         protected Programme() : this(null) { }
 

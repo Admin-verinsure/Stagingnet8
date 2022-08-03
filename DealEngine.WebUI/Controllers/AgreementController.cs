@@ -3195,6 +3195,16 @@ namespace DealEngine.WebUI.Controllers
                                         //send out agreement bound notification email
                                         await _emailService.SendSystemEmailAgreementBoundNotify(programme.BrokerContactUser, programme.BaseProgramme, agreement, programme.Owner);
                                     }
+
+                                    //send to me should be able regardless
+                                    if (!programme.BaseProgramme.ProgEnableEmail && !Rerenderalldocs && sendUser)
+                                    {
+                                        EmailTemplate emailTemplate = programme.BaseProgramme.EmailTemplates.FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+                                        if (emailTemplate != null)
+                                        {
+                                            await _emailService.SendEmailViaEmailTemplate(user.Email, emailTemplate, documents, agreement.ClientInformationSheet, agreement);
+                                        }
+                                    }
                                 }
                             }
 
