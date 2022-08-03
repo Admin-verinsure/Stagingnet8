@@ -73,6 +73,15 @@
         catch (ex) {
             //we assume the obj is part of a form but may not always be the case
         }
+
+        if (Name = "BuildingViewModel_buildingtenant") {
+            debugger;
+            var tenantval = $('#BuildingViewModel_buildingtenant').val();
+            if (tenantval = "addTenant") {
+                $('#addTenantModal').show();
+            }
+
+        }
     }
 
     function InputValidation(obj, value) {

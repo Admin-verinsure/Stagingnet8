@@ -1,12 +1,12 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
-<form id="RVViewModel" class="is-valid" data-accordianId="Registered Vehicle">
+<form id="RegisteredVehicle" class="is-valid" data-accordianId="Registered Vehicle">
 
     @Html.HiddenFor(m => m.OrganisationViewModel.Organisation.Id, new { id = "Organisation.Id" })
     @Html.HiddenFor(m => m.OrganisationViewModel.User.Id, new { id = "User.Id" })
     @Html.HiddenFor(m => m.ClientInformationSheet.Id)
     @Html.HiddenFor(m => m.RVViewModel.Id)
-
+   
 
     <div class="form-group">
         <div class="row">

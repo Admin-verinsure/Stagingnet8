@@ -67,6 +67,7 @@ namespace DealEngine.WebUI.Controllers
         IChangeProcessService _changeProcessService;
         IMapperSession<OrganisationalUnit> _organisationalUnitRepository;
         IMapperSession<Organisation> _organisationRepository;
+        ILocationService _locationService;
         IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
 
         public InformationController(
@@ -109,8 +110,10 @@ namespace DealEngine.WebUI.Controllers
             IChangeProcessService changeProcessService,
             IMapperSession<OrganisationalUnit> organisationalUnitRepository,
             IMapperSession<Organisation> organisationRepository,
-            //IGeneratePdf generatePdf,
-            IClientAgreementExtensionTermService clientAgreementExtensionTermService,
+            ILocationService locationService,
+
+        //IGeneratePdf generatePdf,
+        IClientAgreementExtensionTermService clientAgreementExtensionTermService,
         IMapper mapper
             )
             : base(userService)
@@ -155,6 +158,7 @@ namespace DealEngine.WebUI.Controllers
             _changeProcessService = changeProcessService;
             _organisationalUnitRepository = organisationalUnitRepository;
             _organisationRepository = organisationRepository;
+            _locationService = locationService;
             _clientAgreementExtensionTermService = clientAgreementExtensionTermService;
             //_generatePdf = generatePdf;
         }
@@ -1900,7 +1904,6 @@ namespace DealEngine.WebUI.Controllers
                 var OrgUser = await _userService.GetUserByEmail(clientProgramme.InformationSheet.Owner.Email);
                 List<Organisation> DefaultMarinas = await _organisationService.GetPublicMarinas();
                 List<Organisation> DefaultInstitutes = await _organisationService.GetPublicFinancialInstitutes(); //??error
-                
                 Programme programme = clientProgramme.BaseProgramme;
                 InformationViewModel model = new InformationViewModel(clientProgramme.InformationSheet, OrgUser, user)
                 {
@@ -1917,6 +1920,8 @@ namespace DealEngine.WebUI.Controllers
                             model.ClientInformationSheet.WaterLocations.Add(unit.WaterLocation);
                     }                    
                 }
+                model.BuildingViewModel.Locations = model.ClientInformationSheet.Locations.ToList();
+                //model.BuildingViewModel.OrganisationalUnits = model.ClientInformationSheet.Organisation.Where(org => org.Name == "Tenant").ToList();;
                 if (DefaultInstitutes.Any())
                 {
                     foreach (var Institute in DefaultInstitutes)
