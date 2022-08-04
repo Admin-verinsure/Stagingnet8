@@ -96,7 +96,11 @@ namespace DealEngine.Services.Impl
 		public  async Task<Vehicle> UpdateVehicle(IFormCollection collection, Vehicle vehicle)
         {
 			var jsonVehicle = (Vehicle) await _serializerationService.GetDeserializedObject(typeof(Vehicle), collection);
+			Guid vehicleid = Guid.Parse(collection["RVViewModel.Id"].ToString());
 			vehicle = _mapper.Map(jsonVehicle, vehicle);
+			if(collection["RVViewModel.Id"].ToString()!= null){
+				vehicle.Id = vehicleid;
+			}
 			return vehicle;
 
 		}

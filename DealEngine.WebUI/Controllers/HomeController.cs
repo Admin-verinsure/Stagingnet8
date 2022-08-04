@@ -22,6 +22,7 @@ using SystemDocument = DealEngine.Domain.Entities.Document;
 using Document = DealEngine.Domain.Entities.Document;
 using NReco.PdfGenerator;
 using Quartz;
+using Microsoft.AspNetCore.Mvc.Rendering;
 //using DealEngine.WebUI.Tasks;
 #endregion
 
@@ -2224,7 +2225,9 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> EditClients(string ProgrammeId)
         {
-            User user = null;            
+            User user = null;
+            List<User> BrokerContact  = new List<User>();
+            List<SelectListItem> brokers = new List<SelectListItem>();
             try
             {
                 user = await CurrentUser();
@@ -2235,6 +2238,17 @@ namespace DealEngine.WebUI.Controllers
                     return PageNotFound();
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
                 EditClientsViewModel model = new EditClientsViewModel(programme);
+                BrokerContact = await _userService.GetAllUserByOrganisation(model.Programme.BrokerContactUser.PrimaryOrganisation);
+                foreach (var broker in BrokerContact)
+                {
+                    brokers.Add(new SelectListItem()
+                    {
+                        Text = broker.FullName,
+                        Value = broker.Id.ToString()
+                     });
+                }
+
+                model.BrokerContacts = brokers;
                 return View(model);                
             }
             catch (Exception ex)

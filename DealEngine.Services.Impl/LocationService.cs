@@ -37,6 +37,7 @@ namespace DealEngine.Services.Impl
         {
             await _locationRepository.UpdateAsync(location);
         }
+
     }
 }
 

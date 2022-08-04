@@ -20,6 +20,7 @@ namespace DealEngine.WebUI.Models
 			foreach (var Location in ClientInformationSheet.Locations)
 			{
 				Locations.Add(Location);
+				IncludeNDFSL = GetSelectListOptions();
 			}
 			return Locations;
 		}
@@ -69,7 +70,22 @@ namespace DealEngine.WebUI.Models
 				}																												
 			};
 		}
-
+		private IList<SelectListItem> GetSelectListOptions()
+		{
+			return new List<SelectListItem>()
+			{
+				new SelectListItem
+				{
+					Text = "-- Select --", Value = "0"
+				},
+				new SelectListItem
+				{
+					Text = "Yes", Value = "1"
+				},
+				new SelectListItem
+				{ Text = "No", Value = "2" }
+			};
+		}
 		public IList<Location> Locations { get; set; }
 		public string Street { get; set; }
 		public string City { get; set; }
@@ -77,7 +93,12 @@ namespace DealEngine.WebUI.Models
 		public string CommonName { get; set; }
 		public string Suburb { get; set; }
 		public string Postcode { get; set; }
+		public string BuildingInsureAmount { get; set; }
+		public string BuildingIndemnityVal{ get; set; }
+
+
 		public IList<SelectListItem> LocationType { get; set; }
-    }
+		public IList<SelectListItem> IncludeNDFSL { get; set; }
+	}
 
 }

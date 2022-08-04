@@ -184,6 +184,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         JsonObjects.Add("Organisation", organisation);
                         JsonObjects.Add("ClientProgramme", ClientProgrammes.OrderByDescending(cpobdc => cpobdc.DateCreated).FirstOrDefault());
+                        //JsonObjects.Add("ClientProgramme", ClientProgrammes.OrderByDescending(cpobdc => cpobdc.DateCreated).FirstOrDefault().BrokerContactUser.Id);
                         var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
                         //var jsonObj = JsonSerializer.Serialize(JsonObjects);
                         return Json(jsonObj);
@@ -211,6 +212,8 @@ namespace DealEngine.WebUI.Controllers
                     clientProgramme.EGlobalClientNumber = Collection["ClientProgramme.EGlobalClientNumber"];
                     clientProgramme.Tier = Collection["ClientProgramme.Tier"];
                     clientProgramme.EGlobalBranchCode = Collection["ClientProgramme.EGlobalBranchCode"];
+                    clientProgramme.BrokerContactUser = await _userService.GetUserById(Guid.Parse(Collection["ClientProgramme.BrokerContactId"]));
+                    clientProgramme.BrokerContactId = clientProgramme.BrokerContactUser.Id;
                     await _programmeService.Update(clientProgramme);
                     User OwnerUser = await _userService.GetUserPrimaryOrganisationOrEmail(clientProgramme.Owner);
                     if(OwnerUser != null)
@@ -258,6 +261,7 @@ namespace DealEngine.WebUI.Controllers
                     model.ChassisNumber = vehicle.ChassisNumber;
                     model.EngineNumber = vehicle.EngineNumber;
                     model.GrossVehicleMass = vehicle.GrossVehicleMass.ToString();
+                    model.VehicleId = vehicle.Id;
                 }
 
                 JsonObjects.Add("RVViewModel", model);
@@ -366,10 +370,24 @@ namespace DealEngine.WebUI.Controllers
 
                 vehicle = await _vehicleService.PostVehicle(collection, vehicle);
 
-                if (!Sheet.Vehicles.Contains(vehicle))
-                    Sheet.Vehicles.Add(vehicle);
+                //if (!Sheet.Vehicles.Contains(vehicle))
+                //    Sheet.Vehicles.Add(vehicle);
+                //await _clientInformationService.UpdateInformation(Sheet);
 
-                await _vehicleRepository.UpdateAsync(vehicle);
+                //if (Sheet.Vehicles.Contains(vehicle))
+                //{
+                //    await _vehicleRepository.UpdateAsync(vehicle);
+                //}
+
+
+                //vehicle.ClientInformationSheet = sheet;
+                //await _vehicleRepository.AddAsync(vehicle);
+                //sheet.Vehicles.Add(vehicle);
+
+                vehicle.ClientInformationSheet = Sheet;
+                await _vehicleRepository.AddAsync(vehicle);
+                Sheet.Vehicles.Add(vehicle);
+
                 return Redirect("../Information/EditInformation?Id=" + Sheet.Programme.Id.ToString());
             }
             catch (Exception ex)

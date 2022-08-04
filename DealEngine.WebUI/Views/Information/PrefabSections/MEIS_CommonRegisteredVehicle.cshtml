@@ -39,7 +39,7 @@
                         <th data-field="RegisteredMotorRegistration" data-sortable="true">Registration</th>
                         <th data-field="RegisteredMotorMake" data-sortable="true">Make</th>
                         <th data-field="RegisteredMotorModel" data-sortable="true">Model</th>
-                        <th data-field="RegisteredMotorSum" data-sortable="true">Sum Insured</th
+                        <th data-field="RegisteredMotorSum" data-sortable="true">Sum Insured</th>
                         <th data-field="deleteButton" data-sortable="false"></th>
                     </tr>
                 </thead>
@@ -80,10 +80,6 @@
 
                 </tbody>
 
-
-
-
-
             </table>
 
         </div>
@@ -109,21 +105,13 @@
         <div id="RegisteredTab4" class="tab-pane" role="tabpanel">
             @using (Html.BeginForm("AddRegisteredVehicle", "Vehicle", FormMethod.Post, new { @id = "RVViewModel", @name = "RVViewModel" }))
             {
-               
+                @Html.Hidden("Validated", "true")
 
                 @await Html.PartialAsync("PrefabSections/MEIS_RegisteredVehicle", Model)
 
-                @*<div class="form-group">
-                <button class="btn btn-success update" type="submit" id="RegisteredVehicleSubmitBtn" onclick="OnVehicleSubmit('RVViewModel', 'Registered Vehicle')">Add</button>
-                <button class="btn btn-danger" id="RegisteredVehicleClearButton" onclick="ResetOrganisation('RVViewModel');location.reload();"> Clear</button>
-            </div>*@
             }
 
 
-            @*<div class="form-group">
-            <button class="btn btn-success update" type="submit" id="RegisteredVehicleSubmitBtn" onclick="OnOrganisationSubmit('RVViewModel', 'Registered Vehicle')">Add</button>
-            <button class="btn btn-danger" id="RegisteredVehicleClearButton" onclick="ResetOrganisation('RVViewModel');location.reload();"> Clear</button>
-        </div>*@
 
         </div>
     </div>

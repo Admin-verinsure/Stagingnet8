@@ -41,6 +41,7 @@ namespace DealEngine.WebUI.Models
             MLViewModel = new MLViewModel();
             BIViewModel = new BIViewModel(); //Business Information
             RVViewModel = new RVViewModel(clientInformationSheet, OrgUser);
+            BuildingViewModel = new BuildingViewModel();
         }
         public User User { get; set; }
         public OrganisationViewModel OrganisationViewModel { get; set; }
@@ -94,6 +95,8 @@ namespace DealEngine.WebUI.Models
         public MLViewModel MLViewModel { get; internal set; }
         public BIViewModel BIViewModel { get; set; }
         public RVViewModel RVViewModel { get; set; }
+        public BuildingViewModel BuildingViewModel { get; set; }
+
 
     }
 
@@ -1825,7 +1828,7 @@ namespace DealEngine.WebUI.Models
         public Guid Id { get; set; }
 
         public IList<Domain.Entities.Vehicle> vehicles { get; set; }
-
+        //public Domain.Entities.Vehicle Vehicle { get; set; }
         [Display(Name = "Has Registered Number?")]
         public IList<SelectListItem> HasRegisteredNumber { get; set; }
         [Display(Name = "Type of cover:")]
@@ -1855,6 +1858,7 @@ namespace DealEngine.WebUI.Models
 
         [Display(Name = "Estimated Market Value:")]
         public string GroupSumInsured { get; set; }
+        public string Validated { get; set; }
 
         private IList<SelectListItem> GetSelectListOptions()
         {
@@ -2015,4 +2019,32 @@ namespace DealEngine.WebUI.Models
         }
     }
 
+
+    //public class BuildingViewModel
+    //{
+    //    public GeneralViewModel()
+    //    {
+    //        if (PolicyDate == DateTime.MinValue)
+    //        {
+    //            PolicyDate = DateTime.Now;
+    //        }
+    //        if (PolicyStartDate == DateTime.MinValue)
+    //        {
+    //            PolicyStartDate = DateTime.Now;
+    //        }
+    //        if (PolicyEndDate == DateTime.MinValue)
+    //        {
+    //            PolicyEndDate = DateTime.Now;
+    //        }
+    //    }
+    //    [Display(Name = "Policy Date")]
+    //    public DateTime PolicyDate { get; set; }
+
+    //    [Display(Name = "Policy Start Date")]
+    //    public DateTime PolicyStartDate { get; set; }
+
+    //    [Display(Name = "Policy End Date")]
+    //    public DateTime PolicyEndDate { get; set; }
+
+    //}
 }
