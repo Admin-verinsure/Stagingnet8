@@ -60,5 +60,6 @@ namespace DealEngine.Services.Interfaces
         Task ImportNZBarImportClaims(User user);
         Task ImportNZBarOwners(User user);
         Task ImportMEISOwners(User user);
+        Task ImportMREPreRenewData(User user);
     }
 }
