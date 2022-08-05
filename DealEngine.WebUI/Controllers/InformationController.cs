@@ -10,6 +10,7 @@ using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Programme;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using DealEngine.Infrastructure.FluentNHibernate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
@@ -66,6 +67,7 @@ namespace DealEngine.WebUI.Controllers
         IChangeProcessService _changeProcessService;
         IMapperSession<OrganisationalUnit> _organisationalUnitRepository;
         IMapperSession<Organisation> _organisationRepository;
+        ILocationService _locationService;
         IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
 
         public InformationController(
@@ -108,8 +110,10 @@ namespace DealEngine.WebUI.Controllers
             IChangeProcessService changeProcessService,
             IMapperSession<OrganisationalUnit> organisationalUnitRepository,
             IMapperSession<Organisation> organisationRepository,
-            //IGeneratePdf generatePdf,
-            IClientAgreementExtensionTermService clientAgreementExtensionTermService,
+            ILocationService locationService,
+
+        //IGeneratePdf generatePdf,
+        IClientAgreementExtensionTermService clientAgreementExtensionTermService,
         IMapper mapper
             )
             : base(userService)
@@ -154,6 +158,7 @@ namespace DealEngine.WebUI.Controllers
             _changeProcessService = changeProcessService;
             _organisationalUnitRepository = organisationalUnitRepository;
             _organisationRepository = organisationRepository;
+            _locationService = locationService;
             _clientAgreementExtensionTermService = clientAgreementExtensionTermService;
             //_generatePdf = generatePdf;
         }
@@ -168,6 +173,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 foreach (var item in template.Sections)
                 {
                     Litems.Add(new InformationItems() { Id = item.Id, Name = item.Name });
@@ -191,6 +201,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 InformationViewModel model = await GetClientInformationSheetViewModel(id);
 
                 return View(model);
@@ -239,6 +254,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(Id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
@@ -272,6 +292,12 @@ namespace DealEngine.WebUI.Controllers
 
             try
             {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
@@ -280,8 +306,7 @@ namespace DealEngine.WebUI.Controllers
                 model.SectionView = name;
                 model.ListSection = viewlist;
                 model.ClientProgramme = clientProgramme;
-                user = await CurrentUser();
-
+                
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
@@ -959,6 +984,9 @@ namespace DealEngine.WebUI.Controllers
             if (user.IsLoggedout)
                 return PageNotFound();
 
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 
@@ -984,7 +1012,10 @@ namespace DealEngine.WebUI.Controllers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("FAPViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("IPViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("OTViewModel", StringComparison.CurrentCulture)));
-                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));               
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("MLViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
+
 
                 if (sheet.Status == "Not Started")
                 {
@@ -1191,6 +1222,13 @@ namespace DealEngine.WebUI.Controllers
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 user = await CurrentUser();
+
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (sheet != null)
                 {
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -1224,6 +1262,12 @@ namespace DealEngine.WebUI.Controllers
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (sheet != null)
                 {
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -1366,6 +1410,13 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(id));                
                 var sheet = clientProgramme.InformationSheet;
                 var isBaseSheet = await _clientInformationService.IsBaseClass(sheet);
@@ -1402,14 +1453,14 @@ namespace DealEngine.WebUI.Controllers
                         await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out information sheet submission notification email
                         await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
-                        //send out agreement refer notification email
-                        foreach (ClientAgreement agreement in clientProgramme.Agreements)
+                    }
+                    //send out agreement refer notification email
+                    foreach (ClientAgreement agreement in clientProgramme.Agreements)
+                    {
+                        if (agreement.Status == "Referred")
                         {
-                            if (agreement.Status == "Referred")
-                            {
-                              await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
-                              await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
-                            }
+                            await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
+                            await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
                         }
                     }
                 }
@@ -1495,6 +1546,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<ViewResult> MoveAdvisors(Guid id)
         {
+
             ClientProgramme clientProgramme = await _clientProgrammeRepository.GetByIdAsync(id);
             Programme programme = clientProgramme.BaseProgramme;
             ClientInformationSheet lastInformationSheet = clientProgramme.InformationSheet;
@@ -1783,6 +1835,12 @@ namespace DealEngine.WebUI.Controllers
             {
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (clientProgramme == null)
                     throw new Exception("ClientProgramme (" + id + ") doesn't belong to User " + user.UserName);
 
@@ -1807,6 +1865,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (!string.IsNullOrWhiteSpace(id))
                     user = await _userService.GetUser(id);
 
@@ -1840,7 +1904,6 @@ namespace DealEngine.WebUI.Controllers
                 var OrgUser = await _userService.GetUserByEmail(clientProgramme.InformationSheet.Owner.Email);
                 List<Organisation> DefaultMarinas = await _organisationService.GetPublicMarinas();
                 List<Organisation> DefaultInstitutes = await _organisationService.GetPublicFinancialInstitutes(); //??error
-                
                 Programme programme = clientProgramme.BaseProgramme;
                 InformationViewModel model = new InformationViewModel(clientProgramme.InformationSheet, OrgUser, user)
                 {
@@ -1857,6 +1920,8 @@ namespace DealEngine.WebUI.Controllers
                             model.ClientInformationSheet.WaterLocations.Add(unit.WaterLocation);
                     }                    
                 }
+                model.BuildingViewModel.Locations = model.ClientInformationSheet.Locations.ToList();
+                //model.BuildingViewModel.OrganisationalUnits = model.ClientInformationSheet.Organisation.Where(org => org.Name == "Tenant").ToList();;
                 if (DefaultInstitutes.Any())
                 {
                     foreach (var Institute in DefaultInstitutes)

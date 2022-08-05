@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -103,13 +104,13 @@ namespace DealEngine.WebUI
                 options.IncludeSubDomains = true;
                 options.Preload = true;
             });
-           
+
             var container = services.BuildServiceProvider();
 
             // Create an instance of the job factory
-          //  services.AddHostedService<JobSchedular>();
+            //  services.AddHostedService<JobSchedular>();
             services.AddSingleton<IJobFactory, JobFactory>();
-           
+
             services.AddScoped<IReportBuilderService, ReportBuilderService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
@@ -123,11 +124,14 @@ namespace DealEngine.WebUI
             //services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));.....
             services.AddHttpContextAccessor();
             services.AddQuartzHostedService();
-            
+            services.AddControllers()
+                .AddXmlSerializerFormatters();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<SecurityHeadersMiddleware>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -159,7 +163,6 @@ namespace DealEngine.WebUI
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();
-            app.UseMiddleware<SecurityHeadersMiddleware>();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -169,7 +172,6 @@ namespace DealEngine.WebUI
             });
 
         }
-
 
         public static IScheduler GetSchedular()
         {
@@ -191,7 +193,6 @@ namespace DealEngine.WebUI
     }
 
 }
-
 
 public sealed class SecurityHeadersMiddleware
 {
@@ -267,21 +268,22 @@ public sealed class SecurityHeadersMiddleware
             #endregion
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-            //context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
+            context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+            context.Response.Headers.Add("x-frame-options", new StringValues("DENY"));
 
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
             // https://content-security-policy.com/unsafe-inline/
-            //context.Response.Headers.Add("Content-Security-Policy", new StringValues(
-            //    "base-uri 'self';" +
-            //    "block-all-mixed-content;" +
-            //    "default-src 'self';" +
-            //    "frame-ancestors 'none';" +
-            //    "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
-            //    "img-src 'self' data: https:;" +
-            //    "script-src 'self' 'unsafe-inline';" +
-            //    "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
-            //    "upgrade-insecure-requests;"
+            context.Response.Headers.Add("Content-Security-Policy", new StringValues(
+                "base-uri 'self';" +
+                "block-all-mixed-content;" +
+                "default-src 'self';" +
+                "frame-ancestors 'none';" +
+                "font-src 'self' https://fonts.gstatic.com https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com ;" +
+                "img-src 'self' data: https:;" +
+                "script-src 'self' 'unsafe-inline';" +
+                "style-src 'self' 'unsafe-inline' https://maxcdn.bootstrapcdn.com https://fonts.googleapis.com;" +
+                "upgrade-insecure-requests;"
 
             #region Other Directives that can be used
             //"child-src 'none';" +
@@ -298,7 +300,7 @@ public sealed class SecurityHeadersMiddleware
             //"worker-src 'self';"
             #endregion
 
-            //));
+            ));
         }
         return _next(context);
     }

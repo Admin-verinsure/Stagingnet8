@@ -405,6 +405,13 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductIndex(string Programme)
         {
+            var user = await CurrentUser();
+
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             var productList = new List<Product>();
             var programme = await _programmeService.GetProgramme(Guid.Parse(Programme));
             productList = programme.Products.ToList();
@@ -515,7 +522,12 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> CreateDocument(string id, string productId)
         {
             DocumentViewModel model = new DocumentViewModel();
-            User user = null;
+            User user =  await CurrentUser(); 
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
                 if (string.IsNullOrWhiteSpace(id))
@@ -598,9 +610,15 @@ namespace DealEngine.WebUI.Controllers
         {
             BaseListViewModel<DocumentInfoViewModel> models = new BaseListViewModel<DocumentInfoViewModel>();
             User user = null;
+           
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 List<SystemDocument> docs = _documentRepository.FindAll().Where(d => d.DateDeleted == null && user.PrimaryOrganisation == d.OwnerOrganisation && d.IsTemplate).ToList();
 
                 if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsInsurer)

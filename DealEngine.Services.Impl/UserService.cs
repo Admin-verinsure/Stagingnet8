@@ -345,7 +345,7 @@ namespace DealEngine.Services.Impl
 		}
 		public async Task<List<User>> GetAllUserByOrganisation(Organisation org)
 		{
-			return _userRepository.FindAll().Where(u => u.PrimaryOrganisation == org).ToList();
+			return _userRepository.FindAll().Where(u => u.PrimaryOrganisation == org).OrderBy(u => u.FullName).ToList();
 		}
 
 		private void UpdateLDap(User user)

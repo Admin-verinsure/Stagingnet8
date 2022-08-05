@@ -603,6 +603,7 @@ namespace DealEngine.WebUI.Models.Agreement
         public string CancelAgreementReason { get; set; }
         public bool SentOnlineAcceptance { get; set; }
         public string RetroactiveDate { get; set; }
+        public string ContinuityDate { get; set; }
         public string TerritoryLimit { get; set; }
         public string Jurisdiction { get; set; }
         public string ProfessionalBusiness { get; set; }
@@ -628,6 +629,9 @@ namespace DealEngine.WebUI.Models.Agreement
         public IList<SelectListItem> Organisations { get; set; }
         public bool IsMasterAgreement { get; set; }
         public bool UsesEglobal { get; set; }
+        public bool HasCCPayment { get; set; }
+        public bool HasInvoicePayment { get; set; }
+        public bool ProgEnableBrokerUW { get; set; }
     }
 
     public class InsuranceInclusion

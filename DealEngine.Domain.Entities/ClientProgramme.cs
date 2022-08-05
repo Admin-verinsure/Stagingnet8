@@ -43,6 +43,10 @@ namespace DealEngine.Domain.Entities
         public virtual ClientProgramme RenewFromClientProgramme { get; set; }
         protected ClientProgramme() : this(null, null, null) { }
         public virtual string EGlobalExternalContactNumber { get; set; }
+        public virtual DateTime ClientProgrammeInceptionDate { get; set; }
+        public virtual DateTime ClientProgrammeExpiryDate { get; set; }
+        public virtual Guid BrokerContactId { get; set; }
+
         public ClientProgramme (User createdBy, Organisation createdFor, Programme baseProgramme)
 			: base(createdBy)
 		{

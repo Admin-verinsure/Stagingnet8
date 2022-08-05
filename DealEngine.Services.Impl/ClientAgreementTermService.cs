@@ -40,7 +40,7 @@ namespace DealEngine.Services.Impl
 
         }
 
-        public async Task AddAgreementTerm(User createdBy, int termLimit, decimal excess, decimal premium, decimal fSL, decimal brokerageRate, decimal brokerage, ClientAgreement clientAgreement, string subTermType)
+        public async Task AddAgreementTerm(User createdBy, int termLimit ,int AggregateLimit, decimal excess, decimal premium, decimal fSL, decimal brokerageRate, decimal brokerage, ClientAgreement clientAgreement, string subTermType)
         {
             if (string.IsNullOrWhiteSpace(termLimit.ToString()))
                 throw new ArgumentNullException(nameof(termLimit));
@@ -54,6 +54,8 @@ namespace DealEngine.Services.Impl
                 throw new ArgumentNullException(nameof(brokerageRate));
             if (string.IsNullOrWhiteSpace(brokerage.ToString()))
                 throw new ArgumentNullException(nameof(brokerage));
+            if (string.IsNullOrWhiteSpace(AggregateLimit.ToString()))
+                throw new ArgumentNullException(nameof(AggregateLimit));
             if (clientAgreement == null)
                 throw new ArgumentNullException(nameof(clientAgreement));
             

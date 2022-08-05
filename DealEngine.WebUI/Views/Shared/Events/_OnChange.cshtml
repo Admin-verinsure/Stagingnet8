@@ -73,6 +73,15 @@
         catch (ex) {
             //we assume the obj is part of a form but may not always be the case
         }
+
+        if (Name = "BuildingViewModel_buildingtenant") {
+            debugger;
+            var tenantval = $('#BuildingViewModel_buildingtenant').val();
+            if (tenantval = "addTenant") {
+                $('#addTenantModal').show();
+            }
+
+        }
     }
 
     function InputValidation(obj, value) {
@@ -509,7 +518,8 @@
             Value == "JBarrister" ||
             Value == "Barrister"||
             Value == "IEntity" ||
-            Value =="ABusiness") {
+            Value == "ABusiness") {
+            //Value == "MREDirector" ) {
             //readonly Organisation Type personal
             document.getElementById("OwnerFap").hidden = true;
 
@@ -536,15 +546,65 @@
             }
 
 
-
+          
             if (Value == "Contractor") {
                 ContractorOnChange();
             }
 
+            //if (Value == "Run Off") {
+            //    debugger;
+            //    var RunOffUnit = document.getElementById("RunOffUnit");
+            //    if (RunOffUnit != null) {
+            //        document.getElementById("RunOffUnit").hidden = false;
+            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+            //        //TradingName.addAttribute("required");
+            //    }
+            //    var Email = document.getElementById("EmailDiv");
+            //    if (Email != null) {
+            //        document.getElementById("EmailDiv").hidden = true;
+            //        Email.removeAttribute("required");
+            //    }
+            //} else {
+            //    var RunOffUnit = document.getElementById("RunOffUnit");
+            //    if (RunOffUnit != null) {
+            //        document.getElementById("RunOffUnit").hidden = true;
+            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+            //        TradingName.removeAttribute("required");
+            //    }
+            //    var Email = document.getElementById("EmailDiv");
+            //    if (Email != null) {
+            //        document.getElementById("EmailDiv").hidden = false;
+            //    //    Email.addAttribute("required");
+            //    }
+            //}
+
+
             for (var i = 0; i < List.options.length; i++) {
+                //if (List.options[i].text == "Private" && Value != "MREDirector") {
                 if (List.options[i].text == "Private") {
+
                     List.options[i].selected = true;
                     document.getElementById("Private").hidden = false;
+
+                    var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+                    if (IsDirectorUnit != null) {
+                        document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                            el.style.display = 'none';
+                        });
+                    }
+
+                    var Email = document.getElementById("EmailDiv");
+                    if (Email != null) {
+                      document.getElementById("EmailDiv").hidden = false;
+                    }
+
+                    var RunOffUnit = document.getElementById("RunOffUnit");
+                    if (RunOffUnit != null) {
+                        document.getElementById("RunOffUnit").hidden = true;
+                        var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                        effectivedate.removeAttribute("required");
+                    }
+
                 }
             }
 
@@ -565,7 +625,7 @@
             if (Value == "ABusiness") {
                 ABusinessOnChange();
             }
-
+           
             List.disabled = true;
         } else {
             document.getElementById("Else").hidden = false;
@@ -581,6 +641,71 @@
                 }
             }
 
+            if (Value == "Subsidiary Company organisation") {
+                debugger;
+                var NoTradingName = document.getElementById("NoTradingName");
+                if (NoTradingName != null) {
+                    document.getElementById("TradingName").hidden = false;
+                    var TradingName = document.getElementById("Organisation.TradingName");
+                    TradingName.hidden = false;
+                    TradingName.removeAttribute("required");
+                }
+
+                var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+
+                if (IsDirectorUnit != null) {
+                    document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                        el.style.display = 'none';
+                    });
+                }
+
+                var Email = document.getElementById("EmailDiv");
+                if (Email != null) {
+                    document.getElementById("EmailDiv").hidden = true;
+                }
+
+
+            }
+
+            if (Value == "MREDirector") {
+                MEDirectorOnChange();
+
+            }
+
+
+            if (Value == "Run Off") {
+                debugger;
+                var RunOffUnit = document.getElementById("RunOffUnit");
+                if (RunOffUnit != null) {
+                    document.getElementById("RunOffUnit").hidden = false;
+                    //var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                    //TradingName.addAttribute("required");
+                }
+                var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+
+                if (IsDirectorUnit != null) {
+                    document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                        el.style.display = 'none';
+                    });
+                }
+
+                var Email = document.getElementById("EmailDiv");
+                if (Email != null) {
+                    document.getElementById("EmailDiv").hidden = true;
+                }
+
+
+            } else {
+                var RunOffUnit = document.getElementById("RunOffUnit");
+                if (RunOffUnit != null) {
+                    document.getElementById("RunOffUnit").hidden = true;
+                    var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                    effectivedate.removeAttribute("required");
+                }
+               
+            }
+
+
             var NoTradingNameValidation = document.getElementById("NoTradingNameValidation");
                     var TradingName = document.getElementById("Organisation.TradingName");
                     if (NoTradingNameValidation != null && NoTradingNameValidation.value == "True") {
@@ -589,9 +714,27 @@
                          TradingName.classList.add("is-valid");
                     }
 
+
+
         }
 
         DefaultRule("1", Value);
+
+
+        //var NoEmailValidation = document.getElementById("MREDirectorUnit");
+        //if (NoEmailValidation != null) {
+        //    var Email = document.getElementById("EmailDiv");
+        //    if (Email != null) {
+        //        document.getElementById("EmailDiv").hidden = true;
+        //        Email.removeAttribute("required");
+        //    }
+        //} else {
+        //    var Email = document.getElementById("User.Email");
+        //    if (Email != null) {
+        //        document.getElementById("User.Email").hidden = false;
+        //        Email.addAttribute("required");
+        //    }
+        //}
     }
 
     function AdministratorOnChange() {
@@ -636,6 +779,31 @@
         }
        
         
+
+    }
+
+    function MEDirectorOnChange() {
+        debugger;
+        var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+      
+
+        if (IsDirectorUnit != null) {
+            document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                el.style.display = 'unset';
+            });
+        }
+
+        var Email = document.getElementById("EmailDiv");
+        if (Email != null) {
+            document.getElementById("EmailDiv").hidden = true;
+        }
+
+        var RunOffUnit = document.getElementById("RunOffUnit");
+        if (RunOffUnit != null) {
+            document.getElementById("RunOffUnit").hidden = true;
+            var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+            effectivedate.removeAttribute("required");
+        }
 
     }
 
@@ -838,7 +1006,7 @@
             var additionalactivityId = activities.options[i].value;
             if (additionalactivityId == "CUS0029" || additionalactivityId == "CUS0039" || additionalactivityId == "CUS0044" || additionalactivityId == "CUS0061" ||
                 additionalactivityId == "CUS0076" || additionalactivityId == "customict010" || additionalactivityId == "CUS0081" || additionalactivityId == "CUSFANZ11" || 
-                additionalactivityId == "CUSFANZ21" || additionalactivityId == "CUSNZBar20") {
+                additionalactivityId == "CUSFANZ21" || additionalactivityId == "CUSNZBar20" || additionalactivityId == "CUSMRE20") {
                 additionalactivityId = "CUS0018";
             }
             if (activities.options[i].selected === true) {

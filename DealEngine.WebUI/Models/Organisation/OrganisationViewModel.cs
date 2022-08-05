@@ -127,6 +127,16 @@ namespace DealEngine.WebUI.Models
                     OwnershipOptions = GetOwnershipOptions();
                 }
 
+                if (Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                {
+                    SubsidiaryUnit = new SubsidiaryUnit(null, null, null, null);
+                    RealEstateRunOffUnit = new RealEstateRunOffUnit(null, null, null, null);
+                    RealEstateDirectorUnit = new RealEstateDirectorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
+                    InsuranceAttributes = GetMarshRE();
+                    OrganisationTypes = GetMREOrganisationTypes();
+
+                }
+
                 Organisation = ClientInformationSheet.Owner;
                 //if (Organisations.Any(o => o.Id != (ClientInformationSheet.Owner.Id)))
                 Organisations.Add(ClientInformationSheet.Owner);
@@ -368,6 +378,39 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Co Owner",
                         Value = "Co Owner"
+                    }
+                };
+            return _Types;
+        }
+
+        private IList<SelectListItem> GetMarshRE()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                    new SelectListItem
+                    {
+                        Text = "-- Select --",
+                        Value = "0"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Private",
+                        Value = "Personnel"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Director",
+                        Value = "MREDirector"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Subsidiary Company organisation",
+                        Value = "Subsidiary Company organisation"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Run Off",
+                        Value = "Run Off"
                     }
                 };
             return _Types;
@@ -662,6 +705,36 @@ namespace DealEngine.WebUI.Models
                 };
             return _Types;
         }
+
+        private IList<SelectListItem> GetMREOrganisationTypes()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                   
+                    new SelectListItem
+                    {
+                        Text = "Private ",
+                        Value = "Personnel"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Director ",
+                        Value = "MREDirector "
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Other Subsidiary Company",
+                        Value = "Other Subsidiary Company"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Run Off",
+                        Value = "RunOff"
+                    }
+                    
+                };
+            return _Types;
+        }
         private IList<SelectListItem> GetHasRegisteredOptions()
         {
             var _Types = new List<SelectListItem>();
@@ -936,6 +1009,10 @@ namespace DealEngine.WebUI.Models
         public BarristerUnit BarristerUnit { get; set; }
         [JsonIgnore]
         public IList<SelectListItem> HasBarristerPrincipalOptions { get; set; }
+        public RealEstateDirectorUnit RealEstateDirectorUnit { get; set; }
+        public RealEstateRunOffUnit RealEstateRunOffUnit { get; set; }
+        public SubsidiaryUnit SubsidiaryUnit { get; set; }
+
     }
 }
 

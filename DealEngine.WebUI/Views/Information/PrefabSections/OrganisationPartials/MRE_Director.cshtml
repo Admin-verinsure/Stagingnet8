@@ -1,0 +1,34 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<div class="RealEstateDirectorUnit" style="display:none">
+
+    <div class="form-group row">
+        @*<div class="form-group col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.OrganisationViewModel.RealEstateDirectorUnit.Name, new { @class = "label required" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.RealEstateDirectorUnit.Name, new { @class = "form-control", @id = "RealEstateDirectorUnit.Name", @required = "", @maxlength = "250" })
+            </div>
+        </div>*@
+        <div class="form-group col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.OrganisationViewModel.RealEstateDirectorUnit.Qualification, new { @class = "label required" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.RealEstateDirectorUnit.Qualification, new { @class = "form-control", @id = "RealEstateDirectorUnit.Qualification", @required = "", @maxlength = "250" })
+            </div>
+        </div>
+        <div class="form-group col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.OrganisationViewModel.RealEstateDirectorUnit.FirmYears, new { @class = "label required" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.RealEstateDirectorUnit.FirmYears, new { @class = "form-control", @id = "RealEstateDirectorUnit.FirmYears", @required = "", @maxlength = "250" })
+            </div>
+        </div>
+
+        <div class="form-group col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.OrganisationViewModel.RealEstateDirectorUnit.ProfessionYears, new { @class = "label required" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.RealEstateDirectorUnit.ProfessionYears, new { @class = "form-control", @id = "RealEstateDirectorUnit.ProfessionYears", @required = "", @maxlength = "250" })
+            </div>
+        </div>
+
+    </div>
+</div>
+

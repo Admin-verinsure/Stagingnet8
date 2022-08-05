@@ -10,14 +10,28 @@
             <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in Model.OrganisationViewModel.OrganisationTypes)
                 {
-    <option selected="@option.Selected" value="@option.Value">@option.Text</option>}
+                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                }
             </select>
         </div>
-        <div class="form-group">
-            @Html.LabelFor(m => m.OrganisationViewModel.User.Email, new { @class = "label required" })
-            @Html.TextBoxFor(m => m.OrganisationViewModel.User.Email, new { @class = "form-control", @id = "User.Email", @data_rule = "OrganisationEmail", @onchange = "OnChange(this.id, this.name)", @required = "", @type = "email" })
-            <div id="InvalidOrganisationEmail" class="invalid-feedback">Organisation email already exists - please enter a different email</div>
-        </div>
+        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+        {
+            <div class="form-group" id="EmailDiv" hidden>
+                @Html.LabelFor(m => m.OrganisationViewModel.User.Email, new { @class = "label required" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.User.Email, new { @class = "form-control", @id = "User.Email", @data_rule = "OrganisationEmail", @onchange = "OnChange(this.id, this.name)", @required = "", @type = "email" })
+                <div id="InvalidOrganisationEmail" class="invalid-feedback">Organisation email already exists - please enter a different email</div>
+            </div>
+        }
+        else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName != "Marsh Real Estate Programme")
+        {
+            <div class="form-group" id="EmailDiv">
+                @Html.LabelFor(m => m.OrganisationViewModel.User.Email, new { @class = "label required" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.User.Email, new { @class = "form-control", @id = "User.Email", @data_rule = "OrganisationEmail", @onchange = "OnChange(this.id, this.name)", @required = "", @type = "email" })
+                <div id="InvalidOrganisationEmail" class="invalid-feedback">Organisation email already exists - please enter a different email</div>
+            </div>
+        }
+
+
     </div>
     <div class="form-group col-md-6">
         <div class="form-group" id="HideInsuranceAttribute">
@@ -25,7 +39,8 @@
             <select id="Organisation.InsuranceAttribute" name="OrganisationViewModel.InsuranceAttribute" class="form-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in @Model.OrganisationViewModel.InsuranceAttributes)
                 {
-    <option selected="@option.Selected" value="@option.Value">@option.Text</option>}
+                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                }
             </select>
         </div>
     </div>
@@ -35,24 +50,24 @@
         @Html.LabelFor(m => m.OrganisationViewModel.Organisation.Name, new { @class = "label required" })
         @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.Name, new { @class = "form-control", @id = "Organisation.Name", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo ML Programme")
+              Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo ML Programme")
         {
-<div class="form-group" id="HideDateofIncorportation" hidden>
-    @Html.LabelFor(m => m.OrganisationViewModel.Organisation.DateofIncorportation, new { @class = "label required" })
-    @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.DateofIncorportation, "dd/MM/yyyy", new { @class = "form-control", @id = "Organisation.DateofIncorportation", @type = "date", @onchange = "OnChange(this.id, this.name)", @required = "" })
-    @if (Model.OrganisationViewModel.Organisation.DateofIncorportation == null)
-    {
-@Html.Hidden("NoDateofIncorportation", true) }
+            <div class="form-group" id="HideDateofIncorportation" hidden>
+                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.DateofIncorportation, new { @class = "label required" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.DateofIncorportation, "dd/MM/yyyy", new { @class = "form-control", @id = "Organisation.DateofIncorportation", @type = "date", @onchange = "OnChange(this.id, this.name)", @required = "" })
+                @if (Model.OrganisationViewModel.Organisation.DateofIncorportation == null)
+                {
+                    @Html.Hidden("NoDateofIncorportation", true) }
                 else
                 {
-@Html.Hidden("NoDateofIncorportation", false)                }
-</div>
-                <div class="form-group" id="TradingName">
-                    @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
-                    {
-    @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label" })
-                        @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "If Applicable. Max characters is 250. Over 250 will not be stored." })                }
-                </div>}
+                    @Html.Hidden("NoDateofIncorportation", false)}
+            </div>
+            <div class="form-group" id="TradingName">
+                @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
+                {
+                    @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label" })
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "If Applicable. Max characters is 250. Over 250 will not be stored." })}
+            </div>}
     </div>
     @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
 Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
@@ -66,39 +81,154 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
 <div class="form-group col-md-6" id="TradingName" hidden>
     @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
     {
-@Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label required" })
-                    @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "If Applicable. Max characters is 250. Over 250 will not be stored." })
-                                        @if (string.IsNullOrWhiteSpace(Model.OrganisationViewModel.Organisation.TradingName))
-                                        {
-                    @Html.Hidden("NoTradingName", true) }
-                                        else
-                                        {
-                    @Html.Hidden("NoTradingName", false)}
-                                                            @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
-                                                            {
-                                        @Html.Hidden("NoTradingNameValidation", true) }
-                                                            else
-                                                            {
-                                        @Html.Hidden("NoTradingNameValidation", false)}}
+        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label required" })
+        @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "If Applicable. Max characters is 250. Over 250 will not be stored." })
+        @if (string.IsNullOrWhiteSpace(Model.OrganisationViewModel.Organisation.TradingName))
+        {
+            @Html.Hidden("NoTradingName", true) }
+        else
+        {
+            @Html.Hidden("NoTradingName", false)}
+        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
+        {
+            @Html.Hidden("NoTradingNameValidation", true) }
+        else
+        {
+            @Html.Hidden("NoTradingNameValidation", false)}
+    
+    }
+
+    @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+    {
+        @*@Html.Hidden("NoTradingNameValidation", true)*@
+        @Html.Hidden("NoEmailValidation", true)
+    }
+    
+    
 </div>}
 </div>
 
 @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme"
-  || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
+|| Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
+       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
+       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
 
 {
 
-<div class="form-group AdvisorUnit">
+    <div class="form-group AdvisorUnit">
+
+
+        <div class="form-group col-md-6">
+            <div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.FAPLicenseNumber, new { @class = "label required" })
+
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.AdvisorUnit.FAPLicenseNumber, new { @class = "form-control", @id = "AdvisorUnit.FAPLicenseNumber" })
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div class="form-group col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.isTheFAP, new { @class = "label required" })
+                <select id="AdvisorUnit.isTheFAP" name="OrganisationViewModel.AdvisorUnit.isTheFAP" data-rule="IsTheFap" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">
+                            @option.Text
+                        </option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div id="OrganisationViewModel.AdvisorUnit.isTheFAP" class="form-group col-md-6" hidden>
+
+            <div class="form-group">
+                <div>
+                    @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.isInterposedPerson, new { @class = "label required" })
+
+                </div>
+                <select id="AdvisorUnit.isInterposedPerson" name="OrganisationViewModel.AdvisorUnit.isInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">
+                            @option.Text
+                        </option>
+                    }
+                </select>
+            </div>
+
+
+        </div>
+
+    </div>}
+
+<div class="form-group" id="OwnerFap" hidden>
+    @if (Model.OrganisationViewModel.Programme.IsFAPOrg)
+    {
+        <div class="form-group  col-md-6">
+            <div>
+                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "label required" })
+            </div>
+
+            @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "form-control", @id = "Organisation.OrganisationFAPLicenseNumber" })
+
+        </div>
+
+        <div class="form-group  col-md-6">
+            <div>
+                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationTheFAP, new { @class = "label required" })
+            </div>
+
+            <select id="Organisation.isOrganisationTheFAP" name="OrganisationViewModel.Organisation.isOrganisationTheFAP" data-rule="IsTheFap" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
+                {
+                    <option selected="@option.Selected" value="@option.Value">
+                        @option.Text
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div id="OrganisationViewModel.Organisation.isOrganisationTheFAP" class="form-group  col-md-6" hidden>
+
+            <div>
+                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationInterposedPerson, new { @class = "label required" })
+
+            </div>
+
+            <select id="Organisation.isOrganisationInterposedPerson" name="OrganisationViewModel.Organisation.isOrganisationInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
+                {
+                    <option selected="@option.Selected" value="@option.Value">
+                        @option.Text
+                    </option>
+                }
+            </select>
+        </div>
+    }
+
+</div>
+
+
+
+
+@if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+
+{
+<div id="RunOffUnit" class="form-group  col-md-6" hidden>
 
 
     <div class="form-group col-md-6">
         <div>
             <div class="form-group">
-                @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.FAPLicenseNumber, new { @class = "label required" })
+                @Html.LabelFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.EffectiveDate, new { @class = "label required" })
 
-                @Html.TextBoxFor(m => m.OrganisationViewModel.AdvisorUnit.FAPLicenseNumber, new { @class = "form-control", @id = "AdvisorUnit.FAPLicenseNumber" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.EffectiveDate, new { @class = "form-control", @id = "RealEstateRunOffUnit.EffectiveDate" })
             </div>
 
         </div>
@@ -106,81 +236,25 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
 
     </div>
 
-    <div class="form-group col-md-6">
-        <div class="form-group">
-            @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.isTheFAP, new { @class = "label required" })
-            <select id="AdvisorUnit.isTheFAP" name="OrganisationViewModel.AdvisorUnit.isTheFAP" data-rule="IsTheFap" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
-                {
-<option selected="@option.Selected" value="@option.Value">
-    @option.Text
-</option>}
-            </select>
-        </div>
-    </div>
+    @*<div class="form-group col-md-6">
+        <div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.Name, new { @class = "label required" })
 
-    <div id="OrganisationViewModel.AdvisorUnit.isTheFAP" class="form-group col-md-6" hidden>
-
-        <div class="form-group">
-            <div>
-                @Html.LabelFor(m => m.OrganisationViewModel.AdvisorUnit.isInterposedPerson, new { @class = "label required" })
-
+                @Html.TextBoxFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.Name, new { @class = "form-control", @id = "RealEstateRunOffUnit.Name" })
             </div>
-            <select id="AdvisorUnit.isInterposedPerson" name="OrganisationViewModel.AdvisorUnit.isInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
-                {
-<option selected="@option.Selected" value="@option.Value">
-    @option.Text
-</option>}
-            </select>
+
         </div>
 
 
-    </div>
+    </div>*@
 
-</div>}
 
-<div class="form-group" id="OwnerFap" hidden>
-    @if (Model.OrganisationViewModel.Programme.IsFAPOrg)
-    {
-<div class="form-group  col-md-6">
-    <div>
-        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "label required" })
-    </div>
-
-    @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.OrganisationFAPLicenseNumber, new { @class = "form-control", @id = "Organisation.OrganisationFAPLicenseNumber" })
 
 </div>
 
-                <div class="form-group  col-md-6">
-                    <div>
-                        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationTheFAP, new { @class = "label required" })
-                    </div>
 
-                    <select id="Organisation.isOrganisationTheFAP" name="OrganisationViewModel.Organisation.isOrganisationTheFAP" data-rule="IsTheFap" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in @Model.OrganisationViewModel.HasIsFAPOptions)
-                        {
-        <option selected="@option.Selected" value="@option.Value">
-            @option.Text
-        </option>                }
-                    </select>
-                </div>
 
-                                <div id="OrganisationViewModel.Organisation.isOrganisationTheFAP" class="form-group  col-md-6" hidden>
 
-                                    <div>
-                                        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.isOrganisationInterposedPerson, new { @class = "label required" })
-
-                                    </div>
-
-                                    <select id="Organisation.isOrganisationInterposedPerson" name="OrganisationViewModel.Organisation.isOrganisationInterposedPerson" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                                        @foreach (var option in @Model.OrganisationViewModel.HasInterposedPersonOptions)
-                                        {
-                        <option selected="@option.Selected" value="@option.Value">
-                            @option.Text
-                        </option>                }
-                                    </select>
-                                </div>}
-
-</div>
-
+    
+}

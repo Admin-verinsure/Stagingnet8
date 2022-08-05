@@ -406,6 +406,7 @@
     <PackageReference Include="FastReport.OpenSource.Data.Postgres" Version="2020.2.0" />    
     <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2020.2.0" />    
     <PackageReference Include="FastReport.OpenSource.Web" Version="2020.2.9" />    
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.2.0" />    
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.9" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
       <PrivateAssets>all</PrivateAssets>
@@ -432,7 +433,7 @@
     <PackageReference Include="Quartz" Version="3.3.3" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
     <PackageReference Include="ReflectionIT.Mvc.Paging" Version="4.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     <PackageReference Include="System.Linq.Dynamic" Version="1.0.7" />
     <PackageReference Include="Unity" Version="5.11.10" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
@@ -446,7 +447,8 @@
     <ProjectReference Include="..\DealEngine.Domain.Entities\DealEngine.Domain.Entities.csproj" />
     <ProjectReference Include="..\DealEngine.Infrastructure.FluentNHibernate\DealEngine.Infrastructure.FluentNHibernate.csproj" />
     <ProjectReference Include="..\DealEngine.Infrastructure.Payment\DealEngine.Infrastructure.Payment.csproj" />
-    <ProjectReference Include="..\DealEngine.Services.Impl\DealEngine.Services.Impl.csproj" />
+    <ProjectReference Include="..\DealEngine.Infrastructure.PolicyCenter\DealEngine.Infrastructure.PolicyCenter.csproj" />
+	<ProjectReference Include="..\DealEngine.Services.Impl\DealEngine.Services.Impl.csproj" />
   </ItemGroup>
 
 </Project>

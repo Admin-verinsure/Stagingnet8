@@ -34,5 +34,9 @@ namespace DealEngine.Domain.Entities
         public virtual string EndorsementText { get; set; }
         public virtual string PIBoundExcess { get; set; }
         public virtual string ILRetro { get; set; }
+        public virtual string MLBoundLimit { get; set; }
+        public virtual string MLBoundPremium { get; set; }
+        public virtual string MLRetro { get; set; }
+        public virtual string CERetro { get; set; }
     }
 }

@@ -64,6 +64,8 @@
         var subExcess = $(e.relatedTarget).data('sub-excess');
         var subType = $(e.relatedTarget).data('sub-type');
         var subPremiumDiffer = $(e.relatedTarget).data('sub-premiumdiffer');
+        var AggregateLimit = $(e.relatedTarget).data('sub-agreegatelimit');
+        
         var subId = $(e.relatedTarget).data('sub-id');
         if (action == "AddTerm")
              document.getElementById("TermPremiumDiffer").disabled = true;
@@ -75,6 +77,8 @@
         $(e.currentTarget).find('input[name="SumInsured"]').val(subSumInsured);
         $(e.currentTarget).find('input[name="Excess"]').val(subExcess);
         $(e.currentTarget).find('input[name="Premium"]').val(subPremium);
+        $(e.currentTarget).find('input[name="AggregateLimit"]').val(AggregateLimit);
+
         $(e.currentTarget).find('input[name="PremiumDiffer"]').val(subPremiumDiffer);
     });
 
@@ -789,6 +793,7 @@
             var Excess = $("#TermExcess").val().replace("$", " ");
          var Premium = $("#TermPremium").val().replace("$", " ");
          var PremiumDiffer = $("#TermPremiumDiffer").val().replace("$", " ");
+         var AggregateLimit = $("#AggregateLimit").val().replace("$", " ");
             var id = $("#TermId").val();
             var postData = {
                 "TermLimit": SumInsured.replace(/,/g, '').trim(),
@@ -796,6 +801,7 @@
                 "Premium": Premium.replace(/,/g, '').trim(),
                 "TermId": id,
                 "TermType": termType,
+                "AggregateLimit": AggregateLimit,
                 clientAgreementId: agreement,
                 "PremiumDiffer": PremiumDiffer.replace(/,/g, '').trim()
             };

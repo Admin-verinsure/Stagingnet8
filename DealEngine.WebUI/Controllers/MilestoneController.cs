@@ -43,6 +43,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 var programmeList = await _programmeService.GetAllProgrammes();
                 MilestoneViewModel model = new MilestoneViewModel(programmeList);               
 

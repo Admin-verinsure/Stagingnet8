@@ -102,6 +102,10 @@ namespace DealEngine.Domain.Entities
         public virtual string Reportspath { get; set; }
         public virtual IList<ProgrammeReports> ProgrammeReports { get; set; }
         public virtual bool ProgDisableClaimInsHistoryPanel { get; set; }
+        public virtual bool ProgEnableBrokerUW { get; set; }
+        public virtual bool ProgMultiPolicyMode { get; set; }
+        public virtual bool ProgMultBrokerMode { get; set; }
+
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)

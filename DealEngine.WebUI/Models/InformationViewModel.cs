@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using DealEngine.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace DealEngine.WebUI.Models
 {
@@ -37,6 +38,10 @@ namespace DealEngine.WebUI.Models
             Status = clientInformationSheet.Status;
             AnswerSheetId = clientInformationSheet.Id;
             ClientProgramme = clientInformationSheet.Programme;
+            MLViewModel = new MLViewModel();
+            BIViewModel = new BIViewModel(); //Business Information
+            RVViewModel = new RVViewModel(clientInformationSheet, OrgUser);
+            BuildingViewModel = new BuildingViewModel();
         }
         public User User { get; set; }
         public OrganisationViewModel OrganisationViewModel { get; set; }
@@ -87,8 +92,12 @@ namespace DealEngine.WebUI.Models
         public OTViewModel OTViewModel { get; internal set; }
         public IPViewModel IPViewModel { get; internal set; }
         public GeneralViewModel GeneralViewModel { get; internal set; }
+        public MLViewModel MLViewModel { get; internal set; }
+        public BIViewModel BIViewModel { get; set; }
+        public RVViewModel RVViewModel { get; set; }
+        public BuildingViewModel BuildingViewModel { get; set; }
 
-        
+
     }
 
 
@@ -302,6 +311,18 @@ namespace DealEngine.WebUI.Models
             HasRefusedOptions = GetSelectListOptions();
             HasStatutoryOffenceOptions = GetSelectListOptions();
             HasLiquidationOptions = GetSelectListOptions();
+            HasDeclinedProposal = GetSelectListOptions();
+            HasSpecialTermsOptions = GetSelectListOptions();
+            HasCancelledOptions = GetSelectListOptions();
+            HasFraudEmployeeOptions = GetSelectListOptions();
+            HasEmployeeAloneChequesOptions = GetSelectListOptions();
+            HasMonthlyCheckOptions = GetSelectListOptions();
+            HasAnnualAccountsOptions = GetSelectListOptions();
+            HasWrittenProceduresOptions = GetSelectListOptions();
+            HasEverInvestigateOptions = GetSelectListOptions();
+            HasAnyAllegationsOptions = GetSelectListOptions();
+            HasCivilAllegationsOptions = GetSelectListOptions();
+            HasOtherRiskOptions = GetSelectListOptions();
         }
 
         public string DamageLossDetails { get; set; }
@@ -309,11 +330,49 @@ namespace DealEngine.WebUI.Models
         public string RefusedDetails { get; set; }
         public string StatutoryOffenceDetails { get; set; }
         public string LiquidationDetails { get; set; }
+        public string DeclinedProposalDetails { get; set; }
+        public string SpecialTermsDetails { get; set; }
+        public string cancelledDetails { get; set; }
+        public string FraudEmployeeDetails { get; set; }
+        public string EmployeeAloneDetails { get; set; }
+        public string CashInHandDetails { get; set; }
+        public string MonthlyCheckDetails { get; set; }
+        public string AnnualAccountsDetails { get; set; }
+        public string WrittenProceduresDetails { get; set; }
+        public string EverInvestigateDetails { get; set; }
+        public string AnyAllegationsDetails { get; set; }
+        public string CivilAllegationsDetails { get; set; }
+        public string OtherRiskDetails { get; set; }
+
+        
+
+
+
         public IList<SelectListItem> HasDamageLossOptions { get; set; }
         public IList<SelectListItem> HasWithdrawnOptions { get; set; }
         public IList<SelectListItem> HasRefusedOptions { get; set; }
         public IList<SelectListItem> HasStatutoryOffenceOptions { get; set; }
         public IList<SelectListItem> HasLiquidationOptions { get; set; }
+        public IList<SelectListItem> HasDeclinedProposal { get; set; }
+        public IList<SelectListItem> HasSpecialTermsOptions { get; set; }
+        public IList<SelectListItem> HasCancelledOptions { get; set; }
+        public IList<SelectListItem> HasFraudEmployeeOptions { get; set; }
+        public IList<SelectListItem> HasEmployeeAloneChequesOptions { get; set; }
+        public IList<SelectListItem> HasMonthlyCheckOptions { get; set; }
+        public IList<SelectListItem> HasAnnualAccountsOptions { get; set; }
+        public IList<SelectListItem> HasWrittenProceduresOptions { get; set; }
+        public IList<SelectListItem> HasEverInvestigateOptions { get; set; }
+        public IList<SelectListItem> HasAnyAllegationsOptions { get; set; }
+        public IList<SelectListItem> HasCivilAllegationsOptions { get; set; }
+        public IList<SelectListItem> HasOtherRiskOptions { get; set; }
+
+        
+
+
+
+
+
+
         private IList<SelectListItem> GetSelectListOptions()
         {
             return new List<SelectListItem>()
@@ -502,6 +561,10 @@ namespace DealEngine.WebUI.Models
             HasExistingPolicyOptions = GetSelectListOptionsCyberRenew();
             HasLocationOptions = GetSelectListOptions();
             HasOptionalUltraOptions = GetSelectListOptions();
+            HasSoftwareUpdates = GetSelectListOptions();
+            HasCLOptions = GetSelectListOptions();
+            HasNoLossOptions = GetSelectListOptions();
+
         }
         private IList<SelectListItem> GetSelectListOptions()
         {
@@ -570,11 +633,23 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasOptionalUltraOptions { get; set; }
 
         public IList<SelectListItem> HasLocationOptions { get; set; }
+        public IList<SelectListItem> HasSoftwareUpdates { get; set; }
+        public IList<SelectListItem> HasCLOptions { get; set; }
+        public IList<SelectListItem> HasNoLossOptions { get; set; }
+
+        
 
         public int CoverAmount { get; set; }
         public string DateLapsed { get; set; }
         public string RetroactiveDate { get; set; }
-        public string InsurerName { get; set; }        
+        public string InsurerName { get; set; }
+        public string SoftwareUpdatesDetails { get; set; }
+        public string BackupOptionsDetails { get; set; }
+        public string AccessControlOptionsDetails { get; set; }
+        public string LocationOptionsDetails { get; set; }
+        public string ActivityOptionsDetails { get; set; }
+        public string NoLossOptionsDetails { get; set; }
+        public string KnowledgeOptionsDetails { get; set; }
     }
     public class FAPViewModel
     {
@@ -763,6 +838,12 @@ namespace DealEngine.WebUI.Models
             HasPreviouslyUndertaken = GetSelectListOptions();
             hasClaimsMade = GetSelectListOptions();
             IsRequirecoverJunior = GetSelectListOptions();
+            HasJointVentureActivitiesOptions = GetSelectListOptions();
+            HasActivitiesInsuredOptions = GetSelectListOptions();
+            HasFirmEngageOptions = GetSelectListOptions();
+            HasFirmEngageInsuredOptions = GetSelectListOptions();
+            HasStructuralConditionOptions = GetSelectListOptions();
+            HasRiskProceduresOptions = GetSelectListOptions();
         }
 
         private IList<SelectListItem> GetSelectListOptionsPIRenew()
@@ -783,6 +864,11 @@ namespace DealEngine.WebUI.Models
                 { Text = "Never had Professional Indemnity", Value = "3" }
             };
         }
+
+
+
+
+
 
         private IList<SelectListItem> GetRunOffYearCoverSelectListOptions()
         {
@@ -1158,8 +1244,15 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasPreviouslyUndertaken { get; set; }
         public IList<SelectListItem> hasClaimsMade { get; set; }
         public IList<SelectListItem> IsRequirecoverJunior { get; set; }
+        public IList<SelectListItem> HasJointVentureActivitiesOptions { get; set; }
+        public IList<SelectListItem> HasActivitiesInsuredOptions { get; set; }
+        public IList<SelectListItem> HasFirmEngageOptions { get; set; }
+        public IList<SelectListItem> HasFirmEngageInsuredOptions { get; set; }
+        public IList<SelectListItem> HasStructuralConditionOptions { get; set; }
+        public IList<SelectListItem> HasRiskProceduresOptions { get; set; }
+        public IList<SelectListItem> HasExistingCyberPolicy { get; set; }
 
-        
+
 
         public string ProcedureManagedDetails { get; set; }
         public string BusinessChangesDetails { get; set; }        
@@ -1216,6 +1309,11 @@ namespace DealEngine.WebUI.Models
         public decimal AnnualFee { get; set; }
         public decimal AnnualPremium { get; set; }
         public string ClaimsMadedetails { get; set; }
+        public string FirmEngageDetails { get; set; }
+        public string ActivitiesInsuredDetails { get; set; }
+        public string RiskExposureDetails { get; set; }
+        public string RiskProceduresDetails { get; set; }
+
     }
     public class DAOLIViewModel
     {
@@ -1306,7 +1404,6 @@ namespace DealEngine.WebUI.Models
             };
         }      
     }
-
     public class OTViewModel
     {
         public OTViewModel()
@@ -1330,6 +1427,136 @@ namespace DealEngine.WebUI.Models
         public string ClaimDetails { get; set; }
         public string InvolvedTrusteeDetails { get; set; }
         public string FinancialObligationsDetails { get; set; }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+
+    }
+
+
+    public class BIViewModel
+    {
+        public BIViewModel()
+        {
+            HasAnyMerger = GetSelectListOptions();
+            HasFirmAffiliated = GetSelectListOptions();
+            FranchiseListOptions = GetFranchiseListOptions();
+        }
+
+        private IList<SelectListItem> GetFranchiseListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Bayleys", Value = "Bayleys"
+                },
+                new SelectListItem
+                { Text = "Century 21", Value = "Century 21" },
+                new SelectListItem
+                {
+                    Text = "First National", Value = "First National"
+                },
+                new SelectListItem
+                { Text = "Harcourts", Value = "Harcourts" },
+                new SelectListItem
+                {
+                    Text = "LJ Hooker", Value = "LJ Hooker"
+                },
+                new SelectListItem
+                {
+                    Text = "Professionals", Value = "Professionals"
+                },
+                new SelectListItem
+                { Text = "Ray White", Value = "Ray White" },
+                new SelectListItem
+                { Text = "Remax", Value = "Remax" },
+                new SelectListItem
+                { Text = "Sothebys", Value = "Sothebys" },
+                new SelectListItem
+                { Text = "Other", Value = "1" }
+            };
+        }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+        public IList<SelectListItem> HasAnyMerger { get; set; }
+        public IList<SelectListItem> HasFirmAffiliated { get; set; }
+        public IList<SelectListItem> FranchiseListOptions { get; set; }
+
+        public string FirmDate { get; set; }
+        public string AgentsDetails { get; set; }
+
+        public string mergerdetails { get; set; }
+
+    }
+
+    public class MLViewModel
+    {
+        public MLViewModel()
+        {
+            HasDebtsOptions = GetSelectListOptions();
+            HasAblePayOptions = GetSelectListOptions();
+            HasAnyLawBreachOptions = GetSelectListOptions();
+            HasAnyClaimMadeOptions = GetSelectListOptions();
+            HasMLOptions = GetSelectListOptions();
+            HasInsolvencyOptions = GetSelectListOptions();
+        }
+
+        public int AssetTotal { get; set; }
+        public int AssetCurrent { get; set; }
+        
+        public int AfterTaxNumber { get; set; }
+        public int TotalLiability { get; set; }
+
+        public string MLLevel { get; set; }
+        public string AnyClaimMadeDetails { get; set; }
+
+        
+
+        public IList<SelectListItem> HasDebtsOptions { get; set; }
+        public IList<SelectListItem> HasAblePayOptions { get; set; }
+        public IList<SelectListItem> HasAnyLawBreachOptions { get; set; }
+        public IList<SelectListItem> HasAnyClaimMadeOptions { get; set; }
+        public IList<SelectListItem> HasMLOptions { get; set; }
+        public IList<SelectListItem> HasInsolvencyOptions { get; set; }
+
+        
+
+
 
         private IList<SelectListItem> GetSelectListOptions()
         {
@@ -1581,4 +1808,243 @@ namespace DealEngine.WebUI.Models
         public DateTime PolicyEndDate { get; set; }
 
     }
+
+    public class RVViewModel : BaseViewModel
+    {
+        public RVViewModel(ClientInformationSheet clientInformationSheet, User OrgUser)
+        {
+            HasRegisteredNumber = GetSelectListOptions();
+            TypeOfCover = GetCoverOptions();
+            AreaOperation = GetAreaOptions();
+            Grade = GetGradeOptions();
+            TypeOfVehicle = GetVehicleOptions();
+            vehicles = new List<Domain.Entities.Vehicle>();
+
+            foreach (var vehicle in clientInformationSheet.Vehicles)
+            {
+                vehicles.Add(vehicle);
+            }
+        }
+        public Guid Id { get; set; }
+
+        public IList<Domain.Entities.Vehicle> vehicles { get; set; }
+        //public Domain.Entities.Vehicle Vehicle { get; set; }
+        [Display(Name = "Has Registered Number?")]
+        public IList<SelectListItem> HasRegisteredNumber { get; set; }
+        [Display(Name = "Type of cover:")]
+        public IList<SelectListItem> TypeOfCover { get; set; }
+
+        [Display(Name = "Area Of Operation:")]
+        public IList<SelectListItem> AreaOperation { get; set; }
+
+
+        [Display(Name = "Claims Grade:")]
+        public IList<SelectListItem> Grade { get; set; }
+
+
+        [Display(Name = "Type Of Vehicle:")]
+        public IList<SelectListItem> TypeOfVehicle { get; set; }
+        
+  
+        [Display(Name = "Registration Number?")]
+        public string Registration { get; set; }
+
+        [Display(Name = "Year:")]
+        public string Year { get; set; }
+        [Display(Name = "Make:")]
+        public string Make { get; set; }
+        [Display(Name = "Model:")]
+        public string Model { get; set; }
+
+        [Display(Name = "Estimated Market Value:")]
+        public string GroupSumInsured { get; set; }
+        public string Validated { get; set; }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+        private IList<SelectListItem> GetCoverOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                { 
+                    Text = "Full Cover", Value = "FullCover" 
+                },
+                new SelectListItem
+                {
+                    Text = "Third party, fire and theft (TPFT)", Value = "TPFT"
+                },
+                new SelectListItem
+                {
+                     Text = "Third party only(TP)", Value = "TP"
+                }
+            };
+        }
+
+        private IList<SelectListItem> GetGradeOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "1", Value = "1"
+                },
+                new SelectListItem
+                {
+                    Text = "2", Value = "2"
+                },
+                new SelectListItem
+                {
+                     Text = "3", Value = "3"
+                },
+                new SelectListItem
+                {
+                     Text = "4", Value = "4"
+                }
+            };
+        }
+
+        private IList<SelectListItem> GetVehicleOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Light Vehicle", Value = "LightVehicle"
+                }
+            };
+        }
+
+
+        private IList<SelectListItem> GetAreaOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "NorthLand", Value = "NorthLand"
+                },
+                new SelectListItem
+                {
+                    Text = "Auckland", Value = "Auckland"
+                },
+                new SelectListItem
+                {
+                     Text = "Waikato", Value = "Waikato"
+                },
+                new SelectListItem
+                {
+                    Text = "Bay Of Plenty", Value = "Bay Of Plenty"
+                },
+                new SelectListItem
+                {
+                    Text = "Gisborne", Value = "Gisborne"
+                },
+                new SelectListItem
+                {
+                     Text = "Hawke's Bay", Value = "Hawke's Bay"
+                },
+                new SelectListItem
+                {
+                    Text = "Taranaki", Value = "Taranaki"
+                },
+                new SelectListItem
+                {
+                    Text = "Manawatu-Wanga", Value = "Manawatu-Wanga"
+                },
+                new SelectListItem
+                {
+                     Text = "Malborough", Value = "Malborough"
+                },
+                new SelectListItem
+                {
+                     Text = "Nelson-Tasman", Value = "Nelson-Tasman"
+                },
+                new SelectListItem
+                {
+                    Text = "West Coast", Value = "West Coast"
+                },
+                new SelectListItem
+                {
+                    Text = "Canterbury", Value = "Canterbury"
+                },
+                new SelectListItem
+                {
+                     Text = "Otago", Value = "Otago"
+                },
+                new SelectListItem
+                {
+                    Text = "Southland", Value = "Southland"
+                },
+                new SelectListItem
+                {
+                    Text = "Australia", Value = "Australia"
+                },
+                new SelectListItem
+                {
+                     Text = "South Pacific", Value = "South Pacific"
+                }
+            };
+        }
+    }
+
+
+    //public class BuildingViewModel
+    //{
+    //    public GeneralViewModel()
+    //    {
+    //        if (PolicyDate == DateTime.MinValue)
+    //        {
+    //            PolicyDate = DateTime.Now;
+    //        }
+    //        if (PolicyStartDate == DateTime.MinValue)
+    //        {
+    //            PolicyStartDate = DateTime.Now;
+    //        }
+    //        if (PolicyEndDate == DateTime.MinValue)
+    //        {
+    //            PolicyEndDate = DateTime.Now;
+    //        }
+    //    }
+    //    [Display(Name = "Policy Date")]
+    //    public DateTime PolicyDate { get; set; }
+
+    //    [Display(Name = "Policy Start Date")]
+    //    public DateTime PolicyStartDate { get; set; }
+
+    //    [Display(Name = "Policy End Date")]
+    //    public DateTime PolicyEndDate { get; set; }
+
+    //}
 }

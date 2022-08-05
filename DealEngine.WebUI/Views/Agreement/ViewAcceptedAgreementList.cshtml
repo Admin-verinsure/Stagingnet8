@@ -44,7 +44,7 @@
                 {
                     <div class="form-group">
                         <ul class="nav nav-pills" id="pills-tab" role="tablist">
-                            @if (item.CurrentUser.PrimaryOrganisation.IsBroker || item.CurrentUser.PrimaryOrganisation.IsTC)
+                            @if ((item.CurrentUser.PrimaryOrganisation.IsBroker && !item.ProgEnableBrokerUW) || item.CurrentUser.PrimaryOrganisation.IsTC)
                             {
                                 <li class="nav-item">
                                     <a href='@Url.Action("PartialViewProgramme", "Information",new { id = @item.ClientProgrammeId, viewlist="ListView"})' class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Information for all Products </a>
@@ -69,13 +69,16 @@
             }*@
 
                                 <li class="nav-item">
-                                    <a href="~/Agreement/EditAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Dates </a>
+                                    <a href="~/Agreement/EditAgreement/@item.ClientAgreementId" class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i> Edit Policy Dates </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="~/Agreement/ViewAgreementRule/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Premiums </a>
+                                    <a href="@Url.Action("EditTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode  })" class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>
+
+                                    @*<a href="~/Agreement/EditTerms/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>*@
                                 </li>
+
                                 <li class="nav-item">
-                                    <a href="~/Agreement/ViewAgreementEndorsement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Policy Endorsements </a>
+                                    <a href="~/Agreement/ViewAgreementEndorsement/@item.ClientAgreementId" class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i> Policy Endorsements </a>
                                 </li>
                                 @if (User.IsInRole("TCUser"))
                                 {
@@ -91,10 +94,9 @@
                                     }
 
                                 }
-                                <li class="nav-item">
-                                    <a href="@Url.Action("EditTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode  })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>
 
-                                    @*<a href="~/Agreement/EditTerms/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>*@
+                                <li class="nav-item">
+                                    <a href="~/Agreement/ViewAgreementRule/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Premiums </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Extension </a>
@@ -192,7 +194,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                     </li>
                                 }
                             }
-                            else if (item.CurrentUser.PrimaryOrganisation.IsInsurer)
+                            else if (item.CurrentUser.PrimaryOrganisation.IsInsurer || (item.CurrentUser.PrimaryOrganisation.IsBroker && item.ProgEnableBrokerUW))
                             {
                                 <li class="nav-item">
                                     <a href="~/Information/ViewProgrammeDetails/@item.ClientProgrammeId" class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Information for all Products </a>
@@ -206,17 +208,17 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                 </li>
 
                                 <li class="nav-item">
-                                    <a href="~/Agreement/EditAgreement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Dates </a>
+                                    <a href="~/Agreement/EditAgreement/@item.ClientAgreementId" class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i> Edit Policy Dates </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="@Url.Action("EditTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="~/Agreement/ViewAgreementEndorsement/@item.ClientAgreementId" class="btn btn-secondary btn-sm"><i class="fa fa-edit"></i> Policy Endorsements </a>
+                                </li>
+
                                 <li class="nav-item">
                                     <a href="~/Agreement/ViewAgreementRule/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Premiums </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="~/Agreement/ViewAgreementEndorsement/@item.ClientAgreementId" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Policy Endorsements </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="@Url.Action("EditTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Limits </a>
-
                                 </li>
                                 <li class="nav-item">
                                     <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Edit Policy Extension </a>
@@ -271,6 +273,12 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                         </li>
 
                                     }
+                                }
+                                @if (item.UsesEglobal && item.CurrentUser.PrimaryOrganisation.IsBroker)
+                                {
+                                    <li class="nav-item">
+                                        <a href="@Url.Action("EditBillingConfiguration", "Programme", new { programmeId = @item.ClientProgrammeId })" class="btn btn-success btn-sm"><i class="fa fa-edit"></i> Billing Information Configuration </a>
+                                    </li>
                                 }
                                 @if (@item.Status == "Bound and pending payment")
                                 {

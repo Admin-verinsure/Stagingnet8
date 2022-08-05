@@ -1277,6 +1277,22 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             } else
             {
                 BrokerFeeTotal = objClientAgreement.BrokerFee;
+
+                if (objClientAgreement.ClientInformationSheet.Programme.Agreements.Where(clientagreement => clientagreement.DateDeleted == null && 
+                (clientagreement.Status == "Quoted" || clientagreement.Status == "Bound" || clientagreement.Status == "Bound and pending payment" || clientagreement.Status == "Bound and invoice pending" || 
+                clientagreement.Status == "Bound and invoiced")).Count() > 1)
+                {
+                    BrokerFeeTotal = 0;
+                    foreach (var ca in objClientAgreement.ClientInformationSheet.Programme.Agreements.Where(clientagreement => clientagreement.DateDeleted == null &&
+                                                                                                           (clientagreement.Status == "Quoted" || clientagreement.Status == "Bound" || 
+                                                                                                            clientagreement.Status == "Bound and pending payment" || 
+                                                                                                            clientagreement.Status == "Bound and invoice pending" ||
+                                                                                                            clientagreement.Status == "Bound and invoiced")))
+                    {
+                        BrokerFeeTotal += ca.BrokerFee;
+                    }
+                    
+                }
             }
             
             CalculateInvoiceSummary(EBixPolicy, BrokerFeeTotal);
@@ -1484,12 +1500,14 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
                 {
                     if (eGlobalPolicyRiskConfig.RiskCode == risk.RiskCode)
                     {
-                        foreach (EGlobalSubAgent eGlobalSubAgent in eGlobalPolicyRiskConfig.SubAgents)
+                        if (eGlobalPolicyRiskConfig.SubAgents != null)
                         {
-                            subAgents.Add(eGlobalSubAgent.CalculateSubAgent(EGlobalPolicy.ClientProgramme.InformationSheet, risk));
+                            foreach (EGlobalSubAgent eGlobalSubAgent in eGlobalPolicyRiskConfig.SubAgents)
+                            {
+                                subAgents.Add(eGlobalSubAgent.CalculateSubAgent(EGlobalPolicy.ClientProgramme.InformationSheet, risk));
+                            }
                         }
                     }
-
                 }              
             }
             return subAgents;

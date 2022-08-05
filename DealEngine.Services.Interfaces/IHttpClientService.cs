@@ -10,6 +10,7 @@ namespace DealEngine.Services.Interfaces
         Task<string> Challenge(string challengeRequest);
         Task<string> CreateEGlobalInvoice(string xmlPayload);
         Task<string> GetEglobalStatus();
+        Task<string> MEISGetAccount(string xml);
         Task<string> Authenticate(string xml);
     }
 }

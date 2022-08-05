@@ -6,9 +6,9 @@
         @Html.LabelFor(m => m.OrganisationViewModel.DirectorUnit.IsRetiredorDeceased)
         <select id="DirectorUnit.IsRetiredorDeceased" name="OrganisationViewModel.DirectorUnit.IsRetiredorDeceased" data-rule="RetirementDateValidation" class="form-select" onchange="OnChange(this.id, this.name)" required>
             @foreach (var option in Model.OrganisationViewModel.HasRetiredorDeceasedOptions)
-            {
+              {
                 <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-            }
+              }
         </select> 
     </div>
     <div id="OrganisationViewModel.DirectorUnit.IsRetiredorDeceased" hidden>

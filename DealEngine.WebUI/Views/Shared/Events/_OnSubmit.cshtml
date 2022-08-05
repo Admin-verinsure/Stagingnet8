@@ -125,7 +125,7 @@
                             }
                         }
                         else {
-                            //hardcoded to find the div visibility - need to find a better way  
+                            //hardcoded to find the div visibility - need to find a better way
                             var isHidden = element.parentElement.parentElement.parentElement.parentElement.hidden;//IsElementHidden(element);
                             if (isHidden == false) {
                                 OnChange(element.id, element.name);
@@ -159,7 +159,7 @@
                 form.classList.remove("needs-validation");
                 form.classList.add("was-validated");
             }
-            UnitValidationOnSubmit(Programme);         
+            UnitValidationOnSubmit(Programme);
             LocationValidationOnSubmit();
         }
     }
@@ -226,7 +226,7 @@
                             }
                         }
                     }
-                    
+
                     var DateofIncorportation = document.getElementById("NoDateofIncorportation");
                     if (DateofIncorportation != null) {
                         if (DateofIncorportation.value === "True") {
@@ -240,9 +240,9 @@
                     }
                 }
             }
-        }    
+        }
         var InvalidEmail = document.getElementById("ValidBackEndEmail");
-        if (InvalidEmail != null) {
+        if (InvalidEmail != null && Programme != "Marsh Real Estate Programme") {
             event.preventDefault();
             event.stopPropagation();
             $("#more").trigger("click");
@@ -304,7 +304,7 @@
                    if (Data == false) {
                        $("#IsFapOrg").val("false");
                        var hh = document.getElementById("IsFapOrg").value
-                       
+
                    } else {
                        $("#IsFapOrg").val("true");
                        var hhd = document.getElementById("IsFapOrg").value
@@ -313,7 +313,7 @@
                    }
                }
            });
-   
+
         }
 
 
@@ -329,7 +329,7 @@
         var ErrorMessage = "";
         debugger;
         var selectElement = document.getElementById('Organisation.InsuranceAttribute');
-                      
+
         var output = selectElement.value;
         debugger;
         if (output == "Administrator") {
@@ -367,7 +367,7 @@
             }
         //  document.getElementsByName("Unit").value="AdministratorUnit"
 
-       
+
 
         if (FormId === "organisationViewModel") {
             for (var i = 0; i < form.length; i++) {
@@ -393,7 +393,7 @@
                                  RemoveIsTheBarrister = true;
                             }
                          }
-                        
+
                         if (dataRule == "RetirementDateValidation" && output == "Advisor") {
                             if (element[element.selectedIndex].value == "true") {
                                 if (document.getElementById("AdvisorUnit.DateofRetirement").value == ""
@@ -402,7 +402,7 @@
                                 }
                             }
                         }
-                         
+
                         if (dataRule == "RetirementDateValidation" && output == "Director") {
                             if (element[element.selectedIndex].value == "true") {
                                 if (document.getElementById("DirectorUnit.DateofRetirement").value == ""
@@ -411,7 +411,7 @@
                                 }
                             }
                         }
-                            
+
                             var NoTradingNameValidation = document.getElementById("NoTradingNameValidation");
                              var TradingName = document.getElementById("Organisation.TradingName");
                               debugger;
@@ -466,7 +466,7 @@
                     });
                 }
 
-                
+
                  if (RemoveIsTheBarrister) {
                     $.ajax({
                         url: '@Url.Action("RemoveIsTheBarrister", "Organisation")',
@@ -479,7 +479,7 @@
                     });
                 }
 
-                
+
                 var serializeddata = $("#" + form.id).serialize();
                 $.ajax({
                     url: '@Url.Action("AddOrganisation", "Organisation")',
@@ -503,5 +503,26 @@
              window.alert(ErrorMessage);
         }
     }
+
+
+
+     function OnVehicleSubmit(FormId, AccordionId) {
+         var PostAjax = true;
+         debugger;
+        var form = document.getElementById(FormId);
+		  var serializeddata = $("#" + form.id).serialize();
+                $.ajax({
+                    url: '@Url.Action("AddMeisRegisteredVehicle", "Services")',
+                    type: "POST",
+                    async: false,
+                    data: $("#" + form.id).serialize(),
+                    success: function (Data) {
+                        location.reload();
+                    }, error: function (request, error) {
+                        debugger;
+                    }
+                });
+     }
+
 
 </script>
