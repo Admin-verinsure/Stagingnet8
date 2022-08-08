@@ -156,9 +156,13 @@ namespace DealEngine.Infrastructure.Ldap.Services
 					Attributes = mods
 				};
 				var response = client.Send <ModifyResponse> (modifyRequest);
-				client.Unbind ();
-				if (response.ResultCode > 0)
-					throw new Exception ("Unable to modify user in Ldap: " + response.ErrorMessage);
+				if(response != null)
+                {
+					client.Unbind();
+					if (response.ResultCode > 0)
+						throw new Exception("Unable to modify user in Ldap: " + response.ErrorMessage);
+				}
+				
 			}
 		}
 

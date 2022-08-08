@@ -2925,7 +2925,7 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public async Task ImportMEISOwners(User CreatedUser)
+        public async Task ImportMREOwners(User CreatedUser)
         {
             var currentUser = CreatedUser;
             StreamReader reader;
@@ -2939,7 +2939,7 @@ namespace DealEngine.Services.Impl
             string Name = "";
             Guid.TryParse("b69c2fe4-bb08-4fb3-810b-58fd4a3149cc", out Guid ProgrammeId);
             //addresses need to be on one line            
-            var fileName = WorkingDirectory + "MREPolicy.csv";
+            var fileName = WorkingDirectory + "MREExpiryPolicyFromJune2022.csv";
 
             using (reader = new StreamReader(fileName))
             {
@@ -2955,8 +2955,8 @@ namespace DealEngine.Services.Impl
                     string[] parts = line.Split(',');
                     try
                     {
-                        userName = parts[3];
-                        email = parts[6];
+                        userName = parts[5];
+                        email = parts[4];
 
 
                         try
@@ -2970,16 +2970,16 @@ namespace DealEngine.Services.Impl
                             int randomNumber = random.Next(10, 99);
                             userName = userName + randomNumber.ToString();
                             user = new User(currentUser, Guid.NewGuid(), userName);
-                            user.FirstName = parts[4];
-                            user.LastName = parts[5];
-                            user.FullName = parts[4] + " " + parts[5];
+                            user.FirstName = parts[2];
+                            user.LastName = parts[3];
+                            user.FullName = parts[2] + " " + parts[3];
                             user.Email = email;
 
                         }
 
 
                         type = "Corporation – Limited liability";
-                        Name = user.FullName;
+                        Name = parts[1];
                         OrganisationType ownerType = new OrganisationType(type);
                         InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, type);
                         OrganisationalUnit ownerUnit = new OrganisationalUnit(currentUser, type, "Head Office", null);
@@ -3026,9 +3026,9 @@ namespace DealEngine.Services.Impl
                         var sheet = await _clientInformationService.IssueInformationFor(user, Owner, clientProgramme, reference);
                         await _referenceService.CreateClientInformationReference(sheet);
                         clientProgramme.BrokerContactUser = programme.BrokerContactUser;
-                        clientProgramme.EGlobalClientNumber = parts[9];
-                        clientProgramme.EGlobalExternalContactNumber = parts[11];
-                        clientProgramme.EGlobalBranchCode = parts[8];
+                        clientProgramme.EGlobalClientNumber = parts[7];
+                        clientProgramme.EGlobalExternalContactNumber = parts[9];
+                        clientProgramme.EGlobalBranchCode = parts[6];
                         clientProgramme.ClientProgrammeMembershipNumber = parts[0];
                         sheet.IsRenewawl = true;
                         sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(user, sheet, null, programme.Name + "UIS issue Process Completed"));

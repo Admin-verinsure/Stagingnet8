@@ -206,13 +206,13 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ImportMEISOwners()
+        public async Task<IActionResult> ImportMREOwners()
         {
             User user = null;
             try
             {
                 user = await CurrentUser();
-                await _importService.ImportMEISOwners(user);
+                await _importService.ImportMREOwners(user);
 
                 return RedirectToAction("Index", "Home");
             }
