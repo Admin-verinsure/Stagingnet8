@@ -17,6 +17,9 @@ namespace DealEngine.WebUI.Models
             hasWaterSupply = GetSelectListOptions();
             hasUnoccupied = GetSelectListOptions();
             BuildingUses = GetBuildingUsesOptions();
+            IsBuildingOccupied = GetBuildingOwners();
+            IndustryOptions = GetIndustryOptions();
+            OccupationOptions = GetOccupationOptions();
         }
         public Guid AnswerSheetId { get; set; }
 
@@ -141,16 +144,113 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> FloorAreaOptions { get; set; }
         public string ResidentialUnits { get; set; }
         public string StoreysNumber { get; set; }
+        public string TenantName { get; set; }
+
         public IList<SelectListItem> hasEPS { get; set; }
         public IList<SelectListItem> hasAutomaticSprinklers { get; set; }
         public IList<SelectListItem> hasWaterSupply { get; set; }
         public IList<SelectListItem> hasUnoccupied { get; set; }
         public List<Location> Locations { get; set; }
         public IList<SelectListItem> BuildingUses { get; set; }
+        public IList<SelectListItem> IsBuildingOccupied { get; set; }
+        public IList<SelectListItem> IndustryOptions { get; set; }
+        public IList<SelectListItem> OccupationOptions { get; set; }
+
+        
+
+        private IList<SelectListItem> GetOccupationOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = ""
+                },
+                new SelectListItem
+                {
+                    Text = "Occupation1", Value = "Occupation1"
+                }
+            };
+        }
+        
+          private IList<SelectListItem> GetIndustryOptions()
+          {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = ""
+                },
+                new SelectListItem
+                {
+                    Text = "Accomodation & Food Services", Value = "7"
+                },
+                new SelectListItem
+                {
+                    Text = "Agriculture / Forestry", Value = "2"
+                },
+                new SelectListItem
+                {
+                    Text = "Healthcare", Value = "8"
+                },
+                new SelectListItem
+                {
+                    Text = "Manufacturing", Value = "4"
+                },
+                new SelectListItem
+                {
+                    Text = "Professional / Office", Value = "1"
+                },
+                new SelectListItem
+                {
+                    Text = "Retail", Value = "5"
+                },
+                new SelectListItem
+                {
+                    Text = "Services", Value = "11"
+                },
+                new SelectListItem
+                {
+                    Text = "Trades / Construction", Value = "3"
+                },
+                new SelectListItem
+                {
+                    Text = "Wholesale", Value = "6"
+                },
+                new SelectListItem
+                {
+                    Text = "Miscellaneous", Value = "9"
+                },
+                new SelectListItem
+                {
+                    Text = "Unknown", Value = "12"
+                }
+            };
+          }
 
 
-
-
+        private IList<SelectListItem> GetBuildingOwners()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = ""
+                },
+                new SelectListItem
+                {
+                    Text = "Owner", Value = "Owner"
+                },
+                new SelectListItem
+                {
+                    Text = "Tenant", Value = "Tenant"
+                },
+                new SelectListItem
+                {
+                    Text = "Both", Value = "Both"
+                }
+            };
+        }
 
         private IList<SelectListItem> GetSelectExteriorWallOptions()
         {
