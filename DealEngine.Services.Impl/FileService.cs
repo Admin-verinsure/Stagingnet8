@@ -181,8 +181,15 @@ namespace DealEngine.Services.Impl
                 List<KeyValuePair<string, string>> mergeFields = new List<KeyValuePair<string, string>>();
                 mergeFields.Add(new KeyValuePair<string, string>("[[ClientName]]", clientInformationSheet.Owner.Name));
                 mergeFields.Add(new KeyValuePair<string, string>("[[Date]]", DateTime.UtcNow.ToShortDateString()));
-                mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.FirstName +
+                if (clientInformationSheet.Programme.BrokerContactUser != null)
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BrokerContactUser.FirstName +
+                    clientInformationSheet.Programme.BrokerContactUser.LastName));
+                } else
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.FirstName +
                     clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.LastName));
+                }
 
                 // merge the configured merge feilds into the document
                 string content = FromBytes(template.Contents);
