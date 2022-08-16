@@ -198,7 +198,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                                 SubsidiaryOrg += ", " + uisorg.Name;
                             }
 
-                            SubsidiaryEndorsementTxt = "Subsidiary means any entity of which the Policyholder has Control either directly or indirectly through one or more other entities on or before the inception date of this policy.In addition, the following named entity or entities are also deemed to be a Subsidiary for the purposes of this policy: " + SubsidiaryOrg + "<br/ > All other terms, conditions and exclusions remain unchanged.";
+                            SubsidiaryEndorsementTxt = "Subsidiary means any entity of which the Policyholder has Control either directly or indirectly through one or more other entities on or before the inception date of this policy.In addition, the following named entity or entities are also deemed to be a Subsidiary for the purposes of this policy: " + SubsidiaryOrg + ". <br/ > All other terms, conditions and exclusions remain unchanged.";
                             ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, "Deemed Subsidiary Endorsement", "Exclusion", product, SubsidiaryEndorsementTxt, 110, agreement);
                             agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
                         }
@@ -221,7 +221,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             {
                                 RunOffEff += ", " + unit2.EffectiveDate;
                             }
-                            RunOffEndorsementTxt = "Run off It is hereby declared and agreed that the policy shall not indemnify the " + RunOffOrg + " against any Claim or loss arising from any civil liability committed or alleged to have been committed on the part of the Insured in or about the conduct of any Professional Business after" + RunOffEff + ". <br/ >All other terms, conditions and exclusions remain unchanged.";
+                            RunOffEndorsementTxt = "It is hereby declared and agreed that the policy shall not indemnify the " + RunOffOrg + " against any Claim or loss arising from any civil liability committed or alleged to have been committed on the part of the Insured in or about the conduct of any Professional Business after " + RunOffEff + ". <br/ >All other terms, conditions and exclusions remain unchanged.";
                             ClientAgreementEndorsement clientAgreementEndorsement1 = new ClientAgreementEndorsement(underwritingUser, "Run Off Endorsement", "Exclusion", product, RunOffEndorsementTxt, 111, agreement);
                             agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement1);
                         }
@@ -250,6 +250,20 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termpitermoption.Brokerage = TermBrokerage;
             termpitermoption.DateDeleted = null;
             termpitermoption.DeletedBy = null;
+
+            ////add Costs & Expenses extension
+            foreach (ClientAgreementTermExtension pitermextension in agreement.ClientAgreementTermExtensions.Where(ctex => ctex.DateDeleted == null))
+            {
+                pitermextension.Delete(underwritingUser);
+            }
+            ClientAgreementTermExtension termPICEextension = GetAgreementExtensionTerm(underwritingUser, agreement, 500000, 0M, 0M, "Professional Indemnity – Costs & Expenses");
+            termPICEextension.ExtentionName = "Professional Indemnity – Costs & Expenses";
+            termPICEextension.HideLimitExcess = false;
+            termPICEextension.Premium = 0M;
+            termPICEextension.BasePremium = 0M;
+            termPICEextension.DateDeleted = null;
+            termPICEextension.DeletedBy = null;
+
 
             //Change policy premium calculation
             if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
@@ -446,6 +460,19 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             return dict;
         }
 
+        //Add the Costs & Expenses extension
+        ClientAgreementTermExtension GetAgreementExtensionTerm(User CurrentUser, ClientAgreement agreement, int limitoption, decimal excessoption, decimal premiumoption, string extensionName)
+        {
+            ClientAgreementTermExtension extensionTerm = agreement.ClientAgreementTermExtensions.FirstOrDefault(tex => tex.DateDeleted != null && tex.ExtentionName == extensionName);
+
+            if (extensionTerm == null)
+            {
+                extensionTerm = new ClientAgreementTermExtension(CurrentUser, limitoption, excessoption, premiumoption, agreement);
+                agreement.ClientAgreementTermExtensions.Add(extensionTerm);
+            }
+
+            return extensionTerm;
+        }
 
         void uwrfpriorinsurance(User underwritingUser, ClientAgreement agreement)
         {

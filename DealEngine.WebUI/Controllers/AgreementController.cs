@@ -983,10 +983,7 @@ namespace DealEngine.WebUI.Controllers
                 var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
 
                 //used for eglobal request and response log 
-                if (agreement.ClientInformationSheet.Programme.BaseProgramme.ProgEnableEmail)
-                {
-                    await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
-                }
+                await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
 
                 EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
 
@@ -4402,10 +4399,7 @@ namespace DealEngine.WebUI.Controllers
                     var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
 
                     //used for eglobal request and response log
-                    if (programme.BaseProgramme.ProgEnableEmail)
-                    {
-                        await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
-                    }
+                    await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
 
                     EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
 
@@ -4684,10 +4678,7 @@ namespace DealEngine.WebUI.Controllers
                         var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
 
                         //used for eglobal request and response log
-                        if (programme.BaseProgramme.ProgEnableEmail)
-                        {
-                            await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
-                        }
+                        await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
 
                         EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
 

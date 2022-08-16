@@ -181,8 +181,15 @@ namespace DealEngine.Services.Impl
                 List<KeyValuePair<string, string>> mergeFields = new List<KeyValuePair<string, string>>();
                 mergeFields.Add(new KeyValuePair<string, string>("[[ClientName]]", clientInformationSheet.Owner.Name));
                 mergeFields.Add(new KeyValuePair<string, string>("[[Date]]", DateTime.UtcNow.ToShortDateString()));
-                mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.FirstName +
+                if (clientInformationSheet.Programme.BrokerContactUser != null)
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BrokerContactUser.FirstName +
+                    clientInformationSheet.Programme.BrokerContactUser.LastName));
+                } else
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.FirstName +
                     clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.LastName));
+                }
 
                 // merge the configured merge feilds into the document
                 string content = FromBytes(template.Contents);
@@ -1382,6 +1389,15 @@ namespace DealEngine.Services.Impl
                 {
                     //mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[RetroactiveDate_{0}]]", term.SubTermType), ""));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimit_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                    if (term.TermLimit > 1000000)
+                    {
+                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitDC_{0}]]", term.SubTermType), "$1,000,000"));
+                    } else
+                    {
+                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitDC_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                    }
+
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx2_{0}]]", term.SubTermType), (term.TermLimit * 2).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx3_{0}]]", term.SubTermType), (term.TermLimit * 3).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx4_{0}]]", term.SubTermType), (term.TermLimit * 4).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));

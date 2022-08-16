@@ -25,13 +25,13 @@
             </div>
             <div class="card-body">
                 @Html.HiddenFor(m => m.ClientAgreementId)
-               
+
                 @if (Model.ExtensionTerms.Count != 0)
                 {
                     <div class="form-group">
                         <div class="card">
                             <div class="card-header">
-                                <header>  @Model.ProductName ExtensionTerms <a href="#ExtensionTermModal" aria-hidden="true" data-sub-type="@Model.ProductName" style="color:green" data-type-id="AddTerm" data-toggle="modal"> <u>  Add New Extension Term </u></a></header>
+                                <header>  @Model.ProductName ExtensionTerms <a href="#ExtensionTermModal" aria-hidden="true" data-sub-type="@Model.ProductName" style="color:green" data-type-id="AddTerm" data-bs-toggle="modal"> <u>  Add New Extension Term </u></a></header>
 
 
                             </div>
@@ -49,7 +49,7 @@
                                                 <th class="text-center" width="11%"> Excess</th>
                                                 <th class="text-center" width="11%"> Total Premium</th>
                                                 @*<th class="text-center" width="11%"> Base Premium</th>
-                                                <th class="text-center" width="11%"> Total Premium Difference</th>*@
+                                                    <th class="text-center" width="11%"> Total Premium Difference</th>*@
                                                 <th class="text-center" width="9%"></th>
                                             </tr>
                                             @foreach (var item in Model.ExtensionTerms)
@@ -67,14 +67,14 @@
                                                     <td class="pt-3-half" width="11%" contenteditable="true">
                                                         @item.Premium.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))
                                                     </td>
-                                                  
-                                                <td width="9%">
-                                                   
-                                                    <a href="#ExtensionTermModal" aria-hidden="true" style="color:forestgreen" data-toggle="modal"
-                                                             data-sub-sum="@item.TermLimit.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" data-sub-premium="@item.Premium.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))"
-                                                             data-sub-excess="@item.Excess.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" data-sub-id="@item.TermId"><i class="fa fa-edit"> </i></a>
-                                                    <a href="#ConfirmExtensionTermDelete" aria-hidden="true" style="color:red" data-toggle="modal" data-term-id="@item.TermId"><span class="fa fa-trash" id="span"></span></a>
-                                                </td>
+
+                                                    <td width="9%">
+
+                                                        <a href="#ExtensionTermModal" aria-hidden="true" style="color:forestgreen" data-bs-toggle="modal"
+                                                                     data-sub-sum="@item.TermLimit.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" data-sub-premium="@item.Premium.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))"
+                                                                     data-sub-excess="@item.Excess.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" data-sub-id="@item.TermId"><i class="fa fa-edit"> </i></a>
+                                                            <a href="#ConfirmExtensionTermDelete" aria-hidden="true" style="color:red" data-bs-toggle="modal" data-term-id="@item.TermId"><span class="fa fa-trash" id="span"></span></a>
+                                                    </td>
                                                 </tr>
                                             }
                                         </table>
@@ -109,24 +109,25 @@
             <div class="form-group">
             </div>
             <div class="modal-footer">
-                <button type="Submit" data-dismiss="modal" class="btn btn-success" id="btnExtensionTermDelete">Confirm </button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button type="Submit" data-bs-dismiss="modal" class="btn btn-success" id="btnExtensionTermDelete">Confirm </button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 
-<div id="ExtensionTermModal" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <!-- Modal content-->
-        <div class="modal-content">
 
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title" style="color:blue; font-size:22px">Edit Extension Term</h4>
-            </div>
-            <div class="modal-body">
-                <form id="ExtensionForm">
+<div id="ExtensionTermModal" class="modal" aria-hidden="true">
+    <form id="ExtensionForm" class="" action="" method="post">
+        <div class="modal-dialog" role="document">
+            <!-- Modal content-->
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-bs-dismiss="modal">&times;</button>
+                    <h4 class="modal-title" style="color:blue; font-size:22px">Edit Extension Term</h4>
+                </div>
+                <div class="modal-body">
 
                         <div class="form-group" hidden>
                             <label for="MaxSumInsured">Term Id</label>
@@ -152,15 +153,17 @@
 
                         </div>
 
-                    </form>
-            </div>
-            <div class="modal-footer">
-                <input type="Reset" value="Submit" class="btn btn-success" id="btnExtenionTermSubmit">
-                <a href="#" class="btn btn-danger" data-dismiss="modal">Cancel</a>
+                </div>
+                <div class="modal-footer">
+                    <input type="Reset" value="Submit" class="btn btn-success" id="btnExtenionTermSubmit">
+                    <a href="#" class="btn btn-danger" data-bs-dismiss="modal">Cancel</a>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
+
+
 
 @section pagespecific {
 
