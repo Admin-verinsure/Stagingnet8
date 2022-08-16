@@ -701,13 +701,9 @@ namespace DealEngine.WebUI.Controllers
                     {
                         if (option != "None")
                         {
-                            var clientAgreementTerm = await _clientAgreementTermService.GetAllClientAgreementTerm();
-                            List<ClientAgreementTerm> listClientAgreementerm = clientAgreementTerm.Where(cagt => cagt.Id == Guid.Parse(option)).ToList();
-                            foreach (var term in listClientAgreementerm)
-                            {
-                                term.Bound = true;
-                                await uow.Commit();
-                            }
+                            var clientAgreementTerm = await _clientAgreementTermService.GetAgreementById(option);
+                            clientAgreementTerm.Bound = true;
+                            await uow.Commit();
                         }
                     }
                 }
