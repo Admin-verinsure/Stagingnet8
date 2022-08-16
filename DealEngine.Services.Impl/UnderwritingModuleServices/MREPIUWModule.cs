@@ -265,6 +265,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termPICEextension.DeletedBy = null;
             termPICEextension.Bound = true;
 
+
             //Change policy premium calculation
             if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
             {

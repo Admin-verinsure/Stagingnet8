@@ -381,7 +381,7 @@ namespace DealEngine.WebUI.Controllers
                         // This is for ManageDocuments where we haven't hit ProcessRequestConfiguration which Formats and Converts the document
                         if (doc.IsTemplate == true)
                         {
-                            doc = await _fileService.FormatCKHTMLforConversion(doc);
+                            //doc = await _fileService.FormatCKHTMLforConversion(doc);
                             doc = await _fileService.ConvertHTMLToPDF(doc);
                         }
                         return File(doc.Contents, "application/pdf", doc.Name + ".pdf");
