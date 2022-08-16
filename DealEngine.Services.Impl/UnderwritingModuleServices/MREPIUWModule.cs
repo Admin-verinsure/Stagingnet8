@@ -251,6 +251,20 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termpitermoption.DateDeleted = null;
             termpitermoption.DeletedBy = null;
 
+            ////add Costs & Expenses extension
+            //foreach (ClientAgreementTermExtension pitermextension in agreement.ClientAgreementTermExtensions.Where(ctex => ctex.DateDeleted == null))
+            //{
+            //    pitermextension.Delete(underwritingUser);
+            //}
+            //ClientAgreementTermExtension termPICEextension = GetAgreementExtensionTerm(underwritingUser, agreement, 500000, 0M, 0M, "Professional Indemnity – Costs & Expenses");
+            //termPICEextension.ExtentionName = "Professional Indemnity – Costs & Expenses";
+            //termPICEextension.HideLimitExcess = false;
+            //termPICEextension.Premium = 0M;
+            //termPICEextension.BasePremium = 0M;
+            //termPICEextension.DateDeleted = null;
+            //termPICEextension.DeletedBy = null;
+
+
             //Change policy premium calculation
             if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
             {
@@ -446,6 +460,19 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             return dict;
         }
 
+        //Add the Costs & Expenses extension
+        ClientAgreementTermExtension GetAgreementExtensionTerm(User CurrentUser, ClientAgreement agreement, int limitoption, decimal excessoption, decimal premiumoption, string extensionName)
+        {
+            ClientAgreementTermExtension extensionTerm = agreement.ClientAgreementTermExtensions.FirstOrDefault(tex => tex.DateDeleted != null && tex.ExtentionName == extensionName);
+
+            if (extensionTerm == null)
+            {
+                extensionTerm = new ClientAgreementTermExtension(CurrentUser, limitoption, excessoption, premiumoption, agreement);
+                agreement.ClientAgreementTermExtensions.Add(extensionTerm);
+            }
+
+            return extensionTerm;
+        }
 
         void uwrfpriorinsurance(User underwritingUser, ClientAgreement agreement)
         {
