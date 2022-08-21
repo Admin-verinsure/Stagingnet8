@@ -632,6 +632,7 @@ namespace DealEngine.WebUI.Models.Agreement
         public bool HasCCPayment { get; set; }
         public bool HasInvoicePayment { get; set; }
         public bool ProgEnableBrokerUW { get; set; }
+        public User ContactBroker { get; set; }
     }
 
     public class InsuranceInclusion

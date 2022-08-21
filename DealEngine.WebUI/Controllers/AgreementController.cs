@@ -303,6 +303,7 @@ namespace DealEngine.WebUI.Controllers
                 model.ClientProgrammeId = agreement.ClientInformationSheet.Programme.Id;
                 model.ProgrammeName = programme.Name;
                 model.ProgrammeNamedPartyName = programme.NamedPartyUnitName;
+                model.ContactBroker = agreement.ClientInformationSheet.Programme.BrokerContactUser;
 
                 if (!string.IsNullOrEmpty(agreement.issuetobrokercomment))
                 {
