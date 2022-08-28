@@ -221,6 +221,7 @@ namespace DealEngine.Services.Impl
                 currencyFormat.CurrencyNegativePattern = 2;
                 Decimal PremiumTotal = 0.0m;
                 Decimal BrokerFeeTotal = 0.0m;
+                string strPICEExtensionLimit = "$500,000";
 
                 int intMonthlyInstalmentNumber = 1;
                 if (agreement.ClientInformationSheet.Programme.BaseProgramme.EnableMonthlyPremiumDisplay)
@@ -438,7 +439,16 @@ namespace DealEngine.Services.Impl
                             {
                                 PremiumTotal += termExtension.Premium;
                             }
+
+                            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                            {
+                                if (termExtension.TermLimit > 500000 && termExtension.ExtentionName == "Professional Indemnity – Costs & Expenses")
+                                {
+                                    strPICEExtensionLimit = termExtension.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
+                                }
+                            }
                         }
+                       
                     }
 
                     if (agreementlist.Product.DefaultEnableBrokerFee)
@@ -446,6 +456,8 @@ namespace DealEngine.Services.Impl
                         PremiumTotal += agreementlist.BrokerFee;
                     }
                 }
+
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[PICEExtensionLimit]]", ""), strPICEExtensionLimit));
 
                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_Total]]", ""), PremiumTotal.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_GST]]", ""), (PremiumTotal * (decimal)0.15).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));

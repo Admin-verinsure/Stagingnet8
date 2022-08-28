@@ -251,7 +251,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termpitermoption.DateDeleted = null;
             termpitermoption.DeletedBy = null;
 
-            ////add Costs & Expenses extension
+            //add Costs & Expenses extension
             foreach (ClientAgreementTermExtension pitermextension in agreement.ClientAgreementTermExtensions.Where(ctex => ctex.DateDeleted == null))
             {
                 pitermextension.Delete(underwritingUser);
@@ -263,6 +263,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termPICEextension.BasePremium = 0M;
             termPICEextension.DateDeleted = null;
             termPICEextension.DeletedBy = null;
+            termPICEextension.Bound = true;
 
 
             //Change policy premium calculation

@@ -58,13 +58,21 @@
                                         }
 
                                     }
-                                    {
-                                    <option value="PI/lumely" data-city="Washington">Marsh Real Estate PI Policies Lumley Report</option>
-                                    <option value="ML/lumely ">Marsh Real Estate ML Policies Lumley Report</option>
-                                    <option value="PI/AIG" data-city="Washington">Marsh Real Estate PI Policies AIG Report</option>
-                                    <option value="ML/AIG ">Marsh Real Estate ML Policies Lumley Report</option>
-                                    <option value="CL/AIG" data-city="Washington">Marsh Real Estate CL Policies AIG Report</option>
+
+                                    @{
+                                        if (Model.programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                                        {
+                                            <option value="PI/lumely" data-city="Washington">Marsh Real Estate PI Policies Lumley Report</option>
+                                            <option value="ML/lumely ">Marsh Real Estate ML Policies Lumley Report</option>
+                                            <option value="PI/AIG" data-city="Washington">Marsh Real Estate PI Policies AIG Report</option>
+                                            <option value="ML/AIG ">Marsh Real Estate ML Policies Lumley Report</option>
+                                            <option value="CL/AIG" data-city="Washington">Marsh Real Estate CL Policies AIG Report</option>
+                                        }
+
+
                                     }
+
+
 
 
 

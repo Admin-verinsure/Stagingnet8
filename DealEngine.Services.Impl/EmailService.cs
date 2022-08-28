@@ -1193,15 +1193,19 @@ namespace DealEngine.Services.Impl
                 if (!string.IsNullOrWhiteSpace(recipient))
                 {
                     email.To(recipient);
-                    if (!string.IsNullOrWhiteSpace(BCCEmail))
-                    {
-                        email.BCC(BCCEmail);
-                    }
-                    //email.To(recipient).BCC(SystemEmail);
+                    //if (!string.IsNullOrWhiteSpace(BCCEmail))
+                    //{
+                    //    email.BCC(BCCEmail);
+                    //}
+                    ////email.To(recipient).BCC(SystemEmail);
                     if (!string.IsNullOrWhiteSpace(ReplyToEmail))
                     {
                         email.ReplyTo(ReplyToEmail);
                     }
+                }
+                if (!string.IsNullOrWhiteSpace(BCCEmail))
+                {
+                    email.BCC(BCCEmail);
                 }
             }
             else
