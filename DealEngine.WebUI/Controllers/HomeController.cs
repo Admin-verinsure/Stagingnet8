@@ -1373,22 +1373,145 @@ namespace DealEngine.WebUI.Controllers
             return ListReportSet;
         }
 
-        public async Task<List<string>> CreatePremiumLimitReport( ClientProgramme cp, Guid clientInformationSheetID, Boolean IsprincipalAdvisor, Boolean isSubClient,string reportName)
+        public async Task<List<List<string>>> GetMREPremiumLimitReportSet(Guid programmeId, string reportName)
+        {
+            Programme programme = await _programmeService.GetProgrammeById(programmeId);
+            List<List<string>> ListReportSet = new List<List<string>>();
+            List<String> ListReport = new List<String>();
+
+            decimal PIFullPremiumTotal = 0M;
+            decimal PIGrossPremiumTotal = 0M;
+            decimal PINetPremiumToInsurerTotal = 0M;
+
+            var ReportingDay = DateTime.Today;
+            var ReportingMonth = new DateTime(ReportingDay.Year, ReportingDay.Month, 1);
+            var ReportingFirstDay = ReportingMonth.AddMonths(-1);
+            var ReportingLastDay = ReportingMonth.AddDays(-1);
+
+
+            ListReport.Add("Client Number");
+            ListReport.Add("Invoice number");
+            ListReport.Add("Client");
+            ListReport.Add("Limit");
+            ListReport.Add("Excess");
+            if (reportName.Contains("lumely"))
+            {
+                ListReport.Add("Gross Premium 25%");
+                ListReport.Add("Net Premium to insurer 25%");
+            }
+            else if (reportName.Contains("AIG"))
+            {
+                ListReport.Add("Gross Premium 75%");
+                ListReport.Add("Net Premium to insurer 75%");
+            }
+            if (reportName.Contains("PI"))
+            {
+                reportName = "PI";
+            }else if (reportName.Contains("ML"))
+            {
+                reportName = "ML";
+            }
+            else if (reportName.Contains("CL"))
+            {
+                reportName = "CL";
+            }
+
+
+
+            ListReportSet.Add(ListReport);
+
+            foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null &&
+                                                                                 o.InformationSheet.Status == "Bound and invoiced" &&
+                                                                                 o.InformationSheet.SubmitDate >= ReportingFirstDay &&
+                                                                                 o.InformationSheet.SubmitDate <= ReportingLastDay))
+            {
+                try
+                {
+                    Guid clientInformationSheetID = Guid.NewGuid();
+                    if (cp.BaseProgramme.Id == programme.Id)
+                    {
+                        clientInformationSheetID = cp.InformationSheet.Id;
+                    }
+                    List<String> tempListReport = new List<String>();
+                    decimal PIFullPremium = 0M;
+                    decimal PIGrossPremium = 0M;
+                    decimal PINetPremiumToInsurer = 0M;
+                    decimal PIFullPremiumtotal = 0M;
+
+                    Organisation organisation = cp.InformationSheet.Owner;
+                    User user = await _userService.GetApplicationUserByEmail(organisation.Email);
+
+                    if (cp.Agreements.Count > 0)
+                    {
+                        foreach (ClientAgreement agreement in cp.Agreements)
+                        {
+                            var term = agreement.ClientAgreementTerms.FirstOrDefault(ter => ter.SubTermType == reportName && ter.Bound == true);
+                            if (term != null)
+                            {
+                                tempListReport = new List<String>();
+                                tempListReport.Add((cp.EGlobalClientNumber).ToString());
+                                tempListReport.Add(cp.InformationSheet.ReferenceId);
+                                tempListReport.Add(cp.InformationSheet.Owner.Name);
+                                tempListReport.Add(term.TermLimit.ToString());
+                                tempListReport.Add(term.Excess.ToString("N0"));
+
+                                if (reportName.Contains("lumely"))
+                                {
+
+                                    PIGrossPremium = (term.Premium * 0.25M);
+                                    PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+
+                                }
+                                else if (reportName.Contains("AIG"))
+                                {
+                                    PIGrossPremium = (term.Premium * 0.75M);
+                                    PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+
+                                }
+
+
+                                PIFullPremiumTotal += term.Premium;
+                                PIGrossPremiumTotal += PIGrossPremium;
+                                PINetPremiumToInsurerTotal += PINetPremiumToInsurer;
+
+                                tempListReport.Add(PIGrossPremium.ToString("N2"));
+                                tempListReport.Add(PINetPremiumToInsurer.ToString("N2"));
+
+                                break;
+                            }
+                        }
+                    }
+                    if (tempListReport.Count > 0)
+                        ListReportSet.Add(tempListReport);
+
+                }
+                catch (Exception ex)
+                { }
+
+                
+            }
+
+            List<String> listtotal = new List<String>();
+            listtotal.Add(" ");
+            listtotal.Add(" ");
+            listtotal.Add(" ");
+            listtotal.Add(" ");
+            listtotal.Add("Total: ");
+            listtotal.Add(PIGrossPremiumTotal.ToString("N2"));
+            listtotal.Add(PINetPremiumToInsurerTotal.ToString("N2"));
+            if (listtotal.Count > 0)
+                ListReportSet.Add(listtotal);
+            return ListReportSet;
+        }
+
+
+
+        public async Task<List<string>> CreatePremiumLimitReport(ClientProgramme cp, Guid clientInformationSheetID, Boolean IsprincipalAdvisor, Boolean isSubClient, string reportName)
         {
 
             List<String> ListReport = new List<String>();
-
-
-            
-
             Organisation organisation = cp.InformationSheet.Owner;
-            ////adding collumns to ListReport
-
-            //ListReport.Add(cp.InformationSheet.Owner.Name);
-            //ListReport.Add((cp.InformationSheet.IsChange).ToString());
-            //ListReport.Add(cp.InformationSheet.ReferenceId);
-
-            //ListReport.Add(organisation.Email);
+          
             User user = await _userService.GetApplicationUserByEmail(organisation.Email);
 
             if (cp.Agreements.Count > 0)
@@ -1412,18 +1535,56 @@ namespace DealEngine.WebUI.Controllers
 
                         break;
                     }
+
+                }
+
+            }
+
+            return ListReport;
+
+        }
+
+
+
+        public async Task<List<string>> CreateMREPremiumLimitReport( ClientProgramme cp, Guid clientInformationSheetID, Boolean IsprincipalAdvisor, Boolean isSubClient,string reportName)
+        {
+        
+            List<String> ListReport = new List<String>();
+            decimal PIFullPremium = 0M;
+            decimal PIGrossPremium = 0M;
+            decimal PINetPremiumToInsurer = 0M;
+            decimal PIFullPremiumtotal = 0M;
+
+
+            Organisation organisation = cp.InformationSheet.Owner;
+            User user = await _userService.GetApplicationUserByEmail(organisation.Email);
+
+            if (cp.Agreements.Count > 0)
+            {
+                foreach (ClientAgreement agreement in cp.Agreements)
+                {
+                    var term = agreement.ClientAgreementTerms.FirstOrDefault(ter => ter.SubTermType == reportName && ter.Bound == true);
+                    if (term != null)
+                    {
+                        ListReport = new List<String>();
+                        ListReport.Add((cp.EGlobalClientNumber).ToString());
+                        ListReport.Add(cp.InformationSheet.ReferenceId);
+                        ListReport.Add(cp.InformationSheet.Owner.Name);
+                        ListReport.Add(term.TermLimit.ToString());
+                        ListReport.Add(term.Excess.ToString("N0"));
+
+                        PIGrossPremium = (PIFullPremium * 0.25M);
+                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+
+                        ListReport.Add(PIGrossPremium.ToString("N2"));
+                        ListReport.Add(PINetPremiumToInsurer.ToString("N2"));
+
+                        break;
+                    }
                   
                 }
                
             }
-            //else
-            //{
-            //    ListReport.Add("0");
-            //    ListReport.Add("0");
-            //    ListReport.Add("0");
-            //    ListReport.Add("0");
-
-            //}
 
 
             return ListReport;
@@ -1884,7 +2045,7 @@ namespace DealEngine.WebUI.Controllers
 
                     //string queryselect = "PI";
                 ViewBag.reportName = queryselect;
-                //ViewBag.ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
+                ViewBag.ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
                 //PropertyDescriptorCollection props = generatequeryField(queryselect);
 
                 List<PIReport> reportset = new List<PIReport>();
@@ -1907,8 +2068,14 @@ namespace DealEngine.WebUI.Controllers
                 }else if (queryselect == "RevenueActivity")
                 {
                         Lreportset = await GetRevenueReportSet(ProgrammeId, queryselect);
+                }else if (programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                {
+                        ViewBag.Title = "Bound " + queryselect + " Premium and Limits";
+
+                        Lreportset = await GetMREPremiumLimitReportSet(ProgrammeId, queryselect);
+
                 }
-                else
+                    else
                 {
                     ViewBag.Title = "Bound " + queryselect + " Premium and Limits";
 
