@@ -116,14 +116,21 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             agreement.ProfessionalBusiness = strProfessionalBusiness;
 
+            //Minimum premium period is 4 months
+            int minicoverperiodindays = 0;
+            minicoverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddMonths(-4)).Days;
+
             int TermLimit1mil = 1000000;
             decimal TermPremium1mil = 0m;
             decimal TermBrokerage1mil = 0m;
             decimal TermExcess1mil = 0;
             TermPremium1mil = rates["pl1millimitpremium"];
             TermExcess1mil = rates["pl1millimitexcess"];
+            decimal TermMinPremium1mil = 0M;
+            TermMinPremium1mil = TermPremium1mil / coverperiodindays * minicoverperiodindays;
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium1mil = TermPremium1mil / coverperiodindays * agreementperiodindays;
+            TermPremium1mil = (TermPremium1mil > TermMinPremium1mil) ? TermPremium1mil : TermMinPremium1mil;
             TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
 
             ClientAgreementTerm termpl1millimitoption = GetAgreementTerm(underwritingUser, agreement, "PL", TermLimit1mil, TermExcess1mil);
@@ -142,8 +149,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             decimal TermExcess2mil = 0;
             TermPremium2mil = rates["pl2millimitpremium"];
             TermExcess2mil = rates["pl2millimitexcess"];
+            decimal TermMinPremium2mil = 0M;
+            TermMinPremium2mil = TermPremium2mil / coverperiodindays * minicoverperiodindays;
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium2mil = TermPremium2mil / coverperiodindays * agreementperiodindays;
+            TermPremium2mil = (TermPremium2mil > TermMinPremium2mil) ? TermPremium2mil : TermMinPremium2mil;
             TermBrokerage2mil = TermPremium2mil * agreement.Brokerage / 100;
 
             ClientAgreementTerm termpl2millimitoption = GetAgreementTerm(underwritingUser, agreement, "PL", TermLimit2mil, TermExcess2mil);
@@ -162,8 +172,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             decimal TermExcess5mil = 0;
             TermPremium5mil = rates["pl5millimitpremium"];
             TermExcess5mil = rates["pl5millimitexcess"];
+            decimal TermMinPremium5mil = 0M;
+            TermMinPremium5mil = TermPremium5mil / coverperiodindays * minicoverperiodindays;
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium5mil = TermPremium5mil / coverperiodindays * agreementperiodindays;
+            TermPremium5mil = (TermPremium5mil > TermMinPremium5mil) ? TermPremium5mil : TermMinPremium5mil;
             TermBrokerage5mil = TermPremium5mil * agreement.Brokerage / 100;
 
             ClientAgreementTerm termpl5millimitoption = GetAgreementTerm(underwritingUser, agreement, "PL", TermLimit5mil, TermExcess5mil);
