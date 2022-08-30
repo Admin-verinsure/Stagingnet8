@@ -1352,10 +1352,14 @@ namespace DealEngine.WebUI.Controllers
 
             ListReportSet.Add(ListReport);
 
-              foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null  && o.InformationSheet.Status == "Bound"))
+              foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null  && (o.InformationSheet.Status == "Bound" 
+                                                                                                                           || o.InformationSheet.Status == "Bound and invoice pending"
+                                                                                                                           || o.InformationSheet.Status == "Bound and invoiced")))
             { 
                 try
                 {
+
+                    var statusttrty = cp.InformationSheet.Status;
                         Guid clientInformationSheetID = Guid.NewGuid();
                         if (cp.BaseProgramme.Id == programme.Id)
                         {
