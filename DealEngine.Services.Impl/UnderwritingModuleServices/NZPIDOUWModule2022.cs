@@ -132,6 +132,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             agreement.ProfessionalBusiness = strProfessionalBusiness;
 
+
+            //Minimum premium period is 4 months
+            int minicoverperiodindays = 0;
+            minicoverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddMonths(-4)).Days;
+
             int TermLimit500k = 500000;
             decimal TermPremium500k = 0m;
             decimal TermBrokerage500k = 0m;
@@ -148,8 +153,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 TermPremium500k = rates["do500klimitpremiumover2employee"];
             }
+            decimal TermMinPremium500k = 0M;
+            TermMinPremium500k = TermPremium500k / coverperiodindays * minicoverperiodindays;
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium500k = TermPremium500k / coverperiodindays * agreementperiodindays;
+            TermPremium500k = (TermPremium500k > TermMinPremium500k) ? TermPremium500k : TermMinPremium500k;
             TermBrokerage500k = TermPremium500k * agreement.Brokerage / 100;
 
             int TermExcess = 0;

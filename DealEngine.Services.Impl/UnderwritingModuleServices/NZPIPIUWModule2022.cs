@@ -224,17 +224,24 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 cAELPLAExcl.DeletedBy = underwritingUser;
             }
 
+            //Minimum premium period is 4 months
+            int minicoverperiodindays = 0;
+            minicoverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddMonths(-4)).Days;
+
             int TermExcess = 0;
             TermExcess = 2000;
 
             int TermLimit1mil = 1000000;
             decimal TermPremium1mil = 0M;
             decimal TermBrokerage1mil = 0M;
+            decimal TermMinPremium1mil = 0M;
 
             TermPremium1mil = GetPremiumFor(rates, TermLimit1mil, intnumberofadvisors);
             TermPremium1mil = TermPremium1mil - TermPremiumReduction;
+            TermMinPremium1mil = TermPremium1mil / coverperiodindays * minicoverperiodindays;
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium1mil = TermPremium1mil / coverperiodindays * agreementperiodindays;
+            TermPremium1mil = (TermPremium1mil > TermMinPremium1mil) ? TermPremium1mil : TermMinPremium1mil;
             TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
 
             ClientAgreementTerm term1millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit1mil, TermExcess);
@@ -250,11 +257,14 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int TermLimit2mil = 2000000;
             decimal TermPremium2mil = 0M;
             decimal TermBrokerage2mil = 0M;
+            decimal TermMinPremium2mil = 0M;
 
             TermPremium2mil = GetPremiumFor(rates, TermLimit2mil, intnumberofadvisors);
             TermPremium2mil = TermPremium2mil - TermPremiumReduction;
+            TermMinPremium2mil = TermPremium2mil / coverperiodindays * minicoverperiodindays;
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium2mil = TermPremium2mil / coverperiodindays * agreementperiodindays;
+            TermPremium2mil = (TermPremium2mil > TermMinPremium2mil) ? TermPremium2mil : TermMinPremium2mil;
             TermBrokerage2mil = TermPremium2mil * agreement.Brokerage / 100;
 
             ClientAgreementTerm term2millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit2mil, TermExcess);
@@ -270,11 +280,14 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int TermLimit5mil = 5000000;
             decimal TermPremium5mil = 0M;
             decimal TermBrokerage5mil = 0M;
+            decimal TermMinPremium5mil = 0M;
 
             TermPremium5mil = GetPremiumFor(rates, TermLimit5mil, intnumberofadvisors);
             TermPremium5mil = TermPremium5mil - TermPremiumReduction;
+            TermMinPremium5mil = TermPremium5mil / coverperiodindays * minicoverperiodindays;
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium5mil = TermPremium5mil / coverperiodindays * agreementperiodindays;
+            TermPremium5mil = (TermPremium5mil > TermMinPremium5mil) ? TermPremium5mil : TermMinPremium5mil;
             TermBrokerage5mil = TermPremium5mil * agreement.Brokerage / 100;
 
             ClientAgreementTerm term5millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "PI", TermLimit5mil, TermExcess);
@@ -340,6 +353,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Change policy premium claculation
             if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
             {
+                //set admin fee $65 for change
+                agreement.BrokerFee = 65;
+
                 var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PI"));
                 foreach (var term in PreviousAgreement.ClientAgreementTerms)
                 {
