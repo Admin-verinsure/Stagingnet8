@@ -1398,15 +1398,41 @@ namespace DealEngine.WebUI.Controllers
             ListReport.Add("Client");
             ListReport.Add("Limit");
             ListReport.Add("Excess");
+            var reportNameformal = reportName;
             if (reportName.Contains("lumely"))
             {
-                ListReport.Add("Gross Premium 25%");
-                ListReport.Add("Net Premium to insurer 25%");
+
+                if (reportName.Contains("ML"))
+                {
+                    ListReport.Add("Gross Premium 12.5%");
+                    ListReport.Add("Net Premium to insurer 12.5%");
+                }
+                else if (reportName.Contains("PI"))
+                {
+                    ListReport.Add("Gross Premium 25%");
+                    ListReport.Add("Net Premium to insurer 25%");
+                }
+
+                
             }
             else if (reportName.Contains("AIG"))
             {
-                ListReport.Add("Gross Premium 75%");
-                ListReport.Add("Net Premium to insurer 75%");
+                if (reportName.Contains("ML"))
+                {
+                    ListReport.Add("Gross Premium 87.5%");
+                    ListReport.Add("Net Premium to insurer 87.5%");
+                }
+                else if (reportName.Contains("PI"))
+                {
+                    ListReport.Add("Gross Premium 75%");
+                    ListReport.Add("Net Premium to insurer 75%");
+                }
+                else if (reportName.Contains("CL"))
+                {
+                    ListReport.Add("Gross Premium 100%");
+                    ListReport.Add("Net Premium to insurer 100%");
+                }
+               
             }
             if (reportName.Contains("PI"))
             {
@@ -1420,8 +1446,7 @@ namespace DealEngine.WebUI.Controllers
                 reportName = "CL";
             }
 
-
-
+          
             ListReportSet.Add(ListReport);
 
             foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null &&
@@ -1454,22 +1479,50 @@ namespace DealEngine.WebUI.Controllers
                             {
                                 tempListReport = new List<String>();
                                 tempListReport.Add((cp.EGlobalClientNumber).ToString());
-                                tempListReport.Add(cp.InformationSheet.ReferenceId);
+                                EGlobalResponse eGlobalResponse = cp.ClientAgreementEGlobalResponses.Where(er => er.DateDeleted == null && er.ResponseType == "update").OrderByDescending(er => er.VersionNumber).FirstOrDefault();
+                                if (eGlobalResponse != null)
+                                {
+                                    tempListReport.Add("I"+eGlobalResponse.InvoiceNumber.ToString());
+                                }
                                 tempListReport.Add(cp.InformationSheet.Owner.Name);
                                 tempListReport.Add(term.TermLimit.ToString());
                                 tempListReport.Add(term.Excess.ToString("N0"));
 
-                                if (reportName.Contains("lumely"))
+                                if (reportNameformal.Contains("lumely"))
                                 {
+                                    if(reportName == "ML")
+                                    {
+                                        PIGrossPremium = (term.Premium * 0.125M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.25M) * 1.15M) + PIGrossPremium * 0.15M);
 
-                                    PIGrossPremium = (term.Premium * 0.25M);
-                                    PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                    }
+                                    else if(reportName == "PI")
+                                    {
+                                        PIGrossPremium = (term.Premium * 0.25M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                    }
 
                                 }
-                                else if (reportName.Contains("AIG"))
+                                else if (reportNameformal.Contains("AIG"))
                                 {
-                                    PIGrossPremium = (term.Premium * 0.75M);
-                                    PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                    if (reportName == "ML")
+                                    {
+                                        PIGrossPremium = (term.Premium * 0.875M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.25M) * 1.15M) + PIGrossPremium * 0.15M);
+
+                                    }
+                                    else if (reportName == "PI")
+                                    {
+                                        PIGrossPremium = (term.Premium * 0.75M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                    }
+                                    else if(reportName == "CL")
+                                    {
+                                        PIGrossPremium = term.Premium;
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.25M) * 1.15M) + PIGrossPremium * 0.15M);
+
+                                    }
+
 
                                 }
 
