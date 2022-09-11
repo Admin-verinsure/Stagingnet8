@@ -1499,7 +1499,7 @@ namespace DealEngine.WebUI.Controllers
                                     else if(reportName == "PI")
                                     {
                                         PIGrossPremium = (term.Premium * 0.25M);
-                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.225M) * 1.15M) + PIGrossPremium * 0.15M);
                                     }
 
                                 }
@@ -1514,7 +1514,7 @@ namespace DealEngine.WebUI.Controllers
                                     else if (reportName == "PI")
                                     {
                                         PIGrossPremium = (term.Premium * 0.75M);
-                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.225M) * 1.15M) + PIGrossPremium * 0.15M);
                                     }
                                     else if(reportName == "CL")
                                     {
