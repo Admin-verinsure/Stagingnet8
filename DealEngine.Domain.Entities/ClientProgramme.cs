@@ -46,7 +46,12 @@ namespace DealEngine.Domain.Entities
         public virtual DateTime ClientProgrammeInceptionDate { get; set; }
         public virtual DateTime ClientProgrammeExpiryDate { get; set; }
         public virtual Guid BrokerContactId { get; set; }
+        public virtual string ProducerCode { get; set; }
+        public virtual string BusOpsDesc { get; set; }
+        public virtual string AccountOrgType { get; set; }
+        public virtual string requestID { get; set; }/// how to get request id
 
+        
         public ClientProgramme (User createdBy, Organisation createdFor, Programme baseProgramme)
 			: base(createdBy)
 		{
