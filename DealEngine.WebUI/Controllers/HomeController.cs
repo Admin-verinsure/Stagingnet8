@@ -2125,7 +2125,7 @@ namespace DealEngine.WebUI.Controllers
                 }else if (queryselect == "RevenueActivity")
                 {
                         Lreportset = await GetRevenueReportSet(ProgrammeId, queryselect);
-                }else if (programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                }else if (programme.NamedPartyUnitName == "Marsh Real Estate Programme" && (queryselect.Contains("lumely") ||  queryselect.Contains("AIG")))
                 {
                         ViewBag.Title = "Bound " + queryselect + " Premium and Limits";
 
