@@ -121,12 +121,12 @@ namespace DealEngine.WebUI.Controllers
         {
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
-            var currentUser = await CurrentUser();
-            if (currentUser.IsLoggedout)
-                return PageNotFound();
+            //var currentUser = await CurrentUser();
+            //if (currentUser.IsLoggedout)
+            //    return PageNotFound();
 
-            if (User == null)
-                return PageNotFound();
+            //if (User == null)
+            //    return PageNotFound();
 
             // We do not want to use any existing identity information
             EnsureLoggedOut();
