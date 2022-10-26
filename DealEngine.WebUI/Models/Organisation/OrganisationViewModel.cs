@@ -29,6 +29,8 @@ namespace DealEngine.WebUI.Models
                     EBaristerUnit = new EBaristerUnit(null, null, null, null);
                     JBaristerUnit = new JBaristerUnit(null, null, null, null);
                     BarristerUnit = new BarristerUnit(null, null, null, null);
+                    EmployeeUnit = new EmployeeUnit(null, null, null, null);
+
                     if (Programme.NamedPartyUnitName == "NZFSG Programme") 
                     { 
                         InsuranceAttributes = GetAdvisorTypes1(); 
@@ -874,6 +876,11 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Associated Business",
                         Value = "ABusiness"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Employee",
+                        Value = "Employee"
                     }
                 };
             return _Types;
@@ -1007,6 +1014,9 @@ namespace DealEngine.WebUI.Models
         public EBaristerUnit EBaristerUnit { get; set; }
         public JBaristerUnit JBaristerUnit { get; set; }
         public BarristerUnit BarristerUnit { get; set; }
+        public EmployeeUnit EmployeeUnit { get; set; }
+
+        
         [JsonIgnore]
         public IList<SelectListItem> HasBarristerPrincipalOptions { get; set; }
         public RealEstateDirectorUnit RealEstateDirectorUnit { get; set; }

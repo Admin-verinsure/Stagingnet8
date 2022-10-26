@@ -203,6 +203,9 @@
                             } else if (Value == "Run Off") {
                                 Unit = "RealEstateRunOffUnit";
                                 PopulateOrganisationalUnit(OutPut, Unit);
+                            } else if (Value == "Employee") {
+                                Unit = "EmployeeUnit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
                             }else {
                                 if (Unit.length > 0) {
                                     PopulateOrganisationalUnit(OutPut, Unit[0].id);

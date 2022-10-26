@@ -102,6 +102,21 @@ namespace DealEngine.Domain.Entities
 
     }
 
+    public class EmployeeUnit : OrganisationalUnit
+    {
+        public EmployeeUnit() { }
+        public EmployeeUnit(User User, string Name, string Type, IFormCollection Collection)
+            : base(User, Name, Type, Collection)
+        {
+        }
+        [Display(Name = "Employee Name")]
+
+        public virtual string EmployeeName { get; set; }
+        [Display(Name = "Role")]
+        public virtual string Role { get; set; }
+
+    }
+
     public class JBaristerUnit : OrganisationalUnit
     {
         public JBaristerUnit() { }
@@ -395,6 +410,8 @@ namespace DealEngine.Domain.Entities
        
 
     }
+
+  
 }
 
 
