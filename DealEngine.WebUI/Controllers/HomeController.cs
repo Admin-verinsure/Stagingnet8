@@ -1450,9 +1450,10 @@ namespace DealEngine.WebUI.Controllers
             ListReportSet.Add(ListReport);
 
             foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null &&
-                                                                                 o.InformationSheet.Status == "Bound and invoiced" &&
-                                                                                 o.InformationSheet.SubmitDate >= ReportingFirstDay &&
-                                                                                 o.InformationSheet.SubmitDate <= ReportingLastDay))
+                                                                                 o.InformationSheet.Status == "Bound and invoiced"))
+                                                                                 //&&
+                                                                                 //o.InformationSheet.SubmitDate >= ReportingFirstDay &&
+                                                                                 //o.InformationSheet.SubmitDate <= ReportingLastDay))
             {
                 try
                 {
@@ -1472,7 +1473,8 @@ namespace DealEngine.WebUI.Controllers
 
                     if (cp.Agreements.Count > 0)
                     {
-                        foreach (ClientAgreement agreement in cp.Agreements)
+                        foreach (ClientAgreement agreement in cp.Agreements.Where(agree => agree.BoundDate >= ReportingFirstDay && agree.BoundDate <= ReportingLastDay && agree.InceptionDate < ReportingFirstDay
+                                                                                              || agree.InceptionDate >= ReportingFirstDay && agree.InceptionDate <= ReportingLastDay && agree.BoundDate <= ReportingLastDay))
                         {
                             var term = agreement.ClientAgreementTerms.FirstOrDefault(ter => ter.SubTermType == reportName && ter.Bound == true);
                             if (term != null)
@@ -1499,7 +1501,7 @@ namespace DealEngine.WebUI.Controllers
                                     else if(reportName == "PI")
                                     {
                                         PIGrossPremium = (term.Premium * 0.25M);
-                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.225M) * 1.15M) + PIGrossPremium * 0.15M);
                                     }
 
                                 }
@@ -1514,7 +1516,7 @@ namespace DealEngine.WebUI.Controllers
                                     else if (reportName == "PI")
                                     {
                                         PIGrossPremium = (term.Premium * 0.75M);
-                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.225M) * 1.15M) + PIGrossPremium * 0.15M);
                                     }
                                     else if(reportName == "CL")
                                     {
@@ -2125,7 +2127,7 @@ namespace DealEngine.WebUI.Controllers
                 }else if (queryselect == "RevenueActivity")
                 {
                         Lreportset = await GetRevenueReportSet(ProgrammeId, queryselect);
-                }else if (programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                }else if (programme.NamedPartyUnitName == "Marsh Real Estate Programme" && (queryselect.Contains("lumely") ||  queryselect.Contains("AIG")))
                 {
                         ViewBag.Title = "Bound " + queryselect + " Premium and Limits";
 

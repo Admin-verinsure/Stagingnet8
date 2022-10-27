@@ -274,6 +274,7 @@
                     @Html.Hidden("EBaristerUnit", Model.OrganisationViewModel.EBaristerUnit.GetType().AssemblyQualifiedName, new { @id = "EBaristerUnit" })
                     @Html.Hidden("JBaristerUnit", Model.OrganisationViewModel.JBaristerUnit.GetType().AssemblyQualifiedName, new { @id = "JBaristerUnit" })
                     @Html.Hidden("BarristerUnit", Model.OrganisationViewModel.BarristerUnit.GetType().AssemblyQualifiedName, new { @id = "BarristerUnit" })
+                    @Html.Hidden("EmployeeUnit", Model.OrganisationViewModel.EmployeeUnit.GetType().AssemblyQualifiedName, new { @id = "EmployeeUnit" })
 
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/NZBar_AddOrganisation", Model)
                 }

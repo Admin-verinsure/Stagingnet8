@@ -14,7 +14,7 @@
                 }
             </select>
         </div>
-        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
         {
             <div class="form-group" id="EmailDiv" hidden>
                 @Html.LabelFor(m => m.OrganisationViewModel.User.Email, new { @class = "label required" })
@@ -50,7 +50,7 @@
         @Html.LabelFor(m => m.OrganisationViewModel.Organisation.Name, new { @class = "label required" })
         @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.Name, new { @class = "form-control", @id = "Organisation.Name", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
         @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-              Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo ML Programme")
+             Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo ML Programme")
         {
             <div class="form-group" id="HideDateofIncorportation" hidden>
                 @Html.LabelFor(m => m.OrganisationViewModel.Organisation.DateofIncorportation, new { @class = "label required" })
@@ -78,40 +78,40 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
 Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
 )
     {
-<div class="form-group col-md-6" id="TradingName" hidden>
-    @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
-    {
-        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label required" })
-        @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "If Applicable. Max characters is 250. Over 250 will not be stored." })
-        @if (string.IsNullOrWhiteSpace(Model.OrganisationViewModel.Organisation.TradingName))
-        {
-            @Html.Hidden("NoTradingName", true) }
-        else
-        {
-            @Html.Hidden("NoTradingName", false)}
-        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
-        {
-            @Html.Hidden("NoTradingNameValidation", true) }
-        else
-        {
-            @Html.Hidden("NoTradingNameValidation", false)}
-    
-    }
+        <div class="form-group col-md-6" id="TradingName" hidden>
+            @if (Model.OrganisationViewModel.Organisation.Id == Model.ClientInformationSheet.Owner.Id)
+            {
+                @Html.LabelFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "label required" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.TradingName, new { @class = "form-control", @id = "Organisation.TradingName", @onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "If Applicable. Max characters is 250. Over 250 will not be stored." })
+                @if (string.IsNullOrWhiteSpace(Model.OrganisationViewModel.Organisation.TradingName))
+                {
+                    @Html.Hidden("NoTradingName", true) }
+                else
+                {
+                    @Html.Hidden("NoTradingName", false)}
+                @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
+                {
+                    @Html.Hidden("NoTradingNameValidation", true) }
+                else
+                {
+                    @Html.Hidden("NoTradingNameValidation", false)}
 
-    @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
-    {
-        @*@Html.Hidden("NoTradingNameValidation", true)*@
-        @Html.Hidden("NoEmailValidation", true)
-    }
-    
-    
-</div>}
+            }
+
+            @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+            {
+                @*@Html.Hidden("NoTradingNameValidation", true)*@
+                @Html.Hidden("NoEmailValidation", true)
+            }
+
+
+        </div>}
 </div>
 
 @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme"
 || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
+      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
+      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
 
 {
 
@@ -220,41 +220,54 @@ Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ
 @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
 
 {
-<div id="RunOffUnit" class="form-group  col-md-6" hidden>
+    <div id="RunOffUnit" class="form-group  col-md-6" hidden>
 
 
-    <div class="form-group col-md-6">
-        <div>
-            <div class="form-group">
-                @Html.LabelFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.EffectiveDate, new { @class = "label required" })
+        <div class="form-group col-md-6">
+            <div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.EffectiveDate, new { @class = "label required" })
 
-                @Html.TextBoxFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.EffectiveDate, new { @class = "form-control", @id = "RealEstateRunOffUnit.EffectiveDate" })
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.EffectiveDate, new { @class = "form-control", @id = "RealEstateRunOffUnit.EffectiveDate" })
+                </div>
+
             </div>
+
 
         </div>
 
 
     </div>
 
-    @*<div class="form-group col-md-6">
-        <div>
-            <div class="form-group">
-                @Html.LabelFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.Name, new { @class = "label required" })
 
-                @Html.TextBoxFor(m => m.OrganisationViewModel.RealEstateRunOffUnit.Name, new { @class = "form-control", @id = "RealEstateRunOffUnit.Name" })
+
+
+
+}
+
+@if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+
+{
+    <div id="Employee" class="form-group  col-md-6 Employee" hidden>
+
+
+        <div class="form-group col-md-6">
+            <div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.OrganisationViewModel.EmployeeUnit.Role, new { @class = "label required" })
+
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.EmployeeUnit.Role, new { @class = "form-control", @id = "EmployeeUnit.Role" })
+                </div>
+
             </div>
+
 
         </div>
 
 
-    </div>*@
-
-
-
-</div>
+    </div>
 
 
 
 
-    
 }
