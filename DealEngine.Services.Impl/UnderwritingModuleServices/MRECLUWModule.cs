@@ -85,7 +85,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 if (agreement.ClientInformationSheet.RevenueData.LastFinancialYearTotal > 0)
                 {
-                    feeincome = agreement.ClientInformationSheet.RevenueData.CurrentYearTotal;
+                    feeincome = agreement.ClientInformationSheet.RevenueData.LastFinancialYearTotal;
                 }
             }
 
@@ -322,10 +322,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 agreement.Status = "Quoted";
             }
 
-            agreement.ProfessionalBusiness = "Licensed Real Estate Agents, Property Managers, Registered Valuers, Licensed Auctioneers and other activities as disclosed in the proposal form completed on behalf of the firm or as subsequently advised to the Insurers in writing and the payment of any additional Premium required.";
+            agreement.ProfessionalBusiness = "Licensed Real Estate Agents, Property Managers, Registered Valuers, Licensed Auctioneers.";
             string retrodate = agreement.InceptionDate.ToString("dd/MM/yyyy");
             agreement.TerritoryLimit = "Worldwide";
-            agreement.Jurisdiction = "Worldwide";
+            agreement.Jurisdiction = "Worldwide excluding USA / Canada";
             agreement.RetroactiveDate = retrodate;
             if (!String.IsNullOrEmpty(strretrodate))
             {

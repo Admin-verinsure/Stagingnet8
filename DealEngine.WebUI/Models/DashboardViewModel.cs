@@ -198,6 +198,7 @@ namespace DealEngine.WebUI.Models
         public List<UpdateTypesViewModel> UpdateTypes { get; internal set; }
    
 		public bool IsRenewFromProgramme { get; set; }
+		public bool ProgEnableEmail { get; set; }
 
 	}
 

@@ -25,10 +25,16 @@
                 </li>
             }*@
 
-            if (Model.IsRenewFromProgramme)
+            if (Model.IsRenewFromProgramme && Model.ProgEnableEmail)
             {
                 <li class="nav-item">
                     <a onclick="location.href='@Url.Action("IssueRenewal", "Home", new { ProgrammeId = @Model.Programme.Id})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue Renewal Notification </a>
+                </li>
+            }
+            if (Model.IsRenewFromProgramme && !Model.ProgEnableEmail)
+            {
+                <li class="nav-item">
+                    <a onclick="location.href='@Url.Action("BrokerRenewal", "Home", new { ProgrammeId = @Model.Programme.Id})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Broker Renew </a>
                 </li>
             }
 
