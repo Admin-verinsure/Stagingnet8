@@ -780,6 +780,8 @@ namespace DealEngine.WebUI.Controllers
                 {
                     model.IsRenewFromProgramme = false;
                 }
+                
+                model.ProgEnableEmail = programme.ProgEnableEmail;
 
                 foreach (var updateType in programme.UpdateTypes)
                 {
@@ -1139,6 +1141,54 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> BrokerRenewal(string ProgrammeId)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
+                IssueUISViewModel model = new IssueUISViewModel();
+                var clientProgrammes = new List<ClientProgramme>();
+                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+                List<ClientProgramme> renewClientProgrammes = await _programmeService.GetRenewBaseClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
+
+                foreach (var client in renewClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                {
+                    if (client.DateDeleted == null && client.InformationSheet != null)
+                    {
+                        //filter out the renewal clientprogramme already created
+                        List<ClientProgramme> currentClientProgrammes = await _programmeService.GetClientProgrammesByOwnerByProgramme(client.Owner.Id, programme.Id);
+                        if (currentClientProgrammes.Count == 0)
+                        {
+                            clientProgrammes.Add(client);
+                        }
+                    }
+                }
+                model.ClientProgrammes = clientProgrammes;
+                model.ProgrammeId = ProgrammeId;
+                model.IsSubUIS = "false";
+                model.IsLinuxEnv = "True";
+                if (_appSettingService.IsLinuxEnv == "False")
+                {
+                    model.IsLinuxEnv = "False";
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> IssueReminder(string ProgrammeId)
         {
             User user = null;
@@ -1450,9 +1500,10 @@ namespace DealEngine.WebUI.Controllers
             ListReportSet.Add(ListReport);
 
             foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null &&
-                                                                                 o.InformationSheet.Status == "Bound and invoiced" &&
-                                                                                 o.InformationSheet.SubmitDate >= ReportingFirstDay &&
-                                                                                 o.InformationSheet.SubmitDate <= ReportingLastDay))
+                                                                                 o.InformationSheet.Status == "Bound and invoiced"))
+                                                                                 //&&
+                                                                                 //o.InformationSheet.SubmitDate >= ReportingFirstDay &&
+                                                                                 //o.InformationSheet.SubmitDate <= ReportingLastDay))
             {
                 try
                 {
@@ -1472,7 +1523,8 @@ namespace DealEngine.WebUI.Controllers
 
                     if (cp.Agreements.Count > 0)
                     {
-                        foreach (ClientAgreement agreement in cp.Agreements)
+                        foreach (ClientAgreement agreement in cp.Agreements.Where(agree => agree.BoundDate >= ReportingFirstDay && agree.BoundDate <= ReportingLastDay && agree.InceptionDate < ReportingFirstDay
+                                                                                              || agree.InceptionDate >= ReportingFirstDay && agree.InceptionDate <= ReportingLastDay && agree.BoundDate <= ReportingLastDay))
                         {
                             var term = agreement.ClientAgreementTerms.FirstOrDefault(ter => ter.SubTermType == reportName && ter.Bound == true);
                             if (term != null)
@@ -1499,7 +1551,7 @@ namespace DealEngine.WebUI.Controllers
                                     else if(reportName == "PI")
                                     {
                                         PIGrossPremium = (term.Premium * 0.25M);
-                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.225M) * 1.15M) + PIGrossPremium * 0.15M);
                                     }
 
                                 }
@@ -1514,7 +1566,7 @@ namespace DealEngine.WebUI.Controllers
                                     else if (reportName == "PI")
                                     {
                                         PIGrossPremium = (term.Premium * 0.75M);
-                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.275M) * 1.15M) + PIGrossPremium * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.225M) * 1.15M) + PIGrossPremium * 0.15M);
                                     }
                                     else if(reportName == "CL")
                                     {
@@ -2125,7 +2177,7 @@ namespace DealEngine.WebUI.Controllers
                 }else if (queryselect == "RevenueActivity")
                 {
                         Lreportset = await GetRevenueReportSet(ProgrammeId, queryselect);
-                }else if (programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                }else if (programme.NamedPartyUnitName == "Marsh Real Estate Programme" && (queryselect.Contains("lumely") ||  queryselect.Contains("AIG")))
                 {
                         ViewBag.Title = "Bound " + queryselect + " Premium and Limits";
 
@@ -2395,6 +2447,45 @@ namespace DealEngine.WebUI.Controllers
                         }
                     }
 
+                }
+
+                return await RedirectToLocal();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> BrokerRenewal(IFormCollection formCollection)
+        {
+            User user = null;
+            Programme currentProgramme = null;
+            string email = null;
+
+            try
+            {
+                user = await CurrentUser();
+                currentProgramme = await _programmeService.GetProgramme(Guid.Parse(formCollection["ProgrammeId"]));
+
+                foreach (var key in formCollection.Keys)
+                {
+                    email = key;
+                    var correctEmail = await _userService.GetUserByEmail(email);
+                    if (correctEmail != null)
+                    {
+                        
+                        var renewFromProgrammeBase = await _programmeService.GetClientProgrammebyId(Guid.Parse(formCollection[key]));
+
+                        if (renewFromProgrammeBase != null)
+                        {
+                            //Create a renew
+                            ClientProgramme CloneProgramme = await _programmeService.CloneForRenew(user, renewFromProgrammeBase.Id, currentProgramme.Id);
+                        }
+                    }
                 }
 
                 return await RedirectToLocal();

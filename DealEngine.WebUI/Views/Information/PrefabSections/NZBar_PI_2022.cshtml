@@ -1,0 +1,154 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="PIViewModel" class="is-valid" data-accordianId="Professional Indemnity">
+    @*<strong>Professional Indemnity Cover</strong>*@
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasNzbar" class="label required">
+                    Are you a full financial member of the New Zealand Bar Association?
+                </label>
+                <label>(Note: Only full financial members of the NZBA qualify for coverage under this insurance plan.)</label>
+            </div>
+            <div class="col-3">
+
+                <select id="hasNzbar" name="PIViewModel.hasNzbar" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.hasNzbar)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+
+            </div>
+        </div>
+    </div>
+
+    @*<div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="hasAnnualFee" class="label required">
+                        Is your Annual Fee Income greater than $1,000,000?
+                    </label>
+                </div>
+                <div class="col-3">
+                    <select id="hasAnnualFee" name="PIViewModel.hasAnnualFee" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.PIViewModel.hasAnnualFee)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>*@
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="IsJuniorBarrister" class="label required">
+                    Are you a junior barrister?
+                    (A Junior Barrister is a barrister with less than seven years' post admission experience. The seven years may include time spent in a legal firm/public sector or other legal role.)
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="IsJuniorBarrister" name="PIViewModel.IsJuniorBarrister" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.IsJuniorBarrister)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+
+
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="IsRequirecoverJunior" class="label required">
+                    Do you require cover for Employed or Junior Barristers?
+                    (Cover is provided at an additional $200+gst per junior barrister and $500+gst per employed barrister.)
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="IsRequirecoverJunior" name="PIViewModel.IsRequirecoverJunior" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.IsRequirecoverJunior)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.IsRequirecoverJunior" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-12">
+                    <label for="JuniorBarristersdetails">
+                        <strong>Please provide the details of all Employed or Junior Barristers for whom cover is required within the Named Parties Panel. </strong>
+                    </label>
+                </div>
+                @*<div class="col-3">
+                        @Html.TextAreaFor(m => m.PIViewModel.JuniorBarristersdetails, new { @class = "form-control", @id = "investigationdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>*@
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="IsOutsideNZBA" class="label required">
+                    Do you currently hold Professional Indemnity Insurance outside of NZBA?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="IsOutsideNZBA" name="PIViewModel.IsOutsideNZBA" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.PIViewModel.IsOutsideNZBA)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+
+
+            </div>
+        </div>
+    </div>
+    <div id="PIViewModel.IsOutsideNZBA" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="OutsideNZBAdetails" class="label required">
+                        <strong>Please Provide Details. </strong>
+                    </label>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <label class="label required">
+                        <strong>Insurer</strong>
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.InsurerDetails, new { @class = "form-control", @id = "InsurerDetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-9">
+                    <label class="label required">
+                        <strong>Limit of Indemnity</strong>
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.PIViewModel.IndemnityDetails, new { @class = "form-control", @id = "IndemnityDetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+</form>

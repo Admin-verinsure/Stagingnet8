@@ -155,6 +155,7 @@ namespace DealEngine.Services.Impl
                 new MREFIDUWModule(),
                 new MRECEUWModule(),
                 new MRECLUWModule(),
+                new NZBarPIUWModule2022(),
                 new NZBarPIUWModule(),
                 new NZBarPLUWModule(),
                 new NZBarSLUWModule(),

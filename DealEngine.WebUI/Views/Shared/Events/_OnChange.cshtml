@@ -625,7 +625,7 @@
             if (Value == "ABusiness") {
                 ABusinessOnChange();
             }
-           
+            
             List.disabled = true;
         } else {
             document.getElementById("Else").hidden = false;
@@ -669,8 +669,22 @@
 
             if (Value == "MREDirector") {
                 MEDirectorOnChange();
+            }
+            if (Value == "Employee") {
+                EmployeeOnChange();
+                var EmployeeUnit = document.getElementById("Employee");
+                if (EmployeeUnit != null) {
+                    document.getElementById("Employee").hidden = false;
+                }
+
+                var Email = document.getElementById("EmailDiv");
+                if (Email != null) {
+                    document.getElementById("EmailDiv").hidden = true;
+                }
 
             }
+
+           
 
 
             if (Value == "Run Off") {
@@ -704,8 +718,6 @@
                 }
                
             }
-
-
             var NoTradingNameValidation = document.getElementById("NoTradingNameValidation");
                     var TradingName = document.getElementById("Organisation.TradingName");
                     if (NoTradingNameValidation != null && NoTradingNameValidation.value == "True") {
@@ -757,8 +769,10 @@
         debugger;
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
-         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsEmployeeUnit = document.getElementsByClassName("Employee");
 
+        
 
         if (IsBarristerUnit != null) {
 
@@ -777,6 +791,13 @@
                  el.style.display = 'none';
         });
         }
+        if (IsEmployeeUnit != null) {
+            document.querySelectorAll('.Employee').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+
+
        
         
 
@@ -807,10 +828,13 @@
 
     }
 
-     function ABusinessOnChange() {
+    function ABusinessOnChange() {
+        debugger;
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
          var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsEmployeeUnit = document.getElementsByClassName("Employee");
+
          if (IsJBarristerUnit != null) {
 
               document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
@@ -828,13 +852,57 @@
               });
 
          }
-          
+         if (IsEmployeeUnit != null) {
+             document.querySelectorAll('.Employee').forEach(function (el) {
+                 el.style.display = 'none';
+             });
+         }
     }
+
+    function EmployeeOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+        var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var ISEmployeeUnit = document.getElementsByClassName("Employee");
+
+        if (ISEmployeeUnit != null) {
+            document.querySelectorAll('.Employee').forEach(function (el) {
+                el.style.display = 'unset';
+            });
+        }
+
+        if (IsJBarristerUnit != null) {
+
+            document.querySelectorAll('.JBaristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+        if (IsBarristerUnit != null) {
+            document.querySelectorAll('.BarristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+        if (IsEBarristerUnit != null) {
+            document.querySelectorAll('.EBaristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+
+        }
+        var Email = document.getElementById("EmailDiv");
+        if (Email != null) {
+            document.getElementById("EmailDiv").hidden = true;
+        }
+
+    }
+
+    
 
      function JBarristerOnChange() {
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
          var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+         var IsEmployeeUnit = document.getElementsByClassName("EmployeeUnit");
+
          if (IsJBarristerUnit != null) {
 
               document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
@@ -852,6 +920,12 @@
               });
 
          }
+         if (IsEmployeeUnit != null) {
+             document.querySelectorAll('.EmployeeUnit').forEach(function (el) {
+                 el.style.display = 'none';
+             });
+         }
+
           
     }
 
@@ -860,6 +934,8 @@
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsEmployeeUnit = document.getElementsByClassName("EmployeeUnit");
+
         if (IsEBarristerUnit != null) {
               document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
                  el.style.display = 'unset';
@@ -873,6 +949,11 @@
         }
         if (IsBarristerUnit != null) {
             document.querySelectorAll('.BarristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+        if (IsEmployeeUnit != null) {
+            document.querySelectorAll('.EmployeeUnit').forEach(function (el) {
                 el.style.display = 'none';
             });
         }

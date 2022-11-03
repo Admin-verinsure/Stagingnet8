@@ -180,6 +180,11 @@ namespace DealEngine.Services.Impl
                 UnitName = collection["RealEstateRunOffUnit"].ToString();
 
             }
+            else if (InsuranceAttribute == "Employee")
+            {
+                UnitName = collection["EmployeeUnit"].ToString();
+
+            }
             else
             {
                 UnitName = collection["Unit"].ToString();
@@ -498,6 +503,12 @@ namespace DealEngine.Services.Impl
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new EBaristerUnit(User, Type, OrganisationTypeName, collection));
                 }
+                if (Type == "Employee")
+                {
+                    OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
+                    OrganisationalUnits.Add(new EmployeeUnit(User, Type, OrganisationTypeName, collection));
+                }
+                
                 if (Type == "Barrister" )
                 {
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
