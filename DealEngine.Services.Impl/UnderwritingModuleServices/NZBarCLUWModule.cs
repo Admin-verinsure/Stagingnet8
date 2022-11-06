@@ -77,54 +77,54 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
 
             //For 1st year set up
-            string strretrodate = "";
-            if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
-            {
-                foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
-                {
-                    if (preRenewOrRefData.DataType == "preterm")
-                    {
-                        if (!string.IsNullOrEmpty(preRenewOrRefData.CLRetro))
-                        {
-                            strretrodate = preRenewOrRefData.CLRetro;
-                        }
-
-                    }
-                    if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "CL")
-                    {
-                        if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
-                        {
-                            ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
-                            agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
-                        }
-                    }
-                }
-            }
-
-            //For renewal
             //string strretrodate = "";
-            //if (agreement.ClientInformationSheet.IsRenewawl && agreement.ClientInformationSheet.RenewFromInformationSheet != null)
+            //if (agreement.ClientInformationSheet.PreRenewOrRefDatas.Count() > 0)
             //{
-            //    var renewFromAgreement = agreement.ClientInformationSheet.RenewFromInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "CL"));
-
-            //    if (renewFromAgreement != null)
+            //    foreach (var preRenewOrRefData in agreement.ClientInformationSheet.PreRenewOrRefDatas)
             //    {
-            //        strretrodate = renewFromAgreement.RetroactiveDate;
-
-            //        foreach (var renewendorsement in renewFromAgreement.ClientAgreementEndorsements)
+            //        if (preRenewOrRefData.DataType == "preterm")
             //        {
-
-            //            if (renewendorsement.DateDeleted == null  &&
-            //                renewendorsement.Name != "Data Recovery and Business Interruption Exclusion (DRB)" && renewendorsement.Name != "Unencrypted Portable Media Exclusion (UPM)"
-            //                 && renewendorsement.Name != "Social Engineering Fraud Extension")
+            //            if (!string.IsNullOrEmpty(preRenewOrRefData.CLRetro))
             //            {
-            //                ClientAgreementEndorsement newclientendorsement =
-            //                    new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
-            //                agreement.ClientAgreementEndorsements.Add(newclientendorsement);
+            //                strretrodate = preRenewOrRefData.CLRetro;
+            //            }
+
+            //        }
+            //        if (preRenewOrRefData.DataType == "preendorsement" && preRenewOrRefData.EndorsementProduct == "CL")
+            //        {
+            //            if (agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == preRenewOrRefData.EndorsementTitle) == null)
+            //            {
+            //                ClientAgreementEndorsement clientAgreementEndorsement = new ClientAgreementEndorsement(underwritingUser, preRenewOrRefData.EndorsementTitle, "Exclusion", product, preRenewOrRefData.EndorsementText, 130, agreement);
+            //                agreement.ClientAgreementEndorsements.Add(clientAgreementEndorsement);
             //            }
             //        }
             //    }
             //}
+
+            //For renewal
+            string strretrodate = "";
+            if (agreement.ClientInformationSheet.IsRenewawl && agreement.ClientInformationSheet.RenewFromInformationSheet != null)
+            {
+                var renewFromAgreement = agreement.ClientInformationSheet.RenewFromInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "CL"));
+
+                if (renewFromAgreement != null)
+                {
+                    strretrodate = renewFromAgreement.RetroactiveDate;
+
+                    foreach (var renewendorsement in renewFromAgreement.ClientAgreementEndorsements)
+                    {
+
+                        if (renewendorsement.DateDeleted == null &&
+                            renewendorsement.Name != "Data Recovery and Business Interruption Exclusion (DRB)" && renewendorsement.Name != "Unencrypted Portable Media Exclusion (UPM)"
+                             && renewendorsement.Name != "Social Engineering Fraud Extension")
+                        {
+                            ClientAgreementEndorsement newclientendorsement =
+                                new ClientAgreementEndorsement(underwritingUser, renewendorsement.Name, renewendorsement.Type, product, renewendorsement.Value, renewendorsement.OrderNumber, agreement);
+                            agreement.ClientAgreementEndorsements.Add(newclientendorsement);
+                        }
+                    }
+                }
+            }
 
 
             decimal extpremium = 0m;
