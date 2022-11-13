@@ -703,6 +703,16 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Financial Institution",
                         Value = "Financial Institution"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Club Trust– non-trading",
+                        Value = "Club Trust– non-trading"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Club Trust– trading",
+                        Value = "Club Trust– trading"
                     }
                 };
             return _Types;
