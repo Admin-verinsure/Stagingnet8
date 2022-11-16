@@ -315,3 +315,22 @@ deploy_stagingi2ibrokers:
   dependencies:
     - build
 
+deploy_insurerotaryoceania:
+  stage: deploy
+  script:
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLinsurerotaryoceania"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$$URLinsurerotaryoceania"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$$URLinsurerotaryoceania"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$$URLinsurerotaryoceania"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - eval "$(ssh-agent -s)"
+  - ssh-add <(echo "$PKgitlab")
+  - ssh ubuntu@"$$URLinsurerotaryoceania" './DE-DeployPrep.sh'
+  - 'dotnet publish -c Release'
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@"$$URLinsurerotaryoceania":/home/ubuntu/projects/dealengine
+  - ssh ubuntu@"$URLinsurerotaryoceania" './DE-DeployFin.sh'
+  environment:
+    name: insurerotaryoceania
+    url: https://$URLinsurerotaryoceania
+  when: manual
+  dependencies:
+    - build
