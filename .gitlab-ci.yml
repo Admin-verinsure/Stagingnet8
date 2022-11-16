@@ -10,45 +10,48 @@ build:
     - 'dotnet clean'
     - 'dotnet build -c Release'
 
-deploy_demo:
+# MARSH #
+deploy_stagingmnzconnect:
   stage: deploy
   script:
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLstagingmnzconnect"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLstagingmnzconnect"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLstagingmnzconnect"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLstagingmnzconnect"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
   - eval "$(ssh-agent -s)"
   - ssh-add <(echo "$PKgitlab")
-  - ssh ubuntu@"$URLdemo" './DE-DeployPrep.sh'
+  - ssh ubuntu@"$URLstagingmnzconnect" './DE-DeployPrep.sh'
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLdemo:/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLdemo" './DE-DeployFin.sh'
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLstagingmnzconnect:/home/ubuntu/projects/dealengine
+  - ssh ubuntu@"$URLstagingmnzconnect" './DE-DeployFin.sh'
   environment:
-    name: demo
-    url: https://URLdemo
+    name: mnzconnect
+    url: https://URLstagingmnzconnect
   when: manual
   dependencies:
     - build
 
-deploy_staging:
+deploy_mnzconnect:
   stage: deploy
   script:
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLdevops"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLdevops"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLdevops"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLdevops"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLmnzconnect"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLmnzconnect"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLmnzconnect"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLmnzconnect"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
   - eval "$(ssh-agent -s)"
   - ssh-add <(echo "$PKgitlab")
-  - ls -la
-  - scp ubuntu@"$URLdevops":/home/ubuntu/backup/appsettings.json /home/gitlab-runner/
-  #- /home/gitlab-runner/DE-UpdateStartup.sh
-  #- ssh ubuntu@"$URLdevops" './DE-DeployPrep.sh'
+  - ssh ubuntu@"$URLmnzconnect" './DE-DeployPrep.sh'
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLdevops:/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLdevops" './DE-DeployFin.sh'
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@"$URLmnzconnect":/home/ubuntu/projects/dealengine
+  - ssh ubuntu@"$URLmnzconnect" './DE-DeployFin.sh'
   environment:
-    name: staging
-    url: https://URLdevops
+    name: mnzconnect
+    url: https://$URLmnzconnect
   when: manual
   dependencies:
     - build
 
+# AIB #
 deploy_stagingaibgrouponline:
   stage: deploy
   script:
@@ -70,6 +73,28 @@ deploy_stagingaibgrouponline:
   dependencies:
     - build 
 
+deploy_aibgrouponline:
+  stage: deploy
+  script:
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLaibgrouponline"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLaibgrouponline"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLaibgrouponline"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLaibgrouponline"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - eval "$(ssh-agent -s)"
+  - ssh-add <(echo "$PKgitlab")
+  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLaibgrouponline" './DE-DeployPrep.sh'
+  - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
+  - 'dotnet publish -c Release'
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLaibgrouponline:/home/ubuntu/projects/dealengine
+  - ssh ubuntu@"$URLaibgrouponline" './DE-DeployFin.sh'
+  environment:
+    name: aibgrouponline
+    url: https://$URLaibgrouponline
+  when: manual
+  dependencies:
+    - build
+
+# TAI #
 deploy_stagingdetai:
   stage: deploy
   script:
@@ -91,26 +116,28 @@ deploy_stagingdetai:
   dependencies:
     - build
 
-deploy_stagingmnzconnect:
+deploy_insuretai:
   stage: deploy
   script:
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLstagingmnzconnect"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLstagingmnzconnect"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLstagingmnzconnect"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLstagingmnzconnect"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLinsuretai"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLinsuretai"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLinsuretai"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
+  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLinsuretai"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
   - eval "$(ssh-agent -s)"
   - ssh-add <(echo "$PKgitlab")
-  - ssh ubuntu@"$URLstagingmnzconnect" './DE-DeployPrep.sh'
+  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLinsuretai" './DE-DeployPrep.sh'
+  - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLstagingmnzconnect:/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLstagingmnzconnect" './DE-DeployFin.sh'
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLinsuretai:/home/ubuntu/projects/dealengine
+  - ssh ubuntu@"$URLinsuretai" './DE-DeployFin.sh'
   environment:
-    name: mnzconnect
-    url: https://URLstagingmnzconnect
+    name: detai
+    url: https://URLinsuretai
   when: manual
   dependencies:
     - build
 
+# PRO RISKS #
 deploy_stagingprofessionalrisks:
   stage: deploy
   script:
@@ -132,6 +159,28 @@ deploy_stagingprofessionalrisks:
   dependencies:
     - build
 
+deploy_professionalrisks:
+  stage: deploy
+  script:
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLprorisks"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLprorisks"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLprorisks"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLprorisks"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+  - eval "$(ssh-agent -s)"
+  - ssh-add <(echo "$PKgitlab")
+  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLprorisks" './DE-DeployPrep.sh'
+  - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
+  - 'dotnet publish -c Release'
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLprorisks:/home/ubuntu/projects/dealengine
+  - ssh ubuntu@"$URLprorisks" './DE-DeployFin.sh'
+  environment:
+    name: professionalrisks
+    url: https://URLprorisks
+  when: manual
+  dependencies:
+    - build
+
+# ABBOTT #
 deploy_stagingabbottgroup:
   stage: deploy
   script:
@@ -174,147 +223,7 @@ deploy_abbottgroup:
   dependencies:
     - build
 
-deploy_mnzconnect:
-  stage: deploy
-  script:
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLmnzconnect"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLmnzconnect"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLmnzconnect"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLmnzconnect"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - eval "$(ssh-agent -s)"
-  - ssh-add <(echo "$PKgitlab")
-  - ssh ubuntu@"$URLmnzconnect" './DE-DeployPrep.sh'
-  - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@"$URLmnzconnect":/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLmnzconnect" './DE-DeployFin.sh'
-  environment:
-    name: mnzconnect
-    url: https://$URLmnzconnect
-  when: manual
-  dependencies:
-    - build
-
-deploy_insuretai:
-  stage: deploy
-  script:
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLinsuretai"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLinsuretai"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLinsuretai"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
-  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLinsuretai"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
-  - eval "$(ssh-agent -s)"
-  - ssh-add <(echo "$PKgitlab")
-  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLinsuretai" './DE-DeployPrep.sh'
-  - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
-  - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLinsuretai:/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLinsuretai" './DE-DeployFin.sh'
-  environment:
-    name: detai
-    url: https://URLinsuretai
-  when: manual
-  dependencies:
-    - build
-
-
-deploy_professionalrisks:
-  stage: deploy
-  script:
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLprorisks"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLprorisks"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLprorisks"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLprorisks"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - eval "$(ssh-agent -s)"
-  - ssh-add <(echo "$PKgitlab")
-  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLprorisks" './DE-DeployPrep.sh'
-  - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
-  - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLprorisks:/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLprorisks" './DE-DeployFin.sh'
-  environment:
-    name: professionalrisks
-    url: https://URLprorisks
-  when: manual
-  dependencies:
-    - build
-
-deploy_mydealslive:
-  stage: deploy
-  script:
-  - eval "$(ssh-agent -s)"
-  - ssh-add <(echo "$PKgitlab")
-  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLmydealslive" './DE-DeployPrep.sh'
-  - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLmydealslive:/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLmydealslive" './DE-DeployFin.sh'
-  environment:
-    name: mydealslive
-    url: https://URLmydealslive
-  when: manual
-  dependencies:
-    - build
-
-deploy_aibgrouponline:
-  stage: deploy
-  script:
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLaibgrouponline"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLaibgrouponline"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLaibgrouponline"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLaibgrouponline"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - eval "$(ssh-agent -s)"
-  - ssh-add <(echo "$PKgitlab")
-  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLaibgrouponline" './DE-DeployPrep.sh'
-  - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
-  - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLaibgrouponline:/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLaibgrouponline" './DE-DeployFin.sh'
-  environment:
-    name: aibgrouponline
-    url: https://$URLaibgrouponline
-  when: manual
-  dependencies:
-    - build
-    
-deploy_insurerotary:
-  stage: deploy
-  script:
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLinsurerotary"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLinsurerotary"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLinsurerotary"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
-  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLinsurerotary"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
-  - eval "$(ssh-agent -s)"
-  - ssh-add <(echo "$PKgitlab")
-  - ssh ubuntu@"$URLinsurerotary" './DE-DeployPrep.sh'
-  - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
-  - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLinsurerotary:/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLinsurerotary" './DE-DeployFin.sh'
-  environment:
-    name: insurerotary
-    url: https://$URLinsurerotary
-  when: manual
-  dependencies:
-    - build
-    
-deploy_stagingi2ibrokers:
-  stage: deploy
-  script:
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLstagingi2ibrokers"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLstagingi2ibrokers"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLstagingi2ibrokers"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLstagingi2ibrokers"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-  - eval "$(ssh-agent -s)"
-  - ssh-add <(echo "$PKgitlab")
-  - ssh ubuntu@"$URLstagingi2ibrokers" './DE-DeployPrep.sh'
-  - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@"$URLstagingi2ibrokers":/home/ubuntu/projects/dealengine
-  - ssh ubuntu@"$URLstagingi2ibrokers" './DE-DeployFin.sh'
-  environment:
-    name: stagingi2ibrokers
-    url: https://$URLstagingi2ibrokers
-  when: manual
-  dependencies:
-    - build
-
+# ROTARY # 
 deploy_insurerotaryoceania:
   stage: deploy
   script:
@@ -335,3 +244,100 @@ deploy_insurerotaryoceania:
   when: manual
   dependencies:
     - build
+
+# OLD # 
+#deploy_mydealslive:
+#  stage: deploy
+#  script:
+#  - eval "$(ssh-agent -s)"
+#  - ssh-add <(echo "$PKgitlab")
+#  - ssh -o StrictHostKeyChecking=no ubuntu@"$URLmydealslive" './DE-DeployPrep.sh'
+#  - 'dotnet publish -c Release'
+#  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLmydealslive:/home/ubuntu/projects/dealengine
+#  - ssh ubuntu@"$URLmydealslive" './DE-DeployFin.sh'
+#  environment:
+#    name: mydealslive
+#    url: https://URLmydealslive
+#  when: manual
+#  dependencies:
+#    - build
+
+#deploy_insurerotary:
+#  stage: deploy
+#  script:
+#  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLinsurerotary"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
+#  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLinsurerotary"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
+#  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLinsurerotary"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
+#  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLinsurerotary"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-build-classic-tc/build/ckeditor.js
+#  - eval "$(ssh-agent -s)"
+#  - ssh-add <(echo "$PKgitlab")
+#  - ssh ubuntu@"$URLinsurerotary" './DE-DeployPrep.sh'
+#  - cp ~/general/_LoginText.cshtml /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/Views/Account/_LoginText.cshtml
+#  - 'dotnet publish -c Release'
+#  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLinsurerotary:/home/ubuntu/projects/dealengine
+#  - ssh ubuntu@"$URLinsurerotary" './DE-DeployFin.sh'
+#  environment:
+#    name: insurerotary
+#    url: https://$URLinsurerotary
+#  when: manual
+#  dependencies:
+#    - build
+    
+#deploy_stagingi2ibrokers:
+#  stage: deploy
+#  script:
+#  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLstagingi2ibrokers"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+#  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLstagingi2ibrokers"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+#  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLstagingi2ibrokers"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+#  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLstagingi2ibrokers"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+#  - eval "$(ssh-agent -s)"
+#  - ssh-add <(echo "$PKgitlab")
+#  - ssh ubuntu@"$URLstagingi2ibrokers" './DE-DeployPrep.sh'
+#  - 'dotnet publish -c Release'
+#  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@"$URLstagingi2ibrokers":/home/ubuntu/projects/dealengine
+#  - ssh ubuntu@"$URLstagingi2ibrokers" './DE-DeployFin.sh'
+#  environment:
+#    name: stagingi2ibrokers
+#    url: https://$URLstagingi2ibrokers
+#  when: manual
+#  dependencies:
+#    - build
+
+#deploy_demo:
+#  stage: deploy
+#  script:
+#  - eval "$(ssh-agent -s)"
+#  - ssh-add <(echo "$PKgitlab")
+#  - ssh ubuntu@"$URLdemo" './DE-DeployPrep.sh'
+#  - 'dotnet publish -c Release'
+#  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/publish/ ubuntu@$URLdemo:/home/ubuntu/projects/dealengine
+#  - ssh ubuntu@"$URLdemo" './DE-DeployFin.sh'
+#  environment:
+#    name: demo
+#    url: https://URLdemo
+#  when: manual
+#  dependencies:
+#    - build
+
+#deploy_staging:
+#  stage: deploy
+#  script:
+#  - sed -i "s/https:\/\/localhost:44323\/Image\/CKGetAllImages/https:\/\/"$URLdevops"\/Image\/CKGetAllImages/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+#  - sed -i "s/https:\/\/localhost:44323\/Image\/_/https:\/\/"$URLdevops"\/Image\/_/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+#  - sed -i "s/https:\/\/localhost:44323\/Image\/CKUpload/https:\/\/"$URLdevops"\/Image\/CKUpload/g" /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+#  - sed -i 's,https:\/\/localhost:44323\/Image\/,https:\/\/'"$URLdevops"'\/Image\/,g' /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+#  - eval "$(ssh-agent -s)"
+#  - ssh-add <(echo "$PKgitlab")
+#  - ls -la
+#  - scp ubuntu@"$URLdevops":/home/ubuntu/backup/appsettings.json /home/gitlab-runner/
+  #- /home/gitlab-runner/DE-UpdateStartup.sh
+  #- ssh ubuntu@"$URLdevops" './DE-DeployPrep.sh'
+#  - 'dotnet publish -c Release'
+#  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLdevops:/home/ubuntu/projects/dealengine
+#  - ssh ubuntu@"$URLdevops" './DE-DeployFin.sh'
+#  environment:
+#    name: staging
+#    url: https://URLdevops
+#  when: manual
+#  dependencies:
+#    - build
