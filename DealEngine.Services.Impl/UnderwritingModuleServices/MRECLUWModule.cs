@@ -158,92 +158,112 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
-            int incomeoption = 0;
-            int TermExcess = 0;
+            //int incomeoption = 0;
+            //int TermExcess = 0;
 
-            if (feeincome >= 0 && feeincome < 1000000)
-            {
-                incomeoption = 1;
-                TermExcess = 1000;
-            }
-            else if (feeincome >= 1000000 && feeincome <= 2500000)
-            {
-                incomeoption = 2;
-                TermExcess = 2500;
-            }
-            else if (feeincome >= 2500000 && feeincome < 5000000)
-            {
-                incomeoption = 3;
-                TermExcess = 2500;
-            }
-            else if (feeincome >= 5000000 && feeincome < 7500000)
-            {
-                incomeoption = 4;
-                TermExcess = 5000;
-            }
-            else if (feeincome >= 7500000 && feeincome < 10000000)
-            {
-                incomeoption = 5;
-                TermExcess = 5000;
-            }
+            //if (feeincome >= 0 && feeincome < 1000000)
+            //{
+            //    incomeoption = 1;
+            //    TermExcess = 1000;
+            //}
+            //else if (feeincome >= 1000000 && feeincome <= 2500000)
+            //{
+            //    incomeoption = 2;
+            //    TermExcess = 2500;
+            //}
+            //else if (feeincome >= 2500000 && feeincome < 5000000)
+            //{
+            //    incomeoption = 3;
+            //    TermExcess = 2500;
+            //}
+            //else if (feeincome >= 5000000 && feeincome < 7500000)
+            //{
+            //    incomeoption = 4;
+            //    TermExcess = 5000;
+            //}
+            //else if (feeincome >= 7500000 && feeincome < 10000000)
+            //{
+            //    incomeoption = 5;
+            //    TermExcess = 5000;
+            //}
 
-            int TermLimit500k = 500000;
-            decimal TermPremium500k = 0m;
-            decimal TermBasePremium500k = 0m;
-            decimal TermBrokerage500k = 0m;
-            TermPremium500k = GetPremiumFor(rates, incomeoption, TermLimit500k);
-            TermBasePremium500k = TermPremium500k;
-            TermPremium500k = TermPremium500k * agreementperiodindays / coverperiodindays;
-            TermBrokerage500k = TermPremium500k * agreement.Brokerage / 100;
+            //int TermLimit500k = 500000;
+            //decimal TermPremium500k = 0m;
+            //decimal TermBasePremium500k = 0m;
+            //decimal TermBrokerage500k = 0m;
+            //TermPremium500k = GetPremiumFor(rates, incomeoption, TermLimit500k);
+            //TermBasePremium500k = TermPremium500k;
+            //TermPremium500k = TermPremium500k * agreementperiodindays / coverperiodindays;
+            //TermBrokerage500k = TermPremium500k * agreement.Brokerage / 100;
 
-            ClientAgreementTerm termcl500klimitoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit500k, TermExcess);
-            termcl500klimitoption.TermLimit = TermLimit500k;
-            termcl500klimitoption.Premium = TermPremium500k;
-            termcl500klimitoption.BasePremium = TermBasePremium500k;
-            termcl500klimitoption.Excess = TermExcess;
-            termcl500klimitoption.BrokerageRate = agreement.Brokerage;
-            termcl500klimitoption.Brokerage = TermBrokerage500k;
-            termcl500klimitoption.DateDeleted = null;
-            termcl500klimitoption.DeletedBy = null;
+            //ClientAgreementTerm termcl500klimitoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit500k, TermExcess);
+            //termcl500klimitoption.TermLimit = TermLimit500k;
+            //termcl500klimitoption.Premium = TermPremium500k;
+            //termcl500klimitoption.BasePremium = TermBasePremium500k;
+            //termcl500klimitoption.Excess = TermExcess;
+            //termcl500klimitoption.BrokerageRate = agreement.Brokerage;
+            //termcl500klimitoption.Brokerage = TermBrokerage500k;
+            //termcl500klimitoption.DateDeleted = null;
+            //termcl500klimitoption.DeletedBy = null;
 
-            int TermLimit1mil = 1000000;
-            decimal TermPremium1mil = 0m;
-            decimal TermBasePremium1mil = 0m;
-            decimal TermBrokerage1mil = 0m;
-            TermPremium1mil = GetPremiumFor(rates, incomeoption, TermLimit1mil);
-            TermBasePremium1mil = TermPremium1mil;
-            TermPremium1mil = TermPremium1mil * agreementperiodindays / coverperiodindays;
-            TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
+            //int TermLimit1mil = 1000000;
+            //decimal TermPremium1mil = 0m;
+            //decimal TermBasePremium1mil = 0m;
+            //decimal TermBrokerage1mil = 0m;
+            //TermPremium1mil = GetPremiumFor(rates, incomeoption, TermLimit1mil);
+            //TermBasePremium1mil = TermPremium1mil;
+            //TermPremium1mil = TermPremium1mil * agreementperiodindays / coverperiodindays;
+            //TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
 
-            ClientAgreementTerm termcl1millimitoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit1mil, TermExcess);
-            termcl1millimitoption.TermLimit = TermLimit1mil;
-            termcl1millimitoption.Premium = TermPremium1mil;
-            termcl1millimitoption.BasePremium = TermBasePremium1mil;
-            termcl1millimitoption.Excess = TermExcess;
-            termcl1millimitoption.BrokerageRate = agreement.Brokerage;
-            termcl1millimitoption.Brokerage = TermBrokerage1mil;
-            termcl1millimitoption.DateDeleted = null;
-            termcl1millimitoption.DeletedBy = null;
+            //ClientAgreementTerm termcl1millimitoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit1mil, TermExcess);
+            //termcl1millimitoption.TermLimit = TermLimit1mil;
+            //termcl1millimitoption.Premium = TermPremium1mil;
+            //termcl1millimitoption.BasePremium = TermBasePremium1mil;
+            //termcl1millimitoption.Excess = TermExcess;
+            //termcl1millimitoption.BrokerageRate = agreement.Brokerage;
+            //termcl1millimitoption.Brokerage = TermBrokerage1mil;
+            //termcl1millimitoption.DateDeleted = null;
+            //termcl1millimitoption.DeletedBy = null;
 
-            int TermLimit2mil = 2000000;
-            decimal TermPremium2mil = 0m;
-            decimal TermBasePremium2mil = 0m;
-            decimal TermBrokerage2mil = 0m;
-            TermPremium2mil = GetPremiumFor(rates, incomeoption, TermLimit2mil);
-            TermBasePremium2mil = TermPremium2mil;
-            TermPremium2mil = TermPremium2mil * agreementperiodindays / coverperiodindays;
-            TermBrokerage2mil = TermPremium2mil * agreement.Brokerage / 100;
+            //int TermLimit2mil = 2000000;
+            //decimal TermPremium2mil = 0m;
+            //decimal TermBasePremium2mil = 0m;
+            //decimal TermBrokerage2mil = 0m;
+            //TermPremium2mil = GetPremiumFor(rates, incomeoption, TermLimit2mil);
+            //TermBasePremium2mil = TermPremium2mil;
+            //TermPremium2mil = TermPremium2mil * agreementperiodindays / coverperiodindays;
+            //TermBrokerage2mil = TermPremium2mil * agreement.Brokerage / 100;
 
-            ClientAgreementTerm termcl2millimitoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit2mil, TermExcess);
-            termcl2millimitoption.TermLimit = TermLimit2mil;
-            termcl2millimitoption.Premium = TermPremium2mil;
-            termcl2millimitoption.BasePremium = TermBasePremium2mil;
-            termcl2millimitoption.Excess = TermExcess;
-            termcl2millimitoption.BrokerageRate = agreement.Brokerage;
-            termcl2millimitoption.Brokerage = TermBrokerage2mil;
-            termcl2millimitoption.DateDeleted = null;
-            termcl2millimitoption.DeletedBy = null;
+            //ClientAgreementTerm termcl2millimitoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit2mil, TermExcess);
+            //termcl2millimitoption.TermLimit = TermLimit2mil;
+            //termcl2millimitoption.Premium = TermPremium2mil;
+            //termcl2millimitoption.BasePremium = TermBasePremium2mil;
+            //termcl2millimitoption.Excess = TermExcess;
+            //termcl2millimitoption.BrokerageRate = agreement.Brokerage;
+            //termcl2millimitoption.Brokerage = TermBrokerage2mil;
+            //termcl2millimitoption.DateDeleted = null;
+            //termcl2millimitoption.DeletedBy = null;
 
+            //Calculate premium option
+
+            int TermLimit = 0;
+            decimal TermPremium = 0M;
+            decimal TermBasePremium = 0M;
+            decimal TermBrokerage = 0M;
+            decimal TermExcess = 0M;
+
+            TermPremium = TermPremium * agreementperiodindays / coverperiodindays;
+            TermBrokerage = TermPremium * agreement.Brokerage / 100;
+
+            ClientAgreementTerm termcltermoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit, TermExcess);
+            termcltermoption.TermLimit = TermLimit;
+            termcltermoption.Premium = TermPremium;
+            termcltermoption.BasePremium = TermBasePremium;
+            termcltermoption.Excess = TermExcess;
+            termcltermoption.BrokerageRate = agreement.Brokerage;
+            termcltermoption.Brokerage = TermBrokerage;
+            termcltermoption.DateDeleted = null;
+            termcltermoption.DeletedBy = null;
 
             //Change policy premium calculation
             if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
@@ -253,33 +273,33 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 {
                     foreach (var term in PreviousAgreement.ClientAgreementTerms)
                     {
-                        if (term.Bound)
-                        {
-                            var PreviousBoundPremium = term.Premium;
-                            if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
-                            {
-                                PreviousBoundPremium = term.BasePremium;
-                            }
+                        //if (term.Bound)
+                        //{
+                        //    var PreviousBoundPremium = term.Premium;
+                        //    if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
+                        //    {
+                        //        PreviousBoundPremium = term.BasePremium;
+                        //    }
 
-                            termcl500klimitoption.PremiumDiffer = (TermPremium500k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
-                            termcl500klimitoption.PremiumPre = PreviousBoundPremium;
-                            if (termcl500klimitoption.TermLimit == term.TermLimit && termcl500klimitoption.Excess == term.Excess)
-                            {
-                                termcl500klimitoption.Bound = true;
-                            }
-                            termcl1millimitoption.PremiumDiffer = (TermPremium1mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
-                            termcl1millimitoption.PremiumPre = PreviousBoundPremium;
-                            if (termcl1millimitoption.TermLimit == term.TermLimit && termcl1millimitoption.Excess == term.Excess)
-                            {
-                                termcl1millimitoption.Bound = true;
-                            }
-                            termcl2millimitoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
-                            termcl2millimitoption.PremiumPre = PreviousBoundPremium;
-                            if (termcl2millimitoption.TermLimit == term.TermLimit && termcl2millimitoption.Excess == term.Excess)
-                            {
-                                termcl2millimitoption.Bound = true;
-                            }
-                        }
+                        //    termcl500klimitoption.PremiumDiffer = (TermPremium500k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        //    termcl500klimitoption.PremiumPre = PreviousBoundPremium;
+                        //    if (termcl500klimitoption.TermLimit == term.TermLimit && termcl500klimitoption.Excess == term.Excess)
+                        //    {
+                        //        termcl500klimitoption.Bound = true;
+                        //    }
+                        //    termcl1millimitoption.PremiumDiffer = (TermPremium1mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        //    termcl1millimitoption.PremiumPre = PreviousBoundPremium;
+                        //    if (termcl1millimitoption.TermLimit == term.TermLimit && termcl1millimitoption.Excess == term.Excess)
+                        //    {
+                        //        termcl1millimitoption.Bound = true;
+                        //    }
+                        //    termcl2millimitoption.PremiumDiffer = (TermPremium2mil - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                        //    termcl2millimitoption.PremiumPre = PreviousBoundPremium;
+                        //    if (termcl2millimitoption.TermLimit == term.TermLimit && termcl2millimitoption.Excess == term.Excess)
+                        //    {
+                        //        termcl2millimitoption.Bound = true;
+                        //    }
+                        //}
 
                         strretrodate = PreviousAgreement.RetroactiveDate;
 
@@ -298,9 +318,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
                 else
                 {
-                    termcl500klimitoption.PremiumDiffer = TermPremium500k;
-                    termcl1millimitoption.PremiumDiffer = TermPremium1mil;
-                    termcl2millimitoption.PremiumDiffer = TermPremium2mil;
+                    termcltermoption.PremiumDiffer = 0;
+                    //termcl500klimitoption.PremiumDiffer = TermPremium500k;
+                    //termcl1millimitoption.PremiumDiffer = TermPremium1mil;
+                    //termcl2millimitoption.PremiumDiffer = TermPremium2mil;
                 }
 
             }
