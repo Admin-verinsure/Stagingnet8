@@ -96,6 +96,7 @@ namespace DealEngine.WebUI.Models
         public BIViewModel BIViewModel { get; set; }
         public RVViewModel RVViewModel { get; set; }
         public BuildingViewModel BuildingViewModel { get; set; }
+        public CPViewModel CPViewModel { get; set; }
 
 
     }
@@ -2047,4 +2048,36 @@ namespace DealEngine.WebUI.Models
     //    public DateTime PolicyEndDate { get; set; }
 
     //}
+
+
+    public class CPViewModel : BaseViewModel
+    {
+        public CPViewModel(ClientInformationSheet clientInformationSheet, User OrgUser)
+        {
+            HasClubTrustRealEstate = GetSelectListOptions();
+            HasClubTrustMotorVehicle = GetSelectListOptions();
+
+        }
+      //  public Guid Id { get; set; }
+        public IList<SelectListItem> HasClubTrustRealEstate { get; set; }
+        public IList<SelectListItem> HasClubTrustMotorVehicle { get; set; }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+      
 }
