@@ -187,8 +187,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             agreement.ProfessionalBusiness = "Barristers and other occupations agreed by NZI";
             string retrodate = "Unlimited but excluding known or reported incidents, not including any previous practice as a barrister & solicitor unless specifically agreed by Lumley";
-            agreement.TerritoryLimit = "Worldwide excluding USA and Canada";
-            agreement.Jurisdiction = "Worldwide excluding USA and Canada";
+            agreement.TerritoryLimit = "New Zealand";
+            agreement.Jurisdiction = "New Zealand";
             agreement.RetroactiveDate = retrodate;
             if (!String.IsNullOrEmpty(strretrodate))
             {
