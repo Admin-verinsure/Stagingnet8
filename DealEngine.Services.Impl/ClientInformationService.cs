@@ -17,10 +17,14 @@ namespace DealEngine.Services.Impl
         IMapperSession<Reference> _referenceRepository;
         IUserService _userService;
         IOrganisationService _organisationService;
+        IClubAssetInfoService _clubassetRepository;
+        IAssetData _assetData;
         public ClientInformationService(
             IOrganisationService organisationService,
             IMapperSession<Reference> referenceRepository,
             IUserService userService,
+            IClubAssetInfoService clubassetRepository,
+            IAssetData assetData,
             IMapperSession<ClientInformationSheet> customerInformationRepository
             )
         {
@@ -28,6 +32,8 @@ namespace DealEngine.Services.Impl
             _referenceRepository = referenceRepository;
             _userService = userService;
             _customerInformationRepository = customerInformationRepository;
+            _clubassetRepository = clubassetRepository;
+            _assetData = assetData;
         }
 
         public async Task<ClientInformationSheet> IssueInformationFor(User createdBy, Organisation createdFor, InformationTemplate informationTemplate)
@@ -134,8 +140,95 @@ namespace DealEngine.Services.Impl
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("MLViewModel", StringComparison.CurrentCulture)));
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
+            SaveTrustAssetAnswer( user,sheet, collection, collection.Keys.Where(s => s.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
+            //SaveTrustAssetAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("TAViewModel", StringComparison.CurrentCulture)
+            //                                                              || s.StartsWith("TAViewModel", StringComparison.CurrentCulture)
+            //                                                              || s.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
 
         }
+
+        private void SaveTrustAssetAnswer(User user,ClientInformationSheet sheet, IFormCollection collection, IEnumerable<string> enumerable)
+        {
+            //sheet.TrustAssetData = new TrustAssetData(sheet);
+            List<ClubTrustAssetsInfo> ClubTrustAssetsInfolist = new List<ClubTrustAssetsInfo>();
+            //ClubTrustAssetsInfo ClubTrustAssetsInfo = new ClubTrustAssetsInfo();
+
+            int i = 2; // initialization
+            var jhj = "TAViewModel" + i + ".DescriptionorName";
+            while (collection["TAViewModel" + i + ".DescriptionorName"].Count() > 0) // condition
+            {
+
+                ClubTrustAssetsInfo clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["TAViewModel" + i + ".DescriptionorName"],
+                                                                                 int.Parse(collection["TAViewModel" + i + ".CurrentValue"]),
+                                                                                 int.Parse(collection["TAViewModel" + i + ".ReplacementValue"]),
+                                                                                 collection["TAViewModel" + i + ".Owner"], user);
+                _clubassetRepository.UpdateClubAsset(clubTrustAssetsInfo);
+
+                ClubTrustAssetsInfolist.Add(clubTrustAssetsInfo);
+                i++;
+            }
+            //ClubTrustAssetsInfo.Name = collection["TAViewModel" + i + ".DescriptionorName"];
+            //ClubTrustAssetsInfo.CurrentVal = int.Parse(collection["TAViewModel" + i + ".CurrentValue"]);
+            //ClubTrustAssetsInfo.ReplacementVal = int.Parse(collection["TAViewModel" + i + ".ReplacementValue"]);
+            //ClubTrustAssetsInfo.Owner= collection["TAViewModel" + i + ".Owner"];
+            //_clubassetRepository.UpdateClubAsset(ClubTrustAssetsInfolist);
+
+            AssetData AssetData = new AssetData(collection["TAViewModel.HasClubTrustAssetMore"],
+                                                collection["TAViewModel.HasClubTrustAssets"],
+                                                ClubTrustAssetsInfolist,user);
+
+            //AssetData.HasClubTrustAssetMore = collection["TAViewModel.HasClubTrustAssetMore"];
+            //    AssetData.HasClubTrustAssets = collection["TAViewModel.HasClubTrustAssets"];
+            //    AssetData.ClubTrustAssetsInfo = ClubTrustAssetsInfolist;
+                 _assetData.UpdateAssetData(AssetData);
+                sheet.AssetData = AssetData;
+                UpdateInformation(sheet);
+                i++;
+            
+            //TAViewModel.DescriptionorName
+            //var DescriptionorName = collection["TAViewModel.DescriptionorName"];
+            //var descriptorarray = DescriptionorName.Split(',').ToList();
+            ////TAViewModel.CurrentValue
+            //TAViewModel.ReplacementValue
+            //try
+            //{
+                //if (collection == null)
+                //    throw new ArgumentNullException(nameof(collection));
+
+                //foreach (var keyField in locationForm)Des.').ToList();
+                //    }
+                //}
+
+                //if (sheet.Locations.Contains(location))
+                //{
+                //    await _locationService.UpdateLocation(location);
+                //}
+                //else
+                //{
+                //    sheet.Locations.Add(location);
+                //    await _clientInformationService.UpdateInformation(sheet);
+                //}
+
+                //await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                //return RedirectToAction("Error500", "Error");
+
+
+
+            //    for (var i = 0; i < 4; i++)
+            //    {
+            //        foreach (var key in enumerable)
+            //        {
+            //            sheet.AddAnswer(key, collection[key]);
+            //        }
+            //    }
+
+            //}catch (Exception ex )
+            //{
+
+            //}
+            //|
+        }
+        
 
         private void AnswerFromUserDetails(User user, IFormCollection collection, IEnumerable<string> enumerable)
         {

@@ -310,7 +310,7 @@ namespace DealEngine.WebUI.Controllers
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
-
+                await GetClubTrustAssetViewModel(model, sheet.AssetData, clientProgramme);
                 //build models from answers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("PMINZEPLViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("ELViewModel", StringComparison.CurrentCulture)));
@@ -993,7 +993,7 @@ namespace DealEngine.WebUI.Controllers
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
-
+                await GetTrustDataModel(model, sheet);
                 //build models from answers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("PMINZEPLViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("ELViewModel", StringComparison.CurrentCulture)));
@@ -1126,7 +1126,21 @@ namespace DealEngine.WebUI.Controllers
                 }
             }
         }
-
+        
+       private async Task GetTrustDataModel(InformationViewModel model, ClientInformationSheet sheet)
+        {
+            try
+            {
+                if (sheet != null)
+                {
+                    model.AssetData = sheet.AssetData;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
         private async Task GetRoleViewModel(InformationViewModel model, RoleData roleData)
         {
             try
@@ -1142,7 +1156,29 @@ namespace DealEngine.WebUI.Controllers
                 Console.WriteLine(ex.Message);
             }
         }
+        private async Task GetClubTrustAssetViewModel(InformationViewModel model, AssetData trustAssetData, ClientProgramme clientProgramme)
+        {
+            try
+            {
+                if (trustAssetData.ClubTrustAssetsInfo.Count()>0)
+                {
 
+                    model.AssetData.ClubTrustAssetsInfo = trustAssetData.ClubTrustAssetsInfo;
+                }
+                //if (trustAssetData.HasClubTrustAssetMore.Count() > 0)
+                //{
+                //    model.TAViewModel.HasClubTrustAssetMore = trustAssetData.HasClubTrustAssetMore;
+                //}
+                //if (trustAssetData.HasClubTrustAssets.Count() > 0)
+                //{
+                //    model.TAViewModel.HasClubTrustAssets = trustAssetData.HasClubTrustAssets;
+                //}
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
         private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData,Programme programme)
         {
             try

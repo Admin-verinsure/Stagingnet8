@@ -1231,6 +1231,41 @@
         return sanitised;
     }
 
+
+    function AddNewRow() {
+        //event.preventDefault();
+        debugger;
+        var newRow = $("<tr>");
+        var cols = '';
+        var rowcounter = (document.getElementById("assettable").rows.length) +1;
+        //// Table columns
+       
+        cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"TAViewModel" + rowcounter + ".DescriptionorName\" placeholder=\"Description or name\"></td>";
+        cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"TAViewModel" + rowcounter + ".CurrentValue\" placeholder=\"Current Value\"></td>";
+        cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"TAViewModel" + rowcounter + ".ReplacementValue\" placeholder=\"Replacement Value\"></td>";
+        cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"TAViewModel" + rowcounter + ".Owner\" placeholder=\"Owner\"></td>";
+        cols += '<td><button class="btn btn-danger rounded-0" id ="deleteRow"><i class="fa fa-trash"></i></button</td>';
+
+        // Table columns
+        //cols += '<td><input class="form-control rounded-0" type="text"  placeholder="Description or name"></td>';
+        //cols += '<td><input class="form-control rounded-0" type="text"  placeholder="Current Value"></td>';
+        //cols += '<td><input class="form-control rounded-0" type="text"  placeholder="Replacement Value"></td>';
+        //cols += '<td><input class="form-control rounded-0" type="text"  placeholder="Owner"></td>';
+        //cols += '<td><button class="btn btn-danger rounded-0" id ="deleteRow"><i class="fa fa-trash"></i></button</td>';
+
+
+
+        newRow.append(cols);
+        $("#assettable").append(newRow);
+        // Increase counter after each row insertion
+    };
+
+    // Remove row when delete btn is clicked
+    $("#stocktable").on("click", "#deleteRow", function (event) {
+        $(this).closest("tr").remove();
+        counter -= 1
+    });
+
     //function SetPolicyEffectiveDate() {
     //    debugger;
     //    var priorDate = new Date().setDate(today.getDate() - 30);
