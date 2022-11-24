@@ -1313,6 +1313,17 @@ namespace DealEngine.WebUI.Models
         public string ActivitiesInsuredDetails { get; set; }
         public string RiskExposureDetails { get; set; }
         public string RiskProceduresDetails { get; set; }
+        public int SublimitValuations { get; set; }
+        public int SublimitBusinessSales { get; set; }
+        public int SublimitBusinessSalesAg { get; set; }
+        public int SublimitRuralSales { get; set; }
+        public int SublimitRuralSalesAg { get; set; }
+        public int SublimitEmployeeFidelity { get; set; }
+        public int SublimitPunitiveExemplaryDamages { get; set; }
+        public int SublimitLossofdocuments { get; set; }
+        public int SublimitPublicRelationsExpenses { get; set; }
+        public int SublimitPollutionExclusion { get; set; }
+        public int SublimitInvestigationCosts { get; set; }
 
     }
     public class DAOLIViewModel
@@ -1369,6 +1380,7 @@ namespace DealEngine.WebUI.Models
         public string DateLapsed { get; set; }
         public string RetroactiveDate { get; set; }
         public string InsurerName { get; set; }
+        
         private IList<SelectListItem> GetSelectListOptionsDORenew()
         {
             return new List<SelectListItem>()
