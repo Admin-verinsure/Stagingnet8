@@ -60,6 +60,8 @@ namespace DealEngine.Domain.Entities
        
         protected ClientInformationSheet () : this (null) { }
         public virtual IList<ResearchHouse> ResearchHouses { get; set; }
+        public virtual IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
+
         protected ClientInformationSheet (User createdBy)
 			: base (createdBy)
 		{

@@ -28,14 +28,18 @@ namespace DealEngine.Services.Impl
         //    foreach(var clubTrustAssetsInfo in clubTrustAssetsInfolist)
         //    await _ClubTrustAssetsInfoRepository.UpdateAsync(clubTrustAssetsInfo);
         //}
+        public async Task DeleteClubAssetById(User deletedBy, ClubTrustAssetsInfo clubTrustAssetsInfo)
+        {
+            clubTrustAssetsInfo.Delete(deletedBy);
+            await UpdateClubAsset(clubTrustAssetsInfo);
+        }
 
         public async Task UpdateClubAsset(ClubTrustAssetsInfo clubTrustAssetsInfo)
         {
                 await _ClubTrustAssetsInfoRepository.UpdateAsync(clubTrustAssetsInfo);
         }
 
-
-
+      
     }
 }
 

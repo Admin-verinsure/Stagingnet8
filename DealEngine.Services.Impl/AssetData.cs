@@ -27,8 +27,13 @@ namespace DealEngine.Services.Impl
         {
             await _AssetDataRepository.UpdateAsync(AssetData);
         }
+        public async Task<AssetData> GetAssetDataBySheetId(Guid sheetid)
+        {
+            return await _AssetDataRepository.FindAll().FirstOrDefaultAsync(asset => asset.clientInformationSheet.Id == sheetid);
+        }
 
-       
+
+
     }
 }
 

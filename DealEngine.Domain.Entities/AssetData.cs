@@ -11,13 +11,13 @@ namespace DealEngine.Domain.Entities
     {
         public AssetData() : base(null) { }
 
-        public AssetData(string hasClubTrustAssets, string hasClubTrustAssetMore, IList<ClubTrustAssetsInfo> clubTrustAssetsInfolist, User user = null)
+        public AssetData(string hasClubTrustAssets, string hasClubTrustAssetMore, IList<ClubTrustAssetsInfo> clubTrustAssetsInfolist,ClientInformationSheet sheet, User user = null)
            : base(user) 
         {
             HasClubTrustAssets = hasClubTrustAssets;
             HasClubTrustAssetMore = hasClubTrustAssetMore;
             ClubTrustAssetsInfo = GetClubTrustAssetsInfo(clubTrustAssetsInfolist);
-
+            clientInformationSheet = sheet;
 
         }
         //public ClubTrustAssetsInfo(ClientInformationSheet sheet, User user = null)
@@ -32,10 +32,10 @@ namespace DealEngine.Domain.Entities
         public virtual  string HasClubTrustAssets { get; set; }
         public virtual  string HasClubTrustAssetMore { get; set; }
         public virtual IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
-
+        public virtual ClientInformationSheet clientInformationSheet { get; set; }
         private IList<ClubTrustAssetsInfo> GetClubTrustAssetsInfo(IList<ClubTrustAssetsInfo> clubTrustAssetsInfolist)
         {
-            ClubTrustAssetsInfo = new List<ClubTrustAssetsInfo>();
+            List<ClubTrustAssetsInfo>  ClubTrustAssetsInfo = new List<ClubTrustAssetsInfo>();
 
             foreach (var trustdate in clubTrustAssetsInfolist)
             {

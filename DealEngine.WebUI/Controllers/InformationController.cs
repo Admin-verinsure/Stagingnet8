@@ -69,7 +69,8 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<Organisation> _organisationRepository;
         ILocationService _locationService;
         IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
-
+        IAssetData _assetData;
+        IClubAssetInfoService _clubAssetInfoService;
         public InformationController(
             ISubsystemService subsystemService,
             IOrganisationTypeService organisationTypeService,
@@ -111,7 +112,8 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<OrganisationalUnit> organisationalUnitRepository,
             IMapperSession<Organisation> organisationRepository,
             ILocationService locationService,
-
+            IAssetData assetData,
+            IClubAssetInfoService clubAssetInfoService,
         //IGeneratePdf generatePdf,
         IClientAgreementExtensionTermService clientAgreementExtensionTermService,
         IMapper mapper
@@ -160,6 +162,8 @@ namespace DealEngine.WebUI.Controllers
             _organisationRepository = organisationRepository;
             _locationService = locationService;
             _clientAgreementExtensionTermService = clientAgreementExtensionTermService;
+            _assetData = assetData;
+            _clubAssetInfoService = clubAssetInfoService;
             //_generatePdf = generatePdf;
         }
 
@@ -1011,6 +1015,7 @@ namespace DealEngine.WebUI.Controllers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("MLViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
 
 
                 if (sheet.Status == "Not Started")
@@ -1131,9 +1136,12 @@ namespace DealEngine.WebUI.Controllers
         {
             try
             {
-                if (sheet != null)
-                {
-                    model.AssetData = sheet.AssetData;
+                if (sheet != null) {
+                    //AssetData asset = await _assetData.GetAssetDataBySheetId(sheet.Id);
+                    if(sheet.ClubTrustAssetsInfo.Count > 0)
+                    {
+                        model.TAViewModel.ClubTrustAssetsInfo = sheet.ClubTrustAssetsInfo;
+                    }
                 }
             }
             catch (Exception ex)
@@ -1237,6 +1245,25 @@ namespace DealEngine.WebUI.Controllers
 
                 var url = "/Information/EditInformation/" + UnlockReason.DealId;
                 return Json(new { url });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTrustAsset(Guid  Trustassetid)
+        {
+            User user = null;
+            try
+            {
+                ClubTrustAssetsInfo clubTrustAssetsInfo = await _clubAssetInfoService.GetClubAssetById(Trustassetid);
+                user = await CurrentUser();
+                await _clubAssetInfoService.DeleteClubAssetById(user, clubTrustAssetsInfo);
+                return new JsonResult(true);
             }
             catch (Exception ex)
             {

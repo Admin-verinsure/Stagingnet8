@@ -9,5 +9,7 @@ namespace DealEngine.Services.Interfaces
     {
         Task<AssetData> GetAssetDataById(Guid AssetDataId);
         Task UpdateAssetData(AssetData AssetData);
+        Task<AssetData> GetAssetDataBySheetId(Guid sheetid);
+
     }
 }

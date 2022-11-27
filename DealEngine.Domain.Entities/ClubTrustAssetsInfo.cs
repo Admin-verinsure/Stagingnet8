@@ -15,13 +15,14 @@ namespace DealEngine.Domain.Entities
         {
         }
 
-        public ClubTrustAssetsInfo(string name, int currentval, int replacementval, string owner, User user)
+        public ClubTrustAssetsInfo(string name, int currentval, int replacementval, string owner,ClientInformationSheet sheet, User user)
            : base(user)
         {
             Name = name;
             CurrentVal = currentval;
             ReplacementVal = replacementval;
             Owner = owner;
+            ClientInformationSheet = sheet;
         }
 
         public virtual string Name { get; set; }

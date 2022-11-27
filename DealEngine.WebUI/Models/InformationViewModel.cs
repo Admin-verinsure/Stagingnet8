@@ -2091,9 +2091,24 @@ namespace DealEngine.WebUI.Models
         {
             HasClubTrustAssets = GetSelectListOptions();
             HasClubTrustAssetMore = GetSelectListOptions();
-
         }
-        //  public Guid Id { get; set; }
+        public TAViewModel(ClientInformationSheet clientInformationSheet)
+        {
+            HasClubTrustAssets = GetSelectListOptions();
+            HasClubTrustAssetMore = GetSelectListOptions();
+            ClubTrustAssetsInfo = GetClubTrustAssets(clientInformationSheet);
+        }
+
+
+        private IList<ClubTrustAssetsInfo> GetClubTrustAssets(ClientInformationSheet clientInformationSheet)
+        {
+            ClubTrustAssetsInfo = new List<ClubTrustAssetsInfo>();
+            foreach (var ClubTrustAsset in clientInformationSheet.ClubTrustAssetsInfo)
+            {
+                ClubTrustAssetsInfo.Add(ClubTrustAsset);
+            }
+            return ClubTrustAssetsInfo;
+        }
         public IList<SelectListItem> HasClubTrustAssets { get; set; }
         public IList<SelectListItem> HasClubTrustAssetMore { get; set; }
         public IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
