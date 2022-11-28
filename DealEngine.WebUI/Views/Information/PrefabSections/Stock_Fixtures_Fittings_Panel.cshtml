@@ -1,0 +1,131 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="TAViewModel" class="is-valid" data-accordianId="Cover Period and Product Selector">
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Your Requirements for Extra Covers:
+                    If you want a quote for covers for please select yes below:
+                </label>
+
+                <label class="label required">
+                    Do you want cover or your Club or Club Trust assets (not real estate) ?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasClubTrustAssets" name="TAViewModel.HasClubTrustAssets" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.TAViewModel.HasClubTrustAssets)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label>
+                    Is any one Club or trust asset worth more than $3000?
+
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasClubTrustAssetMore" name="TAViewModel.HasClubTrustAssetMore" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.TAViewModel.HasClubTrustAssetMore)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="TAViewModel.HasClubTrustAssetMore" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="Scheduledassets" class="label required">
+                        Scheduled assets over $3000:
+                    </label>
+                </div>
+                <div class="col-10">
+
+                     This script got from frontendfreecode.com 
+                    <div class="container py-1">
+                        <div class="row">
+                            <div class="col-lg-12 mx-auto">
+                                <div class="card rounded-0 border-0 shadow">
+                                    <div class="card-body p-5">
+
+                                          Bootstrap table
+                                        <div class="table-responsive">
+                                            <table class="table" id="assettable" name="TAViewModel.ClubTrustAssetsInfo">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Description or Name</th>
+                                                        <th scope="col">Current Value</th>
+                                                        <th scope="col">Replacement Value</th>
+                                                        <th scope="col">Owner</th>
+                                                        <th scope="col"></th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    @if (Model.TAViewModel.ClubTrustAssetsInfo != null)
+                                                    {
+                                                        int i = 1;
+
+                                                        @foreach (var option in Model.TAViewModel.ClubTrustAssetsInfo)
+                                                        {
+                                                            <tr>
+                                                                 <td hidden>
+                                                                <input class="form-control rounded-0" type="text" name='CTAViewModelDescriptionorName @i'value="@option.Id">
+                                                                 </td>
+                                                                <td>
+                                                                <input class="form-control rounded-0" type="text" name='CTAViewModelDescriptionorName @i' placeholder="Description or name" value="@option.Name">
+                                                                 </td>
+                                                                <td>
+                                                                    <input class="form-control rounded-0" type="text" name='CTAViewModelCurrentValue @i' placeholder="Current Value" value="@option.CurrentVal">
+                                                                </td>
+                                                                 <td>
+                                                                    <input class="form-control rounded-0" type="text" name='CTAViewModelReplacementValue @i' placeholder="Replacement Value" value="@option.ReplacementVal">
+                                                                </td>
+                                                                <td>
+                                                                    <input class="form-control rounded-0" type="text" name='CTAViewModelOwner @i' placeholder="Owner" value="@option.Owner">
+                                                                 </td>
+                                                            </tr>
+
+                                                           i++;
+                                                          }
+
+
+
+                                                    }
+
+
+
+                                                    </tbody>
+                                                </table>
+                                        </div>
+                                        <a class="btn btn-primary rounded-0 btn-block" onclick="AddNewRow()" id="insertRow">Add new row</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+

@@ -1,0 +1,50 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="CPViewModel" class="is-valid" data-accordianId="Cover Period and Product Selector">
+    
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Your Requirements for Extra Covers:
+                    If you want a quote for covers for please select yes below:
+                </label>
+
+                <label class="label required">
+                    Your Club or Club Trust real estate, if any ?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasClubTrustRealEstate" name="CPViewModel.HasClubTrustRealEstate" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.CPViewModel.HasClubTrustRealEstate)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label>
+                    Your Club or Club Trust motor vehicle, if any?
+
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasClubTrustMotorVehicle" name="CPViewModel.HasClubTrustMotorVehicle" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.CPViewModel.HasClubTrustMotorVehicle)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+   
+</form>
