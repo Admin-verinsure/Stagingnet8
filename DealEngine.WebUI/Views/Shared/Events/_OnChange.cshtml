@@ -39,7 +39,6 @@
     function OnChange(Id, Name) {
 
         if (Id == "IsRequirecoverJunior") {
-            debugger;
         }
 
         var obj = document.getElementById(Id);
@@ -75,7 +74,6 @@
         }
 
         if (Name = "BuildingViewModel_buildingtenant") {
-            debugger;
             var tenantval = $('#BuildingViewModel_buildingtenant').val();
             if (tenantval == "addTenant") {
                 $('#addTenantModal').show();
@@ -142,7 +140,6 @@
     }
 
     function DefaultFAPRule(Value, Name) {
-        debugger;
         var element = document.getElementById("AdministratorUnit.isAdministratorTheFAP");
         if (Value == "1" && element != null) {
 
@@ -295,7 +292,17 @@
                 }
             }
             if (Rule === "OrganisationType") {
-                OrganisationTypeOnChange(Value);
+                debugger;
+                $("#Organisation.OrganisationType option:first").attr("selected", true);
+                var Progname = $("#Programme_NamedPartyUnitName").val();
+                if (Progname != "RotaryAssociationsProgramme") {
+                    OrganisationTypeOnChange(Value);
+                } else {
+                    if (Progname == "RotaryAssociationsProgramme") {
+                        NewOrganisationTypeOnChange(Value);
+                    }
+                }
+                
             }
             if (Rule === "OrganisationEmail") {
                 var Form = document.getElementById("organisationViewModel");
@@ -333,13 +340,11 @@
                 });
             }
             if (Rule === "DefaultEffectiveDate") {
-                debugger;
                 var datefix = Value.replaceAll('-', '');
                 var year = datefix.substring(0, 4);
                 var month = datefix.substring(4, 6);
                 var day = datefix.substring(6, 8);
                 var newDate = new Date(year, month - 1, day);
-                debugger;
                 $('#AddBoatEffectiveDate').datepicker('option', 'minDate', newDate);
                 $('#BoatEffectiveDate').datepicker('option', 'minDate', newDate);
                 $('#AddEffectiveDate').datepicker('option', 'minDate', newDate);
@@ -361,7 +366,6 @@
 
             }
             if (Rule === "PolicyStartDate") {
-                debugger;
                 var datefix = Value.replaceAll('-', '');
                  var year = datefix.substring(0, 4);
                 var month = datefix.substring(4, 6);
@@ -385,9 +389,6 @@
                     document.getElementById("i2ipolicystartdate").setAttribute("min", mindate);
                     document.getElementById("i2iPolicyEndDate").setAttribute("max", maxDate);
                     document.getElementById("i2iPolicyEndDate").setAttribute("min", Value);
-                debugger;
-
-
 
             }
             //   if (Rule === "PolicyEndDate") {
@@ -494,12 +495,9 @@
         }
         return "0";
     }
-    debugger
     function OrganisationTypeOnChange(Value) {
         //reset views to default
-        debugger
         ResetOrganisationUnitView();
-        debugger;
         var List = document.getElementById("Organisation.OrganisationType");
         List.disabled = false;
         if (Value == "Advisor" ||
@@ -642,7 +640,6 @@
             }
 
             if (Value == "Subsidiary Company organisation") {
-                debugger;
                 var NoTradingName = document.getElementById("NoTradingName");
                 if (NoTradingName != null) {
                     document.getElementById("TradingName").hidden = false;
@@ -688,7 +685,6 @@
 
 
             if (Value == "Run Off") {
-                debugger;
                 var RunOffUnit = document.getElementById("RunOffUnit");
                 if (RunOffUnit != null) {
                     document.getElementById("RunOffUnit").hidden = false;
@@ -749,6 +745,130 @@
         //}
     }
 
+
+    function NewOrganisationTypeOnChange(Value) {
+        debugger;
+        //reset views to default
+        ResetOrganisationUnitView();
+        //var Role = document.getElementById("Organisation.InsuranceAttribute");
+        var OrgTypeList = document.getElementById("Organisation.OrganisationType");
+        if (Value == "Administrator" ||
+            Value == "Trustee" ||
+            Value == "Incorporated Society Officer" ||
+            Value == "Director") {
+            //readonly Organisation Type personal
+            //document.getElementById("OwnerFap").hidden = true;
+
+
+            //for (var i = 0; i < List.options.length; i++) {
+            //    //if (List.options[i].text == "Private" && Value != "MREDirector") {
+            //    if (List.options[i].text == "Private") {
+
+            //        List.options[i].selected = true;
+            //        document.getElementById("Private").hidden = false;
+
+
+            //        var Email = document.getElementById("EmailDiv");
+            //        if (Email != null) {
+            //            document.getElementById("EmailDiv").hidden = false;
+            //        }
+            //    }
+            //}
+
+            if (Value == "Administrator") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private Individual") {
+                        OrgTypeList.options[i].hidden = false;
+                        OrgTypeList.options[i].selected = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                }
+
+                $("#NoUserCreation").val(false);
+            }
+
+
+            if (Value == "Trustee") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private Individual") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = false;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = false;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                }
+                $("#NoUserCreation").val(true);
+
+            }
+            if (Value == "Incorporated Society Officer") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private Individual") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = false;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                }
+                $("#NoUserCreation").val(true);
+            }
+            if (Value == "Director") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = false;
+                    }
+                }
+                $("#NoUserCreation").val(true);
+            }
+
+            document.getElementById("Else").hidden = false;
+
+            
+        } else { }
+        DefaultRule("1", Value);
+
+
+    }
     function AdministratorOnChange() {
          var IsHideAdministrator = document.getElementById("HideAdministrator");
         if (IsHideAdministrator != null) {
@@ -766,7 +886,6 @@
     }
 
     function BarristerOnChange() {
-        debugger;
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
@@ -804,7 +923,6 @@
     }
 
     function MEDirectorOnChange() {
-        debugger;
         var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
       
 
@@ -829,7 +947,6 @@
     }
 
     function ABusinessOnChange() {
-        debugger;
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
          var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
@@ -930,7 +1047,6 @@
     }
 
     function EBarristerOnChange() {
-        debugger;
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
@@ -971,7 +1087,6 @@
         }
     }
     function BaristerUnitOnChange() {
-        debugger;
         var IsEBaristerUnit = document.getElementsByClassName("EBaristerUnit");
         var IsJBaristerUnit = document.getElementsByClassName("JBaristerUnit");
         var IsBaristerUnit = document.getElementsByClassName("BaristerUnit");
@@ -998,7 +1113,6 @@
     }
 
     function AdvisorOnChange() {
-        debugger;
         var IsTripleAApproval = document.getElementById("HideTripleAApproval");
         if (IsTripleAApproval != null) {
             IsTripleAApproval.hidden = true;
@@ -1021,9 +1135,7 @@
 
     }
 
-    debugger;
     function ResetOrganisationUnitView() {
-        debugger;
 
         //document.getElementById("Private").hidden = true;
         //document.getElementById("Else").hidden = true;

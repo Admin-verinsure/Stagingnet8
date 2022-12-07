@@ -44,6 +44,9 @@ namespace DealEngine.Domain.Entities
         public virtual User UnlockedBy { get; set; }
         public virtual ClientInformationSheet RenewFromInformationSheet { get; set; }
         public virtual AssetData AssetData { get; set; }
+        public virtual File file { get; set; }
+        
+        public virtual IList<Document> documents { get; set; }
 
         [JsonIgnore]
         public virtual IList<AuditLog> ClientInformationSheetAuditLogs { get; set; }

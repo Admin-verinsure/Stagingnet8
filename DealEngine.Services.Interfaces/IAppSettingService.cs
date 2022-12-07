@@ -36,6 +36,7 @@ namespace DealEngine.Services.Interfaces
         string MarshEglobalEndpoint { get; }
         string MarshEglobalUsername { get; }
         string MarshEglobalPassword { get; }
+        //string UploadedDocumentPath { get; }
     }
 }
 

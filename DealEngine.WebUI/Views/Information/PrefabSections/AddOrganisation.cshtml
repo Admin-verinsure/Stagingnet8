@@ -29,7 +29,7 @@
                     <tr>
                         <th data-field="editButton" data-sortable="false"></th>
                         <th data-field="OrganisationName" data-sortable="true">Organisation Name</th>
-                        <th data-field="OrganisationType" data-sortable="true">Organisation Type</th>
+                        <th data-field="OrganisationType" data-sortable="true">Role</th>
                         @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
@@ -66,7 +66,7 @@
                                 @organisation.Name
                             </td>
                             <td>
-                                Owner
+                                Insured_PolicyOwner
                             </td>
                             @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
                          Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
@@ -285,6 +285,14 @@
                     @Html.Hidden("MREDirectorUnit", Model.OrganisationViewModel.RealEstateDirectorUnit.GetType().AssemblyQualifiedName, new { @id = "MREDirectorUnit" })
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/RealEstate_AddOrganisation", Model)
                 }
+                else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "RotaryAssociationsProgramme")
+                {
+                    @Html.Hidden("AdministratorUnit", Model.OrganisationViewModel.AdministratorUnit.GetType().AssemblyQualifiedName, new { @id = "AdministratorUnit" })
+                    @Html.Hidden("DirectorUnit", Model.OrganisationViewModel.DirectorUnit.GetType().AssemblyQualifiedName, new { @id = "DirectorUnit" })
+                    @Html.Hidden("Unit", Model.OrganisationViewModel.AdvisorUnit.GetType().AssemblyQualifiedName, new { @id = "Unit" })
+                    @await Html.PartialAsync("PrefabSections/OrganisationPartials/Rotary_AddOrganisation", Model)
+                }
+
                 <div class="form-group">
                     <button class="btn btn-success update" type="submit" id="OrganisationSubmitBtn" onclick="OnOrganisationSubmit('organisationViewModel', 'Insured Details / Named Parties')">Add</button>
                     <button class="btn btn-danger" id="OrganisationClearButton" onclick="ResetOrganisation('organisationViewModel');location.reload();"> Clear</button>

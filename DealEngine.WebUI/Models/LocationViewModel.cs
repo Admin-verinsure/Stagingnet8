@@ -27,21 +27,26 @@ namespace DealEngine.WebUI.Models
 		private IList<SelectListItem> GetLocationTypes()
 		{
 			return new List<SelectListItem>()
-			{  
+			{
 				new SelectListItem()
 				{
-					Value="0",
-					Text="--Select--"
-				},
-				new SelectListItem()
-				{
-					Value="Residential",
-					Text="Residential"
+					Value="Postal",
+					Text="Postal Address"
 				},
 				new SelectListItem()
 				{
 					Value="Commercial",
 					Text="Commercial"
+				},
+				new SelectListItem()
+				{
+					Value="Billing",
+					Text="Billing Address"
+				},
+				new SelectListItem()
+				{
+					Value="Residential",
+					Text="Residential"
 				},
 				new SelectListItem()
 				{
@@ -52,16 +57,6 @@ namespace DealEngine.WebUI.Models
 				{
 					Value="Rural",
 					Text="Rural"
-				},
-				new SelectListItem()
-				{
-					Value="Postal",
-					Text="Postal Address"
-				},
-				new SelectListItem()
-				{
-					Value="Billing",
-					Text="Billing Address"
 				},
 				new SelectListItem()
 				{

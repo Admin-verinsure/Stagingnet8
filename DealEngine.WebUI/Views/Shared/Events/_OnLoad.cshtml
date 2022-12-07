@@ -203,6 +203,9 @@
                             } else if (Value == "Run Off") {
                                 Unit = "RealEstateRunOffUnit";
                                 PopulateOrganisationalUnit(OutPut, Unit);
+                            } else if (Value == "Trustee") {
+                                Unit = "Unit";
+                                PopulateOrganisationalUnit(OutPut, Unit);
                             } else if (Value == "Employee") {
                                 Unit = "EmployeeUnit";
                                 PopulateOrganisationalUnit(OutPut, Unit);
@@ -368,6 +371,7 @@
     }
 
     function PopulateOrganisationalUnit(OutPut, UnitName) {
+        debugger;
         for (var Unit in OutPut["Organisation"]["OrganisationalUnits"]) {
             for (var Item in OutPut["Organisation"]["OrganisationalUnits"][Unit]) {
                 id = UnitName + "." + Item;

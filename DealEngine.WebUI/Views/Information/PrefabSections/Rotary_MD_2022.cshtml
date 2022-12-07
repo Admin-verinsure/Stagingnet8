@@ -31,7 +31,7 @@
         <div class="row">
             <div class="col-9">
                 <label>
-                    Is any one Club or trust asset worth more than $3000?
+                    Is any one Club or trust asset worth more than $15000?
 
                 </label>
             </div>
@@ -52,21 +52,19 @@
             <div class="row">
                 <div class="col-9">
                     <label for="Scheduledassets" class="label required">
-                        Scheduled assets over $3000:
+                        Scheduled assets over $15000:
                     </label>
                 </div>
                 <div class="col-10">
 
-                     This script got from frontendfreecode.com 
                     <div class="container py-1">
                         <div class="row">
                             <div class="col-lg-12 mx-auto">
                                 <div class="card rounded-0 border-0 shadow">
                                     <div class="card-body p-5">
 
-                                          Bootstrap table
                                         <div class="table-responsive">
-                                            <table class="table" id="assettable" name="TAViewModel.ClubTrustAssetsInfo">
+                                            <table class="table"  name="TAViewModel.ClubTrustAssetsInfo">
                                                 <thead>
                                                     <tr>
                                                         <th scope="col">Description or Name</th>
@@ -77,7 +75,7 @@
                                                     </tr>
                                                 </thead>
 
-                                                <tbody>
+                                                <tbody id="assettable">
                                                     @if (Model.TAViewModel.ClubTrustAssetsInfo != null)
                                                     {
                                                         int i = 1;
@@ -85,33 +83,62 @@
                                                         @foreach (var option in Model.TAViewModel.ClubTrustAssetsInfo)
                                                         {
                                                             <tr>
-                                                                 <td hidden>
-                                                                <input class="form-control rounded-0" type="text" name='CTAViewModelDescriptionorName @i'value="@option.Id">
-                                                                 </td>
-                                                                <td>
-                                                                <input class="form-control rounded-0" type="text" name='CTAViewModelDescriptionorName @i' placeholder="Description or name" value="@option.Name">
-                                                                 </td>
-                                                                <td>
-                                                                    <input class="form-control rounded-0" type="text" name='CTAViewModelCurrentValue @i' placeholder="Current Value" value="@option.CurrentVal">
-                                                                </td>
-                                                                 <td>
-                                                                    <input class="form-control rounded-0" type="text" name='CTAViewModelReplacementValue @i' placeholder="Replacement Value" value="@option.ReplacementVal">
+                                                                <td hidden>
+                                                                    <input class="form-control rounded-0" type="text" value="@option.Id">
                                                                 </td>
                                                                 <td>
-                                                                    <input class="form-control rounded-0" type="text" name='CTAViewModelOwner @i' placeholder="Owner" value="@option.Owner">
-                                                                 </td>
+                                                                    <input class="form-control rounded-0" type="text" name='CTAViewModelDescriptionorName @i' min="15001" placeholder="Description or name" value="@option.Name">
+                                                                </td>
+                                                                <td>
+                                                                    <input class="form-control rounded-0" name='CTAViewModelCurrentValue @i' placeholder="Current Value"  type="number" value="@option.CurrentVal">
+                                                                </td>
+                                                                <td>
+                                                                    <input class="form-control rounded-0"  name='CTAViewModelReplacementValue @i' placeholder="Replacement Value" type="number" value="@option.ReplacementVal">
+                                                                </td>
+                                                                <td>
+                                                                    <select name='CTAViewModelOwner @i' class="form-select" required>
+                                                                        <option>Please select owner</option>
+
+                                                                        @foreach (var owner in Model.OrganisationViewModel.Organisations)
+                                                                        {
+                                                                            if (owner.Id == option.Owner.Id)
+                                                                            {
+                                                                                <option selected="selected" value="@owner.Id">@owner.Name</option>
+
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <option value="@owner.Id">@owner.Name</option>
+
+                                                                            }
+                                                                        }
+
+                                                                    </select>
+                                                                    @*<input class="form-control rounded-0" type="text" name='CTAViewModelOwner @i' placeholder="Owner" value="@option.Owner">*@
+                                                                </td>
                                                             </tr>
 
-                                                           i++;
-                                                          }
-
+                                                            i++;
+                                                        }
 
 
                                                     }
 
+                                                    <tr hidden>
+                                                        <td>
+                                                            <select id="organisationselection" class="form-select">
+                                                                <option selected="selected" value="">Please select owner</option>
+
+                                                                @foreach (var owner in Model.OrganisationViewModel.Organisations)
+                                                                {
+                                                                    <option value="@owner.Id">@owner.Name</option>
+                                                                }
+                                                            </select>
+                                                        </td>
+                                                    </tr>
 
 
-                                                    </tbody>
+                                                </tbody>
                                                 </table>
                                         </div>
                                         <a class="btn btn-primary rounded-0 btn-block" onclick="AddNewRow()" id="insertRow">Add new row</a>

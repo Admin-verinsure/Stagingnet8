@@ -15,7 +15,7 @@ namespace DealEngine.Domain.Entities
         {
         }
 
-        public ClubTrustAssetsInfo(string name, int currentval, int replacementval, string owner,ClientInformationSheet sheet, User user)
+        public ClubTrustAssetsInfo(string name, int currentval, int replacementval, Organisation owner,ClientInformationSheet sheet, User user)
            : base(user)
         {
             Name = name;
@@ -28,7 +28,7 @@ namespace DealEngine.Domain.Entities
         public virtual string Name { get; set; }
         public virtual int CurrentVal { get; set; }
         public virtual int ReplacementVal { get; set; }
-        public virtual string Owner { get; set; }
+        public virtual Organisation Owner { get; set; }
         public virtual  ClientInformationSheet ClientInformationSheet { get; set; }
         //public virtual IList<ClubTrustAssetsInfo> clubTrustAssetsInfo { get; set; }
 

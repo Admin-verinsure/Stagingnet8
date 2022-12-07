@@ -153,33 +153,59 @@ namespace DealEngine.Services.Impl
             try
             {
                 int i = 1; // initialization
+                Guid ownerid = Guid.Parse(collection["CTAViewModelOwner " + i]);
+                Organisation ownerorg = await _organisationService.GetOrganisation(ownerid);
             while (collection["CTAViewModelDescriptionorName " + i].Count() > 0) // condition
             {
-                    if(sheet.ClubTrustAssetsInfo.Count>0)
-                    {
-                        using (var uow = _unitOfWork.BeginUnitOfWork())
-                        {
-                            sheet.ClubTrustAssetsInfo.Clear();
+                    bool isclubexist = false;
 
-                            uow.Commit();
-                        }
-                    }
+                    //using (var uow = _unitOfWork.BeginUnitOfWork())
+                    //{
+                    //    sheet.ClubTrustAssetsInfo.Clear();
+                    //    uow.Commit();
+                    //}
+
                     ClubTrustAssetsInfo clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["CTAViewModelDescriptionorName " + i],
                                                                                  int.Parse(collection["CTAViewModelCurrentValue " + i]),
                                                                                  int.Parse(collection["CTAViewModelReplacementValue " + i]),
-                                                                                 collection["CTAViewModelOwner " + i],sheet, user);
+                                                                                 ownerorg, sheet, user);
 
                     i++;
 
                     try
                     {
-                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                         foreach (var asset in sheet.ClubTrustAssetsInfo)
+                            {
+                                if(asset.Name == clubTrustAssetsInfo.Name  && asset.ReplacementVal == clubTrustAssetsInfo.ReplacementVal
+                                                     )
+                                {
+                                    isclubexist = true;
+                                    
+                                }
+                            }
+                      
+
+                        if (!isclubexist)
                         {
-                            _clubassetRepository.UpdateClubAsset(clubTrustAssetsInfo);
-                            //sheet.ClubTrustAssetsInfo.Add(clubTrustAssetsInfo);
-                            //await UpdateInformation(sheet);
-                            uow.Commit();
+                            using (var uow = _unitOfWork.BeginUnitOfWork())
+                            {
+                                _clubassetRepository.UpdateClubAsset(clubTrustAssetsInfo);
+                                //sheet.ClubTrustAssetsInfo.Add(clubTrustAssetsInfo);
+                                //await UpdateInformation(sheet);
+                                uow.Commit();
+                            }
                         }
+                        //if (!sheet.ClubTrustAssetsInfo.Contains(clubTrustAssetsInfo))
+                        //{
+                        //    using (var uow = _unitOfWork.BeginUnitOfWork())
+                        //    {
+                        //        _clubassetRepository.UpdateClubAsset(clubTrustAssetsInfo);
+                        //        //sheet.ClubTrustAssetsInfo.Add(clubTrustAssetsInfo);
+                        //        //await UpdateInformation(sheet);
+                        //        uow.Commit();
+                        //    }
+                        //}
+                        
                     }
                     catch (Exception ex)
                     {

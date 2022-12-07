@@ -36,7 +36,7 @@ namespace DealEngine.Services.Impl
 
         public async Task UpdateClubAsset(ClubTrustAssetsInfo clubTrustAssetsInfo)
         {
-                await _ClubTrustAssetsInfoRepository.UpdateAsync(clubTrustAssetsInfo);
+                await _ClubTrustAssetsInfoRepository.AddAsync(clubTrustAssetsInfo);
         }
 
       

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DealEngine.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace DealEngine.WebUI.Models
 {
@@ -102,6 +103,12 @@ namespace DealEngine.WebUI.Models
         public CPViewModel CPViewModel { get; set; }
         public AssetData AssetData { get; set; }
         public TAViewModel TAViewModel { get; set; }
+        public IList<Document> DocumentList { get; set; }
+        //public File File{ get; set; }
+        public IFormFile File { get; set; }
+        //public Organisation DocumentOrganisation { get; set; }
+        public string DocumentOrganisation { get; set; }
+        public Guid ClientProgrammeId { get; set; }
 
     }
 

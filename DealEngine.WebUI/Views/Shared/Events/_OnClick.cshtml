@@ -1261,14 +1261,39 @@
         var rowcounter = (document.getElementById("assettable").rows.length);
         //// Table columns
 
-        cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"CTAViewModelDescriptionorName " + rowcounter + "\" placeholder=\"Description or name\"></td>";
-        cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"CTAViewModelCurrentValue " + rowcounter + "\" placeholder=\"Current Value\"></td>";
-        cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"CTAViewModelReplacementValue " + rowcounter + "\" placeholder=\"Replacement Value\"></td>";
-        cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"CTAViewModelOwner " + rowcounter + "\" placeholder=\"Owner\"></td>";
+        cols += "<td><input class=\"form-control rounded-0\" type=\"text\"  name=\"CTAViewModelDescriptionorName " + rowcounter + "\" placeholder=\"Description or name\"></td>";
+        cols += "<td><input class=\"form-control rounded-0\" type=\"number\"  min=\"15001\" name=\"CTAViewModelCurrentValue " + rowcounter + "\" placeholder=\"Current Value\"></td>";
+        cols += "<td><input class=\"form-control rounded-0\" type=\"number\" name=\"CTAViewModelReplacementValue " + rowcounter + "\" placeholder=\"Replacement Value\"></td>";
+        //cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"CTAViewModelOwner " + rowcounter + "\" placeholder=\"Owner\"></td>";
+        cols += "<td><select  name=\"CTAViewModelOwner " + rowcounter + "\" class=\"form-select\" id=\"orgselect" + rowcounter +"\"></select></td>";
+       // cols += "<td id=\"orgselect" + rowcounter + "\" ></td>";
+
         cols += '<td><button class="btn btn-danger rounded-0" id ="deleteRow"><i class="fa fa-trash"></i></button</td>';
 
         newRow.append(cols);
+
         $("#assettable").append(newRow);
+        var orgselectid = "orgselect" + rowcounter;
+        //var ele = document.getElementById(id);
+        //var elements = $("#organisationselection").innerHTML;
+
+        var elements = $("#organisationselection").children();
+            
+        $.each(elements, function (key, value) {
+
+            $("#"+orgselectid).append(new Option(value.text, value.value));
+            //$('#orgselect2').append("</select>");
+
+            //document.getElementById("orgselect" + rowcounter)
+            //    .append(`<option value= ${value.value}>
+            //                           ${value.text}
+            //                      </option>`);
+        });
+        //$('#orgselect2').append("</td>");
+        //var id = "orgselect" + rowcounter;
+        //var ele = document.getElementById(id);
+        //document.getElementById("orgselect" + rowcounter).append(elements);
+
         // Increase counter after each row insertion
     };
 

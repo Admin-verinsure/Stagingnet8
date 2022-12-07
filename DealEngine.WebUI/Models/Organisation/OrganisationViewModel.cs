@@ -139,6 +139,15 @@ namespace DealEngine.WebUI.Models
 
                 }
 
+                if (Programme.NamedPartyUnitName == "RotaryAssociationsProgramme")
+                {
+                    DirectorUnit = new DirectorUnit(null, null, null, null);
+                    AdministratorUnit = new AdministratorUnit(null, null, null, null);
+                    AdvisorUnit = new AdvisorUnit(null, null, null, null);
+                    InsuranceAttributes = GetRolesTypes5();
+                    OrganisationTypes = GetRotaryOrganisationTypes();
+
+                }
                 Organisation = ClientInformationSheet.Owner;
                 //if (Organisations.Any(o => o.Id != (ClientInformationSheet.Owner.Id)))
                 Organisations.Add(ClientInformationSheet.Owner);
@@ -208,7 +217,6 @@ namespace DealEngine.WebUI.Models
             return _Types;
         }
 
-       
         private IList<SelectListItem> GetAssociationOptions2()
         {
             var _Types = new List<SelectListItem>();
@@ -718,6 +726,45 @@ namespace DealEngine.WebUI.Models
             return _Types;
         }
 
+
+        private IList<SelectListItem> GetRotaryOrganisationTypes()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                    new SelectListItem
+                    {
+                        Text = "-- Select --",
+                        Value = "0"
+                    },new SelectListItem
+                    {
+                        Text = "Private Individual",
+                        Value = "Private"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Trading Trust",
+                        Value = "Trading Trust"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Holding Trust",
+                        Value = "Holding Trust"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Incorporated Society",
+                        Value = "Incorporated Society"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Company",
+                        Value = "Company"
+                    }
+                };
+            return _Types;
+        }
+
+
         private IList<SelectListItem> GetMREOrganisationTypes()
         {
             var _Types = new List<SelectListItem>();
@@ -792,6 +839,41 @@ namespace DealEngine.WebUI.Models
             return _Types;
 
         }
+
+        private IList<SelectListItem> GetRolesTypes5()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                new SelectListItem
+                    {
+                        Text = "-- Select --",
+                        Value = "0"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Administrator",
+                        Value = "Administrator"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Trustee",
+                        Value = "Trustee"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Incorporated Society Officer",
+                        Value = "Incorporated Society Officer"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Director",
+                        Value = "Director"
+                    }
+            };
+            return _Types;
+
+        }
+
         private IList<SelectListItem> GetAdvisorTypes1()
         {
             var _Types = new List<SelectListItem>();
@@ -954,7 +1036,7 @@ namespace DealEngine.WebUI.Models
         public Guid ProgrammeId { get; set; }
         public Domain.Entities.Organisation Organisation { get; set; }
         public User User { get; set; }
-        [Display(Name ="Type")]
+        [Display(Name ="Role")]
         [JsonIgnore]
         public IList<SelectListItem> InsuranceAttributes { get; set; }
         [Display(Name = "Organisation Type")]

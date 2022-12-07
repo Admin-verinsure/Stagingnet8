@@ -164,83 +164,98 @@
 
                             @*<div class="form-group">
                                 <div class="row">
-                                    <div class="col-9">
-                                        <label class="label required">
-                                            Do you want to include ND and FSL ?
+                                    <div class="col-6">
+                                        <label for="locationBuildings" class="label required">
+                                            Building:
                                         </label>
                                     </div>
-                                    <div class="col-3">
-
-                                        <select id="LocationViewModel_IncludeNDFSL" name="LocationViewModel.IncludeNDFSL" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                                            @foreach (var option in Model.LocationViewModel.IncludeNDFSL)
-                                            {
-                                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                                            }
-                                        </select>
+                                    <div class="col-6">
+                                        @Html.DropDownListFor(m => m.LocationViewModel.Locations, Model.LocationViewModel.LocationType, new { id = "locationtypeoptions", @class = "form-select", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "LocationViewModel" })
                                     </div>
                                 </div>
-                            </div>
-
-                            <div id="BuildingViewModel.IncludeNDFSL" hidden>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <label for="includeNdFsl" class="label required">
-                                                <strong>Natural Disaster including Earthquake</strong> (Please see the definition in your policy wording)
-                                                <br />
-                                                <br />
-                                                The policy includes cover for Natural Disaster including Earthquake. Please deselect this box if you do not wish to insure property at this location for Natural Disaster.
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <label for="hasnolossoptions" class="label required">
-                                                I wish to insure my Building for:
-                                            </label>
-                                        </div>
-                                        <div class="col-3">
-                                            $@Html.TextAreaFor(m => m.LocationViewModel.BuildingInsureAmount, new { @class = "form-control", @id = "buildinginsureamount", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <label for="includeNdFsl" class="label required">
-                                                <strong> Fire Service Levy (FSL)</strong>
-                                                <br />
-                                                <br />
-                                                FSL can be charged on the Building indemnity value(the replacement cost of an asset less an allowance for the depreciation/condition of the asset) if supported by an FSL
-                                                declaration which must be signed by you and retured to us. By providing an indemnity value below you are confirming that you are aware that you may receive an invoice for 
-                                                additional FSL if the above conditioins are not met.
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-9">
-                                            <label for="hasnolossoptions" class="label required">
-                                                Building Indemnity Value:
-                                            </label>
-                                        </div>
-                                        <div class="col-3">
-                                            $@Html.TextAreaFor(m => m.LocationViewModel.BuildingIndemnityVal, new { @class = "form-control", @id = "buildingindemnityval", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
-                                        </div>
-                                    </div>
-                                </div>
-
-
                             </div>*@
+
+
+
+                            @*<div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label class="label required">
+                        Do you want to include ND and FSL ?
+                    </label>
+                </div>
+                <div class="col-3">
+
+                    <select id="LocationViewModel_IncludeNDFSL" name="LocationViewModel.IncludeNDFSL" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                        @foreach (var option in Model.LocationViewModel.IncludeNDFSL)
+                        {
+                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div id="BuildingViewModel.IncludeNDFSL" hidden>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="includeNdFsl" class="label required">
+                            <strong>Natural Disaster including Earthquake</strong> (Please see the definition in your policy wording)
+                            <br />
+                            <br />
+                            The policy includes cover for Natural Disaster including Earthquake. Please deselect this box if you do not wish to insure property at this location for Natural Disaster.
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasnolossoptions" class="label required">
+                            I wish to insure my Building for:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        $@Html.TextAreaFor(m => m.LocationViewModel.BuildingInsureAmount, new { @class = "form-control", @id = "buildinginsureamount", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="includeNdFsl" class="label required">
+                            <strong> Fire Service Levy (FSL)</strong>
+                            <br />
+                            <br />
+                            FSL can be charged on the Building indemnity value(the replacement cost of an asset less an allowance for the depreciation/condition of the asset) if supported by an FSL
+                            declaration which must be signed by you and retured to us. By providing an indemnity value below you are confirming that you are aware that you may receive an invoice for
+                            additional FSL if the above conditioins are not met.
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-9">
+                        <label for="hasnolossoptions" class="label required">
+                            Building Indemnity Value:
+                        </label>
+                    </div>
+                    <div class="col-3">
+                        $@Html.TextAreaFor(m => m.LocationViewModel.BuildingIndemnityVal, new { @class = "form-control", @id = "buildingindemnityval", @type = "text", onchange = "OnChange(this.id, this.name)", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    </div>
+                </div>
+            </div>
+
+
+        </div>*@
 
                             <div class="form-group">
                                 <button class="btn btn-sm btn-success text-light update" id="LocationAddButton" onclick="AddLocation()" form="LocationViewModel"> Add </button>
