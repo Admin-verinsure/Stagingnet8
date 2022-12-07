@@ -1313,10 +1313,21 @@ namespace DealEngine.Services.Impl
             mergeFields.Add(new KeyValuePair<string, string>("[[ProfessionalBusiness]]", agreement.ProfessionalBusiness));
             mergeFields.Add(new KeyValuePair<string, string>("[[ContinuityDate]]", agreement.ContinuityDate));
 
+            int intSublimitValuations = 250000;
+            int intSublimitBusinessSales = 1000000;
+            int intSublimitBusinessSalesAg = 2000000;
+            int intSublimitRuralSales = 1000000;
+            int intSublimitRuralSalesAg = 2000000;
+            int intSublimitEmployeeFidelity = 250000;
+            int intSublimitPunitiveExemplaryDamages = 100000;
+            int intSublimitLossofdocuments = 100000;
+            int intSublimitPublicRelationsExpenses = 50000;
+            int intSublimitInvestigationCosts = 250000;
+            int intSublimitPollutionExclusion = 250000;
+
             if (clientInformationSheet != null)
             {
                 mergeFields.Add(new KeyValuePair<string, string>("[[SubClientName]]", clientInformationSheet.Owner.Name));
-
             }
             if (agreement.ClientInformationSheet != null)
             {
@@ -1380,6 +1391,105 @@ namespace DealEngine.Services.Impl
                     mergeFields.Add(new KeyValuePair<string, string>("[[TradingName]]", agreement.ClientInformationSheet.Programme.Owner.TradingName));
                     mergeFields.Add(new KeyValuePair<string, string>("[[InsuredEmail]]", agreement.ClientInformationSheet.Programme.Owner.Email));
                 }
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitValuations").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitValuations").First().Value) > 0)
+                    {
+                        intSublimitValuations = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitValuations").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitValuations]]", intSublimitValuations.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSales").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSales").First().Value) > 0)
+                    {
+                        intSublimitBusinessSales = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSales").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitBusinessSales]]", intSublimitBusinessSales.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSalesAg").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSalesAg").First().Value) > 0)
+                    {
+                        intSublimitBusinessSalesAg = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSalesAg").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitBusinessSalesAg]]", intSublimitBusinessSalesAg.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSalesAg").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSalesAg").First().Value) > 0)
+                    {
+                        intSublimitRuralSalesAg = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSalesAg").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitRuralSalesAg]]", intSublimitRuralSalesAg.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSales").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSales").First().Value) > 0)
+                    {
+                        intSublimitRuralSales = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSales").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitRuralSales]]", intSublimitRuralSales.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitEmployeeFidelity").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitEmployeeFidelity").First().Value) > 0)
+                    {
+                        intSublimitEmployeeFidelity = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitEmployeeFidelity").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitEmployeeFidelity]]", intSublimitEmployeeFidelity.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPunitiveExemplaryDamages").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPunitiveExemplaryDamages").First().Value) > 0)
+                    {
+                        intSublimitPunitiveExemplaryDamages = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPunitiveExemplaryDamages").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitPunitiveExemplaryDamages]]", intSublimitPunitiveExemplaryDamages.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitLossofdocuments").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitLossofdocuments").First().Value) > 0)
+                    {
+                        intSublimitLossofdocuments = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitLossofdocuments").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitLossofdocuments]]", intSublimitLossofdocuments.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPublicRelationsExpenses").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPublicRelationsExpenses").First().Value) > 0)
+                    {
+                        intSublimitPublicRelationsExpenses = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPublicRelationsExpenses").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitPublicRelationsExpenses]]", intSublimitPublicRelationsExpenses.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitInvestigationCosts").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitInvestigationCosts").First().Value) > 0)
+                    {
+                        intSublimitInvestigationCosts = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitInvestigationCosts").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitInvestigationCosts]]", intSublimitInvestigationCosts.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPollutionExclusion").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPollutionExclusion").First().Value) > 0)
+                    {
+                        intSublimitPollutionExclusion = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPollutionExclusion").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitPollutionExclusion]]", intSublimitPollutionExclusion.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
             }
 
             //Eglobal merge fields

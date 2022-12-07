@@ -716,7 +716,7 @@ namespace DealEngine.Services.Impl
             }
             else
             {
-                newClientProgramme.BrokerContactUser = oldClientProgramme.BaseProgramme.BrokerContactUser;
+                newClientProgramme.BrokerContactUser = currentProgramme.BrokerContactUser;
             }
             newClientProgramme.RenewFromClientProgramme = oldClientProgramme;
             newClientProgramme.InformationSheet = newClientInformationSheet;
