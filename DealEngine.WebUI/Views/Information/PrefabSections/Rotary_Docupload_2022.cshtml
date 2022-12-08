@@ -6,7 +6,10 @@
 <div id="content" class="container">
     <!-- Bread crumb is created dynamically -->
     <!-- row -->
-    <label>upload your club constitution and club trutee </label>
+               <div class="form-group row">
+                       <strong>Upload your club constitution and club trutee </strong>
+
+               </div>
 
             <div class="col-sm-12" style="overflow-y:auto; height:44vh; width:100%;text-align:center;">
                 <form id="DocUploadForm" enctype="multipart/form-data" asp-controller="Information" asp-action="Upload" method="post" class="mt-3">
@@ -30,7 +33,7 @@
                     <div class="form-group row">
                         <label asp-for="Name" class="col-sm-2 col-form-label"></label>
                         <div class="col-sm-10">
-                            <input asp-for="Name" class="form-control" placeholder="club constitution and club trutee name">
+                            <input class="form-control" placeholder="club constitution and club trutee name">
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
                     </div>
