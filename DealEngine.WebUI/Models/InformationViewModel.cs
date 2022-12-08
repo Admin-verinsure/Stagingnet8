@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DealEngine.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http;
 
 namespace DealEngine.WebUI.Models
 {
@@ -42,6 +43,9 @@ namespace DealEngine.WebUI.Models
             BIViewModel = new BIViewModel(); //Business Information
             RVViewModel = new RVViewModel(clientInformationSheet, OrgUser);
             BuildingViewModel = new BuildingViewModel();
+            TAViewModel = new TAViewModel();
+            CPViewModel = new CPViewModel();
+
         }
         public User User { get; set; }
         public OrganisationViewModel OrganisationViewModel { get; set; }
@@ -96,7 +100,15 @@ namespace DealEngine.WebUI.Models
         public BIViewModel BIViewModel { get; set; }
         public RVViewModel RVViewModel { get; set; }
         public BuildingViewModel BuildingViewModel { get; set; }
-
+        public CPViewModel CPViewModel { get; set; }
+        public AssetData AssetData { get; set; }
+        public TAViewModel TAViewModel { get; set; }
+        public IList<Document> DocumentList { get; set; }
+        //public File File{ get; set; }
+        public IFormFile File { get; set; }
+        //public Organisation DocumentOrganisation { get; set; }
+        public string DocumentOrganisation { get; set; }
+        public Guid ClientProgrammeId { get; set; }
 
     }
 
@@ -2059,4 +2071,113 @@ namespace DealEngine.WebUI.Models
     //    public DateTime PolicyEndDate { get; set; }
 
     //}
+
+
+    public class CPViewModel : BaseViewModel
+    {
+        public CPViewModel()
+        {
+            HasClubTrustRealEstate = GetSelectListOptions();
+            HasClubTrustMotorVehicle = GetSelectListOptions();
+
+        }
+        //  public Guid Id { get; set; }
+        public IList<SelectListItem> HasClubTrustRealEstate { get; set; }
+        public IList<SelectListItem> HasClubTrustMotorVehicle { get; set; }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+    }
+
+    public class TAViewModel : BaseViewModel
+    {
+        public TAViewModel()
+        {
+            HasClubTrustAssets = GetSelectListOptions();
+            HasClubTrustAssetMore = GetSelectListOptions();
+        }
+        public TAViewModel(ClientInformationSheet clientInformationSheet)
+        {
+            HasClubTrustAssets = GetSelectListOptions();
+            HasClubTrustAssetMore = GetSelectListOptions();
+            ClubTrustAssetsInfo = GetClubTrustAssets(clientInformationSheet);
+        }
+
+
+        private IList<ClubTrustAssetsInfo> GetClubTrustAssets(ClientInformationSheet clientInformationSheet)
+        {
+            ClubTrustAssetsInfo = new List<ClubTrustAssetsInfo>();
+            foreach (var ClubTrustAsset in clientInformationSheet.ClubTrustAssetsInfo)
+            {
+                ClubTrustAssetsInfo.Add(ClubTrustAsset);
+            }
+            return ClubTrustAssetsInfo;
+        }
+        public IList<SelectListItem> HasClubTrustAssets { get; set; }
+        public IList<SelectListItem> HasClubTrustAssetMore { get; set; }
+        public IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+    }
+
+    //public class ClubTrustAssetsInfoViewModel
+    //{
+    //    public ClubTrustAssetsInfoViewModel() { }
+    //    public ClubTrustAssetsInfoViewModel(Domain.Entities.ClientProgramme clientprogramme)
+    //    {
+    //        ClubTrustAssetsInfolist = GetClubTrustAssets(clientprogramme);
+    //    }
+
+    //    private IList<ClubTrustAssetsInfo> GetClubTrustAssets(Domain.Entities.ClientProgramme clientprogramme)
+    //    {
+    //        ClubTrustAssetsInfolist = new List<ClubTrustAssetsInfo>();
+    //        foreach (var asset in clientprogramme.ClubTrustAssetsInfo)
+    //        {
+    //            ClubTrustAssetsInfolist.Add(new ClubTrustAssetsInfo(null)
+    //            {
+    //                Name = asset.Name,
+    //                CurrentVal = asset.CurrentVal,
+    //                ReplacementVal = asset.ReplacementVal,
+    //                Owner = asset.Owner
+    //            });
+    //        }
+    //        return ClubTrustAssetsInfolist;
+    //    }
+
+    //    public IList<ClubTrustAssetsInfo> ClubTrustAssetsInfolist { get; set; }
+
+
+    //}
+
 }

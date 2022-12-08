@@ -34,6 +34,8 @@ namespace DealEngine.Services.Interfaces
 		string FromBytes (byte [] bytes);
         Task<Document> GetDocumentByType(Organisation primaryOrganisation, int documentType);
 		Task<List<Document>> GetDocumentByOwner(Organisation Owner);
+		//Task<Document> AddDocument(Document documentID);
+
 		//Task<IActionResult> GetPDF(Guid id);
 	}
 }

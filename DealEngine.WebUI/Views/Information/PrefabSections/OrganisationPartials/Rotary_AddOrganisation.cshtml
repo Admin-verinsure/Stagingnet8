@@ -1,0 +1,17 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+
+<div class="form-group">
+    @await Html.PartialAsync("PrefabSections/OrganisationPartials/_OrganisationTypes", Model)
+    @Html.Hidden("NoUserCreation", true)
+
+    <div class="row" id="Private" hidden>
+
+    </div>
+    <div class="form-group col-md-6">
+        @Html.LabelFor(m => m.OrganisationViewModel.Organisation.Phone, new { @class = "label required" })
+        @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.Phone, new { @class = "form-control", @id = "Organisation.Phone" })
+    </div>
+
+</div>
+

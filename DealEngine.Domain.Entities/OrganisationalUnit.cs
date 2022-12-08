@@ -339,7 +339,8 @@ namespace DealEngine.Domain.Entities
 
         [Display(Name = "Are you intending to apply for interposed person arrangements?")]
         public virtual bool isAdministratorInterposedPerson { get; set; }
-
+        [Display(Name = "Phone Number")]
+        public virtual string MobilePhone { get; set; }
     }
 
     public class DirectorUnit : OrganisationalUnit
@@ -357,6 +358,8 @@ namespace DealEngine.Domain.Entities
         public virtual DateTime? DateofRetirement { get; set; }
         [Display(Name = "Date of Deceased (Please Enter either Date of Retirement or Date of Deceased)")]
         public virtual DateTime? DateofDeceased { get; set; }
+        [Display(Name = "Phone Number")]
+        public virtual string MobilePhone { get; set; }
     }
 
     public class RealEstateDirectorUnit : OrganisationalUnit

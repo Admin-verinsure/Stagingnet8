@@ -5,6 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using AutoMapper;
 using AutoMapper.Configuration.Annotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DealEngine.Domain.Entities
 {
@@ -42,7 +43,11 @@ namespace DealEngine.Domain.Entities
         public virtual DateTime UnlockDate { get; set; }
         public virtual User UnlockedBy { get; set; }
         public virtual ClientInformationSheet RenewFromInformationSheet { get; set; }
+        public virtual AssetData AssetData { get; set; }
+        public virtual File file { get; set; }
         
+        public virtual IList<Document> documents { get; set; }
+
         [JsonIgnore]
         public virtual IList<AuditLog> ClientInformationSheetAuditLogs { get; set; }
 
@@ -58,6 +63,8 @@ namespace DealEngine.Domain.Entities
        
         protected ClientInformationSheet () : this (null) { }
         public virtual IList<ResearchHouse> ResearchHouses { get; set; }
+        public virtual IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
+
         protected ClientInformationSheet (User createdBy)
 			: base (createdBy)
 		{
@@ -77,6 +84,7 @@ namespace DealEngine.Domain.Entities
             Status = "Not Started";
             RevenueData = new RevenueData(null, createdBy);
             RoleData = new RoleData(null, createdBy);
+            //AssetData = new AssetData();
         }
 
 		public ClientInformationSheet (User createdBy, Organisation createdFor, InformationTemplate informationTemplate)
@@ -210,6 +218,74 @@ namespace DealEngine.Domain.Entities
 
 		public virtual Product Product { get; set; }
 	}
+
+    //public class TrustAssetData : EntityBase
+    //{
+    //    protected TrustAssetData()
+    //   : this(null)
+    //    {
+
+    //    }
+    //    public TrustAssetData(User createdBy) : base(createdBy)
+    //    {
+    //        //HasClubTrustAssets = GetSelectListOptions();
+    //        //HasClubTrustAssetMore = GetSelectListOptions();
+    //    }
+
+    //    public TrustAssetData(ClientInformationSheet sheet = null, User user = null)
+    //        : base(user)
+    //    {
+    //        //HasClubTrustAssets = GetSelectListOptions();
+    //        //HasClubTrustAssetMore = GetSelectListOptions();
+
+    //        if (sheet != null)
+    //        {
+    //            ClubTrustAssetsInfo = GetClubTrustAssetsInfo(sheet);
+    //        }
+    //    }
+
+    //    //public IList<SelectListItem> HasClubTrustAssets { get; set; }
+    //    //public IList<SelectListItem> HasClubTrustAssetMore { get; set; }
+    //    public virtual IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
+
+    //    private IList<SelectListItem> GetSelectListOptions()
+    //    {
+    //        return new List<SelectListItem>()
+    //        {
+    //            new SelectListItem
+    //            {
+    //                Text = "-- Select --", Value = "0"
+    //            },
+    //            new SelectListItem
+    //            {
+    //                Text = "Yes", Value = "1"
+    //            },
+    //            new SelectListItem
+    //            { Text = "No", Value = "2" }
+    //        };
+    //    }
+
+    //    private IList<ClubTrustAssetsInfo> GetClubTrustAssetsInfo(ClientInformationSheet sheet)
+    //    {
+    //        if (sheet.TrustAssetData != null)
+    //        {
+    //            foreach (var trustdate in sheet.TrustAssetData.ClubTrustAssetsInfo)
+    //            {
+    //                ClubTrustAssetsInfo.Add(new ClubTrustAssetsInfo(null)
+    //                {
+    //                    Name = trustdate.Name,
+    //                    CurrentVal = trustdate.CurrentVal,
+    //                    ReplacementVal = trustdate.ReplacementVal,
+    //                    Owner = trustdate.Owner
+    //                    //Percentage = territory.Percentage,
+    //                    //Selected = territory.Selected                    
+    //                });
+    //            }
+    //        }
+    //        return ClubTrustAssetsInfo;
+    //    }
+
+    //}
 
     public class RevenueData : EntityBase
     {
@@ -398,5 +474,7 @@ namespace DealEngine.Domain.Entities
 
 
     }
+
+    
 }
 

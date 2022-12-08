@@ -9,20 +9,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using NReco.PdfGenerator;
+using Quartz;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Document = DealEngine.Domain.Entities.Document;
 using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
 using SystemDocument = DealEngine.Domain.Entities.Document;
-using Document = DealEngine.Domain.Entities.Document;
-using NReco.PdfGenerator;
-using Quartz;
-using Microsoft.AspNetCore.Mvc.Rendering;
 //using DealEngine.WebUI.Tasks;
 #endregion
 

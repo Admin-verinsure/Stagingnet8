@@ -17,10 +17,16 @@ namespace DealEngine.Services.Impl
         IMapperSession<Reference> _referenceRepository;
         IUserService _userService;
         IOrganisationService _organisationService;
+        IClubAssetInfoService _clubassetRepository;
+        IAssetData _assetData;
+        IUnitOfWork _unitOfWork;
         public ClientInformationService(
             IOrganisationService organisationService,
             IMapperSession<Reference> referenceRepository,
             IUserService userService,
+            IClubAssetInfoService clubassetRepository,
+            IAssetData assetData,
+            IUnitOfWork unitOfWork,
             IMapperSession<ClientInformationSheet> customerInformationRepository
             )
         {
@@ -28,6 +34,9 @@ namespace DealEngine.Services.Impl
             _referenceRepository = referenceRepository;
             _userService = userService;
             _customerInformationRepository = customerInformationRepository;
+            _clubassetRepository = clubassetRepository;
+            _assetData = assetData;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ClientInformationSheet> IssueInformationFor(User createdBy, Organisation createdFor, InformationTemplate informationTemplate)
@@ -134,8 +143,84 @@ namespace DealEngine.Services.Impl
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("MLViewModel", StringComparison.CurrentCulture)));
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
+            SaveAnswer( sheet, collection, collection.Keys.Where(s => s.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
+            SaveTrustAssetAnswer( user,sheet, collection, collection.Keys.Where(s => s.StartsWith("CTAViewModel", StringComparison.CurrentCulture)));
+            }
 
-        }
+        private async Task SaveTrustAssetAnswer(User user,ClientInformationSheet sheet, IFormCollection collection, IEnumerable<string> enumerable)
+        {
+            List<ClubTrustAssetsInfo> ClubTrustAssetsInfolist = new List<ClubTrustAssetsInfo>();
+            try
+            {
+                int i = 1; // initialization
+                Guid ownerid = Guid.Parse(collection["CTAViewModelOwner " + i]);
+                Organisation ownerorg = await _organisationService.GetOrganisation(ownerid);
+            while (collection["CTAViewModelDescriptionorName " + i].Count() > 0) // condition
+            {
+                    bool isclubexist = false;
+
+                    //using (var uow = _unitOfWork.BeginUnitOfWork())
+                    //{
+                    //    sheet.ClubTrustAssetsInfo.Clear();
+                    //    uow.Commit();
+                    //}
+
+                    ClubTrustAssetsInfo clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["CTAViewModelDescriptionorName " + i],
+                                                                                 int.Parse(collection["CTAViewModelCurrentValue " + i]),
+                                                                                 int.Parse(collection["CTAViewModelReplacementValue " + i]),
+                                                                                 ownerorg, sheet, user);
+
+                    i++;
+
+                    try
+                    {
+                         foreach (var asset in sheet.ClubTrustAssetsInfo)
+                            {
+                                if(asset.Name == clubTrustAssetsInfo.Name  && asset.ReplacementVal == clubTrustAssetsInfo.ReplacementVal
+                                                     )
+                                {
+                                    isclubexist = true;
+                                    
+                                }
+                            }
+                      
+
+                        if (!isclubexist)
+                        {
+                            using (var uow = _unitOfWork.BeginUnitOfWork())
+                            {
+                                _clubassetRepository.UpdateClubAsset(clubTrustAssetsInfo);
+                                //sheet.ClubTrustAssetsInfo.Add(clubTrustAssetsInfo);
+                                //await UpdateInformation(sheet);
+                                uow.Commit();
+                            }
+                        }
+                        //if (!sheet.ClubTrustAssetsInfo.Contains(clubTrustAssetsInfo))
+                        //{
+                        //    using (var uow = _unitOfWork.BeginUnitOfWork())
+                        //    {
+                        //        _clubassetRepository.UpdateClubAsset(clubTrustAssetsInfo);
+                        //        //sheet.ClubTrustAssetsInfo.Add(clubTrustAssetsInfo);
+                        //        //await UpdateInformation(sheet);
+                        //        uow.Commit();
+                        //    }
+                        //}
+                        
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                   
+               
+            }
+            
+        }catch (Exception ex )
+            {
+
+            }
+}
+        
 
         private void AnswerFromUserDetails(User user, IFormCollection collection, IEnumerable<string> enumerable)
         {

@@ -22,6 +22,10 @@ using SystemDocument = DealEngine.Domain.Entities.Document;
 using Document = DealEngine.Domain.Entities.Document;
 using System.Net.Mime;
 using NReco.PdfGenerator;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+
+
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -69,7 +73,9 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<Organisation> _organisationRepository;
         ILocationService _locationService;
         IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
-
+        IAssetData _assetData;
+        IClubAssetInfoService _clubAssetInfoService;
+        private readonly IWebHostEnvironment _hostingEnv;
         public InformationController(
             ISubsystemService subsystemService,
             IOrganisationTypeService organisationTypeService,
@@ -111,7 +117,9 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<OrganisationalUnit> organisationalUnitRepository,
             IMapperSession<Organisation> organisationRepository,
             ILocationService locationService,
-
+            IAssetData assetData,
+            IClubAssetInfoService clubAssetInfoService,
+            IWebHostEnvironment hostingEnv,
         //IGeneratePdf generatePdf,
         IClientAgreementExtensionTermService clientAgreementExtensionTermService,
         IMapper mapper
@@ -160,6 +168,10 @@ namespace DealEngine.WebUI.Controllers
             _organisationRepository = organisationRepository;
             _locationService = locationService;
             _clientAgreementExtensionTermService = clientAgreementExtensionTermService;
+            _assetData = assetData;
+            _clubAssetInfoService = clubAssetInfoService;
+            _hostingEnv = hostingEnv;
+
             //_generatePdf = generatePdf;
         }
 
@@ -310,7 +322,7 @@ namespace DealEngine.WebUI.Controllers
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
-
+                await GetClubTrustAssetViewModel(model, sheet.AssetData, clientProgramme);
                 //build models from answers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("PMINZEPLViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("ELViewModel", StringComparison.CurrentCulture)));
@@ -971,7 +983,7 @@ namespace DealEngine.WebUI.Controllers
 
         [HttpGet]
         // public async Task<IActionResult> EditInformation(Guid id)
-        public async Task<IActionResult> EditInformation(Guid id, string updateType)
+        public async Task<IActionResult> EditInformation(Guid id, string updateType = null)
         {
             User user = null;
 
@@ -990,10 +1002,12 @@ namespace DealEngine.WebUI.Controllers
                 var sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
                 model.Advisory = await _milestoneService.SetMilestoneFor("Agreement Status - Not Started", user, sheet);
+                model.ClientProgrammeId = clientProgramme.Id;
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
-
+                await GetTrustDataModel(model, sheet);
+                //await GetDocumentUploadModel(model, sheet.file);
                 //build models from answers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("PMINZEPLViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("ELViewModel", StringComparison.CurrentCulture)));
@@ -1011,6 +1025,7 @@ namespace DealEngine.WebUI.Controllers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("MLViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
 
 
                 if (sheet.Status == "Not Started")
@@ -1126,6 +1141,41 @@ namespace DealEngine.WebUI.Controllers
                 }
             }
         }
+        
+       private async Task GetTrustDataModel(InformationViewModel model, ClientInformationSheet sheet)
+        {
+            try
+            {
+                if (sheet != null) {
+                    //AssetData asset = await _assetData.GetAssetDataBySheetId(sheet.Id);
+                    if(sheet.ClubTrustAssetsInfo.Count > 0)
+                    {
+                        model.TAViewModel.ClubTrustAssetsInfo = sheet.ClubTrustAssetsInfo;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        
+
+        //private async Task GetDocumentUploadModel(InformationViewModel model, File file)
+        //{
+        //    try
+        //    {
+        //        if (file..Any())
+        //        {
+        //            model.RoleDataViewModel = _mapper.Map<RoleDataViewModel>(roleData);
+        //            model.RoleDataViewModel.AdditionalRoleInformationViewModel = _mapper.Map<AdditionalRoleInformationViewModel>(roleData.AdditionalRoleInformation);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //    }
+        //}
 
         private async Task GetRoleViewModel(InformationViewModel model, RoleData roleData)
         {
@@ -1142,7 +1192,29 @@ namespace DealEngine.WebUI.Controllers
                 Console.WriteLine(ex.Message);
             }
         }
+        private async Task GetClubTrustAssetViewModel(InformationViewModel model, AssetData trustAssetData, ClientProgramme clientProgramme)
+        {
+            try
+            {
+                if (trustAssetData.ClubTrustAssetsInfo.Count()>0)
+                {
 
+                    model.AssetData.ClubTrustAssetsInfo = trustAssetData.ClubTrustAssetsInfo;
+                }
+                //if (trustAssetData.HasClubTrustAssetMore.Count() > 0)
+                //{
+                //    model.TAViewModel.HasClubTrustAssetMore = trustAssetData.HasClubTrustAssetMore;
+                //}
+                //if (trustAssetData.HasClubTrustAssets.Count() > 0)
+                //{
+                //    model.TAViewModel.HasClubTrustAssets = trustAssetData.HasClubTrustAssets;
+                //}
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
         private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData,Programme programme)
         {
             try
@@ -1201,6 +1273,25 @@ namespace DealEngine.WebUI.Controllers
 
                 var url = "/Information/EditInformation/" + UnlockReason.DealId;
                 return Json(new { url });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteTrustAsset(Guid  Trustassetid)
+        {
+            User user = null;
+            try
+            {
+                ClubTrustAssetsInfo clubTrustAssetsInfo = await _clubAssetInfoService.GetClubAssetById(Trustassetid);
+                user = await CurrentUser();
+                await _clubAssetInfoService.DeleteClubAssetById(user, clubTrustAssetsInfo);
+                return new JsonResult(true);
             }
             catch (Exception ex)
             {
@@ -2025,6 +2116,93 @@ namespace DealEngine.WebUI.Controllers
                 throw ex;
             }
         }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> Upload(InformationViewModel model)
+        {
+            //string UploadedDocumentPath = _appSettingService.CKImagePath;
+            ClientInformationSheet answersheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+            ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
+            var user = await CurrentUser();
+
+            if (model != null)
+            {
+                if (model.File != null)
+                {
+
+                    var contentType = model.File.ContentType;
+                    var extension = "";
+                    var filename = "";
+                    
+                    if (contentType == "application/pdf")
+                    {
+                        extension = ".pdf";
+                    }else if (contentType == "application/vnd.oasis.opendocument.graphics")
+                    {
+                        extension = ".odg";
+                    }else if (contentType == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                    {
+                        extension = ".docx";//.gdoc
+                    }
+                    else
+                    {
+                        throw new FileFormatException("Invalid File Type");
+                    }
+
+                    if (model.File.FileName != null)
+                    {
+                        filename = model.File.FileName;
+                    }
+
+                    var path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+                    //var path = Path.Combine(_hostingEnv.WebRootPath, "files", model.Name, "attachmentfiles");
+                    // var path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation +"";
+                    System.IO.Directory.CreateDirectory(path);
+                    path = Path.Combine(path, filename);
+
+                    try
+                    {
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                            await model.File.CopyToAsync(fileStream);
+                        }
+
+                        DealEngine.Domain.Entities.Document newFile = new DealEngine.Domain.Entities.Document
+                        {
+                            Name = filename,
+                            Description = "File for " + model.DocumentOrganisation,
+                            DocumentType = 0,
+                            IsTemplate = true,
+                            ContentType = model.File.ContentType,
+                            FileRendered = false,
+                            Path = path,
+                            ClientInformationSheet = clientProgramme.InformationSheet
+                        };
+
+                        await _fileService.UploadFile(newFile);
+
+                        //Guid productID = Guid.Parse(model.Product);
+                        //Product myProduct = await _iproductService.GetProductById(productID);
+                        //myProduct.Documents.Add(newFile);
+                        //await _iproductService.UpdateProduct(myProduct);
+                    }
+
+                    catch (Exception Ex)
+                    {
+                        Console.WriteLine(Ex.ToString());
+                    }
+
+                }
+            }
+            var url = "/Information/EditInformation/" + model.ClientProgrammeId;
+            return Redirect(url);
+
+        }
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> SendOnlineAcceptance(string ClientAgreement)
