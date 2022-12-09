@@ -1026,6 +1026,7 @@ namespace DealEngine.WebUI.Controllers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("MLViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("CPViewModel", StringComparison.CurrentCulture)));
 
 
                 if (sheet.Status == "Not Started")
