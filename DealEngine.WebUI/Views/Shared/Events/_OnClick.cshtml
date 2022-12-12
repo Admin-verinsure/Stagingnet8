@@ -1235,7 +1235,7 @@
     function deleteTrustAsset(trustassetid) {
         debugger;
         if (trustassetid != "") {
-           
+
              $.ajax({
             url: '@Url.Action("DeleteTrustAsset", "information")',
             type: "Post",
@@ -1244,13 +1244,35 @@
             })
                  .done(function (data) {
                      debugger;
-                 if (data === true) {
-                     $("#assettable").trigger( 'reloadGrid' );
+                     if (data === true) {
+                         location.reload();
+                         $("#assettable").trigger("click");
                    }
                });
 
         }
     };
+
+   function deletedoc(docid) {
+        debugger;
+       if (docid != "") {
+             $.ajax({
+            url: '@Url.Action("DeleteDoc", "information")',
+            type: "Post",
+                 data: { DocId: docid },
+            async: true
+            })
+                 .done(function (data) {
+                     debugger;
+                     if (data === true) {
+                         location.reload();
+
+                         $("#RotaryDocUpload").trigger("click");
+                   }
+               });
+        }
+    };
+
 
 
     function AddNewRow() {
@@ -1278,7 +1300,7 @@
         //var elements = $("#organisationselection").innerHTML;
 
         var elements = $("#organisationselection").children();
-            
+
         $.each(elements, function (key, value) {
 
             $("#"+orgselectid).append(new Option(value.text, value.value));

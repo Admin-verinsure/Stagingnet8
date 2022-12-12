@@ -35,6 +35,7 @@ namespace DealEngine.Services.Interfaces
         Task<Document> GetDocumentByType(Organisation primaryOrganisation, int documentType);
 		Task<List<Document>> GetDocumentByOwner(Organisation Owner);
 		//Task<Document> AddDocument(Document documentID);
+		Task DeleteDocument(Document doc);
 
 		//Task<IActionResult> GetPDF(Guid id);
 	}

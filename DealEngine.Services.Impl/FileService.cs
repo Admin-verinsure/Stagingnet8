@@ -153,6 +153,11 @@ namespace DealEngine.Services.Impl
         {
             return await _documentRepository.FindAll().FirstOrDefaultAsync(i => i.Id == documentID);
         }
+        public async Task DeleteDocument(Document doc)
+        {
+            await _documentRepository.RemoveAsync(doc);
+
+        }
 
         public async Task<Document> GetDocumentByType(Organisation primaryOrganisation, int DocumentType)
         {

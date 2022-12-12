@@ -1301,6 +1301,31 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteDoc(Guid DocId)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                Document doc = await _fileService.GetDocumentByID(DocId);
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    if (doc != null)
+                    {
+                        doc.DeletedBy = user;
+                    }
+                    await uow.Commit();
+                }
+                return new JsonResult(true);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> ResetStatus(Guid id)
         {
@@ -2151,8 +2176,10 @@ namespace DealEngine.WebUI.Controllers
                     {
                         throw new FileFormatException("Invalid File Type");
                     }
-
-                    if (model.File.FileName != null)
+                    if(model.DocumentName != null)
+                    {
+                        filename = model.DocumentName;
+                    }else if (model.File.FileName != null)
                     {
                         filename = model.File.FileName;
                     }
@@ -2179,7 +2206,8 @@ namespace DealEngine.WebUI.Controllers
                             ContentType = model.File.ContentType,
                             FileRendered = false,
                             Path = path,
-                            ClientInformationSheet = clientProgramme.InformationSheet
+                            ClientInformationSheet = clientProgramme.InformationSheet,
+                            OwnerOrganisationName = model.DocumentOrganisation
                         };
 
                         await _fileService.UploadFile(newFile);

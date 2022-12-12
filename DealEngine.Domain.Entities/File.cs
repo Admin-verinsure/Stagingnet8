@@ -40,6 +40,7 @@ namespace DealEngine.Domain.Entities
 		public virtual bool FileRendered { get; set; }
 		public virtual string Path { get; set; }
 		public virtual bool RenderToPDF { get; set; }
+		public virtual string OwnerOrganisationName { get; set; }
 
 		public virtual ClientInformationSheet ClientInformationSheet { get; set; }
 		//public Product Product { get; set; }

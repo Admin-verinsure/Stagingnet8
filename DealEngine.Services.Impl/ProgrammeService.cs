@@ -121,7 +121,7 @@ namespace DealEngine.Services.Impl
             var clientList = new List<ClientProgramme>();
             if (programme == null)
                 return null;
-            foreach (var client in programme.ClientProgrammes.Take(30))
+            foreach (var client in programme.ClientProgrammes)
             {
                 var isBaseClass = await IsBaseClass(client);
                 if (isBaseClass)
