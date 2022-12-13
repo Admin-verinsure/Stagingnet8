@@ -759,6 +759,11 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Company",
                         Value = "Company"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "other- NOT incorporated",
+                        Value = "Other"
                     }
                 };
             return _Types;
@@ -868,6 +873,11 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Director",
                         Value = "Director"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Other",
+                        Value = "Other"
                     }
             };
             return _Types;

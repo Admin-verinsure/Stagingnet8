@@ -108,6 +108,8 @@ namespace DealEngine.WebUI.Models
         public IFormFile File { get; set; }
         //public Organisation DocumentOrganisation { get; set; }
         public string DocumentOrganisation { get; set; }
+        public string DocumentName { get; set; }
+
         public Guid ClientProgrammeId { get; set; }
 
     }

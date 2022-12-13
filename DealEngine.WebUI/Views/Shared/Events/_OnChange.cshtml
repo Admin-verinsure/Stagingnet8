@@ -755,7 +755,8 @@
         if (Value == "Administrator" ||
             Value == "Trustee" ||
             Value == "Incorporated Society Officer" ||
-            Value == "Director") {
+            Value == "Director" ||
+            Value == "Other") {
             //readonly Organisation Type personal
             //document.getElementById("OwnerFap").hidden = true;
 
@@ -792,6 +793,8 @@
                     }
                     if (OrgTypeList.options[i].text == "Company") {
                         OrgTypeList.options[i].hidden = true;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = true;
                     }
                 }
 
@@ -815,6 +818,8 @@
                     }
                     if (OrgTypeList.options[i].text == "Company") {
                         OrgTypeList.options[i].hidden = true;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = true;
                     }
                 }
                 $("#NoUserCreation").val(true);
@@ -836,6 +841,8 @@
                     }
                     if (OrgTypeList.options[i].text == "Company") {
                         OrgTypeList.options[i].hidden = true;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = true;
                     }
                 }
                 $("#NoUserCreation").val(true);
@@ -856,10 +863,39 @@
                     }
                     if (OrgTypeList.options[i].text == "Company") {
                         OrgTypeList.options[i].hidden = false;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = true;
                     }
                 }
                 $("#NoUserCreation").val(true);
             }
+
+
+            if (Value == "Other") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private Individual") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = true;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = false;
+                    }
+                }
+                $("#NoUserCreation").val(true);
+
+            }
+
+
 
             document.getElementById("Else").hidden = false;
 

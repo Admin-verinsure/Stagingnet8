@@ -3,77 +3,130 @@
 @{ ViewData["Title"] = "Upload Documents"; }
 
 
-<div id="content" class="container">
+<div id="RotaryDocUpload" class="container">
     <!-- Bread crumb is created dynamically -->
     <!-- row -->
-               <div class="form-group row">
-                       <strong>Upload your club constitution and club trutee </strong>
+    <div class="form-group row">
+        <strong>Upload your club constitution and club trustee </strong>
 
-               </div>
+    </div>
 
-            <div class="col-sm-12" style="overflow-y:auto; height:44vh; width:100%;text-align:center;">
-                <form id="DocUploadForm" enctype="multipart/form-data" asp-controller="Information" asp-action="Upload" method="post" class="mt-3">
-
-
-                    @Html.HiddenFor(m => m.ClientProgrammeId)
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">Select Named Party for Document Upload.</label>
-                        <div class="col-sm-10">
-                            <select asp-for="DocumentOrganisation" class="form-control" required>
-                                <option value="select">---Select---</option>
-                                @foreach (var option in Model.OrganisationViewModel.Organisations)
-                                {
-                                    <option value="@option.Name">@option.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
+    <div class="col-sm-12" style="overflow-y:auto; height:44vh; width:100%;text-align:center;">
+        <form id="DocUploadForm" enctype="multipart/form-data" asp-controller="Information" asp-action="Upload" method="post" class="mt-3">
 
 
-                    <div class="form-group row">
-                        <label asp-for="Name" class="col-sm-2 col-form-label"></label>
-                        <div class="col-sm-10">
-                            <input class="form-control" placeholder="club constitution and club trutee name">
-                            <span asp-validation-for="Name" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label">File</label>
-                        <div class="col-sm-10">
-                            <div class="custom-file">
-                                <input asp-for="File" class="form-control custom-file-input" name="File" id="fileUploaddoc" />
-
-                            </div>
-                        </div>
-                        <div class="col-sm-12 mt-3" style="text-align:center;">
-                            <p style="margin:0px !important">Please note: Only .pdf. .doc, .docx, odt and .gdoc file types are accepted.</p>
-                        </div>
-
-                    </div>
-
-                    <div asp-validation-summary="All" class="text-danger"></div>
-
-                    <button id="" onclick="" type="submit" class="btn btn-primary">Upload File</button>
-                    <br /><br />
-                    <br />
-
-                    @foreach (var doc in Model.ClientInformationSheet.documents)
-                    {
-                        <div class="form-group row">
-                            <div class="col-sm-10">
-                                <a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
-                                    @doc.Name
-                                </a>
-                            </div>
-                        </div>
-                    }
-
-                </form>
+            @Html.HiddenFor(m => m.ClientProgrammeId)
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Select Named Party for Document Upload.</label>
+                <div class="col-sm-10">
+                    <select asp-for="DocumentOrganisation" class="form-control" required>
+                        <option onchange="refreshdoclist();" value="select">---Select---</option>
+                        @foreach (var option in Model.OrganisationViewModel.Organisations)
+                        {
+                            <option value="@option.Name">@option.Name</option>
+                        }
+                    </select>
+                </div>
             </div>
-       
-</div>
 
+
+            <div class="form-group row">
+                <label asp-for="Name" class="col-sm-2 col-form-label"></label>
+                <div class="col-sm-10">
+                    <input class="form-control" name="DocumentName" placeholder="club constitution and club trutee document name">
+                    <span name="DocumentName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">File</label>
+                <div class="col-sm-10">
+                    <div class="custom-file">
+                        <input asp-for="File" class="form-control custom-file-input" name="File" id="fileUploaddoc" />
+
+                    </div>
+                </div>
+                <div class="col-sm-12 mt-3" style="text-align:center;">
+                    <p style="margin:0px !important">Please note: Only .pdf. .doc, .docx, odt and .gdoc file types are accepted.</p>
+                </div>
+
+            </div>
+
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <button id="" onclick="" type="submit" class="btn btn-primary">Upload File</button>
+            <br /><br />
+            <br />
+            @*<div class="form-group row">
+                <strong>Uploaded documents for sheet. </strong>
+
+            </div>
+            @foreach (var doc in Model.ClientInformationSheet.documents)
+            {
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
+                            @doc.Name
+                        </a>
+                    </div>
+                </div>
+
+
+            }*@
+
+        </form>
+    </div>
+
+
+    <br /><br /><br /><br />
+
+    <!-- row -->
+   
+
+                      <div>
+                          @if (Model.ClientInformationSheet.documents.Count > 0)
+                          {
+                              <div class="form-group row">
+                                  <div class="col-sm-2 col-md-2">
+                                  </div>
+                                  <div class="col-sm-2 col-md-2">
+                                      <label><strong>Named Party</strong></label>
+                                  </div>
+                                  <div class="col-sm-4 col-md-4">
+                                      <label><strong>Document Uploaded</strong></label>
+
+                                  </div>
+
+                                  <div class="col-sm-2 col-md-2">
+
+                                  </div>
+
+                              </div>
+                          }
+
+
+                          @foreach (var doc in Model.ClientInformationSheet.documents.Where(doc => doc.DeletedBy == null))
+                          {
+                              <div class="form-group row">
+                                  <div class="col-sm-2 col-md-2">
+                                  </div>
+                                  <label class="col-sm-2 col-md-2 col-form-label">@doc.OwnerOrganisationName</label>
+                                  <div class="col-sm-3 col-md-3">
+                                      <a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
+                                          @doc.Name
+                                      </a>
+                                  </div>
+
+                                  <div class="col-sm-2 col-md-2">
+                                      <button class="btn btn-danger rounded-0" value="@doc.Id" onclick="deletedoc('@doc.Id')"><i class="fa fa-trash"></i></button>
+
+                                  </div>
+
+                              </div>
+                          }
+
+                      </div>
+</div>
 
 
 
@@ -84,43 +137,21 @@
 
 
             var $form = $("#DocUploadForm");
-                $form.submit(function () {
-                    $.post($(this).attr('action'), $(this).serialize(), function (response) {
-                        // do something here on success
-                        debugger;
-                        location.reload()
-                    }, 'json');
-                    return false;
-                });
+            $form.submit(function () {
+                $.post($(this).attr('action'), $(this).serialize(), function (response) {
+                    // do something here on success
+                    debugger;
+                    location.reload();
+                    $("[id='RotaryDocUpload']").trigger("click");
+                }, 'json');
+                return false;
+            });
 
 
-
-
-
-
-            //$("#ckuploadbtn").on("click", function () {
-            //    $("#uploadmodal").modal({
-            //        backdrop: true
-            //    });
-            //});
-
-            //$("#ckuploadbtnfile").on("click", function () {
-            //    $("#uploadmodalfile").modal({
-            //        backdrop: true
-            //    });
-            //});
-
-            //$("#fileUploaddoc").change(function () {
-            //    var fileName = $(this).val().split("\\").pop();
-            //    $(this).next('#custom-file-label').html(fileName);
-            //    $("#custom-file-label").html(fileName);
-            //});
-
-        //    $("#fileUpload").change(function () {
-        //        var fileName = $(this).val().split("\\").pop();
-        //        $(this).next('#custom-file-label').html(fileName);
-        //        $("#custom-file-label").html(fileName);
-        //    });
+            function refreshdoclist() {
+                location.reload();
+                $("[id='RotaryDocUpload']").trigger("click");
+            }
         });
     </script>
 }
