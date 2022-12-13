@@ -41,7 +41,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
-            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdextensionpremiumover", "mdadditionaladminfeeover");
+            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdextensionpremiumover", "mdadditionaladminfeeover", "mdadditionaladminfeeover", "mdstandardadminfee");
 
             //Create default referral points based on the clientagreementrules
             if (agreement.ClientAgreementReferrals.Count == 0)
@@ -68,6 +68,28 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
+
+            int extLimit = 0;
+            int extExcess = 500;
+            decimal extPremium = 0M;
+            decimal adminFee = 0M;
+            int extLoading = 0;
+            bool extRequired = false;
+            if (agreement.ClientInformationSheet.ClubTrustAssetsInfo != null)
+            {
+                foreach (var clubTrustAssetsInfo in agreement.ClientInformationSheet.ClubTrustAssetsInfo)
+                {
+                    if (clubTrustAssetsInfo.CurrentVal > 25000)
+                    {
+                        extLoading += Convert.ToInt32(Math.Ceiling(Convert.ToDecimal((clubTrustAssetsInfo.CurrentVal - 25000) / 5000)));
+                        extLimit += clubTrustAssetsInfo.CurrentVal;
+                        extRequired = true;
+                    }
+                }
+            }
+            extPremium = extLoading * rates["mdextensionpremiumover"];
+            adminFee = rates["mdstandardadminfee"] + extLoading * rates["mdadditionaladminfeeover"];
+
             int agreementperiodindays = 0;
             agreementperiodindays = (agreement.ExpiryDate - agreement.InceptionDate).Days;
 
@@ -87,11 +109,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             TermExcess = Convert.ToInt32(rates["mdexcess"]);
 
             int TermLimit = 0;
-            TermExcess = Convert.ToInt32(rates["mdlimit"]);
+            TermLimit = Convert.ToInt32(rates["mdlimit"]);
             decimal TermPremium = 0M;
             decimal TermBrokerage = 0M;
             TermPremium = rates["mdpremium"];
-
 
 
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
@@ -108,6 +129,24 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termoption.DateDeleted = null;
             termoption.DeletedBy = null;
 
+            //add Extension Additional cover for Scheduled assets extension
+            foreach (ClientAgreementTermExtension mdtermextension in agreement.ClientAgreementTermExtensions.Where(ctex => ctex.DateDeleted == null))
+            {
+                mdtermextension.Delete(underwritingUser);
+            }
+            if (extRequired)
+            {
+                ClientAgreementTermExtension termMDextension = GetAgreementExtensionTerm(underwritingUser, agreement, extLimit, extExcess, extPremium, "Extension Additional cover for Scheduled assets");
+                termMDextension.ExtentionName = "Extension Additional cover for Scheduled assets";
+                termMDextension.HideLimitExcess = false;
+                termMDextension.Premium = extPremium;
+                termMDextension.BasePremium = extPremium;
+                termMDextension.DateDeleted = null;
+                termMDextension.DeletedBy = null;
+                termMDextension.Bound = true;
+            }
+
+            agreement.BrokerFee = adminFee;
 
             //Referral points per agreement
             //Operates Outside of NZ
@@ -221,6 +260,19 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             return dict;
         }
 
+        //Extension Additional cover for Scheduled assets extension
+        ClientAgreementTermExtension GetAgreementExtensionTerm(User CurrentUser, ClientAgreement agreement, int limitoption, decimal excessoption, decimal premiumoption, string extensionName)
+        {
+            ClientAgreementTermExtension extensionTerm = agreement.ClientAgreementTermExtensions.FirstOrDefault(tex => tex.DateDeleted != null && tex.ExtentionName == extensionName);
+
+            if (extensionTerm == null)
+            {
+                extensionTerm = new ClientAgreementTermExtension(CurrentUser, limitoption, excessoption, premiumoption, agreement);
+                agreement.ClientAgreementTermExtensions.Add(extensionTerm);
+            }
+
+            return extensionTerm;
+        }
 
         void uwrfoperatesoutsideofnz(User underwritingUser, ClientAgreement agreement, bool bolworkoutsidenz)
         {
