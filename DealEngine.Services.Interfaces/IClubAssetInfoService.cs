@@ -10,6 +10,8 @@ namespace DealEngine.Services.Interfaces
         Task<ClubTrustAssetsInfo> GetClubAssetById(Guid ClubAssetId);
         Task UpdateClubAsset(ClubTrustAssetsInfo clubTrustAssetsInfolist);
          Task DeleteClubAssetById(User deletedBy, ClubTrustAssetsInfo clubTrustAssetsInfo);
+        Task<IList<ClubTrustAssetsInfo>> GetClubTrustAssets(Guid sheet);
+        Task<ClubTrustAssetsInfo> GetClubAssetByName(Guid sheet,String assetname);
 
         //Task UpdateClubAsset(List<ClubTrustAssetsInfo> clubTrustAssetsInfolist);
     }

@@ -41,6 +41,7 @@ namespace DealEngine.Domain.Entities
 		public virtual string Path { get; set; }
 		public virtual bool RenderToPDF { get; set; }
 		public virtual string OwnerOrganisationName { get; set; }
+		public virtual string Extension { get; set; }
 
 		public virtual ClientInformationSheet ClientInformationSheet { get; set; }
 		//public Product Product { get; set; }

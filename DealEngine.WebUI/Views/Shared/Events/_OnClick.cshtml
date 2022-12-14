@@ -1253,7 +1253,7 @@
         }
     };
 
-   function deletedoc(docid) {
+   function deletedoc(docid,docname) {
         debugger;
        if (docid != "") {
              $.ajax({
@@ -1264,8 +1264,11 @@
             })
                  .done(function (data) {
                      debugger;
+                     var hjk = $('#' + $.escapeSelector(docname));
+                     $('#' + $.escapeSelector(docname)).hide();
+                     //$("#" + docname).addClass('hidden');
                      if (data === true) {
-                         location.reload();
+                         //location.reload();
 
                          $("#RotaryDocUpload").trigger("click");
                    }
@@ -1290,7 +1293,7 @@
         cols += "<td><select  name=\"CTAViewModelOwner " + rowcounter + "\" class=\"form-select\" id=\"orgselect" + rowcounter +"\"></select></td>";
        // cols += "<td id=\"orgselect" + rowcounter + "\" ></td>";
 
-        cols += '<td><button class="btn btn-danger rounded-0" id ="deleteRow"><i class="fa fa-trash"></i></button</td>';
+        cols += '<td><button class="btn btn-danger rounded-0" onclick="$(this).closest(\"tr\").remove();" id ="deleteRow"><i class="fa fa-trash"></i></button</td>';
 
         newRow.append(cols);
 

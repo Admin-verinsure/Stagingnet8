@@ -73,8 +73,11 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<Organisation> _organisationRepository;
         ILocationService _locationService;
         IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
-        IAssetData _assetData;
-        IClubAssetInfoService _clubAssetInfoService;
+        //IAssetData _assetData;
+        IMapperSession<ClubTrustAssetsInfo> _clubTrustAssetsInfoRepository;
+
+        private readonly IClubAssetInfoService _clubAssetInfoService;
+
         private readonly IWebHostEnvironment _hostingEnv;
         public InformationController(
             ISubsystemService subsystemService,
@@ -117,9 +120,12 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<OrganisationalUnit> organisationalUnitRepository,
             IMapperSession<Organisation> organisationRepository,
             ILocationService locationService,
-            IAssetData assetData,
+            //IAssetData assetData,
             IClubAssetInfoService clubAssetInfoService,
+            IMapperSession<ClubTrustAssetsInfo> ClubTrustAssetsInfoRepository,
+
             IWebHostEnvironment hostingEnv,
+
         //IGeneratePdf generatePdf,
         IClientAgreementExtensionTermService clientAgreementExtensionTermService,
         IMapper mapper
@@ -168,7 +174,7 @@ namespace DealEngine.WebUI.Controllers
             _organisationRepository = organisationRepository;
             _locationService = locationService;
             _clientAgreementExtensionTermService = clientAgreementExtensionTermService;
-            _assetData = assetData;
+            _clubTrustAssetsInfoRepository = ClubTrustAssetsInfoRepository;
             _clubAssetInfoService = clubAssetInfoService;
             _hostingEnv = hostingEnv;
 
@@ -283,7 +289,7 @@ namespace DealEngine.WebUI.Controllers
                     sections.Add(Section.CustomView);
                 }
                 model.ListSection = sections;
-                
+
                 ViewBag.Title = "View Information Sheet ";
                 return View(model);
             }
@@ -294,7 +300,7 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-     
+
 
         [HttpGet]
         public async Task<IActionResult> PartialViewProgramme(Guid id, String name = "", List<string> viewlist = null)
@@ -318,7 +324,7 @@ namespace DealEngine.WebUI.Controllers
                 model.SectionView = name;
                 model.ListSection = viewlist;
                 model.ClientProgramme = clientProgramme;
-                
+
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
@@ -398,7 +404,7 @@ namespace DealEngine.WebUI.Controllers
                     //}
                     #endregion
                 }
-                
+
                 #region Commented code
 
                 //model.InterestedParties = interestedParties;
@@ -514,7 +520,7 @@ namespace DealEngine.WebUI.Controllers
                         if (term.Bound)
                         {
                             OptionItem[0] = agreement.Product.Name;
-                            OptionItem[1] = ""+ term.TermLimit;
+                            OptionItem[1] = "" + term.TermLimit;
                             OptionItem[2] = "" + term.Excess;
                             OptionItems[count] = OptionItem;
                             count++;
@@ -522,7 +528,7 @@ namespace DealEngine.WebUI.Controllers
                     }
                 }
                 model.LimitsSelected = OptionItems;
-               // model.DeclarationMessage = sheet.Programme.BaseProgramme.Declaration;
+                // model.DeclarationMessage = sheet.Programme.BaseProgramme.Declaration;
 
                 model.Advisory = await _milestoneService.SetMilestoneFor("Agreement Status - Not Started", user, sheet);
 
@@ -599,38 +605,38 @@ namespace DealEngine.WebUI.Controllers
                 {
                     foreach (var agreement in clientProgramme.Agreements)
                     {
-                            if (agreement.Product.IsExtentionOption)
+                        if (agreement.Product.IsExtentionOption)
 
-                            {
-                                foreach (var term in agreement.ClientAgreementTermExtensions)
+                        {
+                            foreach (var term in agreement.ClientAgreementTermExtensions)
                             {
                                 term.Bound = false;
                             }
                         }
 
-                      if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
-                      {
-                        ClientAgreementEndorsement cAELPLAIncl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Inclusion");
-
-                        if (cAELPLAIncl != null)
+                        if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
                         {
-                            cAELPLAIncl.DateDeleted = DateTime.UtcNow;
-                            cAELPLAIncl.DeletedBy = user;
+                            ClientAgreementEndorsement cAELPLAIncl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Inclusion");
+
+                            if (cAELPLAIncl != null)
+                            {
+                                cAELPLAIncl.DateDeleted = DateTime.UtcNow;
+                                cAELPLAIncl.DeletedBy = user;
+                            }
+
                         }
 
-                      }
-
-                      if (clientProgramme.BaseProgramme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
-                      {
-                        ClientAgreementEndorsement cAECLExt = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Social Engineering Fraud Extension");
-
-                        if (cAECLExt != null)
+                        if (clientProgramme.BaseProgramme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
                         {
-                            cAECLExt.DateDeleted = DateTime.UtcNow;
-                            cAECLExt.DeletedBy = user;
-                        }
+                            ClientAgreementEndorsement cAECLExt = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Social Engineering Fraud Extension");
 
-                      }
+                            if (cAECLExt != null)
+                            {
+                                cAECLExt.DateDeleted = DateTime.UtcNow;
+                                cAECLExt.DeletedBy = user;
+                            }
+
+                        }
 
                     }
                     await uow.Commit();
@@ -643,9 +649,9 @@ namespace DealEngine.WebUI.Controllers
                         if (option != "None" && option != null)
                         {
                             ClientAgreementTermExtension clientAgreementExtentionTerm = await _clientAgreementExtensionTermService.GetAgreementExtentionById(Guid.Parse(option));
-                            
-                                clientAgreementExtentionTerm.Bound = true;
-                              
+
+                            clientAgreementExtentionTerm.Bound = true;
+
                             ClientAgreement agreement = clientAgreementExtentionTerm.ClientAgreement;
                             if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
                             {
@@ -830,9 +836,9 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
                 ClientAgreementTerm selectedterm = await _clientAgreementTermService.GetAgreementById(SelectedId);
-               // var prem = selectedterm.Premium;
-                    //ClientAgreementTerms.Where(at => at.DateDeleted == null);
-                    //String[][] OptionItems = new String[clientProgramme.Agreements.Count][];
+                // var prem = selectedterm.Premium;
+                //ClientAgreementTerms.Where(at => at.DateDeleted == null);
+                //String[][] OptionItems = new String[clientProgramme.Agreements.Count][];
 
                 return Json(selectedterm);
             }
@@ -997,7 +1003,7 @@ namespace DealEngine.WebUI.Controllers
 
             try
             {
-                
+
                 var clientProgramme = await _programmeService.GetClientProgramme(id);
                 var sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
@@ -1040,17 +1046,17 @@ namespace DealEngine.WebUI.Controllers
                 for (var i = 0; i < sheet.ClaimNotifications.Count; i++)
                 {
                     claims.Add(ClaimViewModel.FromEntity(sheet.ClaimNotifications.ElementAtOrDefault(i)));
-                }               
+                }
 
 
                 model.Claims = claims;
 
                 //if(updateType == "")
-                if(string.IsNullOrWhiteSpace(updateType))
+                if (string.IsNullOrWhiteSpace(updateType))
                 {
                     updateType = "common_you";
                 }
-               
+
                 model.selectedUpdateType = new List<string>();
 
                 using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
@@ -1131,7 +1137,7 @@ namespace DealEngine.WebUI.Controllers
                         }
                         if (typeof(DateTime?) == property.PropertyType)
                         {
-                            var date = DateTime.Parse(answer.Value);                         
+                            var date = DateTime.Parse(answer.Value);
                             property.SetValue(reflectModel, date.ToString("dd/MM/yyyy"));
                         }
                     }
@@ -1142,16 +1148,16 @@ namespace DealEngine.WebUI.Controllers
                 }
             }
         }
-        
-       private async Task GetTrustDataModel(InformationViewModel model, ClientInformationSheet sheet)
+
+        private async Task GetTrustDataModel(InformationViewModel model, ClientInformationSheet sheet)
         {
             try
             {
                 if (sheet != null) {
                     //AssetData asset = await _assetData.GetAssetDataBySheetId(sheet.Id);
-                    if(sheet.ClubTrustAssetsInfo.Count > 0)
+                    if (sheet.ClubTrustAssetsInfo.Count > 0)
                     {
-                        model.TAViewModel.ClubTrustAssetsInfo = sheet.ClubTrustAssetsInfo;
+                        model.TAViewModel.ClubTrustAssetsInfo = sheet.ClubTrustAssetsInfo.Where(asset => asset.DeletedBy == null).ToList();
                     }
                 }
             }
@@ -1160,7 +1166,7 @@ namespace DealEngine.WebUI.Controllers
                 Console.WriteLine(ex.Message);
             }
         }
-        
+
 
         //private async Task GetDocumentUploadModel(InformationViewModel model, File file)
         //{
@@ -1197,7 +1203,7 @@ namespace DealEngine.WebUI.Controllers
         {
             try
             {
-                if (trustAssetData.ClubTrustAssetsInfo.Count()>0)
+                if (trustAssetData.ClubTrustAssetsInfo.Count() > 0)
                 {
 
                     model.AssetData.ClubTrustAssetsInfo = trustAssetData.ClubTrustAssetsInfo;
@@ -1216,7 +1222,7 @@ namespace DealEngine.WebUI.Controllers
                 Console.WriteLine(ex.Message);
             }
         }
-        private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData,Programme programme)
+        private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData, Programme programme)
         {
             try
             {
@@ -1282,9 +1288,8 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-
         [HttpPost]
-        public async Task<IActionResult> DeleteTrustAsset(Guid  Trustassetid)
+        public async Task<IActionResult> DeleteTrustAsset(Guid Trustassetid)
         {
             User user = null;
             try
@@ -1424,7 +1429,11 @@ namespace DealEngine.WebUI.Controllers
                 {
                     await _clientInformationService.SaveAnswersFor(sheet, collection, user);
                 }
+                if (collection["CTAViewModelDescriptionorName 1"].Count() > 0)
+                {
+                    SaveTrustAssetAnswer(user, sheet, collection);
 
+                }
                 return Json("Success");
             }
             catch (Exception ex)
@@ -1434,6 +1443,66 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpPost]
+        private async Task SaveTrustAssetAnswer(User user, ClientInformationSheet sheet, IFormCollection collection)
+        {
+            List<ClubTrustAssetsInfo> ClubTrustAssetsInfolist = new List<ClubTrustAssetsInfo>();
+            IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo = await _clubAssetInfoService.GetClubTrustAssets(sheet.Id);
+
+            try
+            {
+                int i = 1; // initialization
+                Guid ownerid = Guid.Parse(collection["CTAViewModelOwner " + i]);
+                Organisation ownerorg = await _organisationService.GetOrganisation(ownerid);
+                //ClubTrustAssetsInfo clubTrustAssetsInfo = null;
+                while (collection["CTAViewModelDescriptionorName " + i].Count() > 0) // condition
+                {
+                    Boolean exists = false;
+
+
+                    var assetname = collection["CTAViewModelDescriptionorName " + i];
+                    try
+                    {
+                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                        {
+                            //ClubTrustAssetsInfo clubTrustAssetsInfo = await _clubAssetInfoService.GetClubAssetById(sheet.Id);
+                            foreach(var asset in ClubTrustAssetsInfo)
+                            {
+                                if(asset.Name == collection["CTAViewModelDescriptionorName " + i])
+                                {
+                                    exists = true;
+                                }
+                            }
+                            
+
+                        if (!exists)
+                        {
+                           ClubTrustAssetsInfo clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["CTAViewModelDescriptionorName " + i],
+                                                                            int.Parse(collection["CTAViewModelCurrentValue " + i]),
+                                                                            int.Parse(collection["CTAViewModelReplacementValue " + i]),
+                                                                            ownerorg, sheet, user);
+
+                            await _clubAssetInfoService.UpdateClubAsset(clubTrustAssetsInfo);
+                        }
+
+                            await uow.Commit();
+                        }
+                        
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    i++;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
 
         //string jsonString = JsonSerializer.Serialize(weatherForecast);
         [HttpPost]
@@ -2152,7 +2221,7 @@ namespace DealEngine.WebUI.Controllers
             ClientInformationSheet answersheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
             ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
             var user = await CurrentUser();
-
+            var path = "";
             if (model != null)
             {
                 if (model.File != null)
@@ -2178,13 +2247,23 @@ namespace DealEngine.WebUI.Controllers
                     }
                     if(model.DocumentName != null)
                     {
-                        filename = model.DocumentName;
+                        filename = model.DocumentName+ extension;
                     }else if (model.File.FileName != null)
                     {
                         filename = model.File.FileName;
                     }
 
-                    var path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+                    path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+
+                    //if (_appSettingService.IsLinuxEnv == "True")
+                    //{
+                    //     path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation + "";
+                    //}
+                    //else
+                    //{
+                    //     path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+
+                    //}
                     //var path = Path.Combine(_hostingEnv.WebRootPath, "files", model.Name, "attachmentfiles");
                     // var path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation +"";
                     System.IO.Directory.CreateDirectory(path);
@@ -2207,7 +2286,8 @@ namespace DealEngine.WebUI.Controllers
                             FileRendered = false,
                             Path = path,
                             ClientInformationSheet = clientProgramme.InformationSheet,
-                            OwnerOrganisationName = model.DocumentOrganisation
+                            OwnerOrganisationName = model.DocumentOrganisation,
+                            Extension = extension
                         };
 
                         await _fileService.UploadFile(newFile);
