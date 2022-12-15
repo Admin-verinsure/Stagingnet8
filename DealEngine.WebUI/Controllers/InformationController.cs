@@ -2253,17 +2253,17 @@ namespace DealEngine.WebUI.Controllers
                         filename = model.File.FileName;
                     }
 
-                    path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+                    //path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
 
-                    //if (_appSettingService.IsLinuxEnv == "True")
-                    //{
-                    //     path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation + "";
-                    //}
-                    //else
-                    //{
-                    //     path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+                    if (_appSettingService.IsLinuxEnv == "True")
+                    {
+                        path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation + "";
+                    }
+                    else
+                    {
+                        path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
 
-                    //}
+                    }
                     //var path = Path.Combine(_hostingEnv.WebRootPath, "files", model.Name, "attachmentfiles");
                     // var path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation +"";
                     System.IO.Directory.CreateDirectory(path);
