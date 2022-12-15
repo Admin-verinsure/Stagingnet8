@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using Document = DealEngine.Domain.Entities.Document;
 using System.Text.RegularExpressions;
 using NReco.PdfGenerator;
+using System.Net.Sockets;
 
 namespace DealEngine.Services.Impl
 {
@@ -855,6 +856,8 @@ namespace DealEngine.Services.Impl
                 string strbarristerlist = "";
                 string strabusiness = "";
 
+                string strallrotarynamedparties = "";
+
                 if (agreement.ClientInformationSheet.Organisation.Count > 0)
                 {
 
@@ -1042,6 +1045,44 @@ namespace DealEngine.Services.Impl
                                 }
                             }
 
+                            var rotarydirector = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Director");
+                            if (rotarydirector != null)
+                            {
+                                if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                {
+                                    strallrotarynamedparties = uisorg.Name;
+                                }
+                                else
+                                {
+                                    strallrotarynamedparties += ", " + uisorg.Name;
+                                }
+                            }
+                            var rotarytrustee = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Trustee");
+                            if (rotarytrustee != null)
+                            {
+                                if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                {
+                                    strallrotarynamedparties = uisorg.Name;
+                                }
+                                else
+                                {
+                                    strallrotarynamedparties += ", " + uisorg.Name;
+                                }
+                            }
+                            var rotaryincorporatedsocietyofficer = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Incorporated Society Officer");
+                            if (rotaryincorporatedsocietyofficer != null)
+                            {
+                                if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                {
+                                    strallrotarynamedparties = uisorg.Name;
+                                }
+                                else
+                                {
+                                    strallrotarynamedparties += ", " + uisorg.Name;
+                                }
+                            }
+
+
                         }
 
                     }
@@ -1075,6 +1116,11 @@ namespace DealEngine.Services.Impl
                         strabusiness = "No Associated Business Insureds.";
                     }
 
+                    if (string.IsNullOrEmpty(strallrotarynamedparties))
+                    {
+                        strabusiness = "No Additional Insureds.";
+                    }
+
                     mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTablePI]]", stradvisorlist));
                     mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTableDO]]", stradvisorlist1));
                     mergeFields.Add(new KeyValuePair<string, string>("[[OtherConsultingBusiness]]", strotherconsultingbusiness));
@@ -1083,6 +1129,8 @@ namespace DealEngine.Services.Impl
 
                     mergeFields.Add(new KeyValuePair<string, string>("[[BarristerNames]]", strbarristerlist));
                     mergeFields.Add(new KeyValuePair<string, string>("[[AssociatedBusiness]]", strabusiness));
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AllRotaryNamedParties]]", strallrotarynamedparties));
 
                 }
                 else
@@ -1095,6 +1143,8 @@ namespace DealEngine.Services.Impl
 
                     mergeFields.Add(new KeyValuePair<string, string>("[[BarristerNames]]", "No Barrister insured under this policy."));
                     mergeFields.Add(new KeyValuePair<string, string>("[[AssociatedBusiness]]", "No Associated Business Insureds."));
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AllRotaryNamedParties]]", "No Additional Insureds."));
                 }
 
                 //Advisor list with FAP Number
