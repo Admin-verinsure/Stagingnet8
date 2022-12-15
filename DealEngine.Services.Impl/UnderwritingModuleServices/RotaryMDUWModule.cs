@@ -81,7 +81,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 {
                     if (clubTrustAssetsInfo.CurrentVal > 25000)
                     {
-                        extLoading += Convert.ToInt32(Math.Ceiling(Convert.ToDecimal((clubTrustAssetsInfo.CurrentVal - 25000) / 5000)));
+                        decimal dec1 = Convert.ToDecimal(clubTrustAssetsInfo.CurrentVal - 25000) / 5000;
+                        extLoading += Convert.ToInt32(Math.Ceiling(dec1));
                         extLimit += clubTrustAssetsInfo.CurrentVal;
                         extRequired = true;
                     }
