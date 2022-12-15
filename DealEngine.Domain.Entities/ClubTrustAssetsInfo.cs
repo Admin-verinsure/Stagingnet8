@@ -15,7 +15,7 @@ namespace DealEngine.Domain.Entities
         {
         }
 
-        public ClubTrustAssetsInfo(string name, int currentval, int replacementval, Organisation owner,ClientInformationSheet sheet, User user)
+        public ClubTrustAssetsInfo(string name, int currentval, int replacementval, Organisation owner, ClientInformationSheet sheet, User user)
            : base(user)
         {
             Name = name;

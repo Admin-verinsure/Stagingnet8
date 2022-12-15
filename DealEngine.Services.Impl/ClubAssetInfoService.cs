@@ -13,9 +13,9 @@ namespace DealEngine.Services.Impl
     {
         IMapperSession<ClubTrustAssetsInfo> _ClubTrustAssetsInfoRepository;
 
-        public ClubAssetInfoService(IMapperSession<ClubTrustAssetsInfo> locationRepository)
+        public ClubAssetInfoService(IMapperSession<ClubTrustAssetsInfo> TrustAssetRepository)
         {
-            _ClubTrustAssetsInfoRepository = locationRepository;
+            _ClubTrustAssetsInfoRepository = TrustAssetRepository;
         }
 
         public async Task<ClubTrustAssetsInfo> GetClubAssetById(Guid ClubAssetId)
@@ -23,6 +23,10 @@ namespace DealEngine.Services.Impl
             return await _ClubTrustAssetsInfoRepository.GetByIdAsync(ClubAssetId);
         }
 
+        public async Task<ClubTrustAssetsInfo> GetClubAssetByName(Guid sheet, String assetname)
+        {
+            return await _ClubTrustAssetsInfoRepository.FindAll().FirstOrDefaultAsync(asset => asset.ClientInformationSheet.Id== sheet && asset.Name == assetname);
+        }
         //public async Task UpdateClubAsset(List<ClubTrustAssetsInfo> clubTrustAssetsInfolist)
         //{
         //    foreach(var clubTrustAssetsInfo in clubTrustAssetsInfolist)
@@ -33,10 +37,14 @@ namespace DealEngine.Services.Impl
             clubTrustAssetsInfo.Delete(deletedBy);
             await UpdateClubAsset(clubTrustAssetsInfo);
         }
+        public async Task<IList<ClubTrustAssetsInfo>> GetClubTrustAssets(Guid sheetId)
+        {
+            return  _ClubTrustAssetsInfoRepository.FindAll().Where(Asset => Asset.ClientInformationSheet.Id == sheetId).ToList();
+        }
 
         public async Task UpdateClubAsset(ClubTrustAssetsInfo clubTrustAssetsInfo)
         {
-                await _ClubTrustAssetsInfoRepository.AddAsync(clubTrustAssetsInfo);
+                await _ClubTrustAssetsInfoRepository.UpdateAsync(clubTrustAssetsInfo);
         }
 
       
