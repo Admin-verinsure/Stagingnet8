@@ -4408,6 +4408,10 @@ namespace DealEngine.Services.Impl
                     {
                         userName = parts[4];
                     }
+                    else
+                    {
+                        userName = "";
+                    }
                     
                     email = parts[3];
                     try
