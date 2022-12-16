@@ -4404,7 +4404,11 @@ namespace DealEngine.Services.Impl
                     string[] parts = line.Split(',');
                     user = null;
                     organisation = null;
-                    userName = parts[4];
+                    if (parts.Length >= 5)
+                    {
+                        userName = parts[4];
+                    }
+                    
                     email = parts[3];
                     try
                     {
