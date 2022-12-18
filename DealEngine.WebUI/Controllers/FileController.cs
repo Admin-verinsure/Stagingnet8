@@ -197,14 +197,18 @@ namespace DealEngine.WebUI.Controllers
         {
             try
             {
+                //using (StreamReader reader = new StreamReader("."+ path))
+                //{
+                //    return File();
+                //}
                 //return File("file:///C:/Users/Public/trusteename001/xzcdsf.docx", contenttype, filename);
-                return File("file:///"+path, contenttype, filename);
+                return PhysicalFile(path, contenttype);
 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.InnerException);
-                return File("file:///" + path, contenttype, filename);
+                return PhysicalFile(path, contenttype);
 
             }
         }
