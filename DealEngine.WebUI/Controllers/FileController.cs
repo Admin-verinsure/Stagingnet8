@@ -184,6 +184,32 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+
+        //[HttpPost]
+        //public async Task<IActionResult> GetuploadedDoc(string DocId)
+        //{
+        //    return PhysicalFile("C:\\Users\\Public\\trusteename001\\xzcdsf.docx","pdf");
+        //    //return File(pdfBytes, "application/pdf", invoicename + ".pdf");
+
+        //}
+        [HttpGet]
+        public FileResult GetuploadedDoc(string path,string contenttype,string filename)
+        {
+            try
+            {
+                //return File("file:///C:/Users/Public/trusteename001/xzcdsf.docx", contenttype, filename);
+                return File("file:///"+path, contenttype, filename);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.InnerException);
+                return File("file:///" + path, contenttype, filename);
+
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> covertdoctohtml(string TemplateName, string ActualFileName, string DocumentType)
         {
