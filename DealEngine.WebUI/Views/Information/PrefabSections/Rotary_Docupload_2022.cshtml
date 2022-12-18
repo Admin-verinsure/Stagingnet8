@@ -114,7 +114,7 @@
                         <a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
                             @doc.Name
                         </a>
-                        <button url="File/GetuploadedDoc">down load me</button>
+                        @*<button url="File/GetuploadedDoc">down load me</button>*@
                         <a href="@Url.Action("GetuploadedDoc", "File", new { path = @doc.Path, ContentType = @doc.ContentType, filename = @doc.Name})" class="btn btn-dark btn-sm"><i class="fa fa-edit"></i> Download File </a>
 
                         @*<a class="btn btn-primary btn-xs" style="color:white; font-size:10pt; border:0;" href="/File/GetuploadedDoc/(@doc.path)?format=@doc.ContentType"><i class="fa fa-download"></i> Get PDF</a>*@
