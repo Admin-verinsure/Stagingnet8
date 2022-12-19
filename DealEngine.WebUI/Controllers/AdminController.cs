@@ -859,6 +859,24 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> UploadUserLdap()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.createIndividualstoldap(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> RotaryImportUsers()
