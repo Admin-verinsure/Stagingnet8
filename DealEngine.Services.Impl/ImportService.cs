@@ -4389,6 +4389,8 @@ namespace DealEngine.Services.Impl
             Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
             StreamReader reader;
             User user = null;
+            User localuser = null;
+
             Organisation organisation = null;
             bool readFirstLine = false;
             string line;
@@ -4418,12 +4420,11 @@ namespace DealEngine.Services.Impl
                     {
                         if (!string.IsNullOrWhiteSpace(parts[3]))
                         {
-                            user = _ldapService.GetUserByEmail(parts[3]);
+                            user = _ldapService.GetUserByEmailforupload(parts[3]);
                         }
 
                         if (user == null) {
-                            if (user == null)
-                            {
+                          
                                 if(userName == "")
                                 {
                                     userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
@@ -4434,19 +4435,19 @@ namespace DealEngine.Services.Impl
 
                                 try
                                 {
-                                    user = await _userService.GetUser(parts[4]);
+                                    localuser = await _userService.GetUser(parts[4]);
 
                                 }
                                 catch (Exception ex)
                                 {
-                                    if (user == null)
+                                    if (localuser == null)
                                     {
-                                        user = new User(currentUser, Guid.NewGuid(), userName);
-                                        user.FirstName = parts[1];
-                                        user.LastName = parts[2];
-                                        user.FullName = parts[1] + " " + parts[2];
-                                        user.Email = email;
-                                        user.Phone = "12345";
+                                        localuser = new User(currentUser, Guid.NewGuid(), userName);
+                                        localuser.FirstName = parts[1];
+                                        localuser.LastName = parts[2];
+                                        localuser.FullName = parts[1] + " " + parts[2];
+                                        localuser.Email = email;
+                                        localuser.Phone = "12345";
 
                                     }
                                 }
@@ -4454,7 +4455,7 @@ namespace DealEngine.Services.Impl
 
                                 try
                                 {
-                                    _ldapService.Create(user);
+                                    _ldapService.Create(localuser);
 
                                 }
                                 catch (Exception ex)
@@ -4463,19 +4464,19 @@ namespace DealEngine.Services.Impl
                                 }
                                
                                 
-                            }
+                            
                         }
                         else
                         {
                             if (user != null)
                             {
                                 userName = user.UserName;
-                                user = new User(currentUser, Guid.NewGuid(), userName);
-                                user.FirstName = parts[1];
-                                user.LastName = parts[2];
-                                user.FullName = parts[1] + " " + parts[2];
-                                user.Email = email;
-                                user.Phone = "12345";
+                                localuser = new User(currentUser, Guid.NewGuid(), userName);
+                                localuser.FirstName = parts[1];
+                                localuser.LastName = parts[2];
+                                localuser.FullName = parts[1] + " " + parts[2];
+                                localuser.Email = email;
+                                localuser.Phone = "12345";
                             }
                         }
 
@@ -4502,7 +4503,7 @@ namespace DealEngine.Services.Impl
                             user.Organisations.Add(organisation);
                         user.SetPrimaryOrganisation(organisation);
 
-                        await _userService.ApplicationCreateUser(user);
+                        await _userService.ApplicationCreateUser(localuser);
 
                         var programme = await _programmeService.GetProgramme(programmeID);
                         var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, user, organisation);

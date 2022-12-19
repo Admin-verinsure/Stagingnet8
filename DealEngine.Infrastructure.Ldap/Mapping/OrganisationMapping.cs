@@ -24,6 +24,23 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 			return organisation;
 		}
 
+		public Organisation FromLdapforupload(LdapEntry entry)
+		{
+			Guid id = Guid.Parse(entry.GetAttributeValue("o"));                 // Need to swap this to use 'uniqueIdentifier'
+			string orgName = entry.GetAttributeValue("buildingname");              // Need to swap this to use 'o'
+
+			Organisation organisation = new Organisation(null, id, orgName)
+			{
+				Domain = entry.GetAttributeValue("associateddomain"),
+				Phone = entry.GetAttributeValue("telephonenumber"),
+				Description = entry.GetAttributeValue("description")
+			};
+			string organisationType = entry.GetAttributeValue("businesscategory");
+
+			return organisation;
+		}
+		//TEntity FromLdapforupload(LdapEntry entry);
+
 		public string GetDn (Organisation entity, string baseDn)
 		{
 			return "o=" + entity.Id + ",ou=organisations," + baseDn;
