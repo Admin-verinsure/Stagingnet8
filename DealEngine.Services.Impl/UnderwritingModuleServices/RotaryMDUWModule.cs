@@ -135,16 +135,23 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 mdtermextension.Delete(underwritingUser);
             }
-            if (extRequired)
+
+            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "TAViewModel.HasClubTrustAssetMore").Any())
             {
-                ClientAgreementTermExtension termMDextension = GetAgreementExtensionTerm(underwritingUser, agreement, extLimit, extExcess, extPremium, "Extension Additional cover for Scheduled assets");
-                termMDextension.ExtentionName = "Extension Additional cover for Scheduled assets";
-                termMDextension.HideLimitExcess = false;
-                termMDextension.Premium = extPremium;
-                termMDextension.BasePremium = extPremium;
-                termMDextension.DateDeleted = null;
-                termMDextension.DeletedBy = null;
-                termMDextension.Bound = true;
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "TAViewModel.HasClubTrustAssetMore").First().Value == "1")
+                {
+                    if (extRequired)
+                    {
+                        ClientAgreementTermExtension termMDextension = GetAgreementExtensionTerm(underwritingUser, agreement, extLimit, extExcess, extPremium, "Extension Additional cover for Scheduled assets");
+                        termMDextension.ExtentionName = "Extension Additional cover for Scheduled assets";
+                        termMDextension.HideLimitExcess = false;
+                        termMDextension.Premium = extPremium;
+                        termMDextension.BasePremium = extPremium;
+                        termMDextension.DateDeleted = null;
+                        termMDextension.DeletedBy = null;
+                        termMDextension.Bound = true;
+                    }
+                }
             }
 
             agreement.BrokerFee = adminFee;
