@@ -58,21 +58,21 @@
             <br /><br />
             <br />
             @*<div class="form-group row">
-                <strong>Uploaded documents for sheet. </strong>
+                    <strong>Uploaded documents for sheet. </strong>
 
-            </div>
-            @foreach (var doc in Model.ClientInformationSheet.documents)
-            {
-                <div class="form-group row">
-                    <div class="col-sm-10">
-                        <a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
-                            @doc.Name
-                        </a>
-                    </div>
                 </div>
+                @foreach (var doc in Model.ClientInformationSheet.documents)
+                {
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
+                                @doc.Name
+                            </a>
+                        </div>
+                    </div>
 
 
-            }*@
+                }*@
 
         </form>
 
@@ -111,10 +111,14 @@
                     <label class="col-sm-2 col-md-2 col-form-label">@doc.OwnerOrganisationName</label>
                     <div class="col-sm-3 col-md-3">
                         @*<a class="btn btn-primary btn-sm" href="/File/GetDocument?id=@doc.Id&format=@doc.Extension"> @doc.Name </a>*@
+                        @*<a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
+                            @doc.Name
+                        </a>*@
+                        @*<button url="File/GetuploadedDoc">down load me</button>*@
+                    <a href="@Url.Action("GetuploadedDoc", "File", new { path = @doc.Path, ContentType = @doc.ContentType, filename = @doc.Name})" class="btn  btn-primary btn-sm"><i class="fa fa-edit"></i>  @doc.Name </a>
 
-                        <a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
-            @doc.Name
-        </a>
+                        @*<a class="btn btn-primary btn-xs" style="color:white; font-size:10pt; border:0;" href="/File/GetuploadedDoc/(@doc.path)?format=@doc.ContentType"><i class="fa fa-download"></i> Get PDF</a>*@
+
                     </div>
 
                     <div class="col-sm-2 col-md-2">

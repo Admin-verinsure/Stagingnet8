@@ -1276,7 +1276,26 @@
         }
     };
 
+    function GetuploadedDoc(path){
+        debugger;
+            $.ajax({
+                url: '@Url.Action("GetuploadedDoc", "File")',
+                type: "POST",
+                data: { DocId: path },
+                success: function (Data) {
+                    try {
+                        var OutPut = JSON.parse(Data);
+                        PopulateOrganisationView(Method, OutPut);
+                    } catch (e) {
+                        debugger;
+                    }
+                }, error: function (request, error) {
+                    debugger;
+                }
+            });
 
+
+    }
 
     function AddNewRow() {
         //event.preventDefault();

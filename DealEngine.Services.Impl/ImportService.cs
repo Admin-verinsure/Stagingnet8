@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using DealEngine.Infrastructure.Ldap.Interfaces;
 
 namespace DealEngine.Services.Impl
 {
@@ -23,6 +24,8 @@ namespace DealEngine.Services.Impl
         IInsuranceAttributeService _InsuranceAttributeService;
         private readonly string WorkingDirectory;
         IAppSettingService _appSettingService;
+        ILdapService _ldapService;
+
 
         public ImportService(
             IOrganisationService organisationService,
@@ -35,7 +38,8 @@ namespace DealEngine.Services.Impl
             IInsuranceAttributeService insuranceAttributeService,
             IMapperSession<Organisation> organisationRepository,
             IBusinessActivityService businessActivityService,
-            IAppSettingService appSettingService)
+            IAppSettingService appSettingService,
+            ILdapService ldapService)
         {
 
             _businessActivityService = businessActivityService;
@@ -48,6 +52,7 @@ namespace DealEngine.Services.Impl
             _clientInformationService = clientInformationService;
             _unitOfWork = unitOfWork;
             _appSettingService = appSettingService;
+            _ldapService = ldapService;
 
             if (_appSettingService.IsLinuxEnv == "True")
             {
@@ -4374,6 +4379,161 @@ namespace DealEngine.Services.Impl
                 }
             }
         }
+
+           
+      public async Task ImportRotaryServiceIndividuals(User CreatedUser)
+        {
+            //addresses need to be on one line            
+            var fileName = WorkingDirectory + "rotarymemberdataexsitinguploadtest.csv";
+            var currentUser = CreatedUser;
+            Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
+            StreamReader reader;
+            User user = null;
+            Organisation organisation = null;
+            bool readFirstLine = false;
+            string line;
+            string email;
+            int lineCount = 0;
+            var userName = "";
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    user = null;
+                    organisation = null;
+                    if (parts.Length >= 5)
+                    {
+                        userName = parts[4];
+                    }
+                    else
+                    {
+                        userName = "";
+                    }
+                    
+                    email = parts[3];
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(parts[3]))
+                        {
+                            user = _ldapService.GetUserByEmail(parts[3]);
+                        }
+
+                        if (user == null) {
+                            if (user == null)
+                            {
+                                if(userName == "")
+                                {
+                                    userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
+                                    Random random = new Random();
+                                    int randomNumber = random.Next(10, 99);
+                                    userName = userName + randomNumber.ToString();
+                                }
+
+                                try
+                                {
+                                    user = await _userService.GetUser(parts[4]);
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    if (user == null)
+                                    {
+                                        user = new User(currentUser, Guid.NewGuid(), userName);
+                                        user.FirstName = parts[1];
+                                        user.LastName = parts[2];
+                                        user.FullName = parts[1] + " " + parts[2];
+                                        user.Email = email;
+                                        user.Phone = "12345";
+
+                                    }
+                                }
+                                //user = new User(currentUser, Guid.NewGuid(), userName);
+
+                                try
+                                {
+                                    _ldapService.Create(user);
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(ex.Message);
+                                }
+                               
+                                
+                            }
+                        }
+                        else
+                        {
+                            if (user != null)
+                            {
+                                userName = user.UserName;
+                                user = new User(currentUser, Guid.NewGuid(), userName);
+                                user.FirstName = parts[1];
+                                user.LastName = parts[2];
+                                user.FullName = parts[1] + " " + parts[2];
+                                user.Email = email;
+                                user.Phone = "12345";
+                            }
+                        }
+
+
+                        OrganisationType ownerType = new OrganisationType("Corporation – Limited liability");
+                        InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, "Corporation – Limited liability");
+                        OrganisationalUnit ownerUnit = new OrganisationalUnit(currentUser, "Corporation – Limited liability", "Head Office", null);
+                       
+
+                        organisation = await _organisationService.GetOrganisationByEmail(email);
+                        
+                            if (organisation == null)
+                            {
+                                var organisationType = await _organisationTypeService.GetOrganisationTypeByName("Corporation – Limited liability");
+                                organisation = new Organisation(currentUser, Guid.NewGuid(), parts[0], organisationType, parts[3]);
+                                await _organisationService.CreateNewOrganisation(organisation);
+                            }
+
+
+
+                        organisation.OrganisationalUnits.Add(ownerUnit);
+                        organisation.InsuranceAttributes.Add(ownerAttribute);
+                        if (!user.Organisations.Contains(organisation))
+                            user.Organisations.Add(organisation);
+                        user.SetPrimaryOrganisation(organisation);
+
+                        await _userService.ApplicationCreateUser(user);
+
+                        var programme = await _programmeService.GetProgramme(programmeID);
+                        var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, user, organisation);
+                        var reference = await _referenceService.GetLatestReferenceId();
+                        var sheet = await _clientInformationService.IssueInformationFor(user, organisation, clientProgramme, reference);
+                        await _referenceService.CreateClientInformationReference(sheet);
+
+                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                        {
+                            clientProgramme.BrokerContactUser = programme.BrokerContactUser;
+                            sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(user, sheet, null, programme.Name + "UIS issue Process Completed"));
+                            try
+                            {
+                                await uow.Commit();
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(ex.Message);
+                            }
+                        }
+                        lineCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message + lineCount);
+                    }
+                }
+            }
+      }
+
+
         public async Task ImportDANZServiceIndividuals(User CreatedUser)
         {
             //addresses need to be on one line            
