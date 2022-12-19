@@ -4499,22 +4499,22 @@ namespace DealEngine.Services.Impl
 
                         organisation.OrganisationalUnits.Add(ownerUnit);
                         organisation.InsuranceAttributes.Add(ownerAttribute);
-                        if (!user.Organisations.Contains(organisation))
-                            user.Organisations.Add(organisation);
-                        user.SetPrimaryOrganisation(organisation);
+                        if (!localuser.Organisations.Contains(organisation))
+                            localuser.Organisations.Add(organisation);
+                        localuser.SetPrimaryOrganisation(organisation);
 
                         await _userService.ApplicationCreateUser(localuser);
 
                         var programme = await _programmeService.GetProgramme(programmeID);
-                        var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, user, organisation);
+                        var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, localuser, organisation);
                         var reference = await _referenceService.GetLatestReferenceId();
-                        var sheet = await _clientInformationService.IssueInformationFor(user, organisation, clientProgramme, reference);
+                        var sheet = await _clientInformationService.IssueInformationFor(localuser, organisation, clientProgramme, reference);
                         await _referenceService.CreateClientInformationReference(sheet);
 
                         using (var uow = _unitOfWork.BeginUnitOfWork())
                         {
                             clientProgramme.BrokerContactUser = programme.BrokerContactUser;
-                            sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(user, sheet, null, programme.Name + "UIS issue Process Completed"));
+                            sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(localuser, sheet, null, programme.Name + "UIS issue Process Completed"));
                             try
                             {
                                 await uow.Commit();
