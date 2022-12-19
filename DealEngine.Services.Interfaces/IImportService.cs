@@ -62,6 +62,6 @@ namespace DealEngine.Services.Interfaces
         Task ImportMREOwners(User user);
         Task ImportMREPreRenewData(User user);
         Task ImportRotaryServiceIndividuals(User user);
-
+        Task createIndividualstoldap(User user);
     }
 }

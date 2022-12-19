@@ -4380,8 +4380,8 @@ namespace DealEngine.Services.Impl
             }
         }
 
-           
-      public async Task ImportRotaryServiceIndividuals(User CreatedUser)
+
+        public async Task createIndividualstoldap(User CreatedUser)
         {
             //addresses need to be on one line            
             var fileName = WorkingDirectory + "rotarymemberdataexsitinguploadtest.csv";
@@ -4389,6 +4389,8 @@ namespace DealEngine.Services.Impl
             Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
             StreamReader reader;
             User user = null;
+            User localuser = null;
+
             Organisation organisation = null;
             bool readFirstLine = false;
             string line;
@@ -4412,18 +4414,92 @@ namespace DealEngine.Services.Impl
                     {
                         userName = "";
                     }
-                    
+
                     email = parts[3];
                     try
                     {
                         if (!string.IsNullOrWhiteSpace(parts[3]))
                         {
-                            user = _ldapService.GetUserByEmail(parts[3]);
+                            user = _ldapService.GetUserByEmailforupload(parts[3]);
                         }
 
-                        if (user == null) {
-                            if (user == null)
+                        if (user == null)
+                        {
+
+                            if (userName == "")
                             {
+                                userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
+                                Random random = new Random();
+                                int randomNumber = random.Next(10, 99);
+                                userName = userName + randomNumber.ToString();
+                            }
+                           
+                                if (user == null)
+                                {
+                                    user = new User(currentUser, Guid.NewGuid(), userName);
+                                user.FirstName = parts[1];
+                                user.LastName = parts[2];
+                                user.FullName = parts[1] + " " + parts[2];
+                                user.Email = email;
+                                user.Phone = "12345";
+
+                                }
+                            try
+                            {
+                                _ldapService.Create(user);
+
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new Exception(ex.Message);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message + lineCount);
+                    }
+                }
+            }
+        }
+
+        public async Task ImportRotaryServiceIndividuals(User CreatedUser)
+        {
+            //addresses need to be on one line            
+            var fileName = WorkingDirectory + "rotarymemberdataexsitinguploadtest.csv";
+            var currentUser = CreatedUser;
+            Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
+            StreamReader reader;
+            User localuser = null;
+
+            Organisation organisation = null;
+            string line;
+            string email;
+            int lineCount = 0;
+            var userName = "";
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    organisation = null;
+                    if (parts.Length >= 5)
+                    {
+                        userName = parts[4];
+                    }
+                    else
+                    {
+                        userName = "";
+                    }
+                    
+                    email = parts[3];
+                    try
+                    {
+                       
+
+                          
                                 if(userName == "")
                                 {
                                     userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
@@ -4434,50 +4510,21 @@ namespace DealEngine.Services.Impl
 
                                 try
                                 {
-                                    user = await _userService.GetUser(parts[4]);
+                                    localuser = await _userService.GetUser(parts[4]);
 
                                 }
                                 catch (Exception ex)
                                 {
-                                    if (user == null)
+                                    if (localuser == null)
                                     {
-                                        user = new User(currentUser, Guid.NewGuid(), userName);
-                                        user.FirstName = parts[1];
-                                        user.LastName = parts[2];
-                                        user.FullName = parts[1] + " " + parts[2];
-                                        user.Email = email;
-                                        user.Phone = "12345";
-
+                                        localuser = new User(currentUser, Guid.NewGuid(), userName);
+                                        localuser.FirstName = parts[1];
+                                        localuser.LastName = parts[2];
+                                        localuser.FullName = parts[1] + " " + parts[2];
+                                        localuser.Email = email;
+                                        localuser.Phone = "12345";
                                     }
                                 }
-                                //user = new User(currentUser, Guid.NewGuid(), userName);
-
-                                try
-                                {
-                                    _ldapService.Create(user);
-
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new Exception(ex.Message);
-                                }
-                               
-                                
-                            }
-                        }
-                        else
-                        {
-                            if (user != null)
-                            {
-                                userName = user.UserName;
-                                user = new User(currentUser, Guid.NewGuid(), userName);
-                                user.FirstName = parts[1];
-                                user.LastName = parts[2];
-                                user.FullName = parts[1] + " " + parts[2];
-                                user.Email = email;
-                                user.Phone = "12345";
-                            }
-                        }
 
 
                         OrganisationType ownerType = new OrganisationType("Corporation – Limited liability");
@@ -4498,22 +4545,22 @@ namespace DealEngine.Services.Impl
 
                         organisation.OrganisationalUnits.Add(ownerUnit);
                         organisation.InsuranceAttributes.Add(ownerAttribute);
-                        if (!user.Organisations.Contains(organisation))
-                            user.Organisations.Add(organisation);
-                        user.SetPrimaryOrganisation(organisation);
+                        if (!localuser.Organisations.Contains(organisation))
+                            localuser.Organisations.Add(organisation);
+                        localuser.SetPrimaryOrganisation(organisation);
 
-                        await _userService.ApplicationCreateUser(user);
+                        await _userService.ApplicationCreateUser(localuser);
 
                         var programme = await _programmeService.GetProgramme(programmeID);
-                        var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, user, organisation);
+                        var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, localuser, organisation);
                         var reference = await _referenceService.GetLatestReferenceId();
-                        var sheet = await _clientInformationService.IssueInformationFor(user, organisation, clientProgramme, reference);
+                        var sheet = await _clientInformationService.IssueInformationFor(localuser, organisation, clientProgramme, reference);
                         await _referenceService.CreateClientInformationReference(sheet);
 
                         using (var uow = _unitOfWork.BeginUnitOfWork())
                         {
                             clientProgramme.BrokerContactUser = programme.BrokerContactUser;
-                            sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(user, sheet, null, programme.Name + "UIS issue Process Completed"));
+                            sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(localuser, sheet, null, programme.Name + "UIS issue Process Completed"));
                             try
                             {
                                 await uow.Commit();
