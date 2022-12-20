@@ -154,6 +154,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
+            if (adminFee > 1750)
+            {
+                adminFee = 1750;
+            }
+
             agreement.BrokerFee = adminFee;
 
             //Referral points per agreement
