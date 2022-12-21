@@ -4471,6 +4471,7 @@ namespace DealEngine.Services.Impl
             Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
             StreamReader reader;
             User localuser = null;
+            User user = null;
 
             Organisation organisation = null;
             string line;
@@ -4497,10 +4498,21 @@ namespace DealEngine.Services.Impl
                     email = parts[3];
                     try
                     {
-                       
 
-                          
-                                if(userName == "")
+                        if (!string.IsNullOrWhiteSpace(parts[3]))
+                        {
+                            user = _ldapService.GetUserByEmailforupload(parts[3]);
+                        }
+
+                        if (user != null)
+                        {
+                            if (user.UserName != null)
+                            {
+                                userName = user.UserName;
+                            }
+                        }
+
+                            if (userName == "")
                                 {
                                     userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
                                     Random random = new Random();
