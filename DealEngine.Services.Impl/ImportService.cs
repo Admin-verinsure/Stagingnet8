@@ -4486,14 +4486,14 @@ namespace DealEngine.Services.Impl
                     line = reader.ReadLine();
                     string[] parts = line.Split(',');
                     organisation = null;
-                    if (parts.Length >= 5)
-                    {
-                        userName = parts[4];
-                    }
-                    else
-                    {
-                        userName = "";
-                    }
+                    //if (parts.Length >= 5)
+                    //{
+                    //    userName = parts[4];
+                    //}
+                    //else
+                    //{
+                    //    userName = "";
+                    //}
                     
                     email = parts[3];
                     try
@@ -4520,23 +4520,15 @@ namespace DealEngine.Services.Impl
                                     userName = userName + randomNumber.ToString();
                                 }
 
-                                try
-                                {
-                                    localuser = await _userService.GetUser(parts[4]);
-
-                                }
-                                catch (Exception ex)
-                                {
-                                    if (localuser == null)
-                                    {
+                              
+                                    
                                         localuser = new User(currentUser, Guid.NewGuid(), userName);
                                         localuser.FirstName = parts[1];
                                         localuser.LastName = parts[2];
                                         localuser.FullName = parts[1] + " " + parts[2];
                                         localuser.Email = email;
                                         localuser.Phone = "12345";
-                                    }
-                                }
+                                   
 
 
                         OrganisationType ownerType = new OrganisationType("Corporation – Limited liability");

@@ -24,7 +24,7 @@ using System.Net.Mime;
 using NReco.PdfGenerator;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
-
+using System.Text;
 
 
 namespace DealEngine.WebUI.Controllers
@@ -777,6 +777,7 @@ namespace DealEngine.WebUI.Controllers
 
                 String[][] OptionItems = new String[clientProgramme.Agreements.Where(ag => ag.DateDeleted == null).Count()][];
                 var count = 0;
+                int limittotal = 0;
                 foreach (var agreement in clientProgramme.Agreements.Where(ag => ag.DateDeleted == null))
                 {
                     //count = 0;
@@ -810,10 +811,13 @@ namespace DealEngine.WebUI.Controllers
                         OptionItems[count] = OptionItem;
                         count++;
                         boundval = true;
+                        limittotal += term.TermLimit;
                     }
 
                 }
-                return Json(OptionItems);
+                //ViewBag.TermLimitTotal = limittotal;
+                var result = new { termlimit = limittotal, optionitems = OptionItems };
+                return Json(result);
             }
             catch (Exception ex)
             {
@@ -2271,9 +2275,10 @@ namespace DealEngine.WebUI.Controllers
 
                     try
                     {
+                        
                         using (var fileStream = new FileStream(path, FileMode.Create))
                         {
-                            await model.File.CopyToAsync(fileStream);
+                             model.File.CopyTo(fileStream);
                         }
 
                         DealEngine.Domain.Entities.Document newFile = new DealEngine.Domain.Entities.Document
