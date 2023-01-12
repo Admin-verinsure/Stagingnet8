@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	  <LangVersion>preview</LangVersion>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>aspnet-DealEngine.WebUI-332DB7AE-7AC6-45DB-8A70-CE31C48F596C</UserSecretsId>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
