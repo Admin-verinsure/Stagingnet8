@@ -28,6 +28,8 @@
 @Html.HiddenFor(m => m.ClientAgreementId)
 @Html.HiddenFor(m => m.InformationSheetStatus)
 
+
+
 @foreach (var item in Model.InsuranceRoles)
 {
     <fieldset>
@@ -440,75 +442,76 @@ else
                 </table>
             </div>
 
-            @if (Model.IsExtentionCoverOption &&  Model.ExtensionCoverOptions.Count > 0) { 
-            <div class="row">
-                <div class="col-3 font-md">
-                    <strong>Extension Options</strong>
+            @if (Model.IsExtentionCoverOption && Model.ExtensionCoverOptions.Count > 0)
+            {
+                <div class="row">
+                    <div class="col-3 font-md">
+                        <strong>Extension Options</strong>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <table class="table table-bordered table-responsive-md table-striped text-center" id="@Model.ProductName Extension">
-                    <tr>
-                        <th class="text-center" width="5%"></th>
-                        <th class="text-center" width="17%">Extension Name</th>
-                        <th class="text-center" width="20%">Limit</th>
-                        <th class="text-center" width="20%">Excess</th>
-                        <th class="text-center" width="16%">Premium</th>
-
-
-                    </tr>
-                    @foreach (var item in Model.ExtensionCoverOptions)
-                    {
-
-                <tr class="clickable-row">
-                    <td>
-                       @*<input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId" onchange="extensionselected('@Model.ProductName')" onselect="extensionselected('@Model.ProductName')">*@
-                        <input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId" >
-
-                    </td>
-                    <td class="pt-3-half" width="20%" contenteditable="true">
-                        @item.ExtensionName
-                    </td>
-                    <td class="pt-3-half" width="20%" contenteditable="true">
-                        @item.Inclusion
-                    </td>
-                    <td class="pt-3-half" width="20%" contenteditable="true">
-                        @item.Exclusion
-                    </td>
-                    <td class="pt-4-half" id="@Model.ProductCode row">
-                        @item.TotalPremium
-                    </td>
-                </tr>
+                <div class="row">
+                    <table class="table table-bordered table-responsive-md table-striped text-center" id="@Model.ProductName Extension">
+                        <tr>
+                            <th class="text-center" width="5%"></th>
+                            <th class="text-center" width="17%">Extension Name</th>
+                            <th class="text-center" width="20%">Limit</th>
+                            <th class="text-center" width="20%">Excess</th>
+                            <th class="text-center" width="16%">Premium</th>
 
 
-                    }
-                    <tr>
-                        <td><input type="radio" dirname="" name="@Model.ProductName Extensiontable" value="None"></td>
-                        <td class="pt-4-half" colspan="5" width="15%">
-                            <label> I don't want this Extension</label>
-                        </td>
-                    </tr>
+                        </tr>
+                        @foreach (var item in Model.ExtensionCoverOptions)
+                        {
+
+                            <tr class="clickable-row">
+                                <td>
+                                    @*<input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId" onchange="extensionselected('@Model.ProductName')" onselect="extensionselected('@Model.ProductName')">*@
+                                    <input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId">
+
+                                </td>
+                                <td class="pt-3-half" width="20%" contenteditable="true">
+                                    @item.ExtensionName
+                                </td>
+                                <td class="pt-3-half" width="20%" contenteditable="true">
+                                    @item.Inclusion
+                                </td>
+                                <td class="pt-3-half" width="20%" contenteditable="true">
+                                    @item.Exclusion
+                                </td>
+                                <td class="pt-4-half" id="@Model.ProductCode row">
+                                    @item.TotalPremium
+                                </td>
+                            </tr>
+
+
+                        }
+                        <tr>
+                            <td><input type="radio" dirname="" name="@Model.ProductName Extensiontable" value="None"></td>
+                            <td class="pt-4-half" colspan="5" width="15%">
+                                <label> I don't want this Extension</label>
+                            </td>
+                        </tr>
 
 
 
-                </table>
-            </div>
+                    </table>
+                </div>
             }
             @*<table class="table-hover" id="@Model.ProductCode totalprem" hidden>
-                <tbody>
+                    <tbody>
 
-                    <tr>
-                        <td width="260" height="40">
-                            <strong>Total:</strong>
-                        </td>
-                        <td width="350" height="40">
-                            <label id="@Model.ProductCode premiumamount"></label>  (Total premium per product)
-                        </td>
-                    </tr>
+                        <tr>
+                            <td width="260" height="40">
+                                <strong>Total:</strong>
+                            </td>
+                            <td width="350" height="40">
+                                <label id="@Model.ProductCode premiumamount"></label>  (Total premium per product)
+                            </td>
+                        </tr>
 
-                </tbody>
-            </table>*@
+                    </tbody>
+                </table>*@
 
 
             <table class="table-hover">
@@ -793,7 +796,7 @@ else
         }
 
           if ("@Model.InformationSheetStatus" == "Started") {
-
+              debugger;
                 var progId = $("#ClientProgrammeId").val();
                 //var progId = $('#ClientProgrammeId').val();
                 var postData = { ProgrammeId: progId };
@@ -803,9 +806,9 @@ else
                     type: "POST",
                     data: postData
                 }).done(function (data) {
-                    if (data != "") {
-                        for (var item = 0; item < data.length; item++) {
-                            var arr = data[item];
+                    if (data.optionitems != "") {
+                        for (var item = 0; item < data.optionitems.length; item++) {
+                            var arr = data.optionitems[item];
                             var count = 0;
                             //var element = 'input[name=\\"' + arr[count] + '"][value=\\"' + arr[count + 1] + '"]';
                             var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
@@ -815,6 +818,12 @@ else
                             //$('#' + arr[count+1]).val(arr[count + 1]);
                         }
                     }
+                    debugger;
+
+                    @*var TermLimitTotal = @ViewBag.TermLimitTotal;*@
+                    
+                    document.getElementById("Limittotal").innerHTML = data.termlimit;
+
                 }).fail(function (jqXHR, textStatus, errorThrown) {
                 alert("There was an error while trying to save default cover option.");
                 });
