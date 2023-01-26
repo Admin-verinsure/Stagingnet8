@@ -3,99 +3,121 @@
 <div id="widget-grid" class="container">
     @Html.HiddenFor(m => m.Programme.Id)
 
-    <ul class="nav">
-        <li class="nav-item">
-            <a class="btn btn-primary btn-sm" href="~/Home/Index"><i class="fa fa-home"></i>Back to Dashboard</a>
-        </li>
-        @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-        {
-            <li class="nav-item">
-                <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
-                    <i class="fa fa-pencil"></i> Create UIS
-                </a>
-            </li>
-            <li class="nav-item">
-                <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
-            </li>
-
-            @*if (Model.IsSubclientEnabled)
-            {
-                <li class="nav-item">
-                    <a onclick="location.href='@Url.Action("IssueSubUIS", "Home", new { ProgrammeId = @Model.Programme.Id, actionname = "IssueUIS" })'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue Sub UIS </a>
-                </li>
-            }*@
-
-            if (Model.IsRenewFromProgramme && Model.ProgEnableEmail)
-            {
-                <li class="nav-item">
-                    <a onclick="location.href='@Url.Action("IssueRenewal", "Home", new { ProgrammeId = @Model.Programme.Id})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue Renewal Notification </a>
-                </li>
-            }
-            if (Model.IsRenewFromProgramme && !Model.ProgEnableEmail)
-            {
-                <li class="nav-item">
-                    <a onclick="location.href='@Url.Action("BrokerRenewal", "Home", new { ProgrammeId = @Model.Programme.Id})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Broker Renew </a>
-                </li>
-            }
-
-
-            <li class="nav-item">
-                <a class="btn btn-primary btn-sm" href="~/Home/IssueReminder?ProgrammeId=@Model.Programme.Id"><i class="fa fa-pencil"></i>Issue Reminder</a>
-            </li>
-
-            <li class="nav-item">
-                <a onclick="location.href='@Url.Action("EditClients", "Home", new { ProgrammeId=@Model.Programme.Id })'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Edit Client </a>
-            </li>
-            <li class="nav-item">
-                @*<a class="btn btn-primary btn-sm" href="~/Home/GetBreakdown?ProgrammeId=@Model.ProgrammeId"><i class="fa fa-pencil"></i>Breakdown</a>*@
-            </li>
-            <li class="nav-item">
-                <a asp-controller="Home" asp-action="ReportView" asp-route-ProgrammeId="@Model.Programme.Id" class="btn btn-primary btn-sm" style="color:white">View Report </a>
-            </li>
-        }
-        @*for NTU*@
-        @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsTC == "True" || Model.CurrentUserIsInsurer == "True")
-        {
-
-            <li class="nav-item">
-                <a onclick="location.href='@Url.Action("NTUcreate", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="NTUcreate"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> NTU UIS </a>
-            </li>
-            <li class="nav-item">
-                <a onclick="location.href='@Url.Action("RestoreNTU", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="RestoreNTU"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Restore NTU UIS </a>
-            </li>
-            <li class="nav-item">
-                <a onclick="location.href='@Url.Action("RerenderDocs", "Agreement",new { ProgrammeId=@Model.Programme.Id})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Re-render documents </a>
-            </li>
-        }
-        else if (Model.CurrentUserIsProgrammeManager == "True")
-        {
-            <li class="nav-item">
-                <a class="btn btn-primary btn-sm" href="#CreateUISModal" aria-hidden="true" style="color:white" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal"><i class="fa fa-pencil"></i> Create UIS</a>
-            </li>
-
-            <li class="nav-item">
-                <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue UIS </a>
-            </li>
-        }
-
-
-
-        @*add pop up msg please wait for rerender*@
-
-    </ul>
+    
 
     <div class="card">
         <div class="card-header text-white" style="background-color:#3276b1">
             <span class="widget-icon">
                 <h6><i class="fa fa-table text-light"></i> Insurance Information </h6>
             </span>
+
+
+           
+
         </div>
         <div class="card-body">
-            @if (!User.IsInRole("Client"))
-            {
-            <p>You can use this search box to find anything - just type any word in the client name or status etc.</p>
-            }
-            
+            <div class="row">
+
+                <section class="col col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                    <a class="btn btn-primary btn-sm" href="~/Home/Index"><i class="fa fa-home"></i>Back to Dashboard</a>
+                </section>
+
+                <section class="col col-sm-2 col-md-2 col-lg-2">
+                    <div class=" btn btn-primary btn-sm btn-group" role="group">
+
+
+                        <button type="button" class="btn btn-primary dropdown-toggle nav-item" data-bs-toggle="dropdown" aria-expanded="false">
+                            Infosheet
+                        </button>
+                        <ul class="dropdown-menu">
+
+                            @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                            {
+                                <li class="nav-item">
+                                    <a class="dropdown-item" href="#CreateUISModal" aria-hidden="true" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
+                                        Create Infosheet
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="dropdown-item"> Issue Infosheet </a>
+                                </li>
+
+                                @*if (Model.IsSubclientEnabled)
+                            {
+                            <li class="nav-item">
+                            <a onclick="location.href='@Url.Action("IssueSubUIS", "Home", new { ProgrammeId = @Model.Programme.Id, actionname = "IssueUIS" })'" class="btn btn-primary btn-sm" style="color:white"> <i class="fa fa-pencil"></i> Issue Sub UIS </a>
+                            </li>
+                            }*@
+
+                                if (Model.IsRenewFromProgramme && Model.ProgEnableEmail)
+                                {
+                                    <li class="nav-item">
+                                        <a onclick="location.href='@Url.Action("IssueRenewal", "Home", new { ProgrammeId = @Model.Programme.Id})'" class="dropdown-item">  Issue Renewal Notification </a>
+                                    </li>
+                                }
+                                if (Model.IsRenewFromProgramme && !Model.ProgEnableEmail)
+                                {
+                                    <li class="nav-item">
+                                        <a onclick="location.href='@Url.Action("BrokerRenewal", "Home", new { ProgrammeId = @Model.Programme.Id})'" class="dropdown-item">  Broker Renew </a>
+                                    </li>
+                                }
+
+
+                                <li class="nav-item">
+                                    <a class="dropdown-item" href="~/Home/IssueReminder?ProgrammeId=@Model.Programme.Id">Issue Reminder</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a onclick="location.href='@Url.Action("EditClients", "Home", new { ProgrammeId=@Model.Programme.Id })'" class="dropdown-item"> Edit Client </a>
+                                </li>
+                                <li class="nav-item">
+                                    @*<a class="btn btn-primary btn-sm" href="~/Home/GetBreakdown?ProgrammeId=@Model.ProgrammeId"><i class="fa fa-pencil"></i>Breakdown</a>*@
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Home" asp-action="ReportView" asp-route-ProgrammeId="@Model.Programme.Id" class="dropdown-item">View Report </a>
+                                </li>
+                            }
+                            @*for NTU*@
+                            @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsTC == "True" || Model.CurrentUserIsInsurer == "True")
+                            {
+
+                                <li class="nav-item">
+                                    <a onclick="location.href='@Url.Action("NTUcreate", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="NTUcreate"})'" class="dropdown-item">  NTU Infosheet </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a onclick="location.href='@Url.Action("RestoreNTU", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="RestoreNTU"})'" class="dropdown-item">  Restore NTU Infosheet </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a onclick="location.href='@Url.Action("RerenderDocs", "Agreement",new { ProgrammeId=@Model.Programme.Id})'" class="dropdown-item"> Re-render documents </a>
+                                </li>
+                            }
+                            else if (Model.CurrentUserIsProgrammeManager == "True")
+                            {
+                                <li class="nav-item">
+                                    <a class="dropdown-item" href="#CreateUISModal" aria-hidden="true" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal"> Create Infosheet</a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="dropdown-item">Issue Infosheet </a>
+                                </li>
+                            }
+
+
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="col col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                    @if (!User.IsInRole("Client"))
+                    {
+                        <p>You can use this search box to find anything - just type any word in the client name or status etc.</p>
+                    }
+                </section>
+
+               
+            </div>
+
+
             @await Html.PartialAsync("_ClientProgrammeTablePartial", @Model)
         </div>
     </div>

@@ -1522,7 +1522,13 @@ namespace DealEngine.WebUI.Controllers
             await _signInManager.SignOutAsync();
             var deUser = await _userManager.FindByNameAsync(form["username"].ToString());
             await _signInManager.SignInAsync(deUser, true);
-
+            var currentUser = await _userService.GetApplicationUserByEmail(deUser.Email);
+            using (var uow = _unitOfWork.BeginUnitOfWork())
+            {
+                currentUser.IsLoggedout = false;
+                currentUser.LoggedInTime = DateTime.UtcNow;
+                await uow.Commit();
+            }
             return Redirect("~/Home/Index");
 
         }

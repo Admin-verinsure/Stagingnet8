@@ -21,7 +21,7 @@
                 <div class="col-sm-10">
                     <select asp-for="DocumentOrganisation" class="form-control" required>
                         <option onchange="refreshdoclist();" value="select">---Select---</option>
-                        @foreach (var option in Model.OrganisationViewModel.Organisations)
+                        @foreach (var option in Model.OrganisationViewModel.Organisations.Where(org => org.Removed==false))
                         {
                             <option value="@option.Name">@option.Name</option>
                         }
@@ -33,7 +33,7 @@
             <div class="form-group row">
                 <label asp-for="Name" class="col-sm-2 col-form-label"></label>
                 <div class="col-sm-10">
-                    <input class="form-control" name="DocumentName" placeholder="club constitution and club trutee document name">
+                    <input class="form-control" name="DocumentName" placeholder="club constitution or club trust document name">
                     <span name="DocumentName" class="text-danger"></span>
                 </div>
             </div>

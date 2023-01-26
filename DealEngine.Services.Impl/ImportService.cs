@@ -4916,6 +4916,11 @@ namespace DealEngine.Services.Impl
                 }
             }
         }
+
+        public Task ImportRotaryServicelocalIndividuals(User user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 
