@@ -23,10 +23,8 @@
                 </section>
 
                 <section class="col col-sm-2 col-md-2 col-lg-2">
-                    <div class=" btn btn-primary btn-sm btn-group" role="group">
 
-
-                        <button type="button" class="btn btn-primary dropdown-toggle nav-item" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button type="button" class="btn btn-primary btn-sm dropdown-toggle nav-item" data-bs-toggle="dropdown" aria-expanded="false">
                             Infosheet
                         </button>
                         <ul class="dropdown-menu">
@@ -104,18 +102,20 @@
 
 
                         </ul>
-                    </div>
                 </section>
 
-                <section class="col col-xs-12 col-sm-8 col-md-8 col-lg-8">
+              
+               
+            </div>
+             <div class="row">
+                   <section class="col col-xs-12 col-sm-8 col-md-8 col-lg-8">
                     @if (!User.IsInRole("Client"))
                     {
                         <p>You can use this search box to find anything - just type any word in the client name or status etc.</p>
                     }
                 </section>
 
-               
-            </div>
+                 </div>
 
 
             @await Html.PartialAsync("_ClientProgrammeTablePartial", @Model)
