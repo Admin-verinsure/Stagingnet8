@@ -93,7 +93,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
 
             //Referral points per agreement
-            uwrasreferral(underwritingUser, agreement);
+            //uwrasreferral(underwritingUser, agreement);
 
             //Update agreement status
             if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
