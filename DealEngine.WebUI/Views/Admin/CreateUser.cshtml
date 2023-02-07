@@ -6,10 +6,17 @@
             <div class="card-header">
                 <div class="form-group">
                     @Html.LabelFor(m => m.User.Email)
-                    @Html.TextBoxFor(m => m.User.Email, new { @class = "form-control", @id = "User.Email", @required = "", @placeholder = "email" })                    
+                    @Html.TextBoxFor(m => m.User.Email, new { @class = "form-control", @id = "User.Email", @required = "", @placeholder = "email" })
                 </div>
                 <div class="form-group">
                     <button class="btn-success btn btn-xs" type="button" onclick="GetUser()">Go</button>
+                </div>
+
+                <div class="form-group" style="display:none" id="resenddiv">
+                    <button class="btn-success btn btn-xs" type="button" onclick="ResendLogin()">Resend Login</button>
+                </div>
+                <div class="form-group">
+                    <label id="IsUserLoggedout"></label>
                 </div>
             </div>
             <div class="card-body">
@@ -42,6 +49,7 @@
 </div>
 @section pagespecific {
     <script type="text/javascript">
+        
         function GetUser() {
             var userEmail = document.getElementById('User.Email').value;
             $.ajax({
@@ -49,16 +57,45 @@
                 url: '@Url.Action("GetCreateUser", "Admin")',
                 data: { UserEmail: userEmail }
             })
-                .done(function (data) {
-                    if (data != null) {
-                        var OutPut = JSON.parse(data);
+                .done(function (data ,status, xhr) {
+                    debugger;
+                    if (data.jsonObj != null) {
+                        var OutPut = JSON.parse(data.jsonObj);
+                        if (data.isusserLogged == "User never Logged in.") {
+                            $("#resenddiv").show();
+                        } else {
+                            $("#resenddiv").hide();
+                        }
+                        if (data.isusserLogged == "User is logged out.") {
+                            document.getElementById('IsUserLoggedout').innerHTML += data.isusserLogged;
+                        } else {
+                            document.getElementById('IsUserLoggedout').innerHTML = "";
+                        }
+
                         PopulateView(OutPut);
                     } else {
                         document.getElementById("form").reset();
                         document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
                         document.getElementById('User.Email').value = userEmail;
                     }
+                })
+                .fail(function (jqXhr, textStatus, errorThrown) {
+                    debugger;
+                    console.log(errorThrown);
+                });
+        }
 
+
+        function ResendLogin() {
+            var userEmail = document.getElementById('User.Email').value;
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("ResendEmail", "Admin")',
+                data: { UserEmail: userEmail }
+            })
+                .done(function (data ,status, xhr) {
+                    debugger;
+                   
                 })
                 .fail(function (jqXhr, textStatus, errorThrown) {
                     debugger;

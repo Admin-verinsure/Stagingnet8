@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Identity;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
 using System.Data;
 using DealEngine.Services.Impl;
+using FluentNHibernate.Conventions;
+using Microsoft.Extensions.Azure;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -50,6 +52,7 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<User> _userRepository;
         IUpdateTypeService _updateTypeServices;
         IPolicyCenterService _policyCenterService;
+        IEmailService _emailService;
         public AdminController(
             IUpdateTypeService updateTypeService,
             IOrganisationService organisationService,
@@ -77,6 +80,7 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<Boat> boatRepository,
             IMapperSession<User> userRepository2,
             IReferenceService referenceService,
+            IEmailService emailService,
             IPolicyCenterService policyCenterService
             )
 			: base (userRepository)
@@ -107,9 +111,11 @@ namespace DealEngine.WebUI.Controllers
             _objectRepository = objectRepository;
             _updateTypeServices = updateTypeService;
             _policyCenterService = policyCenterService;
+            _emailService = emailService;
+
         }
 
-		[HttpGet]
+        [HttpGet]
 		public async Task<IActionResult> Index ()
 		{
             AdminViewModel model = new AdminViewModel();
@@ -1746,17 +1752,55 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> GetCreateUser(IFormCollection form)
         {
             var user = await _userService.GetUserByEmail(form["UserEmail"]);
-
+            IdentityUser identityUser;
+            string IsusserLogged = "";
             Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
             if (user != null)
             {
                 JsonObjects.Add("User", user);
                 JsonObjects.Add("Organisation", user.PrimaryOrganisation);
                 var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
-                return Json(jsonObj);                
+                identityUser = await _userManager.FindByNameAsync(user.UserName);
+                if (identityUser.UserName.IsEmpty())
+                {
+                    IsusserLogged = "User never Logged in.";
+                }
+                else
+                {
+                    if (user.IsLoggedout)
+                    {
+                        IsusserLogged = "User is logged out.";
+
+                    }
+                    else
+                    {
+                        IsusserLogged = "";
+
+                    }
+                }
+                //Response.Headers[""] = IsusserLogged;
+                //Response.Headers.Add("IsusserLogged", IsusserLogged);
+                return Json(new { IsusserLogged = IsusserLogged, jsonObj = jsonObj });
             }
             return Json(null);
-        }        
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResendEmail(IFormCollection form)
+        {
+            var currentUser = await CurrentUser();
+            try
+            {
+               await _emailService.SendSystemEmailLogin(form["UserEmail"]);
+
+            }catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return Json(true);
+        }
 
         [HttpPost]
         public async Task<IActionResult> PostCreateUser(IFormCollection form)
