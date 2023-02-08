@@ -8,6 +8,7 @@ build:
   stage: build
   script:
     - 'dotnet clean'
+    - 'dotnet nuget disable source IAG'
     - 'dotnet build -c Release'
 
 # MARSH #
