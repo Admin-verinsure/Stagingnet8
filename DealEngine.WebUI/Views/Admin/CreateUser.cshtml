@@ -9,34 +9,14 @@
                     @Html.TextBoxFor(m => m.User.Email, new { @class = "form-control", @id = "User.Email", @required = "", @placeholder = "email" })
                 </div>
 
-                @*<div class="form-group">
-                    @Html.LabelFor(m => m.User.FirstName)
-                    @Html.TextBoxFor(m => m.User.FirstName, new { @class = "form-control", @id = "User.FirstName", @required = "", @placeholder = "FirstName" })
-                </div>*@
-
-               
-
-               
-            </div>
-            <div class="card-body">
-
                 <div class="form-group">
                     @Html.LabelFor(m => m.User.FirstName)
                     @Html.TextBoxFor(m => m.User.FirstName, new { @class = "form-control ", @id = "User.FirstName" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.User.LastName)
-                    @Html.TextBoxFor(m => m.User.LastName, new { @class = "form-control ", @id = "User.LastName" })
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.User.UserName)
-                    @Html.TextBoxFor(m => m.User.UserName, new { @class = "form-control ", @id = "User.UserName" })
                 </div>
 
                 <div class="form-group">
                     <label id="IsUserLoggedout"></label>
                 </div>
-
                 <div class="form-group" style="display:none" id="resenddiv">
                     <button class="btn-success btn btn-xs" type="button" onclick="ResendLogin()">Resend Login</button>
                 </div>
@@ -49,6 +29,27 @@
                 <div class="form-group">
                     <button class="btn-success btn btn-xs" type="button" onclick="GetUser()">Search</button>
                 </div>
+                @*<div class="form-group">
+            @Html.LabelFor(m => m.User.FirstName)
+            @Html.TextBoxFor(m => m.User.FirstName, new { @class = "form-control", @id = "User.FirstName", @required = "", @placeholder = "FirstName" })
+        </div>*@
+
+
+
+
+            </div>
+            <div class="card-body">
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.User.LastName)
+                    @Html.TextBoxFor(m => m.User.LastName, new { @class = "form-control ", @id = "User.LastName" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.User.UserName)
+                    @Html.TextBoxFor(m => m.User.UserName, new { @class = "form-control ", @id = "User.UserName" })
+                </div>
+
+
                 @*<div class="form-group">
             @Html.LabelFor(m => m.Organisation.IsInsurer)
             @Html.DropDownListFor(m => m.Organisation.IsInsurer, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsInsurer" })
