@@ -1751,7 +1751,15 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetCreateUser(IFormCollection form)
         {
-            var user = await _userService.GetUserByEmail(form["UserEmail"]);
+            User user = null;
+            if (form["UserEmail"] !="")
+            {
+                 user = await _userService.GetUserByEmail(form["UserEmail"]);
+            }
+            else
+            {
+                user = await _userService.GetUserByFirstName(form["UserFname"]);
+            }
             IdentityUser identityUser;
             string IsusserLogged = "";
             Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
@@ -1761,7 +1769,7 @@ namespace DealEngine.WebUI.Controllers
                 JsonObjects.Add("Organisation", user.PrimaryOrganisation);
                 var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
                 identityUser = await _userManager.FindByNameAsync(user.UserName);
-                if (identityUser.UserName.IsEmpty())
+                if (identityUser == null)
                 {
                     IsusserLogged = "User never Logged in.";
                 }
@@ -1769,7 +1777,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     if (user.IsLoggedout)
                     {
-                        IsusserLogged = "User is logged out.";
+                        IsusserLogged = "User has Logged in system once but now logged out";
 
                     }
                     else
@@ -1783,6 +1791,37 @@ namespace DealEngine.WebUI.Controllers
                 return Json(new { IsusserLogged = IsusserLogged, jsonObj = jsonObj });
             }
             return Json(null);
+        }
+        
+
+        [HttpPost]
+        public async Task<IActionResult> UserUnlock(IFormCollection form)
+        {
+            var currentUser = await CurrentUser();
+            User user = null;
+            try
+            {
+                if (form["UserEmail"] != "")
+                {
+                    user = await _userService.GetUserByEmail(form["UserEmail"]);
+                }
+                if(user != null)
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        user.IsLoggedout = false;
+                       await uow.Commit();
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return Json(true);
         }
 
 
