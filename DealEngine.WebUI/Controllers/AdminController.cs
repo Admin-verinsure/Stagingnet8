@@ -1853,7 +1853,7 @@ namespace DealEngine.WebUI.Controllers
                 deUser = new IdentityUser
                 {
                     UserName = user.UserName,
-                    Email = user.Email
+                    Email = user.Email,
                 };
                 await _userManager.CreateAsync(deUser, "defaultPassword");
             }

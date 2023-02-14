@@ -96,6 +96,7 @@ namespace DealEngine.Domain.Entities
         #endregion
 
         #region Getters
+        [Display(Name = "Organisation Name")]
         public virtual string Name { get; set; }
         [Display(Name = "Trading Name")]
         public virtual string TradingName { get; set; }

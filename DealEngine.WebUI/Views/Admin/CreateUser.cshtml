@@ -5,12 +5,12 @@
         <div class="card">
             <div class="card-header">
                 <div class="form-group">
-                    @Html.LabelFor(m => m.User.Email)
+                    @Html.LabelFor(m => m.User.Email)  <label style="color:red">    (Inputs are case sensitive)</label>
                     @Html.TextBoxFor(m => m.User.Email, new { @class = "form-control", @id = "User.Email", @required = "", @placeholder = "email" })
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(m => m.User.FirstName)
+                    @Html.LabelFor(m => m.User.FirstName)<label style="color:red">   (Inputs are case sensitive)</label>
                     @Html.TextBoxFor(m => m.User.FirstName, new { @class = "form-control ", @id = "User.FirstName" })
                 </div>
 
@@ -48,7 +48,10 @@
                     @Html.LabelFor(m => m.User.UserName)
                     @Html.TextBoxFor(m => m.User.UserName, new { @class = "form-control ", @id = "User.UserName" })
                 </div>
-
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Organisation.Name)
+                    @Html.TextBoxFor(m => m.Organisation.Name, new { @class = "form-control ", @id = "Organisation.Name" })
+                </div>
 
                 @*<div class="form-group">
             @Html.LabelFor(m => m.Organisation.IsInsurer)
