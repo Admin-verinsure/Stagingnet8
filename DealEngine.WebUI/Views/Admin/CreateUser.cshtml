@@ -15,6 +15,31 @@
                 </div>
 
                 <div class="form-group">
+                    <button class="btn-success btn btn-xs" type="button" onclick="GetUser()">Search</button>
+                </div>
+
+
+                <div class="form-group">
+
+                    @Html.LabelFor(m => m.Organisation.Name)
+
+                    @Html.TextBoxFor(m => m.Organisation.Name, new { @class = "form-control ", @id = "Organisation.Name" })
+                </div>
+
+                <div class="form-group" id="userlist" style="display:none">
+
+                    <label>User List</label>
+
+                    <select onchange=GetUser(this.value) class="form-control" id="UserList" name="UserList"></select>
+
+                </div>
+
+
+                <div class="form-group">
+                    <button class="btn-success btn btn-xs" type="button" onclick="GetUserbyOrg()">Search by Organisation</button>
+                </div>
+
+                <div class="form-group">
                     <label id="IsUserLoggedout"></label>
                 </div>
                 <div class="form-group" style="display:none" id="resenddiv">
@@ -25,10 +50,10 @@
                     <button class="btn-success btn btn-xs" type="button" onclick="UnlockUser()">Unlock User</button>
                 </div>
 
-
                 <div class="form-group">
-                    <button class="btn-success btn btn-xs" type="button" onclick="GetUser()">Search</button>
+                    <button class="btn-success btn btn-xs" type="reset">Clear</button>
                 </div>
+
                 @*<div class="form-group">
             @Html.LabelFor(m => m.User.FirstName)
             @Html.TextBoxFor(m => m.User.FirstName, new { @class = "form-control", @id = "User.FirstName", @required = "", @placeholder = "FirstName" })
@@ -48,11 +73,7 @@
                     @Html.LabelFor(m => m.User.UserName)
                     @Html.TextBoxFor(m => m.User.UserName, new { @class = "form-control ", @id = "User.UserName" })
                 </div>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.Organisation.Name)
-                    @Html.TextBoxFor(m => m.Organisation.Name, new { @class = "form-control ", @id = "Organisation.Name" })
-                </div>
-
+               
                 @*<div class="form-group">
             @Html.LabelFor(m => m.Organisation.IsInsurer)
             @Html.DropDownListFor(m => m.Organisation.IsInsurer, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsInsurer" })
@@ -70,15 +91,53 @@
 </div>
 @section pagespecific {
     <script type="text/javascript">
+        
+        function GetUserbyOrg() {
+           
+            var userOrg = document.getElementById('Organisation.Name').value;
 
-        function GetUser() {
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("GetCreateUserbyOrg", "Admin")',
+                data: { UserOrg: userOrg  }
+            })
+                .done(function (data) {
+                    debugger;
+                    if (data != null) {
+                        debugger;
+                        
+                        $("#userlist").show();
+                        var s = '<option value="-1">Please Select a users</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            s += '<option  value="' + data[i].id + '">' + data[i].firstName +" "+ data[i].lastName + '</option>';
+                        }
+                        $("#UserList").html(s);
+
+
+                    } else {
+                        document.getElementById("form").reset();
+                        document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
+                        document.getElementById('User.Email').value = userEmail;
+                    }
+                })
+                .fail(function (jqXhr, textStatus, errorThrown) {
+                    debugger;
+                    console.log(errorThrown);
+                });
+        }
+
+
+
+
+        function GetUser(userid) {
             var userEmail = document.getElementById('User.Email').value;
             var userFname = document.getElementById('User.FirstName').value;
+            var userOrg = document.getElementById('Organisation.Name').value;
 
             $.ajax({
                 type: 'Post',
                 url: '@Url.Action("GetCreateUser", "Admin")',
-                data: { UserEmail: userEmail, UserFname: userFname }
+                data: { UserEmail: userEmail, UserFname: userFname, UserOrg: userOrg, userid: userid }
             })
                 .done(function (data ,status, xhr) {
                     debugger;
@@ -98,6 +157,14 @@
                         }
 
                         PopulateView(OutPut);
+                        debugger;
+                        var s = '<option value="-1">Please Select a Department</option>';
+                        for (var i = 0; i < data.userList.length; i++) {
+                            s += '<option value="' + data.userList[i].id + '">' + data[i].userList[i].name + '</option>';
+                        }
+                        $("#UserList").html(s);
+
+
                     } else {
                         document.getElementById("form").reset();
                         document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
@@ -152,6 +219,6 @@
                 });
         }
 
-        
+
     </script>
 }

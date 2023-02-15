@@ -1752,14 +1752,26 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> GetCreateUser(IFormCollection form)
         {
             User user = null;
+            List<User> Luser = new List<User>();
+
             if (form["UserEmail"] !="")
             {
                  user = await _userService.GetUserByEmail(form["UserEmail"]);
             }
-            else
+            else if (form["UserFname"] != "")
             {
                 user = await _userService.GetUserByFirstName(form["UserFname"]);
             }
+            else if (form["userid"] != "")
+            {
+                user = await _userService.GetUserById(Guid.Parse(form["userid"]));
+            }
+            else if (form["UserOrg"] != "")
+            {
+                Organisation org = await _organisationService.GetOrganisationByName(form["UserOrg"]);
+                Luser = await _userService.GetAllUserByOrganisation(org);
+            }
+            
             IdentityUser identityUser;
             string IsusserLogged = "";
             Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
@@ -1788,11 +1800,30 @@ namespace DealEngine.WebUI.Controllers
                 }
                 //Response.Headers[""] = IsusserLogged;
                 //Response.Headers.Add("IsusserLogged", IsusserLogged);
-                return Json(new { IsusserLogged = IsusserLogged, jsonObj = jsonObj });
+                return Json(new { IsusserLogged = IsusserLogged, jsonObj = jsonObj});
             }
             return Json(null);
         }
-        
+
+        [HttpPost]
+        public async Task<IActionResult> GetCreateUserbyOrg(IFormCollection form)
+        {
+            List<User> Luser = new List<User>();
+
+            if (form["UserOrg"] != "")
+            {
+                Organisation org = await _organisationService.GetOrganisationByName(form["UserOrg"]);
+                Luser = await _userService.GetAllUserByOrganisation(org);
+            }
+            IdentityUser identityUser;
+            string IsusserLogged = "";
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+            
+                //Response.Headers[""] = IsusserLogged;
+                //Response.Headers.Add("IsusserLogged", IsusserLogged);
+            return Json(Luser);
+            
+        }
 
         [HttpPost]
         public async Task<IActionResult> UserUnlock(IFormCollection form)
