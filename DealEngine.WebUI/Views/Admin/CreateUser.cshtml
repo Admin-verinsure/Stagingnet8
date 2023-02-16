@@ -1,7 +1,26 @@
 ﻿@model DealEngine.WebUI.Models.UserViewModel
 <div class="container">
+
+    <div class="form-group">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa-fw fa fa-home" ></i>
+            <span>
+                <a href="~/Home/Index">Dashboard</a>
+                > Check User
+            </span>
+        </h1>
+    </div>
+
+    <div class="form-group">
+        <span>
+            <a class="btn btn-primary btn-xs text-white" onclick="location.href='@Url.Action("Index", "Home")'" id="backbutton"><i class="fa fa-home"></i> Back </a>
+        </span>
+    </div>
+
+
+
     <form method="POST" action="~/Admin/PostCreateUser" novalidate id="form">
-        @Html.HiddenFor(m=>m.Organisation.Id, new { @id="Organisation.Id"})
+        @Html.HiddenFor(m => m.Organisation.Id, new { @id = "Organisation.Id" })
         <div class="card">
             <div class="card-header">
                 <div class="form-group">
@@ -15,7 +34,7 @@
                 </div>
 
                 <div class="form-group">
-                    <button class="btn-success btn btn-xs" type="button" onclick="GetUser()">Search</button>
+                    <button class="btn-success btn btn-xs" type="button"  onclick="GetUser()">Search</button>
                 </div>
 
 
@@ -37,8 +56,9 @@
 
                 <div class="form-group">
                     <button class="btn-success btn btn-xs" type="button" onclick="GetUserbyOrg()">Search by Organisation</button>
+                    <button class="btn-search-close btn btn-xs" style="background-color: #ffcc00" type="reset">Clear to Search</button>
                 </div>
-
+               
                 <div class="form-group">
                     <label id="IsUserLoggedout"></label>
                 </div>
@@ -50,14 +70,12 @@
                     <button class="btn-success btn btn-xs" type="button" onclick="UnlockUser()">Unlock User</button>
                 </div>
 
-                <div class="form-group">
-                    <button class="btn-success btn btn-xs" type="reset">Clear</button>
-                </div>
+
 
                 @*<div class="form-group">
-            @Html.LabelFor(m => m.User.FirstName)
-            @Html.TextBoxFor(m => m.User.FirstName, new { @class = "form-control", @id = "User.FirstName", @required = "", @placeholder = "FirstName" })
-        </div>*@
+                        @Html.LabelFor(m => m.User.FirstName)
+                        @Html.TextBoxFor(m => m.User.FirstName, new { @class = "form-control", @id = "User.FirstName", @required = "", @placeholder = "FirstName" })
+                    </div>*@
 
 
 
@@ -73,19 +91,19 @@
                     @Html.LabelFor(m => m.User.UserName)
                     @Html.TextBoxFor(m => m.User.UserName, new { @class = "form-control ", @id = "User.UserName" })
                 </div>
-               
+
                 @*<div class="form-group">
-            @Html.LabelFor(m => m.Organisation.IsInsurer)
-            @Html.DropDownListFor(m => m.Organisation.IsInsurer, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsInsurer" })
-            @Html.LabelFor(m => m.Organisation.IsTC)
-            @Html.DropDownListFor(m => m.User.PrimaryOrganisation.IsTC, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsTC" })
-            @Html.LabelFor(m => m.Organisation.IsBroker)
-            @Html.DropDownListFor(m => m.Organisation.IsBroker, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsBroker" })
-        </div>*@
+                        @Html.LabelFor(m => m.Organisation.IsInsurer)
+                        @Html.DropDownListFor(m => m.Organisation.IsInsurer, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsInsurer" })
+                        @Html.LabelFor(m => m.Organisation.IsTC)
+                        @Html.DropDownListFor(m => m.User.PrimaryOrganisation.IsTC, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsTC" })
+                        @Html.LabelFor(m => m.Organisation.IsBroker)
+                        @Html.DropDownListFor(m => m.Organisation.IsBroker, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsBroker" })
+                    </div>*@
             </div>
             @*<div class="card-footer">
-                <button class="btn btn-primary btn-xs" type="submit">Update</button>
-            </div>*@
+                    <button class="btn btn-primary btn-xs" type="submit">Update</button>
+                </div>*@
         </div>
     </form>
 </div>
