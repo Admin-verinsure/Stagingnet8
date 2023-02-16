@@ -4462,6 +4462,124 @@ namespace DealEngine.Services.Impl
                 }
             }
         }
+        
+
+         public async Task ImportRotaryServicelocalIndividuals(User CreatedUser)
+        {
+            //addresses need to be on one line            
+            var fileName = WorkingDirectory + "rotarymemberdataexsitinguploadtest.csv";
+            var currentUser = CreatedUser;
+            Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
+            StreamReader reader;
+            User localuser = null;
+            User user = null;
+
+            Organisation organisation = null;
+            string line;
+            string email;
+            int lineCount = 0;
+            var userName = "";
+            using (reader = new StreamReader(fileName))
+            {
+                while (!reader.EndOfStream)
+                {
+
+                    line = reader.ReadLine();
+                    string[] parts = line.Split(',');
+                    organisation = null;
+                   
+                      userName = "";
+                    
+
+                    email = parts[3];
+                    try
+                    {
+
+                        if (!string.IsNullOrWhiteSpace(parts[3]))
+                        {
+                            user = _ldapService.GetUserByEmailforupload(parts[3]);
+                        }
+
+                        if (user != null)
+                        {
+                            if (user.UserName != null)
+                            {
+                                userName = user.UserName;
+                            }
+                        }
+
+                        //if (userName == "")
+                        //{
+                        //    userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
+                        //    Random random = new Random();
+                        //    int randomNumber = random.Next(10, 99);
+                        //    userName = userName + randomNumber.ToString();
+                        //}
+
+
+
+                        localuser = new User(currentUser, Guid.NewGuid(), userName);
+                        localuser.FirstName = parts[1];
+                        localuser.LastName = parts[2];
+                        localuser.FullName = parts[1] + " " + parts[2];
+                        localuser.Email = email;
+                        localuser.Phone = "12345";
+
+
+
+                        //OrganisationType ownerType = new OrganisationType("Corporation – Limited liability");
+                        //InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, "Corporation – Limited liability");
+                        //OrganisationalUnit ownerUnit = new OrganisationalUnit(currentUser, "Corporation – Limited liability", "Head Office", null);
+
+
+                        //organisation = await _organisationService.GetOrganisationByEmail(email);
+
+                        //if (organisation == null)
+                        //{
+                        //    var organisationType = await _organisationTypeService.GetOrganisationTypeByName("Corporation – Limited liability");
+                        //    organisation = new Organisation(currentUser, Guid.NewGuid(), parts[0], organisationType, parts[3]);
+                        //    await _organisationService.CreateNewOrganisation(organisation);
+                        //}
+
+
+
+                        //organisation.OrganisationalUnits.Add(ownerUnit);
+                        //organisation.InsuranceAttributes.Add(ownerAttribute);
+                        //if (!localuser.Organisations.Contains(organisation))
+                        //    localuser.Organisations.Add(organisation);
+                        //localuser.SetPrimaryOrganisation(organisation);
+
+                        await _userService.ApplicationCreateUser(localuser);
+
+                        //var programme = await _programmeService.GetProgramme(programmeID);
+                        //var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, localuser, organisation);
+                        //var reference = await _referenceService.GetLatestReferenceId();
+                        //var sheet = await _clientInformationService.IssueInformationFor(localuser, organisation, clientProgramme, reference);
+                        //await _referenceService.CreateClientInformationReference(sheet);
+
+                        //using (var uow = _unitOfWork.BeginUnitOfWork())
+                        //{
+                        //    clientProgramme.BrokerContactUser = programme.BrokerContactUser;
+                        //    sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(localuser, sheet, null, programme.Name + "UIS issue Process Completed"));
+                        //    try
+                        //    {
+                        //        await uow.Commit();
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        throw new Exception(ex.Message);
+                        //    }
+                        //}
+                        lineCount++;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message + lineCount);
+                    }
+                }
+            }
+        }
+
 
         public async Task ImportRotaryServiceIndividuals(User CreatedUser)
         {
@@ -4494,7 +4612,7 @@ namespace DealEngine.Services.Impl
                     //{
                     //    userName = "";
                     //}
-                    
+                    userName = "";
                     email = parts[3];
                     try
                     {
@@ -4917,10 +5035,10 @@ namespace DealEngine.Services.Impl
             }
         }
 
-        public Task ImportRotaryServicelocalIndividuals(User user)
-        {
-            throw new NotImplementedException();
-        }
+        //public Task ImportRotaryServicelocalIndividuals(User user)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
 

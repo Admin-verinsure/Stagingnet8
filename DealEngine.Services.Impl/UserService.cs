@@ -170,7 +170,20 @@ namespace DealEngine.Services.Impl
 			}
 			return user;
 		}
+		public async Task<User> GetUserByFirstName(string firstName)
+		{
+			User user = null;
+			try
+			{
+				user = await _userRepository.FindAll().FirstOrDefaultAsync(u => u.FirstName == firstName);
 
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message);
+			}
+			return user;
+		}
 		public async Task<User> GetUserByUserName(string userName)
 		{
 			User user = null;
