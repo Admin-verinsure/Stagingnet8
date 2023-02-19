@@ -19,7 +19,7 @@
 
 
 
-    <form method="POST" action="~/Admin/PostCreateUser" novalidate id="form">
+    <form method="POST" action="~/Information/PostCreateUser" novalidate id="form">
         @Html.HiddenFor(m => m.Organisation.Id, new { @id = "Organisation.Id" })
         <div class="card">
             <div class="card-header">
@@ -108,7 +108,7 @@
 
             $.ajax({
                 type: 'Post',
-                url: '@Url.Action("GetCreateUserbyOrg", "Admin")',
+                url: '@Url.Action("GetCreateUserbyOrg", "Information")',
                 data: { UserOrg: userOrg  }
             })
                 .done(function (data) {
@@ -128,6 +128,7 @@
                         document.getElementById("form").reset();
                         document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
                         document.getElementById('User.Email').value = userEmail;
+                        $("#userlist").hide();
                     }
                 })
                 .fail(function (jqXhr, textStatus, errorThrown) {
@@ -146,7 +147,7 @@
 
             $.ajax({
                 type: 'Post',
-                url: '@Url.Action("GetCreateUser", "Admin")',
+                url: '@Url.Action("GetCreateUser", "Information")',
                 data: { UserEmail: userEmail, UserFname: userFname, UserOrg: userOrg, userid: userid }
             })
                 .done(function (data ,status, xhr) {
@@ -154,7 +155,7 @@
                     if (data.jsonObj != null) {
                         var OutPut = JSON.parse(data.jsonObj);
                         document.getElementById('IsUserLoggedout').innerHTML = "<span style='color:green'>" + data.isusserLogged+"</span>" ;
-
+                        $("#userlist").hide();
                         if (data.isusserLogged == "User never Logged in.") {
                             $("#resenddiv").show();
                         } else {
@@ -192,7 +193,7 @@
             var userEmail = document.getElementById('User.Email').value;
             $.ajax({
                 type: 'Post',
-                url: '@Url.Action("ResendEmail", "Admin")',
+                url: '@Url.Action("ResendEmail", "Information")',
                 data: { UserEmail: userEmail }
             })
                 .done(function (data) {
@@ -212,7 +213,7 @@
             var userEmail = document.getElementById('User.Email').value;
             $.ajax({
                 type: 'Post',
-                url: '@Url.Action("UserUnlock", "Admin")',
+                url: '@Url.Action("UserUnlock", "Information")',
                 data: { UserEmail: userEmail }
             })
                 .done(function (data) {

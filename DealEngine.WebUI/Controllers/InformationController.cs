@@ -25,7 +25,9 @@ using NReco.PdfGenerator;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using System.Text;
-
+using DealEngine.Services.Impl;
+using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
+using Microsoft.AspNetCore.Identity;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -73,6 +75,9 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<Organisation> _organisationRepository;
         ILocationService _locationService;
         IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
+        ISerializerationService _serializerationService;
+        UserManager<IdentityUser> _userManager;
+
         //IAssetData _assetData;
         IMapperSession<ClubTrustAssetsInfo> _clubTrustAssetsInfoRepository;
 
@@ -122,7 +127,9 @@ namespace DealEngine.WebUI.Controllers
             ILocationService locationService,
             //IAssetData assetData,
             IClubAssetInfoService clubAssetInfoService,
+            ISerializerationService serializerationService,
             IMapperSession<ClubTrustAssetsInfo> ClubTrustAssetsInfoRepository,
+            UserManager<IdentityUser> userManager,
 
             IWebHostEnvironment hostingEnv,
 
@@ -177,6 +184,8 @@ namespace DealEngine.WebUI.Controllers
             _clubTrustAssetsInfoRepository = ClubTrustAssetsInfoRepository;
             _clubAssetInfoService = clubAssetInfoService;
             _hostingEnv = hostingEnv;
+            _userManager = userManager;
+            _serializerationService = serializerationService;
 
             //_generatePdf = generatePdf;
         }
@@ -2315,6 +2324,157 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+
+
+        [HttpPost]
+        public async Task<IActionResult> PostCreateUser(IFormCollection form)
+        {
+            var currentUser = await CurrentUser();
+            var jsonUser = (User)await _serializerationService.GetDeserializedObject(typeof(User), form);
+            var user = await _userService.PostCreateUser(jsonUser, currentUser, form);
+            var deUser = await _userManager.FindByEmailAsync(user.Email);
+            if (deUser == null)
+            {
+                deUser = new IdentityUser
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                };
+                await _userManager.CreateAsync(deUser, "defaultPassword");
+            }
+            return Redirect("~/Home/Index");
+        }
+
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetCreateUserbyOrg(IFormCollection form)
+        {
+            List<User> Luser = new List<User>();
+
+            if (form["UserOrg"] != "")
+            {
+                Organisation org = await _organisationService.GetOrganisationByName(form["UserOrg"]);
+                Luser = await _userService.GetAllUserByOrganisation(org);
+            }
+            IdentityUser identityUser;
+            string IsusserLogged = "";
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+
+            //Response.Headers[""] = IsusserLogged;
+            //Response.Headers.Add("IsusserLogged", IsusserLogged);
+            return Json(Luser);
+
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetCreateUser(IFormCollection form)
+        {
+            User user = null;
+            List<User> Luser = new List<User>();
+
+            if (form["UserEmail"] != "")
+            {
+                user = await _userService.GetUserByEmail(form["UserEmail"]);
+            }
+            else if (form["UserFname"] != "")
+            {
+                user = await _userService.GetUserByFirstName(form["UserFname"]);
+            }
+            else if (form["userid"] != "")
+            {
+                user = await _userService.GetUserById(Guid.Parse(form["userid"]));
+            }
+            else if (form["UserOrg"] != "")
+            {
+                Organisation org = await _organisationService.GetOrganisationByName(form["UserOrg"]);
+                Luser = await _userService.GetAllUserByOrganisation(org);
+            }
+
+            IdentityUser identityUser;
+            string IsusserLogged = "";
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+            if (user != null)
+            {
+                JsonObjects.Add("User", user);
+                JsonObjects.Add("Organisation", user.PrimaryOrganisation);
+                var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
+                identityUser = await _userManager.FindByNameAsync(user.UserName);
+                if (identityUser == null)
+                {
+                    IsusserLogged = "User never Logged in.";
+                }
+                else
+                {
+                    if (user.IsLoggedout)
+                    {
+                        IsusserLogged = "User has Logged in system once but now logged out";
+
+                    }
+                    else
+                    {
+                        IsusserLogged = "";
+
+                    }
+                }
+                //Response.Headers[""] = IsusserLogged;
+                //Response.Headers.Add("IsusserLogged", IsusserLogged);
+                return Json(new { IsusserLogged = IsusserLogged, jsonObj = jsonObj });
+            }
+            return Json(null);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResendEmail(IFormCollection form)
+        {
+            var currentUser = await CurrentUser();
+            try
+            {
+                await _emailService.SendSystemEmailLogin(form["UserEmail"]);
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return Json(true);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UserUnlock(IFormCollection form)
+        {
+            var currentUser = await CurrentUser();
+            User user = null;
+            try
+            {
+                if (form["UserEmail"] != "")
+                {
+                    user = await _userService.GetUserByEmail(form["UserEmail"]);
+                }
+                if (user != null)
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        user.IsLoggedout = false;
+                        await uow.Commit();
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return Json(true);
+        }
 
 
 
