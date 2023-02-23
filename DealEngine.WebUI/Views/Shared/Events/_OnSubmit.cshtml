@@ -483,7 +483,7 @@
                 var serializeddata = $("#" + form.id).serialize();
                 debugger;
                 $.ajax({
-                    url: '@Url.Action("AddOrganisation1", "Organisation")',
+                    url: '@Url.Action("AddOrganisation", "Organisation")',
                     type: "POST",
                     async: false,
                     data: $("#" + form.id).serialize(),
