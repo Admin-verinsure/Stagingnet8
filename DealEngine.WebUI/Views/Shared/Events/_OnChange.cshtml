@@ -760,22 +760,23 @@
             //readonly Organisation Type personal
             //document.getElementById("OwnerFap").hidden = true;
 
+            if (Value == "Administrator"){
 
-            //for (var i = 0; i < List.options.length; i++) {
-            //    //if (List.options[i].text == "Private" && Value != "MREDirector") {
-            //    if (List.options[i].text == "Private") {
+              for (var i = 0; i < OrgTypeList.options.length; i++) {
+                //if (List.options[i].text == "Private" && Value != "MREDirector") {
+                 if (OrgTypeList.options[i].value == "Private") {
 
-            //        List.options[i].selected = true;
-            //        document.getElementById("Private").hidden = false;
+                        OrgTypeList.options[i].selected = true;
+                    document.getElementById("Private").hidden = false;
 
 
-            //        var Email = document.getElementById("EmailDiv");
-            //        if (Email != null) {
-            //            document.getElementById("EmailDiv").hidden = false;
-            //        }
-            //    }
-            //}
-
+                    var Email = document.getElementById("EmailDiv");
+                    if (Email != null) {
+                        document.getElementById("EmailDiv").hidden = false;
+                    }
+                  }
+              }
+            }
             if (Value == "Administrator") {
                 for (var i = 0; i < OrgTypeList.options.length; i++) {
                     if (OrgTypeList.options[i].text == "Private Individual") {

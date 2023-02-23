@@ -257,14 +257,7 @@ namespace DealEngine.Services.Impl
 
             if (user != null)
             {
-                //if(organisation.Id != user.PrimaryOrganisation.Id && organisation.Email == user.Email)
-                //{
-                //    organisation.Name = user.FirstName + " " + user.LastName;
-                //}
-                //else
-                //{
-                //    organisation.Name = jsonOrganisation.Name;
-                //}
+               
                 if (jsonOrganisation.Name != "")
                 {
                     organisation.Name = jsonOrganisation.Name;
@@ -275,10 +268,7 @@ namespace DealEngine.Services.Impl
                     organisation.Name = user.FirstName + " " + user.LastName;
                 }
 
-                //if ((user.FirstName + " " + user.LastName) != organisation.Name && TypeName == "Advisor")
-                //{
-                //    organisation.Name = user.FirstName + " " + user.LastName;
-                //}
+               
             }
             var isfap = collection["OrganisationViewModel.Organisation.isTheFAP"];
             organisation.Email = collection["OrganisationViewModel.User.Email"].ToString();
@@ -378,7 +368,7 @@ namespace DealEngine.Services.Impl
 
         public async Task<Organisation> CreateOrganisation(string Email, string Type, string OrganisationName, string OrganisationTypeName, string FirstName, string LastName, User Creator, IFormCollection collection)
         {
-            Organisation foundOrg = null;//= await GetOrganisationByEmail(Email);
+            Organisation foundOrg = null;//= await GetOrganisationByEmail(Email);///if add primary adviosr can use same email to create different org
             User User = null;
             Boolean usercreation = true;
             Boolean nousercreationflag = false;
@@ -427,7 +417,7 @@ namespace DealEngine.Services.Impl
                 if (string.IsNullOrWhiteSpace(Email))
                 {
 
-                    Email = OrganisationName + "@Techcertain.com ";
+                    Email = OrganisationName + "@Techcertain.com";
                     usercreation = false;
                 }
                 List<OrganisationalUnit> OrganisationalUnits = GetOrganisationCreateUnits(Type, Creator, collection);
@@ -438,11 +428,16 @@ namespace DealEngine.Services.Impl
                 {
                     if (!User.Organisations.Any(o => o.InsuranceAttributes.Any(i => i.Name == Type) && o.Name == OrganisationName))
                         User.Organisations.Add(foundOrg);
-
-                    if (Type != "Administrator" && User.PrimaryOrganisation == null)
+                    //if (Type != "Administrator")
+                    //{
+                    //    User.Organisations.Add(foundOrg);
+                    //}
+                    if ( User.PrimaryOrganisation == null)
                     {
                         User.SetPrimaryOrganisation(foundOrg);
                     }
+                  
+                    ;
 
                     await _userService.Create(User);
                 }

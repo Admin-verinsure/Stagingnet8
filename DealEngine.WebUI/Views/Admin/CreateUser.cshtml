@@ -62,7 +62,7 @@
                 <div class="form-group">
                     <label id="IsUserLoggedout"></label>
                 </div>
-                <div class="form-group" style="display:none" id="resenddiv">
+                <div class="form-group" id="resenddiv">
                     <button class="btn-success btn btn-xs" type="button" onclick="ResendLogin()">Resend Login</button>
                 </div>
 
@@ -156,11 +156,7 @@
                         var OutPut = JSON.parse(data.jsonObj);
                         document.getElementById('IsUserLoggedout').innerHTML = "<span style='color:green'>" + data.isusserLogged+"</span>" ;
                         $("#userlist").hide();
-                        if (data.isusserLogged == "User never Logged in.") {
-                            $("#resenddiv").show();
-                        } else {
-                            $("#resenddiv").hide();
-                        }
+                        
                         if (data.isusserLogged == "User has Logged in system once but now logged out") {
                             $("#unlockdiv").show();
                         } else {
@@ -200,7 +196,6 @@
                     debugger;
                     if (data == true) {
                         document.getElementById('IsUserLoggedout').innerHTML = "<span style='color:green'>User Login Information sent Successfully</span>";
-                        $("#resenddiv").hide();
                     }
                 })
                 .fail(function (jqXhr, textStatus, errorThrown) {
