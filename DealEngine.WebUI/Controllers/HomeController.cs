@@ -1065,7 +1065,7 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 Programme programme = await _programmeService.GetProgrammeById(id);
-
+                
                 IList<ClientProgramme> clientList = new List<ClientProgramme>();
                 foreach (var clientorg in user.Organisations)
                 {
@@ -1108,16 +1108,15 @@ namespace DealEngine.WebUI.Controllers
 
                 }
                 model.SelectedUpdateTypes = new List<string>();
-
+                
                 if (programme.RenewFromProgramme != null)
                 {
                     model.IsRenewFromProgramme = true;
-                }
-                else
+                } else
                 {
                     model.IsRenewFromProgramme = false;
                 }
-
+                
                 model.ProgEnableEmail = programme.ProgEnableEmail;
 
                 foreach (var updateType in programme.UpdateTypes)
@@ -1133,7 +1132,7 @@ namespace DealEngine.WebUI.Controllers
                 }
                 model.UpdateTypes = updateTypeModel.OrderBy(acat => acat.UpdateTypes).ToList();
                 return View(model);
-              
+             
             }
             catch (Exception ex)
             {
