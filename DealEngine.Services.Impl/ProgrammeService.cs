@@ -12,6 +12,8 @@ using FluentNHibernate.Conventions;
 using NHibernate.Util;
 using FluentNHibernate.Utils;
 using ServiceStack;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 
 namespace DealEngine.Services.Impl
@@ -1211,9 +1213,29 @@ namespace DealEngine.Services.Impl
 
         }
 
+        public async Task<List<Organisation>> GetOwnerForProgramme (Guid programmeId)
+        {
+            Programme programme = await GetProgramme(programmeId);
+            var ownerList = new List<Organisation>();
+            Dictionary<string, Organisation> owners = new Dictionary<string, Organisation>();
+
+            if (programme == null)
+                return null;
+            foreach (var client in programme.ClientProgrammes.Where(c => c.DateDeleted == null).OrderBy(c=>c.Owner.Name))
+            {
+                if (!owners.ContainsKey(client.Owner.Id.ToString()))
+                {
+                    ownerList.Add(client.Owner);
+                    owners.Add(client.Owner.Id.ToString(), client.Owner);
+                }
+            }
+
+            return ownerList;
+        }
+
         //public async Task UpdateFlag(Programme  Prog, String flagname, String flagval)
         //{
-            
+
         //    //await _programmeRepository.UpdateAsync(Prog.Select );
         //    //person.Select(c => new {
         //    //    name = c.firstname
