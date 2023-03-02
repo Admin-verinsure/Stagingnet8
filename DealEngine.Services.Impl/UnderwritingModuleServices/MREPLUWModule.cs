@@ -254,6 +254,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 agreement.RetroactiveDate = strretrodate;
             }
+            if (!String.IsNullOrEmpty(agreement.ContinuityDate))
+            {
+                agreement.ContinuityDate = "Policy Inception";
+            }
 
             //Create agreement audit log
             string auditLogDetail = "MRE PL UW created/modified";
