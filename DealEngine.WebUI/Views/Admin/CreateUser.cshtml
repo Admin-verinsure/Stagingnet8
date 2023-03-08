@@ -121,7 +121,8 @@
                     debugger;
                     if (data != "not found") {
                         debugger;
-                        
+                        document.getElementById('OrgLabel').innerHTML = " ";
+
                         $("#userlist").show();
                         var s = '<option value="-1">Please Select a users</option>';
                         for (var i = 0; i < data.length; i++) {
@@ -136,7 +137,7 @@
                         document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
                         document.getElementById('User.Email').value = "";
                         $("#userlist").hide();
-                        document.getElementById('OrgLabel').innerHTML = "<span style='color:red'>No Organisation found.</span>";
+                        document.getElementById('OrgLabel').innerHTML = "<span style='color:red'>No User found.</span>";
 
                     }
                 })
@@ -265,6 +266,11 @@
                          type: "POST",  
                          dataFilter: function (data) {return data;},  
                          success: function (data) {  
+                             if(data.length == 0){
+                                document.getElementById('OrgLabel').innerHTML = "<span style='color:red'>No Organisation found.</span>";
+                             }else{
+                                document.getElementById('OrgLabel').innerHTML = " ";
+                             }
                             response($.map(data, function (item) {
                                 return {
                                      label: item.name,
