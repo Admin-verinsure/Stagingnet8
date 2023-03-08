@@ -366,24 +366,29 @@ namespace DealEngine.Services.Impl
 			_ldapService.Update(user);
 		}
 
-		public async Task<User> PostCreateUser(User jsonUser, User currentUser, IFormCollection form)
+		public async Task<User> PostCreateUser(User jsonUser, User currentUser, IFormCollection form,Organisation orgselected)
 		{
 			var createUser = await GetUserByEmail(form["User.Email"]);
-			if (Guid.TryParse(form["Organisation.Id"], out Guid OrganisationId))
+			if (createUser != null)
 			{
-				if (OrganisationId != Guid.Empty)
-				{
-					createUser = _mapper.Map(jsonUser, createUser);
-					var PrimaryOrganisation = await _organisationRepository.GetByIdAsync(OrganisationId);
-					createUser.SetPrimaryOrganisation(PrimaryOrganisation);
+				
+                    //createUser = new User(currentUser, Guid.NewGuid(), form);
+                    createUser = _mapper.Map(jsonUser, createUser);
+					//var PrimaryOrganisation = await _organisationRepository.GetByIdAsync(OrganisationId);
+					createUser.SetPrimaryOrganisation(orgselected);
 					await Update(createUser);
-				}
+				
 			}
 			else
 			{
 				createUser = new User(currentUser, Guid.NewGuid(), form);
 				createUser = _mapper.Map(jsonUser, createUser);
-				await Create(createUser);
+				if (orgselected != null)
+				{
+                    createUser.SetPrimaryOrganisation(orgselected);
+
+                }
+                await Create(createUser);
 			}
 			return createUser;
 		}

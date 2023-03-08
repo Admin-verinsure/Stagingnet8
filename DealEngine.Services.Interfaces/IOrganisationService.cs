@@ -32,6 +32,8 @@ namespace DealEngine.Services.Interfaces
         Task<List<Organisation>> GetFinancialInstitutes();
         Task PostMarina(IFormCollection model);
         Task PostInstitute(IFormCollection model);
+        Task<List<Organisation>> GetAllOrganisationsStartBy(string startswith);
+
     }
 }
 

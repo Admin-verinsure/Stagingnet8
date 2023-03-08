@@ -19,7 +19,7 @@
 
 
 
-    <form method="POST" action="~/Information/PostCreateUser" novalidate id="form">
+    <form method="POST" action="~/Admin/CreateNewUser" novalidate id="form">
         @Html.HiddenFor(m => m.Organisation.Id, new { @id = "Organisation.Id" })
         <div class="card">
             <div class="card-header">
@@ -41,15 +41,23 @@
                 <div class="form-group">
 
                     @Html.LabelFor(m => m.Organisation.Name)
+                    <input class="form-control col-3" type="text" id="Organisation.Name" name="Organisation.Name" autocomplete="on" />
 
-                    @Html.TextBoxFor(m => m.Organisation.Name, new { @class = "form-control ", @id = "Organisation.Name" })
-                </div>
+@*                    @Html.TextBoxFor(m => m.Organisation.Name, new { @class = "form-control ", @id = "Organisation.Name" })
+*@                </div>
+
+              
+
 
                 <div class="form-group" id="userlist" style="display:none">
 
-                    <label>User List</label>
+                    <label>  User List  </label>   
 
                     <select onchange=GetUser(this.value) class="form-control" id="UserList" name="UserList"></select>
+                    <br />
+                    <br />
+
+                    <button class="btn btn-primary btn-xs" type="submit">Create New User</button>
 
                 </div>
 
@@ -58,10 +66,13 @@
                     <button class="btn-success btn btn-xs" type="button" onclick="GetUserbyOrg()">Search by Organisation</button>
                     <button class="btn-search-close btn btn-xs" style="background-color: #ffcc00" type="reset">Clear to Search</button>
                 </div>
+
+                <div class="form-group"><label id="OrgLabel"></label> </div>
                
                 <div class="form-group">
                     <label id="IsUserLoggedout"></label>
                 </div>
+
                 <div class="form-group" id="resenddiv">
                     <button class="btn-success btn btn-xs" type="button" onclick="ResendLogin()">Resend Login</button>
                 </div>
@@ -69,7 +80,15 @@
                 <div class="form-group" style="display:none" id="unlockdiv">
                     <button class="btn-success btn btn-xs" type="button" onclick="UnlockUser()">Unlock User</button>
                 </div>
-
+                @*<div>
+                    <label >Tags: </label>
+                   <input class="form-control col-3" type="text" id="tags" name="tags" autocomplete="on"/>*@
+@*                    <input type="text" id="tags" name="tags" data-provide="typeahead" class="typeahead search-query form-control autocomplete"/>
+*@                           @*                    <asp:TextBox ID="tags" runat="server" AutoPostBack="true"></asp:TextBox>
+*@                    @*<label for="tags">Tags: </label>
+                      <input ID="tags" runat="server" Width="200" placeholder="Organisation Name"/>*@
+@*                </div>
+*@
 
 
             </div>
@@ -84,22 +103,19 @@
                     @Html.TextBoxFor(m => m.User.UserName, new { @class = "form-control ", @id = "User.UserName" })
                 </div>
 
-                @*<div class="form-group">
-                        @Html.LabelFor(m => m.Organisation.IsInsurer)
-                        @Html.DropDownListFor(m => m.Organisation.IsInsurer, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsInsurer" })
-                        @Html.LabelFor(m => m.Organisation.IsTC)
-                        @Html.DropDownListFor(m => m.User.PrimaryOrganisation.IsTC, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsTC" })
-                        @Html.LabelFor(m => m.Organisation.IsBroker)
-                        @Html.DropDownListFor(m => m.Organisation.IsBroker, Model.BooleanOptions, new { @class = "b", @id = "Organisation.IsBroker" })
-                    </div>*@
             </div>
-            @*<div class="card-footer">
-                    <button class="btn btn-primary btn-xs" type="submit">Update</button>
-                </div>*@
+            <div class="card-footer">
+@*                                    <button class="btn btn-primary btn-xs" type="submit">Create New User</button>
+*@
+                <a class="btn btn-primary btn-sm" href="~/Admin/CreateNewUser">Create New User  </a>
+             </div>
         </div>
     </form>
 </div>
 @section pagespecific {
+    <link href="~/jqueryui/jquery-ui.css" rel="stylesheet" />
+    <script src="~/jqueryui/jquery-ui.js"></script>
+
     <script type="text/javascript">
         
         function GetUserbyOrg() {
@@ -113,7 +129,7 @@
             })
                 .done(function (data) {
                     debugger;
-                    if (data != null) {
+                    if (data != "not found") {
                         debugger;
                         
                         $("#userlist").show();
@@ -121,14 +137,17 @@
                         for (var i = 0; i < data.length; i++) {
                             s += '<option  value="' + data[i].id + '">' + data[i].firstName +" "+ data[i].lastName + '</option>';
                         }
+                        //s += '<option ><button> <a class="btn btn-primary btn-sm" href="~/Admin/CreateNewUser">Create New User  </a></button>'
                         $("#UserList").html(s);
-
+                        //document.getElementById('OrgLabel').innerHTML = " ";
 
                     } else {
                         document.getElementById("form").reset();
                         document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
-                        document.getElementById('User.Email').value = userEmail;
+                        document.getElementById('User.Email').value = "";
                         $("#userlist").hide();
+                        document.getElementById('OrgLabel').innerHTML = "<span style='color:red'>No Organisation found.</span>";
+
                     }
                 })
                 .fail(function (jqXhr, textStatus, errorThrown) {
@@ -137,51 +156,50 @@
                 });
         }
 
-
-
-
         function GetUser(userid) {
             var userEmail = document.getElementById('User.Email').value;
             var userFname = document.getElementById('User.FirstName').value;
             var userOrg = document.getElementById('Organisation.Name').value;
-
-            $.ajax({
-                type: 'Post',
-                url: '@Url.Action("GetCreateUser", "Information")',
-                data: { UserEmail: userEmail, UserFname: userFname, UserOrg: userOrg, userid: userid }
-            })
-                .done(function (data ,status, xhr) {
-                    debugger;
-                    if (data.jsonObj != null) {
-                        var OutPut = JSON.parse(data.jsonObj);
-                        document.getElementById('IsUserLoggedout').innerHTML = "<span style='color:green'>" + data.isusserLogged+"</span>" ;
-                        $("#userlist").hide();
-                        
-                        if (data.isusserLogged == "User has Logged in system once but now logged out") {
-                            $("#unlockdiv").show();
-                        } else {
-                            $("#unlockdiv").hide();
-                        }
-
-                        PopulateView(OutPut);
-                        debugger;
-                        var s = '<option value="-1">Please Select a Department</option>';
-                        for (var i = 0; i < data.userList.length; i++) {
-                            s += '<option value="' + data.userList[i].id + '">' + data[i].userList[i].name + '</option>';
-                        }
-                        $("#UserList").html(s);
-
-
-                    } else {
-                        document.getElementById("form").reset();
-                        document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
-                        document.getElementById('User.Email').value = userEmail;
-                    }
+                $.ajax({
+                    type: 'Post',
+                    url: '@Url.Action("GetCreateUser", "Information")',
+                    data: { UserEmail: userEmail, UserFname: userFname, UserOrg: userOrg, userid: userid }
                 })
-                .fail(function (jqXhr, textStatus, errorThrown) {
-                    debugger;
-                    console.log(errorThrown);
-                });
+                    .done(function (data, status, xhr) {
+                        debugger;
+                        if (data.jsonObj != null) {
+                            var OutPut = JSON.parse(data.jsonObj);
+                            document.getElementById('IsUserLoggedout').innerHTML = "<span style='color:green'>" + data.isusserLogged + "</span>";
+                            $("#userlist").hide();
+
+                            if (data.isusserLogged == "User has Logged in system once but now logged out") {
+                                $("#unlockdiv").show();
+                            } else {
+                                $("#unlockdiv").hide();
+                            }
+
+                            PopulateView(OutPut);
+                            debugger;
+                            var s = '<option value="-1">Please Select a Department</option>';
+                            for (var i = 0; i < data.userList.length; i++) {
+                                s += '<option value="' + data.userList[i].id + '">' + data[i].userList[i].name + '</option>';
+                            }
+                            $("#UserList").html(s);
+
+
+                        } else {
+                            document.getElementById("form").reset();
+                            document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
+                            document.getElementById('User.Email').value = userEmail;
+                        }
+                    })
+                    .fail(function (jqXhr, textStatus, errorThrown) {
+                        debugger;
+                        console.log(errorThrown);
+                    });
+
+            
+          
         }
 
 
@@ -225,6 +243,82 @@
                 });
         }
 
+//        $(document).ready(function() {
+//	$("#search-box").keyup(function() {
+//		$.ajax({
+//			type: "POST",
+//                    url: 'Url.Action("GetAllOrgs", "Information")',
+//			data: 'keyword=' + $(this).val(),
+//			beforeSend: function() {
+//				$("#search-box").css("background", "#FFF url(LoaderIcon.gif) no-repeat 165px");
+//			},
+//			success: function(data) {
+//				$("#suggesstion-box").show();
+//				$("#suggesstion-box").html(data.name);
+//				$("#search-box").css("background", "#FFF");
+//			}
+//		});
+//	});
+//});
 
+        $(function () {
+
+            $("[id='Organisation.Name']").autocomplete({
+                source: function (request, response) {  
+                    //  var orgstartwith = document.getElementById('tags').value;
+                    //var postData = { "orgstartwith": orgstartwith };
+
+                    var postData = { "orgstartwith": $("[id='Organisation.Name']").val() };
+                    $.ajax({
+                        url: '@Url.Action("GetAllOrgs", "Information")',
+                        data:postData,
+                         type: "POST",  
+                         dataFilter: function (data) {return data;},  
+                         success: function (data) {  
+                            response($.map(data, function (item) {
+                                return {
+                                     label: item.name,
+                                    value: item.name
+                                };
+                            }))
+                         },  
+                         error: function (XMLHttpRequest, textStatus, errorThrown) {  
+                             var err = eval("(" + XMLHttpRequest.responseText + ")");  
+                             alert(err.Message);  
+                             // console.log("Ajax Error!");    
+                         }  
+                     });  
+                 },
+                
+                 minLength: 4 //This is the Char length of inputTextBox    
+             });  
+
+            //$("#tags").autocomplete({
+
+            //    source: function (request, response) {
+            //        var orgstartwith = document.getElementById('tags').value;
+            //        var postData = { "orgstartwith": orgstartwith };
+
+            //        $.ajax({
+            //            type: "POST",
+            //            data: postData,
+            //            dataType: "json",
+            //            success: function (data) {
+            //                var listItems= "";
+            //                for (var i = 0; i < data.length; i++) {
+            //                    listItems += "<option value='" + data[i].OrgName + "'>" + data[i].OrgID + "</option>";
+            //                    }
+            //                 $("#tag").html(listItems);
+            //            }
+            //        });
+            //    }
+
+            //});
+
+        });
+     
     </script>
+
 }
+
+           

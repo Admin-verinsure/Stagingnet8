@@ -28,6 +28,10 @@ using System.Text;
 using DealEngine.Services.Impl;
 using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using FluentNHibernate.Testing.Values;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -2324,14 +2328,17 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
-
+        
+     
 
         [HttpPost]
         public async Task<IActionResult> PostCreateUser(IFormCollection form)
         {
             var currentUser = await CurrentUser();
             var jsonUser = (User)await _serializerationService.GetDeserializedObject(typeof(User), form);
-            var user = await _userService.PostCreateUser(jsonUser, currentUser, form);
+            jsonUser.FullName = jsonUser.FirstName + " " + jsonUser.LastName;
+            Organisation orgselected = await _organisationService.GetOrganisationByName(form["Organisationselected"]);
+            var user = await _userService.PostCreateUser(jsonUser, currentUser,form, orgselected);
             var deUser = await _userManager.FindByEmailAsync(user.Email);
             if (deUser == null)
             {
@@ -2352,16 +2359,25 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetCreateUserbyOrg(IFormCollection form)
         {
-            List<User> Luser = new List<User>();
-
+            List<User> Luser = null;
+            String isorg = null;
             if (form["UserOrg"] != "")
             {
+                Luser = new List<User>();
                 Organisation org = await _organisationService.GetOrganisationByName(form["UserOrg"]);
-                Luser = await _userService.GetAllUserByOrganisation(org);
+                if(org != null)
+                {
+                    Luser = await _userService.GetAllUserByOrganisation(org);
+                }
+                else
+                {
+                    isorg = "not found";
+                    return Json(isorg);
+
+                }
             }
             IdentityUser identityUser;
             string IsusserLogged = "";
-            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
 
             //Response.Headers[""] = IsusserLogged;
             //Response.Headers.Add("IsusserLogged", IsusserLogged);
@@ -2425,6 +2441,37 @@ namespace DealEngine.WebUI.Controllers
                 return Json(new { IsusserLogged = IsusserLogged, jsonObj = jsonObj });
             }
             return Json(null);
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllOrgs(String orgstartwith)
+        {
+            List<Organisation> organisations = new List<Organisation>();
+
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+                organisations = await _organisationService.GetAllOrganisationsStartBy(orgstartwith);
+            int count = 0;
+            try
+            {
+                foreach(var org in organisations)
+                {
+                    //JsonObjects.Add("Organisation"+count, organisations[count]);
+                    organisations.Add(org);
+                };
+            }
+            catch (Exception ex)
+            {
+
+            }
+               
+               
+        //string jsonData = JsonConvert.SerializeObject(myData);
+        //JObject jsonObject = JObject.Parse(jsonData);
+        //var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
+
+            return Json(organisations);
         }
 
 

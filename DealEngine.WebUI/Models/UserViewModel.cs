@@ -19,6 +19,9 @@ namespace DealEngine.WebUI.Models
 		public User User { get; set; }
 		public IList<SelectListItem> BooleanOptions { get; set; }
 		public Domain.Entities.Organisation Organisation { get; set; }
-	}
+        public IList<Domain.Entities.Organisation> Organisations { get; set; }
+        public string Organisationselected { get; set; }
+
+    }
 }
 

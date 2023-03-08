@@ -1,0 +1,208 @@
+﻿@model DealEngine.WebUI.Models.UserViewModel
+<div class="container">
+
+    <div class="form-group">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa-fw fa fa-home" ></i>
+            <span>
+                <a href="~/Home/Index">Dashboard</a>
+                > Check User
+            </span>
+        </h1>
+    </div>
+
+    <div class="form-group">
+        <span>
+            <a class="btn btn-primary btn-xs text-white" onclick="location.href='@Url.Action("Index", "Home")'" id="backbutton"><i class="fa fa-home"></i> Back </a>
+        </span>
+    </div>
+
+
+
+    <form method="POST" action="~/Information/PostCreateUser" novalidate id="form">
+        @Html.HiddenFor(m => m.Organisationselected, new { @id = "Organisationselected" })
+        <div class="card">
+            <div class="card-header">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.User.Email)  <label style="color:red">    (Inputs are case sensitive)</label>
+                    @Html.TextBoxFor(m => m.User.Email, new { @class = "form-control", @id = "User.Email", @required = "", @placeholder = "email" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.User.FirstName)<label style="color:red">   (Inputs are case sensitive)</label>
+                    @Html.TextBoxFor(m => m.User.FirstName, new { @class = "form-control ", @id = "User.FirstName" })
+                </div>
+
+                
+                <div class="form-group">
+                    @Html.LabelFor(m => m.User.LastName)
+                    @Html.TextBoxFor(m => m.User.LastName, new { @class = "form-control ", @id = "User.LastName" })
+                </div>
+             @*   <div class="form-group">
+                    @Html.LabelFor(m => m.User.UserName)
+                    @Html.TextBoxFor(m => m.User.UserName, new { @class = "form-control ", @id = "User.UserName" })
+                </div>*@
+
+@*
+                <div class="form-group">
+
+                    @Html.LabelFor(m => m.Organisation.Name)*@
+@*                    @Html.DropDownListFor(m => m.Organisations, Model.Organisation.Name, new { @class = "form-select", @id = "Organisation.Name", @required = "required" })
+*@                    
+
+@*Html.DropDownListFor(m => m.Organisation.Name,new SelectList(Model.Organisations),"Attach Organisation")
+*@@*                    @Html.DropDownListFor(m => m.Organisation.Name, new { @class = "form-control ", @id = "Organisation.Name" })
+*@               
+
+
+            </div>
+           
+            <div class="card-footer">
+                    <button class="btn btn-primary btn-xs" type="submit">Create New User</button>
+             </div>
+        </div>
+    </form>
+</div>
+@*@section pagespecific {
+    <script type="text/javascript">
+        
+        function GetUserbyOrg() {
+           
+            var userOrg = document.getElementById('Organisation.Name').value;
+
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("GetCreateUserbyOrg", "Information")',
+                data: { UserOrg: userOrg  }
+            })
+                .done(function (data) {
+                    debugger;
+                    if (data != null) {
+                        debugger;
+                        
+                        $("#userlist").show();
+                        var s = '<option value="-1">Please Select a users</option>';
+                        for (var i = 0; i < data.length; i++) {
+                            s += '<option  value="' + data[i].id + '">' + data[i].firstName +" "+ data[i].lastName + '</option>';
+                        }
+                        $("#UserList").html(s);
+
+
+                    } else {
+                        document.getElementById("form").reset();
+                        document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
+                        document.getElementById('User.Email').value = userEmail;
+                        $("#userlist").hide();
+                    }
+                })
+                .fail(function (jqXhr, textStatus, errorThrown) {
+                    debugger;
+                    console.log(errorThrown);
+                });
+        }
+
+        function Createuser() {
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("CreateNewUser", "Information")',
+            })
+                .done(function (data) {
+                    debugger;
+                    
+                })
+                .fail(function (jqXhr, textStatus, errorThrown) {
+                    debugger;
+                    console.log(errorThrown);
+                });
+        }
+
+
+
+        function GetUser(userid) {
+            var userEmail = document.getElementById('User.Email').value;
+            var userFname = document.getElementById('User.FirstName').value;
+            var userOrg = document.getElementById('Organisation.Name').value;
+
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("GetCreateUser", "Information")',
+                data: { UserEmail: userEmail, UserFname: userFname, UserOrg: userOrg, userid: userid }
+            })
+                .done(function (data ,status, xhr) {
+                    debugger;
+                    if (data.jsonObj != null) {
+                        var OutPut = JSON.parse(data.jsonObj);
+                        document.getElementById('IsUserLoggedout').innerHTML = "<span style='color:green'>" + data.isusserLogged+"</span>" ;
+                        $("#userlist").hide();
+                        
+                        if (data.isusserLogged == "User has Logged in system once but now logged out") {
+                            $("#unlockdiv").show();
+                        } else {
+                            $("#unlockdiv").hide();
+                        }
+
+                        PopulateView(OutPut);
+                        debugger;
+                        var s = '<option value="-1">Please Select a Department</option>';
+                        for (var i = 0; i < data.userList.length; i++) {
+                            s += '<option value="' + data.userList[i].id + '">' + data[i].userList[i].name + '</option>';
+                        }
+                        $("#UserList").html(s);
+
+
+                    } else {
+                        document.getElementById("form").reset();
+                        document.getElementById("Organisation.Id").value = '@System.Guid.Empty';
+                        document.getElementById('User.Email').value = userEmail;
+                    }
+                })
+                .fail(function (jqXhr, textStatus, errorThrown) {
+                    debugger;
+                    console.log(errorThrown);
+                });
+        }
+
+
+        function ResendLogin() {
+            var userEmail = document.getElementById('User.Email').value;
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("ResendEmail", "Information")',
+                data: { UserEmail: userEmail }
+            })
+                .done(function (data) {
+                    debugger;
+                    if (data == true) {
+                        document.getElementById('IsUserLoggedout').innerHTML = "<span style='color:green'>User Login Information sent Successfully</span>";
+                    }
+                })
+                .fail(function (jqXhr, textStatus, errorThrown) {
+                    debugger;
+                    console.log(errorThrown);
+                });
+        }
+
+        function UnlockUser() {
+            var userEmail = document.getElementById('User.Email').value;
+            $.ajax({
+                type: 'Post',
+                url: '@Url.Action("UserUnlock", "Information")',
+                data: { UserEmail: userEmail }
+            })
+                .done(function (data) {
+                    debugger;
+                    if (data == true){
+                        document.getElementById('IsUserLoggedout').innerHTML = "<span style='color:green'>User Unlocked Successfully</span>";
+                        $("#unlockdiv").hide();
+                    }
+
+                })
+                .fail(function (jqXhr, textStatus, errorThrown) {
+                    debugger;
+                    console.log(errorThrown);
+                });
+        }
+
+
+    </script>
+}*@

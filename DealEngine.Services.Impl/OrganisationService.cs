@@ -10,6 +10,7 @@ using DealEngine.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
+using ServiceStack;
 
 namespace DealEngine.Services.Impl
 {
@@ -78,6 +79,14 @@ namespace DealEngine.Services.Impl
             // we don't want to query ldap. That way lies timeouts. Or Dragons.
             return await _organisationRepository.FindAll().ToListAsync();
         }
+
+        public async Task<List<Organisation>> GetAllOrganisationsStartBy(string startby)
+        {
+            // we don't want to query ldap. That way lies timeouts. Or Dragons.
+            return await _organisationRepository.FindAll().Where(org => org.Name.Contains(startby) && org.DateDeleted==null).Take(5).ToListAsync();
+        }
+
+
         public async Task UpdateOrganisationsEmail(String Email, String NewEmail)
         {
             foreach (Organisation org in await GetAllOrganisationsByEmail(Email))

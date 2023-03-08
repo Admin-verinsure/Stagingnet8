@@ -1582,6 +1582,26 @@ namespace DealEngine.WebUI.Controllers
             return View(userViewModel);
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> CreateNewUser(IFormCollection form)
+        //{
+        //    UserViewModel userViewModel = new UserViewModel();
+        //    //Guid OrgId = Guid.Parse(form["Organisation.Id"]);
+        //    //Guid OrgId = Guid.Parse(form["Organisation.Id"]);
+        //    return View("CreateNewUser", userViewModel);
+        //}
+
+        [HttpPost]
+        public async Task<IActionResult> CreateNewUser(IFormCollection form)
+        {
+            UserViewModel userViewModel = new UserViewModel();
+            //Guid OrgId = Guid.Parse(form["Organisation.Id"]);
+            String orgname = form["Organisation.Name"];
+            userViewModel.Organisationselected = orgname;
+            return View("CreateNewUser", userViewModel);
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> HQLTest()
         {
