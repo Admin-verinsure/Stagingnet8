@@ -2349,7 +2349,7 @@ namespace DealEngine.WebUI.Controllers
                 };
                 await _userManager.CreateAsync(deUser, "defaultPassword");
             }
-            return Redirect("~/Home/Index");
+            return Redirect("~/Admin/CreateUser");
         }
 
 
