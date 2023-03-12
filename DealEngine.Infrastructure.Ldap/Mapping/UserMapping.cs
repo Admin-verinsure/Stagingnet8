@@ -11,7 +11,7 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 	{
 		public User FromLdap (LdapEntry entry)
 		{
-			Guid id = Guid.Parse (entry.GetAttributeValue ("employeenumber"));                  // Need to swap this to use 'uniqueIdentifier'
+			Guid id = Guid.Parse (entry.GetAttributeValue ("entryParentId"));                  // Need to swap this to use 'uniqueIdentifier'
 			string userName = entry.GetAttributeValue ("uid");
 
 			User user = new User (null, id, userName);
