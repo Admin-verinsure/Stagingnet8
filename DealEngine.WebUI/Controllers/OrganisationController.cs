@@ -30,7 +30,7 @@ namespace DealEngine.WebUI.Controllers
         IProgrammeService _programmeService;
         IMapper _mapper;
         IEmailService _emailService;
-
+        IUnitOfWork _unitOfWork;
         public OrganisationController(
             IProgrammeService programmeService,
             IMilestoneService milestoneService,
@@ -41,6 +41,7 @@ namespace DealEngine.WebUI.Controllers
             IOrganisationService organisationService,
             IUserService userRepository,
             IEmailService emailService,
+            IUnitOfWork unitOfWork,
             IMapper mapper
             )
             : base (userRepository)
@@ -54,6 +55,7 @@ namespace DealEngine.WebUI.Controllers
             _applicationLoggingService = applicationLoggingService;
             _organisationService = organisationService;
             _emailService = emailService;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost]
@@ -334,7 +336,8 @@ namespace DealEngine.WebUI.Controllers
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             string OrganisationTypeName = collection["OrganisationViewModel.OrganisationType"].ToString();
             Organisation organisation = await _organisationService.GetOrganisation(OrganisationId);
-            
+            ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(collection["ClientProgrammeId"]));
+
             try
             {
 
@@ -342,6 +345,20 @@ namespace DealEngine.WebUI.Controllers
                 {
                     organisation = await _organisationService.CreateOrganisation(jsonUser.Email, TypeName, jsonOrganisation.Name, OrganisationTypeName, jsonUser.FirstName, jsonUser.LastName, currentUser, collection);
                 }
+
+                if (TypeName == "Administrator")
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+
+                        User user = await _userService.GetUserByEmail(jsonUser.Email);
+                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id)) { 
+                        user.Organisations.Add(clientProgramme.Owner);
+                        }
+                        await uow.Commit();
+                    }
+                }
+
 
                 await _organisationService.PostOrganisation(collection, organisation);
                 if (!Sheet.Organisation.Contains(organisation))

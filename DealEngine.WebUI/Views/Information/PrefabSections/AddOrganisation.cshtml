@@ -195,6 +195,7 @@
                 @Html.HiddenFor(m => m.OrganisationViewModel.Organisation.Id, new { id = "Organisation.Id" })
                 @Html.HiddenFor(m => m.OrganisationViewModel.User.Id, new { id = "User.Id" })
                 @Html.HiddenFor(m => m.ClientInformationSheet.Id)
+                @Html.HiddenFor(m => m.ClientProgrammeId)
                 @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme")
                 {
                     @Html.Hidden("AdministratorUnit", Model.OrganisationViewModel.AdministratorUnit.GetType().AssemblyQualifiedName, new { @id = "AdministratorUnit" })

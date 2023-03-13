@@ -449,9 +449,9 @@ namespace DealEngine.Services.Impl
                     if ( User.PrimaryOrganisation == null)
                     {
                         User.SetPrimaryOrganisation(foundOrg);
-                    }
-                  
-                    ;
+                    };
+
+                   
 
                     await _userService.Create(User);
                 }
