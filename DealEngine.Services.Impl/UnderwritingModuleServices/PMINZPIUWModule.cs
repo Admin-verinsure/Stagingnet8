@@ -225,7 +225,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
 
                 decOther = decPMTC + decOPMA + decDM + decTM + decRCIM;
-                decSumActivity = decBDSP + decCon + decIT + decMOP + decNPMA + decOther;
+                decSumActivity = decBDSP + decCon + decIT + decMOP + decNPMA + decFASA + decOther;
 
                 decPRBDSP = decBDSP / (decSumActivity - decNPMA) * decSumActivity;
                 decPRCon = decCon / (decSumActivity - decNPMA) * decSumActivity;
