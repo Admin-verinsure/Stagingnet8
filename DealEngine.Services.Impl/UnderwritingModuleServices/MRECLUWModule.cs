@@ -352,7 +352,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 agreement.RetroactiveDate = strretrodate;
             }
-            if (!String.IsNullOrEmpty(agreement.ContinuityDate))
+            if (String.IsNullOrEmpty(agreement.ContinuityDate))
             {
                 agreement.ContinuityDate = "Policy Inception";
             }
