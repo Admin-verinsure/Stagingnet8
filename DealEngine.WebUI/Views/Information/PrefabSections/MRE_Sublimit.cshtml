@@ -1,0 +1,247 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="PIViewModel" class="is-valid" data-accordianId="Sub Limit">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    <strong>Sub-Limits</strong>
+                </label>
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    <strong>Limit</strong>
+                </label>
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    Valuations:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitValuations, new { @class = "form-control", @id = "sublimitvaluations", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    in the aggregate
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    Business Sales:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitBusinessSales, new { @class = "form-control", @id = "sublimitbusinesssales", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    any one claim and
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitBusinessSalesAg, new { @class = "form-control", @id = "sublimitbusinesssalesag", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    in the aggregate
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    Rural Sales (n/a Lifestyle Blocks):
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitRuralSales, new { @class = "form-control", @id = "sublimitruralsales", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    any one claim and
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitRuralSalesAg, new { @class = "form-control", @id = "sublimitruralsalesag", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    in the aggregate
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    Employee Fidelity:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitEmployeeFidelity, new { @class = "form-control", @id = "sublimitemployeefidelity", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    in the aggregate
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    Loss of Documents:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitLossofdocuments, new { @class = "form-control", @id = "sublimitlossofdocuments", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    in the aggregate
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    Investigation Costs:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitInvestigationCosts, new { @class = "form-control", @id = "sublimitinvestigationcosts", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    in the aggregate
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    Public Relations Expenses:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitPublicRelationsExpenses, new { @class = "form-control", @id = "sublimitpublicrelationsexpenses", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    in the aggregate
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    Pollution Exclusion - Writeback:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitPollutionExclusion, new { @class = "form-control", @id = "sublimitpollutionexclusion", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    in the aggregate
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-6">
+                <label for="assettotal" class="label">
+                    Punitive / Exemplary Damages:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.PIViewModel.SublimitPunitiveExemplaryDamages, new { @class = "form-control", @id = "sublimitpunitiveexemplarydamages", @type = "number", onchange = "OnChange(this.id, this.name)" })
+            </div>
+            <div class="col-3">
+                <label for="assettotal" class="label">
+                    in the aggregate
+                </label>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<script type="text/javascript">
+    if (document.getElementById('sublimitvaluations').value == 0) {
+        document.getElementById('sublimitvaluations').value = 250000;
+    }
+    if (document.getElementById('sublimitbusinesssales').value == 0) {
+        document.getElementById('sublimitbusinesssales').value = 1000000;
+    }
+    if (document.getElementById('sublimitbusinesssalesag').value == 0) {
+        document.getElementById('sublimitbusinesssalesag').value = 2000000;
+    }
+    if (document.getElementById('sublimitruralsales').value == 0) {
+        document.getElementById('sublimitruralsales').value = 1000000;
+    }
+    if (document.getElementById('sublimitruralsalesag').value == 0) {
+        document.getElementById('sublimitruralsalesag').value = 2000000;
+    }
+    if (document.getElementById('sublimitemployeefidelity').value == 0) {
+        document.getElementById('sublimitemployeefidelity').value = 250000;
+    }
+    if (document.getElementById('sublimitlossofdocuments').value == 0) {
+        document.getElementById('sublimitlossofdocuments').value = 100000;
+    }
+    if (document.getElementById('sublimitinvestigationcosts').value == 0) {
+        document.getElementById('sublimitinvestigationcosts').value = 250000;
+    }
+    if (document.getElementById('sublimitpublicrelationsexpenses').value == 0) {
+        document.getElementById('sublimitpublicrelationsexpenses').value = 50000;
+    }
+    if (document.getElementById('sublimitpollutionexclusion').value == 0) {
+        document.getElementById('sublimitpollutionexclusion').value = 250000;
+    }
+    if (document.getElementById('sublimitpunitiveexemplarydamages').value == 0) {
+        document.getElementById('sublimitpunitiveexemplarydamages').value = 100000;
+    }
+</script>

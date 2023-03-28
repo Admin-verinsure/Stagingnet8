@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace DealEngine.WebUI.Controllers
 {
-    public class InformationTemplateController : BaseController
+    public class InformationTemplateController : BaseController 
     {
         IInformationItemService _informationItemService;
         IInformationTemplateService _informationTemplateService;

@@ -1231,6 +1231,122 @@
         return sanitised;
     }
 
+
+    function deleteTrustAsset(trustassetid) {
+        debugger;
+        if (trustassetid != "") {
+
+             $.ajax({
+            url: '@Url.Action("DeleteTrustAsset", "information")',
+            type: "Post",
+                 data: { Trustassetid: trustassetid },
+            async: true
+            })
+                 .done(function (data) {
+                     debugger;
+                     if (data === true) {
+                         location.reload();
+                         $("#assettable").trigger("click");
+                   }
+               });
+
+        }
+    };
+
+   function deletedoc(docid,docname) {
+        debugger;
+       if (docid != "") {
+             $.ajax({
+            url: '@Url.Action("DeleteDoc", "information")',
+            type: "Post",
+                 data: { DocId: docid },
+            async: true
+            })
+                 .done(function (data) {
+                     debugger;
+                     var hjk = $('#' + $.escapeSelector(docname));
+                     $('#' + $.escapeSelector(docname)).hide();
+                     //$("#" + docname).addClass('hidden');
+                     if (data === true) {
+                         //location.reload();
+
+                         $("#RotaryDocUpload").trigger("click");
+                   }
+               });
+        }
+    };
+
+    function GetuploadedDoc(path){
+        debugger;
+            $.ajax({
+                url: '@Url.Action("GetuploadedDoc", "File")',
+                type: "POST",
+                data: { DocId: path },
+                success: function (Data) {
+                    try {
+                        var OutPut = JSON.parse(Data);
+                        PopulateOrganisationView(Method, OutPut);
+                    } catch (e) {
+                        debugger;
+                    }
+                }, error: function (request, error) {
+                    debugger;
+                }
+            });
+
+
+    }
+
+    function AddNewRow() {
+        //event.preventDefault();
+        debugger;
+        var newRow = $("<tr>");
+        var cols = '';
+        var rowcounter = (document.getElementById("assettable").rows.length);
+        //// Table columns
+
+        cols += "<td><input class=\"form-control rounded-0\" type=\"text\"  name=\"CTAViewModelDescriptionorName " + rowcounter + "\" placeholder=\"Description or name\"></td>";
+        cols += "<td><input class=\"form-control rounded-0\" type=\"number\"  min=\"15001\" name=\"CTAViewModelCurrentValue " + rowcounter + "\" placeholder=\"Current Value\"></td>";
+        cols += "<td><input class=\"form-control rounded-0\" type=\"number\" name=\"CTAViewModelReplacementValue " + rowcounter + "\" placeholder=\"Replacement Value\"></td>";
+        //cols += "<td><input class=\"form-control rounded-0\" type=\"text\" name=\"CTAViewModelOwner " + rowcounter + "\" placeholder=\"Owner\"></td>";
+        cols += "<td><select  name=\"CTAViewModelOwner " + rowcounter + "\" class=\"form-select\" id=\"orgselect" + rowcounter +"\"></select></td>";
+       // cols += "<td id=\"orgselect" + rowcounter + "\" ></td>";
+
+        cols += '<td><button class="btn btn-danger rounded-0" onclick="$(this).closest(\"tr\").remove();" id ="deleteRow"><i class="fa fa-trash"></i></button</td>';
+
+        newRow.append(cols);
+
+        $("#assettable").append(newRow);
+        var orgselectid = "orgselect" + rowcounter;
+        //var ele = document.getElementById(id);
+        //var elements = $("#organisationselection").innerHTML;
+
+        var elements = $("#organisationselection").children();
+
+        $.each(elements, function (key, value) {
+
+            $("#"+orgselectid).append(new Option(value.text, value.value));
+            //$('#orgselect2').append("</select>");
+
+            //document.getElementById("orgselect" + rowcounter)
+            //    .append(`<option value= ${value.value}>
+            //                           ${value.text}
+            //                      </option>`);
+        });
+        //$('#orgselect2').append("</td>");
+        //var id = "orgselect" + rowcounter;
+        //var ele = document.getElementById(id);
+        //document.getElementById("orgselect" + rowcounter).append(elements);
+
+        // Increase counter after each row insertion
+    };
+
+    // Remove row when delete btn is clicked
+    $("#stocktable").on("click", "#deleteRow", function (event) {
+        $(this).closest("tr").remove();
+        counter -= 1
+    });
+
     //function SetPolicyEffectiveDate() {
     //    debugger;
     //    var priorDate = new Date().setDate(today.getDate() - 30);

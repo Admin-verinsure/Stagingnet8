@@ -401,11 +401,13 @@
                                         }
                                         @if (User.HasClaim("ViewUsers", "ViewUsers"))
                                         {
-                                            <tr>
-                                                <td>Users</td>
-                                                <td>User Management</td>
-                                                <td><a class="btn btn-success btn-sm disabled pull-right" style="width:100px;" href="#"><i class="fa fa-search"></i> In Dev</a></td>
-                                            </tr>
+                                    <tr>
+                                        <td>Users</td>
+                                        <td>User Management</td>
+                                        <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="/Admin/CreateUser"><i class="fa fa-search"></i> Check User </a></td>
+
+                                        @*<td><a class="btn btn-success btn-sm disabled pull-right" style="width:100px;" href="#"><i class="fa fa-search"></i> In Dev</a></td>*@
+                                    </tr>
                                         }
                                         @if (User.HasClaim("ViewWater", "ViewWater"))
                                         {

@@ -379,6 +379,7 @@ namespace DealEngine.WebUI.Controllers
 
                 // Step 1 validate in  LDap 
                 _ldapService.Validate(userName, password, out resultCode, out resultMessage);
+                //resultCode = 0;
                 if (resultCode == 0)
                 {
                     var user = await _userService.GetUser(userName);

@@ -9,6 +9,7 @@ namespace DealEngine.Infrastructure.Ldap.Interfaces
 		User GetUser (string username);
 		User GetUser (Guid userId);
 		User GetUserByEmail (string email);
+		User GetUserByEmailforupload(string email);
 		void Validate (string username, string password, out int resultCode, out string resultMessage);
 		Organisation GetOrganisation (string organisationName);
 		Organisation GetOrganisation (Guid organisationId);

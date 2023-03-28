@@ -215,7 +215,7 @@ namespace DealEngine.WebUI.Models.Agreement
             }
             foreach (ClientAgreementTerm term in agreement.ClientAgreementTerms.Where(t => t.DateDeleted == null).OrderBy(acat => acat.TermLimit).ThenBy(acat => acat.Excess))
             {
-                if ((agreement.Product.Id == new Guid("094f0b97-f288-440d-a32a-3c2128e35e70") || agreement.Product.Id == new Guid("eda1fa59-19e3-48f6-aef9-3057582717b4")) 
+                if ((agreement.Product.Id == new Guid("094f0b97-f288-440d-a32a-3c2128e35e70") || agreement.Product.Id == new Guid("eda1fa59-19e3-48f6-aef9-3057582717b4"))
                     && term.TermLimit == 0 && term.Excess == 0 && term.Premium == 0) //Apollo PIFAP or Abbott PIFAP
                 {
                     MultiCoverOptions.Add(new MultiCoverOptions
@@ -228,6 +228,20 @@ namespace DealEngine.WebUI.Models.Agreement
                         Exclusion = "Same as Professional Indemnity",
                         TotalPremium = "Included",
                         monthlypremium = "Included",
+                        Dependableproduct = "NonDependable"
+                    });
+                } else if (agreement.Product.Id == new Guid("826a14a9-66d7-4b4d-904f-4c346b209488")) //Rotary Associations Product
+                {
+                    MultiCoverOptions.Add(new MultiCoverOptions
+                    {
+                        TermId = term.Id,
+                        isSelected = (term.Bound == true) ? "checked" : "",
+                        ProductId = agreement.Product.Id,
+                        RiskName = agreement.Product.Name,
+                        Inclusion = "Limit: " + term.TermLimit.ToString("C", userCulture) + " shared",
+                        Exclusion = "Excess: " + term.Excess.ToString("C", userCulture),
+                        TotalPremium = "Paid by District",//term.Premium.ToString("C", userCulture),
+                        monthlypremium = "To be advised", //(term.Premium / intMonthlyInstalmentNumber).ToString("C", userCulture),
                         Dependableproduct = "NonDependable"
                     });
                 }
@@ -342,7 +356,7 @@ namespace DealEngine.WebUI.Models.Agreement
                             }
                             else
                             {
-                                if (agreement.ClientInformationSheet.IsChange) 
+                                if (agreement.ClientInformationSheet.IsChange)
                                 {
                                     MultiCoverOptions.Add(new MultiCoverOptions
                                     {
@@ -353,7 +367,7 @@ namespace DealEngine.WebUI.Models.Agreement
                                         Inclusion = "Limit: " + term.TermLimit.ToString("C", userCulture),
                                         Exclusion = "Minimum Excess: " + term.Excess.ToString("C", userCulture),
                                         TotalPremium = term.PremiumDiffer.ToString("C", userCulture),
-										monthlypremium = "To be advised", //(term.PremiumDiffer / intMonthlyInstalmentNumber).ToString("C", userCulture),
+                                        monthlypremium = "To be advised", //(term.PremiumDiffer / intMonthlyInstalmentNumber).ToString("C", userCulture),
                                         Dependableproduct = "NonDependable"
                                     });
                                 } else
@@ -367,7 +381,7 @@ namespace DealEngine.WebUI.Models.Agreement
                                         Inclusion = "Limit: " + term.TermLimit.ToString("C", userCulture),
                                         Exclusion = "Minimum Excess: " + term.Excess.ToString("C", userCulture),
                                         TotalPremium = term.Premium.ToString("C", userCulture),
-										monthlypremium = "To be advised", //(term.Premium / intMonthlyInstalmentNumber).ToString("C", userCulture),
+                                        monthlypremium = "To be advised", //(term.Premium / intMonthlyInstalmentNumber).ToString("C", userCulture),
                                         Dependableproduct = "NonDependable"
                                     });
                                 }
@@ -425,12 +439,13 @@ namespace DealEngine.WebUI.Models.Agreement
                                         Dependableproduct = "NonDependable"
                                     });
                                 }
-                               
+
                             }
 
                         }
                     }
                 }
+
 
             }
         }

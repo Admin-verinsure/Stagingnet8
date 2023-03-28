@@ -381,7 +381,7 @@ namespace DealEngine.Services.Impl
             Organisation foundOrg = null;//= await GetOrganisationByEmail(Email);
             User User = null;
             Boolean usercreation = true;
-
+            Boolean nousercreationflag = false;
 
             if (foundOrg == null)
             {
@@ -395,9 +395,18 @@ namespace DealEngine.Services.Impl
                     OrganisationTypeName = "Person - Individual";
 
                 }
-                
-               
-                if (!string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName))
+                if(collection["NoUserCreation"].Count() > 0)
+                {
+                    nousercreationflag = Boolean.Parse(collection["NoUserCreation"]);
+
+                }
+                else
+                {
+                    nousercreationflag = false;
+
+                }
+
+                if (!string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName) && !nousercreationflag)
                 {
                     User = await _userService.GetUserByEmail(Email);
                     if (User != null)
@@ -425,7 +434,7 @@ namespace DealEngine.Services.Impl
                 InsuranceAttribute InsuranceAttribute = new InsuranceAttribute(Creator, Type);
                 OrganisationType OrganisationType = await _organisationTypeService.GetOrganisationTypeByName(OrganisationTypeName);
                 foundOrg = CreateNewOrganisation(Creator, Email, OrganisationName, OrganisationType, OrganisationalUnits, InsuranceAttribute);
-                if (User != null && usercreation)
+                if (User != null && usercreation && !nousercreationflag)
                 {
                     if (!User.Organisations.Any(o => o.InsuranceAttributes.Any(i => i.Name == Type) && o.Name == OrganisationName))
                         User.Organisations.Add(foundOrg);

@@ -81,6 +81,13 @@ namespace DealEngine.WebUI.Models
 //		public virtual bool TypeIsInsurer { get; set; }
 //		public virtual bool TypeIsClient { get; set; }
 //}
+	public class OwnerItem
+	{
+        public string OwnerName { get; set; }
+        public string OwnerId { get; set; }
+        public string ProgrammeId { get; set; }
+    }
+
 	public class DealItem
 	{
 		public string Name { get; set; }
@@ -132,7 +139,8 @@ namespace DealEngine.WebUI.Models
 			OrganisationViewModel = new OrganisationViewModel(null, null);
 			Programme = baseProgramme;
 			Deals = new List<DealItem>();
-		}
+            OwnerDeals = new List<OwnerItem>();
+        }
 
         public ProgrammeItem(List<ClientInformationSheet> sheets)
         {
@@ -179,7 +187,8 @@ namespace DealEngine.WebUI.Models
 		public List<string> SelectedUpdateTypes { get; set; }
 		public IList<string> Languages { get; set; }
 		public IList<DealItem> Deals { get; set; }
-		public IList<UpdateType> updateTypes { get; set; }
+        public IList<OwnerItem> OwnerDeals { get; set; }
+        public IList<UpdateType> updateTypes { get; set; }
 
 		public string CurrentUserIsBroker { get; set; }
 		public string CurrentUserIsInsurer { get; set; }
@@ -199,8 +208,9 @@ namespace DealEngine.WebUI.Models
    
 		public bool IsRenewFromProgramme { get; set; }
 		public bool ProgEnableEmail { get; set; }
+        public bool ProgMultiPolicyMode { get; set; }
 
-	}
+    }
 
 
 	public class TaskItem : BaseViewModel

@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Identity;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
 using System.Data;
 using DealEngine.Services.Impl;
+using FluentNHibernate.Conventions;
+using Microsoft.Extensions.Azure;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -50,6 +52,7 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<User> _userRepository;
         IUpdateTypeService _updateTypeServices;
         IPolicyCenterService _policyCenterService;
+        IEmailService _emailService;
         public AdminController(
             IUpdateTypeService updateTypeService,
             IOrganisationService organisationService,
@@ -77,6 +80,7 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<Boat> boatRepository,
             IMapperSession<User> userRepository2,
             IReferenceService referenceService,
+            IEmailService emailService,
             IPolicyCenterService policyCenterService
             )
 			: base (userRepository)
@@ -107,9 +111,11 @@ namespace DealEngine.WebUI.Controllers
             _objectRepository = objectRepository;
             _updateTypeServices = updateTypeService;
             _policyCenterService = policyCenterService;
+            _emailService = emailService;
+
         }
 
-		[HttpGet]
+        [HttpGet]
 		public async Task<IActionResult> Index ()
 		{
             AdminViewModel model = new AdminViewModel();
@@ -850,6 +856,63 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
                 await _importService.ImportDANZServiceIndividuals(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> UploadUserLdap()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.createIndividualstoldap(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+        
+
+
+        [HttpGet]
+        public async Task<IActionResult> RotaryImportLocalUsers()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportRotaryServicelocalIndividuals(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> RotaryImportUsers()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportRotaryServiceIndividuals(user);
 
                 return RedirectToAction("Index", "Home");
             }
@@ -1688,18 +1751,126 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetCreateUser(IFormCollection form)
         {
-            var user = await _userService.GetUserByEmail(form["UserEmail"]);
+            User user = null;
+            List<User> Luser = new List<User>();
 
+            if (form["UserEmail"] !="")
+            {
+                 user = await _userService.GetUserByEmail(form["UserEmail"]);
+            }
+            else if (form["UserFname"] != "")
+            {
+                user = await _userService.GetUserByFirstName(form["UserFname"]);
+            }
+            else if (form["userid"] != "")
+            {
+                user = await _userService.GetUserById(Guid.Parse(form["userid"]));
+            }
+            else if (form["UserOrg"] != "")
+            {
+                Organisation org = await _organisationService.GetOrganisationByName(form["UserOrg"]);
+                Luser = await _userService.GetAllUserByOrganisation(org);
+            }
+            
+            IdentityUser identityUser;
+            string IsusserLogged = "";
             Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
             if (user != null)
             {
                 JsonObjects.Add("User", user);
                 JsonObjects.Add("Organisation", user.PrimaryOrganisation);
                 var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
-                return Json(jsonObj);                
+                identityUser = await _userManager.FindByNameAsync(user.UserName);
+                if (identityUser == null)
+                {
+                    IsusserLogged = "User never Logged in.";
+                }
+                else
+                {
+                    if (user.IsLoggedout)
+                    {
+                        IsusserLogged = "User has Logged in system once but now logged out";
+
+                    }
+                    else
+                    {
+                        IsusserLogged = "";
+
+                    }
+                }
+                //Response.Headers[""] = IsusserLogged;
+                //Response.Headers.Add("IsusserLogged", IsusserLogged);
+                return Json(new { IsusserLogged = IsusserLogged, jsonObj = jsonObj});
             }
             return Json(null);
-        }        
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetCreateUserbyOrg(IFormCollection form)
+        {
+            List<User> Luser = new List<User>();
+
+            if (form["UserOrg"] != "")
+            {
+                Organisation org = await _organisationService.GetOrganisationByName(form["UserOrg"]);
+                Luser = await _userService.GetAllUserByOrganisation(org);
+            }
+            IdentityUser identityUser;
+            string IsusserLogged = "";
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+            
+                //Response.Headers[""] = IsusserLogged;
+                //Response.Headers.Add("IsusserLogged", IsusserLogged);
+            return Json(Luser);
+            
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UserUnlock(IFormCollection form)
+        {
+            var currentUser = await CurrentUser();
+            User user = null;
+            try
+            {
+                if (form["UserEmail"] != "")
+                {
+                    user = await _userService.GetUserByEmail(form["UserEmail"]);
+                }
+                if(user != null)
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        user.IsLoggedout = false;
+                       await uow.Commit();
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return Json(true);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResendEmail(IFormCollection form)
+        {
+            var currentUser = await CurrentUser();
+            try
+            {
+               await _emailService.SendSystemEmailLogin(form["UserEmail"]);
+
+            }catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return Json(true);
+        }
 
         [HttpPost]
         public async Task<IActionResult> PostCreateUser(IFormCollection form)
@@ -1713,7 +1884,7 @@ namespace DealEngine.WebUI.Controllers
                 deUser = new IdentityUser
                 {
                     UserName = user.UserName,
-                    Email = user.Email
+                    Email = user.Email,
                 };
                 await _userManager.CreateAsync(deUser, "defaultPassword");
             }

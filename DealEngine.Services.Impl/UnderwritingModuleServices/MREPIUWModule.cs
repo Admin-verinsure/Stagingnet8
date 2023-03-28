@@ -251,19 +251,19 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             termpitermoption.DateDeleted = null;
             termpitermoption.DeletedBy = null;
 
-            ////add Costs & Expenses extension
-            //foreach (ClientAgreementTermExtension pitermextension in agreement.ClientAgreementTermExtensions.Where(ctex => ctex.DateDeleted == null))
-            //{
-            //    pitermextension.Delete(underwritingUser);
-            //}
-            //ClientAgreementTermExtension termPICEextension = GetAgreementExtensionTerm(underwritingUser, agreement, 500000, 0M, 0M, "Professional Indemnity – Costs & Expenses");
-            //termPICEextension.ExtentionName = "Professional Indemnity – Costs & Expenses";
-            //termPICEextension.HideLimitExcess = false;
-            //termPICEextension.Premium = 0M;
-            //termPICEextension.BasePremium = 0M;
-            //termPICEextension.DateDeleted = null;
-            //termPICEextension.DeletedBy = null;
-            //termPICEextension.Bound = true;
+            //add Costs & Expenses extension
+            foreach (ClientAgreementTermExtension pitermextension in agreement.ClientAgreementTermExtensions.Where(ctex => ctex.DateDeleted == null))
+            {
+                pitermextension.Delete(underwritingUser);
+            }
+            ClientAgreementTermExtension termPICEextension = GetAgreementExtensionTerm(underwritingUser, agreement, 500000, 0M, 0M, "Professional Indemnity – Costs & Expenses");
+            termPICEextension.ExtentionName = "Professional Indemnity – Costs & Expenses";
+            termPICEextension.HideLimitExcess = false;
+            termPICEextension.Premium = 0M;
+            termPICEextension.BasePremium = 0M;
+            termPICEextension.DateDeleted = null;
+            termPICEextension.DeletedBy = null;
+            termPICEextension.Bound = true;
 
 
             //Change policy premium calculation
@@ -349,6 +349,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             if (!String.IsNullOrEmpty(strretrodate))
             {
                 agreement.RetroactiveDate = strretrodate;
+            }
+
+            if (String.IsNullOrEmpty(agreement.ContinuityDate))
+            {
+                agreement.ContinuityDate = "Policy Inception";
             }
 
             if (agreement.ClientInformationSheet.Programme.BaseProgramme.ProgMultiPolicyMode)
