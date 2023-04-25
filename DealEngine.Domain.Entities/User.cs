@@ -96,7 +96,7 @@ namespace DealEngine.Domain.Entities
 					_primaryOrganisation = Organisations [0];
 					return _primaryOrganisation;
 				} else
-					return null;
+					return null;                                  
 			}
 			set {
 				_primaryOrganisation = value;

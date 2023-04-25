@@ -401,7 +401,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         user.IsLoggedout = false;
                         user.LoggedInTime = DateTime.UtcNow;
-                        await uow.Commit();
+                        await uow.Commit().ConfigureAwait(false);
                     }
                     return LocalRedirect("~/Home/Index");
                 }

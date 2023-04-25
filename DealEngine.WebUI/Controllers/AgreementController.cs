@@ -3538,17 +3538,19 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 clientagreements = ClientProgramme.Agreements.ToList(); ;
-                foreach (ClientAgreement agreement in clientagreements.Where(agree => agree.Id == Guid.Parse("5cc65c22-9749-4d2e-80c2-ad43016ea7b3")))
+                foreach (ClientAgreement agreement in clientagreements)
                 {
-                    agreeTemplateList = agreement.Documents.Where(doc => doc.Name == TemplateName && doc.DateDeleted == null).ToList();
+                    
+                    agreeTemplateList = agreement.Product.Documents.Where(doc => doc.Name == TemplateName && doc.DateDeleted == null).ToList();
 
 
-                    //var templatetype = agreement.Documents.Where(doc => doc.Name == TemplateName);
-                    foreach (SystemDocument templatetypes in agreeTemplateList)
-                    {
-                        documents.Add(await RerenderTemplate(templatetypes, agreement, ClientProgramme));
+                        //var templatetype = agreement.Documents.Where(doc => doc.Name == TemplateName);
+                        foreach (SystemDocument templatetypes in agreeTemplateList)
+                        {
+                            documents.Add(await RerenderTemplate(templatetypes, agreement, ClientProgramme));
 
-                    }
+                        }
+                    
                 }
             }
             catch (Exception ex)
