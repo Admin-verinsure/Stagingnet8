@@ -383,6 +383,15 @@ namespace DealEngine.WebUI.Controllers
                 if (resultCode == 0)
                 {
                     var user = await _userService.GetUser(userName);
+
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        user.IsLoggedout = false;
+                        user.LoggedInTime = DateTime.UtcNow;
+                        await uow.Commit();
+                    }
+
+
                     var identityResult = await DealEngineIdentityUserLogin(user, password);
                     if (!identityResult.Succeeded)
                     {
@@ -397,12 +406,8 @@ namespace DealEngine.WebUI.Controllers
                         deUser = await _userManager.FindByNameAsync(userName);
                     }
                     var result = await _signInManager.PasswordSignInAsync(deUser, password, viewModel.RememberMe, lockoutOnFailure: true);
-                    using (var uow = _unitOfWork.BeginUnitOfWork())
-                    {
-                        user.IsLoggedout = false;
-                        user.LoggedInTime = DateTime.UtcNow;
-                        await uow.Commit().ConfigureAwait(false);
-                    }
+
+                   
                     return LocalRedirect("~/Home/Index");
                 }
                 /*
