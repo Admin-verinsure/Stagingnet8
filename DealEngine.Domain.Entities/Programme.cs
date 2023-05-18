@@ -105,7 +105,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool ProgEnableBrokerUW { get; set; }
         public virtual bool ProgMultiPolicyMode { get; set; }
         public virtual bool ProgMultBrokerMode { get; set; }
-
+        public virtual bool IsClientTaskDisabled { get; set; }
         protected Programme() : this(null) { }
 
         public Programme(User createdBy) : base(createdBy)
