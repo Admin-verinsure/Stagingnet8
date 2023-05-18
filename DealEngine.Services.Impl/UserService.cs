@@ -170,7 +170,20 @@ namespace DealEngine.Services.Impl
 			}
 			return user;
 		}
+		public async Task<User> GetUserByFirstName(string firstName)
+		{
+			User user = null;
+			try
+			{
+				user = await _userRepository.FindAll().FirstOrDefaultAsync(u => u.FirstName == firstName);
 
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message);
+			}
+			return user;
+		}
 		public async Task<User> GetUserByUserName(string userName)
 		{
 			User user = null;
@@ -228,7 +241,7 @@ namespace DealEngine.Services.Impl
 		{
 			await CreateDefaultUserOrganisation(user);
 			await _userRepository.AddAsync(user);
-			await Update(user);
+			//await Update(user);
 		}
 
 		public async Task Create(User user)
@@ -345,7 +358,7 @@ namespace DealEngine.Services.Impl
 		}
 		public async Task<List<User>> GetAllUserByOrganisation(Organisation org)
 		{
-			return _userRepository.FindAll().Where(u => u.PrimaryOrganisation == org).ToList();
+			return _userRepository.FindAll().Where(u => u.PrimaryOrganisation == org).OrderBy(u => u.FullName).ToList();
 		}
 
 		private void UpdateLDap(User user)

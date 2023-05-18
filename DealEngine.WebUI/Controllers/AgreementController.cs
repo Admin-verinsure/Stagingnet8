@@ -242,6 +242,8 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(agreementId);
                 model.InformationSheetId = sheetId;
                 model.ClientAgreementId = agreementId;
@@ -290,6 +292,9 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(agreementId);
                 ClientProgramme clientprog = await _programmeService.GetClientProgrammebyId(programmeId);
                 Programme programme = clientprog.BaseProgramme;
@@ -298,6 +303,7 @@ namespace DealEngine.WebUI.Controllers
                 model.ClientProgrammeId = agreement.ClientInformationSheet.Programme.Id;
                 model.ProgrammeName = programme.Name;
                 model.ProgrammeNamedPartyName = programme.NamedPartyUnitName;
+                model.ContactBroker = agreement.ClientInformationSheet.Programme.BrokerContactUser;
 
                 if (!string.IsNullOrEmpty(agreement.issuetobrokercomment))
                 {
@@ -365,7 +371,8 @@ namespace DealEngine.WebUI.Controllers
                     }
                     await uow.Commit();
                 }
-                if (model.Content != null && agreement.ClientInformationSheet.Programme.BaseProgramme.ProgEnableEmail)
+                //removed programme sending email check as user requested, issue to broker should always send out email
+                if (model.Content != null) // && agreement.ClientInformationSheet.Programme.BaseProgramme.ProgEnableEmail 
                 {
                     await _emailService.IssueToBrokerSendEmail(model.issuetobrokerto, model.Content, agreement.ClientInformationSheet, agreement, user);
                 }
@@ -533,6 +540,9 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
@@ -924,12 +934,15 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementViewModel model = new ViewAgreementViewModel();
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
             ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
             ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
             ClientProgramme programme = answerSheet.Programme;
             try
             {
-                user = await CurrentUser();
                 ViewBag.Title = "Bind Agreements ";
                 model.InformationSheetId = answerSheet.Id;
                 model.ClientProgrammeId = programme.Id;
@@ -971,10 +984,7 @@ namespace DealEngine.WebUI.Controllers
                 var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
 
                 //used for eglobal request and response log 
-                if (agreement.ClientInformationSheet.Programme.BaseProgramme.ProgEnableEmail)
-                {
-                    await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
-                }
+                await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
 
                 EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
 
@@ -1021,6 +1031,9 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
@@ -1053,6 +1066,8 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
@@ -1123,6 +1138,9 @@ namespace DealEngine.WebUI.Controllers
             {
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
                 if (agreement != null)
                 {
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -1430,6 +1448,10 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> EditExtensionTerms(Guid id, String productname = null)
         {
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
             ViewAgreementViewModel model = new ViewAgreementViewModel();
             try
             {
@@ -1470,6 +1492,11 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> EditTerms(Guid id, String productname = null)
         {
             User user = null;
+            user = await CurrentUser();
+
+            if (user.IsLoggedout)
+                return PageNotFound();
+
             ViewAgreementViewModel model = new ViewAgreementViewModel();
             try
             {
@@ -1550,6 +1577,7 @@ namespace DealEngine.WebUI.Controllers
                         TermType = subtypeterm.SubTermType,
                         TermLimit = subtypeterm.TermLimit,
                         Excess = Convert.ToInt32(subtypeterm.Excess),
+                        AggregateLimit = Convert.ToInt32(subtypeterm.AggregateLimit),
                         Premium = subtypeterm.Premium,
                         BasePremium = subtypeterm.BasePremium,
                         PremiumDiffer = subtypeterm.PremiumDiffer
@@ -1694,6 +1722,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         term.Premium = clientAgreementSubTerm.Premium;
                         term.TermLimit = clientAgreementSubTerm.TermLimit;
+                        term.AggregateLimit = clientAgreementSubTerm.AggregateLimit;
                         term.Excess = clientAgreementSubTerm.Excess;
                         term.PremiumDiffer = clientAgreementSubTerm.PremiumDiffer;
                         await uow.Commit();
@@ -1705,7 +1734,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         decimal brokeragerate = agreement.Product.DefaultBrokerage;
                         decimal Brokerage = clientAgreementSubTerm.Premium * agreement.Product.DefaultBrokerage / 100;
-                        _clientAgreementTermService.AddAgreementTerm(user, clientAgreementSubTerm.TermLimit, clientAgreementSubTerm.Excess, clientAgreementSubTerm.Premium, 0.0m, brokeragerate, Brokerage, agreement, clientAgreementSubTerm.TermType);
+                        _clientAgreementTermService.AddAgreementTerm(user, clientAgreementSubTerm.TermLimit,clientAgreementSubTerm.AggregateLimit, clientAgreementSubTerm.Excess, clientAgreementSubTerm.Premium, 0.0m, brokeragerate, Brokerage, agreement, clientAgreementSubTerm.TermType);
                         await uow.Commit();
                     }
                 }
@@ -1827,6 +1856,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ViewAgreementViewModel model;
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(id);
                 Organisation insured = clientProgramme.Owner;
@@ -2081,6 +2115,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 var clientProgramme = await _programmeService.GetClientProgrammebyId(id);
                 Organisation insured = clientProgramme.Owner;
                 ClientInformationSheet answerSheet = clientProgramme.InformationSheet;
@@ -2145,7 +2184,15 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ViewAgreementDeclarationReport(String id)
         {
             var models = new BaseListViewModel<ViewAgreementViewModel>();
+
             User user = null;
+            user = await CurrentUser();
+
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
 
             try
             {
@@ -2215,6 +2262,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 //need to review this code duplication
                 var models = new BaseListViewModel<ViewAgreementViewModel>();
 
@@ -2316,6 +2369,8 @@ namespace DealEngine.WebUI.Controllers
 
                         model.NoPaymentRequiredMessage = clientProgramme.BaseProgramme.NoPaymentRequiredMessage;
                         model.IsMasterAgreement = agreement.MasterAgreement;
+                        model.HasCCPayment = agreement.ClientInformationSheet.Programme.BaseProgramme.HasCCPayment;
+                        model.HasInvoicePayment = agreement.ClientInformationSheet.Programme.BaseProgramme.HasInvoicePayment;
                         models.Add(model);
                     }
                 }
@@ -2350,13 +2405,19 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementViewModel model = new ViewAgreementViewModel();
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
                 ClientProgramme programme = answerSheet.Programme;
-                user = await CurrentUser();
 
                 model.InformationSheetId = answerSheet.Id;
                 model.ClientAgreementId = agreement.Id;
@@ -2369,6 +2430,7 @@ namespace DealEngine.WebUI.Controllers
                 model.ClientNumber = agreement.ClientNumber;
                 model.PolicyNumber = agreement.PolicyNumber;
                 model.RetroactiveDate = agreement.RetroactiveDate;
+                model.ContinuityDate = agreement.ContinuityDate;
                 model.TerritoryLimit = agreement.TerritoryLimit;
                 model.Jurisdiction = agreement.Jurisdiction;
                 model.ProfessionalBusiness = agreement.ProfessionalBusiness;
@@ -2405,6 +2467,7 @@ namespace DealEngine.WebUI.Controllers
                     agreement.ClientNumber = model.ClientNumber;
                     agreement.PolicyNumber = model.PolicyNumber;
                     agreement.RetroactiveDate = model.RetroactiveDate;
+                    agreement.ContinuityDate = model.ContinuityDate;
                     agreement.Jurisdiction = model.Jurisdiction;
                     agreement.TerritoryLimit = model.TerritoryLimit;
                     agreement.ProfessionalBusiness = model.ProfessionalBusiness;
@@ -2431,13 +2494,19 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementChangeReasonViewModel model = new ViewAgreementChangeReasonViewModel();
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
                 ClientProgramme programme = answerSheet.Programme;
-                user = await CurrentUser();
 
                 model.InformationSheetID = answerSheet.Id;
                 model.ClientAgreementID = agreement.Id;
@@ -2506,9 +2575,14 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementRuleViewModel model = new ViewAgreementRuleViewModel();
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
-                user = await CurrentUser();
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
@@ -2551,9 +2625,14 @@ namespace DealEngine.WebUI.Controllers
         {
             ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
-                user = await CurrentUser();
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 model.Owner = agreement.ClientInformationSheet.Organisation.Where(o => o.InsuranceAttributes.Any(i => i.Name == "Advisor") && o.Removed != true && o.DateDeleted == null).ToList();
@@ -2624,9 +2703,14 @@ namespace DealEngine.WebUI.Controllers
         {
             ViewAgreementEndorsementViewModel model = new ViewAgreementEndorsementViewModel();
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
-                user = await CurrentUser();
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
                 Organisation insured = answerSheet.Owner;
@@ -2788,11 +2872,17 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> AcceptAgreement(Guid Id)
         {
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             List<AgreementDocumentViewModel> models = new List<AgreementDocumentViewModel>();
             try
             {
                 ClientProgramme programme = await _programmeService.GetClientProgrammebyId(Id);
-                user = await CurrentUser();
                 foreach (ClientAgreement agreement in programme.Agreements)
                 {
                     if (agreement == null)
@@ -2853,11 +2943,16 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> RerenderDocs(string ProgrammeId, string ClientProgId = null)
         {
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             ViewAgreementViewModel viewAgreementViewModel = new ViewAgreementViewModel();
             List<Product> listAgreementProduct = new List<Product>();
             try
             {
-                user = await CurrentUser();
                 viewAgreementViewModel.ProgrammeId = Guid.Parse(ProgrammeId);
                 ViewBag.IsTC = user.PrimaryOrganisation.IsTC;
                 ViewBag.IsInsurer = user.PrimaryOrganisation.IsInsurer;
@@ -2915,6 +3010,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<List<Product>> GetAgreementProduct(string ProgrammeId)
         {
             User user = null;
+
             List<Product> listProduct = new List<Product>();
 
             try
@@ -3096,6 +3192,16 @@ namespace DealEngine.WebUI.Controllers
 
                                         //send out agreement bound notification email
                                         await _emailService.SendSystemEmailAgreementBoundNotify(programme.BrokerContactUser, programme.BaseProgramme, agreement, programme.Owner);
+                                    }
+
+                                    //send to me should be able regardless
+                                    if (!programme.BaseProgramme.ProgEnableEmail && !Rerenderalldocs && sendUser)
+                                    {
+                                        EmailTemplate emailTemplate = programme.BaseProgramme.EmailTemplates.FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+                                        if (emailTemplate != null)
+                                        {
+                                            await _emailService.SendEmailViaEmailTemplate(user.Email, emailTemplate, documents, agreement.ClientInformationSheet, agreement);
+                                        }
                                     }
                                 }
                             }
@@ -3683,10 +3789,16 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> SendPolicyDocuments(Guid id, bool sendUser)
         {
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 ClientInformationSheet sheet = await _customerInformationService.GetInformation(id);
-                user = await CurrentUser();
                 var progid = sheet.Programme.Id;
                 // TODO - rewrite to save templates on a per programme basis
                 await RerenderClientProgrammes(sheet.Programme, "SendPolicyDocuments", null, null, false, sendUser);
@@ -3704,10 +3816,16 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> SendFullProposalReport(Guid id, bool sendUser)
         {
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 ClientInformationSheet sheet = await _customerInformationService.GetInformation(id);
-                user = await CurrentUser();
                 // TODO - rewrite to save templates on a per programme basis
 
                 ClientProgramme programme = sheet.Programme;
@@ -4282,10 +4400,7 @@ namespace DealEngine.WebUI.Controllers
                     var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
 
                     //used for eglobal request and response log
-                    if (programme.BaseProgramme.ProgEnableEmail)
-                    {
-                        await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
-                    }
+                    await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
 
                     EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
 
@@ -4472,11 +4587,16 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ProcessRequestConfiguration(Guid Id)
         {
             User user = null;
+            user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
                 string queryString = HttpContext.Request.Query["result"].ToString();
                 var status = "Bound";
-                user = await CurrentUser();
 
                 ClientProgramme programme = await _programmeService.GetClientProgrammebyId(Id);
                 Payment payment = await _paymentService.GetPayment(programme.Id);
@@ -4559,10 +4679,7 @@ namespace DealEngine.WebUI.Controllers
                         var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
 
                         //used for eglobal request and response log
-                        if (programme.BaseProgramme.ProgEnableEmail)
-                        {
-                            await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
-                        }
+                        await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
 
                         EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
 
@@ -4770,6 +4887,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 PartialViewResult result = (PartialViewResult)await ViewAgreement(id);
                 var models = (BaseListViewModel<ViewAgreementViewModel>)result.Model;
                 var agreeDocList = new List<Document>();
@@ -4807,9 +4929,15 @@ namespace DealEngine.WebUI.Controllers
 
             try
             {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 PartialViewResult result = (PartialViewResult)await ViewAgreement(id);
                 var models = (BaseListViewModel<ViewAgreementViewModel>)result.Model;
-                user = await CurrentUser();
+
                 var agreeDocList = new List<Document>();
 
                 foreach (ViewAgreementViewModel model in models)
@@ -4823,7 +4951,10 @@ namespace DealEngine.WebUI.Controllers
                     model.InformationSheetId = programme.InformationSheet.Id;
                     model.ProgrammeName = programme.BaseProgramme.Name;
                     model.ProgrammeNamedPartyName = programme.BaseProgramme.NamedPartyUnitName;
+                    model.ProgEnableBrokerUW = programme.BaseProgramme.ProgEnableBrokerUW;
                     model.UsesEglobal = programme.BaseProgramme.UsesEGlobal;
+                    model.HasCCPayment = programme.BaseProgramme.HasCCPayment;
+                    model.HasInvoicePayment = programme.BaseProgramme.HasInvoicePayment;
                     ViewBag.Ispdfenable = "" + programme.BaseProgramme.EnableFullProposalReport;
                     model.ClientProgrammeId = id;
                     foreach (ClientAgreement agreement in programme.Agreements.Where(a => a.DateDeleted == null && a.InsurerDeclined !=true))

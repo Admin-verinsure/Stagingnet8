@@ -63,6 +63,12 @@ namespace DealEngine.WebUI.Controllers
 			try
 			{
 				user = await CurrentUser();
+				if (user.IsLoggedout)
+					return PageNotFound();
+
+				if (user == null)
+					return PageNotFound();
+
 				var productList = await _productService.GetAllProducts();
 				var products = productList.Where(p => p.OwnerCompany == user.PrimaryOrganisation.Id);
 				BaseListViewModel<ProductInfoViewModel> models = new BaseListViewModel<ProductInfoViewModel>();
@@ -95,6 +101,12 @@ namespace DealEngine.WebUI.Controllers
 			try
 			{
 				user = await CurrentUser();
+				if (user.IsLoggedout)
+					return PageNotFound();
+
+				if (user == null)
+					return PageNotFound();
+
 				var productList = await _productService.GetAllProducts();
 				var products = productList.Where(p => p.Public);
 				BaseListViewModel<ProductInfoViewModel> models = new BaseListViewModel<ProductInfoViewModel> ();
@@ -130,6 +142,12 @@ namespace DealEngine.WebUI.Controllers
 			try
 			{
 				user = await CurrentUser();
+				if (user.IsLoggedout)
+					return PageNotFound();
+
+				if (user == null)
+					return PageNotFound();
+
 				ProductViewModel model = new ProductViewModel();
 				model.Description = new ProductDescriptionVM
 				{
@@ -206,6 +224,12 @@ namespace DealEngine.WebUI.Controllers
 			try
 			{
 				user = await CurrentUser();
+				if (user.IsLoggedout)
+					return PageNotFound();
+
+				if (user == null)
+					return PageNotFound();
+
 				model.Builder = new RoleBuilderVM();
 
 				List<SelectListItem> proglist = new List<SelectListItem>();
@@ -276,6 +300,12 @@ namespace DealEngine.WebUI.Controllers
 			try
 			{
 				user = await CurrentUser();
+				if (user.IsLoggedout)
+					return PageNotFound();
+
+				if (user == null)
+					return PageNotFound();
+
 				model.Builder = new TerritoryBuilderVM
 				{
 					Location = "",
@@ -446,6 +476,12 @@ namespace DealEngine.WebUI.Controllers
 			try
 			{
 				user = await CurrentUser();
+				if (user.IsLoggedout)
+					return PageNotFound();
+
+				if (user == null)
+					return PageNotFound();
+
 				Product product = await _productService.GetProductById(id);
 				if (product != null)
 				{
@@ -486,6 +522,12 @@ namespace DealEngine.WebUI.Controllers
 			try
 			{
 				user = await CurrentUser();
+				if (user.IsLoggedout)
+					return PageNotFound();
+
+				if (user == null)
+					return PageNotFound();
+
 				Product originalProduct = await _productService.GetProductById(id);
 				if (originalProduct != null)
 				{
@@ -589,6 +631,12 @@ namespace DealEngine.WebUI.Controllers
 			try
 			{
 				user = await CurrentUser();
+				if (user.IsLoggedout)
+					return PageNotFound();
+
+				if (user == null)
+					return PageNotFound();
+
 				var riskCategoryList = await _riskCategoryService.GetAllRiskCategories();
 				foreach (RiskCategory risk in riskCategoryList)
 					model.Add(new RiskEntityViewModel { Insured = risk.Name, Id = risk.Id, CoverAll = false, CoverLoss = false, CoverInterruption = false, CoverThirdParty = false });

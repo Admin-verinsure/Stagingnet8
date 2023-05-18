@@ -23,7 +23,10 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI.BaseClasses
             PackageProduct = _packageProduct;
             Load();
             LoadInsurers();
-            LoadSubAgents();
+            if (PackageProduct.PackageProductDefaultSubAgent != null)
+            {
+                LoadSubAgents();
+            }
         }
 
         void Load()

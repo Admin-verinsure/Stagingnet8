@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
 
-
 namespace DealEngine.Services.Impl
 {
     public class OrganisationService : IOrganisationService
@@ -165,6 +164,25 @@ namespace DealEngine.Services.Impl
             else if (InsuranceAttribute == "Barrister")
             {
                 UnitName = collection["BarristerUnit"].ToString();
+
+            }
+            else if (InsuranceAttribute == "MREDirector")
+            {
+                UnitName = collection["MREDirectorUnit"].ToString();
+
+            }else if (InsuranceAttribute == "Subsidiary Company organisation")
+            {
+                UnitName = collection["SubsidiaryUnit"].ToString();
+
+            }
+            else if ( InsuranceAttribute == "Run Off")
+            {
+                UnitName = collection["RealEstateRunOffUnit"].ToString();
+
+            }
+            else if (InsuranceAttribute == "Employee")
+            {
+                UnitName = collection["EmployeeUnit"].ToString();
 
             }
             else
@@ -362,15 +380,33 @@ namespace DealEngine.Services.Impl
         {
             Organisation foundOrg = null;//= await GetOrganisationByEmail(Email);
             User User = null;
+            Boolean usercreation = true;
+            Boolean nousercreationflag = false;
+
             if (foundOrg == null)
             {
-                if (string.IsNullOrWhiteSpace(OrganisationName))
+                if (string.IsNullOrWhiteSpace(OrganisationName) && string.IsNullOrWhiteSpace(FirstName))
+                {
+                    OrganisationName =  collection["OrganisationViewModel.Organisation.Name"].ToString();
+                }
+                    if (string.IsNullOrWhiteSpace(OrganisationName))
                 {
                     OrganisationName = FirstName + " " + LastName;
                     OrganisationTypeName = "Person - Individual";
 
                 }
-                if (!string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName))
+                if(collection["NoUserCreation"].Count() > 0)
+                {
+                    nousercreationflag = Boolean.Parse(collection["NoUserCreation"]);
+
+                }
+                else
+                {
+                    nousercreationflag = false;
+
+                }
+
+                if (!string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(FirstName) && !string.IsNullOrWhiteSpace(LastName) && !nousercreationflag)
                 {
                     User = await _userService.GetUserByEmail(Email);
                     if (User != null)
@@ -387,11 +423,18 @@ namespace DealEngine.Services.Impl
                             User = new User(Creator, Guid.NewGuid(), collection);
                     }
                 }
+
+                if (string.IsNullOrWhiteSpace(Email))
+                {
+
+                    Email = OrganisationName + "@Techcertain.com ";
+                    usercreation = false;
+                }
                 List<OrganisationalUnit> OrganisationalUnits = GetOrganisationCreateUnits(Type, Creator, collection);
                 InsuranceAttribute InsuranceAttribute = new InsuranceAttribute(Creator, Type);
                 OrganisationType OrganisationType = await _organisationTypeService.GetOrganisationTypeByName(OrganisationTypeName);
                 foundOrg = CreateNewOrganisation(Creator, Email, OrganisationName, OrganisationType, OrganisationalUnits, InsuranceAttribute);
-                if (User != null)
+                if (User != null && usercreation && !nousercreationflag)
                 {
                     if (!User.Organisations.Any(o => o.InsuranceAttributes.Any(i => i.Name == Type) && o.Name == OrganisationName))
                         User.Organisations.Add(foundOrg);
@@ -438,8 +481,7 @@ namespace DealEngine.Services.Impl
                     Type == "Administration" ||
                     Type == "Other Consulting Business" ||
                     Type == "Mentored Advisor" ||
-                    Type == "Director"
-                    )
+                    Type == "Director" )
                 {
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new AdvisorUnit(User, Type, OrganisationTypeName, collection));
@@ -470,11 +512,26 @@ namespace DealEngine.Services.Impl
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new EBaristerUnit(User, Type, OrganisationTypeName, collection));
                 }
-                if (Type == "Barrister" 
-                   )
+                if (Type == "Employee")
+                {
+                    OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
+                    OrganisationalUnits.Add(new EmployeeUnit(User, Type, OrganisationTypeName, collection));
+                }
+                
+                if (Type == "Barrister" )
                 {
                     OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
                     OrganisationalUnits.Add(new BarristerUnit(User, Type, OrganisationTypeName, collection));
+                }
+                if (Type == "MREDirector" )
+                {
+                    OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
+                    OrganisationalUnits.Add(new RealEstateDirectorUnit(User, Type, OrganisationTypeName, collection));
+                }
+                if (Type == "Run Off")
+                {
+                    OrganisationalUnits.Add(new OrganisationalUnit(User, "Person - Individual", OrganisationTypeName, collection));
+                    OrganisationalUnits.Add(new RealEstateRunOffUnit(User, Type, OrganisationTypeName, collection));
                 }
             }
 
@@ -670,8 +727,7 @@ namespace DealEngine.Services.Impl
                 organisation.OrganisationalUnits.Add(partyUnit);
             }
             await Update(organisation);
-        }
+        }        
     }
-
 }
 

@@ -8,6 +8,8 @@ using ServiceStack;
 using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
+using AutoMapper;
 
 namespace DealEngine.Services.Impl
 {
@@ -18,15 +20,18 @@ namespace DealEngine.Services.Impl
 		string _apiKey;
         IAppSettingService _appSettingService;
 		IMapperSession<Vehicle> _vehicleRepository;
+		ISerializerationService _serializerationService;
+		IMapper _mapper;
 
-
-		public VehicleService (IAppSettingService appSettingService, IMapperSession<Vehicle> vehicleRepository)
+		public VehicleService (IAppSettingService appSettingService, IMapper mapper, ISerializerationService serializerationService, IMapperSession<Vehicle> vehicleRepository)
 		{
 			_vehicleRepository = vehicleRepository;
 			_appSettingService = appSettingService;
             _apiEndpoint = _appSettingService.CarJamEndpoint;
             _apiKey = _appSettingService.CarJamApiKey;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+			_serializerationService = serializerationService;
+			_mapper = mapper;
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 		}
 
         [Obsolete]
@@ -75,6 +80,32 @@ namespace DealEngine.Services.Impl
 		{
 			return await _vehicleRepository.GetByIdAsync(vehicleId);
 		}
+
+		public Vehicle CreateNewVehicle(User Creator,  string Registration, string Make, string VehicleModel)
+		{
+			Vehicle vehicle = new Vehicle(Creator, Registration, Make, VehicleModel);
+			return vehicle;
+		}
+
+		public async Task<Vehicle> PostVehicle(IFormCollection collection, Vehicle vehicle)
+        {
+			 vehicle = await UpdateVehicle(collection, vehicle);
+			 return vehicle;
+		}
+
+		public  async Task<Vehicle> UpdateVehicle(IFormCollection collection, Vehicle vehicle)
+        {
+			var jsonVehicle = (Vehicle) await _serializerationService.GetDeserializedObject(typeof(Vehicle), collection);
+			Guid vehicleid = Guid.Parse(collection["RVViewModel.Id"].ToString());
+			vehicle = _mapper.Map(jsonVehicle, vehicle);
+			if(collection["RVViewModel.Id"].ToString()!= null){
+				vehicle.Id = vehicleid;
+			}
+			return vehicle;
+
+		}
+
+
 
 		public bool MyRemoteCertificateValidationCallback (object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
 		{

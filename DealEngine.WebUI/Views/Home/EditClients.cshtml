@@ -17,9 +17,16 @@
                         </select>
                     </label>
                 </div>
-                <div class="form-group">                    
+                <div class="form-group col-md-6">
                     <button class="btn-success btn btn-xs" type="button" onclick="GetOwner()">Go</button>
                 </div>
+                @*@if ( Model.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                {
+
+                    <div class="form-group col-md-4">
+                        <button class="btn-success btn btn-xs" type="button" onclick="GetOwner()">RequestAccount</button>
+                    </div>
+                }*@
             </div>
             <div class="card-body">
                 <div class="form-group">
@@ -39,9 +46,9 @@
                             @Html.TextBoxFor(m => m.Organisation.Email, new { @class = "form-control", @id = "Organisation.Email", @required = "" })
                         </div>
                         @if (Model.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                         Model.Programme.NamedPartyUnitName == "Apollo ML Programme" ||
-                         Model.Programme.NamedPartyUnitName == "Apollo Run Off Programme" ||
-                         Model.Programme.NamedPartyUnitName == "NZPI Programme")
+                        Model.Programme.NamedPartyUnitName == "Apollo ML Programme" ||
+                        Model.Programme.NamedPartyUnitName == "Apollo Run Off Programme" ||
+                        Model.Programme.NamedPartyUnitName == "NZPI Programme")
                         {
                             <div class="form-group">
                                 <label class="label">EGlobal Number</label>
@@ -56,7 +63,8 @@
                                 @Html.DropDownListFor(m => m.ClientProgramme.Tier, Model.Tiers, new { @class = "form-select b", @id = "ClientProgramme.Tier", @required = "", @size = 1 })
                             </div>
                         }
-                        @if (Model.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                        @if (Model.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme" ||
+                          Model.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
                         {
                             <div class="form-group">
                                 <label class="label">EGlobal Client Branch Code</label><br />
@@ -67,6 +75,14 @@
                                 @Html.TextBoxFor(m => m.ClientProgramme.EGlobalClientNumber, new { @class = "form-control", @id = "ClientProgramme.EGlobalClientNumber", @required = "" })
                             </div>
                         }
+
+
+                        <div class="form-group">
+                            <label class="label">Contact Broker</label>
+                            @Html.DropDownListFor(m => m.ClientProgramme.BrokerContactId, Model.BrokerContacts, new { @class = "form-select b", @id = "ClientProgramme.BrokerContactId", @required = "", @size = 1 })
+                        </div>
+
+
                     </div>
                 </div>
             </div>

@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using Document = DealEngine.Domain.Entities.Document;
 using System.Text.RegularExpressions;
 using NReco.PdfGenerator;
+using System.Net.Sockets;
 
 namespace DealEngine.Services.Impl
 {
@@ -153,6 +154,11 @@ namespace DealEngine.Services.Impl
         {
             return await _documentRepository.FindAll().FirstOrDefaultAsync(i => i.Id == documentID);
         }
+        public async Task DeleteDocument(Document doc)
+        {
+            await _documentRepository.RemoveAsync(doc);
+
+        }
 
         public async Task<Document> GetDocumentByType(Organisation primaryOrganisation, int DocumentType)
         {
@@ -164,6 +170,12 @@ namespace DealEngine.Services.Impl
 		{
 			return await _imageRepository.FindAll().FirstOrDefaultAsync(i => i.Name == imageName);
 		}
+
+        //public async Task<T> AddDocument(Document document)
+        //{
+        //    return await _documentRepository.AddAsync(document);
+        //}
+       
 
         public async Task<T> RenderDocument<T>(User renderedBy, T template, ClientAgreement agreement, ClientInformationSheet clientInformationSheet, Job job) where T : Document
         {
@@ -181,8 +193,15 @@ namespace DealEngine.Services.Impl
                 List<KeyValuePair<string, string>> mergeFields = new List<KeyValuePair<string, string>>();
                 mergeFields.Add(new KeyValuePair<string, string>("[[ClientName]]", clientInformationSheet.Owner.Name));
                 mergeFields.Add(new KeyValuePair<string, string>("[[Date]]", DateTime.UtcNow.ToShortDateString()));
-                mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.FirstName +
+                if (clientInformationSheet.Programme.BrokerContactUser != null)
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BrokerContactUser.FirstName +
+                    clientInformationSheet.Programme.BrokerContactUser.LastName));
+                } else
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[BrokerName]]", clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.FirstName +
                     clientInformationSheet.Programme.BaseProgramme.BrokerContactUser.LastName));
+                }
 
                 // merge the configured merge feilds into the document
                 string content = FromBytes(template.Contents);
@@ -214,6 +233,7 @@ namespace DealEngine.Services.Impl
                 currencyFormat.CurrencyNegativePattern = 2;
                 Decimal PremiumTotal = 0.0m;
                 Decimal BrokerFeeTotal = 0.0m;
+                string strPICEExtensionLimit = "$500,000";
 
                 int intMonthlyInstalmentNumber = 1;
                 if (agreement.ClientInformationSheet.Programme.BaseProgramme.EnableMonthlyPremiumDisplay)
@@ -249,6 +269,7 @@ namespace DealEngine.Services.Impl
                             mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                             mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundLimit_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                             mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                            mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundAggregateLimit_{0}]]", term.SubTermType), term.AggregateLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
                             mergeFields.Remove(new KeyValuePair<string, string>(string.Format("[[PolicyStatus_{0}]]", term.SubTermType), "Not Insured"));
                             mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[PolicyStatus_{0}]]", term.SubTermType), "Insured"));
@@ -430,7 +451,16 @@ namespace DealEngine.Services.Impl
                             {
                                 PremiumTotal += termExtension.Premium;
                             }
+
+                            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                            {
+                                if (termExtension.TermLimit > 500000 && termExtension.ExtentionName == "Professional Indemnity – Costs & Expenses")
+                                {
+                                    strPICEExtensionLimit = termExtension.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"));
+                                }
+                            }
                         }
+                       
                     }
 
                     if (agreementlist.Product.DefaultEnableBrokerFee)
@@ -438,6 +468,8 @@ namespace DealEngine.Services.Impl
                         PremiumTotal += agreementlist.BrokerFee;
                     }
                 }
+
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[PICEExtensionLimit]]", ""), strPICEExtensionLimit));
 
                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_Total]]", ""), PremiumTotal.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremium_GST]]", ""), (PremiumTotal * (decimal)0.15).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
@@ -824,6 +856,8 @@ namespace DealEngine.Services.Impl
                 string strbarristerlist = "";
                 string strabusiness = "";
 
+                string strallrotarynamedparties = "";
+
                 if (agreement.ClientInformationSheet.Organisation.Count > 0)
                 {
 
@@ -1011,6 +1045,44 @@ namespace DealEngine.Services.Impl
                                 }
                             }
 
+                            var rotarydirector = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Director");
+                            if (rotarydirector != null)
+                            {
+                                if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                {
+                                    strallrotarynamedparties = uisorg.Name;
+                                }
+                                else
+                                {
+                                    strallrotarynamedparties += ", " + uisorg.Name;
+                                }
+                            }
+                            var rotarytrustee = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Trustee");
+                            if (rotarytrustee != null)
+                            {
+                                if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                {
+                                    strallrotarynamedparties = uisorg.Name;
+                                }
+                                else
+                                {
+                                    strallrotarynamedparties += ", " + uisorg.Name;
+                                }
+                            }
+                            var rotaryincorporatedsocietyofficer = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Incorporated Society Officer");
+                            if (rotaryincorporatedsocietyofficer != null)
+                            {
+                                if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                {
+                                    strallrotarynamedparties = uisorg.Name;
+                                }
+                                else
+                                {
+                                    strallrotarynamedparties += ", " + uisorg.Name;
+                                }
+                            }
+
+
                         }
 
                     }
@@ -1044,6 +1116,11 @@ namespace DealEngine.Services.Impl
                         strabusiness = "No Associated Business Insureds.";
                     }
 
+                    if (string.IsNullOrEmpty(strallrotarynamedparties))
+                    {
+                        strabusiness = "No Additional Insureds.";
+                    }
+
                     mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTablePI]]", stradvisorlist));
                     mergeFields.Add(new KeyValuePair<string, string>("[[AdvisorDetailsTableDO]]", stradvisorlist1));
                     mergeFields.Add(new KeyValuePair<string, string>("[[OtherConsultingBusiness]]", strotherconsultingbusiness));
@@ -1052,6 +1129,8 @@ namespace DealEngine.Services.Impl
 
                     mergeFields.Add(new KeyValuePair<string, string>("[[BarristerNames]]", strbarristerlist));
                     mergeFields.Add(new KeyValuePair<string, string>("[[AssociatedBusiness]]", strabusiness));
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AllRotaryNamedParties]]", strallrotarynamedparties));
 
                 }
                 else
@@ -1064,6 +1143,8 @@ namespace DealEngine.Services.Impl
 
                     mergeFields.Add(new KeyValuePair<string, string>("[[BarristerNames]]", "No Barrister insured under this policy."));
                     mergeFields.Add(new KeyValuePair<string, string>("[[AssociatedBusiness]]", "No Associated Business Insureds."));
+
+                    mergeFields.Add(new KeyValuePair<string, string>("[[AllRotaryNamedParties]]", "No Additional Insureds."));
                 }
 
                 //Advisor list with FAP Number
@@ -1285,11 +1366,23 @@ namespace DealEngine.Services.Impl
             mergeFields.Add(new KeyValuePair<string, string>("[[Jurisdiction]]", agreement.Jurisdiction));
             mergeFields.Add(new KeyValuePair<string, string>("[[Territory]]", agreement.TerritoryLimit));
             mergeFields.Add(new KeyValuePair<string, string>("[[ProfessionalBusiness]]", agreement.ProfessionalBusiness));
-            
+            mergeFields.Add(new KeyValuePair<string, string>("[[ContinuityDate]]", agreement.ContinuityDate));
+
+            int intSublimitValuations = 250000;
+            int intSublimitBusinessSales = 1000000;
+            int intSublimitBusinessSalesAg = 2000000;
+            int intSublimitRuralSales = 1000000;
+            int intSublimitRuralSalesAg = 2000000;
+            int intSublimitEmployeeFidelity = 250000;
+            int intSublimitPunitiveExemplaryDamages = 100000;
+            int intSublimitLossofdocuments = 100000;
+            int intSublimitPublicRelationsExpenses = 50000;
+            int intSublimitInvestigationCosts = 250000;
+            int intSublimitPollutionExclusion = 250000;
+
             if (clientInformationSheet != null)
             {
                 mergeFields.Add(new KeyValuePair<string, string>("[[SubClientName]]", clientInformationSheet.Owner.Name));
-
             }
             if (agreement.ClientInformationSheet != null)
             {
@@ -1353,6 +1446,105 @@ namespace DealEngine.Services.Impl
                     mergeFields.Add(new KeyValuePair<string, string>("[[TradingName]]", agreement.ClientInformationSheet.Programme.Owner.TradingName));
                     mergeFields.Add(new KeyValuePair<string, string>("[[InsuredEmail]]", agreement.ClientInformationSheet.Programme.Owner.Email));
                 }
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitValuations").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitValuations").First().Value) > 0)
+                    {
+                        intSublimitValuations = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitValuations").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitValuations]]", intSublimitValuations.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSales").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSales").First().Value) > 0)
+                    {
+                        intSublimitBusinessSales = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSales").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitBusinessSales]]", intSublimitBusinessSales.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSalesAg").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSalesAg").First().Value) > 0)
+                    {
+                        intSublimitBusinessSalesAg = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitBusinessSalesAg").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitBusinessSalesAg]]", intSublimitBusinessSalesAg.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSalesAg").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSalesAg").First().Value) > 0)
+                    {
+                        intSublimitRuralSalesAg = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSalesAg").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitRuralSalesAg]]", intSublimitRuralSalesAg.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSales").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSales").First().Value) > 0)
+                    {
+                        intSublimitRuralSales = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitRuralSales").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitRuralSales]]", intSublimitRuralSales.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitEmployeeFidelity").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitEmployeeFidelity").First().Value) > 0)
+                    {
+                        intSublimitEmployeeFidelity = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitEmployeeFidelity").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitEmployeeFidelity]]", intSublimitEmployeeFidelity.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPunitiveExemplaryDamages").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPunitiveExemplaryDamages").First().Value) > 0)
+                    {
+                        intSublimitPunitiveExemplaryDamages = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPunitiveExemplaryDamages").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitPunitiveExemplaryDamages]]", intSublimitPunitiveExemplaryDamages.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitLossofdocuments").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitLossofdocuments").First().Value) > 0)
+                    {
+                        intSublimitLossofdocuments = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitLossofdocuments").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitLossofdocuments]]", intSublimitLossofdocuments.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPublicRelationsExpenses").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPublicRelationsExpenses").First().Value) > 0)
+                    {
+                        intSublimitPublicRelationsExpenses = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPublicRelationsExpenses").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitPublicRelationsExpenses]]", intSublimitPublicRelationsExpenses.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitInvestigationCosts").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitInvestigationCosts").First().Value) > 0)
+                    {
+                        intSublimitInvestigationCosts = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitInvestigationCosts").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitInvestigationCosts]]", intSublimitInvestigationCosts.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPollutionExclusion").Any())
+                {
+                    if (Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPollutionExclusion").First().Value) > 0)
+                    {
+                        intSublimitPollutionExclusion = Convert.ToInt32(agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "PIViewModel.SublimitPollutionExclusion").First().Value);
+                    }
+                }
+                mergeFields.Add(new KeyValuePair<string, string>("[[SublimitPollutionExclusion]]", intSublimitPollutionExclusion.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
             }
 
             //Eglobal merge fields
@@ -1380,11 +1572,21 @@ namespace DealEngine.Services.Impl
                 {
                     //mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[RetroactiveDate_{0}]]", term.SubTermType), ""));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimit_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+
+                    if (term.TermLimit > 1000000)
+                    {
+                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitDC_{0}]]", term.SubTermType), "$1,000,000"));
+                    } else
+                    {
+                        mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitDC_{0}]]", term.SubTermType), term.TermLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                    }
+
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx2_{0}]]", term.SubTermType), (term.TermLimit * 2).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx3_{0}]]", term.SubTermType), (term.TermLimit * 3).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx4_{0}]]", term.SubTermType), (term.TermLimit * 4).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundLimitx5_{0}]]", term.SubTermType), (term.TermLimit * 5).ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
                     mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundExcess_{0}]]", term.SubTermType), term.Excess.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                    mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundAggregateLimit_{0}]]", term.SubTermType), term.AggregateLimit.ToString("C0", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
                     if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
                     {

@@ -25,6 +25,22 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 			return user;
 		}
 
+		public User FromLdapforupload(LdapEntry entry)
+		{
+			Guid id = Guid.Parse(entry.GetAttributeValue("entryUUID"));                  // Need to swap this to use 'uniqueIdentifier'
+			string userName = entry.GetAttributeValue("uid");
+
+			User user = new User(null, id, userName);
+			user.FirstName = entry.GetAttributeValue("givenname");
+			user.LastName = entry.GetAttributeValue("sn");
+			user.FullName = entry.GetAttributeValue("cn");
+			user.Email = entry.GetAttributeValue("mail");
+			user.Phone = entry.GetAttributeValue("telephonenumber");
+			user.Description = entry.GetAttributeValue("description");
+
+			return user;
+		}
+
 		public string GetDn (User entity, string baseDn)
 		{
 			return "uid=" + entity.UserName + ",ou=users," + baseDn;

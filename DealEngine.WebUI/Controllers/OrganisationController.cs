@@ -329,11 +329,12 @@ namespace DealEngine.WebUI.Controllers
             Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid Id);
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
 
-            var jsonOrganisation = (Organisation)await _serialiserService.GetDeserializedObject(typeof(Organisation), collection);
+            var jsonOrganisation = (Organisation)await _serialiserService.GetDeserializedObject(typeof(Organisation), collection); 
             var jsonUser = (User)await _serialiserService.GetDeserializedObject(typeof(User), collection);
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             string OrganisationTypeName = collection["OrganisationViewModel.OrganisationType"].ToString();
             Organisation organisation = await _organisationService.GetOrganisation(OrganisationId);
+            
             try
             {
 
@@ -363,6 +364,13 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> ManageOrganisations(Guid Id)
         {
+            var user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             Programme programme = await _programmeService.GetProgrammeById(Id);
             OrganisationViewModel model = new OrganisationViewModel(null, null);
             var marinas = await _organisationService.GetAllMarinas();
@@ -537,6 +545,14 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> AttachOrganisation(Guid ProgrammeId, Guid OrganisationId)
         {
+            var user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
+
             var allClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(ProgrammeId);
             var RemovedOrg = await _organisationService.GetOrganisation(OrganisationId);
 
@@ -799,11 +815,16 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> RejoinProgramme(Guid ProgrammeId, Guid OrganisationId)
         {
             User user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             Programme programme = await _programmeService.GetProgrammeById(ProgrammeId);
             Organisation organisation = await _organisationService.GetOrganisation(OrganisationId);
             await _milestoneService.CreateAttachOrganisationTask(user, programme, organisation);
             return RedirectToAction("Index", "Home");
         }
-
     }
 }

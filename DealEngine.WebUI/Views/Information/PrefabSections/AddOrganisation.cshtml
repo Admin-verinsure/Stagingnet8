@@ -17,6 +17,7 @@
         </li>
     </ul>
     <div class="tab-content">
+
         <div id="OrganisationTab1" class="tab-pane active" role="tabpanel">
             <table id="tblOrganisation"
                    class="table table-striped" width="100%"
@@ -28,26 +29,26 @@
                     <tr>
                         <th data-field="editButton" data-sortable="false"></th>
                         <th data-field="OrganisationName" data-sortable="true">Organisation Name</th>
-                        <th data-field="OrganisationType" data-sortable="true">Organisation Type</th>
-                        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
-                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
-                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
-                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme" ||
-                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme"
-                        )
-                        {
-                            <th data-field="IsPrincipal" data-sortable="true">Is Principal</th>
-                        }
-
+                        <th data-field="OrganisationType" data-sortable="true">Role</th>
                         @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
                       Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
+                      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme" ||
+                      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme"
                        )
+                        {
+                            <th data-field="IsPrincipal" data-sortable="true">Is Principal</th>
+                        }
+
+                        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
+                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
+                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
+                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
+                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
+                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
+                      )
                         {
                             <th data-field="IsFap" data-sortable="true">Is Fap</th>
                         }
@@ -65,15 +66,15 @@
                                 @organisation.Name
                             </td>
                             <td>
-                                Owner
+                                Insured_PolicyOwner
                             </td>
                             @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
-                          Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
-                          Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
-                          Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                          Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                          Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
-                  )
+                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
+                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
+                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
+                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
+                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme" 
+                              )
                             {
                                 <td>
                                 </td>
@@ -118,11 +119,11 @@
 
 
                             @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
-                   Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
-                   Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                   Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                   Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
-                   )
+                  Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
+                  Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
+                  Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
+                  Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
+                  )
                             {
                                 <td>
                                     @{
@@ -273,9 +274,25 @@
                     @Html.Hidden("EBaristerUnit", Model.OrganisationViewModel.EBaristerUnit.GetType().AssemblyQualifiedName, new { @id = "EBaristerUnit" })
                     @Html.Hidden("JBaristerUnit", Model.OrganisationViewModel.JBaristerUnit.GetType().AssemblyQualifiedName, new { @id = "JBaristerUnit" })
                     @Html.Hidden("BarristerUnit", Model.OrganisationViewModel.BarristerUnit.GetType().AssemblyQualifiedName, new { @id = "BarristerUnit" })
+                    @Html.Hidden("EmployeeUnit", Model.OrganisationViewModel.EmployeeUnit.GetType().AssemblyQualifiedName, new { @id = "EmployeeUnit" })
 
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/NZBar_AddOrganisation", Model)
                 }
+                else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                {
+                    @Html.Hidden("RealEstateRunOffUnit", Model.OrganisationViewModel.RealEstateRunOffUnit.GetType().AssemblyQualifiedName, new { @id = "RealEstateRunOffUnit" })
+                    @Html.Hidden("SubsidiaryUnit", Model.OrganisationViewModel.SubsidiaryUnit.GetType().AssemblyQualifiedName, new { @id = "SubsidiaryUnit" })
+                    @Html.Hidden("MREDirectorUnit", Model.OrganisationViewModel.RealEstateDirectorUnit.GetType().AssemblyQualifiedName, new { @id = "MREDirectorUnit" })
+                    @await Html.PartialAsync("PrefabSections/OrganisationPartials/RealEstate_AddOrganisation", Model)
+                }
+                else if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "RotaryAssociationsProgramme")
+                {
+                    @Html.Hidden("AdministratorUnit", Model.OrganisationViewModel.AdministratorUnit.GetType().AssemblyQualifiedName, new { @id = "AdministratorUnit" })
+                    @Html.Hidden("DirectorUnit", Model.OrganisationViewModel.DirectorUnit.GetType().AssemblyQualifiedName, new { @id = "DirectorUnit" })
+                    @Html.Hidden("Unit", Model.OrganisationViewModel.AdvisorUnit.GetType().AssemblyQualifiedName, new { @id = "Unit" })
+                    @await Html.PartialAsync("PrefabSections/OrganisationPartials/Rotary_AddOrganisation", Model)
+                }
+
                 <div class="form-group">
                     <button class="btn btn-success update" type="submit" id="OrganisationSubmitBtn" onclick="OnOrganisationSubmit('organisationViewModel', 'Insured Details / Named Parties')">Add</button>
                     <button class="btn btn-danger" id="OrganisationClearButton" onclick="ResetOrganisation('organisationViewModel');location.reload();"> Clear</button>

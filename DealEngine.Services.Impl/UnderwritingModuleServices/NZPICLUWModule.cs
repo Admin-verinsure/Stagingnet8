@@ -183,6 +183,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
+            //Minimum premium period is 4 months
+            int minicoverperiodindays = 0;
+            minicoverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddMonths(-4)).Days;
+
             int TermExcess = 0;
             TermExcess = 2500;
 
@@ -190,8 +194,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             decimal TermPremium250k = 0m;
             decimal TermBrokerage250k = 0m;
             TermPremium250k = GetPremiumFor(rates, feeincome, TermLimit250k) + extpremium;
+            decimal TermMinPremium250k = 0M;
+            TermMinPremium250k = TermPremium250k / coverperiodindays * minicoverperiodindays;
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium250k = TermPremium250k / coverperiodindays * agreementperiodindays;
+            TermPremium250k = (TermPremium250k > TermMinPremium250k) ? TermPremium250k : TermMinPremium250k;
             TermBrokerage250k = TermPremium250k * agreement.Brokerage / 100;
 
             ClientAgreementTerm termcl250klimitoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit250k, TermExcess);
@@ -208,8 +215,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             decimal TermPremium500k = 0m;
             decimal TermBrokerage500k = 0m;
             TermPremium500k = GetPremiumFor(rates, feeincome, TermLimit500k) + extpremium;
+            decimal TermMinPremium500k = 0M;
+            TermMinPremium500k = TermPremium500k / coverperiodindays * minicoverperiodindays;
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium500k = TermPremium500k / coverperiodindays * agreementperiodindays;
+            TermPremium500k = (TermPremium500k > TermMinPremium500k) ? TermPremium500k : TermMinPremium500k;
             TermBrokerage500k = TermPremium500k * agreement.Brokerage / 100;
 
             ClientAgreementTerm termcl500klimitoption = GetAgreementTerm(underwritingUser, agreement, "CL", TermLimit500k, TermExcess);

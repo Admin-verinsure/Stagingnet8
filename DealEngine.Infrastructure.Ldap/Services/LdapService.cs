@@ -62,6 +62,21 @@ namespace DealEngine.Infrastructure.Ldap.Services
 			return null;
 		}
 
+		public User GetUserByEmailforupload(string email)
+		{
+			using (LdapClient client = GetLdapServer(false))
+			{
+				LdapEntry entry = SearchForSingle(client, "(mail=" + email + ")", "ou=users," + _ldapConfiguration.BaseDn);
+				if (entry != null)
+				{
+					User user = _userMapping.FromLdapforupload(entry);
+					//user.Organisations = GetOrganisationsForUser (client, user.UserName);
+					return user;
+				}
+			}
+			return null;
+		}
+
 		public void Validate (string username, string password, out int resultCode, out string resultMessage)
 		{
 			using (LdapClient client = GetLdapServer ()) {
@@ -156,9 +171,13 @@ namespace DealEngine.Infrastructure.Ldap.Services
 					Attributes = mods
 				};
 				var response = client.Send <ModifyResponse> (modifyRequest);
-				client.Unbind ();
-				if (response.ResultCode > 0)
-					throw new Exception ("Unable to modify user in Ldap: " + response.ErrorMessage);
+				if(response != null)
+                {
+					client.Unbind();
+					if (response.ResultCode > 0)
+						throw new Exception("Unable to modify user in Ldap: " + response.ErrorMessage);
+				}
+				
 			}
 		}
 

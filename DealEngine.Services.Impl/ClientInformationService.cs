@@ -17,10 +17,14 @@ namespace DealEngine.Services.Impl
         IMapperSession<Reference> _referenceRepository;
         IUserService _userService;
         IOrganisationService _organisationService;
+        IAssetData _assetData;
+        IUnitOfWork _unitOfWork;
         public ClientInformationService(
             IOrganisationService organisationService,
             IMapperSession<Reference> referenceRepository,
             IUserService userService,
+            IAssetData assetData,
+            IUnitOfWork unitOfWork,
             IMapperSession<ClientInformationSheet> customerInformationRepository
             )
         {
@@ -28,6 +32,8 @@ namespace DealEngine.Services.Impl
             _referenceRepository = referenceRepository;
             _userService = userService;
             _customerInformationRepository = customerInformationRepository;
+            _assetData = assetData;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<ClientInformationSheet> IssueInformationFor(User createdBy, Organisation createdFor, InformationTemplate informationTemplate)
@@ -132,7 +138,26 @@ namespace DealEngine.Services.Impl
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("IPViewModel", StringComparison.CurrentCulture)));
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("OTViewModel", StringComparison.CurrentCulture))); 
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));
-        }
+            SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("MLViewModel", StringComparison.CurrentCulture)));
+            SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
+            SaveAnswer( sheet, collection, collection.Keys.Where(s => s.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
+            SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("CPViewModel", StringComparison.CurrentCulture)));
+            }
+
+    
+        //public ClubTrustAssetsInfo updateclubassetEntity(ClubTrustAssetsInfo clubTrustAssetsInfo, IFormCollection collection)
+
+        //{
+        //    clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["CTAViewModelDescriptionorName " + i],
+        //                                                                       int.Parse(collection["CTAViewModelCurrentValue " + i]),
+        //                                                                       int.Parse(collection["CTAViewModelReplacementValue " + i]),
+        //                                                                       ownerorg, sheet, user);
+
+        //    clubTrustAssetsInfo.Name = collection["CTAViewModelDescriptionorName " + i];
+        //    clubTrustAssetsInfo.CurrentVal = 
+
+
+        //}
 
         private void AnswerFromUserDetails(User user, IFormCollection collection, IEnumerable<string> enumerable)
         {
@@ -344,6 +369,12 @@ namespace DealEngine.Services.Impl
                     }
                 }
             }                       
+        }
+        public async Task<ClientInformationSheet> GetClientInformationSheetFromOrganisation(Organisation organisation)
+        {
+            var list = await _customerInformationRepository.FindAll().Where(s => s.Owner.Id == organisation.Id).ToListAsync();
+            var clientsheet = list.LastOrDefault();
+            return clientsheet;
         }
     }
 

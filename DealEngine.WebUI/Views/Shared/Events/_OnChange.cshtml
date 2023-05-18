@@ -39,7 +39,6 @@
     function OnChange(Id, Name) {
 
         if (Id == "IsRequirecoverJunior") {
-            debugger;
         }
 
         var obj = document.getElementById(Id);
@@ -72,6 +71,14 @@
         }
         catch (ex) {
             //we assume the obj is part of a form but may not always be the case
+        }
+
+        if (Name = "BuildingViewModel_buildingtenant") {
+            var tenantval = $('#BuildingViewModel_buildingtenant').val();
+            if (tenantval == "addTenant") {
+                $('#addTenantModal').show();
+            }
+
         }
     }
 
@@ -133,7 +140,6 @@
     }
 
     function DefaultFAPRule(Value, Name) {
-        debugger;
         var element = document.getElementById("AdministratorUnit.isAdministratorTheFAP");
         if (Value == "1" && element != null) {
 
@@ -286,7 +292,17 @@
                 }
             }
             if (Rule === "OrganisationType") {
-                OrganisationTypeOnChange(Value);
+                debugger;
+                $("#Organisation.OrganisationType option:first").attr("selected", true);
+                var Progname = $("#Programme_NamedPartyUnitName").val();
+                if (Progname != "RotaryAssociationsProgramme") {
+                    OrganisationTypeOnChange(Value);
+                } else {
+                    if (Progname == "RotaryAssociationsProgramme") {
+                        NewOrganisationTypeOnChange(Value);
+                    }
+                }
+                
             }
             if (Rule === "OrganisationEmail") {
                 var Form = document.getElementById("organisationViewModel");
@@ -324,13 +340,11 @@
                 });
             }
             if (Rule === "DefaultEffectiveDate") {
-                debugger;
                 var datefix = Value.replaceAll('-', '');
                 var year = datefix.substring(0, 4);
                 var month = datefix.substring(4, 6);
                 var day = datefix.substring(6, 8);
                 var newDate = new Date(year, month - 1, day);
-                debugger;
                 $('#AddBoatEffectiveDate').datepicker('option', 'minDate', newDate);
                 $('#BoatEffectiveDate').datepicker('option', 'minDate', newDate);
                 $('#AddEffectiveDate').datepicker('option', 'minDate', newDate);
@@ -352,7 +366,6 @@
 
             }
             if (Rule === "PolicyStartDate") {
-                debugger;
                 var datefix = Value.replaceAll('-', '');
                  var year = datefix.substring(0, 4);
                 var month = datefix.substring(4, 6);
@@ -376,9 +389,6 @@
                     document.getElementById("i2ipolicystartdate").setAttribute("min", mindate);
                     document.getElementById("i2iPolicyEndDate").setAttribute("max", maxDate);
                     document.getElementById("i2iPolicyEndDate").setAttribute("min", Value);
-                debugger;
-
-
 
             }
             //   if (Rule === "PolicyEndDate") {
@@ -485,12 +495,9 @@
         }
         return "0";
     }
-    debugger
     function OrganisationTypeOnChange(Value) {
         //reset views to default
-        debugger
         ResetOrganisationUnitView();
-        debugger;
         var List = document.getElementById("Organisation.OrganisationType");
         List.disabled = false;
         if (Value == "Advisor" ||
@@ -509,7 +516,8 @@
             Value == "JBarrister" ||
             Value == "Barrister"||
             Value == "IEntity" ||
-            Value =="ABusiness") {
+            Value == "ABusiness") {
+            //Value == "MREDirector" ) {
             //readonly Organisation Type personal
             document.getElementById("OwnerFap").hidden = true;
 
@@ -536,15 +544,65 @@
             }
 
 
-
+          
             if (Value == "Contractor") {
                 ContractorOnChange();
             }
 
+            //if (Value == "Run Off") {
+            //    debugger;
+            //    var RunOffUnit = document.getElementById("RunOffUnit");
+            //    if (RunOffUnit != null) {
+            //        document.getElementById("RunOffUnit").hidden = false;
+            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+            //        //TradingName.addAttribute("required");
+            //    }
+            //    var Email = document.getElementById("EmailDiv");
+            //    if (Email != null) {
+            //        document.getElementById("EmailDiv").hidden = true;
+            //        Email.removeAttribute("required");
+            //    }
+            //} else {
+            //    var RunOffUnit = document.getElementById("RunOffUnit");
+            //    if (RunOffUnit != null) {
+            //        document.getElementById("RunOffUnit").hidden = true;
+            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+            //        TradingName.removeAttribute("required");
+            //    }
+            //    var Email = document.getElementById("EmailDiv");
+            //    if (Email != null) {
+            //        document.getElementById("EmailDiv").hidden = false;
+            //    //    Email.addAttribute("required");
+            //    }
+            //}
+
+
             for (var i = 0; i < List.options.length; i++) {
+                //if (List.options[i].text == "Private" && Value != "MREDirector") {
                 if (List.options[i].text == "Private") {
+
                     List.options[i].selected = true;
                     document.getElementById("Private").hidden = false;
+
+                    var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+                    if (IsDirectorUnit != null) {
+                        document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                            el.style.display = 'none';
+                        });
+                    }
+
+                    var Email = document.getElementById("EmailDiv");
+                    if (Email != null) {
+                      document.getElementById("EmailDiv").hidden = false;
+                    }
+
+                    var RunOffUnit = document.getElementById("RunOffUnit");
+                    if (RunOffUnit != null) {
+                        document.getElementById("RunOffUnit").hidden = true;
+                        var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                        effectivedate.removeAttribute("required");
+                    }
+
                 }
             }
 
@@ -565,7 +623,7 @@
             if (Value == "ABusiness") {
                 ABusinessOnChange();
             }
-
+            
             List.disabled = true;
         } else {
             document.getElementById("Else").hidden = false;
@@ -581,6 +639,81 @@
                 }
             }
 
+            if (Value == "Subsidiary Company organisation") {
+                var NoTradingName = document.getElementById("NoTradingName");
+                if (NoTradingName != null) {
+                    document.getElementById("TradingName").hidden = false;
+                    var TradingName = document.getElementById("Organisation.TradingName");
+                    TradingName.hidden = false;
+                    TradingName.removeAttribute("required");
+                }
+
+                var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+
+                if (IsDirectorUnit != null) {
+                    document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                        el.style.display = 'none';
+                    });
+                }
+
+                var Email = document.getElementById("EmailDiv");
+                if (Email != null) {
+                    document.getElementById("EmailDiv").hidden = true;
+                }
+
+
+            }
+
+            if (Value == "MREDirector") {
+                MEDirectorOnChange();
+            }
+            if (Value == "Employee") {
+                EmployeeOnChange();
+                var EmployeeUnit = document.getElementById("Employee");
+                if (EmployeeUnit != null) {
+                    document.getElementById("Employee").hidden = false;
+                }
+
+                var Email = document.getElementById("EmailDiv");
+                if (Email != null) {
+                    document.getElementById("EmailDiv").hidden = true;
+                }
+
+            }
+
+           
+
+
+            if (Value == "Run Off") {
+                var RunOffUnit = document.getElementById("RunOffUnit");
+                if (RunOffUnit != null) {
+                    document.getElementById("RunOffUnit").hidden = false;
+                    //var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                    //TradingName.addAttribute("required");
+                }
+                var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+
+                if (IsDirectorUnit != null) {
+                    document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                        el.style.display = 'none';
+                    });
+                }
+
+                var Email = document.getElementById("EmailDiv");
+                if (Email != null) {
+                    document.getElementById("EmailDiv").hidden = true;
+                }
+
+
+            } else {
+                var RunOffUnit = document.getElementById("RunOffUnit");
+                if (RunOffUnit != null) {
+                    document.getElementById("RunOffUnit").hidden = true;
+                    var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+                    effectivedate.removeAttribute("required");
+                }
+               
+            }
             var NoTradingNameValidation = document.getElementById("NoTradingNameValidation");
                     var TradingName = document.getElementById("Organisation.TradingName");
                     if (NoTradingNameValidation != null && NoTradingNameValidation.value == "True") {
@@ -589,11 +722,189 @@
                          TradingName.classList.add("is-valid");
                     }
 
+
+
         }
 
         DefaultRule("1", Value);
+
+
+        //var NoEmailValidation = document.getElementById("MREDirectorUnit");
+        //if (NoEmailValidation != null) {
+        //    var Email = document.getElementById("EmailDiv");
+        //    if (Email != null) {
+        //        document.getElementById("EmailDiv").hidden = true;
+        //        Email.removeAttribute("required");
+        //    }
+        //} else {
+        //    var Email = document.getElementById("User.Email");
+        //    if (Email != null) {
+        //        document.getElementById("User.Email").hidden = false;
+        //        Email.addAttribute("required");
+        //    }
+        //}
     }
 
+
+    function NewOrganisationTypeOnChange(Value) {
+        debugger;
+        //reset views to default
+        ResetOrganisationUnitView();
+        //var Role = document.getElementById("Organisation.InsuranceAttribute");
+        var OrgTypeList = document.getElementById("Organisation.OrganisationType");
+        if (Value == "Administrator" ||
+            Value == "Trustee" ||
+            Value == "Incorporated Society Officer" ||
+            Value == "Director" ||
+            Value == "Other") {
+            //readonly Organisation Type personal
+            //document.getElementById("OwnerFap").hidden = true;
+
+
+            //for (var i = 0; i < List.options.length; i++) {
+            //    //if (List.options[i].text == "Private" && Value != "MREDirector") {
+            //    if (List.options[i].text == "Private") {
+
+            //        List.options[i].selected = true;
+            //        document.getElementById("Private").hidden = false;
+
+
+            //        var Email = document.getElementById("EmailDiv");
+            //        if (Email != null) {
+            //            document.getElementById("EmailDiv").hidden = false;
+            //        }
+            //    }
+            //}
+
+            if (Value == "Administrator") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private Individual") {
+                        OrgTypeList.options[i].hidden = false;
+                        OrgTypeList.options[i].selected = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = true;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                }
+
+                $("#NoUserCreation").val(false);
+            }
+
+
+            if (Value == "Trustee") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private Individual") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = false;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = false;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = true;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                }
+                $("#NoUserCreation").val(true);
+
+            }
+            if (Value == "Incorporated Society Officer") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private Individual") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = false;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = true;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                }
+                $("#NoUserCreation").val(true);
+            }
+            if (Value == "Director") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = false;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                }
+                $("#NoUserCreation").val(true);
+            }
+
+
+            if (Value == "Other") {
+                for (var i = 0; i < OrgTypeList.options.length; i++) {
+                    if (OrgTypeList.options[i].text == "Private Individual") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Trading Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Holding Trust") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Incorporated Society") {
+                        OrgTypeList.options[i].hidden = true;
+                    }
+                    if (OrgTypeList.options[i].text == "Company") {
+                        OrgTypeList.options[i].hidden = true;
+                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
+                        OrgTypeList.options[i].hidden = false;
+                    }
+                }
+                $("#NoUserCreation").val(true);
+
+            }
+
+
+
+            document.getElementById("Else").hidden = false;
+
+            
+        } else { document.getElementById("Else").hidden = false;}
+        DefaultRule("1", Value);
+
+
+    }
     function AdministratorOnChange() {
          var IsHideAdministrator = document.getElementById("HideAdministrator");
         if (IsHideAdministrator != null) {
@@ -611,11 +922,12 @@
     }
 
     function BarristerOnChange() {
-        debugger;
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
-         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsEmployeeUnit = document.getElementsByClassName("Employee");
 
+        
 
         if (IsBarristerUnit != null) {
 
@@ -634,15 +946,48 @@
                  el.style.display = 'none';
         });
         }
+        if (IsEmployeeUnit != null) {
+            document.querySelectorAll('.Employee').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+
+
        
         
 
     }
 
-     function ABusinessOnChange() {
+    function MEDirectorOnChange() {
+        var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
+      
+
+        if (IsDirectorUnit != null) {
+            document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
+                el.style.display = 'unset';
+            });
+        }
+
+        var Email = document.getElementById("EmailDiv");
+        if (Email != null) {
+            document.getElementById("EmailDiv").hidden = true;
+        }
+
+        var RunOffUnit = document.getElementById("RunOffUnit");
+        if (RunOffUnit != null) {
+            document.getElementById("RunOffUnit").hidden = true;
+            var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
+            effectivedate.removeAttribute("required");
+        }
+
+    }
+
+    function ABusinessOnChange() {
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
          var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsEmployeeUnit = document.getElementsByClassName("Employee");
+
          if (IsJBarristerUnit != null) {
 
               document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
@@ -660,13 +1005,57 @@
               });
 
          }
-          
+         if (IsEmployeeUnit != null) {
+             document.querySelectorAll('.Employee').forEach(function (el) {
+                 el.style.display = 'none';
+             });
+         }
     }
+
+    function EmployeeOnChange() {
+        var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
+        var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
+        var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var ISEmployeeUnit = document.getElementsByClassName("Employee");
+
+        if (ISEmployeeUnit != null) {
+            document.querySelectorAll('.Employee').forEach(function (el) {
+                el.style.display = 'unset';
+            });
+        }
+
+        if (IsJBarristerUnit != null) {
+
+            document.querySelectorAll('.JBaristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+        if (IsBarristerUnit != null) {
+            document.querySelectorAll('.BarristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+        if (IsEBarristerUnit != null) {
+            document.querySelectorAll('.EBaristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+
+        }
+        var Email = document.getElementById("EmailDiv");
+        if (Email != null) {
+            document.getElementById("EmailDiv").hidden = true;
+        }
+
+    }
+
+    
 
      function JBarristerOnChange() {
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
          var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+         var IsEmployeeUnit = document.getElementsByClassName("EmployeeUnit");
+
          if (IsJBarristerUnit != null) {
 
               document.querySelectorAll('.JBaristerUnit').forEach(function(el) {
@@ -684,14 +1073,21 @@
               });
 
          }
+         if (IsEmployeeUnit != null) {
+             document.querySelectorAll('.EmployeeUnit').forEach(function (el) {
+                 el.style.display = 'none';
+             });
+         }
+
           
     }
 
     function EBarristerOnChange() {
-        debugger;
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
         var IsJBarristerUnit = document.getElementsByClassName("JBaristerUnit");
         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
+        var IsEmployeeUnit = document.getElementsByClassName("EmployeeUnit");
+
         if (IsEBarristerUnit != null) {
               document.querySelectorAll('.EBaristerUnit').forEach(function(el) {
                  el.style.display = 'unset';
@@ -705,6 +1101,11 @@
         }
         if (IsBarristerUnit != null) {
             document.querySelectorAll('.BarristerUnit').forEach(function (el) {
+                el.style.display = 'none';
+            });
+        }
+        if (IsEmployeeUnit != null) {
+            document.querySelectorAll('.EmployeeUnit').forEach(function (el) {
                 el.style.display = 'none';
             });
         }
@@ -722,7 +1123,6 @@
         }
     }
     function BaristerUnitOnChange() {
-        debugger;
         var IsEBaristerUnit = document.getElementsByClassName("EBaristerUnit");
         var IsJBaristerUnit = document.getElementsByClassName("JBaristerUnit");
         var IsBaristerUnit = document.getElementsByClassName("BaristerUnit");
@@ -749,7 +1149,6 @@
     }
 
     function AdvisorOnChange() {
-        debugger;
         var IsTripleAApproval = document.getElementById("HideTripleAApproval");
         if (IsTripleAApproval != null) {
             IsTripleAApproval.hidden = true;
@@ -772,9 +1171,7 @@
 
     }
 
-    debugger;
     function ResetOrganisationUnitView() {
-        debugger;
 
         //document.getElementById("Private").hidden = true;
         //document.getElementById("Else").hidden = true;
@@ -838,7 +1235,7 @@
             var additionalactivityId = activities.options[i].value;
             if (additionalactivityId == "CUS0029" || additionalactivityId == "CUS0039" || additionalactivityId == "CUS0044" || additionalactivityId == "CUS0061" ||
                 additionalactivityId == "CUS0076" || additionalactivityId == "customict010" || additionalactivityId == "CUS0081" || additionalactivityId == "CUSFANZ11" || 
-                additionalactivityId == "CUSFANZ21" || additionalactivityId == "CUSNZBar20") {
+                additionalactivityId == "CUSFANZ21" || additionalactivityId == "CUSNZBar20" || additionalactivityId == "CUSMRE20" || additionalactivityId == "CUSRotaryAss20") {
                 additionalactivityId = "CUS0018";
             }
             if (activities.options[i].selected === true) {

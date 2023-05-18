@@ -184,6 +184,36 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+
+        //[HttpPost]
+        //public async Task<IActionResult> GetuploadedDoc(string DocId)
+        //{
+        //    return PhysicalFile("C:\\Users\\Public\\trusteename001\\xzcdsf.docx","pdf");
+        //    //return File(pdfBytes, "application/pdf", invoicename + ".pdf");
+
+        //}
+        [HttpGet]
+        public FileResult GetuploadedDoc(string path,string contenttype,string filename)
+        {
+            try
+            {
+                //using (StreamReader reader = new StreamReader("."+ path))
+                //{
+                //    return File();
+                //}
+                //return File("file:///C:/Users/Public/trusteename001/xzcdsf.docx", contenttype, filename);
+                return PhysicalFile(path, contenttype);
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.InnerException);
+                return PhysicalFile(path, contenttype);
+
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> covertdoctohtml(string TemplateName, string ActualFileName, string DocumentType)
         {
@@ -381,7 +411,7 @@ namespace DealEngine.WebUI.Controllers
                         // This is for ManageDocuments where we haven't hit ProcessRequestConfiguration which Formats and Converts the document
                         if (doc.IsTemplate == true)
                         {
-                            doc = await _fileService.FormatCKHTMLforConversion(doc);
+                            //doc = await _fileService.FormatCKHTMLforConversion(doc);
                             doc = await _fileService.ConvertHTMLToPDF(doc);
                         }
                         return File(doc.Contents, "application/pdf", doc.Name + ".pdf");
@@ -405,6 +435,13 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductIndex(string Programme)
         {
+            var user = await CurrentUser();
+
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             var productList = new List<Product>();
             var programme = await _programmeService.GetProgramme(Guid.Parse(Programme));
             productList = programme.Products.ToList();
@@ -515,7 +552,12 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> CreateDocument(string id, string productId)
         {
             DocumentViewModel model = new DocumentViewModel();
-            User user = null;
+            User user =  await CurrentUser(); 
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
             try
             {
                 if (string.IsNullOrWhiteSpace(id))
@@ -598,9 +640,15 @@ namespace DealEngine.WebUI.Controllers
         {
             BaseListViewModel<DocumentInfoViewModel> models = new BaseListViewModel<DocumentInfoViewModel>();
             User user = null;
+           
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 List<SystemDocument> docs = _documentRepository.FindAll().Where(d => d.DateDeleted == null && user.PrimaryOrganisation == d.OwnerOrganisation && d.IsTemplate).ToList();
 
                 if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsInsurer)

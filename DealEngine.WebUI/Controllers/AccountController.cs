@@ -36,6 +36,11 @@ using System.Web;
 
 namespace DealEngine.WebUI.Controllers
 {
+    public class OktaData
+    {
+        public string OktaUID { get; set; }
+    }
+
     [Authorize]
     public class AccountController : BaseController
     {
@@ -116,6 +121,12 @@ namespace DealEngine.WebUI.Controllers
         {
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
+            //var currentUser = await CurrentUser();
+            //if (currentUser.IsLoggedout)
+            //    return PageNotFound();
+
+            //if (User == null)
+            //    return PageNotFound();
 
             // We do not want to use any existing identity information
             EnsureLoggedOut();
@@ -308,6 +319,10 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PasswordChanged()
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+            /////
             return View();
         }
 
@@ -316,6 +331,12 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl)
         {
+
+            //var currentUser = await CurrentUser();
+            //if (currentUser.IsLoggedout)
+            //    return PageNotFound();
+           
+
             var viewModel = new AccountLoginModel
             {
                 ReturnUrl = returnUrl,
@@ -358,6 +379,7 @@ namespace DealEngine.WebUI.Controllers
 
                 // Step 1 validate in  LDap 
                 _ldapService.Validate(userName, password, out resultCode, out resultMessage);
+                //resultCode = 0;
                 if (resultCode == 0)
                 {
                     var user = await _userService.GetUser(userName);
@@ -429,6 +451,8 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginOktaRegistration()
         {
+          
+
             return View();
         }
 
@@ -858,38 +882,41 @@ namespace DealEngine.WebUI.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> OIdLogin(string q)
+        public async Task<IActionResult> OIdLogin(string q, string t)
         {
-            bool isAuth;
-            try
+            bool isAuth = false;
+            User user = null;
+
+            string oktaUid = DecryptString("LaOpzB19V4kUmRZn8aVKfg17HFCxuv9L", q);
+            string oktaSingleUseToken = DecryptString("LaOpzB19V4kUmRZn8aVKfg17HFCxuv9L", t);
+
+            user = await _userService.GetUserByOktaUID(oktaUid);
+
+            // Check if the token is valid.
+            if (user != null)
             {
-                // Check if authenticated to oktacallbackservice
-                isAuth = await CheckAuthenticated();
-            }
-            catch (Exception ex)
-            {
-                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
-                throw new Exception(ex.Message + " " + ex.StackTrace);//
-            }
-            try
-            {
-                if (isAuth)
+                if (user.OktaSingleUseToken.Equals(oktaSingleUseToken))
                 {
-                    var oktaUid = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
+                    isAuth = true;
+                }
+            }
+            else
+            {
+                return LocalRedirect("~/Account/OktaErrorMessage");
+            }
 
-                    #region Time Code where request only valid for 15 seconds, Ubuntu bug and time constraints led to removal.
-                    //var oktaUidTime = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
-                    //string[] oktaUidTimeArray = oktaUidTime.Split("O=");
-                    //string oktaUid = oktaUidTimeArray.First();
-                    //string stringTime = oktaUidTimeArray.Last();
-                    #endregion
+            // Delete old SingleUseToken from User so it can't be re-used.
+            user.OktaSingleUseToken = null;
+            await _userService.Update(user);
 
+            try
+            {
+                if (isAuth == true)
+                {
                     string identityPassword = oktaUid + _appSettingService.OktaIntermediatePassword;
 
-                    User user = null;
                     IdentityUser identityUser;
 
-                    user = await _userService.GetUserByOktaUID(oktaUid);
                     string username = user.UserName;
 
                     // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
@@ -915,27 +942,11 @@ namespace DealEngine.WebUI.Controllers
                         await uow.Commit();
                     }
                     return LocalRedirect("~/Home/Index");
-
-                    // Login must happen within 15 second after initial Redirect 
-                    //DateTime time = DateTime.Parse(stringTime);
-                    //DateTime now = DateTime.Now;
-                    //var seconds = (now - time).TotalSeconds;
-
-                    //if (seconds < 15)
-                    //{
-                    // put identity login in here
-                    //}
-                    //else
-                    //{
-                    //    return LocalRedirect("~/Account/OktaErrorMessage");
-                    //}
-
                 }
                 else
                 {
                     return LocalRedirect("~/Account/OktaErrorMessage");
-                }
-                
+                }                
             }
             catch (Exception ex)
             {
@@ -946,27 +957,64 @@ namespace DealEngine.WebUI.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        private async Task<bool> CheckAuthenticated()
-        {          
-            var callbackService = "https://"+_appSettingService.oktaCallBackServiceURL;
-            Uri callbackServiceUri = new Uri(callbackService);
-            // Setup client
-            HttpClient client = new HttpClient();
-            client.BaseAddress = callbackServiceUri;
+        public async Task <IActionResult> GetToken(string q)
+        {
+            string oktaUID = DecryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", q);
+            string callbackServiceURL = "https://" + _appSettingService.oktaCallBackServiceURL;
 
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, "/Home/CheckAuthenticated");
-            HttpResponseMessage responseMessage = await client.SendAsync(requestMessage);
-            var json = await responseMessage.Content.ReadAsStringAsync();
-            client.Dispose();
+            // Generate token
+            Guid tokenGuid = Guid.NewGuid();
+            string tokenString = tokenGuid.ToString();
 
-            if (responseMessage.IsSuccessStatusCode)
+            // Find user with oktauid from user repo
+            try
             {
-                return true;
+                User user = await _userService.GetUserByOktaUID(oktaUID);
+                
+                // Save token against User
+                user.OktaSingleUseToken = tokenString;
+                await _userService.Update(user);
             }
-            else
+            catch (Exception ex)
             {
-                return false;
+                // Can't log with LogWarning because User may not have been found
+                // await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
             }
+
+            string encryptedToken = EncryptString("dE4kqio9eDi1FFU34g7NrOnBDlTVOL66", tokenString);
+            string encodedEncryptedToken = HttpUtility.UrlEncode(encryptedToken);
+
+            // Return token
+            return Redirect(callbackServiceURL + "/Home/TokenCallback?q=" + encodedEncryptedToken);
+        }
+
+        public static string EncryptString(string key, string plainText)
+        {
+            byte[] iv = new byte[16];
+            byte[] array;
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+                        {
+                            streamWriter.Write(plainText);
+                        }
+
+                        array = memoryStream.ToArray();
+                    }
+                }
+            }
+
+            return Convert.ToBase64String(array);
         }
 
         public static string DecryptString(string key, string cipherText)
@@ -992,60 +1040,7 @@ namespace DealEngine.WebUI.Controllers
                 }
             }
         }
-
-        #region API that callbackservice was supposed to hit but isn't used anymore
-        //[Consumes("application/json")]
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> IdentityLoginOktaCallbackService(string json)
-        {
-            try
-            {
-                //Dictionary<string, string> dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                string okta_uid = "00u12zjmjqdu0CYLr0h8";//dict["okta_uid"];
-                //string email = dict["email"];
-                string identityPassword = "00u12zjmjqdu0CYLr0h8" + _appSettingService.OktaIntermediatePassword;
-                //string firstname = dict["firstname"];
-                //string surname = dict["surname"];
-
-                User user = null;
-                IdentityUser identityUser;
-
-                user = await _userService.GetUserByOktaUID(okta_uid);
-                string username = user.UserName;
-
-                // Check for Identity User by user.Username, if successful return it, if fail create them with password provided, then log them in to Identity (both cases)
-                var identityResult = await DealEngineIdentityUserLogin(user, identityPassword);
-
-                if (!identityResult.Succeeded)
-                {
-                    identityUser = await _userManager.FindByNameAsync(user.UserName);
-                    await _userManager.RemovePasswordAsync(identityUser);
-                    await _userManager.AddPasswordAsync(identityUser, identityPassword);
-                }
-                else
-                {
-                    identityUser = await _userManager.FindByNameAsync(username);
-                    await _signInManager.SignOutAsync();
-                    identityUser = await _userManager.FindByNameAsync(username);
-                }
-                var result = await _signInManager.PasswordSignInAsync(identityUser, identityPassword, false, lockoutOnFailure: true);
-                using (var uow = _unitOfWork.BeginUnitOfWork())
-                {
-                    user.IsLoggedout = false;
-                    user.LoggedInTime = DateTime.UtcNow;
-                    await uow.Commit();
-                }
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
-                throw new Exception(ex.Message + " " + ex.StackTrace);//
-            }
-        }
-        #endregion
-
+       
         private async Task<SignInResult> DealEngineIdentityUserLogin(User user, string password)
         {
             try
@@ -1250,6 +1245,10 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> OTPFailMessage()
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
             return View();
         }
 
@@ -1257,6 +1256,10 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RSAErrorMessage()
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+            
             return View();
         }
 
@@ -1264,6 +1267,10 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> OktaErrorMessage()
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
             return View();
         }
 
@@ -1271,6 +1278,10 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> OktaErrorMessage(AccountLoginModel loginViewModel)
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
             return View(loginViewModel);
         }
 
@@ -1280,6 +1291,10 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> Error()
         {
             // We do not want to use any existing identity information
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
             EnsureLoggedOut();
 
             return View();
@@ -1289,6 +1304,11 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ErrorDynamic(AccountErrorViewModel accountErrorViewModel)
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+
             return View(accountErrorViewModel);
         }
 
@@ -1300,6 +1320,12 @@ namespace DealEngine.WebUI.Controllers
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
 
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            if (User == null)
+                return PageNotFound();
             // We do not want to use any existing identity information
             EnsureLoggedOut();
 
@@ -1327,6 +1353,13 @@ namespace DealEngine.WebUI.Controllers
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
 
+            var currentUser = await CurrentUser();
+
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            if (User == null)
+                return PageNotFound();
             // We do not want to use any existing identity information
             EnsureLoggedOut();
 
@@ -1355,7 +1388,13 @@ namespace DealEngine.WebUI.Controllers
         {
             if (User.Identity.IsAuthenticated)
                 return await RedirectToLocal();
+            var currentUser = await CurrentUser();
 
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            if (User == null)
+                return PageNotFound();
             // We do not want to use any existing identity information
             EnsureLoggedOut();
 
@@ -1623,6 +1662,11 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> ChangeOwnPassword()
         {
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+
             return PartialView("_ChangeOwnPassword");
         }
 
@@ -1660,6 +1704,14 @@ namespace DealEngine.WebUI.Controllers
         {
             var user = await _userService.GetUserById(Id);
             var accountModel = new ManageUserViewModel(user);
+
+            var currentUser = await CurrentUser();
+            if (currentUser.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             //accountModel.UserGroups = new SelectUserGroupsViewModel(user, _permissionsService.GetAllGroups());
 
             SingleUseToken passwordToken = null;// _authenticationService.GetTokensFor(Id).OrderByDescending(t => t.DateCreated.GetValueOrDefault()).FirstOrDefault();

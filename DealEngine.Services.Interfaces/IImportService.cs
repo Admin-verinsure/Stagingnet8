@@ -59,5 +59,11 @@ namespace DealEngine.Services.Interfaces
         Task ImportNZBarPreRenewData(User user);
         Task ImportNZBarImportClaims(User user);
         Task ImportNZBarOwners(User user);
+        Task ImportMREOwners(User user);
+        Task ImportMREPreRenewData(User user);
+        Task ImportRotaryServiceIndividuals(User user);
+        Task ImportRotaryServicelocalIndividuals(User user);
+
+        Task createIndividualstoldap(User user);
     }
 }

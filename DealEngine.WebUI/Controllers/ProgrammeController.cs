@@ -118,6 +118,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 var programmeList = await _programmeService.GetAllProgrammes();
                 var programmes = programmeList.Where(p => p.Owner == user.PrimaryOrganisation);
 
@@ -149,6 +155,11 @@ namespace DealEngine.WebUI.Controllers
 
             try {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 var programmeList = await _programmeService.GetAllProgrammes();
                 var programmes = programmeList.Where(p => p.DateDeleted == null);
                 BaseListViewModel<ProgrammeInfoViewModel> models = new BaseListViewModel<ProgrammeInfoViewModel>();
@@ -185,7 +196,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
-                
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 var clientProgrammeList = await _programmeService.GetClientProgrammesForProgramme(Id);
                 model = new ProgrammeInfoViewModel(null, clientProgrammeList.FirstOrDefault().BaseProgramme, null);
                 foreach (var programme in clientProgrammeList.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker"))
@@ -247,6 +262,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 //reupload everytime
                 var busActivityList = await _busActivityService.GetBusinessActivitiesTemplates();
                 await _importService.ImportActivities(user);                
@@ -386,6 +406,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 var programmeList = await _programmeService.GetProgrammesByOwner(user.PrimaryOrganisation.Id);
                 var sharedRoleList = await _sharedDataRoleService.GetRolesByOwner(user.PrimaryOrganisation.Id);
 
@@ -610,6 +635,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientProgramme programme = await _programmeService.GetClientProgramme(programmeId);
                 clientviewmodel.Id = Id;
                 clientviewmodel.OwnerId = ownerId;
@@ -636,6 +666,12 @@ namespace DealEngine.WebUI.Controllers
             ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(programmeId);
             ProgrammeInfoViewModel model = new ProgrammeInfoViewModel(null, clientProgramme.BaseProgramme, clientProgramme);
             User user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             try
             {
                 string Active = "Not Active";
@@ -704,10 +740,7 @@ namespace DealEngine.WebUI.Controllers
             var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
 
             //used for eglobal request and response log 
-            if (originalEglobalsubmission.EGlobalSubmissionClientProgramme.BaseProgramme.ProgEnableEmail)
-            {
-                await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
-            }
+            await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
 
             EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
 
@@ -755,6 +788,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 ClientProgramme programme = await _programmeService.GetClientProgramme(programmeId);
                 clientviewmodel.Name = programme.Owner.Name;
                 clientviewmodel.Email = programme.Owner.Email;
@@ -811,6 +850,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 model.Id = Id;
                 ViewBag.Title = "Programme Email Template ";
                 return View(model);
@@ -831,6 +876,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 var dbUpdatemodelTypes = await _updateTypeServices.GetAllUpdateTypes();
                 var updateTypeModel = new List<UpdateTypesViewModel>();
 
@@ -976,6 +1027,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 model.Id = Id;
                 ViewBag.Title = "Term Sheet Template ";
                 return View(model);
@@ -995,6 +1052,12 @@ namespace DealEngine.WebUI.Controllers
             
             try
             {
+                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 Programme programme = await _programmeService.GetProgramme(Id);
                 model.Id = Id;
                 model.Name = programme.Name;
@@ -1020,6 +1083,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 Programme programme = await _programmeService.GetProgramme(Id);
                 model.Id = Id;
 
@@ -1097,6 +1165,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 Programme programme = await _programmeService.GetProgrammeById(Id);
                 model.Id = Id;
                 
@@ -1246,6 +1319,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 Programme programme = await _programmeService.GetProgrammeById(Id);
                 model.BrokerContactUser = programme.BrokerContactUser;
                 model.Id = Id;
@@ -1285,6 +1363,12 @@ namespace DealEngine.WebUI.Controllers
 
             try
             {
+                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ProgrammeInfoViewModel model = await GetProgrammeInfoViewModel(Id);
 
                 return View("EditProgramme", model);
@@ -1299,12 +1383,26 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> ManageProgramme()
         {
+            var user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             return View();
         }
 
         [HttpGet]
         public async Task<IActionResult> CreateProgramme()
         {
+            var user = await CurrentUser();
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
             ProgrammeInfoViewModel model = await GetProgrammeInfoViewModel(Guid.Empty);
             model.ProductViewModel = await GetProductViewModel();
             model.InformationBuilderViewModel = await GetInformationBuilderViewModel();
@@ -1674,6 +1772,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 Programme programme = await _programmeService.GetProgrammeById(Id);
                 model.Id = Id;
                 model.Programme = programme;
@@ -1719,6 +1823,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 Programme programme = await _programmeService.GetProgrammeById(Id);
                 EmailTemplate emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == type);
 

@@ -56,6 +56,7 @@ namespace DealEngine.WebUI.Controllers
         IBusinessContractService _businessContractService;
         IResearchHouseService _researchHouseService;
         IApplicationLoggingService _applicationLoggingService;
+        ISerializerationService _serialiserService;
         ILogger<ServicesController> _logger;
         IMapper _mapper;
         Infrastructure.Ldap.Interfaces.ILdapService _ldapService;
@@ -92,6 +93,7 @@ namespace DealEngine.WebUI.Controllers
             IEmailService emailService,
             IUnitOfWork unitOfWork,
             IReferenceService referenceService,
+            ISerializerationService serialiserService,
             IResearchHouseService researchHouseService
             )
 
@@ -127,6 +129,8 @@ namespace DealEngine.WebUI.Controllers
             _businessContractService = businessContractService;
             _researchHouseService = researchHouseService;
             _vehicleRepository = vehicleRepository;
+            _serialiserService = serialiserService;
+
         }
 
         #region Vehicle
@@ -180,6 +184,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         JsonObjects.Add("Organisation", organisation);
                         JsonObjects.Add("ClientProgramme", ClientProgrammes.OrderByDescending(cpobdc => cpobdc.DateCreated).FirstOrDefault());
+                        //JsonObjects.Add("ClientProgramme", ClientProgrammes.OrderByDescending(cpobdc => cpobdc.DateCreated).FirstOrDefault().BrokerContactUser.Id);
                         var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
                         //var jsonObj = JsonSerializer.Serialize(JsonObjects);
                         return Json(jsonObj);
@@ -207,6 +212,8 @@ namespace DealEngine.WebUI.Controllers
                     clientProgramme.EGlobalClientNumber = Collection["ClientProgramme.EGlobalClientNumber"];
                     clientProgramme.Tier = Collection["ClientProgramme.Tier"];
                     clientProgramme.EGlobalBranchCode = Collection["ClientProgramme.EGlobalBranchCode"];
+                    clientProgramme.BrokerContactUser = await _userService.GetUserById(Guid.Parse(Collection["ClientProgramme.BrokerContactId"]));
+                    clientProgramme.BrokerContactId = clientProgramme.BrokerContactUser.Id;
                     await _programmeService.Update(clientProgramme);
                     User OwnerUser = await _userService.GetUserPrimaryOrganisationOrEmail(clientProgramme.Owner);
                     if(OwnerUser != null)
@@ -232,6 +239,8 @@ namespace DealEngine.WebUI.Controllers
         {
             VehicleViewModel model = new VehicleViewModel();
             User user = null;
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+
             try
             {
                 user = await CurrentUser();
@@ -252,14 +261,40 @@ namespace DealEngine.WebUI.Controllers
                     model.ChassisNumber = vehicle.ChassisNumber;
                     model.EngineNumber = vehicle.EngineNumber;
                     model.GrossVehicleMass = vehicle.GrossVehicleMass.ToString();
+                    model.VehicleId = vehicle.Id;
                 }
-                return Json(model);
+
+                JsonObjects.Add("RVViewModel", model);
+                var jsonObj = await _serialiserService.GetSerializedObject(JsonObjects);
+
+
+                return Json(jsonObj);
             }
             catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetVehicleById(string VehicleId, string sheetId)
+        {
+            ClientInformationSheet sheet = await _clientInformationService.GetInformation(Guid.Parse(sheetId));
+            Vehicle vehicle = sheet.Vehicles.FirstOrDefault(v => v.Id == Guid.Parse(VehicleId));
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+            // have a repo vehicle? Return it
+            if (vehicle != null)
+            {
+                JsonObjects.Add("RVViewModel", vehicle);
+                var jsonObj = await _serialiserService.GetSerializedObject(JsonObjects);
+                return Json(jsonObj);
+
+            }
+
+
+            throw new Exception("vehicle with id [" + VehicleId + "] does not exist in the system");
+            
+            return null;
         }
 
         [HttpPost]
@@ -307,6 +342,65 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> AddMeisRegisteredVehicle(IFormCollection collection)
+        {
+            User user = null;
+            try
+            {
+                Guid.TryParse(collection["RVViewModel.Id"], out Guid VehicleId);
+                Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid Id);
+                ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
+                var jsonVehicle = (Vehicle)await _serialiserService.GetDeserializedObject(typeof(Vehicle), collection);
+                Vehicle vehicle = await _vehicleService.GetVehicleById(VehicleId);
+                user = await CurrentUser();
+                string Registration = collection["RVViewModel.RegistrationNumber"].ToString();
+                string Make = collection["RVViewModel.Make"].ToString();
+                string VehicleModel = collection["RVViewModel.Model"].ToString();
+                string Year = collection["RVViewModel.Year"].ToString();
+
+                string MarketValue = collection["RVViewModel.MarketValue"].ToString();
+                string TypeOfCover = collection["RVViewModel.TypeOfCover"].ToString();
+                string AreaOfOperation = collection["RVViewModel.AreaOfOperation"].ToString();
+
+                string hasdirectagencies = collection["RVViewModel.hasdirectagencies"].ToString();
+                if (vehicle == null)
+                {
+                    vehicle =  _vehicleService.CreateNewVehicle(user, Registration, Make, VehicleModel);
+                }
+
+                vehicle = await _vehicleService.PostVehicle(collection, vehicle);
+
+                //if (!Sheet.Vehicles.Contains(vehicle))
+                //    Sheet.Vehicles.Add(vehicle);
+                //await _clientInformationService.UpdateInformation(Sheet);
+
+                //if (Sheet.Vehicles.Contains(vehicle))
+                //{
+                //    await _vehicleRepository.UpdateAsync(vehicle);
+                //}
+
+
+                //vehicle.ClientInformationSheet = sheet;
+                //await _vehicleRepository.AddAsync(vehicle);
+                //sheet.Vehicles.Add(vehicle);
+
+                vehicle.ClientInformationSheet = Sheet;
+                await _vehicleRepository.AddAsync(vehicle);
+                Sheet.Vehicles.Add(vehicle);
+
+                return Redirect("../Information/EditInformation?Id=" + Sheet.Programme.Id.ToString());
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+
+        }
+
+
+
+        [HttpPost]
         public async Task<IActionResult> GetVehicle(Guid answerSheetId, Guid vehicleId)
         {
             VehicleViewModel model = new VehicleViewModel();
@@ -331,6 +425,8 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetVehicles(Guid informationId, bool validated, bool removed, bool transfered, bool _search, string nd, int rows, int page, string sidx, string sord,
@@ -986,6 +1082,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientInformationSheet sheet = await _clientInformationService.GetInformation(informationId);
                 if (sheet == null)
                     throw new Exception("No valid information for id " + informationId);
@@ -1046,6 +1147,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 var organisationalUnitNameList = await _organisationalUnitService.GetAllOrganisationalUnitsName();
                 var results = organisationalUnitNameList.Where(n => n.ToLower().Contains(term.ToLower()));
 
@@ -1380,6 +1487,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 ClientInformationSheet sheet = await _clientInformationService.GetInformation(informationId);
                 if (sheet == null)
                     throw new Exception("No valid information for id " + informationId);

@@ -10,6 +10,7 @@ using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Programme;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using DealEngine.Infrastructure.FluentNHibernate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
@@ -21,6 +22,10 @@ using SystemDocument = DealEngine.Domain.Entities.Document;
 using Document = DealEngine.Domain.Entities.Document;
 using System.Net.Mime;
 using NReco.PdfGenerator;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using System.Text;
+
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -66,8 +71,14 @@ namespace DealEngine.WebUI.Controllers
         IChangeProcessService _changeProcessService;
         IMapperSession<OrganisationalUnit> _organisationalUnitRepository;
         IMapperSession<Organisation> _organisationRepository;
+        ILocationService _locationService;
         IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
+        //IAssetData _assetData;
+        IMapperSession<ClubTrustAssetsInfo> _clubTrustAssetsInfoRepository;
 
+        private readonly IClubAssetInfoService _clubAssetInfoService;
+
+        private readonly IWebHostEnvironment _hostingEnv;
         public InformationController(
             ISubsystemService subsystemService,
             IOrganisationTypeService organisationTypeService,
@@ -108,8 +119,15 @@ namespace DealEngine.WebUI.Controllers
             IChangeProcessService changeProcessService,
             IMapperSession<OrganisationalUnit> organisationalUnitRepository,
             IMapperSession<Organisation> organisationRepository,
-            //IGeneratePdf generatePdf,
-            IClientAgreementExtensionTermService clientAgreementExtensionTermService,
+            ILocationService locationService,
+            //IAssetData assetData,
+            IClubAssetInfoService clubAssetInfoService,
+            IMapperSession<ClubTrustAssetsInfo> ClubTrustAssetsInfoRepository,
+
+            IWebHostEnvironment hostingEnv,
+
+        //IGeneratePdf generatePdf,
+        IClientAgreementExtensionTermService clientAgreementExtensionTermService,
         IMapper mapper
             )
             : base(userService)
@@ -154,7 +172,12 @@ namespace DealEngine.WebUI.Controllers
             _changeProcessService = changeProcessService;
             _organisationalUnitRepository = organisationalUnitRepository;
             _organisationRepository = organisationRepository;
+            _locationService = locationService;
             _clientAgreementExtensionTermService = clientAgreementExtensionTermService;
+            _clubTrustAssetsInfoRepository = ClubTrustAssetsInfoRepository;
+            _clubAssetInfoService = clubAssetInfoService;
+            _hostingEnv = hostingEnv;
+
             //_generatePdf = generatePdf;
         }
 
@@ -168,6 +191,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 foreach (var item in template.Sections)
                 {
                     Litems.Add(new InformationItems() { Id = item.Id, Name = item.Name });
@@ -191,6 +219,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 InformationViewModel model = await GetClientInformationSheetViewModel(id);
 
                 return View(model);
@@ -239,6 +272,11 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(Id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
@@ -251,7 +289,7 @@ namespace DealEngine.WebUI.Controllers
                     sections.Add(Section.CustomView);
                 }
                 model.ListSection = sections;
-                
+
                 ViewBag.Title = "View Information Sheet ";
                 return View(model);
             }
@@ -262,7 +300,7 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-     
+
 
         [HttpGet]
         public async Task<IActionResult> PartialViewProgramme(Guid id, String name = "", List<string> viewlist = null)
@@ -272,6 +310,12 @@ namespace DealEngine.WebUI.Controllers
 
             try
             {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
@@ -280,12 +324,11 @@ namespace DealEngine.WebUI.Controllers
                 model.SectionView = name;
                 model.ListSection = viewlist;
                 model.ClientProgramme = clientProgramme;
-                user = await CurrentUser();
 
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
-
+                await GetClubTrustAssetViewModel(model, sheet.AssetData, clientProgramme);
                 //build models from answers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("PMINZEPLViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("ELViewModel", StringComparison.CurrentCulture)));
@@ -361,7 +404,7 @@ namespace DealEngine.WebUI.Controllers
                     //}
                     #endregion
                 }
-                
+
                 #region Commented code
 
                 //model.InterestedParties = interestedParties;
@@ -477,7 +520,7 @@ namespace DealEngine.WebUI.Controllers
                         if (term.Bound)
                         {
                             OptionItem[0] = agreement.Product.Name;
-                            OptionItem[1] = ""+ term.TermLimit;
+                            OptionItem[1] = "" + term.TermLimit;
                             OptionItem[2] = "" + term.Excess;
                             OptionItems[count] = OptionItem;
                             count++;
@@ -485,7 +528,7 @@ namespace DealEngine.WebUI.Controllers
                     }
                 }
                 model.LimitsSelected = OptionItems;
-               // model.DeclarationMessage = sheet.Programme.BaseProgramme.Declaration;
+                // model.DeclarationMessage = sheet.Programme.BaseProgramme.Declaration;
 
                 model.Advisory = await _milestoneService.SetMilestoneFor("Agreement Status - Not Started", user, sheet);
 
@@ -562,38 +605,38 @@ namespace DealEngine.WebUI.Controllers
                 {
                     foreach (var agreement in clientProgramme.Agreements)
                     {
-                            if (agreement.Product.IsExtentionOption)
+                        if (agreement.Product.IsExtentionOption)
 
-                            {
-                                foreach (var term in agreement.ClientAgreementTermExtensions)
+                        {
+                            foreach (var term in agreement.ClientAgreementTermExtensions)
                             {
                                 term.Bound = false;
                             }
                         }
 
-                      if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
-                      {
-                        ClientAgreementEndorsement cAELPLAIncl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Inclusion");
-
-                        if (cAELPLAIncl != null)
+                        if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
                         {
-                            cAELPLAIncl.DateDeleted = DateTime.UtcNow;
-                            cAELPLAIncl.DeletedBy = user;
+                            ClientAgreementEndorsement cAELPLAIncl = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Landscape Planning & Landscape Architectural Inclusion");
+
+                            if (cAELPLAIncl != null)
+                            {
+                                cAELPLAIncl.DateDeleted = DateTime.UtcNow;
+                                cAELPLAIncl.DeletedBy = user;
+                            }
+
                         }
 
-                      }
-
-                      if (clientProgramme.BaseProgramme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
-                      {
-                        ClientAgreementEndorsement cAECLExt = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Social Engineering Fraud Extension");
-
-                        if (cAECLExt != null)
+                        if (clientProgramme.BaseProgramme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
                         {
-                            cAECLExt.DateDeleted = DateTime.UtcNow;
-                            cAECLExt.DeletedBy = user;
-                        }
+                            ClientAgreementEndorsement cAECLExt = agreement.ClientAgreementEndorsements.FirstOrDefault(cae => cae.Name == "Social Engineering Fraud Extension");
 
-                      }
+                            if (cAECLExt != null)
+                            {
+                                cAECLExt.DateDeleted = DateTime.UtcNow;
+                                cAECLExt.DeletedBy = user;
+                            }
+
+                        }
 
                     }
                     await uow.Commit();
@@ -606,9 +649,9 @@ namespace DealEngine.WebUI.Controllers
                         if (option != "None" && option != null)
                         {
                             ClientAgreementTermExtension clientAgreementExtentionTerm = await _clientAgreementExtensionTermService.GetAgreementExtentionById(Guid.Parse(option));
-                            
-                                clientAgreementExtentionTerm.Bound = true;
-                              
+
+                            clientAgreementExtentionTerm.Bound = true;
+
                             ClientAgreement agreement = clientAgreementExtentionTerm.ClientAgreement;
                             if (clientProgramme.BaseProgramme.NamedPartyUnitName == "NZPI Programme")
                             {
@@ -676,13 +719,9 @@ namespace DealEngine.WebUI.Controllers
                     {
                         if (option != "None")
                         {
-                            var clientAgreementTerm = await _clientAgreementTermService.GetAllClientAgreementTerm();
-                            List<ClientAgreementTerm> listClientAgreementerm = clientAgreementTerm.Where(cagt => cagt.Id == Guid.Parse(option)).ToList();
-                            foreach (var term in listClientAgreementerm)
-                            {
-                                term.Bound = true;
-                                await uow.Commit();
-                            }
+                            var clientAgreementTerm = await _clientAgreementTermService.GetAgreementById(option);
+                            clientAgreementTerm.Bound = true;
+                            await uow.Commit();
                         }
                     }
                 }
@@ -738,6 +777,7 @@ namespace DealEngine.WebUI.Controllers
 
                 String[][] OptionItems = new String[clientProgramme.Agreements.Where(ag => ag.DateDeleted == null).Count()][];
                 var count = 0;
+                int limittotal = 0;
                 foreach (var agreement in clientProgramme.Agreements.Where(ag => ag.DateDeleted == null))
                 {
                     //count = 0;
@@ -771,10 +811,13 @@ namespace DealEngine.WebUI.Controllers
                         OptionItems[count] = OptionItem;
                         count++;
                         boundval = true;
+                        limittotal += term.TermLimit;
                     }
 
                 }
-                return Json(OptionItems);
+                //ViewBag.TermLimitTotal = limittotal;
+                var result = new { termlimit = limittotal, optionitems = OptionItems };
+                return Json(result);
             }
             catch (Exception ex)
             {
@@ -797,9 +840,9 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
                 ClientAgreementTerm selectedterm = await _clientAgreementTermService.GetAgreementById(SelectedId);
-               // var prem = selectedterm.Premium;
-                    //ClientAgreementTerms.Where(at => at.DateDeleted == null);
-                    //String[][] OptionItems = new String[clientProgramme.Agreements.Count][];
+                // var prem = selectedterm.Premium;
+                //ClientAgreementTerms.Where(at => at.DateDeleted == null);
+                //String[][] OptionItems = new String[clientProgramme.Agreements.Count][];
 
                 return Json(selectedterm);
             }
@@ -950,7 +993,7 @@ namespace DealEngine.WebUI.Controllers
 
         [HttpGet]
         // public async Task<IActionResult> EditInformation(Guid id)
-        public async Task<IActionResult> EditInformation(Guid id, string updateType)
+        public async Task<IActionResult> EditInformation(Guid id, string updateType = null)
         {
             User user = null;
 
@@ -959,17 +1002,22 @@ namespace DealEngine.WebUI.Controllers
             if (user.IsLoggedout)
                 return PageNotFound();
 
+            if (user == null)
+                return PageNotFound();
+
             try
             {
-                
+
                 var clientProgramme = await _programmeService.GetClientProgramme(id);
                 var sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
                 model.Advisory = await _milestoneService.SetMilestoneFor("Agreement Status - Not Started", user, sheet);
+                model.ClientProgrammeId = clientProgramme.Id;
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
-
+                await GetTrustDataModel(model, sheet);
+                //await GetDocumentUploadModel(model, sheet.file);
                 //build models from answers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("PMINZEPLViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("ELViewModel", StringComparison.CurrentCulture)));
@@ -984,7 +1032,12 @@ namespace DealEngine.WebUI.Controllers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("FAPViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("IPViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("OTViewModel", StringComparison.CurrentCulture)));
-                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));               
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("GeneralViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("MLViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("CPViewModel", StringComparison.CurrentCulture)));
+
 
                 if (sheet.Status == "Not Started")
                 {
@@ -997,17 +1050,17 @@ namespace DealEngine.WebUI.Controllers
                 for (var i = 0; i < sheet.ClaimNotifications.Count; i++)
                 {
                     claims.Add(ClaimViewModel.FromEntity(sheet.ClaimNotifications.ElementAtOrDefault(i)));
-                }               
+                }
 
 
                 model.Claims = claims;
 
                 //if(updateType == "")
-                if(string.IsNullOrWhiteSpace(updateType))
+                if (string.IsNullOrWhiteSpace(updateType))
                 {
                     updateType = "common_you";
                 }
-               
+
                 model.selectedUpdateType = new List<string>();
 
                 using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
@@ -1088,7 +1141,7 @@ namespace DealEngine.WebUI.Controllers
                         }
                         if (typeof(DateTime?) == property.PropertyType)
                         {
-                            var date = DateTime.Parse(answer.Value);                         
+                            var date = DateTime.Parse(answer.Value);
                             property.SetValue(reflectModel, date.ToString("dd/MM/yyyy"));
                         }
                     }
@@ -1099,6 +1152,41 @@ namespace DealEngine.WebUI.Controllers
                 }
             }
         }
+
+        private async Task GetTrustDataModel(InformationViewModel model, ClientInformationSheet sheet)
+        {
+            try
+            {
+                if (sheet != null) {
+                    //AssetData asset = await _assetData.GetAssetDataBySheetId(sheet.Id);
+                    if (sheet.ClubTrustAssetsInfo.Count > 0)
+                    {
+                        model.TAViewModel.ClubTrustAssetsInfo = sheet.ClubTrustAssetsInfo.Where(asset => asset.DeletedBy == null).ToList();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+
+        //private async Task GetDocumentUploadModel(InformationViewModel model, File file)
+        //{
+        //    try
+        //    {
+        //        if (file..Any())
+        //        {
+        //            model.RoleDataViewModel = _mapper.Map<RoleDataViewModel>(roleData);
+        //            model.RoleDataViewModel.AdditionalRoleInformationViewModel = _mapper.Map<AdditionalRoleInformationViewModel>(roleData.AdditionalRoleInformation);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine(ex.Message);
+        //    }
+        //}
 
         private async Task GetRoleViewModel(InformationViewModel model, RoleData roleData)
         {
@@ -1115,8 +1203,30 @@ namespace DealEngine.WebUI.Controllers
                 Console.WriteLine(ex.Message);
             }
         }
+        private async Task GetClubTrustAssetViewModel(InformationViewModel model, AssetData trustAssetData, ClientProgramme clientProgramme)
+        {
+            try
+            {
+                if (trustAssetData.ClubTrustAssetsInfo.Count() > 0)
+                {
 
-        private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData,Programme programme)
+                    model.AssetData.ClubTrustAssetsInfo = trustAssetData.ClubTrustAssetsInfo;
+                }
+                //if (trustAssetData.HasClubTrustAssetMore.Count() > 0)
+                //{
+                //    model.TAViewModel.HasClubTrustAssetMore = trustAssetData.HasClubTrustAssetMore;
+                //}
+                //if (trustAssetData.HasClubTrustAssets.Count() > 0)
+                //{
+                //    model.TAViewModel.HasClubTrustAssets = trustAssetData.HasClubTrustAssets;
+                //}
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+        private async Task GetRevenueViewModel(InformationViewModel model, RevenueData revenueData, Programme programme)
         {
             try
             {
@@ -1182,6 +1292,49 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteTrustAsset(Guid Trustassetid)
+        {
+            User user = null;
+            try
+            {
+                ClubTrustAssetsInfo clubTrustAssetsInfo = await _clubAssetInfoService.GetClubAssetById(Trustassetid);
+                user = await CurrentUser();
+                await _clubAssetInfoService.DeleteClubAssetById(user, clubTrustAssetsInfo);
+                return new JsonResult(true);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteDoc(Guid DocId)
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                Document doc = await _fileService.GetDocumentByID(DocId);
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    if (doc != null)
+                    {
+                        doc.DeletedBy = user;
+                    }
+                    await uow.Commit();
+                }
+                return new JsonResult(true);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> ResetStatus(Guid id)
         {
@@ -1191,6 +1344,13 @@ namespace DealEngine.WebUI.Controllers
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 user = await CurrentUser();
+
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (sheet != null)
                 {
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -1224,6 +1384,12 @@ namespace DealEngine.WebUI.Controllers
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 ClientInformationSheet sheet = clientProgramme.InformationSheet;
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (sheet != null)
                 {
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -1267,7 +1433,11 @@ namespace DealEngine.WebUI.Controllers
                 {
                     await _clientInformationService.SaveAnswersFor(sheet, collection, user);
                 }
+                if (collection["CTAViewModelDescriptionorName 1"].Count() > 0)
+                {
+                    SaveTrustAssetAnswer(user, sheet, collection);
 
+                }
                 return Json("Success");
             }
             catch (Exception ex)
@@ -1277,6 +1447,66 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpPost]
+        private async Task SaveTrustAssetAnswer(User user, ClientInformationSheet sheet, IFormCollection collection)
+        {
+            List<ClubTrustAssetsInfo> ClubTrustAssetsInfolist = new List<ClubTrustAssetsInfo>();
+            IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo = await _clubAssetInfoService.GetClubTrustAssets(sheet.Id);
+
+            try
+            {
+                int i = 1; // initialization
+                Guid ownerid = Guid.Parse(collection["CTAViewModelOwner " + i]);
+                Organisation ownerorg = await _organisationService.GetOrganisation(ownerid);
+                //ClubTrustAssetsInfo clubTrustAssetsInfo = null;
+                while (collection["CTAViewModelDescriptionorName " + i].Count() > 0) // condition
+                {
+                    Boolean exists = false;
+
+
+                    var assetname = collection["CTAViewModelDescriptionorName " + i];
+                    try
+                    {
+                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                        {
+                            //ClubTrustAssetsInfo clubTrustAssetsInfo = await _clubAssetInfoService.GetClubAssetById(sheet.Id);
+                            foreach(var asset in ClubTrustAssetsInfo)
+                            {
+                                if(asset.Name == collection["CTAViewModelDescriptionorName " + i])
+                                {
+                                    exists = true;
+                                }
+                            }
+                            
+
+                        if (!exists)
+                        {
+                           ClubTrustAssetsInfo clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["CTAViewModelDescriptionorName " + i],
+                                                                            int.Parse(collection["CTAViewModelCurrentValue " + i]),
+                                                                            int.Parse(collection["CTAViewModelReplacementValue " + i]),
+                                                                            ownerorg, sheet, user);
+
+                            await _clubAssetInfoService.UpdateClubAsset(clubTrustAssetsInfo);
+                        }
+
+                            await uow.Commit();
+                        }
+                        
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    i++;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
 
         //string jsonString = JsonSerializer.Serialize(weatherForecast);
         [HttpPost]
@@ -1366,6 +1596,13 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(id));                
                 var sheet = clientProgramme.InformationSheet;
                 var isBaseSheet = await _clientInformationService.IsBaseClass(sheet);
@@ -1402,14 +1639,14 @@ namespace DealEngine.WebUI.Controllers
                         await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out information sheet submission notification email
                         await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
-                        //send out agreement refer notification email
-                        foreach (ClientAgreement agreement in clientProgramme.Agreements)
+                    }
+                    //send out agreement refer notification email
+                    foreach (ClientAgreement agreement in clientProgramme.Agreements)
+                    {
+                        if (agreement.Status == "Referred")
                         {
-                            if (agreement.Status == "Referred")
-                            {
-                              await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
-                              await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
-                            }
+                            await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
+                            await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
                         }
                     }
                 }
@@ -1495,6 +1732,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<ViewResult> MoveAdvisors(Guid id)
         {
+
             ClientProgramme clientProgramme = await _clientProgrammeRepository.GetByIdAsync(id);
             Programme programme = clientProgramme.BaseProgramme;
             ClientInformationSheet lastInformationSheet = clientProgramme.InformationSheet;
@@ -1783,6 +2021,12 @@ namespace DealEngine.WebUI.Controllers
             {
                 ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (clientProgramme == null)
                     throw new Exception("ClientProgramme (" + id + ") doesn't belong to User " + user.UserName);
 
@@ -1807,6 +2051,12 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
                 if (!string.IsNullOrWhiteSpace(id))
                     user = await _userService.GetUser(id);
 
@@ -1840,7 +2090,6 @@ namespace DealEngine.WebUI.Controllers
                 var OrgUser = await _userService.GetUserByEmail(clientProgramme.InformationSheet.Owner.Email);
                 List<Organisation> DefaultMarinas = await _organisationService.GetPublicMarinas();
                 List<Organisation> DefaultInstitutes = await _organisationService.GetPublicFinancialInstitutes(); //??error
-                
                 Programme programme = clientProgramme.BaseProgramme;
                 InformationViewModel model = new InformationViewModel(clientProgramme.InformationSheet, OrgUser, user)
                 {
@@ -1857,6 +2106,8 @@ namespace DealEngine.WebUI.Controllers
                             model.ClientInformationSheet.WaterLocations.Add(unit.WaterLocation);
                     }                    
                 }
+                model.BuildingViewModel.Locations = model.ClientInformationSheet.Locations.ToList();
+                //model.BuildingViewModel.OrganisationalUnits = model.ClientInformationSheet.Organisation.Where(org => org.Name == "Tenant").ToList();;
                 if (DefaultInstitutes.Any())
                 {
                     foreach (var Institute in DefaultInstitutes)
@@ -1964,6 +2215,108 @@ namespace DealEngine.WebUI.Controllers
                 throw ex;
             }
         }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> Upload(InformationViewModel model)
+        {
+            //string UploadedDocumentPath = _appSettingService.CKImagePath;
+            ClientInformationSheet answersheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+            ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
+            var user = await CurrentUser();
+            var path = "";
+            if (model != null)
+            {
+                if (model.File != null)
+                {
+
+                    var contentType = model.File.ContentType;
+                    var extension = "";
+                    var filename = "";
+                    
+                    if (contentType == "application/pdf")
+                    {
+                        extension = ".pdf";
+                    }else if (contentType == "application/vnd.oasis.opendocument.graphics")
+                    {
+                        extension = ".odg";
+                    }else if (contentType == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                    {
+                        extension = ".docx";//.gdoc
+                    }
+                    else
+                    {
+                        throw new FileFormatException("Invalid File Type");
+                    }
+                    if(model.DocumentName != null)
+                    {
+                        filename = model.DocumentName+ extension;
+                    }else if (model.File.FileName != null)
+                    {
+                        filename = model.File.FileName;
+                    }
+
+                    //path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+
+                    if (_appSettingService.IsLinuxEnv == "True")
+                    {
+                        path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation + "";
+                    }
+                    else
+                    {
+                        path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+
+                    }
+                    //var path = Path.Combine(_hostingEnv.WebRootPath, "files", model.Name, "attachmentfiles");
+                    // var path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation +"";
+                    System.IO.Directory.CreateDirectory(path);
+                    path = Path.Combine(path, filename);
+
+                    try
+                    {
+                        
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                             model.File.CopyTo(fileStream);
+                        }
+
+                        DealEngine.Domain.Entities.Document newFile = new DealEngine.Domain.Entities.Document
+                        {
+                            Name = filename,
+                            Description = "File for " + model.DocumentOrganisation,
+                            DocumentType = 0,
+                            IsTemplate = true,
+                            ContentType = model.File.ContentType,
+                            FileRendered = false,
+                            Path = path,
+                            ClientInformationSheet = clientProgramme.InformationSheet,
+                            OwnerOrganisationName = model.DocumentOrganisation,
+                            Extension = extension
+                        };
+
+                        await _fileService.UploadFile(newFile);
+
+                        //Guid productID = Guid.Parse(model.Product);
+                        //Product myProduct = await _iproductService.GetProductById(productID);
+                        //myProduct.Documents.Add(newFile);
+                        //await _iproductService.UpdateProduct(myProduct);
+                    }
+
+                    catch (Exception Ex)
+                    {
+                        Console.WriteLine(Ex.ToString());
+                    }
+
+                }
+            }
+            var url = "/Information/EditInformation/" + model.ClientProgrammeId;
+            return Redirect(url);
+
+        }
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> SendOnlineAcceptance(string ClientAgreement)

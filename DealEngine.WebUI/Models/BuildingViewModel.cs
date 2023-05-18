@@ -7,6 +7,20 @@ namespace DealEngine.WebUI.Models
 {
     public class BuildingViewModel
     {
+        public BuildingViewModel()
+        {
+            ExteriorWallTypeOptions = GetSelectExteriorWallOptions();
+            ConstructionYearOptions = GetSelectConstructionYearOptions();
+            FloorAreaOptions = GetSelectListOptions();
+            hasEPS = GetSelectListOptions();
+            hasAutomaticSprinklers = GetSelectListOptions();
+            hasWaterSupply = GetSelectListOptions();
+            hasUnoccupied = GetSelectListOptions();
+            BuildingUses = GetBuildingUsesOptions();
+            IsBuildingOccupied = GetBuildingOwners();
+            IndustryOptions = GetIndustryOptions();
+            OccupationOptions = GetOccupationOptions();
+        }
         public Guid AnswerSheetId { get; set; }
 
         public Guid BuildingId { get; set; }
@@ -125,6 +139,214 @@ namespace DealEngine.WebUI.Models
 
         public string BuildingCategory { get; set; }
         public string LocationStreet { get; set; }
+        public IList<SelectListItem> ExteriorWallTypeOptions { get; set; }
+        public IList<SelectListItem> ConstructionYearOptions { get; set; }
+        public IList<SelectListItem> FloorAreaOptions { get; set; }
+        public string ResidentialUnits { get; set; }
+        public string StoreysNumber { get; set; }
+        public string TenantName { get; set; }
+
+        public IList<SelectListItem> hasEPS { get; set; }
+        public IList<SelectListItem> hasAutomaticSprinklers { get; set; }
+        public IList<SelectListItem> hasWaterSupply { get; set; }
+        public IList<SelectListItem> hasUnoccupied { get; set; }
+        public List<Location> Locations { get; set; }
+        public IList<SelectListItem> BuildingUses { get; set; }
+        public IList<SelectListItem> IsBuildingOccupied { get; set; }
+        public IList<SelectListItem> IndustryOptions { get; set; }
+        public IList<SelectListItem> OccupationOptions { get; set; }
+
+        
+
+        private IList<SelectListItem> GetOccupationOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = ""
+                },
+                new SelectListItem
+                {
+                    Text = "Occupation1", Value = "Occupation1"
+                }
+            };
+        }
+        
+          private IList<SelectListItem> GetIndustryOptions()
+          {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = ""
+                },
+                new SelectListItem
+                {
+                    Text = "Accomodation & Food Services", Value = "7"
+                },
+                new SelectListItem
+                {
+                    Text = "Agriculture / Forestry", Value = "2"
+                },
+                new SelectListItem
+                {
+                    Text = "Healthcare", Value = "8"
+                },
+                new SelectListItem
+                {
+                    Text = "Manufacturing", Value = "4"
+                },
+                new SelectListItem
+                {
+                    Text = "Professional / Office", Value = "1"
+                },
+                new SelectListItem
+                {
+                    Text = "Retail", Value = "5"
+                },
+                new SelectListItem
+                {
+                    Text = "Services", Value = "11"
+                },
+                new SelectListItem
+                {
+                    Text = "Trades / Construction", Value = "3"
+                },
+                new SelectListItem
+                {
+                    Text = "Wholesale", Value = "6"
+                },
+                new SelectListItem
+                {
+                    Text = "Miscellaneous", Value = "9"
+                },
+                new SelectListItem
+                {
+                    Text = "Unknown", Value = "12"
+                }
+            };
+          }
+
+
+        private IList<SelectListItem> GetBuildingOwners()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = ""
+                },
+                new SelectListItem
+                {
+                    Text = "Owner", Value = "Owner"
+                },
+                new SelectListItem
+                {
+                    Text = "Tenant", Value = "Tenant"
+                },
+                new SelectListItem
+                {
+                    Text = "Both", Value = "Both"
+                }
+            };
+        }
+
+        private IList<SelectListItem> GetSelectExteriorWallOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = ""
+                },
+                new SelectListItem
+                {
+                    Text = "Brick/concrete", Value = "TC_BrickOrConcrete"
+                },
+                new SelectListItem
+                {
+                    Text = "Mixed", Value = "TC_Mixed"
+                },
+                new SelectListItem
+                {
+                    Text = "Expanded Polystyrene Panels", Value = "TC_InsulatedSandwichPanels"
+                },
+                new SelectListItem
+                {
+                    Text = "Timber", Value = "TC_Other1"
+                },
+                new SelectListItem
+                { Text = "Other", Value = "TC_Other" }
+            };
+        }
+
+        private IList<SelectListItem> GetSelectConstructionYearOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = ""
+                },
+                new SelectListItem
+                {
+                    Text = "1992+", Value = "1993"
+                },
+                new SelectListItem
+                {
+                    Text = "1976-91", Value = "1967"
+                },
+                new SelectListItem
+                {
+                    Text = "1966-75", Value = "1967"
+                },
+                new SelectListItem
+                {
+                    Text = "1936-65", Value = "1937"
+                },
+                new SelectListItem
+                { Text = "Pre 1936", Value = "1900" }
+            };
+        }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+        private IList<SelectListItem> GetBuildingUsesOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Factory", Value = "factory"
+                },
+                new SelectListItem
+                { Text = "Store", Value = "store" }
+            };
+        }
+
+
+        
+
         public Building ToEntity(User creatingUser)
         {
             Building building = new Building(creatingUser);
@@ -228,7 +450,7 @@ namespace DealEngine.WebUI.Models
                 BuildingApproved = building.BuildingApproved,
                 BuildingCategory = building.BuildingCategory,
               //  Locationst = building.Location,
-
+                
         };
             if (building.Location != null)
             {

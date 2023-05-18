@@ -2,12 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
-using File = System.IO.File ;
 using System.Collections.Generic;
 using System.Linq;
 using DealEngine.Domain.Entities;
-using SystemDocument = DealEngine.Domain.Entities.Document;
-using Document = DealEngine.Domain.Entities.Document;
 using DealEngine.Services.Interfaces;
 using DealEngine.WebUI.Models;
 using DealEngine.Infrastructure.FluentNHibernate;
@@ -19,21 +16,10 @@ using Microsoft.AspNetCore.Http;
 using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
 using Microsoft.AspNetCore.Identity;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
-
-using System;
 using System.Data;
-using System.Linq;
-using System.Reflection;
-
-//using HibernatingRhinos.Profiler.Appender.NHibernate;
-using NHibernate.Cfg;
-using NHibernate.Criterion;
-using NHibernate.Dialect;
-using NHibernate.Driver;
-using NHibernate.Linq;
-using HibernatingRhinos.Profiler.Appender.NHibernate;
-using NHibernate;
-using DealEngine.Infrastructure.FluentNHibernate;
+using DealEngine.Services.Impl;
+using FluentNHibernate.Conventions;
+using Microsoft.Extensions.Azure;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -64,8 +50,9 @@ namespace DealEngine.WebUI.Controllers
         SignInManager<IdentityUser> _signInManager;
         UserManager<IdentityUser> _userManager;
         IMapperSession<User> _userRepository;
-        // IUpdateTypeService _updateTypeService;
         IUpdateTypeService _updateTypeServices;
+        IPolicyCenterService _policyCenterService;
+        IEmailService _emailService;
         public AdminController(
             IUpdateTypeService updateTypeService,
             IOrganisationService organisationService,
@@ -92,7 +79,10 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<Object> objectRepository,
             IMapperSession<Boat> boatRepository,
             IMapperSession<User> userRepository2,
-            IReferenceService referenceService)
+            IReferenceService referenceService,
+            IEmailService emailService,
+            IPolicyCenterService policyCenterService
+            )
 			: base (userRepository)
 		{
             _organisationService = organisationService;
@@ -120,13 +110,24 @@ namespace DealEngine.WebUI.Controllers
             _userRepository = userRepository2;
             _objectRepository = objectRepository;
             _updateTypeServices = updateTypeService;
+            _policyCenterService = policyCenterService;
+            _emailService = emailService;
+
         }
 
-		[HttpGet]
+        [HttpGet]
 		public async Task<IActionResult> Index ()
 		{
             AdminViewModel model = new AdminViewModel();
             var user = await CurrentUser();
+
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            if (user == null)
+                return PageNotFound();
+
+
 
             if (user.PrimaryOrganisation.IsTC)
             {
@@ -209,6 +210,26 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ImportMREOwners()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportMREOwners(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> FANZImportOwners()
         {
@@ -844,6 +865,63 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> UploadUserLdap()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.createIndividualstoldap(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+        
+
+
+        [HttpGet]
+        public async Task<IActionResult> RotaryImportLocalUsers()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportRotaryServicelocalIndividuals(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> RotaryImportUsers()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportRotaryServiceIndividuals(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> DANZImportPersonnel()
@@ -961,6 +1039,24 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
                 await _importService.ImportNZBarImportClaims(user);
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MREPreRenewData()
+        {
+            User user = null;
+            try
+            {
+                user = await CurrentUser();
+                await _importService.ImportMREPreRenewData(user);
 
                 return RedirectToAction("Index", "Home");
             }
@@ -1523,6 +1619,52 @@ namespace DealEngine.WebUI.Controllers
             return View(model);
         }
 
+
+        //[HttpGet]
+        //public async Task<IActionResult> MarshEliteSOAPTest()
+        //{
+        //    #region Ignore me
+        //    //string xml = "<?xml version=\"1.0\" encoding=\"utf - 16\"?>" +
+        //    //    "<GetAccountRequestTO xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        //    //        "<Account>" +
+        //    //            "<ExternalAccountID>c93e0dfc-69aa-4d6e-ade9-8b0651f36a14</ExternalAccountID>" +
+        //    //            "<ContactTO>" +
+        //    //                "<AccountSubType>TC_company</AccountSubType>" +
+        //    //                "<OrganizationName>0TCMEISTestCompany01</OrganizationName>" +
+        //    //                "<City>Auckland</City>" +
+        //    //                "<AddressLine1>1 Queen Street</AddressLine1>" +
+        //    //                "<Suburb />" +
+        //    //                "<Country>TC_NZ</Country>" +
+        //    //                "<AddressType xsi:nil=\"true\" />" +
+        //    //                "<PostCode>1111</PostCode>" +
+        //    //                "<PrimaryPhoneChoice xsi:nil=\"true\" />" +
+        //    //                "<State xsi:nil=\"true\" />" +
+        //    //            "</ContactTO>" +
+        //    //            "<ProducerCode>MarshMicroWB1</ProducerCode>" +
+        //    //            "<AccountOrgType>TC_company</AccountOrgType>" +
+        //    //            "<BusOpsDesc />" +
+        //    //        "</Account>" +
+        //    //    "</GetAccountRequestTO>";
+
+        //    //// HTTP
+        //    ////var byteResponse = await _httpClientService.MEISGetAccount(xml);
+        //    #endregion
+
+        //    // Get org by id
+        //    // Get location by id 
+
+        //    bool x = Guid.TryParse("9188616b-ee0b-4bb3-98d2-58b02630dd7d", out Guid result);
+            
+        //    Organisation org = new Organisation();
+        //    if (x)
+        //        org.Id = result;
+        //    org.Name = "GetAccountTestOrg1";
+
+        //    bool succeed = await _policyCenterService.GetAccountWCF(org);
+
+        //    return Ok();
+        //}
+
         [HttpGet]
         public async Task<IActionResult> ModifyCKEditor()
         {
@@ -1609,18 +1751,126 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> GetCreateUser(IFormCollection form)
         {
-            var user = await _userService.GetUserByEmail(form["UserEmail"]);
+            User user = null;
+            List<User> Luser = new List<User>();
 
+            if (form["UserEmail"] !="")
+            {
+                 user = await _userService.GetUserByEmail(form["UserEmail"]);
+            }
+            else if (form["UserFname"] != "")
+            {
+                user = await _userService.GetUserByFirstName(form["UserFname"]);
+            }
+            else if (form["userid"] != "")
+            {
+                user = await _userService.GetUserById(Guid.Parse(form["userid"]));
+            }
+            else if (form["UserOrg"] != "")
+            {
+                Organisation org = await _organisationService.GetOrganisationByName(form["UserOrg"]);
+                Luser = await _userService.GetAllUserByOrganisation(org);
+            }
+            
+            IdentityUser identityUser;
+            string IsusserLogged = "";
             Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
             if (user != null)
             {
                 JsonObjects.Add("User", user);
                 JsonObjects.Add("Organisation", user.PrimaryOrganisation);
                 var jsonObj = await _serializerationService.GetSerializedObject(JsonObjects);
-                return Json(jsonObj);                
+                identityUser = await _userManager.FindByNameAsync(user.UserName);
+                if (identityUser == null)
+                {
+                    IsusserLogged = "User never Logged in.";
+                }
+                else
+                {
+                    if (user.IsLoggedout)
+                    {
+                        IsusserLogged = "User has Logged in system once but now logged out";
+
+                    }
+                    else
+                    {
+                        IsusserLogged = "";
+
+                    }
+                }
+                //Response.Headers[""] = IsusserLogged;
+                //Response.Headers.Add("IsusserLogged", IsusserLogged);
+                return Json(new { IsusserLogged = IsusserLogged, jsonObj = jsonObj});
             }
             return Json(null);
-        }        
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetCreateUserbyOrg(IFormCollection form)
+        {
+            List<User> Luser = new List<User>();
+
+            if (form["UserOrg"] != "")
+            {
+                Organisation org = await _organisationService.GetOrganisationByName(form["UserOrg"]);
+                Luser = await _userService.GetAllUserByOrganisation(org);
+            }
+            IdentityUser identityUser;
+            string IsusserLogged = "";
+            Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
+            
+                //Response.Headers[""] = IsusserLogged;
+                //Response.Headers.Add("IsusserLogged", IsusserLogged);
+            return Json(Luser);
+            
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UserUnlock(IFormCollection form)
+        {
+            var currentUser = await CurrentUser();
+            User user = null;
+            try
+            {
+                if (form["UserEmail"] != "")
+                {
+                    user = await _userService.GetUserByEmail(form["UserEmail"]);
+                }
+                if(user != null)
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        user.IsLoggedout = false;
+                       await uow.Commit();
+
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return Json(true);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResendEmail(IFormCollection form)
+        {
+            var currentUser = await CurrentUser();
+            try
+            {
+               await _emailService.SendSystemEmailLogin(form["UserEmail"]);
+
+            }catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            return Json(true);
+        }
 
         [HttpPost]
         public async Task<IActionResult> PostCreateUser(IFormCollection form)
@@ -1634,7 +1884,7 @@ namespace DealEngine.WebUI.Controllers
                 deUser = new IdentityUser
                 {
                     UserName = user.UserName,
-                    Email = user.Email
+                    Email = user.Email,
                 };
                 await _userManager.CreateAsync(deUser, "defaultPassword");
             }

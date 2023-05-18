@@ -47,6 +47,7 @@ namespace DealEngine.Domain.Entities
         public virtual OrganisationalUnit DefaultOU { get; set; }
         public virtual string UserName { get; set; }
         public virtual string OktaUID { get; set; }
+        public virtual string OktaSingleUseToken { get; set; }
         public virtual string SalesPersonUserName { get; set; }
         public virtual string JobTitle { get; set; }
         public virtual string EmployeeNumber { get; set; }
@@ -55,6 +56,7 @@ namespace DealEngine.Domain.Entities
         [Display(Name = "Last Name")]
         public virtual string LastName { get; set; }
         public virtual string Email { get; set; }
+        [Display(Name = "Phone Number")]
 
         public virtual string Phone { get; set; }
 
@@ -70,6 +72,7 @@ namespace DealEngine.Domain.Entities
 		public virtual bool Locked { get; protected set; }
         public virtual Guid LegacyId { get; set; }
         public virtual DateTime? LockTime { get; protected set; }
+        [Display(Name = "Phone Number")]
 
         public virtual string MobilePhone { get; set; }
 

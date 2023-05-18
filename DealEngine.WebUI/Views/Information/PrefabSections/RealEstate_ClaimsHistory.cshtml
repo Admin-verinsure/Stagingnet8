@@ -1,0 +1,471 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="ClaimsHistoryViewModel" class="is-valid" data-accordianId="Claims Experience / Insurance History">
+    <div class="form-group">
+        <label class="label cgmodalLabel">1. Have any insurers with regard to Professional Indemnity insurance:</label>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasdeclinedproposal" class="label required">
+                    Declined a proposal of this firm or of any of the principals or directors?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasdeclinedproposal" name="ClaimsHistoryViewModel.HasDeclinedProposal" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasDeclinedProposal)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasDeclinedProposal" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="damagelossdetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.DeclinedProposalDetails, new { @class = "form-control", @id = "declinedproposaldetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasspecialterms" class="label required">
+                    Imposed special terms?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasSpecialTermsOptions" name="ClaimsHistoryViewModel.HasSpecialTermsOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasSpecialTermsOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasSpecialTermsOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="specialtermsdetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.SpecialTermsDetails, new { @class = "form-control", @id = "specialtermsdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasrefused" class="label required">
+                    Declined to renew the insurance policy?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasrefused" name="ClaimsHistoryViewModel.HasRefusedOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasRefusedOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasRefusedOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="refuseddetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.RefusedDetails, new { @class = "form-control", @id = "refuseddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hascancelled" class="label required">
+                    Cancelled the insurance policy?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasrefused" name="ClaimsHistoryViewModel.HasCancelledOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasCancelledOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasCancelledOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="cancelleddetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.cancelledDetails, new { @class = "form-control", @id = "cancelleddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label class="label">In respect of employees:</label>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasfraudemployee" class="label required">
+                    Has the firm suffered any loss during the past five years through fraud or dishonesty of any employee?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasfraudemployee" name="ClaimsHistoryViewModel.HasFraudEmployeeOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasFraudEmployeeOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasFraudEmployeeOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="fraudemployeedetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.FraudEmployeeDetails, new { @class = "form-control", @id = "fraudemployeedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasemployeealonecheques" class="label required">
+                    Is any employee allowed to sign cheques,drafts,or other negotiable instruments on their signature alone?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasemployeealonecheques" name="ClaimsHistoryViewModel.HasEmployeeAloneChequesOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasEmployeeAloneChequesOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasEmployeeAloneChequesOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="employeealonedetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.EmployeeAloneDetails, new { @class = "form-control", @id = "employeealonedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="cashinhanddetails" class="label required">
+                        How often is cash in hand and petty cash checked independently of the employees responsible?
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.CashInHandDetails, new { @class = "form-control", @id = "cashinhanddetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasmonthlycheck" class="label required">
+                    Are bank statements, receipts and supporting documents checked atleast monthly against the cash book entries independently
+                    of the employee making cash book entries or paying into the bank?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasmonthlycheck" name="ClaimsHistoryViewModel.HasMonthlyCheckOptions" class="form-select " data-rule="Reverse"   onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasMonthlyCheckOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasMonthlyCheckOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="monthlycheckdetails" class="label required">
+                        <strong>You have answered "No" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.MonthlyCheckDetails, new { @class = "form-control", @id = "monthlycheckdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasannualaccounts" class="label required">
+                    Are the firm's annual accounts prepared by a firm of Professional Accountants?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasannualaccounts" name="ClaimsHistoryViewModel.HasAnnualAccountsOptions" class="form-select "  data-rule="Reverse"   onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasAnnualAccountsOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasAnnualAccountsOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="annualaccountsdetails" class="label required">
+                        <strong>You have answered "No" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.AnnualAccountsDetails, new { @class = "form-control", @id = "annualaccountsdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="haswrittenprocedures" class="label required">
+                    Does the firm have written procedures and/or controls to ensure full compliance with the Anti Money Laundering
+                    and Countering Financing of Terrorism Act 2009?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="haswrittenprocedures" name="ClaimsHistoryViewModel.HasWrittenProceduresOptions" class="form-select " data-rule="Reverse"   onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasWrittenProceduresOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasWrittenProceduresOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="writtenproceduresdetails" class="label required">
+                        <strong>You have answered "No" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.WrittenProceduresDetails, new { @class = "form-control", @id = "writtenproceduresdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="haseverinvestigate" class="label required">
+                    Has the firm ever been subject to any investigation or audit in relation to money laundering or financing of terrorism?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="haseverinvestigate" name="ClaimsHistoryViewModel.HasEverInvestigateOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasEverInvestigateOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasEverInvestigateOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="everinvestigatedetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.EverInvestigateDetails, new { @class = "form-control", @id = "everinvestigatedetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasanyallegations" class="label required">
+                    In the last 5 years, have there been any civil or criminal allegations or claims made at common law, including any Licensing Board or REAA disciplinary proceedings,
+                    alleging(without limitation) misconduct or a breach of law against the company, its principals,partners, directors or employees which may have been covered under
+                    this insurance if it were in force?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasanyallegations" name="ClaimsHistoryViewModel.HasAnyAllegationsOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasAnyAllegationsOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasAnyAllegationsOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="anyallegationsdetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.AnyAllegationsDetails, new { @class = "form-control", @id = "anyallegationsdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="form-group">
+        <label class="label cgmodalLabel">Are any of the principals,partners, directors or employees of the Company aware of:</label>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hascivilallegations" class="label required">
+                    Any facts or circumstances which might give rise to any civil or criminal allegations or claims made, such as those described in (3) above against them or the Company which
+                    may be covered under this policy if it commences?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hascivilallegations" name="ClaimsHistoryViewModel.HasCivilAllegationsOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasCivilAllegationsOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasCivilAllegationsOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="civilallegationsdetails" class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.CivilAllegationsDetails, new { @class = "form-control", @id = "civilallegationsdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasotherrisk" class="label required">
+                   Are you aware of any other information material to the risk to be insured which the insurer should be made aware of?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasotherrisk" name="ClaimsHistoryViewModel.HasOtherRiskOptions" class="form-select " onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.ClaimsHistoryViewModel.HasOtherRiskOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+    <div id="ClaimsHistoryViewModel.HasOtherRiskOptions" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label class="label required">
+                        <strong>You have answered "Yes" </strong>, please provide full details:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextAreaFor(m => m.ClaimsHistoryViewModel.OtherRiskDetails, new { @class = "form-control", @id = "otherriskdetails", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+</form>

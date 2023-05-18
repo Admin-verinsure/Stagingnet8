@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CoreWCF.ConfigurationManager" Version="1.0.1" />
+    <PackageReference Include="CoreWCF.Http" Version="1.0.1" />
+    <PackageReference Include="CoreWCF.NetTcp" Version="1.0.1" />
+    <PackageReference Include="CoreWCF.Primitives" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DealEngine.Domain.Entities\DealEngine.Domain.Entities.csproj" />
+    <ProjectReference Include="..\DealEngine.Services.Interfaces\DealEngine.Services.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

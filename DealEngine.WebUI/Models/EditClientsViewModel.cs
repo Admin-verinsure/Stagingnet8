@@ -129,6 +129,9 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> Tiers { get; set; }
         public IList<SelectListItem> EGlobalClientBranchCodes { get; set; }
         public IList<SelectListItem> Owners { get; set; }
+        public IList<SelectListItem> BrokerContacts { get; set; }
+
+        //public List<User> BrokerContacts { get; set; }
         public ClientProgramme ClientProgramme { get; set; }
         public Domain.Entities.Programme Programme { get; set; }
     }

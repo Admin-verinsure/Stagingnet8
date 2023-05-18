@@ -29,6 +29,8 @@ namespace DealEngine.WebUI.Models
                     EBaristerUnit = new EBaristerUnit(null, null, null, null);
                     JBaristerUnit = new JBaristerUnit(null, null, null, null);
                     BarristerUnit = new BarristerUnit(null, null, null, null);
+                    EmployeeUnit = new EmployeeUnit(null, null, null, null);
+
                     if (Programme.NamedPartyUnitName == "NZFSG Programme") 
                     { 
                         InsuranceAttributes = GetAdvisorTypes1(); 
@@ -127,6 +129,25 @@ namespace DealEngine.WebUI.Models
                     OwnershipOptions = GetOwnershipOptions();
                 }
 
+                if (Programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                {
+                    SubsidiaryUnit = new SubsidiaryUnit(null, null, null, null);
+                    RealEstateRunOffUnit = new RealEstateRunOffUnit(null, null, null, null);
+                    RealEstateDirectorUnit = new RealEstateDirectorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
+                    InsuranceAttributes = GetMarshRE();
+                    OrganisationTypes = GetMREOrganisationTypes();
+
+                }
+
+                if (Programme.NamedPartyUnitName == "RotaryAssociationsProgramme")
+                {
+                    DirectorUnit = new DirectorUnit(null, null, null, null);
+                    AdministratorUnit = new AdministratorUnit(null, null, null, null);
+                    AdvisorUnit = new AdvisorUnit(null, null, null, null);
+                    InsuranceAttributes = GetRolesTypes5();
+                    OrganisationTypes = GetRotaryOrganisationTypes();
+
+                }
                 Organisation = ClientInformationSheet.Owner;
                 //if (Organisations.Any(o => o.Id != (ClientInformationSheet.Owner.Id)))
                 Organisations.Add(ClientInformationSheet.Owner);
@@ -196,7 +217,6 @@ namespace DealEngine.WebUI.Models
             return _Types;
         }
 
-       
         private IList<SelectListItem> GetAssociationOptions2()
         {
             var _Types = new List<SelectListItem>();
@@ -368,6 +388,39 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Co Owner",
                         Value = "Co Owner"
+                    }
+                };
+            return _Types;
+        }
+
+        private IList<SelectListItem> GetMarshRE()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                    new SelectListItem
+                    {
+                        Text = "-- Select --",
+                        Value = "0"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Private",
+                        Value = "Personnel"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Director",
+                        Value = "MREDirector"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Subsidiary Company organisation",
+                        Value = "Subsidiary Company organisation"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Run Off",
+                        Value = "Run Off"
                     }
                 };
             return _Types;
@@ -658,7 +711,91 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Financial Institution",
                         Value = "Financial Institution"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Club Trust– non-trading",
+                        Value = "Club Trust– non-trading"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Club Trust– trading",
+                        Value = "Club Trust– trading"
                     }
+                };
+            return _Types;
+        }
+
+
+        private IList<SelectListItem> GetRotaryOrganisationTypes()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                    new SelectListItem
+                    {
+                        Text = "-- Select --",
+                        Value = "0"
+                    },new SelectListItem
+                    {
+                        Text = "Private Individual",
+                        Value = "Private"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Trading Trust",
+                        Value = "Trading Trust"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Holding Trust",
+                        Value = "Holding Trust"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Incorporated Society",
+                        Value = "Incorporated Society"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Company",
+                        Value = "Company"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "other- NOT incorporated",
+                        Value = "Other"
+                    }
+                };
+            return _Types;
+        }
+
+
+        private IList<SelectListItem> GetMREOrganisationTypes()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                   
+                    new SelectListItem
+                    {
+                        Text = "Private ",
+                        Value = "Personnel"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Director ",
+                        Value = "MREDirector "
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Other Subsidiary Company",
+                        Value = "Other Subsidiary Company"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Run Off",
+                        Value = "RunOff"
+                    }
+                    
                 };
             return _Types;
         }
@@ -707,6 +844,46 @@ namespace DealEngine.WebUI.Models
             return _Types;
 
         }
+
+        private IList<SelectListItem> GetRolesTypes5()
+        {
+            var _Types = new List<SelectListItem>();
+            _Types = new List<SelectListItem>() {
+                new SelectListItem
+                    {
+                        Text = "-- Select --",
+                        Value = "0"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Administrator",
+                        Value = "Administrator"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Trustee",
+                        Value = "Trustee"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Incorporated Society Officer",
+                        Value = "Incorporated Society Officer"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Director",
+                        Value = "Director"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Other",
+                        Value = "Other"
+                    }
+            };
+            return _Types;
+
+        }
+
         private IList<SelectListItem> GetAdvisorTypes1()
         {
             var _Types = new List<SelectListItem>();
@@ -801,6 +978,11 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Associated Business",
                         Value = "ABusiness"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Employee",
+                        Value = "Employee"
                     }
                 };
             return _Types;
@@ -864,7 +1046,7 @@ namespace DealEngine.WebUI.Models
         public Guid ProgrammeId { get; set; }
         public Domain.Entities.Organisation Organisation { get; set; }
         public User User { get; set; }
-        [Display(Name ="Type")]
+        [Display(Name ="Role")]
         [JsonIgnore]
         public IList<SelectListItem> InsuranceAttributes { get; set; }
         [Display(Name = "Organisation Type")]
@@ -934,8 +1116,15 @@ namespace DealEngine.WebUI.Models
         public EBaristerUnit EBaristerUnit { get; set; }
         public JBaristerUnit JBaristerUnit { get; set; }
         public BarristerUnit BarristerUnit { get; set; }
+        public EmployeeUnit EmployeeUnit { get; set; }
+
+        
         [JsonIgnore]
         public IList<SelectListItem> HasBarristerPrincipalOptions { get; set; }
+        public RealEstateDirectorUnit RealEstateDirectorUnit { get; set; }
+        public RealEstateRunOffUnit RealEstateRunOffUnit { get; set; }
+        public SubsidiaryUnit SubsidiaryUnit { get; set; }
+
     }
 }
 

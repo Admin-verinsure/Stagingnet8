@@ -102,6 +102,21 @@ namespace DealEngine.Domain.Entities
 
     }
 
+    public class EmployeeUnit : OrganisationalUnit
+    {
+        public EmployeeUnit() { }
+        public EmployeeUnit(User User, string Name, string Type, IFormCollection Collection)
+            : base(User, Name, Type, Collection)
+        {
+        }
+        [Display(Name = "Employee Name")]
+
+        public virtual string EmployeeName { get; set; }
+        [Display(Name = "Role")]
+        public virtual string Role { get; set; }
+
+    }
+
     public class JBaristerUnit : OrganisationalUnit
     {
         public JBaristerUnit() { }
@@ -324,7 +339,8 @@ namespace DealEngine.Domain.Entities
 
         [Display(Name = "Are you intending to apply for interposed person arrangements?")]
         public virtual bool isAdministratorInterposedPerson { get; set; }
-
+        [Display(Name = "Phone Number")]
+        public virtual string MobilePhone { get; set; }
     }
 
     public class DirectorUnit : OrganisationalUnit
@@ -342,7 +358,63 @@ namespace DealEngine.Domain.Entities
         public virtual DateTime? DateofRetirement { get; set; }
         [Display(Name = "Date of Deceased (Please Enter either Date of Retirement or Date of Deceased)")]
         public virtual DateTime? DateofDeceased { get; set; }
+        [Display(Name = "Phone Number")]
+        public virtual string MobilePhone { get; set; }
     }
+
+    public class RealEstateDirectorUnit : OrganisationalUnit
+    {
+        public RealEstateDirectorUnit() { }
+        public RealEstateDirectorUnit(User User, string Name, string Type, IFormCollection Collection)
+            : base(User, Name, Type, Collection)
+        {
+        }
+        //[Display(Name = "Name")]
+        //public virtual string Name { get; set; }
+        //[Display(Name = "Email")]
+        //public virtual string Email { get; set; }
+        [Display(Name = "Qualification")]
+
+        public virtual string Qualification { get; set; }
+        [Display(Name = "No.of Years in this firm")]
+        public virtual string FirmYears { get; set; }
+
+        [Display(Name = "No. of Years in this Profession")]
+        public virtual string ProfessionYears { get; set; }
+
+
+    }
+
+
+
+
+
+    public class RealEstateRunOffUnit : OrganisationalUnit
+    {
+        public RealEstateRunOffUnit() { }
+        public RealEstateRunOffUnit(User User, string Name, string Type, IFormCollection Collection)
+             : base(User, Name, Type, Collection)
+        {
+        }
+        [Display(Name = "EffectiveDate")]
+        public virtual string EffectiveDate { get; set; }
+
+
+
+    }
+
+    public class SubsidiaryUnit : OrganisationalUnit
+    {
+        public SubsidiaryUnit() { }
+        public SubsidiaryUnit(User User, string Name, string Type, IFormCollection Collection)
+             : base(User, Name, Type, Collection)
+        {
+        }
+       
+
+    }
+
+  
 }
 
 

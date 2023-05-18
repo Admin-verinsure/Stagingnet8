@@ -12,6 +12,8 @@ using FluentNHibernate.Conventions;
 using NHibernate.Util;
 using FluentNHibernate.Utils;
 using ServiceStack;
+using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 
 namespace DealEngine.Services.Impl
@@ -545,7 +547,13 @@ namespace DealEngine.Services.Impl
             await _referenceRepository.AddAsync(new Reference(newClientInformationSheet.Id, newClientInformationSheet.ReferenceId));
 
             ClientProgramme newClientProgramme = new ClientProgramme(createdBy, oldClientProgramme.Owner, oldClientProgramme.BaseProgramme);
-            newClientProgramme.BrokerContactUser = oldClientProgramme.BaseProgramme.BrokerContactUser;
+            if (newClientProgramme.BaseProgramme.ProgMultBrokerMode)
+            {
+                newClientProgramme.BrokerContactUser = oldClientProgramme.BrokerContactUser;
+            } else
+            {
+                newClientProgramme.BrokerContactUser = oldClientProgramme.BaseProgramme.BrokerContactUser;
+            }
             newClientProgramme.ChangeReason = changeReason;
             newClientProgramme.InformationSheet = newClientInformationSheet;
             newClientProgramme.InformationSheet.Programme = newClientProgramme;
@@ -602,6 +610,23 @@ namespace DealEngine.Services.Impl
                 foreach (ClientInformationAnswer answer in oldClientProgramme.InformationSheet.Answers)
                 {
                     ClientInformationAnswer newClientInformationAnswer = answer.CloneForNewSheet(newClientInformationSheet);
+
+                    if (newClientInformationSheet.Programme.BaseProgramme.ProgDisableClaimInsHistoryPanel)
+                    {
+                        if (answer.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions" ||
+                            answer.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions" ||
+                            answer.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")
+                        {
+                            newClientInformationAnswer.Value = "0";
+                        }
+                        if (answer.ItemName == "ClaimsHistoryViewModel.DamageLossDetails" || answer.ItemName == "ClaimsHistoryViewModel.WithdrawnDetails" ||
+                        answer.ItemName == "ClaimsHistoryViewModel.RefusedDetails" || answer.ItemName == "ClaimsHistoryViewModel.StatutoryOffenceDetails" ||
+                        answer.ItemName == "ClaimsHistoryViewModel.LiquidationDetails")
+                        {
+                            newClientInformationAnswer.Value = "";
+                        }
+                    }
+
                     newClientInformationSheet.Answers.Add(newClientInformationAnswer);
                 }
             }
@@ -687,7 +712,14 @@ namespace DealEngine.Services.Impl
             await _referenceRepository.AddAsync(new Reference(newClientInformationSheet.Id, newClientInformationSheet.ReferenceId));
 
             ClientProgramme newClientProgramme = new ClientProgramme(createdBy, oldClientProgramme.Owner, oldClientProgramme.BaseProgramme);
-            newClientProgramme.BrokerContactUser = currentProgramme.BrokerContactUser;
+            if (newClientProgramme.BaseProgramme.ProgMultBrokerMode)
+            {
+                newClientProgramme.BrokerContactUser = oldClientProgramme.BrokerContactUser;
+            }
+            else
+            {
+                newClientProgramme.BrokerContactUser = currentProgramme.BrokerContactUser;
+            }
             newClientProgramme.RenewFromClientProgramme = oldClientProgramme;
             newClientProgramme.InformationSheet = newClientInformationSheet;
             newClientProgramme.InformationSheet.Programme = newClientProgramme;
@@ -753,6 +785,23 @@ namespace DealEngine.Services.Impl
                 foreach (ClientInformationAnswer answer in oldClientProgramme.InformationSheet.Answers)
                 {
                     ClientInformationAnswer newClientInformationAnswer = answer.CloneForNewSheet(newClientInformationSheet);
+                    
+                    if (newClientInformationSheet.Programme.BaseProgramme.ProgDisableClaimInsHistoryPanel)
+                    {
+                        if (answer.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions" || 
+                            answer.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions" || 
+                            answer.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")
+                        {
+                            newClientInformationAnswer.Value = "0";
+                        }
+                        if (answer.ItemName == "ClaimsHistoryViewModel.DamageLossDetails" || answer.ItemName == "ClaimsHistoryViewModel.WithdrawnDetails" ||
+                        answer.ItemName == "ClaimsHistoryViewModel.RefusedDetails" || answer.ItemName == "ClaimsHistoryViewModel.StatutoryOffenceDetails" ||
+                        answer.ItemName == "ClaimsHistoryViewModel.LiquidationDetails")
+                        {
+                            newClientInformationAnswer.Value = "";
+                        }
+                    }
+
                     newClientInformationSheet.Answers.Add(newClientInformationAnswer);
                 }
             }
@@ -841,6 +890,7 @@ namespace DealEngine.Services.Impl
                     newclientAgreement.Jurisdiction = oldclientagreement.Jurisdiction;
                     newclientAgreement.TerritoryLimit = oldclientagreement.TerritoryLimit;
                     newclientAgreement.RetroactiveDate = oldclientagreement.RetroactiveDate;
+                    newclientAgreement.ContinuityDate = oldclientagreement.ContinuityDate;
                     newclientAgreement.MasterAgreement = oldclientagreement.MasterAgreement;
                     newclientAgreement.PlacementFee = oldclientagreement.PlacementFee;
                     newclientAgreement.AdditionalCertFee = oldclientagreement.AdditionalCertFee;
@@ -1163,9 +1213,29 @@ namespace DealEngine.Services.Impl
 
         }
 
+        public async Task<List<Organisation>> GetOwnerForProgramme (Guid programmeId)
+        {
+            Programme programme = await GetProgramme(programmeId);
+            var ownerList = new List<Organisation>();
+            Dictionary<string, Organisation> owners = new Dictionary<string, Organisation>();
+
+            if (programme == null)
+                return null;
+            foreach (var client in programme.ClientProgrammes.Where(c => c.DateDeleted == null).OrderBy(c=>c.Owner.Name))
+            {
+                if (!owners.ContainsKey(client.Owner.Id.ToString()))
+                {
+                    ownerList.Add(client.Owner);
+                    owners.Add(client.Owner.Id.ToString(), client.Owner);
+                }
+            }
+
+            return ownerList;
+        }
+
         //public async Task UpdateFlag(Programme  Prog, String flagname, String flagval)
         //{
-            
+
         //    //await _programmeRepository.UpdateAsync(Prog.Select );
         //    //person.Select(c => new {
         //    //    name = c.firstname

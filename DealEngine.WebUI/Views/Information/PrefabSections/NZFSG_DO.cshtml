@@ -1,90 +1,90 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
-    <form id="DAOLIViewModel" class="is-valid" data-accordianId="Directors and Officers Liability Insurance">
-        <div class="form-group">
-            <div class="row">
-                <div class="col-12">
-                    <label class="label">
-                        Please declare the following financial information about your company (only required if you trade through a company). If you do not wish to declare the company's financial information, an Insolvency Exclusion will be applied to the Directors and Officers policy.
-                    </label>
-                </div>
+<form id="DAOLIViewModel" class="is-valid" data-accordianId="Directors and Officers Liability Insurance">
+    <div class="form-group">
+        <div class="row">
+            <div class="col-12">
+                <label class="label">
+                    Please declare the following financial information about your company (only required if you trade through a company). If you do not wish to declare the company's financial information, an Insolvency Exclusion will be applied to the Directors and Officers policy.
+                </label>
             </div>
         </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="assettotal" class="label">
-                        Total Assets:
-                    </label>
-                </div>
-                <div class="col-3">
-                    @Html.TextBoxFor(m => m.DAOLIViewModel.AssetTotal, new { @class = "form-control", @id = "assettotal", @type = "number", onchange = "OnChange(this.id, this.name)" })
-                </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="assettotal" class="label">
+                    Total Assets:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.DAOLIViewModel.AssetTotal, new { @class = "form-control", @id = "assettotal", @type = "number", onchange = "OnChange(this.id, this.name)" })
             </div>
         </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="liabilitytotal" class="label">
-                        Total Liabilities:
-                    </label>
-                </div>
-                <div class="col-3">
-                    @Html.TextBoxFor(m => m.DAOLIViewModel.LiabilityTotal, new { @class = "form-control", @id = "liabilitytotal", @type = "number", onchange = "OnChange(this.id, this.name)" })
-                </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="assettotal" class="label">
+                    Total Assets:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.DAOLIViewModel.AssetTotal, new { @class = "form-control", @id = "assettotal", @type = "number", onchange = "OnChange(this.id, this.name)" })
             </div>
         </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="assetcurrent" class="label">
-                        Current Assets:
-                    </label>
-                </div>
-                <div class="col-3">
-                    @Html.TextBoxFor(m => m.DAOLIViewModel.AssetCurrent, new { @class = "form-control", @id = "assetcurrent", @type = "number", onchange = "OnChange(this.id, this.name)" })
-                </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="assetcurrent" class="label">
+                    Current Assets:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.DAOLIViewModel.AssetCurrent, new { @class = "form-control", @id = "assetcurrent", @type = "number", onchange = "OnChange(this.id, this.name)" })
             </div>
         </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="liabilitycurrent" class="label">
-                        Current Liabilities:
-                    </label>
-                </div>
-                <div class="col-3">
-                    @Html.TextBoxFor(m => m.DAOLIViewModel.LiabilityCurrent, new { @class = "form-control", @id = "liabilitycurrent", @type = "number", onchange = "OnChange(this.id, this.name)" })
-                </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="liabilitycurrent" class="label">
+                    Current Liabilities:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.DAOLIViewModel.LiabilityCurrent, new { @class = "form-control", @id = "liabilitycurrent", @type = "number", onchange = "OnChange(this.id, this.name)" })
             </div>
         </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="aftertaxnumber" class="label">
-                        After-tax profit or loss for the last financial year:
-                    </label>
-                </div>
-                <div class="col-3">
-                    @Html.TextBoxFor(m => m.DAOLIViewModel.AfterTaxNumber, new { @class = "form-control", @id = "aftertaxnumber", @type = "number", onchange = "OnChange(this.id, this.name)" })
-                </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="aftertaxnumber" class="label">
+                    After-tax profit or loss for the last financial year:
+                </label>
+            </div>
+            <div class="col-3">
+                @Html.TextBoxFor(m => m.DAOLIViewModel.AfterTaxNumber, new { @class = "form-control", @id = "aftertaxnumber", @type = "number", onchange = "OnChange(this.id, this.name)" })
             </div>
         </div>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-9">
-                    <label for="hasdebts" class="label required">
-                        Are you currently able to meet your debts as they fall due?
-                    </label>
-                </div>
-                <div class="col-3">
-                    <select id="hasdebts" name="DAOLIViewModel.HasDebtsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                        @foreach (var option in Model.DAOLIViewModel.HasDebtsOptions)
-                        {
-                            <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                        }
-                    </select>
-                </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label for="hasdebts" class="label required">
+                    Are you currently able to meet your debts as they fall due?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="hasdebts" name="DAOLIViewModel.HasDebtsOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.DAOLIViewModel.HasDebtsOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
             </div>
         </div>
-    </form>
+    </div>
+</form>

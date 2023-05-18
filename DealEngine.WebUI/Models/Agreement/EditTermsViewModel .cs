@@ -22,8 +22,10 @@ namespace DealEngine.WebUI.Models.Agreement
 		public string Model { get; set; }
 
         public decimal Excess { get; set; }
+        public int AggregateLimit { get; set; }
 
-		public string BoatMake { get; set; }
+        
+        public string BoatMake { get; set; }
         public string BoatModel { get; set; }
         public string Make { get; set; }
         public string Registration { get; set; }
