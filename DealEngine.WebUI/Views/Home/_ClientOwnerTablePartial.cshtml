@@ -1,0 +1,40 @@
+﻿@model DealEngine.WebUI.Models.ProgrammeItem
+
+<table id="tableProgrammeItems"
+       class="table table-striped" width="100%"
+       @*data-show-columns="true"*@
+       data-pagination="true"
+       data-search="true"
+       data-show-jump-to="true"
+       data-page-list="[10, 25, 50, 100, 200, All]"
+       data-smart-display="false"
+       data-toggle="table"
+       data-show-columns-search="true"
+       data-show-columns-toggle-all="true"
+       data-visible-search="true">
+
+
+    <thead>
+        <tr>
+            <th data-field="name" data-sortable="true">Client Name</th>
+@*            <th data-field="status" data-sortable="true">Status</th>
+*@            <th data-sortable="false"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OwnerDeals)
+        {
+            <tr>
+                <td>@item.OwnerName </td>
+
+                @*<td></td>*@
+                <td>
+                    <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
+                        <a class="btn btn-primary btn-sm" href="/Home/ViewClientProgramme?ownerid=@item.OwnerId&programmeid=@item.ProgrammeId"><i class="fa fa-search"></i> View</a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
