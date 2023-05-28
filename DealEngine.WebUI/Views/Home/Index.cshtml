@@ -4,7 +4,14 @@
 <div id="content">
     <div class="row">
         <div class="container">
-            <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-home"></i> Dashboard <span>> My Dashboard</span></h1>
+
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                </div>
+                    <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                        <button type="button" class="btn btn-info btn-lg btn3d"><span class="glyphicon glyphicon-question-sign"></span> Info</button>
+@*                        <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-home"></i> Dashboard <span>> My Dashboard</span></h1>
+*@
+                    </div>
         </div>
     </div>
     <!-- widget grid -->
@@ -625,6 +632,30 @@
             $.chat_body.animate({
                 scrollTop: $.chat_body[0].scrollHeight
             }, 500);
+
+            .btn3d {
+	position: relative;
+	top: -6px;
+	border: 0;
+	transition: all 40ms linear;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+.btn3d:active:focus,
+.btn3d:focus:hover,
+.btn3d:focus {
+	-moz-outline-style: none;
+	outline: medium none;
+}
+
+.btn3d:active,
+.btn3d.active {
+	top: 2px;
+}
+
 
         });
     </script>

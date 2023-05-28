@@ -55,6 +55,8 @@ namespace DealEngine.Services.Interfaces
         Task<bool> AddOrganisationByMembershipByProgram(Organisation organisation, string membership,Guid Progid);
         Task<List<Organisation>> GetOwnerForProgramme(Guid programmeId);
         //Task UpdateFlag(String ProgName, String flagname , String flagval);
+        Task<ClientProgramme> GetClientProgrammeByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId);
+
 
     }
 }

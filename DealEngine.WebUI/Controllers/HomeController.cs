@@ -5,6 +5,7 @@ using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Services.Interfaces;
 using DealEngine.WebUI.Models;
+using FluentNHibernate.Conventions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -698,6 +699,7 @@ namespace DealEngine.WebUI.Controllers
             var clientProgramme = clientList.FirstOrDefault();
             IList<Organisation> ownerList = new List<Organisation>();
             ProgrammeItem model = new ProgrammeItem(programme);
+            DateTime tme = DateTime.Now.AddMonths(3);
             if (clientProgramme != null)
             {
                 if (!isClient)
@@ -709,16 +711,71 @@ namespace DealEngine.WebUI.Controllers
                     }
                 }
             }
+
+            if (!programme.isprogrenewed && programme.RenewFromProgramme != null)
+            {
+                List<ClientProgramme> renewClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
+                foreach (var client in renewClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                {
+                    if (client.DateDeleted == null && client.InformationSheet != null)
+                    {
+                        //filter out the renewal clientprogramme already created
+                        List<ClientProgramme> currentClientProgrammes = await _programmeService.GetClientProgrammesByOwnerByProgramme(client.Owner.Id, programme.Id);
+                        if (currentClientProgrammes.Count == 0)
+                        {
+                            client.RenewNotificationDate = DateTime.UtcNow;
+                            await _programmeService.Update(client);
+
+                            ClientProgramme CloneProgramme = await _programmeService.CloneForRenew(user, client.Id, programme.Id);
+
+                            Product masterUISProduct = programme.Products.Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
+                            var UISAttachmentDocuments = new List<SystemDocument>();
+                            if (masterUISProduct != null)
+                            {
+                                var UISAttachmentTemplateList = masterUISProduct.Documents.Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
+
+                                foreach (SystemDocument template in UISAttachmentTemplateList)
+                                {
+                                    SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, client.InformationSheet, null);
+                                    SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                                    renderedDoc.OwnerOrganisation = client.Owner;
+                                    UISAttachmentDocuments.Add(renderedDoc);
+                                    await _fileService.UploadFile(renderedDoc);
+                                }
+                            }
+                            using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                            {
+                                programme.isprogrenewed = true;
+
+                                await uow.Commit();
+                            }
+                        }
+                    }
+                }
+            }
+
             if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsProgrammeManager)
             {
                 foreach (Organisation owner in ownerList.Where(o => o.DateDeleted == null).OrderBy(o => o.Name).Distinct())
                 {
-                    model.OwnerDeals.Add(new OwnerItem
+                    ClientProgramme ownerclientProgramme = await  _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.Id) ;
+                    if (ownerclientProgramme.ClientProgrammeExpiryDate < DateTime.Now.AddMonths(2) && ownerclientProgramme.ClientProgrammeExpiryDate > DateTime.Now)
                     {
-                        OwnerId = owner.Id.ToString(),
-                        OwnerName = owner.Name,
-                        ProgrammeId = clientProgramme.BaseProgramme.Id.ToString()
-                    });
+                        model.UpcomingDeals.Add(new OwnerItem
+                        {
+                            OwnerId = owner.Id.ToString(),
+                            OwnerName = owner.Name,
+                            ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
+                        });
+                    }
+                    
+                    
+                        model.OwnerDeals.Add(new OwnerItem
+                        {
+                            OwnerId = owner.Id.ToString(),
+                            OwnerName = owner.Name,
+                            ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
+                        });
 
                 }
             }

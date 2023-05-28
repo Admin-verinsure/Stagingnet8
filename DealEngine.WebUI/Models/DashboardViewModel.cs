@@ -140,6 +140,7 @@ namespace DealEngine.WebUI.Models
 			Programme = baseProgramme;
 			Deals = new List<DealItem>();
             OwnerDeals = new List<OwnerItem>();
+			UpcomingDeals = new List<OwnerItem>();
         }
 
         public ProgrammeItem(List<ClientInformationSheet> sheets)
@@ -188,6 +189,8 @@ namespace DealEngine.WebUI.Models
 		public IList<string> Languages { get; set; }
 		public IList<DealItem> Deals { get; set; }
         public IList<OwnerItem> OwnerDeals { get; set; }
+        public IList<OwnerItem> UpcomingDeals { get; set; }
+
         public IList<UpdateType> updateTypes { get; set; }
 
 		public string CurrentUserIsBroker { get; set; }

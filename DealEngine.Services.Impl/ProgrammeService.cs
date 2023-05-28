@@ -117,6 +117,15 @@ namespace DealEngine.Services.Impl
             return originalClientProgramme;
         }
 
+
+        public async Task<ClientProgramme> GetClientProgrammeByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId)
+        {
+            ClientProgramme originalClientProgramme = _clientProgrammeRepository.FindAll().Where(cp => cp.BaseProgramme.Id == programmeId &&
+                                                      cp.Owner.Id == ownerOrganisationId && cp.InformationSheet != null && cp.DateDeleted == null).FirstOrDefault();
+            return originalClientProgramme;
+        }
+
+
         public async Task<List<ClientProgramme>> GetClientProgrammesForProgramme(Guid programmeId)
         {
             Programme programme = await GetProgramme(programmeId);
@@ -708,6 +717,7 @@ namespace DealEngine.Services.Impl
             newClientInformationSheet.Status = "Not Started";
             newClientInformationSheet.DateCreated = DateTime.UtcNow;
             newClientInformationSheet.UnlockDate = DateTime.MinValue;
+            newClientInformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate").FirstOrDefault().Value = ""+DateTime.UtcNow;
             newClientInformationSheet.RenewFromInformationSheet = oldClientProgramme.InformationSheet;
             await _referenceRepository.AddAsync(new Reference(newClientInformationSheet.Id, newClientInformationSheet.ReferenceId));
 
@@ -723,6 +733,7 @@ namespace DealEngine.Services.Impl
             newClientProgramme.RenewFromClientProgramme = oldClientProgramme;
             newClientProgramme.InformationSheet = newClientInformationSheet;
             newClientProgramme.InformationSheet.Programme = newClientProgramme;
+            newClientProgramme.ClientProgrammeExpiryDate = oldClientProgramme.ClientProgrammeExpiryDate;
             newClientProgramme.BaseProgramme = currentProgramme;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalBranchCode))
                 newClientProgramme.EGlobalBranchCode = oldClientProgramme.EGlobalBranchCode;
