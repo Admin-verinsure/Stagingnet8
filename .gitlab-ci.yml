@@ -23,7 +23,7 @@ deploy_stagingmnzconnect:
   - ssh-add <(echo "$PKgitlab")
   - ssh ubuntu@"$URLstagingmnzconnect" './DE-DeployPrep.sh'
   - 'dotnet publish -c Release'
-  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net5.0/ ubuntu@$URLstagingmnzconnect:/home/ubuntu/projects/dealengine
+  - rsync -azhe ssh /home/gitlab-runner/builds/MsHgSUxs/0/tcdev/dealengine/DealEngine.WebUI/bin/Release/net6.0/ ubuntu@$URLstagingmnzconnect:/home/ubuntu/projects/dealengine
   - ssh ubuntu@"$URLstagingmnzconnect" './DE-DeployFin.sh'
   environment:
     name: mnzconnect
