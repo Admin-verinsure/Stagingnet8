@@ -164,6 +164,16 @@
 
          });
 
+
+            $("#btnQuoteTermSubmit").click(function () {
+            var valid = ValidateSubTerm();
+            if (valid) {
+                quotetermSubmit();
+            }
+
+         });
+
+
         $("#btnExtenionTermSubmit").click(function () {
             debugger;
             var valid = ValidateExtensionTerm();
@@ -818,6 +828,41 @@
                     location.reload(true);
 
                 }
+            });
+    }
+
+      function quotetermSubmit() {
+            var agreement = $("#ClientAgreementId").val();
+            var termType = $("#TermType").val();
+            var SumInsured = $("#TermSumInsured").val().replace("$", " ");
+            var Excess = $("#TermExcess").val().replace("$", " ");
+         var Premium = $("#TermPremium").val().replace("$", " ");
+         var PremiumDiffer = $("#TermPremiumDiffer").val().replace("$", " ");
+         var AggregateLimit = $("#AggregateLimit").val().replace("$", " ");
+            var id = $("#TermId").val();
+            var postData = {
+                "TermLimit": SumInsured.replace(/,/g, '').trim(),
+                "Excess": Excess.replace(/,/g, '').trim(),
+                "Premium": Premium.replace(/,/g, '').trim(),
+                "TermId": id,
+                "TermType": termType,
+                "AggregateLimit": AggregateLimit,
+                clientAgreementId: agreement,
+                "PremiumDiffer": PremiumDiffer.replace(/,/g, '').trim()
+            };
+            $.ajax({
+                type: "Post",
+                url: "/Agreement/EditquoteSubTerm",
+                data: postData,
+                async: true,
+            success: function (response) {
+                debugger;
+                $("#SubTermModal").modal("hide");
+                location.reload(true);
+                confirm("Saved Successfully!.\n Please close this tab. \n Then press previous followed by next to create agreements again.");
+
+                //$("#closeTabModal").modal("show");
+               }
             });
     }
 

@@ -7,6 +7,7 @@ using DealEngine.WebUI.Helpers;
 using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Agreement;
 using DealEngine.WebUI.Models.Programme;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -1487,6 +1488,54 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditQuoteTerms(Guid id, String productname = null)
+        {
+            User user = null;
+            user = await CurrentUser();
+
+            if (user.IsLoggedout)
+                return PageNotFound();
+
+            ViewAgreementViewModel model = new ViewAgreementViewModel();
+            try
+            {
+                ClientAgreement agreement = await _clientAgreementService.GetAgreement(id);
+                ClientAgreementTerm term = agreement.ClientAgreementTerms.FirstOrDefault(t => t.SubTermType == "BV" && t.DateDeleted == null);
+                model.ClientAgreementId = id;
+                model.ClientProgrammeId = agreement.ClientInformationSheet.Programme.Id;
+               
+                var subtypeterms = new List<EditTermsViewModel>();
+
+
+                foreach (var subtypeterm in agreement.ClientAgreementTerms.Where(t => t.SubTermType == productname && t.DateDeleted == null))
+                {
+                    subtypeterms.Add(new EditTermsViewModel
+                    {
+                        TermId = subtypeterm.Id,
+                        TermType = subtypeterm.SubTermType,
+                        TermLimit = subtypeterm.TermLimit,
+                        Excess = Convert.ToInt32(subtypeterm.Excess),
+                        AggregateLimit = Convert.ToInt32(subtypeterm.AggregateLimit),
+                        Premium = subtypeterm.Premium,
+                        BasePremium = subtypeterm.BasePremium,
+                        PremiumDiffer = subtypeterm.PremiumDiffer
+                    });
+                }
+
+                model.SubtypeTerms = subtypeterms.OrderBy(acat => acat.TermLimit).ToList();
+                model.ProductName = productname;
+              
+                ViewBag.Title = "Edit Quote Terms ";
+                return View("EditQuoteTerms", model);
+                //return View("EditQuoteTerms", model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> EditTerms(Guid id, String productname = null)
@@ -1602,6 +1651,7 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
 
         [HttpPost]
         public async Task<IActionResult> EditTerm(EditTermsViewModel clientAgreementBVTerm)
@@ -1747,6 +1797,58 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> EditquoteSubTerm(Guid clientAgreementId, EditTermsViewModel clientAgreementSubTerm)
+        {
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                ClientAgreement agreement = await _clientAgreementService.GetAgreement(clientAgreementId);
+                if (clientAgreementSubTerm.TermId != Guid.Empty)
+                {
+                    ClientAgreementTerm term = agreement.ClientAgreementTerms.FirstOrDefault(t => t.Id == clientAgreementSubTerm.TermId && t.SubTermType == clientAgreementSubTerm.TermType && t.DateDeleted == null);
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        term.Premium = clientAgreementSubTerm.Premium;
+                        term.TermLimit = clientAgreementSubTerm.TermLimit;
+                        term.AggregateLimit = clientAgreementSubTerm.AggregateLimit;
+                        term.Excess = clientAgreementSubTerm.Excess;
+                        term.PremiumDiffer = clientAgreementSubTerm.PremiumDiffer;
+                        await uow.Commit();
+                    }
+                }
+                else
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        decimal brokeragerate = agreement.Product.DefaultBrokerage;
+                        decimal Brokerage = clientAgreementSubTerm.Premium * agreement.Product.DefaultBrokerage / 100;
+                        _clientAgreementTermService.AddAgreementTerm(user, clientAgreementSubTerm.TermLimit, clientAgreementSubTerm.AggregateLimit, clientAgreementSubTerm.Excess, clientAgreementSubTerm.Premium, 0.0m, brokeragerate, Brokerage, agreement, clientAgreementSubTerm.TermType);
+                        await uow.Commit();
+                    }
+                }
+                return RedirectToAction("EditTerms", new { id = clientAgreementId });
+                //return Json(new { redirectUrl = "/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id });
+               // return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
+
+                //var url = "/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id;
+                //return Json(new { url });
+
+                //return Redirect("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
+
+                //return Redirect("ViewAgreement", new { id = agreement.ClientInformationSheet.Programme.Id });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> EditMotorTerm(Guid clientAgreementId, EditTermsViewModel clientAgreementMVTerm)
         {
@@ -1886,6 +1988,7 @@ namespace DealEngine.WebUI.Controllers
                     model.ProgrammeId = agreement.ClientInformationSheet.Programme.BaseProgramme.Id;
                     model.InsuranceRoles = insuranceRoles;
                     model.ProductName = agreement.Product.Name;
+
                     var prodcodesubtring = agreement.Product.UnderwritingModuleCode.Substring(agreement.Product.UnderwritingModuleCode.IndexOf("_") + 1);
                     var hjg = prodcodesubtring.IndexOf("_");
                     if (hjg > 0)
@@ -4046,7 +4149,7 @@ namespace DealEngine.WebUI.Controllers
 
             htmlToPdfConv.PageFooterHtml = "</br>" + $@"page <span class=""page""></span> of <span class=""topage""></span>";
 
-            var margins = new PageMargins();
+            var margins = new NReco.PdfGenerator.PageMargins();
             margins.Bottom = 18;
             margins.Top = 38;
             margins.Left = 15;
@@ -4099,7 +4202,7 @@ namespace DealEngine.WebUI.Controllers
                 htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
             }
             htmlToPdfConv.PdfToolPath = _appSettingService.NRecoPdfToolPath;
-            var margins = new PageMargins();
+            var margins = new NReco.PdfGenerator.PageMargins();
             margins.Bottom = 10;
             margins.Top = 10;
             margins.Left = 30;

@@ -14,7 +14,8 @@ using FluentNHibernate.Utils;
 using ServiceStack;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
-
+using System.Globalization;
+using DocumentFormat.OpenXml.Drawing.Charts;
 
 namespace DealEngine.Services.Impl
 {
@@ -717,8 +718,19 @@ namespace DealEngine.Services.Impl
             newClientInformationSheet.Status = "Not Started";
             newClientInformationSheet.DateCreated = DateTime.UtcNow;
             newClientInformationSheet.UnlockDate = DateTime.MinValue;
-            newClientInformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate").FirstOrDefault().Value = ""+DateTime.UtcNow;
+            if(oldClientProgramme.InformationSheet.Answers.Count != 0)
+            {
+                String policystartdate = oldClientProgramme.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate").FirstOrDefault().Value;
+                DateTime startdate = DateTime.ParseExact(policystartdate, "yyyy-mm-dd", CultureInfo.InvariantCulture);
+                string policyenddate = oldClientProgramme.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyEndDate").FirstOrDefault().Value;
+                DateTime enddate = DateTime.ParseExact(policyenddate, "yyyy-mm-dd", CultureInfo.InvariantCulture);
+                string newpolicyenddate = enddate.AddYears(1).ToString("yyyy-mm-dd");
+                newClientInformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate").FirstOrDefault().Value = policyenddate;
+                newClientInformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyEndDate").FirstOrDefault().Value = newpolicyenddate;
+            }
+            
             newClientInformationSheet.RenewFromInformationSheet = oldClientProgramme.InformationSheet;
+            
             await _referenceRepository.AddAsync(new Reference(newClientInformationSheet.Id, newClientInformationSheet.ReferenceId));
 
             ClientProgramme newClientProgramme = new ClientProgramme(createdBy, oldClientProgramme.Owner, oldClientProgramme.BaseProgramme);
@@ -735,6 +747,7 @@ namespace DealEngine.Services.Impl
             newClientProgramme.InformationSheet.Programme = newClientProgramme;
             newClientProgramme.ClientProgrammeExpiryDate = oldClientProgramme.ClientProgrammeExpiryDate;
             newClientProgramme.BaseProgramme = currentProgramme;
+            newClientProgramme.PaymentType = oldClientProgramme.PaymentType;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalBranchCode))
                 newClientProgramme.EGlobalBranchCode = oldClientProgramme.EGlobalBranchCode;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalClientNumber))

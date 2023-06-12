@@ -47,6 +47,40 @@
                 </div>
             </div>
         </div>
+
+        <div>
+
+       
+        <button type="button" class="btn btn-success btn-sm dropdown-toggle nav-item" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Edit Policy
+                                    </button>
+            <ul class="dropdown-menu">
+                   <li class="nav-item">
+                    <a href="~/Agreement/EditAgreement/Model.ClientAgreementId" class="dropdown-item"> Edit Policy Dates </a>
+                    </li>
+                   <li class="nav-item">
+                    <a target="_blank" href="@Url.Action("EditQuoteTerms", "Agreement", new { id = Model.ClientAgreementId, productname = Model.ProductCode  })" class="dropdown-item"> Edit Policy Limits </a>
+                    </li>
+                    <li class="nav-item">
+                    <a href="~/Agreement/ViewAgreementEndorsement/Model.ClientAgreementId" class="dropdown-item"> Policy Endorsements </a>
+                     </li>
+
+                                         
+
+                     <li class="nav-item">
+                    <a href="~/Agreement/ViewAgreementRule/m.ClientAgreementId" class="dropdown-item"> Edit Policy Premiums </a>
+                      </li>
+                     <li class="nav-item">
+                    <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = Model.ClientAgreementId,  productname = Model.ProductCode })" class="dropdown-item"> Edit Policy Extension </a>
+
+                      </li>
+
+            </ul>
+
+         </div>
+
+
+
     </fieldset>
 }
 
@@ -616,6 +650,31 @@ else
         </div>
     </div>
 </div>
+
+
+
+
+<div class="modal fade" id="closeTabModal" tabindex="-1" role="dialog" aria-labelledby="closeTabModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="closeTabModalLabel">Close Tab</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          Saved Sucessfully.
+        Please close this tab.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 
 <style>
