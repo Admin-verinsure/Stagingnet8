@@ -50,34 +50,43 @@
 
         <div>
 
-       
-        <button type="button" class="btn btn-success btn-sm dropdown-toggle nav-item" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Edit Policy
-                                    </button>
+
+           @* <button type="button" class="btn btn-success btn-sm dropdown-toggle nav-item" data-bs-toggle="dropdown" aria-expanded="false">
+                Edit Policy
+            </button>
             <ul class="dropdown-menu">
-                   <li class="nav-item">
+                <li class="nav-item">
                     <a href="~/Agreement/EditAgreement/Model.ClientAgreementId" class="dropdown-item"> Edit Policy Dates </a>
-                    </li>
-                   <li class="nav-item">
-                    <a target="_blank" href="@Url.Action("EditQuoteTerms", "Agreement", new { id = Model.ClientAgreementId, productname = Model.ProductCode  })" class="dropdown-item"> Edit Policy Limits </a>
-                    </li>
-                    <li class="nav-item">
+                </li>*@
+                @*      <a href="#SubTermModal" aria-hidden="true" style="color:forestgreen" data-bs-toggle="modal" data-sub-agreegatelimit="@item.AggregateLimit.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))"
+            data-sub-sum="@item.TermLimit.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" data-sub-type="@item.TermType" data-sub-premium="@item.Premium.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))"
+            data-sub-excess="@item.Excess.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))" data-sub-id="@item.TermId" data-sub-premiumDiffer="@item.PremiumDiffer.ToString("C", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))"><i class="fa fa-edit"> </i></a>
+
+            *@
+               @* <li class="nav-item">
+                    <a href="#SubQuoteTermModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@Model.ClientAgreementId">edit limits</a>
+                    </li>*@
+                 @*   <a href="#SubQuoteTermModal" aria-hidden="true"
+                   style="color:forestgreen" data-bs-toggle="modal"  data-sub-id="Model.ClientAgreementId.ToString("C0", System.Globalization.CultureInfo.CreateSpecificCulture("en-NZ"))">Edit Limits</a>
+              *@ 
+              @*  
+                <li class="nav-item">
                     <a href="~/Agreement/ViewAgreementEndorsement/Model.ClientAgreementId" class="dropdown-item"> Policy Endorsements </a>
-                     </li>
+                </li>
 
-                                         
-
-                     <li class="nav-item">
+*@
+@*
+                <li class="nav-item">
                     <a href="~/Agreement/ViewAgreementRule/m.ClientAgreementId" class="dropdown-item"> Edit Policy Premiums </a>
-                      </li>
-                     <li class="nav-item">
+                </li>
+                <li class="nav-item">
                     <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = Model.ClientAgreementId,  productname = Model.ProductCode })" class="dropdown-item"> Edit Policy Extension </a>
 
-                      </li>
+                </li>
 
-            </ul>
+            </ul>*@
 
-         </div>
+        </div>
 
 
 
@@ -427,6 +436,7 @@ else
                         <th class="text-center" width="20%">Limit</th>
                         <th class="text-center" width="20%">Excess</th>
                         <th class="text-center" width="16%">Premium</th>
+                        <th></th>
                         @if (Model.ClientInformationSheet.Programme.BaseProgramme.EnableMonthlyPremiumDisplay)
                         {
                             <th class="text-center" width="16%">Monthly Premium</th>
@@ -439,7 +449,7 @@ else
                         <tr class="clickable-row">
                             <td>
                                 <input type="radio" dirname=""
-                                       id="@item.TermId" name="@item.RiskName" @item.isSelected value="@item.TermId" onchange="Resetmoreoptions('@Model.ProductName',@Model.ExtensionCoverOptions.Count)">
+                               id="@item.TermId" name="@item.RiskName" @item.isSelected value="@item.TermId" onchange="Resetmoreoptions('@Model.ProductName',@Model.ExtensionCoverOptions.Count)">
                             </td>
                             <td class="pt-3-half" width="12%" contenteditable="true">
                                 @item.RiskName
@@ -462,6 +472,12 @@ else
                             <td class="pt-3-half" width="12%" contenteditable="true" value="@item.Dependableproduct" hidden>
                                 @item.Dependableproduct
                             </td>
+                            <td>
+                                <a href="#SubQuoteTermModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@item.TermId">Edit Limits</a>
+@*                                <a href="#SubQuoteTermModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@item.TermId">edit</a>
+*@
+                            </td>
+
                         </tr>
                     }
                     @if (Model.IsOptionalProduct)
@@ -533,19 +549,19 @@ else
                 </div>
             }
             @*<table class="table-hover" id="@Model.ProductCode totalprem" hidden>
-                    <tbody>
+        <tbody>
 
-                        <tr>
-                            <td width="260" height="40">
-                                <strong>Total:</strong>
-                            </td>
-                            <td width="350" height="40">
-                                <label id="@Model.ProductCode premiumamount"></label>  (Total premium per product)
-                            </td>
-                        </tr>
+        <tr>
+        <td width="260" height="40">
+        <strong>Total:</strong>
+        </td>
+        <td width="350" height="40">
+        <label id="@Model.ProductCode premiumamount"></label>  (Total premium per product)
+        </td>
+        </tr>
 
-                    </tbody>
-                </table>*@
+        </tbody>
+        </table>*@
 
 
             <table class="table-hover">
@@ -655,23 +671,82 @@ else
 
 
 <div class="modal fade" id="closeTabModal" tabindex="-1" role="dialog" aria-labelledby="closeTabModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="closeTabModalLabel">Close Tab</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-          Saved Sucessfully.
-        Please close this tab.
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="closeTabModalLabel">Close Tab</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Saved Sucessfully.
+                Please close this tab.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+
+
+
+<div id="SubQuoteTermModal" class="modal" aria-hidden="true">
+    <form id="ProdForm" class="" action="" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h4 class="modal-title" style="color:blue; font-size:22px">Edit SubTerm</h4>
+
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" hidden>
+                        <label for="MaxSumInsured">Term Id</label>
+                        <input type="text" class="form-control " id="TermId" name="Id" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="MaxSumInsured">Term Type</label>
+                        <input type="text" class="form-control " id="TermType" name="TermType" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="MaxSumInsured">Sum Insured</label>
+                        <input type="text" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="TermSumInsured" name="SumInsured" />
+                        <p class="validationContainer" id="validateTermSum"></p>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="AggregateLimit">Aggregate Limit</label>
+                        <input type="text" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="AggregateLimit" name="AggregateLimit" />
+                        <p class="validationContainer" id="aggregatelimit"></p>
+
+                    </div>
+                    <div class="form-group">
+                        <label for="Premium">Total Premium</label>
+                        <input type="text" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="TermPremium" name="Premium">
+                        <p class="validationContainer" id="validateTermPremium"></p>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label for="Excess">Excess</label>
+                        <input type="text" class="form-control" pattern="^\$\d{1,3}(,\d{3})*(\.\d+)?$" id="TermExcess" name="Excess">
+                        <p class="validationContainer" id="validateTermExcess"></p>
+
+                    </div>
+                   
+                </div>
+                <div class="modal-footer">
+                    <input type="Reset" value="Submit" class="btn btn-success" id="btnQuoteTermSubmit">
+                    <a href="#" class="btn btn-danger" data-bs-dismiss="modal">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 
@@ -690,11 +765,11 @@ else
 </style>
 @section pagespecific {
     <script type="text/javascript">
-                debugger;
+        debugger;
 
-         $(window).on("load", function () {
-           if ("@Model.InformationSheetStatus" == "Started" || "@Model.InformationSheetStatus" == "Submitted") {
-                              debugger;
+        $(window).on("load", function () {
+            if ("@Model.InformationSheetStatus" == "Started" || "@Model.InformationSheetStatus" == "Submitted") {
+                debugger;
 
                 var progId = "@ViewBag.Id";
                 var postData = { ProgrammeId: progId };
@@ -712,36 +787,36 @@ else
                             debugger;
                         }
                     }
-                }) .fail(function (jqXHR, textStatus, errorThrown) {
-                alert("There was an error while trying to get the Cover Options.");
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    alert("There was an error while trying to get the Cover Options.");
                 });
 
-             }
+            }
 
-         });
+        });
         debugger;
-         @*var progId = "@ViewBag.Id";
-                var postData = { ProgrammeId: "@ViewBag.Id" };
+        @*var progId = "@ViewBag.Id";
+        var postData = { ProgrammeId: "@ViewBag.Id" };
         //viewage662
-                $.ajax({
-                    url: '@Url.Action("GetExtensionCoverOptions", "Information")',
-                    type: "POST",
-                    data: postData
-                }).done(function (data) {
+        $.ajax({
+        url: '@Url.Action("GetExtensionCoverOptions", "Information")',
+        type: "POST",
+        data: postData
+        }).done(function (data) {
 
-                    if (data != "") {
-                        for (var item = 0; item < data.length; item++) {
-                            var arr = data[item];
-                            var count = 0;
-                            var queryselector = "" + "input[name=\'" + arr[count] + " Extensiontable\'][value=\'" + arr[count + 1] + "\']";
-                            $(queryselector).attr('checked', true);
-                            //extensionselected(arr[count]);
+        if (data != "") {
+        for (var item = 0; item < data.length; item++) {
+        var arr = data[item];
+        var count = 0;
+        var queryselector = "" + "input[name=\'" + arr[count] + " Extensiontable\'][value=\'" + arr[count + 1] + "\']";
+        $(queryselector).attr('checked', true);
+        //extensionselected(arr[count]);
 
-                        }
-                    }
-                }) .fail(function (jqXHR, textStatus, errorThrown) {
-                alert("There was an error while trying to get the Cover Options.");
-                });*@
+        }
+        }
+        }) .fail(function (jqXHR, textStatus, errorThrown) {
+        alert("There was an error while trying to get the Cover Options.");
+        });*@
 
     </script>
 
@@ -794,100 +869,141 @@ else
                 });
         }
 
-        @*if ("@Model.InformationSheetStatus.StartsWith("Bound")" == "True") {
+
+        if ("@Model.InformationSheetStatus" == "Submitted") {
             debugger;
-            $("#Coveroptionssec :input").prop("disabled", true);
-        } else {
-            $("#Coveroptionssec :input").prop("disabled", false);
-        };*@
 
+            var progId = $("#ClientProgrammeId").val();
+            //var progId 2= $('#ClientProgrammeId').val();
+            var postData = { ProgrammeId: progId };
+            $.ajax({
+                url: '@Url.Action("GetCoverOptions", "Information")',
+                type: "POST",
+                data: postData
+            }).done(function (data) {
+                if (data != "") {
+                    for (var item = 0; item < data.length; item++) {
+                        var arr = data[item];
+                        var count = 0;
+                        //var element = 'input[name=\\"' + arr[count] + '"][value=\\"' + arr[count + 1] + '"]';
+                        var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
 
-          if ( "@Model.InformationSheetStatus" == "Submitted") {
-                            debugger;
-
-                var progId = $("#ClientProgrammeId").val();
-                //var progId 2= $('#ClientProgrammeId').val();
-              var postData = { ProgrammeId: progId };
-                $.ajax({
-                   url: '@Url.Action("GetCoverOptions", "Information")',
-                    type: "POST",
-                    data: postData
-                }).done(function (data) {
-                    if (data != "") {
-                        for (var item = 0; item < data.length; item++) {
-                            var arr = data[item];
-                            var count = 0;
-                            //var element = 'input[name=\\"' + arr[count] + '"][value=\\"' + arr[count + 1] + '"]';
-                            var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
-
-                            $(queryselector).attr('checked', true);
-                            //$("#"+Arr[count]).
-                            //$('#' + arr[count+1]).val(arr[count + 1]);
-                        }
+                        $(queryselector).attr('checked', true);
+                        //$("#"+Arr[count]).
+                        //$('#' + arr[count+1]).val(arr[count + 1]);
                     }
-                }) .fail(function (jqXHR, textStatus, errorThrown) {
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
                 alert("There was an error while trying to get the Cover Options.");
-                });
+            });
 
-                var progId = $("#ClientProgrammeId").val();
-                var postData = { ProgrammeId: progId };
-              ///viewagree 771
-                $.ajax({
-                    url: '@Url.Action("GetExtensionCoverOptions", "Information")',
-                    type: "POST",
-                    data: postData
-                }).done(function (data) {
-                    if (data != "") {
-                        for (var item = 0; item < data.length; item++) {
-                            var arr = data[item];
-                            var count = 0;
-                            var queryselector = "" + "input[name=\'" + arr[count] + " Extensiontable\'][value=\'" + arr[count + 1] + "\']";
-                            $(queryselector).attr('checked', true);
-                            //extensionselected(arr[count]);
+            var progId = $("#ClientProgrammeId").val();
+            var postData = { ProgrammeId: progId };
+            ///viewagree 771
+            $.ajax({
+                url: '@Url.Action("GetExtensionCoverOptions", "Information")',
+                type: "POST",
+                data: postData
+            }).done(function (data) {
+                if (data != "") {
+                    for (var item = 0; item < data.length; item++) {
+                        var arr = data[item];
+                        var count = 0;
+                        var queryselector = "" + "input[name=\'" + arr[count] + " Extensiontable\'][value=\'" + arr[count + 1] + "\']";
+                        $(queryselector).attr('checked', true);
+                        //extensionselected(arr[count]);
 
-                        }
                     }
-                }) .fail(function (jqXHR, textStatus, errorThrown) {
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
                 alert("There was an error while trying to get the Cover Options.");
-                });
+            });
 
 
         }
 
-          if ("@Model.InformationSheetStatus" == "Started") {
-              debugger;
-                var progId = $("#ClientProgrammeId").val();
-                //var progId = $('#ClientProgrammeId').val();
-                var postData = { ProgrammeId: progId };
+        if ("@Model.InformationSheetStatus" == "Started") {
+            debugger;
+            var progId = $("#ClientProgrammeId").val();
+            //var progId = $('#ClientProgrammeId').val();
+            var postData = { ProgrammeId: progId };
 
-                $.ajax({
-                    url: '@Url.Action("GetdefaultCoverOptions", "Information")',
-                    type: "POST",
-                    data: postData
-                }).done(function (data) {
-                    if (data.optionitems != "") {
-                        for (var item = 0; item < data.optionitems.length; item++) {
-                            var arr = data.optionitems[item];
-                            var count = 0;
-                            //var element = 'input[name=\\"' + arr[count] + '"][value=\\"' + arr[count + 1] + '"]';
-                            var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
+            $.ajax({
+                url: '@Url.Action("GetdefaultCoverOptions", "Information")',
+                type: "POST",
+                data: postData
+            }).done(function (data) {
+                if (data.optionitems != "") {
+                    for (var item = 0; item < data.optionitems.length; item++) {
+                        var arr = data.optionitems[item];
+                        var count = 0;
+                        //var element = 'input[name=\\"' + arr[count] + '"][value=\\"' + arr[count + 1] + '"]';
+                        var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
 
-                            $(queryselector).attr('checked', true);
-                            //$("#"+Arr[count]).
-                            //$('#' + arr[count+1]).val(arr[count + 1]);
-                        }
+                        $(queryselector).attr('checked', true);
+                        //$("#"+Arr[count]).
+                        //$('#' + arr[count+1]).val(arr[count + 1]);
                     }
-                    debugger;
+                }
+                debugger;
 
-                    @*var TermLimitTotal = @ViewBag.TermLimitTotal;*@
-                    
+    @*var TermLimitTotal = @ViewBag.TermLimitTotal;*@
+
                     document.getElementById("Limittotal").innerHTML = data.termlimit;
 
-                }).fail(function (jqXHR, textStatus, errorThrown) {
+            }).fail(function (jqXHR, textStatus, errorThrown) {
                 alert("There was an error while trying to save default cover option.");
-                });
+            });
 
-             }
+        }
+
+
+
+
+        $('#SubQuoteTermModal').on('show.bs.modal', function (e) {
+            debugger;
+            $('.modal').css('width', '600px');
+            var subId = $(e.relatedTarget).data('sub-id');
+            var subType = $(e.relatedTarget).data('sub-type');
+            $(e.currentTarget).find('input[name="Id"]').val(subId);
+             $(e.currentTarget).find('input[name="TermType"]').val(subType);
+        });
+
+        $("#btnQuoteTermSubmit").click(function () {
+            debugger;
+            var agreement = $("#ClientAgreementId").val();
+            var termType = $("#TermType").val();
+            var SumInsured = $("#TermSumInsured").val().replace("$", " ");
+            var Excess = $("#TermExcess").val().replace("$", " ");
+            var Premium = $("#TermPremium").val().replace("$", " ");
+            var id = $("#TermId").val();
+            var postData = {
+                "TermLimit": SumInsured.replace(/,/g, '').trim(),
+                "Excess": Excess.replace(/,/g, '').trim(),
+                "Premium": Premium.replace(/,/g, '').trim(),
+                "TermId": id,
+                "TermType": termType,
+                clientAgreementId: agreement
+            };
+
+
+            $.ajax({
+                type: "Post",
+                url: "/Agreement/EditquoteSubTerm",
+                data: postData,
+                async: true,
+                success: function (response) {
+                    debugger;
+                    $("#SubQuoteTermModal").modal("hide");
+                    confirm("Saved Successfully!.\n  press previous followed by next to create agreements again.");
+
+                    //$("#closeTabModal").modal("show");
+                }
+            });
+        });
+
+
+
 
 
     });

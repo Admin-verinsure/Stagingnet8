@@ -1776,6 +1776,8 @@ namespace DealEngine.WebUI.Controllers
                         term.Excess = clientAgreementSubTerm.Excess;
                         term.PremiumDiffer = clientAgreementSubTerm.PremiumDiffer;
                         await uow.Commit();
+
+
                     }
                 }
                 else
@@ -1830,7 +1832,7 @@ namespace DealEngine.WebUI.Controllers
                         await uow.Commit();
                     }
                 }
-                return RedirectToAction("EditTerms", new { id = clientAgreementId });
+                return Json("true");
                 //return Json(new { redirectUrl = "/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id });
                // return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
 
