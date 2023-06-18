@@ -474,8 +474,7 @@ else
                             </td>
                             <td>
                                 <a href="#SubQuoteTermModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@item.TermId">Edit Limits</a>
-@*                                <a href="#SubQuoteTermModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@item.TermId">edit</a>
-*@
+*
                             </td>
 
                         </tr>
@@ -742,6 +741,26 @@ else
                 </div>
                 <div class="modal-footer">
                     <input type="Reset" value="Submit" class="btn btn-success" id="btnQuoteTermSubmit">
+
+                    <a href="#" class="btn btn-danger" data-bs-dismiss="modal">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+<div id="SavedTermModal" class="modal" aria-hidden="true">
+    <form id="ProdForm" class="" action="" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+          
+                <div class="modal-body">
+                     <h4 class="modal-title" style="color:blue; font-size:22px">Saved Successfully!</h4>
+                </div>
+                <div class="modal-footer">
+                    <input value="next" class="btn btn-success" id="btntermnextbuttn">
                     <a href="#" class="btn btn-danger" data-bs-dismiss="modal">Cancel</a>
                 </div>
             </div>
@@ -925,7 +944,6 @@ else
         if ("@Model.InformationSheetStatus" == "Started") {
             debugger;
             var progId = $("#ClientProgrammeId").val();
-            //var progId = $('#ClientProgrammeId').val();
             var postData = { ProgrammeId: progId };
 
             $.ajax({
@@ -937,12 +955,9 @@ else
                     for (var item = 0; item < data.optionitems.length; item++) {
                         var arr = data.optionitems[item];
                         var count = 0;
-                        //var element = 'input[name=\\"' + arr[count] + '"][value=\\"' + arr[count + 1] + '"]';
                         var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
 
                         $(queryselector).attr('checked', true);
-                        //$("#"+Arr[count]).
-                        //$('#' + arr[count+1]).val(arr[count + 1]);
                     }
                 }
                 debugger;
@@ -995,13 +1010,20 @@ else
                 success: function (response) {
                     debugger;
                     $("#SubQuoteTermModal").modal("hide");
-                    confirm("Saved Successfully!.\n  press previous followed by next to create agreements again.");
+                    Alert("Saved Successfully!.");
 
-                    //$("#closeTabModal").modal("show");
+                    $("#SavedTermModal").modal("show");
                 }
             });
         });
 
+
+        $("#btntermnextbuttn").click(function () {
+            debugger;
+
+            $(".sw-btn-next").click();
+         
+        });
 
 
 
