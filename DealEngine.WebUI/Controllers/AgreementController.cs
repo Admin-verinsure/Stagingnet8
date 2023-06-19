@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using NHibernate.Mapping;
 using NReco.PdfGenerator;
 using ServiceStack;
 using System;
@@ -1811,28 +1812,26 @@ namespace DealEngine.WebUI.Controllers
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(clientAgreementId);
                 if (clientAgreementSubTerm.TermId != Guid.Empty)
                 {
-                    ClientAgreementTerm term = agreement.ClientAgreementTerms.FirstOrDefault(t => t.Id == clientAgreementSubTerm.TermId && t.SubTermType == clientAgreementSubTerm.TermType && t.DateDeleted == null);
-                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    ClientAgreementTerm term = await _clientAgreementTermService.GetAgreementById(""+clientAgreementSubTerm.TermId);
+                    //ClientAgreementTerm term = agreement.ClientAgreementTerms.FirstOrDefault(t => t.Id == clientAgreementSubTerm.TermId && t.SubTermType == clientAgreementSubTerm.TermType && t.DateDeleted == null);
+                  
+                    if(term != null)
                     {
-                        term.Premium = clientAgreementSubTerm.Premium;
-                        term.TermLimit = clientAgreementSubTerm.TermLimit;
-                        term.AggregateLimit = clientAgreementSubTerm.AggregateLimit;
-                        term.Excess = clientAgreementSubTerm.Excess;
-                        term.PremiumDiffer = clientAgreementSubTerm.PremiumDiffer;
-                        await uow.Commit();
+                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                        {
+                            term.Premium = clientAgreementSubTerm.Premium;
+                            term.TermLimit = clientAgreementSubTerm.TermLimit;
+                            term.AggregateLimit = clientAgreementSubTerm.AggregateLimit;
+                            term.Excess = clientAgreementSubTerm.Excess;
+                            term.PremiumDiffer = clientAgreementSubTerm.PremiumDiffer;
+                            await uow.Commit();
+                        }
                     }
+                   
                 }
-                else
-                {
-                    using (var uow = _unitOfWork.BeginUnitOfWork())
-                    {
-                        decimal brokeragerate = agreement.Product.DefaultBrokerage;
-                        decimal Brokerage = clientAgreementSubTerm.Premium * agreement.Product.DefaultBrokerage / 100;
-                        _clientAgreementTermService.AddAgreementTerm(user, clientAgreementSubTerm.TermLimit, clientAgreementSubTerm.AggregateLimit, clientAgreementSubTerm.Excess, clientAgreementSubTerm.Premium, 0.0m, brokeragerate, Brokerage, agreement, clientAgreementSubTerm.TermType);
-                        await uow.Commit();
-                    }
-                }
-                return Json("true");
+               
+                return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
+               // return Json("true");
                 //return Json(new { redirectUrl = "/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id });
                // return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
 

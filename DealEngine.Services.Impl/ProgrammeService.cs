@@ -865,6 +865,18 @@ namespace DealEngine.Services.Impl
                     newClientInformationSheet.ResearchHouses.Add(newResearchHouse);
                 }
             }
+
+
+            if(oldClientProgramme.Agreements != null)
+            {
+                newClientProgramme.Agreements.Clear();
+                foreach(ClientAgreement clientagreement in oldClientProgramme.Agreements)
+                {
+                    ClientAgreement agreement = clientagreement.DeepClone();
+                    newClientProgramme.Agreements.Add(agreement);
+                }
+
+            }
             //if (oldClientProgramme.InformationSheet.SubClientInformationSheets != null)
             //{
             //    newClientInformationSheet.SubClientInformationSheets.Clear();

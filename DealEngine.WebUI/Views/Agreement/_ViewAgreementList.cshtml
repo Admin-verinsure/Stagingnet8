@@ -9,10 +9,12 @@
         </div>
         <div class="card-body">
             <div class="client-form">
+                
                 @foreach (var item in Model)
                 {
-                    @await Html.PartialAsync("Partials/ViewAgreement", item);
+                    @await Html.PartialAsync("Partials/ViewAgreement", item) ;
                 }
+               
             </div>
         </div>
     </div>

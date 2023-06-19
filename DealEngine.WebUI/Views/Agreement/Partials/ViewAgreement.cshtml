@@ -448,7 +448,7 @@ else
                     {
                         <tr class="clickable-row">
                             <td>
-                                <input type="radio" dirname=""
+                                <input type="radio" dirname="" class="radioselect"
                                id="@item.TermId" name="@item.RiskName" @item.isSelected value="@item.TermId" onchange="Resetmoreoptions('@Model.ProductName',@Model.ExtensionCoverOptions.Count)">
                             </td>
                             <td class="pt-3-half" width="12%" contenteditable="true">
@@ -516,7 +516,7 @@ else
                             <tr class="clickable-row">
                                 <td>
                                     @*<input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId" onchange="extensionselected('@Model.ProductName')" onselect="extensionselected('@Model.ProductName')">*@
-                                    <input type="radio" name="@Model.ProductName Extensiontable" value="@item.TermId">
+                                    <input type="radio" name="@Model.ProductName @item.isSelected Extensiontable" value="@item.TermId">
 
                                 </td>
                                 <td class="pt-3-half" width="20%" contenteditable="true">
@@ -941,36 +941,46 @@ else
 
         }
 
-        if ("@Model.InformationSheetStatus" == "Started") {
-            debugger;
-            var progId = $("#ClientProgrammeId").val();
-            var postData = { ProgrammeId: progId };
+         if ("@Model.InformationSheetStatus" == "Started") {
+             debugger;
+              //document.getElementsByClassName('radioselect')[0].checked = true;
+               $("table").each(function() {
+                  $(this).find('input[type="radio"].radioselect:first').prop('checked', true);
+              });
+         }
 
-            $.ajax({
-                url: '@Url.Action("GetdefaultCoverOptions", "Information")',
-                type: "POST",
-                data: postData
-            }).done(function (data) {
-                if (data.optionitems != "") {
-                    for (var item = 0; item < data.optionitems.length; item++) {
-                        var arr = data.optionitems[item];
-                        var count = 0;
-                        var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
+       
 
-                        $(queryselector).attr('checked', true);
-                    }
-                }
-                debugger;
+    //    if ("@Model.InformationSheetStatus" == "Started") {
+    //        debugger;
+    //        var progId = $("#ClientProgrammeId").val();
+    //        var postData = { ProgrammeId: progId };
 
-    @*var TermLimitTotal = @ViewBag.TermLimitTotal;*@
+    //        $.ajax({
+    //            url: '@Url.Action("GetdefaultCoverOptions", "Information")',
+    //            type: "POST",
+    //            data: postData
+    //        }).done(function (data) {
+    //            if (data.optionitems != "") {
+    //                for (var item = 0; item < data.optionitems.length; item++) {
+    //                    var arr = data.optionitems[item];
+    //                    var count = 0;
+    //                    var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
 
-                    document.getElementById("Limittotal").innerHTML = data.termlimit;
+    //                    $(queryselector).attr('checked', true);
+    //                }
+    //            }
+    //            debugger;
 
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                alert("There was an error while trying to save default cover option.");
-            });
+    //@*var TermLimitTotal = @ViewBag.TermLimitTotal;*@
 
-        }
+    //                document.getElementById("Limittotal").innerHTML = data.termlimit;
+
+    //        }).fail(function (jqXHR, textStatus, errorThrown) {
+    //            alert("There was an error while trying to save default cover option.");
+    //        });
+
+    //    }
 
 
 
@@ -1007,10 +1017,13 @@ else
                 url: "/Agreement/EditquoteSubTerm",
                 data: postData,
                 async: true,
-                success: function (response) {
+                success: function (url) {
                     debugger;
                     $("#SubQuoteTermModal").modal("hide");
-                    alert("Saved Successfully!");
+                    $("#agreementView").load(url, function () {
+                    });
+                    //$(".modal-backdrop").modal("hide");
+                    
                    // $("#SavedTermModal").modal("show");
                    // $("#SavedTermModal").modal("hide");
 
