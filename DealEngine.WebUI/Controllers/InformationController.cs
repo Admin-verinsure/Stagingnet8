@@ -1561,9 +1561,12 @@ namespace DealEngine.WebUI.Controllers
                                     }
                                 }
                             }
-                        }                        
+                        }
 
-                        await GenerateUWM(user, sheet, reference);
+                        if(sheet.Programme.Agreements != null)
+                        {
+                            await GenerateUWM(user, sheet, reference);
+                        }
                     }
 
                     return Content("/Agreement/ViewAgreement/" + sheet.Programme.Id);
