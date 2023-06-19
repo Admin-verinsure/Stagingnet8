@@ -16,6 +16,7 @@ using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Globalization;
 using DocumentFormat.OpenXml.Drawing.Charts;
+using System.Linq.Expressions;
 
 namespace DealEngine.Services.Impl
 {
@@ -866,15 +867,25 @@ namespace DealEngine.Services.Impl
                 }
             }
 
-
-            if(oldClientProgramme.Agreements != null)
+            try
             {
-                newClientProgramme.Agreements.Clear();
-                foreach(ClientAgreement clientagreement in oldClientProgramme.Agreements)
+                if (oldClientProgramme.Agreements != null)
                 {
-                    ClientAgreement agreement = clientagreement.DeepClone();
-                    newClientProgramme.Agreements.Add(agreement);
+                    newClientProgramme.Agreements.Clear();
+
+                    foreach (ClientAgreement clientagreement in oldClientProgramme.Agreements)
+                    {
+                       
+                        ClientAgreement agreement = cloneMapper.Map<ClientAgreement>(clientagreement);
+                        newClientProgramme.Agreements.Add(agreement);
+
+
+                    }
                 }
+
+            }
+            catch (Exception ex)
+            {
 
             }
             //if (oldClientProgramme.InformationSheet.SubClientInformationSheets != null)

@@ -720,6 +720,8 @@ namespace DealEngine.WebUI.Controllers
                     foreach (var client in renewClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker"
                                     && (cp.InformationSheet.Answers.Count == 0 || DateTime.ParseExact(cp.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyEndDate").FirstOrDefault().Value, "yyyy-mm-dd", CultureInfo.InvariantCulture) < DateTime.Now.AddMonths(2))).OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
                     {
+
+
                         if (client.DateDeleted == null && client.InformationSheet != null)
                         {
                             //filter out the renewal clientprogramme already created
