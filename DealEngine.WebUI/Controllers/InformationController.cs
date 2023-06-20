@@ -1563,7 +1563,7 @@ namespace DealEngine.WebUI.Controllers
                             }
                         }
 
-                        if(sheet.Programme.Agreements != null)
+                        if(sheet.Programme.Agreements != null && sheet.Programme.Agreements.Count > 0)
                         {
                             await GenerateUWM(user, sheet, reference);
                         }
