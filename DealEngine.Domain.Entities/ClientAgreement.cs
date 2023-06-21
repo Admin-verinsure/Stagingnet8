@@ -10,7 +10,7 @@ namespace DealEngine.Domain.Entities
 	{
 		protected ClientAgreement () : this (null) { }
 
-        protected ClientAgreement (User createdBy)
+        public ClientAgreement (User createdBy)
 			: base (createdBy)
         {
             ClientAgreementTerms = new List<ClientAgreementTerm>();
@@ -131,6 +131,16 @@ namespace DealEngine.Domain.Entities
         {
             return Documents.Where(d => d.DateDeleted == null).ToList();                        
         }
+
+        public static class CloneHelper
+        {
+            public static T DeepClone<T>(T obj)
+            {
+                string json = JsonConvert.SerializeObject(obj);
+                return JsonConvert.DeserializeObject<T>(json);
+            }
+        }
+
     }
 }
 

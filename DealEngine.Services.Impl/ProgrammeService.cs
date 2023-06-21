@@ -867,27 +867,7 @@ namespace DealEngine.Services.Impl
                 }
             }
 
-            try
-            {
-                if (oldClientProgramme.Agreements != null)
-                {
-                    newClientProgramme.Agreements.Clear();
-
-                    foreach (ClientAgreement clientagreement in oldClientProgramme.Agreements)
-                    {
-                       
-                        ClientAgreement agreement = cloneMapper.Map<ClientAgreement>(clientagreement);
-                        newClientProgramme.Agreements.Add(agreement);
-
-
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-            }
+           
             //if (oldClientProgramme.InformationSheet.SubClientInformationSheets != null)
             //{
             //    newClientInformationSheet.SubClientInformationSheets.Clear();
@@ -907,6 +887,26 @@ namespace DealEngine.Services.Impl
             }
 
             await Update(newClientProgramme);
+
+             try
+            {
+                if (oldClientProgramme.Agreements != null)
+                {
+                    newClientProgramme.Agreements.Clear();
+
+                        await CloneAgreementsForUpdate(createdBy, oldClientProgramme.Id, newClientProgramme.Id);
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            newClientProgramme.InformationSheet.Status = "Started";
+            newClientProgramme.InformationSheet.SubmittedBy = null;
+
             return newClientProgramme;
         }
 
