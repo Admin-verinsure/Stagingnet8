@@ -821,7 +821,7 @@ namespace DealEngine.Services.Impl
                         }
                         if (answer.ItemName == "ClaimsHistoryViewModel.DamageLossDetails" || answer.ItemName == "ClaimsHistoryViewModel.WithdrawnDetails" ||
                         answer.ItemName == "ClaimsHistoryViewModel.RefusedDetails" || answer.ItemName == "ClaimsHistoryViewModel.StatutoryOffenceDetails" ||
-                        answer.ItemName == "ClaimsHistoryViewModel.LiquidationDetails" || answer.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions")
+                        answer.ItemName == "ClaimsHistoryViewModel.LiquidationDetails")
                         {
                             newClientInformationAnswer.Value = "";
                         }
