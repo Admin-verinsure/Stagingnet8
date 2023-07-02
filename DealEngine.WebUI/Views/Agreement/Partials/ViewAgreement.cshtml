@@ -474,7 +474,9 @@ else
                             </td>
                             <td>
                                 <a href="#SubQuoteTermModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@item.TermId">Edit Limits</a>
-*
+                                
+                                <a href="#EditDateModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@Model.ClientAgreementId">Edit Dates</a>
+
                             </td>
 
                         </tr>
@@ -749,6 +751,42 @@ else
     </form>
 </div>
 
+<div id="EditDateModal" class="modal" aria-hidden="true">
+    <form id="ProdForm" class="" action="" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h4 class="modal-title" style="color:blue; font-size:22px">Edit Date</h4>
+
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" hidden>
+                        <label for="MaxSumInsured">Term Id</label>
+                        <input type="text" class="form-control " id="DateTermId" name="DateTermId" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="StartDate">Policy Start Date</label>
+                        <input type="date" class="form-control" id="i2ipolicystartdate" name="PolicyStartDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="AggregateLimit">Policy End Date</label>
+                        <input type="date" class="form-control" id="i2ipolicyenddate" name="PolicyEndDate" required>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <input type="Reset" value="Submit" class="btn btn-success" id="btnEditDateSubmit">
+
+                    <a href="#" class="btn btn-danger" data-bs-dismiss="modal">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
 
 
 <div id="SavedTermModal" class="modal" aria-hidden="true">
@@ -993,6 +1031,47 @@ else
             $(e.currentTarget).find('input[name="Id"]').val(subId);
              $(e.currentTarget).find('input[name="TermType"]').val(subType);
         });
+        
+        $('#EditDateModal').on('show.bs.modal', function (e) {
+            debugger;
+            $('.modal').css('width', '600px');
+            var subId = $(e.relatedTarget).data('sub-id');
+            $(e.currentTarget).find('input[name="DateTermId"]').val(subId);
+        });
+
+        $("#btnEditDateSubmit").click(function () {
+            debugger;
+            var agreementid = $("#TermId").val();
+            var PolicyStartdate = $("#i2ipolicystartdate").val();
+            var PolicyEnddate = $("#i2ipolicyenddate").val();
+            var id = $("#DateTermId").val();
+
+            var postData = {
+                "InceptionDate": PolicyStartdate,
+                "ExpiryDate": PolicyEnddate,
+                 "TermId": id,
+                clientAgreementId: agreementid
+            };
+
+
+            $.ajax({
+                type: "Post",
+                url: "/Agreement/EditAgreementdates",
+                data: postData,
+                async: true,
+                success: function (url) {
+                    debugger;
+                    $("#EditDateModal").modal("hide");
+                    $("#agreementView").load(url, function () {
+                    });
+                    $(".modal-backdrop").modal("hide");
+                    
+                   // $("#SavedTermModal").modal("show");
+                   // $("#SavedTermModal").modal("hide");
+
+                }
+            });
+        });
 
         $("#btnQuoteTermSubmit").click(function () {
             debugger;
@@ -1000,7 +1079,7 @@ else
             var termType = $("#TermType").val();
             var SumInsured = $("#TermSumInsured").val().replace("$", " ");
             var Excess = $("#TermExcess").val().replace("$", " ");
-            var Premium = $("#TermPremium").val().replace("$", " ");
+            
             var id = $("#TermId").val();
             var postData = {
                 "TermLimit": SumInsured.replace(/,/g, '').trim(),
@@ -1023,9 +1102,9 @@ else
                     $("#agreementView").load(url, function () {
                     });
                     $(".modal-backdrop").modal("hide");
-                    
-                   // $("#SavedTermModal").modal("show");
-                   // $("#SavedTermModal").modal("hide");
+
+                    // $("#SavedTermModal").modal("show");
+                    // $("#SavedTermModal").modal("hide");
 
                 }
             });

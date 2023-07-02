@@ -7,6 +7,7 @@ using DealEngine.WebUI.Helpers;
 using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Agreement;
 using DealEngine.WebUI.Models.Programme;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -1800,6 +1801,51 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditAgreementdates(Guid clientAgreementId, AgreementViewModel agreementViewModel, Guid  TermId)
+        {
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                ClientAgreement agreement = await _clientAgreementService.GetAgreement(TermId);
+                
+
+                    if (agreement != null)
+                    {
+                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                        {
+                        agreement.InceptionDate = agreementViewModel.InceptionDate;
+                        agreement.ExpiryDate = agreementViewModel.ExpiryDate;
+                          
+                            await uow.Commit();
+                        }
+                    }
+
+                
+
+                return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
+                // return Json("true");
+                //return Json(new { redirectUrl = "/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id });
+                // return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
+
+                //var url = "/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id;
+                //return Json(new { url });
+
+                //return Redirect("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
+
+                //return Redirect("ViewAgreement", new { id = agreement.ClientInformationSheet.Programme.Id });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> EditquoteSubTerm(Guid clientAgreementId, EditTermsViewModel clientAgreementSubTerm)

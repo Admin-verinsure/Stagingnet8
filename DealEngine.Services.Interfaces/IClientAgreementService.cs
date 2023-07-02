@@ -15,6 +15,7 @@ namespace DealEngine.Services.Interfaces
         Task<ClientAgreement> GetAgreementbyReferenceNum(string reference);
         Task UpdateClientAgreement(ClientAgreement clientAgreement);
         Task<ClientAgreementTermExtension> GetAgreementExtension(Guid clientAgreementTermExtensionId);
-        
+        Task<ClientAgreementTerm> GetAgreementTerm(Guid clientAgreementTermId);
+
     }
 }

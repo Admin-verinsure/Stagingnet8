@@ -97,7 +97,7 @@ namespace DealEngine.Services.Impl
 
         public async Task<ClientAgreementTerm> GetAgreementById(string clientAgreementId)
         {
-            return await _clientAgreementTermRepository.GetByIdAsync(Guid.Parse(clientAgreementId) );
+            return await _clientAgreementTermRepository.GetByIdAsync(clientAgreementId );
         }
     }
 }

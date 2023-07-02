@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DealEngine.Domain.Entities;
@@ -18,7 +19,7 @@ namespace DealEngine.Services.Interfaces
 
         Task DeleteAgreementTerm(User deletedBy, ClientAgreementTerm clientAgreementTerm);
         Task<List<ClientAgreementTerm>> GetAllClientAgreementTerm();
-        Task<ClientAgreementTerm> GetAgreementById(string clientAgreementId);
+        Task<ClientAgreementTerm> GetAgreementById(String clientAgreementId);
         Task AddAgreementExtensionTerm(User createdBy, int termLimit, decimal excess, decimal premium, ClientAgreement clientAgreement);
 
     }

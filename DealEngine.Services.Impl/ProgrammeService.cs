@@ -1088,7 +1088,8 @@ namespace DealEngine.Services.Impl
                     newclientAgreement.AdditionalCertFee = oldclientagreement.AdditionalCertFee;
                     newclientAgreement.PolicyNumber = oldclientagreement.PolicyNumber;
                     newclientAgreement.Status = "Quoted";
-
+                    newclientAgreement.InceptionDate = oldclientagreement.ExpiryDate;
+                    newclientAgreement.ExpiryDate = oldclientagreement.ExpiryDate.AddYears(1);
                     currentProgramme.Agreements.Add(newclientAgreement);
 
                     //Clone ClientAgreementTerm

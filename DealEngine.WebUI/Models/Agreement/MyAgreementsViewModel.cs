@@ -20,7 +20,10 @@ namespace DealEngine.WebUI.Models.Agreement
         public string DeclineNotes { get; set; }
         public string CancellNotes { get; set; }
         public DateTime CancellEffectiveDate { get; set; }
-        public string CancelAgreementReason { get; set; }        
+        public string CancelAgreementReason { get; set; }       
+        public DateTime InceptionDate { get; set; }
+        public DateTime ExpiryDate { get; set; }
+
     }
 }
 
