@@ -1075,11 +1075,12 @@ else
 
         $("#btnQuoteTermSubmit").click(function () {
             debugger;
+            
             var agreement = $("#ClientAgreementId").val();
             var termType = $("#TermType").val();
             var SumInsured = $("#TermSumInsured").val().replace("$", " ");
             var Excess = $("#TermExcess").val().replace("$", " ");
-            
+            var Premium = $("#TermPremium").val().replace("$", " ");
             var id = $("#TermId").val();
             var postData = {
                 "TermLimit": SumInsured.replace(/,/g, '').trim(),
