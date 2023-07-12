@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +12,8 @@ namespace DealEngine.Services.Interfaces
 {
     public interface IReportBuilderService
     {
-        Task GetFile(Guid ProgrammeId, string IsReport);
+        //Task<DataTable> GetFile(Guid ProgrammeId, string IsReport);
+        Task GetFile(Guid programmeId, string reportName);
         //Task<MemoryStream, string, string> GetReportView(Guid ProgrammeId, string IsReport);
 
     }
