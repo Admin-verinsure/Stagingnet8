@@ -1375,6 +1375,25 @@ namespace DealEngine.Services.Impl
             }
         }
 
+
+        public async Task SendworkbookReportsViaEmail(string recipent, Attachment attachment)
+        {
+            var user = await _userService.GetUserByEmail(recipent);
+            List<KeyValuePair<string, string>> mergeFields;
+            Programme baseProgramme = null;
+            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
+            email.From(DefaultSender);
+            email.WithSubject("Report subject");
+            email.WithBody("report body");
+            email.UseHtmlBody(true);
+            if (attachment != null)
+            {
+                email.Attachments(attachment);
+                email.Send();
+            } else {
+                email.Send();
+            }
+        }
         public async Task SendCSVReportsViaEmail(string recipent,string workbook,string fileName,string ProgName)
         {
             var user = await _userService.GetUserByEmail(recipent);

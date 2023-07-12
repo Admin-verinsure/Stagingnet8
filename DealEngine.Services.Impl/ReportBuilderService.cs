@@ -8,154 +8,336 @@ using System.Data;
 using System.IO;
 using ClosedXML.Excel;
 using System.Diagnostics;
+using NHibernate.SqlCommand;
+using Microsoft.AspNetCore.Mvc;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Net.Mail;
 
 namespace DealEngine.Services.Impl
 {
-    public class ReportBuilderService :IReportBuilderService
+    public class ReportBuilderService : IReportBuilderService
     {
         IProgrammeService _programmeService;
         IUserService _userService;
+        IEmailService _emailService;
 
-        public ReportBuilderService(IProgrammeService programmeServicey, IUserService userservice)
+        public ReportBuilderService(IProgrammeService programmeServicey, IUserService userservice, IEmailService emailService)
         {
             _programmeService = programmeServicey;
             _userService = userservice;
+            _emailService = emailService;   
         }
 
-        public async Task<List<List<string>>> GetReportView(Guid ProgrammeId, string IsReport)
+        public async Task GetFile(Guid programmeId, string reportName)
         {
 
-            Debug.WriteLine("in report view Available");
+            Programme programme = await _programmeService.GetProgrammeById(programmeId);
+            List<List<dynamic>> ListReportSet = new List<List<dynamic>>();
+            List<dynamic> ListReport = new List<dynamic>();
+            DataTable dt = new DataTable();
+            decimal PIFullPremiumTotal = 0M;
+            decimal PIGrossPremiumTotal = 0M;
+            decimal PINetPremiumToInsurerTotal = 0M;
 
-            List<PIReport> reportset = new List<PIReport>();
-            DataTable table = new DataTable();
-            List<List<string>> Lreportset = new List<List<string>>();
-            
-               
+            //var ReportingDay = DateTime.Parse("9/10/2022 12:00:00 AM");
+            //var ReportingMonth = new DateTime(ReportingDay.Year, ReportingDay.Month, 1);
+            //var ReportingFirstDay = ReportingMonth.AddMonths(-1);
+            //var ReportingLastDay = ReportingMonth.AddDays(-1);
+
+            var ReportingDay = DateTime.Today;
+            var ReportingMonth = new DateTime(ReportingDay.Year, ReportingDay.Month, 1);
+            var ReportingFirstDay = ReportingMonth.AddMonths(-1);
+            var ReportingLastDay = ReportingMonth.AddDays(-1);
+
+            DataColumn column1 = new DataColumn();
+            DataColumn column2 = new DataColumn();
+            DataColumn column3 = new DataColumn();
+            DataColumn column4 = new DataColumn();
+            DataColumn column5 = new DataColumn();
+            DataColumn column6 = new DataColumn();
+            DataColumn column7 = new DataColumn();
+            DataColumn column8 = new DataColumn();
+            DataColumn column9 = new DataColumn();
+            DataColumn column10 = new DataColumn();
+            DataColumn column11 = new DataColumn();
+
+            column1 = new DataColumn("Client Number", typeof(string));
+            column2 = new DataColumn("Invoice number%", typeof(string));
+            column3 = new DataColumn("Client", typeof(string));
+            column4 = new DataColumn("Limit", typeof(decimal));
+            column5 = new DataColumn("Excess", typeof(decimal));
+
+            var reportNameformal = reportName;
+            if (reportName.Contains("lumely"))
+            {
+
+                if (reportName.Contains("ML"))
+                {
+                    column6 = new DataColumn("Gross Premium 12.5%", typeof(decimal));
+                    column7 = new DataColumn("Brokerage%", typeof(decimal));
+                    column8 = new DataColumn("Brokerage", typeof(decimal));
+                    column9 = new DataColumn("GST", typeof(decimal));
+                    column10 = new DataColumn("Brokerage GST", typeof(decimal));
+                    column11 = new DataColumn("Net Premium to insurer", typeof(decimal));
+
+                }
+                else if (reportName.Contains("PI"))
+                {
+                    column6 = new DataColumn("Gross Premium 25%", typeof(decimal));
+                    column7 = new DataColumn("Brokerage%", typeof(decimal));
+                    column8 = new DataColumn("Brokerage", typeof(decimal));
+                    column9 = new DataColumn("GST", typeof(decimal));
+                    column10 = new DataColumn("Brokerage GST", typeof(decimal));
+                    column11 = new DataColumn("Net Premium to insurer", typeof(decimal));
+
+                }
+
+
+            }
+            else if (reportName.Contains("AIG"))
+            {
+                if (reportName.Contains("ML"))
+                {
+                    column6 = new DataColumn("Gross Premium 87.5%", typeof(decimal));
+                    column7 = new DataColumn("Brokerage%", typeof(decimal));
+                    column8 = new DataColumn("Brokerage", typeof(decimal));
+                    column9 = new DataColumn("GST", typeof(decimal));
+                    column10 = new DataColumn("Brokerage GST", typeof(decimal));
+                    column11 = new DataColumn("Net Premium to insurer", typeof(decimal));
+
+                }
+                else if (reportName.Contains("PI"))
+                {
+                    column6 = new DataColumn("Gross Premium 75%", typeof(decimal));
+                    column7 = new DataColumn("Brokerage%", typeof(decimal));
+                    column8 = new DataColumn("Brokerage", typeof(decimal));
+                    column9 = new DataColumn("GST", typeof(decimal));
+                    column10 = new DataColumn("Brokerage GST", typeof(decimal));
+                    column11 = new DataColumn("Net Premium to insurer", typeof(decimal));
+
+
+                }
+                else if (reportName.Contains("CL"))
+                {
+                    column6 = new DataColumn("Gross Premium 100%", typeof(decimal));
+                    column7 = new DataColumn("Brokerage%", typeof(decimal));
+                    column8 = new DataColumn("Brokerage", typeof(decimal));
+                    column9 = new DataColumn("GST", typeof(decimal));
+                    column10 = new DataColumn("Brokerage GST", typeof(decimal));
+                    column11 = new DataColumn("Net Premium to insurer", typeof(decimal));
+
+                }
+
+            }
+
+            dt.Columns.Add(column1);
+            dt.Columns.Add(column2);
+            dt.Columns.Add(column3);
+            dt.Columns.Add(column4);
+            dt.Columns.Add(column5);
+            dt.Columns.Add(column6);
+            dt.Columns.Add(column7);
+            dt.Columns.Add(column8);
+            dt.Columns.Add(column9);
+            dt.Columns.Add(column10);
+            dt.Columns.Add(column11);
+
+
+
+
+            if (reportName.Contains("PI"))
+            {
+                reportName = "PI";
+            }
+            else if (reportName.Contains("ML"))
+            {
+                reportName = "ML";
+            }
+            else if (reportName.Contains("CL"))
+            {
+                reportName = "CL";
+            }
+
+            foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null &&
+                                                                                 o.InformationSheet.Status == "Bound and invoiced"))
+            {
                 try
                 {
-                    Programme programme = await _programmeService.GetProgrammeById(ProgrammeId);
-                    string queryselect = "PI";
-                    if (programme.NamedPartyUnitName == "NZFSG Programme" && queryselect == "FAP")
+                    Guid clientInformationSheetID = Guid.NewGuid();
+                    if (cp.BaseProgramme.Id == programme.Id)
                     {
-                        //ViewBag.Title = "Financial Advice Provider(FAP)";
-
-                      //  Lreportset = await GetNZFGReportSet(ProgrammeId, queryselect);
-
+                        clientInformationSheetID = cp.InformationSheet.Id;
                     }
-                    else if ((programme.NamedPartyUnitName == "Apollo Programme" || programme.NamedPartyUnitName == "TripleA Programme" || programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme") && queryselect == "FAP")
+                    List<dynamic> tempListReport = new List<dynamic>();
+                    decimal PIFullPremium = 0M;
+                    decimal PIGrossPremium = 0M;
+                    decimal PINetPremiumToInsurer = 0M;
+                    decimal PIFullPremiumtotal = 0M;
+                    decimal Brokerageperc = 0M;
+                    decimal Brokerage = 0M;
+                    decimal GST = 0M;
+                    decimal BrokerageGST = 0M;
+
+                    Organisation organisation = cp.InformationSheet.Owner;
+                    User user = await _userService.GetApplicationUserByEmail(organisation.Email);
+                    if (cp.Agreements.Count > 0)
                     {
-                        //ViewBag.Title = "Financial Advice Provider(FAP)";
-//
-                       // Lreportset = await GetAAAReportSet(ProgrammeId, queryselect);
+                        foreach (ClientAgreement agreement in cp.Agreements.Where(agree => agree.BoundDate >= ReportingFirstDay && agree.BoundDate <= ReportingLastDay && agree.InceptionDate < ReportingFirstDay
+                                                                                              || agree.InceptionDate >= ReportingFirstDay && agree.InceptionDate <= ReportingLastDay && agree.BoundDate <= ReportingLastDay))
+                        {
+                            var term = agreement.ClientAgreementTerms.FirstOrDefault(ter => ter.SubTermType == reportName && ter.Bound == true);
+                            if (term != null)
+                            {
+                                DataRow newRow = dt.NewRow();
 
+                                tempListReport = new List<dynamic>();
+                                newRow[0] = cp.EGlobalClientNumber.ToString();  //Add((cp.EGlobalClientNumber).ToString());
+                                EGlobalResponse eGlobalResponse = cp.ClientAgreementEGlobalResponses.Where(er => er.DateDeleted == null && er.ResponseType == "update").OrderByDescending(er => er.VersionNumber).FirstOrDefault();
+                                if (eGlobalResponse != null)
+                                {
+                                    newRow[1] = "I" + eGlobalResponse.InvoiceNumber.ToString();
+                                }
+                                newRow[2] = cp.InformationSheet.Owner.Name;
+                                newRow[3] = term.TermLimit;
+                                newRow[4] = term.Excess;
+                                int ceextensionlimit = 0;
+                                decimal ceextensionexcess = 0M;
+                                decimal ceextensionpremium = 0M;
+                                if (agreement.ClientAgreementTermExtensions.Count > 0)
+                                {
+                                    foreach (var termExtension in agreement.ClientAgreementTermExtensions.Where(ae => ae.DateDeleted == null))
+                                    {
+                                        if (termExtension.Bound && termExtension.ExtentionName == "Professional Indemnity – Costs & Expenses")
+                                        {
+                                            ceextensionlimit = termExtension.TermLimit;
+                                            ceextensionexcess = termExtension.Excess;
+                                            if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
+                                            {
+                                                ceextensionpremium += termExtension.PremiumDiffer;
+                                            }
+                                            else
+                                            {
+                                                ceextensionpremium += termExtension.Premium;
+                                            }
+                                        }
+
+                                    }
+                                }
+                                if (reportNameformal.Contains("lumely"))
+                                {
+                                    if (reportName == "ML")
+                                    {
+                                        PIGrossPremium = (term.Premium * 0.125M);
+                                        Brokerageperc = (term.BrokerageRate) / 100;
+                                        Brokerage = PIGrossPremium * Brokerageperc;
+                                        GST = PIGrossPremium * 0.15M;
+                                        BrokerageGST = (Brokerage * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - Brokerage) + (GST - BrokerageGST);
+
+                                    }
+                                    else if (reportName == "PI")
+                                    {
+
+                                        PIGrossPremium = (term.Premium * 0.25M);
+                                        Brokerageperc = (term.BrokerageRate) / 100;
+                                        Brokerage = PIGrossPremium * Brokerageperc;
+                                        GST = term.Premium * 0.15M;
+                                        BrokerageGST = (Brokerage * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - Brokerage) + (GST - BrokerageGST);
+
+                                    }
+
+                                }
+                                else if (reportNameformal.Contains("AIG"))
+                                {
+                                    if (reportName == "ML")
+                                    {
+                                        PIGrossPremium = (term.Premium * 0.875M);
+                                        Brokerageperc = (term.BrokerageRate) / 100;
+                                        Brokerage = PIGrossPremium * Brokerageperc;
+                                        GST = PIGrossPremium * 0.15M;
+                                        BrokerageGST = (Brokerage * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - Brokerage) + (GST - BrokerageGST);
+
+                                    }
+                                    else if (reportName == "PI")
+                                    {
+                                        PIGrossPremium = (term.Premium * 0.75M);
+                                        Brokerageperc = (term.BrokerageRate) / 100;
+                                        Brokerage = PIGrossPremium * Brokerageperc;
+                                        GST = PIGrossPremium * 0.15M;
+                                        BrokerageGST = (Brokerage * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - Brokerage) + (GST - BrokerageGST);
+
+                                    }
+                                    else if (reportName == "CL")
+                                    {
+                                        PIGrossPremium = term.Premium;
+                                        Brokerageperc = (term.BrokerageRate) / 100;
+                                        Brokerage = PIGrossPremium * Brokerageperc;
+                                        GST = PIGrossPremium * 0.15M;
+                                        BrokerageGST = (Brokerage * 0.15M);
+                                        PINetPremiumToInsurer = (PIGrossPremium - Brokerage) + (GST - BrokerageGST);
+
+                                    }
+                                }
+
+
+                                PIFullPremiumTotal += (term.Premium + ceextensionpremium);
+                                PIGrossPremiumTotal += PIGrossPremium;
+                                PINetPremiumToInsurerTotal += PINetPremiumToInsurer;
+                                newRow[5] = Math.Round(PIGrossPremium, 2);
+                                newRow[6] = Brokerageperc;
+                                newRow[7] = Brokerage;
+                                newRow[8] = Math.Round(GST, 2);
+                                newRow[9] = Math.Round(BrokerageGST, 2);
+                                newRow[10] = Math.Round(PINetPremiumToInsurer, 2);
+                                dt.Rows.Add(newRow);
+
+                                break;
+                            }
+                        }
                     }
-                    else if (queryselect == "RevenueActivity")
-                    {//
-                       // Lreportset = await GetRevenueReportSet(ProgrammeId, queryselect);
-                    }
-                    else
-                    {
-                       // ViewBag.Title = "Bound " + queryselect + " Premium and Limits";
-
-                        Lreportset = await GetPremiumLimitReportSet(ProgrammeId, queryselect);
-
-                    }
-
-
-                    //try
-
-                    //{
-                    //    for (int i = 0; i < Lreportset[0].Count; i++)
-                    //    {
-                    //        table.Columns.Add(Lreportset[0][i]);
-                    //    }
-
-                    //}
-                    //catch (Exception ex)
-                    //{
-                    //    if (table.Columns.Contains("Id"))
-                    //        table.Columns.Remove("Id");
-                    //}
-
-                    ////object[] values = new object[props.Count];
-                    //object[] values1 = new object[table.Columns.Count];
-
-                    //for (int i = 1; i <= Lreportset.Count - 1; i++)
-                    //{
-                    //    try
-                    //    {
-
-                    //        var count = 0;
-                    //        for (int j = 0; j < Lreportset[i].Count; j++)
-                    //        {
-                    //            try
-                    //            {
-                    //                var val = Lreportset[i].ElementAt(j);
-
-                    //                if (val != null)
-                    //                {
-                    //                    values1[count] = val;
-                    //                    count++;
-                    //                }
-                    //            }
-                    //            catch (Exception ex)
-                    //            {
-                    //            }
-                    //        }
-                    //        table.Rows.Add(values1);
-
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //    }
-                    //}
-
-
-                    //    table.TableName = "MyDt";
-                    //    try
-                    //    {
-                    //        XLWorkbook workbook = new XLWorkbook();
-                    //        workbook.Worksheets.Add(table, "WorksheetName");
-                    //        // wb.SaveAs(@"C:\\Users\\Public\\DataImport\\Students1.xlsx");
-
-                    //        //Defining the ContentType for excel file.
-                    //        string ContentType = "Application/msexcel";
-
-                    //        //Define the file name.
-                    //        string fileName = queryselect + "Report.xlsx";
-
-                    //        //Creating stream object.
-                    //        MemoryStream stream = new MemoryStream();
-
-                    //        //Saving the workbook to stream in XLSX format
-                    //        workbook.SaveAs(stream);
-
-                    //        stream.Position = 0;
-
-                    //        return File(stream, ContentType, fileName);
-
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-
-                    //    }
-
-                        //return View(table);
-
-                  
+                    if (tempListReport.Count > 0)
+                        ListReportSet.Add(tempListReport);
 
                 }
                 catch (Exception ex)
-                {
+                { }
 
-                    //await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-                    //return RedirectToAction("Error500", "Error");
-                }
 
-            
+            }
 
-            return Lreportset;
+            if (dt.Columns.Contains("Id"))
+                dt.Columns.Remove("Id");
+            string ContentType = "Application/msexcel";
+            string fileName = reportName + "Report.xlsx";
+            MemoryStream stream = new MemoryStream();
+            XLWorkbook workbook = new XLWorkbook();
+            dt.TableName = "MyDt";
+
+            try
+            {
+                workbook.Worksheets.Add(dt, "WorksheetName");
+
+
+                workbook.SaveAs(stream);
+
+                stream.Position = 0;
+                Attachment attachment = new Attachment(stream, "workbook.xlsx");
+
+
+
+            _emailService.SendworkbookReportsViaEmail("Ashu@techcertain.com", attachment);
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
+
 
         }
 
@@ -165,42 +347,43 @@ namespace DealEngine.Services.Impl
         {
             List<List<string>> ListReportSet = new List<List<string>>();
             List<String> ListReport = new List<String>();
-            try { 
-            Programme programme = await _programmeService.GetProgrammeById(programmeId);
-            ListReport.Add("Insured");
-            ListReport.Add("Is Change");
-            ListReport.Add("Reference Id");
-            ListReport.Add("Email");
-            ListReport.Add("Agreement Status");
-            //ListReport.Add("Advisor Names");
-            ListReport.Add("Limit");
-            ListReport.Add("Excess");
-            ListReport.Add("Premium");
-            ListReport.Add("Premium Difference");
-            //List<ClientProgramme> lClientProgrammes = programme.ClientProgrammes.ToList();
+            try
+            {
+                Programme programme = await _programmeService.GetProgrammeById(programmeId);
+                ListReport.Add("Insured");
+                ListReport.Add("Is Change");
+                ListReport.Add("Reference Id");
+                ListReport.Add("Email");
+                ListReport.Add("Agreement Status");
+                //ListReport.Add("Advisor Names");
+                ListReport.Add("Limit");
+                ListReport.Add("Excess");
+                ListReport.Add("Premium");
+                ListReport.Add("Premium Difference");
+                //List<ClientProgramme> lClientProgrammes = programme.ClientProgrammes.ToList();
                 //var clients = programme.ClientProgrammes;
-             List<ClientProgramme> clientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programmeId);
+                List<ClientProgramme> clientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programmeId);
 
                 ListReportSet.Add(ListReport);
 
-            foreach (var cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null && o.InformationSheet.Status == "Submitted"))
-            {
-                try
+                foreach (var cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null && o.InformationSheet.Status == "Submitted"))
                 {
-                    Guid clientInformationSheetID = Guid.NewGuid();
-                    if (cp.BaseProgramme.Id == programme.Id)
+                    try
                     {
-                        clientInformationSheetID = cp.InformationSheet.Id;
+                        Guid clientInformationSheetID = Guid.NewGuid();
+                        if (cp.BaseProgramme.Id == programme.Id)
+                        {
+                            clientInformationSheetID = cp.InformationSheet.Id;
+
+                        }
+                        List<String> reportlistcount = await CreatePremiumLimitReport(cp, clientInformationSheetID, true, false, reportName);
+                        if (reportlistcount.Count > 0)
+                            ListReportSet.Add(await CreatePremiumLimitReport(cp, clientInformationSheetID, true, false, reportName));
 
                     }
-                    List<String> reportlistcount = await CreatePremiumLimitReport(cp, clientInformationSheetID, true, false, reportName);
-                    if (reportlistcount.Count > 0)
-                        ListReportSet.Add(await CreatePremiumLimitReport(cp, clientInformationSheetID, true, false, reportName));
-
+                    catch (Exception ex)
+                    { }
                 }
-                catch (Exception ex)
-                { }
-            }
             }
             catch (Exception ex)
             { }
@@ -257,4 +440,3 @@ namespace DealEngine.Services.Impl
 
     }
 }
-

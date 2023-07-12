@@ -1930,11 +1930,16 @@ namespace DealEngine.WebUI.Controllers
             decimal PIGrossPremiumTotal = 0M;
             decimal PINetPremiumToInsurerTotal = 0M;
 
-            var ReportingDay = DateTime.Parse("9/10/2022 12:00:00 AM");
+            //var ReportingDay = DateTime.Parse("9/10/2022 12:00:00 AM");
+            //var ReportingMonth = new DateTime(ReportingDay.Year, ReportingDay.Month, 1);
+            //var ReportingFirstDay = ReportingMonth.AddMonths(-1);
+            //var ReportingLastDay = ReportingMonth.AddDays(-1);
+
+            var ReportingDay = DateTime.Today;
             var ReportingMonth = new DateTime(ReportingDay.Year, ReportingDay.Month, 1);
             var ReportingFirstDay = ReportingMonth.AddMonths(-1);
             var ReportingLastDay = ReportingMonth.AddDays(-1);
-            //var reportNameformal = reportName;
+
             DataColumn column1 = new DataColumn();
             DataColumn column2 = new DataColumn();
             DataColumn column3 = new DataColumn();
@@ -1953,11 +1958,6 @@ namespace DealEngine.WebUI.Controllers
             column4 = new DataColumn("Limit", typeof(decimal));
             column5 = new DataColumn("Excess", typeof(decimal));
 
-            //column1.Add("Client Number");
-            //column2.Add("Invoice number");
-            //column3.Add("Client");
-            //column4.Add("Limit");
-            //column5.Add("Excess");
             var reportNameformal = reportName;
             if (reportName.Contains("lumely"))
             {
@@ -1980,12 +1980,7 @@ namespace DealEngine.WebUI.Controllers
                     column9 = new DataColumn("GST", typeof(decimal));
                     column10 = new DataColumn("Brokerage GST", typeof(decimal));
                     column11 = new DataColumn("Net Premium to insurer", typeof(decimal));
-                    //ListReport.Add("Costs & Expenses Extension Limit");
-                    //ListReport.Add("Costs & Expenses Extension Excess");
-
-                    //ListReport.Add("Gross Premium 25%");
-                    //ListReport.Add("Net Premium to insurer 25%");
-
+                   
                 }
 
 
@@ -2011,11 +2006,6 @@ namespace DealEngine.WebUI.Controllers
                     column10 = new DataColumn("Brokerage GST", typeof(decimal));
                     column11 = new DataColumn("Net Premium to insurer", typeof(decimal));
 
-                    //ListReport.Add("Costs & Expenses Extension Limit");
-                    //ListReport.Add("Costs & Expenses Extension Excess");
-                    //ListReport.Add("Gross Premium 75%");
-                    //ListReport.Add("Net Premium to insurer 75%");
-                    
 
                 }
                 else if (reportName.Contains("CL"))
@@ -2058,11 +2048,8 @@ namespace DealEngine.WebUI.Controllers
                 reportName = "CL";
             }
 
-            //ListReportSet.Add(ListReport);
-
             foreach (ClientProgramme cp in programme.ClientProgrammes.Where(o => o.InformationSheet.DateDeleted == null &&
                                                                                  o.InformationSheet.Status == "Bound and invoiced"))
-                                                                                 
             {
                 try
                 {
@@ -2083,7 +2070,6 @@ namespace DealEngine.WebUI.Controllers
 
                     Organisation organisation = cp.InformationSheet.Owner;
                     User user = await _userService.GetApplicationUserByEmail(organisation.Email);
-
                     if (cp.Agreements.Count > 0)
                     {
                         foreach (ClientAgreement agreement in cp.Agreements.Where(agree => agree.BoundDate >= ReportingFirstDay && agree.BoundDate <= ReportingLastDay && agree.InceptionDate < ReportingFirstDay
@@ -2104,8 +2090,6 @@ namespace DealEngine.WebUI.Controllers
                                 newRow[2]= cp.InformationSheet.Owner.Name;
                                 newRow[3]=term.TermLimit;
                                 newRow[4]=term.Excess;
-
-                                //check Costs & Expenses Extension
                                 int ceextensionlimit = 0;
                                 decimal ceextensionexcess = 0M;
                                 decimal ceextensionpremium = 0M;
@@ -2129,8 +2113,6 @@ namespace DealEngine.WebUI.Controllers
 
                                     }
                                 }
-                                
-
                                 if (reportNameformal.Contains("lumely"))
                                 {
                                     if(reportName == "ML")
@@ -2152,11 +2134,6 @@ namespace DealEngine.WebUI.Controllers
                                         GST = term.Premium * 0.15M;
                                         BrokerageGST = (Brokerage * 0.15M);
                                         PINetPremiumToInsurer = (PIGrossPremium - Brokerage) + (GST - BrokerageGST);
-
-                                        //PIGrossPremium = (term.Premium + ceextensionpremium) * 0.25M;
-                                        //PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.225M) * 1.15M) + PIGrossPremium * 0.15M);
-                                        //tempListReport.Add(ceextensionlimit.ToString("N0"));
-                                        //tempListReport.Add(ceextensionexcess.ToString("N0"));
 
                                     }
 
@@ -2181,10 +2158,7 @@ namespace DealEngine.WebUI.Controllers
                                         GST = PIGrossPremium * 0.15M;
                                         BrokerageGST = (Brokerage * 0.15M);
                                         PINetPremiumToInsurer = (PIGrossPremium - Brokerage) + (GST - BrokerageGST);
-                                        //PIGrossPremium = (term.Premium + ceextensionpremium) * 0.75M;
-                                        //PINetPremiumToInsurer = (PIGrossPremium - ((PIGrossPremium * 0.225M) * 1.15M) + PIGrossPremium * 0.15M);
-                                        //tempListReport.Add(ceextensionlimit.ToString("N0"));
-                                        //tempListReport.Add(ceextensionexcess.ToString("N0"));
+                                        
                                     }
                                     else if(reportName == "CL")
                                     {
@@ -2209,8 +2183,6 @@ namespace DealEngine.WebUI.Controllers
                                 newRow[9] = Math.Round(BrokerageGST,2);
                                 newRow[10] = Math.Round(PINetPremiumToInsurer,2);
                                 dt.Rows.Add(newRow);
-                                //tempListReport.Add(PIGrossPremium.ToString("N2"));
-                                //tempListReport.Add(PINetPremiumToInsurer.ToString("N2"));
                                
                                 break;
                             }
@@ -2225,17 +2197,6 @@ namespace DealEngine.WebUI.Controllers
 
                 
             }
-
-            //List<String> listtotal = new List<String>();
-            //listtotal.Add(" ");
-            //listtotal.Add(" ");
-            //listtotal.Add(" ");
-            //listtotal.Add(" ");
-            //listtotal.Add("Total: ");
-            //listtotal.Add(PIGrossPremiumTotal.ToString("N2"));
-            //listtotal.Add(PINetPremiumToInsurerTotal.ToString("N2"));
-            //if (listtotal.Count > 0)
-            //    ListReportSet.Add(listtotal);
             return dt;
         }
 
@@ -2760,6 +2721,129 @@ namespace DealEngine.WebUI.Controllers
 
             return RedirectToAction("Index");
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetMarshReportView(string queryselect, string ProgrammeId, string IsReport)
+        {
+
+            User user = null;
+            user = await CurrentUser();
+            if (user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer)
+            {
+
+                try
+                {
+                    Guid ProgrammeID= Guid.Parse(ProgrammeId);
+                    Programme programme = await _programmeService.GetProgrammeById(ProgrammeID);
+                    ViewBag.reportName = queryselect;
+
+                    List<PIReport> reportset = new List<PIReport>();
+                    DataTable table = new DataTable();
+                    //List<String> ListReport = new List<String>();
+                    List<List<dynamic>> Lreportset = new List<List<dynamic>>();
+                    if (programme.NamedPartyUnitName == "Marsh Real Estate Programme" && (queryselect.Contains("lumely") || queryselect.Contains("AIG")))
+                    {
+                        ViewBag.Title = "Bound " + queryselect + " Premium and Limits";
+
+                        table = await GetMREPremiumLimitReportSet(ProgrammeID, queryselect, table);
+
+                    }
+                    
+
+
+                    try
+                    {
+                        for (int i = 0; i < Lreportset[0].Count; i++)
+                        {
+                            table.Columns.Add((Lreportset[0][i]));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (table.Columns.Contains("Id"))
+                            table.Columns.Remove("Id");
+                    }
+
+                    object[] values1 = new object[table.Columns.Count];
+                    for (int i = 1; i <= Lreportset.Count - 1; i++)
+                    {
+                        try
+                        {
+                            var count = 0;
+                            for (int j = 0; j < Lreportset[i].Count; j++)
+                            {
+                                try
+                                {
+                                    var val = Lreportset[i].ElementAt(j);
+
+                                    if (val != null)
+                                    {
+                                        values1[count] = val;
+                                        count++;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                }
+                            }
+                            table.Rows.Add(values1);
+
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    }
+
+
+                    if (IsReport != "True" && queryselect != "RevenueActivity")
+                    {
+                        return View(table);
+                    }
+                    else
+                    {
+                        table.TableName = "MyDt";
+                        try
+                        {
+                            XLWorkbook workbook = new XLWorkbook();
+                            workbook.Worksheets.Add(table, "WorksheetName");
+                            
+                            string ContentType = "Application/msexcel";
+                            string fileName = queryselect + "Report.xlsx";
+                            MemoryStream stream = new MemoryStream();
+                            workbook.SaveAs(stream);
+
+                            stream.Position = 0;
+
+                            return File(stream, ContentType, fileName);
+
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+
+                        return View(table);
+
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                    return RedirectToAction("Error500", "Error");
+                }
+
+            }
+            else
+            {
+                return RedirectToAction("Error404", "Error");
+            }
+        }
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> GetReportView(IFormCollection formCollection, string IsReport)

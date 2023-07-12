@@ -120,7 +120,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             if (agreement.ClientInformationSheet.Organisation.Count > 0)
             {
-                foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
+                foreach (var uisorg in agreement.ClientInformationSheet.Organisation.Where(org => org.Removed != true))
                 {
                     var unit = (PersonnelUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Personnel");
                     if(unit != null)

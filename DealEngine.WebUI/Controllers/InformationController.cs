@@ -32,6 +32,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using FluentNHibernate.Testing.Values;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using EServices.AccountProxy;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -1563,7 +1564,7 @@ namespace DealEngine.WebUI.Controllers
                             }
                         }
 
-                        if(sheet.Programme.Agreements != null && sheet.Programme.Agreements.Count <= 0)
+                        if((sheet.Programme.Agreements != null && sheet.Programme.Agreements.Count <= 0) || !sheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("Marsh Real Estate Programme") )
                         {
                             await GenerateUWM(user, sheet, reference);
                         }

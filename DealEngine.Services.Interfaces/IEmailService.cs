@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
 using DealEngine.Domain.Entities;
@@ -52,7 +53,8 @@ namespace DealEngine.Services.Interfaces
         Task RemoveOrganisationUserEmail(User removedUser, User brokerContactUser, ClientInformationSheet sheet);
         Task RsaNotificationEmail(string recipient, string rsausername);
         Task SendReportsViaEmail(string recipent, string workbook);
-        Task SendCSVReportsViaEmail(string recipent, string workbook,string fileName,string ProgName);
+        Task SendCSVReportsViaEmail(string recipent, string workbook, string fileName,string ProgName);
+        Task SendworkbookReportsViaEmail(string recipent, Attachment attachment);
 
         
 

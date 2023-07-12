@@ -396,6 +396,7 @@
   <ItemGroup>    
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />    
     <PackageReference Include="ClosedXML" Version="0.95.4" />    
+    <PackageReference Include="Cronos" Version="0.7.1" />    
     <PackageReference Include="ElmahCore" Version="1.2.5" />
     <PackageReference Include="HtmlToOpenXml.dll" Version="2.0.3" />
     <PackageReference Include="IO.Swagger" Version="1.0.0" />
