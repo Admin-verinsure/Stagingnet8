@@ -1445,6 +1445,11 @@ namespace DealEngine.Services.Impl
             return ownerList;
         }
 
+        public async Task<ClientProgramme> GetClientProgrammebyProduct(Guid Productid)
+        {
+            return  _clientProgrammeRepository.FindAll().Where(cp => cp.Products.Keys.Any(p => p.Id == Productid)).FirstOrDefault();
+        }
+
         //public async Task UpdateFlag(Programme  Prog, String flagname, String flagval)
         //{
 

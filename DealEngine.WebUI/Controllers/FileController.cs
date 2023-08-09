@@ -24,6 +24,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using System.Net;
 //using FastReport.Export.PdfSimple.PdfObjects;
 using NReco.PdfGenerator;
+using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -445,6 +446,7 @@ namespace DealEngine.WebUI.Controllers
             var productList = new List<Product>();
             var programme = await _programmeService.GetProgramme(Guid.Parse(Programme));
             productList = programme.Products.ToList();
+            ViewBag.ProgrammeId = programme.Id;
 
             return View(productList);
         }
@@ -636,7 +638,7 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ManageDocuments()
+        public async Task<IActionResult> ManageDocuments(Guid productid,Guid ProgrammeId)
         {
             BaseListViewModel<DocumentInfoViewModel> models = new BaseListViewModel<DocumentInfoViewModel>();
             User user = null;
@@ -649,7 +651,9 @@ namespace DealEngine.WebUI.Controllers
 
                 if (user == null)
                     return PageNotFound();
-                List<SystemDocument> docs = _documentRepository.FindAll().Where(d => d.DateDeleted == null && user.PrimaryOrganisation == d.OwnerOrganisation && d.IsTemplate).ToList();
+                //List<SystemDocument> docs = _documentRepository.FindAll().Where(d => d.DateDeleted == null && user.PrimaryOrganisation == d.OwnerOrganisation && d.IsTemplate).ToList();
+                Product prod = await _productRepository.GetByIdAsync(productid);
+                List<SystemDocument> docs = prod.Documents.Where(d => d.DateDeleted == null &&  d.IsTemplate).ToList();
 
                 if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsInsurer)
                 {
@@ -750,6 +754,8 @@ namespace DealEngine.WebUI.Controllers
                         });
 
                         ViewBag.IsTC = user.PrimaryOrganisation.IsTC;
+                        //ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyProduct(prod.Id);
+                        ViewBag.ProgrammeId = ProgrammeId;
                     }
                 }
                 else

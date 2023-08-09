@@ -39,7 +39,6 @@
                                             <option value=@productcode>@product.Name  Premium report</option>
 
                                         }
-
                                     }
 
                                     @{
@@ -48,13 +47,11 @@
                                             <option value="FAP">FAP Report</option>
 
                                         }
-
                                     }
                                     @{
                                         if (Model.programme.EnableRevenueActivity)
                                         {
                                             <option value="RevenueActivity">RevenueActivity Report</option>
-
                                         }
 
                                     }
@@ -68,8 +65,14 @@
                                             <option value="ML/AIG">Marsh Real Estate ML Policies AIG Report</option>
                                             <option value="CL/AIG" data-city="Washington">Marsh Real Estate CL Policies AIG Report</option>
                                         }
+                                    }
 
-
+                                    @{
+                                        if (Model.programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
+                                        {
+                                            <option value="ONDemandNZBarPI">NZBar PI On Demand </option>
+                                           
+                                        }
                                     }
 
 

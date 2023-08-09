@@ -13,7 +13,7 @@
         </div>
         <div class="form-group">
             <span>
-                <a class="btn btn-primary btn-xs text-white" onclick="location.href='@Url.Action("Index", "Home")'" id="backbutton"><i class="fa fa-home"></i> Back </a>
+            <a class="btn btn-primary btn-xs text-white" href="/Programme/TermSheetConfirguration?Id=@ViewBag.ProgrammeId"><i class="fa fa-home"></i> Back </a>
             </span>
         </div>
         <div class="form-group">
@@ -37,9 +37,11 @@
                                     <tr>
                                         <td>@product.Name</td>
                                         <td>
-                                            @if (User.HasClaim("EditManageDocuments", "EditManageDocuments"))
+                                        @if (User.HasClaim("EditManageDocuments", "EditManageDocuments") || User.HasClaim("ViewManageDocuments", "ViewManageDocuments"))
                                             {
-                                                <a class="btn btn-primary btn-xs" href="/File/ManageDocuments?productId=@(product.Id)">Manage</a>
+@*                                            <a onclick="location.href='@Url.Action("ManageDocuments", "File",new { productId = @product.Id,ProgrammeId=@ViewBag.ProgrammeId})" class="btn btn-primary btn-sm" style="color:white">Rerender Selected document </a>
+*@
+                                                <a class="btn btn-primary btn-xs"  onclick="location.href='@Url.Action("ManageDocuments", "File",new { productId = @product.Id,ProgrammeId=@ViewBag.ProgrammeId})'" >Manage</a>
                                             }
                                         </td>
                                     </tr>
