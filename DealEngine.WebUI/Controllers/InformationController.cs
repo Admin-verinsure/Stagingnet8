@@ -342,6 +342,7 @@ namespace DealEngine.WebUI.Controllers
                 //build custom models
                 await GetRevenueViewModel(model, sheet.RevenueData, clientProgramme.BaseProgramme);
                 await GetRoleViewModel(model, sheet.RoleData);
+                if(sheet.AssetData != null)
                 await GetClubTrustAssetViewModel(model, sheet.AssetData, clientProgramme);
                 //build models from answers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("PMINZEPLViewModel", StringComparison.CurrentCulture)));

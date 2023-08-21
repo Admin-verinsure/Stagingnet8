@@ -3109,8 +3109,6 @@ namespace DealEngine.WebUI.Controllers
 
         [HttpPost]
         public async Task<IActionResult> GetReportView(IFormCollection formCollection, string IsReport)
-
-        //public async Task<IActionResult> GetReportView(Guid ProgrammeId, string IsReport)
         {
 
             User user = null;
@@ -3127,7 +3125,6 @@ namespace DealEngine.WebUI.Controllers
                     //string queryselect = "PI";
                 ViewBag.reportName = queryselect;
                 ViewBag.ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
-                //PropertyDescriptorCollection props = generatequeryField(queryselect);
 
                 List<PIReport> reportset = new List<PIReport>();
                 DataTable table = new DataTable();
@@ -3225,7 +3222,7 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 
-                if (IsReport != "True" && queryselect != "RevenueActivity" && IsReport!=null)
+                if (IsReport != "True" && queryselect != "RevenueActivity")
                 {
                     return View(table);
                 }

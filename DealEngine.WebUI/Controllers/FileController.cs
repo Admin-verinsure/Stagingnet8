@@ -668,7 +668,7 @@ namespace DealEngine.WebUI.Controllers
 
                 if (docs.Count != 0)
                 {
-                    foreach (SystemDocument doc in docs)
+                    foreach (SystemDocument doc in docs.Where(doc => doc.DocumentType != 8))
                     {
                         string documentType = "";
                         switch (doc.DocumentType)
