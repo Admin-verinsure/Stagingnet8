@@ -3418,7 +3418,7 @@ namespace DealEngine.WebUI.Controllers
                             emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == "SendInformationSheetInstructionRenew");
                             if (emailTemplate != null)
                             {
-                                await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
+                               await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
                             }
                             //send out login instruction email
                             await _emailService.SendSystemEmailLogin(email);

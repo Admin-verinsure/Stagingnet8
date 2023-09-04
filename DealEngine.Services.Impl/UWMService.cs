@@ -56,7 +56,11 @@ namespace DealEngine.Services.Impl
                     //Check if the cover is required
                     try
                     {
-                        var val = sheet.Answers.Where(sa => sa.ItemName == product.OptionalProductRequiredAnswer).First().Value;
+                        if(product.OptionalProductRequiredAnswer != null)
+                        {
+                            var val = sheet.Answers.Where(sa => sa.ItemName == product.OptionalProductRequiredAnswer).First().Value;
+
+                        }
 
                         if ((product.IsOptionalProduct || product.IsOptionalProductWithoutSelectOption) && sheet.Answers.Where(sa => sa.ItemName == product.OptionalProductRequiredAnswer).First().Value != "1")
                         {

@@ -472,12 +472,19 @@ else
                             <td class="pt-3-half" width="12%" contenteditable="true" value="@item.Dependableproduct" hidden>
                                 @item.Dependableproduct
                             </td>
-                            <td>
+
+
+
+                            @if (!Model.ClientInformationSheet.Programme.BaseProgramme.DisableEditLimit)
+                            {
+                                <td>
                                 <a href="#SubQuoteTermModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@item.TermId">Edit Limits</a>
 
                                 <a href="#EditDateModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@Model.ClientAgreementId">Edit Dates</a>
 
                             </td>
+                            }
+                            
 
                         </tr>
                     }

@@ -719,7 +719,7 @@ namespace DealEngine.Services.Impl
             newClientInformationSheet.Status = "Not Started";
             newClientInformationSheet.DateCreated = DateTime.UtcNow;
             newClientInformationSheet.UnlockDate = DateTime.MinValue;
-            if(oldClientProgramme.InformationSheet.Answers.Count != 0)
+            if(oldClientProgramme.InformationSheet.Answers.Count != 0 && oldClientProgramme.BaseProgramme.NamedPartyUnitName == "Marsh Real Estate Programme")
             {
                 String policystartdate = oldClientProgramme.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate").FirstOrDefault().Value;
                 DateTime startdate = DateTime.ParseExact(policystartdate, "yyyy-mm-dd", CultureInfo.InvariantCulture);
