@@ -111,7 +111,7 @@ namespace DealEngine.WebUI.Models
         public string DocumentName { get; set; }
 
         public Guid ClientProgrammeId { get; set; }
-
+        public bool IsHardRefferalEnable { get; set; }
     }
 
 
@@ -337,6 +337,7 @@ namespace DealEngine.WebUI.Models
             HasAnyAllegationsOptions = GetSelectListOptions();
             HasCivilAllegationsOptions = GetSelectListOptions();
             HasOtherRiskOptions = GetSelectListOptions();
+            HasHardRefer = GetSelectListOptions();
         }
 
         public string DamageLossDetails { get; set; }
@@ -380,7 +381,7 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasCivilAllegationsOptions { get; set; }
         public IList<SelectListItem> HasOtherRiskOptions { get; set; }
 
-        
+        public IList<SelectListItem> HasHardRefer { get; set; }
 
 
 

@@ -108,6 +108,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsClientTaskDisabled { get; set; }
         public virtual bool isprogrenewed { get; set; }
         public virtual bool DisableEditLimit  { get; set; }
+        public virtual bool EnableHardRefer { get; set; }
 
         protected Programme() : this(null) { }
 

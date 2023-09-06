@@ -125,6 +125,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsApproved { get; set; }
         public virtual string Clientmembership { get; set; }
         public virtual bool OrgBeenMoved { get; set; }
+        public virtual bool IsHardRefferal { get; set; }
         public virtual IList<InsuranceAttribute> InsuranceAttributes { get; set; }
         [Display(Name = "Initial")]
       

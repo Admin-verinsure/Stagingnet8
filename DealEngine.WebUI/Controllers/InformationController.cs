@@ -1077,7 +1077,7 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 model.selectedUpdateType = new List<string>();
-
+                model.IsHardRefferalEnable = clientProgramme.BaseProgramme.EnableHardRefer;
                 using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
                 {
                     if (model.selectedUpdateType != null)
