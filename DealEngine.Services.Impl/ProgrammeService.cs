@@ -1450,6 +1450,11 @@ namespace DealEngine.Services.Impl
             return  _clientProgrammeRepository.FindAll().Where(cp => cp.Products.Keys.Any(p => p.Id == Productid)).FirstOrDefault();
         }
 
+        public async Task<ClientProgramme> GetfirstClientProgrammesByOwner(Guid ownerOrganisationId)
+        {
+            return _clientProgrammeRepository.FindAll().Where(cp => cp.Owner.Id == ownerOrganisationId && cp.InformationSheet != null && cp.DateDeleted == null).OrderByDescending(cp => cp.DateCreated).FirstOrDefault();
+        }
+
         //public async Task UpdateFlag(Programme  Prog, String flagname, String flagval)
         //{
 

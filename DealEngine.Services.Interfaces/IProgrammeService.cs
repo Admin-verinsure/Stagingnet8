@@ -57,7 +57,8 @@ namespace DealEngine.Services.Interfaces
         //Task UpdateFlag(String ProgName, String flagname , String flagval);
         Task<ClientProgramme> GetClientProgrammeByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId);
         Task<ClientProgramme> GetClientProgrammebyProduct(Guid ProductId);
-
+        Task<ClientProgramme> GetfirstClientProgrammesByOwner(Guid ownerid);
+        
 
     }
 }

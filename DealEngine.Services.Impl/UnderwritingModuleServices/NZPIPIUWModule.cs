@@ -284,6 +284,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
+            ///for hardrefferal
+            uwrfhardrefer(underwritingUser, agreement);
 
             //Referral points per agreement
             //Claims / Insurance History
@@ -501,6 +503,35 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             return premiumoption;
         }
 
+        void uwrfhardrefer(User underwritingUser, ClientAgreement agreement)
+        {
+            if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfhardrefer" && cref.DateDeleted == null) == null)
+            {
+                if (agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwrfhardrefer" && cr.DateDeleted == null && cr.Value == "uwrfhardrefer") != null)
+                {
+                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwrfhardrefer" && cr.DateDeleted == null && cr.Value == "uwrfhardrefer").Name,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwrfhardrefer" && cr.DateDeleted == null && cr.Value == "uwrfhardrefer").Description,
+                        "",
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwrfhardrefer" && cr.DateDeleted == null && cr.Value == "uwrfhardrefer").Value,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwrfhardrefer" && cr.DateDeleted == null && cr.Value == "uwrfhardrefer").OrderNumber,
+                        agreement.ClientAgreementRules.FirstOrDefault(cr => cr.RuleCategory == "uwrfhardrefer" && cr.DateDeleted == null && cr.Value == "uwrfhardrefer").DoNotCheckForRenew));
+                }
+            }
+            else
+            {
+                if (agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfhardrefer" && cref.DateDeleted == null).Status != "Pending")
+                {
+                    if (agreement.ClientInformationSheet.Programme.IsHardRefferal)
+                    {
+                        agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfhardrefer" && cref.DateDeleted == null).Status = "Pending";
+
+                    }
+                }
+
+            }
+
+        }
+
 
 
         void uwrfpriorinsurance(User underwritingUser, ClientAgreement agreement)
@@ -524,7 +555,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions").First().Value == "1" ||
                         agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions").First().Value == "1" ||
                         agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions").First().Value == "1" ||
-                        agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "ClaimsHistoryViewModel.HasHardRefer").First().Value == "1" ||
                         agreement.ClientInformationSheet.ClaimNotifications.Where(acscn => acscn.DateDeleted == null && !acscn.Removed && (acscn.ClaimStatus == "Settled" || acscn.ClaimStatus == "Precautionary notification only" || acscn.ClaimStatus == "Part Settled")).Count() > 0)
                     {
                         agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfpriorinsurance" && cref.DateDeleted == null).Status = "Pending";
@@ -536,6 +566,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 {
                     agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfpriorinsurance" && cref.DateDeleted == null).Status = "";
                 }
+
             }
         }
 

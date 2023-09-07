@@ -51,7 +51,7 @@ namespace DealEngine.Domain.Entities
         public virtual string AccountOrgType { get; set; }
         public virtual string requestID { get; set; }/// how to get request id
         //public virtual List<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
-
+        public virtual bool IsHardRefferal { get; set; }
 
         public ClientProgramme (User createdBy, Organisation createdFor, Programme baseProgramme)
 			: base(createdBy)

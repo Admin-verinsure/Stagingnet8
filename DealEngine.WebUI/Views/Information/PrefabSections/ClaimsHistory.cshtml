@@ -162,28 +162,5 @@
                     </div>
                 </div>
             </div>
-          @if (Model.IsHardRefferalEnable){
-            <div class="form-group">
-                 <label class="label cgmodalLabel">3. HARD Refer </label>
-
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-9">
-                <label for="hashardrefer" class="label required">
-                            b) Is this Client need Hard Refer?
-                        </label>
-                    </div>
-                    <div class="col-3">
-                <select id="hashardrefer" name="ClaimsHistoryViewModel.HasHardRefer" class="form-select " onchange="OnChange(this.id, this.name)" required>
-                    @foreach (var option in Model.ClaimsHistoryViewModel.HasHardRefer)
-                            {
-                                <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-          }
+         
         </form>

@@ -3421,16 +3421,30 @@ namespace DealEngine.WebUI.Controllers
                                await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
                             }
                             //send out login instruction email
-                            await _emailService.SendSystemEmailLogin(email);
+                           await _emailService.SendSystemEmailLogin(email);
 
                             //send out uis issue notification email
                             //await _emailService.SendSystemEmailUISIssueNotify(programme.BrokerContactUser, programme, sheet, programme.Owner);
                         }
                     }
-
                 }
 
-                return await RedirectToLocal();
+                foreach (var key in formCollection.Keys)
+                {
+                    if (formCollection[key].Contains("HardReffer"))
+                    {
+                        Organisation org = await _organisationService.GetOrganisation(Guid.Parse(key));
+                      ClientProgramme renewfromClientProgramme = await  _programmeService.GetfirstClientProgrammesByOwner(Guid.Parse(key));
+
+                        using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                        {
+                            renewfromClientProgramme.IsHardRefferal = true;
+                            uow.Commit();
+                        }
+                    }
+                }
+
+                    return await RedirectToLocal();
             }
             catch (Exception ex)
             {

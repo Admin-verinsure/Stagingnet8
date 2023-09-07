@@ -24,7 +24,7 @@ namespace DealEngine.WebUI.Models
 		public string ProgrammeNamedPartyUnitName { get; set; }
 		public IPagedList<ClientProgramme> clientProgrammespagedlist { get; set; }
 		public string IsLinuxEnv { get; set; }
-
-	}
+        public bool IsHardRefferal { get; set; }
+    }
 }
 

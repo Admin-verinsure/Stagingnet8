@@ -635,7 +635,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
             else if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName == "Apollo Programme")
             {
-                decfglimit = 100000;
+                decfglimit = 120000;
             }
 
             //Referral points per agreement

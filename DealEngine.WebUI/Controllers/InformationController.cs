@@ -1565,10 +1565,10 @@ namespace DealEngine.WebUI.Controllers
                             }
                         }
 
-                        if((sheet.Programme.Agreements != null && sheet.Programme.Agreements.Count <= 0) || !sheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("Marsh Real Estate Programme") )
-                        {
+                      //  if((sheet.Programme.Agreements != null && sheet.Programme.Agreements.Count <= 0) || !sheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("Marsh Real Estate Programme") )
+                       // {
                             await GenerateUWM(user, sheet, reference);
-                        }
+                       // }
                     }
 
                     return Content("/Agreement/ViewAgreement/" + sheet.Programme.Id);
