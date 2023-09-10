@@ -49,9 +49,15 @@ namespace DealEngine.Services.Impl
                         continue;
 
                     //Mark the existing agreement for this product deleted
-                    ClientAgreement clientAgreement = sheet.Programme.Agreements.FirstOrDefault(a => a.Product != null && a.Product.Id == product.Id);
-                    if (clientAgreement != null)
-                        clientAgreement.Delete(createdBy);
+                    List<ClientAgreement> clientAgreements =   sheet.Programme.Agreements.Where(a => a.Product != null && a.Product.Name == product.Name).ToList();
+                   
+                    foreach(ClientAgreement clientagreement in clientAgreements)
+                    {
+                        if (clientagreement != null)
+                            clientagreement.Delete(createdBy);
+                    }
+                    
+                    
 
                     //Check if the cover is required
                     try
