@@ -447,7 +447,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
         ClientAgreement GetClientAgreement(User currentUser, ClientInformationSheet informationSheet, ClientProgramme programme, Product product, string reference)
         {
-            ClientAgreement clientAgreement = programme.Agreements.FirstOrDefault(a => a.Product != null && a.Product.Id == product.Id);
+            ClientAgreement clientAgreement = programme.Agreements.FirstOrDefault(a => a.Product != null && a.Product.Id == product.Id && a.DateDeleted == null);
             ClientAgreement previousClientAgreement = null;
             if (clientAgreement == null)
             {
