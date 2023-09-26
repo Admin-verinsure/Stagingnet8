@@ -1654,6 +1654,9 @@ namespace DealEngine.WebUI.Controllers
                     if (sheet.Programme.BaseProgramme.ProgEnableEmail)
                     {
                         //sheet owner is null
+                        //AuditLog auditLog = new AuditLog(user, sheet, agreement, auditLogDetail);
+                        //sheet.ClientInformationSheetAuditLogs.Add(auditLog);
+                        //agreement.ClientAgreementAuditLogs.Add(auditLog);
                         await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out information sheet submission notification email
                         await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);

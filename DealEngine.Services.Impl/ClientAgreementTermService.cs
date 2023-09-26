@@ -61,7 +61,9 @@ namespace DealEngine.Services.Impl
             
 		    ClientAgreementTerm clientAgreementTerm = new ClientAgreementTerm(createdBy, termLimit, excess, premium, fSL, brokerageRate, brokerage, clientAgreement, subTermType);
             clientAgreement.ClientAgreementTerms.Add(clientAgreementTerm);
-            await _clientAgreementTermRepository.AddAsync(clientAgreementTerm);
+           // await _clientAgreementTermRepository.AddAsync(clientAgreementTerm);
+
+            UpdateAgreementTerm(clientAgreementTerm);
             await _clientAgreementRepository.UpdateAsync(clientAgreement);
 
         }

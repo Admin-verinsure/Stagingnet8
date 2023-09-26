@@ -168,37 +168,40 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
             {
                 var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "EL"));
-                foreach (var term in PreviousAgreement.ClientAgreementTerms)
+                if (PreviousAgreement != null)
                 {
-                    if (term.Bound)
+                    foreach (var term in PreviousAgreement.ClientAgreementTerms)
                     {
-                        var PreviousBoundPremium = term.Premium;
-                        if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
+                        if (term.Bound)
                         {
-                            PreviousBoundPremium = term.BasePremium;
+                            var PreviousBoundPremium = term.Premium;
+                            if (term.BasePremium > 0 && PreviousAgreement.ClientInformationSheet.IsChange)
+                            {
+                                PreviousBoundPremium = term.BasePremium;
+                            }
+                            termsl250klimitoption.PremiumDiffer = (TermPremium250k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                            termsl250klimitoption.PremiumPre = PreviousBoundPremium;
+                            if (termsl250klimitoption.TermLimit == term.TermLimit && termsl250klimitoption.Excess == term.Excess)
+                            {
+                                termsl250klimitoption.Bound = true;
+                            }
+                            if (termsl250klimitoption.PremiumDiffer < 0)
+                            {
+                                termsl250klimitoption.PremiumDiffer = 0;
+                            }
+                            termsl500klimitoption.PremiumDiffer = (TermPremium500k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
+                            termsl500klimitoption.PremiumPre = PreviousBoundPremium;
+                            if (termsl500klimitoption.TermLimit == term.TermLimit && termsl500klimitoption.Excess == term.Excess)
+                            {
+                                termsl500klimitoption.Bound = true;
+                            }
+                            if (termsl500klimitoption.PremiumDiffer < 0)
+                            {
+                                termsl500klimitoption.PremiumDiffer = 0;
+                            }
                         }
-                        termsl250klimitoption.PremiumDiffer = (TermPremium250k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
-                        termsl250klimitoption.PremiumPre = PreviousBoundPremium;
-                        if (termsl250klimitoption.TermLimit == term.TermLimit && termsl250klimitoption.Excess == term.Excess)
-                        {
-                            termsl250klimitoption.Bound = true;
-                        }
-                        if (termsl250klimitoption.PremiumDiffer < 0)
-                        {
-                            termsl250klimitoption.PremiumDiffer = 0;
-                        }
-                        termsl500klimitoption.PremiumDiffer = (TermPremium500k - PreviousBoundPremium) * coverperiodindaysforchange / agreementperiodindays;
-                        termsl500klimitoption.PremiumPre = PreviousBoundPremium;
-                        if (termsl500klimitoption.TermLimit == term.TermLimit && termsl500klimitoption.Excess == term.Excess)
-                        {
-                            termsl500klimitoption.Bound = true;
-                        }
-                        if (termsl500klimitoption.PremiumDiffer < 0)
-                        {
-                            termsl500klimitoption.PremiumDiffer = 0;
-                        }
-                    }
 
+                    }
                 }
             }
 

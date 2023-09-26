@@ -353,7 +353,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Change policy premium claculation
             if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
             {
-                //set admin fee $65 for change
+                //set admin fee $65 for change//changing to 0  for invoice issue for nzpi 2023
                 agreement.BrokerFee = 65;
 
                 var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PI"));
