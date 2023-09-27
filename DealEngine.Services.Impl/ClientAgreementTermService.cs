@@ -64,7 +64,7 @@ namespace DealEngine.Services.Impl
            // await _clientAgreementTermRepository.AddAsync(clientAgreementTerm);
 
             UpdateAgreementTerm(clientAgreementTerm);
-            await _clientAgreementRepository.UpdateAsync(clientAgreement);
+           // _clientAgreementRepository.UpdateAsync(clientAgreement);
 
         }
 
