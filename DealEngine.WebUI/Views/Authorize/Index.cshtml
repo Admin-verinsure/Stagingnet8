@@ -7,7 +7,7 @@
                     <div class="card-header" id="headingOne">
                         <h2 class="mb-0 accordion-header">
                             <button class="btn btn-link " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Configure Role
+                                Manage Roles
                             </button>
                         </h2>
                     </div>
@@ -30,41 +30,88 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header" id="headingThree">
+                    <div class="card-header" id="headingtwo">
                         <h2 class="mb-0 accordion-header">
-                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Add Claims to User
+                            <button class="btn btn-link " type="button" data-bs-toggle="collapse" data-bs-target="#collapsetwo" aria-expanded="false" aria-controls="collapsetwo">
+                                Manage Claims
                             </button>
                         </h2>
                     </div>
-                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-
+                    <div id="collapsetwo" class="accordion-collapse collapse show" aria-labelledby="headingtwo" data-bs-parent="#accordionExample">
                         <div class="card-body">
-                            <form id="userclaimform">
-                                <div class="form-group">
-                                    <select class="form-select" id="AddClaimUser" data-placeholder="Select User">
-                                        @foreach (var user in Model.UserList)
-                                        {
-                                            <option value="@user.Id">@user.UserName</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <select class="cselect form-select" data-placeholder="Add Claims" id="AddUserClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)">
-                                        @foreach (var claim in Model.ClaimList)
-                                        {
-                                            <option value="@claim.Value">@claim.Value</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <button type="button" class="btn btn-primary btn-sm" onclick="SaveClaimToUser()">Save</button>
-                                </div>
-                            </form>
+                            <div class="container" id="AddClaimForm">
+                                <form>
+                                    <div class="form-group">
+                                        @await Html.PartialAsync("AddClaimForm", Model)
+                                    </div>
+                                    <div class="form-group">
+                                        @await Html.PartialAsync("DeleteClaimForm", Model)
+                                    </div>
+                                </form>
+                            </div>
                         </div>
-
                     </div>
                 </div>
+
+@* Hidden Add Claims to User Page Section
+    <div class="card">
+        <div class="card-header" id="headingThree">
+            <h2 class="mb-0 accordion-header">
+                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                    Add Claims to User
+                </button>
+            </h2>
+        </div>
+        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+
+            <div class="card-body">
+                <form id="userclaimform">
+                    <div class="form-group">
+                        <select class="form-select" id="AddClaimUser" data-placeholder="Select User">
+                            @foreach (var user in Model.UserList)
+                            {
+                                <option value="@user.Id">@user.UserName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="cselect form-select" data-placeholder="Add Claims" id="AddUserClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)">
+                            @foreach (var claim in Model.ClaimList)
+                            {
+                                <option value="@claim.Value">@claim.Value</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="SaveClaimToUser()">Save</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+*@
+
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0 accordion-header">
+                            <button class="btn btn-link " type="button" data-bs-toggle="collapse" data-bs-target="#collapsethree" aria-expanded="false" aria-controls="collapsethree">
+                                List Users By Role
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapsethree" class="accordion-collapse collapse" aria-labelledby="headingfour" data-bs-parent="#accordionExample">
+                        <div class="card-body">
+                            <div class="container" id="ListUsersByRoleForm">
+                                @await Html.PartialAsync("ListUsersByRole", Model)
+                            </div>
+                        </div>
+        
+                    </div>
+                </div>
+
+
                 <div class="card">
                     <div class="card-header" id="headingfour">
                         <h2 class="mb-0 accordion-header">
@@ -79,12 +126,6 @@
                                 @await Html.PartialAsync("AddRoleToUserForm", Model)
                             </div>
                         </div>
-                        @*<div class="card-footer">
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            <button type="button" class="btn btn-primary" onclick="AddRoleToUser()">Add User Permissions</button>
-                            <button type="button" class="btn btn-primary">Delete</button>
-                        </div>
-                    </div>*@
                     </div>
                 </div>
             </div>
@@ -96,41 +137,78 @@
 @section pagespecific {
     <script type="text/javascript">
 
-        $(document).ready(function () {
-            $('#AddRoleClaims').chosen({ width: '100%' });
-        });
+        var roleClaimsDictionary = @Html.Raw(Json.Serialize(Model.RoleClaims));
+
+        // Create Update Delete Role
 
         $(document).ready(function () {
-            $('#UpdateClaims').chosen({ width: '100%' });
+            $('#UpdateRoleSelect').on('change', function () {
+                var selectedRole = $(this).val();
+                showClaimsForRole(selectedRole);
+                populateClaimsCheckboxesForRole(selectedRole);
+            });
         });
 
-        $(document).ready(function () {
-            $('#AddUserRoleSelect').chosen({ width: '100%' });
-        });
+        function showClaimsForRole(role) {
+            var claims = roleClaimsDictionary[role] || [];
 
-        $(document).ready(function () {
-            $('#AddUserClaims').chosen({ width: '100%' });
-        });
+            var claimsList = $('#roleClaimsList');
+            claimsList.empty(); // Clear the list
 
-        function ShowClaim() {
-            $("#claimList").hide();
+            claims.forEach(function (claim) {
+                var checkboxItem = $('<div class="claim-item" style="width: 50%;"><input type="checkbox" id="CurrentRoleClaim_' + claim + '" name="currentRoleClaims" value="' + claim + '"><label for="CurrentRoleClaim_' + claim + '">' + claim + '</label></div>');
+
+                claimsList.append(checkboxItem);
+            });
         }
 
-        function SaveClaimToUser() {
-            var userId = document.getElementById('AddClaimUser').value;
-            var claims = $('#AddUserClaims').val();
-            postData = { UserId: userId, Claims: claims }
+        function populateClaimsCheckboxesForRole(roleName) {
+            var associatedClaims = roleClaimsDictionary[roleName] || [];
+            var allClaims = @Html.Raw(Json.Serialize(Model.ClaimList.Select(c => c.Value)));
+            var availableClaims = allClaims.filter(claim => !associatedClaims.includes(claim));
+
+            var claimsContainerBox = $('#claims-container-box');
+            claimsContainerBox.empty();
+
+            availableClaims.forEach(function (claim) {
+                var checkboxItem = $('<div class="claim-item"><input type="checkbox" id="' + claim + '" name="selectedClaims" value="' + claim + '"><label for="' + claim + '">' + claim + '</label></div>');
+                claimsContainerBox.append(checkboxItem);
+            });
+        }
+
+        function getAddedClaims() {
+            return $("input[name='selectedClaims']:checked").map(function () {
+                return $(this).val();
+            }).get();
+        }
+
+        function getRemovedClaims() {
+            return $("input[name='currentRoleClaims']:checked").map(function () {
+                return $(this).val();
+            }).get();
+        }
+
+        function UpdateRole() {
+            var roleName = $('#UpdateRoleSelect').val();
+            var claimsToAdd = getAddedClaims();
+            var claimsToRemove = getRemovedClaims();
+
+            var postData = {
+                RoleName: roleName,
+                ClaimsToAdd: claimsToAdd,
+                ClaimsToRemove: claimsToRemove
+            };
+            
             $.ajax({
-                url: '@Url.Action("CreateUserToClaim", "Authorize")',
+                url: '@Url.Action("UpdateRole", "Authorize")',
                 type: "POST",
                 data: postData
             })
                 .done(function (data) {
-                    $('#Success').alert();
                     location.reload();
+                    $('#Success').alert();
                 })
                 .fail(function (a, s, d) {
-                    debugger;
                     alert("Unable to save.");
                 });
         }
@@ -156,27 +234,9 @@
                 });
         }
 
-        function UpdateRole() {
-            var roleName = $('#UpdateRoleSelect').val();
-            var claim = $('#UpdateClaims').val();
-            var postData = { RoleName: roleName, Claims: claim }
-            $.ajax({
-                url: '@Url.Action("UpdateRole", "Authorize")',
-                type: "POST",
-                data: postData
-            })
-                .done(function (data) {
-                    location.reload();
-                    $('#Success').alert();
-                })
-                .fail(function (a, s, d) {
-                    alert("Unable to save.");
-                });
-        }
-
         function DeleteRole() {
             var e = document.getElementById("DeleteRoleSelect");
-            var roleName = e.options[e.selectedIndex].text;  
+            var roleName = e.options[e.selectedIndex].text;
             debugger;
             var postData = { RoleName: roleName }
             $.ajax({
@@ -192,6 +252,42 @@
                     alert("Unable to save.");
                 });
         }
+
+        // List Users By Role
+        $(document).ready(function () {
+            $('#RoleSelect').on('change', function () {
+                var selectedRole = $(this).val();
+                fetchUsersForRole(selectedRole);
+            });
+        });
+
+        function fetchUsersForRole(role) {
+            debugger;
+            $.ajax({
+                url: '@Url.Action("GetUsersByRole", "Authorize")',
+                type: "GET",
+                data: { roleName: role }
+            })
+                .done(function (data) {
+                    debugger;
+                    var usersList = $('#usersList');
+                    usersList.empty(); // Clear the list
+
+                    data.forEach(function (user) {
+                        var listItem = $('<li data-user-id="' + user.id + '">Name: ' + user.userName + ', Email: ' + user.email + '</li>');
+                        usersList.append(listItem);
+                    });
+                })
+                .fail(function () {
+                    alert("Unable to fetch users.");
+                });
+        }
+
+        // Add Role to User
+
+        // function AddRoleToUser() {
+        //     $('#AddRoleToUserForm').show();
+        // }
 
         function SaveRoleToUser() {
             var userId = $('#AddUser').val();
@@ -212,19 +308,42 @@
                 });
         }
 
-        function AddRole() {
-            $('#AddRoleForm').show();
-            $('#UpdateRoleForm').hide();
-        }
 
-        function AddRoleToUser() {
-            $('#AddRoleToUserForm').show();
-        }
+        // Add Claim to User - Deprecated function
 
-        function EditRole() {
-            $('#AddRoleForm').hide();
-            $('#UpdateRoleForm').show();
-        }
+        // function SaveClaimToUser() {
+        //     var userId = document.getElementById('AddClaimUser').value;
+        //     var claims = $('#AddUserClaims').val();
+        //     postData = { UserId: userId, Claims: claims }
+        //     $.ajax({
+        //         url: 'ATUrl.Action("CreateUserToClaim", "Authorize")',
+        //         type: "POST",
+        //         data: postData
+        //     })
+        //         .done(function (data) {
+        //             $('#Success').alert();
+        //             location.reload();
+        //         })
+        //         .fail(function (a, s, d) {
+        //             debugger;
+        //             alert("Unable to save.");
+        //         });
+        // }
 
     </script>
+}
+
+@section PageStyles {
+    <style>
+        .claims-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .claim-item {
+            width: 50%;
+            box-sizing: border-box;
+            /*padding: 5px;*/
+        }
+    </style>
 }

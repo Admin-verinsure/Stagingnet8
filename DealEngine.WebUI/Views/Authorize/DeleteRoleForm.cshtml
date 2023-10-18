@@ -1,7 +1,14 @@
 ﻿@model DealEngine.WebUI.Models.Authorization.AuthorizeViewModel
 
 <form>
-    <div class="form-group col-6">
+    <!-- Title -->
+    <div class="form-group col-12">
+        <h3>Delete Role</h3>
+    </div>
+
+    <!-- Role Selection -->
+    <div class="form-group col-12">
+        <label for="DeleteRoleSelect">Select Role to Delete</label>
         <select class="form-select" id="DeleteRoleSelect">
             @foreach (var role in Model.RoleList)
             {
@@ -9,10 +16,9 @@
             }
         </select>
     </div>
-   
-    <div class="form-group col-6">
-        <button type="button" class="btn btn-primary btn-lg" onclick="DeleteRole()">Delete</button>
+
+    <!-- Delete Button -->
+    <div class="form-group col-12">
+        <button type="button" class="btn btn-danger btn-lg" onclick="DeleteRole()">Delete Role</button>
     </div>
 </form>
-
-

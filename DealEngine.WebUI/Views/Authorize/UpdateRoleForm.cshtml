@@ -1,7 +1,14 @@
 ﻿@model DealEngine.WebUI.Models.Authorization.AuthorizeViewModel
 
 <form>
-    <div class="form-group col-6">
+    <!-- Title -->
+    <div class="form-group col-12">
+        <h3>Update Role</h3>
+    </div>
+
+    <!-- Role Selection -->
+    <div class="form-group col-12">
+        <label for="UpdateRoleSelect">Select Role to Update</label>
         <select class="form-select" id="UpdateRoleSelect">
             @foreach (var role in Model.RoleList)
             {
@@ -10,17 +17,30 @@
         </select>
     </div>
 
-    <div class="form-group col-6">
-        <select class="cselect form-select" data-placeholder="UpdateClaims" id="UpdateClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)" style="display: none;">
+    <!-- Display Claims for the Selected Role -->
+    <div id="roleClaimsDisplay" class="form-group col-12">
+        <label>Current Claims for selected Role:</label>
+        <div class="border p-2" style="width: 100%; display: flex; flex-wrap: wrap;">
+            <ul id="roleClaimsList" class="list-unstyled" style="display: flex; flex-wrap: wrap; width: 100%;"></ul>
+        </div>
+    </div>
+
+    <!-- Update Claims for the Role -->
+    <div class="claims-container">
+        <label>Claims to Add to selected Role:</label>
+        <div id ="claims-container-box" class="border p-2" style="width: 100%; display: flex; flex-wrap: wrap;">
             @foreach (var claim in Model.ClaimList)
             {
-                <option value="@claim.Value">@claim.Value</option>
+                <div class="claim-item">
+                    <input type="checkbox" id="@claim.Value" name="selectedClaims" value="@claim.Value">
+                    <label for="@claim.Value">@claim.Value</label>
+                </div>
             }
-        </select>
+        </div>
     </div>
-    <div class="form-group col-6">
-        <button type="button" class="btn btn-primary btn-lg" onclick="UpdateRole()">Update</button>
+
+    <!-- Update Button -->
+    <div class="form-group col-12 p-2">
+        <button type="button" class="btn btn-primary btn-lg" onclick="UpdateRole()">Update Role</button>
     </div>
 </form>
-
-

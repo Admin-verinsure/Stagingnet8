@@ -13,6 +13,7 @@ using NHibernate.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -23,6 +24,7 @@ namespace DealEngine.WebUI.Controllers
         IClaimTemplateService _claimTemplateService;
         RoleManager<IdentityRole> _roleManager;
         UserManager<IdentityUser> _userManager;
+        
         IOrganisationService _organisationService;
         IApplicationLoggingService _applicationLoggingService;
         ILogger<AuthorizeController> _logger;
@@ -78,6 +80,16 @@ namespace DealEngine.WebUI.Controllers
                 {
                     model.UserList = userList;
                 }
+
+                var roleClaimsDictionary = new Dictionary<string, List<string>>();
+
+                foreach (var role in model.RoleList)
+                {
+                    var claimsInRole = await _roleManager.GetClaimsAsync(role);
+                    roleClaimsDictionary[role.Name] = claimsInRole.Select(c => c.Value).ToList();
+                }
+
+                model.RoleClaims = roleClaimsDictionary;
 
                 return View(model);
             }
@@ -271,5 +283,111 @@ namespace DealEngine.WebUI.Controllers
             }
                 return NoContent();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUsersByRole(string roleName)
+        {
+            try
+            {
+                var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
+
+                var userDtos = usersInRole.Select(u => new
+                {
+                    u.Id,
+                    u.UserName,
+                    u.Email
+                }).ToList();
+
+                return Json(userDtos);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                return BadRequest("Error retrieving users for the role.");
+            }
+
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CreateClaim(string claimType, string claimValue)
+        {
+            try
+            {
+                // Check if the claim already exists
+                var existingClaim = await _claimService.GetTemplateByName(claimValue);
+                if (existingClaim != null)
+                {
+                    return BadRequest("A claim with this value already exists.");
+                }
+
+                // Create a new claim instance
+                var claim = new Domain.Entities.Claim(claimType, claimValue);
+
+                // Add the claim using the ClaimService
+                await _claimService.AddClaim(claim);
+
+                // Return a success response
+                return Ok(new { Message = "Claim created successfully!" });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                return BadRequest("Error creating the claim.");
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteClaim(string claimType, string claimValue)
+        {
+            try
+            {
+                // Get the claim by its value
+                var claim = await _claimService.GetTemplateByName(claimValue);
+                if (claim == null)
+                {
+                    return BadRequest("Claim not found.");
+                }
+
+                // Create a System.Security.Claims.Claim instance for removal
+                var systemClaim = new System.Security.Claims.Claim(claimType, claimValue);
+
+                // Remove the claim from all roles that have it
+                var roles = _roleManager.Roles.ToList();
+                foreach (var role in roles)
+                {
+                    var roleClaims = await _roleManager.GetClaimsAsync(role);
+                    if (roleClaims.Any(c => c.Type == claimType && c.Value == claimValue))
+                    {
+                        await _roleManager.RemoveClaimAsync(role, systemClaim);
+                    }
+                }
+
+                // Remove the claim from all users that have it
+                var users = _userManager.Users.ToList();
+                foreach (var user in users)
+                {
+                    var userClaims = await _userManager.GetClaimsAsync(user);
+                    if (userClaims.Any(c => c.Type == claimType && c.Value == claimValue))
+                    {
+                        await _userManager.RemoveClaimAsync(user, systemClaim);
+                    }
+                }
+
+                // Remove the claim from the system using the ClaimService
+                await _claimService.RemoveClaim(claimValue);
+
+                // Return a success response
+                return Ok(new { Message = "Claim deleted successfully and removed from all roles and users!" });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                return BadRequest("Error deleting the claim.");
+            }
+        }
+
+
     }
 }
