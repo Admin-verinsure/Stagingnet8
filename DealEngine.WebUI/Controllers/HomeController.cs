@@ -713,53 +713,53 @@ namespace DealEngine.WebUI.Controllers
                     }
                 }
             }
-            if (programme.RenewFromProgramme != null)
-            {
-                List<ClientProgramme> renewClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
-                try
-                {
-                    foreach (var client in renewClientProgrammes.Where(cp => cp.InformationSheet.Status == "Bound and invoiced"))
-                    {
-                        if (client.DateDeleted == null && client.InformationSheet != null)
-                        {
-                            //filter out the renewal clientprogramme already created
-                            List<ClientProgramme> currentClientProgrammes = await _programmeService.GetClientProgrammesByOwnerByProgramme(client.Owner.Id, programme.Id);
-                            if (currentClientProgrammes.Count == 0)
-                            {
-                                client.RenewNotificationDate = DateTime.UtcNow;
-                                await _programmeService.Update(client);
+            //if (programme.RenewFromProgramme != null)
+            //{
+            //    List<ClientProgramme> renewClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
+            //    try
+            //    {
+            //        foreach (var client in renewClientProgrammes.Where(cp => cp.InformationSheet.Status == "Bound and invoiced"))
+            //        {
+            //            if (client.DateDeleted == null && client.InformationSheet != null)
+            //            {
+            //                //filter out the renewal clientprogramme already created
+            //                List<ClientProgramme> currentClientProgrammes = await _programmeService.GetClientProgrammesByOwnerByProgramme(client.Owner.Id, programme.Id);
+            //                if (currentClientProgrammes.Count == 0)
+            //                {
+            //                    client.RenewNotificationDate = DateTime.UtcNow;
+            //                    await _programmeService.Update(client);
 
-                                ClientProgramme CloneProgramme = await _programmeService.CloneForRenew(user, client.Id, programme.Id);
+            //                    ClientProgramme CloneProgramme = await _programmeService.CloneForRenew(user, client.Id, programme.Id);
 
-                                Product masterUISProduct = programme.Products.Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
-                                var UISAttachmentDocuments = new List<SystemDocument>();
-                                if (masterUISProduct != null)
-                                {
-                                    var UISAttachmentTemplateList = masterUISProduct.Documents.Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
+            //                    Product masterUISProduct = programme.Products.Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
+            //                    var UISAttachmentDocuments = new List<SystemDocument>();
+            //                    if (masterUISProduct != null)
+            //                    {
+            //                        var UISAttachmentTemplateList = masterUISProduct.Documents.Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
 
-                                    foreach (SystemDocument template in UISAttachmentTemplateList)
-                                    {
-                                        SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, client.InformationSheet, null);
-                                        SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
-                                        renderedDoc.OwnerOrganisation = client.Owner;
-                                        UISAttachmentDocuments.Add(renderedDoc);
-                                        await _fileService.UploadFile(renderedDoc);
-                                    }
-                                }
-                                using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
-                                {
-                                    await uow.Commit();
-                                }
-                            }
-                        }
-                    }
+            //                        foreach (SystemDocument template in UISAttachmentTemplateList)
+            //                        {
+            //                            SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, client.InformationSheet, null);
+            //                            SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+            //                            renderedDoc.OwnerOrganisation = client.Owner;
+            //                            UISAttachmentDocuments.Add(renderedDoc);
+            //                            await _fileService.UploadFile(renderedDoc);
+            //                        }
+            //                    }
+            //                    using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+            //                    {
+            //                        await uow.Commit();
+            //                    }
+            //                }
+            //            }
+            //        }
 
-                }
-                catch (Exception ex)
-                {
+            //    }
+            //    catch (Exception ex)
+            //    {
 
-                }
-            }
+            //    }
+            //}
 
             if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsProgrammeManager)
             {
@@ -1280,14 +1280,16 @@ namespace DealEngine.WebUI.Controllers
                 //ProgrammeItem model = new ProgrammeItem(clientList.FirstOrDefault().BaseProgramme);
                 ProgrammeItem model = new ProgrammeItem(programme);
 
+              
+                if (programme.IsClientTaskDisabled && !programme.IsProgrammerenewed)
+                {
+                    model = await GetBrokerRenewedListModel(user, clientList, programme);
+                }else
                 if (programme.ProgMultBrokerMode)
                 {
                     model = await GetOwnerListModel(user, clientList, programme);
                 }
-                if (programme.IsClientTaskDisabled && !programme.IsProgrammerenewed)
-                {
-                    model = await GetBrokerRenewedListModel(user, clientList, programme);
-                } else
+                else
                 {
                     model = await GetClientProgrammeListModel(user, clientList, programme);
                 }
