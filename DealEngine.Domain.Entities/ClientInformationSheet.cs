@@ -52,7 +52,14 @@ namespace DealEngine.Domain.Entities
 
         [JsonIgnore]
         public virtual IList<AuditLog> ClientInformationSheetAuditLogs { get; set; }
+        public virtual User DeclaredBy { get; set; }
+        public virtual DateTime DeclaredDate { get; set; }
 
+        public virtual void declared(User user)
+        {
+            DeclaredDate = DateTime.Now;
+            DeclaredBy = user;
+        }
         public virtual void submitted(User user)
         {
             Status = "Submitted";

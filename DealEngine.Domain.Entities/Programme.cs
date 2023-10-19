@@ -106,9 +106,16 @@ namespace DealEngine.Domain.Entities
         public virtual bool ProgMultiPolicyMode { get; set; }
         public virtual bool ProgMultBrokerMode { get; set; }
         public virtual bool IsClientTaskDisabled { get; set; }
-        public virtual bool isprogrenewed { get; set; }
+        //public virtual bool IsBrokerRenewed { get; set; }
         public virtual bool DisableEditLimit  { get; set; }
         public virtual bool EnableHardRefer { get; set; }
+        public virtual bool HasCustomisedinfoquestionsrollover { get; set; }
+        public virtual decimal PackageRate { get; set; }
+        public virtual bool EnablePackageRate { get; set; }
+        public virtual bool IsPolicyperiodclone { get; set; }
+        public virtual bool IsProgrammerenewed { get; set; }
+
+
 
         protected Programme() : this(null) { }
 

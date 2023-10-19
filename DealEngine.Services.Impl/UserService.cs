@@ -396,10 +396,13 @@ namespace DealEngine.Services.Impl
 
 		public async Task<User> GetApplicationUserByEmail(string email)
 		{
+
 			User user = null;
 			try
 			{
-				user = await _userRepository.FindAll().FirstOrDefaultAsync(u => u.Email == email);
+              //  user = await _userRepository.FindAll().FirstOrDefaultAsync(u => string.Equals(u.Email, email, StringComparison.OrdinalIgnoreCase));
+
+                user = await _userRepository.FindAll().FirstOrDefaultAsync(u => u.Email == email);
 			}
 			catch (Exception ex)
 			{

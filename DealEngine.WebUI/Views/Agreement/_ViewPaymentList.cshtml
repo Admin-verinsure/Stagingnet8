@@ -33,8 +33,13 @@
 
                 @foreach (var item in Model)
                 {
-                    if (item.IsMasterAgreement)
+               
+                if (item.IsMasterAgreement)
                     {
+                       if (Model.BaseProgramme.PackageRate > 0.0m)
+                       {
+                        totalPremiums += (double)Model.BaseProgramme.PackageRate;
+                       }
                         item.TotalPremium = totalPremiums.ToString("C");
                         item.TotalAdministrationFee = totalbrokerageFee.ToString("C");
                         <div class="form-group">
