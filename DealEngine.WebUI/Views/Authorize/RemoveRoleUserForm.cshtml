@@ -11,8 +11,8 @@
         </select>
     </div>
     <div class="form-group col-12">
-        <label for="AddUserRoleSelect">Select Role to Add to User</label>
-        <select class="cselect form-select" data-placeholder="Select Roles to add to User" id="AddUserRoleSelect" multiple="multiple" name="@Html.NameFor(m => m.RoleList)">            
+        <label for="RemoveUserRole">Select Role to Remove from User</label>
+        <select class="cselect form-select" data-placeholder="Select Role to Remove from User" id="RemoveUserRole" multiple="multiple" name="@Html.NameFor(m => m.RoleList)">            
                 @foreach (var role in Model.RoleList)
                 {
                     <option value="@role.Id">@role.Name</option>
@@ -20,7 +20,7 @@
             </select>
     </div>
     <div class="form-group col-12">
-        <button type="button" class="btn btn-primary btn-sm" onclick="SaveRoleToUser()">Save</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="RemoveRoleFromUser()">Save</button>
     </div>
 </form>
 

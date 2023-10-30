@@ -60,6 +60,7 @@ namespace DealEngine.WebUI.Controllers
                 user = await CurrentUser();
 
                 var userList = await _userService.GetAllUsers();
+                var orderedUserList = userList.OrderBy(u => u.UserName).ToList();
                 var roleList = new List<IdentityRole>();
 
                 var claimList = await _claimService.GetClaimsAllClaimsList();
@@ -69,16 +70,18 @@ namespace DealEngine.WebUI.Controllers
                     claimList = await _claimService.GetClaimsAllClaimsList();
                 }
 
-                AuthorizeViewModel model = new AuthorizeViewModel();
-
-                model.RoleList = new List<IdentityRole>();
-                model.UserList = new List<User>();
-                model.ClaimList = claimList;
-                model.RoleList = await _roleManager.Roles.ToListAsync();
-
-                if (userList.Count != 0)
+                AuthorizeViewModel model = new AuthorizeViewModel
                 {
-                    model.UserList = userList;
+                    RoleList = await _roleManager.Roles.ToListAsync(),
+                    UserList = orderedUserList,
+                    ClaimList = claimList,
+                    RoleClaims = new Dictionary<string, List<string>>()
+                };         
+
+                foreach (var role in model.RoleList)
+                {
+                    var claimsInRole = await _roleManager.GetClaimsAsync(role);
+                    model.RoleClaims[role.Name] = claimsInRole.Select(c => c.Value).ToList();
                 }
 
                 var roleClaimsDictionary = new Dictionary<string, List<string>>();
@@ -90,6 +93,16 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 model.RoleClaims = roleClaimsDictionary;
+
+                // BUG HERE
+                if (user != null)
+                {
+                    var identityUser = await _userManager.FindByNameAsync(user.UserName);
+
+                    model.IsTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
+                    model.IsProgrammeManagerCoastguard = await _userManager.IsInRoleAsync(identityUser, "ProgrammeManagerCoastguard");
+                }
+
 
                 return View(model);
             }
@@ -239,6 +252,37 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> RemoveRoleFromUser(Guid UserId, string roleId)
+        {
+            User user = null;
+            try
+            {
+                user = await _userService.GetUserById(UserId);
+                var identityUser = await _userManager.FindByNameAsync(user.UserName);
+                if (identityUser == null)
+                {
+                    return BadRequest("User not found.");
+                }
+
+                var role = await _roleManager.FindByIdAsync(roleId);
+                if (role != null)
+                {
+                    if (await _userManager.IsInRoleAsync(identityUser, role.Name))
+                    {
+                        await _userManager.RemoveFromRoleAsync(identityUser, role.Name);
+                    }
+                }             
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return BadRequest("Error removing roles from user.");
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CreateUserToClaim(string UserId, string[] Claims)
         {
             User user = null;
@@ -291,7 +335,9 @@ namespace DealEngine.WebUI.Controllers
             {
                 var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
 
-                var userDtos = usersInRole.Select(u => new
+                var userDtos = usersInRole
+                .OrderBy(u => u.UserName)    
+                .Select(u => new
                 {
                     u.Id,
                     u.UserName,
@@ -318,7 +364,7 @@ namespace DealEngine.WebUI.Controllers
                 var existingClaim = await _claimService.GetTemplateByName(claimValue);
                 if (existingClaim != null)
                 {
-                    return BadRequest("A claim with this value already exists.");
+                    return Json(new { success = false, message = "A claim with this value already exists." });
                 }
 
                 // Create a new claim instance
@@ -328,14 +374,15 @@ namespace DealEngine.WebUI.Controllers
                 await _claimService.AddClaim(claim);
 
                 // Return a success response
-                return Ok(new { Message = "Claim created successfully!" });
+                return Json(new { success = true, message = "Claim created successfully!" });
             }
             catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
-                return BadRequest("Error creating the claim.");
+                return Json(new { success = false, message = "Error creating the claim." });
             }
         }
+
 
 
         [HttpPost]
@@ -343,6 +390,24 @@ namespace DealEngine.WebUI.Controllers
         {
             try
             {
+                // Only let TC_USER
+                User currentUser = await CurrentUser();
+                var identityUser = await _userManager.FindByNameAsync(currentUser.UserName);
+
+                if (identityUser != null) {
+                    bool isTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
+
+                    if (!isTCUser)
+                    {
+                        return BadRequest("User not permitted to perform this action.");
+                    }
+                }
+                else
+                {
+                    return BadRequest("User is not logged in.");
+                }
+
+
                 // Get the claim by its value
                 var claim = await _claimService.GetTemplateByName(claimValue);
                 if (claim == null)

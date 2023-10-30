@@ -45,7 +45,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DealEngine.Infrastructure.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DealEngine.Domain.Services", "DealEngine.Domain.Services\DealEngine.Domain.Services.csproj", "{BE067612-7348-4165-AE35-7305031C64A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DealEngine.Infrastructure.PolicyCenter", "DealEngine.Infrastructure.PolicyCenter\DealEngine.Infrastructure.PolicyCenter.csproj", "{1F9A23BC-84AA-4A7A-8631-5FBE14253C86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DealEngine.Infrastructure.PolicyCenter", "DealEngine.Infrastructure.PolicyCenter\DealEngine.Infrastructure.PolicyCenter.csproj", "{1F9A23BC-84AA-4A7A-8631-5FBE14253C86}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -13,6 +13,9 @@ namespace DealEngine.WebUI.Models.Authorization
         public IList<User> UserList { get; set; }
         public IList<Domain.Entities.Organisation> Organisations { get; set; }
         public Dictionary<string, List<string>> RoleClaims { get; set; }
+        
+        public bool IsTCUser { get; set; }
+        public bool IsProgrammeManagerCoastguard { get; set; }
     }
 }
 

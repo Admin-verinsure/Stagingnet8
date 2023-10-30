@@ -10,32 +10,8 @@
     <!-- Role Name -->
     <div class="form-group col-12">
         <label for="InputClaimName">New Claim Name</label>
-        <input type="text" class="form-control" id="InputClaimName">
+        <input type="text" class="form-control" id="newClaimName">
     </div>
-
-    <!-- Claims Selection -->
-@*     <div class="claims-container">
-        <label>Add Claims to New Role</label>
-        <div id="addRoleClaimsCheckboxContainer" class="border p-2" style="width: 100%; display: flex; flex-wrap: wrap;">
-            @foreach (var claim in Model.ClaimList)
-            {
-                <div class="claim-item">
-                    <input type="checkbox" id="AddRoleClaim_@claim.Value" name="selectedClaimsForNewRole" value="@claim.Value">
-                    <label for="AddRoleClaim_@claim.Value">@claim.Value</label>
-                </div>
-            }
-        </div>
-    </div> *@
-
-@* Old  <div class="form-group col-12">
-        <label for="AddRoleClaims">Select Claims for New Role</label>
-        <select class="cselect form-select" id="AddRoleClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)">
-            @foreach (var claim in Model.ClaimList)
-            {
-                <option value="@claim.Value">@claim.Value</option>
-            }
-        </select>
-    </div> *@
 
     <!-- Save Button -->
     <div class="form-group col-12 p-2">
