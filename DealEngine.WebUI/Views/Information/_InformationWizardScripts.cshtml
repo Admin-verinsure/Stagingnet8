@@ -7182,6 +7182,8 @@
                 window.location.href = data.url;
             })
             .fail(function (a, s, d) {
+                debugger;
+                     $('#getDocumentsModal').hide();
                 alert("Unable to save.");
             });
         }
