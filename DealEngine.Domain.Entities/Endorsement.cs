@@ -71,6 +71,12 @@ namespace DealEngine.Domain.Entities
             protected set;
         }
 
+        public virtual string IsManual
+        {
+            get;
+            protected set;
+        }
+
 
     }
 }

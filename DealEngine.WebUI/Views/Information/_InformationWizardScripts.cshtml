@@ -366,6 +366,20 @@
                     document.getElementById("advisoryModal").hidden = false;
                     return false;
                 }
+                 $.ajax({
+                    url: '@Url.Action("ConfirmDeclaration", "Information")',
+                    type: "POST",
+                    data: $("#tab_1 :input")
+                })
+                .done(function (url) {
+                    $("#pxpaymentView").load(url, function () {
+                        $('#getAgreementPaymentModal').hide();
+                        $('#getErrorModal').hide();
+                    });
+                });
+
+
+
                 $('#getAgreementPaymentModal').show();
                 var nextbutton = document.getElementsByClassName("next");
                 $(nextbutton).addClass("hidden");
@@ -7168,6 +7182,8 @@
                 window.location.href = data.url;
             })
             .fail(function (a, s, d) {
+                debugger;
+                     $('#getDocumentsModal').hide();
                 alert("Unable to save.");
             });
         }

@@ -1293,6 +1293,11 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
                     }
                     
                 }
+
+                if (objClientAgreement.ClientInformationSheet.Programme.BaseProgramme.EnablePackageRate)
+                {
+                    BrokerFeeTotal += objClientAgreement.ClientInformationSheet.Programme.BaseProgramme.PackageRate;
+                }
             }
             
             CalculateInvoiceSummary(EBixPolicy, BrokerFeeTotal);

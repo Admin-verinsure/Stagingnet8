@@ -1682,6 +1682,39 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmDeclaration(IFormCollection collection)
+        {
+            Guid sheetId = Guid.Empty;
+            ClientInformationSheet sheet = null;
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                if (Guid.TryParse(HttpContext.Request.Form["AnswerSheetId"], out sheetId))
+                {
+                    sheet = await _clientInformationService.GetInformation(sheetId);
+                }
+
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    sheet.declared(user);
+                    await uow.Commit();
+                }
+                return Json(true);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> PaymentInformation(IFormCollection collection)
         {

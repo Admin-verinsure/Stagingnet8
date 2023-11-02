@@ -2496,6 +2496,8 @@ namespace DealEngine.WebUI.Controllers
 
                         }
 
+                      
+
                         bool isActive = true;
 
                         model.EGlobalIsActive = isActive;
@@ -2523,7 +2525,11 @@ namespace DealEngine.WebUI.Controllers
                         models.Add(model);
                     }
                 }
-
+                if (clientProgramme.BaseProgramme.EnablePackageRate)
+                {
+                    totalPayable += clientProgramme.BaseProgramme.PackageRate;
+                }
+                models.BaseProgramme = clientProgramme.BaseProgramme;
                 ViewBag.Title = clientProgramme.BaseProgramme.Name + " Payment for " + clientProgramme.Owner.Name;
 
                 bool requirePayment = false;

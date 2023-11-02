@@ -1,6 +1,7 @@
 ﻿@model DealEngine.WebUI.Models.ProgrammeItem
 
-
+@if (null != Model.UpcomingDeals)
+{
 <div class="card-header text-white w3-panel w3-pale-blue w3-border" style="background-color:#3276b1">
     <h6> <i class="fa fa-comments"></i> Upcoming Deals </h6>
 </div>
@@ -48,6 +49,7 @@
 
 </div>
 
+}
 <div class="card-header text-white" style="background-color:#3276b1">
     <h6> <i class="fa fa-comments"></i> Deals </h6>
 </div>
@@ -76,9 +78,19 @@
             <tr>
                 <td>@item.OwnerName </td>
                 <td>
-                    <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
-                        <a class="btn btn-primary btn-sm" href="/Home/ViewClientProgramme?ownerid=@item.OwnerId&programmeid=@item.ProgrammeId"><i class="fa fa-search"></i> View</a>
-                    </div>
+                        @if (!item.IsOwnerneedcloning)
+                        {
+                            <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
+                                <a class="btn btn-primary btn-sm" href="/Home/ViewClientProgramme?ownerid=@item.OwnerId&programmeid=@item.ProgrammeId"><i class="fa fa-search"></i> View</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
+                                <a class="btn btn-primary btn-sm" href="/Home/ClientProgrammeCloning?ownerid=@item.OwnerId"><i class="fa fa-search"></i> View</a>
+                            </div>
+                        }
+
                 </td>
             </tr>
         }

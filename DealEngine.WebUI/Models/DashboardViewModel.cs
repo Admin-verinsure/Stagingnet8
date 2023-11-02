@@ -86,9 +86,11 @@ namespace DealEngine.WebUI.Models
         public string OwnerName { get; set; }
         public string OwnerId { get; set; }
         public string ProgrammeId { get; set; }
+        public bool IsOwnerneedcloning { get; set; }
+
     }
 
-	public class DealItem
+    public class DealItem
 	{
 		public string Name { get; set; }
 
@@ -189,6 +191,7 @@ namespace DealEngine.WebUI.Models
 		public IList<string> Languages { get; set; }
 		public IList<DealItem> Deals { get; set; }
         public IList<OwnerItem> OwnerDeals { get; set; }
+
         public IList<OwnerItem> UpcomingDeals { get; set; }
 
         public IList<UpdateType> updateTypes { get; set; }

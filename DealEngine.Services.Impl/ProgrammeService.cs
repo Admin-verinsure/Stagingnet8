@@ -719,7 +719,7 @@ namespace DealEngine.Services.Impl
             newClientInformationSheet.Status = "Not Started";
             newClientInformationSheet.DateCreated = DateTime.UtcNow;
             newClientInformationSheet.UnlockDate = DateTime.MinValue;
-            if(oldClientProgramme.InformationSheet.Answers.Count != 0 && oldClientProgramme.BaseProgramme.NamedPartyUnitName == "Marsh Real Estate Programme")
+            if(oldClientProgramme.InformationSheet.Answers.Count != 0 && (oldClientProgramme.BaseProgramme.NamedPartyUnitName == "Marsh Real Estate Programme" || oldClientProgramme.BaseProgramme.IsPolicyperiodclone))
             {
                 String policystartdate = oldClientProgramme.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate").FirstOrDefault().Value;
                 DateTime startdate = DateTime.ParseExact(policystartdate, "yyyy-mm-dd", CultureInfo.InvariantCulture);
@@ -826,8 +826,25 @@ namespace DealEngine.Services.Impl
                             newClientInformationAnswer.Value = "";
                         }
                     }
+                    if (newClientInformationSheet.Programme.BaseProgramme.HasCustomisedinfoquestionsrollover)
+                    {
+                        if (answer.ItemName == "PIViewModel.IsRequirecoverJunior")
+                        {
+                            newClientInformationAnswer.Value = "0";
+                        }
+                        if (answer.ItemName == "PIViewModel.JuniorBarristersdetails")
+                        {
+                            newClientInformationAnswer.Value = "";
+                        }
+                        if (answer.ItemName == "EPLViewModel.HaveAnyEmployeeYN")
+                        {
+                            newClientInformationAnswer.Value = "0";
+                        }
 
-                    newClientInformationSheet.Answers.Add(newClientInformationAnswer);
+
+                    }
+
+                        newClientInformationSheet.Answers.Add(newClientInformationAnswer);
                 }
             }
             if (oldClientProgramme.InformationSheet.BusinessInterruptions != null)
