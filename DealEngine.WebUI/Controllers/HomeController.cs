@@ -841,10 +841,17 @@ namespace DealEngine.WebUI.Controllers
 
             return model;
         }
-        private async Task<ActionResult> ClientProgrammeCloning(ClientProgramme client)
+
+
+        [HttpGet]
+        public async Task<ActionResult> ClientProgrammeCloning(Guid  ownerid, Guid programmeid)
         {
             IList<Organisation> ownerList = new List<Organisation>();
-            Programme programme = client.BaseProgramme;
+            Organisation owner = await _organisationService.GetOrganisation(ownerid);
+            Programme programme = await _programmeService.GetProgrammeById(programmeid);
+
+            ClientProgramme client = await _programmeService.GetClientProgrammebyOwnerId(programme.RenewFromProgramme.Id, ownerid);
+
             ProgrammeItem model = new ProgrammeItem(programme);
             DateTime tme = DateTime.Now.AddMonths(3);
             User user = await CurrentUser();
@@ -930,8 +937,13 @@ namespace DealEngine.WebUI.Controllers
 
             //return Redirect("/Home/ViewClientProgramme/" + formCollection["ProgrammeId"]);
             //return RedirectToAction("ViewAcceptedAgreement", new { id = model.ClientProgrammeId });
-            return RedirectToAction("/Home/ViewClientProgramme", new { ownerid = client, programmeid = programme });
+            //return Redirect("/Home/ViewClientProgramme", new { ownerId = client, programmeId = programme });
+            var routeValues = new { ownerId = ownerid, programmeId = programmeid };
 
+            // Redirect to MyAction with two parameters
+            return RedirectToAction("ViewClientProgramme", routeValues);
+            //return RedirectToAction("/Home/ViewClientProgramme", new { ownerId = client, programmeId = programme });
+            //public async Task<IActionResult> ViewClientProgramme(Guid ownerId, Guid programmeId)
             //Redirect / Home/ViewClientProgramme?ownerid=@item.OwnerId&programmeid=@item.ProgrammeId";
         }
 
@@ -1476,7 +1488,7 @@ namespace DealEngine.WebUI.Controllers
               
                 if (programme.IsClientTaskDisabled && !programme.IsProgrammerenewed)
                 {
-                    model = await GetBrokerRenewedListModel(user, clientList, programme);
+                    model = await GetBrokerRenewedDashboard(user, clientList, programme);
                 }else
                 if (programme.ProgMultBrokerMode)
                 {

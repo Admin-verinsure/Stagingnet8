@@ -314,6 +314,11 @@ namespace DealEngine.Services.Impl
             return await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(c => c.Owner.Name == OwnerName && c.BaseProgramme.Name == ProgName);
 
         }
+        public async Task<ClientProgramme> GetClientProgrammebyOwnerId(Guid  ProgID, Guid  OwnerId)
+        {
+            return await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(c => c.Owner.Id == OwnerId && c.BaseProgramme.Id == ProgID);
+
+        }
 
         public async Task<ClientProgramme> GetClientProgrammebyId(Guid clientProgrammeID)
         {
