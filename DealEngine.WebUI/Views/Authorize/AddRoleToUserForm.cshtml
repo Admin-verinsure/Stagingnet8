@@ -12,8 +12,8 @@
     </div>
     <div class="form-group col-12">
         <label for="AddUserRoleSelect">Select Role to Add to User</label>
-        <select class="cselect form-select" data-placeholder="Select Roles to add to User" id="AddUserRoleSelect" multiple="multiple" name="@Html.NameFor(m => m.RoleList)">            
-                @foreach (var role in Model.RoleList)
+        <select class="cselect form-select" data-placeholder="Select Roles to add to User" id="AddUserRoleSelect" multiple="multiple" name="@Html.NameFor(m => m.RoleList)">
+            @foreach (var role in Model.RoleList)
                 {
                     <option value="@role.Id">@role.Name</option>
                 }

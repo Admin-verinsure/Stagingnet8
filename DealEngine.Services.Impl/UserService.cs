@@ -184,7 +184,19 @@ namespace DealEngine.Services.Impl
 			}
 			return user;
 		}
-		public async Task<User> GetUserByUserName(string userName)
+        public async Task<IList<User>> GetUsersByLastName(string lastName)
+        {
+            try
+            {
+                var users = await _userRepository.FindAll().Where(u => u.LastName == lastName).ToListAsync();
+                return users;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<User> GetUserByUserName(string userName)
 		{
 			User user = null;
 			try

@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
+using NHibernate.AspNetCore.Identity;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -94,15 +95,12 @@ namespace DealEngine.WebUI.Controllers
 
                 model.RoleClaims = roleClaimsDictionary;
 
-                // BUG HERE
                 if (user != null)
                 {
                     var identityUser = await _userManager.FindByNameAsync(user.UserName);
 
                     model.IsTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
-                    model.IsProgrammeManagerCoastguard = await _userManager.IsInRoleAsync(identityUser, "ProgrammeManagerCoastguard");
                 }
-
 
                 return View(model);
             }
@@ -252,7 +250,7 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RemoveRoleFromUser(Guid UserId, string roleId)
+        public async Task<IActionResult> RemoveRoleFromUser(Guid UserId, string[] roleIds)
         {
             User user = null;
             try
@@ -264,14 +262,17 @@ namespace DealEngine.WebUI.Controllers
                     return BadRequest("User not found.");
                 }
 
-                var role = await _roleManager.FindByIdAsync(roleId);
-                if (role != null)
+                foreach (var roleId in roleIds)
                 {
-                    if (await _userManager.IsInRoleAsync(identityUser, role.Name))
+                    var role = await _roleManager.FindByIdAsync(roleId);
+                    if (role != null)
                     {
-                        await _userManager.RemoveFromRoleAsync(identityUser, role.Name);
+                        if (await _userManager.IsInRoleAsync(identityUser, role.Name))
+                        {
+                            await _userManager.RemoveFromRoleAsync(identityUser, role.Name);
+                        }
                     }
-                }             
+                }
 
                 return Ok();
             }
@@ -450,6 +451,58 @@ namespace DealEngine.WebUI.Controllers
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
                 return BadRequest("Error deleting the claim.");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserDetailsByLastName(string lastName)
+        {
+            try
+            {
+                var appUsers = await _userService.GetUsersByLastName(lastName);
+                if (appUsers == null || !appUsers.Any())
+                {
+                    return NotFound("Users not found");
+                }
+
+                var userDetails = new List<object>();
+
+                foreach (var appUser in appUsers)
+                {
+                    var idenUser = await _userManager.FindByNameAsync(appUser.UserName);
+                    if (idenUser != null)
+                    {
+                        var roles = await _userManager.GetRolesAsync(idenUser);
+                        userDetails.Add(new
+                        {
+                            appUser.Id,
+                            appUser.UserName,
+                            appUser.Email,
+                            appUser.FirstName,
+                            appUser.LastName,
+                            Roles = roles
+                        });
+                    }
+                    else
+                    {
+                        userDetails.Add(new
+                        {
+                            appUser.Id,
+                            appUser.UserName,
+                            appUser.Email,
+                            appUser.FirstName,
+                            appUser.LastName,
+                            Roles = new List<string>()
+                        });
+                    }
+                }
+
+                return Json(userDetails);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                return BadRequest("Error retrieving user details.");
             }
         }
 

@@ -3,7 +3,7 @@
 <form>
     <div class="form-group col-12">
         <label for="AddUser">Select User</label>
-        <select class="form-select" id="AddUser" data-placeholder="Select User">
+        <select class="form-select" id="RemoveUser" data-placeholder="Select User">
             @foreach (var user in Model.UserList)
             {
                 <option value="@user.Id">@user.UserName</option>
@@ -11,9 +11,9 @@
         </select>
     </div>
     <div class="form-group col-12">
-        <label for="RemoveUserRole">Select Role to Remove from User</label>
-        <select class="cselect form-select" data-placeholder="Select Role to Remove from User" id="RemoveUserRole" multiple="multiple" name="@Html.NameFor(m => m.RoleList)">            
-                @foreach (var role in Model.RoleList)
+        <label for="RemoveUserRoleSelect">Select Role to Remove from User</label>
+        <select class="cselect form-select" data-placeholder="Select Role to Remove from User" id="RemoveUserRoleSelect" multiple="multiple" name="@Html.NameFor(m => m.RoleList)">
+            @foreach (var role in Model.RoleList)
                 {
                     <option value="@role.Id">@role.Name</option>
                 }
