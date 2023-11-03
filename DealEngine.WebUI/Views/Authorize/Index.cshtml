@@ -250,22 +250,15 @@
             });
         }
 
-        function getAddedClaims() {
-            return $("input[name='selectedClaims']:checked").map(function () {
-                return $(this).val();
-            }).get();
-        }
-
-        function getRemovedClaims() {
-            return $("input[name='currentRoleClaims']:checked").map(function () {
-                return $(this).val();
-            }).get();
-        }
-
         function UpdateRole() {
+            debugger;
             var roleName = $('#UpdateRoleSelect').val();
-            var claimsToAdd = getAddedClaims();
-            var claimsToRemove = getRemovedClaims();
+            var claimsToAdd = $("input[name='claimsToAdd']:checked").map(function () {
+                return $(this).val();
+            }).get();
+            var claimsToRemove = $("input[name='claimsToRemove']:checked").map(function () {
+                return $(this).val();
+            }).get();
 
             var postData = {
                 RoleName: roleName,
@@ -278,20 +271,22 @@
                 type: "POST",
                 data: postData
             })
-                .done(function (data) {
-                    location.reload();
-                    $('#Success').alert();
-                })
-                .fail(function (a, s, d) {
-                    alert("Unable to save.");
-                });
+            .done(function (data) {
+                location.reload();
+                $('#Success').alert();
+            })
+            .fail(function (a, s, d) {
+                alert("Unable to save.");
+            });
         }
 
         function SaveRole() {
             var roleName = $('#InputRoleName').val();
-            var claim = $('#AddRoleClaims').val();
-            var organisationId = $('#organisationId').val();
-            var postData = { RoleName: roleName, Claims: claim, OrganisationId: organisationId }
+            var claims = [];
+            $('input[name="selectedClaimsForNewRole"]:checked').each(function () {
+                claims.push($(this).val());
+            });
+            var postData = { RoleName: roleName, Claims: claims}
 
             $.ajax({
                 url: '@Url.Action("AddRole", "Authorize")',
@@ -308,24 +303,7 @@
                 });
         }
 
-        function DeleteRole() {
-            var e = document.getElementById("DeleteRoleSelect");
-            var roleName = e.options[e.selectedIndex].text;
-            debugger;
-            var postData = { RoleName: roleName }
-            $.ajax({
-                url: '@Url.Action("DeleteRoleSelect", "Authorize")',
-                type: "POST",
-                data: postData
-            })
-                .done(function (data) {
-                    location.reload();
-                    $('#Success').alert();
-                })
-                .fail(function (a, s, d) {
-                    alert("Unable to save.");
-                });
-        }
+
 
         // Manage Claims
 
@@ -361,37 +339,7 @@
                 });
         }
 
-        function DeleteClaim() {
-            var selectedClaimValue = $('#DeleteClaimSelect').val();
 
-            if (!selectedClaimValue) {
-                alert('Please select a claim to delete.');
-                return;
-            }
-
-            if (!confirm('Are you sure you want to delete this claim? This action cannot be undone.')) {
-                return;
-            }
-
-            $.ajax({
-                url: '/Authorize/DeleteClaim', // Update this URL if it's different
-                type: 'POST',
-                data: {
-                    claimValue: selectedClaimValue
-                },
-                success: function (response) {
-                    if (response.success) {
-                        alert('Claim deleted successfully.');
-                        location.reload(); // Reload the page to reflect the changes
-                    } else {
-                        alert('Error deleting claim: ' + response.message);
-                    }
-                },
-                error: function () {
-                    alert('An error occurred while trying to delete the claim.');
-                }
-            });
-        }
 
         // List Users By Role
 
@@ -510,6 +458,70 @@
                 }
             });
         }
+
+
+        function confirmDelete(action, itemName) {
+            var confirmDelete = confirm("Are you sure you want to delete the " + action + ": " + itemName + "?");
+            if (confirmDelete) {
+                // If confirmed, proceed with the deletion
+                if (action === 'role') {
+                    deleteRole(itemName);
+                } else if (action === 'claim') {
+                    deleteClaim(itemName);
+                }
+            }
+        }
+
+        function deleteRole(roleName) {
+            var e = document.getElementById("DeleteRoleSelect");
+            var roleName = e.options[e.selectedIndex].text;
+            debugger;
+            var postData = { RoleName: roleName }
+            $.ajax({
+                url: '@Url.Action("DeleteRoleSelect", "Authorize")',
+                type: "POST",
+                data: postData
+            })
+                .done(function (data) {
+                    location.reload();
+                    $('#Success').alert();
+                })
+                .fail(function (a, s, d) {
+                    alert("Unable to save.");
+                });
+        }
+
+        function deleteClaim(claimName) {
+            var selectedClaimValue = $('#DeleteClaimSelect').val();
+
+            if (!selectedClaimValue) {
+                alert('Please select a claim to delete.');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this claim? This action cannot be undone.')) {
+                return;
+            }
+
+            $.ajax({
+                url: '/Authorize/DeleteClaim', // Update this URL if it's different
+                type: 'POST',
+                data: {
+                    claimValue: selectedClaimValue
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert('Claim deleted successfully.');
+                        location.reload(); // Reload the page to reflect the changes
+                    } else {
+                        alert('Error deleting claim: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while trying to delete the claim.');
+                }
+            });
+        }        
 
         // Add Claim to User - Deprecated function
 

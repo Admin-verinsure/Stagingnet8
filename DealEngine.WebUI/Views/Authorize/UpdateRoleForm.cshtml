@@ -32,7 +32,7 @@
             @foreach (var claim in Model.ClaimList)
             {
                 <div class="claim-item">
-                    <input type="checkbox" id="@claim.Value" name="selectedClaims" value="@claim.Value">
+                    <input type="checkbox" id="@claim.Value" name="claimsToAdd" value="@claim.Value">
                     <label for="@claim.Value">@claim.Value</label>
                 </div>
             }

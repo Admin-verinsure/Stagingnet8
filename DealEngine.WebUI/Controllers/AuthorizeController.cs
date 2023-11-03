@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using NHibernate.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -112,19 +113,13 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddRole(string RoleName, string[] Claims, string OrganisationId)
+        public async Task<IActionResult> AddRole(string RoleName, string[] Claims)
         {
             User user = null;
             try
             {
                 user = await CurrentUser();
                 var isRole = await _roleManager.RoleExistsAsync(RoleName);
-                var organisation = user.PrimaryOrganisation;
-
-                if (OrganisationId != null)
-                {
-                    organisation = await _organisationService.GetOrganisation(Guid.Parse(OrganisationId));
-                }
 
                 if (!isRole)
                 {
@@ -136,11 +131,15 @@ namespace DealEngine.WebUI.Controllers
                     var identityresult = await _roleManager.CreateAsync(role);
                     if (identityresult.Succeeded)
                     {
-                        foreach (var cl in Claims)
+                        if (!Claims.IsNullOrEmpty())
                         {
-                            var claim = new Claim(cl, cl);
-                            await _roleManager.AddClaimAsync(role, claim);
+                            foreach (var cl in Claims)
+                            {
+                                var claim = new Claim(cl, cl);
+                                await _roleManager.AddClaimAsync(role, claim);
+                            }
                         }
+
                         return Ok();
                     }
                 }
@@ -158,10 +157,28 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteRoleSelect(string RoleName)
         {
+
             User user = null;
+
             try
             {
                 user = await CurrentUser();
+                var identityUser = await _userManager.FindByNameAsync(user.UserName);
+
+                if (identityUser != null)
+                {
+                    bool isTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
+
+                    if (!isTCUser)
+                    {
+                        return BadRequest("User not permitted to perform this action.");
+                    }
+                }
+                else
+                {
+                    return BadRequest("User is not logged in.");
+                }
+
                 var isRole = await _roleManager.RoleExistsAsync(RoleName);
                 if (isRole)
                 {
@@ -177,8 +194,10 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
         [HttpPost]
-        public async Task<IActionResult> UpdateRole(string RoleName, string[] Claims)
+        public async Task<IActionResult> UpdateRole(string RoleName, string[] ClaimsToAdd, string[] ClaimsToRemove)
         {
             User user = null;
             try
@@ -188,24 +207,34 @@ namespace DealEngine.WebUI.Controllers
                 if (isRole)
                 {
                     var role = await _roleManager.FindByNameAsync(RoleName);
-                    var claimList = await _roleManager.GetClaimsAsync(role);
+                    var currentClaims = await _roleManager.GetClaimsAsync(role);
 
-                    foreach (var claim in claimList)
+                    // Remove the claims that are in the ClaimsToRemove array
+                    foreach (var cTR in ClaimsToRemove)
                     {
-                        await _roleManager.RemoveClaimAsync(role, claim);
+                        var claim = currentClaims.FirstOrDefault(c => c.Value == cTR);
+                        if (claim != null)
+                        {
+                            await _roleManager.RemoveClaimAsync(role, claim);
+                        }
                     }
 
-                    foreach (var cl in Claims)
+                    // Add new claims from the ClaimsToAdd array
+                    foreach (var cTA in ClaimsToAdd)
                     {
-                        var template = await _claimService.GetTemplateByName(cl);
+                        var template = await _claimService.GetTemplateByName(cTA);
                         var claim = new Claim(template.Value, template.Value);
-                        await _roleManager.AddClaimAsync(role, claim);
+                        // Check if the claim already exists to avoid duplicates
+                        if (!currentClaims.Any(c => c.Value == template.Value))
+                        {
+                            await _roleManager.AddClaimAsync(role, claim);
+                        }
                     }
 
                     return Ok();
                 }
 
-                return Ok();
+                return NotFound("Role not found.");
             }
             catch (Exception ex)
             {
@@ -213,6 +242,22 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetClaimsForRole(string roleName)
+        {
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role == null)
+            {
+                return NotFound("Role not found.");
+            }
+
+            var claims = await _roleManager.GetClaimsAsync(role);
+            // Transform the claims into a suitable format for the frontend if necessary
+            return Json(claims.Select(c => c.Value));
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> SaveRoleToUser(Guid UserId, string[] RoleIds)
