@@ -1,0 +1,28 @@
+﻿@model DealEngine.WebUI.Models.Authorization.AuthorizeViewModel
+
+<form>
+    <!-- Title -->
+    <div class="form-group col-12">
+        <h3>Delete Claim</h3>
+    </div>
+
+    <!-- Role Selection -->
+    <div class="form-group col-12">
+        <label for="DeleteClaimSelect">Select Claim to Delete</label>
+        <select class="form-select" id="DeleteClaimSelect">
+            @foreach (var claim in Model.ClaimList)
+            {
+                <option value="@claim.Value">@claim.Value</option>
+            }
+        </select>
+    </div>
+
+    <div class="alert alert-warning">
+        <strong>Warning:</strong> Deleting a claim will remove it from all users and roles that currently have it allocated.
+    </div>
+
+    <!-- Delete Button -->
+    <div class="form-group col-12">
+        <button type="button" class="btn btn-danger btn-lg" onclick="DeleteRole()">Delete Claim</button>
+    </div>
+</form>

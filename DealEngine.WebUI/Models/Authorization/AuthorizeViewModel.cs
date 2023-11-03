@@ -12,6 +12,14 @@ namespace DealEngine.WebUI.Models.Authorization
         public IList<IdentityRole> RoleList { get; set; }
         public IList<User> UserList { get; set; }
         public IList<Domain.Entities.Organisation> Organisations { get; set; }
+        public Dictionary<string, List<string>> RoleClaims { get; set; }        
+        public bool IsTCUser { get; set; }
+        public bool IsProgrammeManagerCoastguard { get; set; }
+        public string SelectedUserId { get; set; }
+        public string SelectedUserFirstName { get; set; }
+        public string SelectedUserLastName { get; set; }
+        public string SelectedUserEmail { get; set; }
+        public IList<string> SelectedUserRoles { get; set; }
     }
 }
 
