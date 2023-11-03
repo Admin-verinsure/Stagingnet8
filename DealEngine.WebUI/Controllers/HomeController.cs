@@ -953,24 +953,24 @@ namespace DealEngine.WebUI.Controllers
             IList<Organisation> ownerList = new List<Organisation>();
             ProgrammeItem model = new ProgrammeItem(programme);
             DateTime tme = DateTime.Now.AddMonths(3);
-            if (clientProgramme != null)
-            {
-                if (!isClient)
-                {
-                    var isBaseClientProg = await _programmeService.IsBaseClass(clientProgramme);
-                    if (isBaseClientProg)
-                    {
-                        ownerList = await _programmeService.GetOwnerForProgramme(clientProgramme.BaseProgramme.Id);
-                    }
-                }
-            }
-          
+            //if (clientProgramme != null)
+            //{
+            //    if (!isClient)
+            //    {
+            //        //var isBaseClientProg = await _programmeService.IsBaseClass(clientProgramme);
+            //        //if (isBaseClientProg)
+            //        //{
+            //            ownerList = await _programmeService.GetOwnerForProgramme(programme.Id);
+            //       // }
+            //    }
+            //}
+            ownerList = await _programmeService.GetOwnerForProgramme(programme.RenewFromProgramme.Id);
 
             if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsProgrammeManager)
             {
                 foreach (Organisation owner in ownerList.Where(o => o.DateDeleted == null).OrderBy(o => o.Name).Distinct())
                 {
-                    ClientProgramme ownerclientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.Id);
+                    ClientProgramme ownerclientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.RenewFromProgramme.Id);
                     //if (ownerclientProgramme.ClientProgrammeExpiryDate < DateTime.Now.AddMonths(2))
                     //{
                     //    model.UpcomingDeals.Add(new OwnerItem
@@ -984,7 +984,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         OwnerId = owner.Id.ToString(),
                         OwnerName = owner.Name,
-                        ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString(),
+                        ProgrammeId = programme.Id.ToString(),
                         IsOwnerneedcloning = true
                     });
                 }
