@@ -478,7 +478,7 @@ namespace DealEngine.Services.Impl
                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[ProgrammeBoundPremiuminclGstMonthly_Total]]", ""), (PremiumTotal * (decimal)1.15 / intMonthlyInstalmentNumber).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
 
-                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumAdjustmentTotal]]", ""), (PremiumTotal - BrokerFeeTotal- agreement.ClientInformationSheet.Programme.BaseProgramme.PackageRate).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
+                mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumAdjustmentTotal]]", ""), (PremiumTotal - BrokerFeeTotal).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPackageFee]]", ""), (agreement.ClientInformationSheet.Programme.BaseProgramme.PackageRate).ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
 
                 mergeFields.Add(new KeyValuePair<string, string>(string.Format("[[BoundPremiumFeeTotal]]", ""), BrokerFeeTotal.ToString("C2", CultureInfo.CreateSpecificCulture("en-NZ"))));
