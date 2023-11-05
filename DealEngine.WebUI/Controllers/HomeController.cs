@@ -964,7 +964,9 @@ namespace DealEngine.WebUI.Controllers
             //       // }
             //    }
             //}
-            ownerList = await _programmeService.GetOwnerForProgramme(programme.RenewFromProgramme.Id);
+         //   ownerList = await _programmeService.GetOwnerForProgramme(programme.RenewFromProgramme.Id);
+            ownerList = await _programmeService.GetOwnerForProgramme(programme.Id);
+
 
             if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsProgrammeManager)
             {
