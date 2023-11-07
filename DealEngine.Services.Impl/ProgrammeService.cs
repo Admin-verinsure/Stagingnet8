@@ -136,6 +136,7 @@ namespace DealEngine.Services.Impl
                 return null;
             foreach (var client in programme.ClientProgrammes)
             {
+                //clientList.Add(client);
                 var isBaseClass = await IsBaseClass(client);
                 if (isBaseClass)
                 {
@@ -1455,26 +1456,23 @@ namespace DealEngine.Services.Impl
 
             if (programme == null)
                 return null;
-            foreach (var client in programme.ClientProgrammes.Where(c => c.DateDeleted == null).OrderBy(c=>c.Owner.Name))
+
+            HashSet<string> uniqueOwnerIds = new HashSet<string>();
+
+            foreach (var client in programme.ClientProgrammes
+                .Concat(programme.RenewFromProgramme?.ClientProgrammes ?? Enumerable.Empty<ClientProgramme>())
+                .Where(c => c.DateDeleted == null)
+                .OrderBy(c => c.Owner.Name))
             {
-                if (!owners.ContainsKey(client.Owner.Id.ToString()))
+                string ownerId = client.Owner.Id.ToString();
+
+                if (!uniqueOwnerIds.Contains(ownerId))
                 {
                     ownerList.Add(client.Owner);
-                    owners.Add(client.Owner.Id.ToString(), client.Owner);
+                    uniqueOwnerIds.Add(ownerId);
                 }
             }
 
-            if (programme.RenewFromProgramme.Id != null)
-            {
-                foreach (var client in programme.RenewFromProgramme.ClientProgrammes.Where(c => c.DateDeleted == null).OrderBy(c => c.Owner.Name))
-                {
-                    if (!owners.ContainsKey(client.Owner.Id.ToString()))
-                    {
-                        ownerList.Add(client.Owner);
-                        owners.Add(client.Owner.Id.ToString(), client.Owner);
-                    }
-                }
-            }
 
             return ownerList;
         }

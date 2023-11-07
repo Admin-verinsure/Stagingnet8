@@ -947,67 +947,63 @@ namespace DealEngine.WebUI.Controllers
             //Redirect / Home/ViewClientProgramme?ownerid=@item.OwnerId&programmeid=@item.ProgrammeId";
         }
 
-        private async Task<ProgrammeItem> GetBrokerRenewedDashboard (User user, IList<ClientProgramme> clientList, Programme programme, bool isClient = false)
+        private async Task<ProgrammeItem> GetBrokerRenewedDashboard (User user, ClientProgramme clientProgramme, Programme programme, bool isClient = false)
         {
-            var clientProgramme = clientList.FirstOrDefault();
             IList<Organisation> ownerList = new List<Organisation>();
             ProgrammeItem model = new ProgrammeItem(programme);
             DateTime tme = DateTime.Now.AddMonths(3);
-            //if (clientProgramme != null)
-            //{
-            //    if (!isClient)
-            //    {
-            //        //var isBaseClientProg = await _programmeService.IsBaseClass(clientProgramme);
-            //        //if (isBaseClientProg)
-            //        //{
-            //            ownerList = await _programmeService.GetOwnerForProgramme(programme.Id);
-            //       // }
-            //    }
-            //}
-         //   ownerList = await _programmeService.GetOwnerForProgramme(programme.RenewFromProgramme.Id);
-            ownerList = await _programmeService.GetOwnerForProgramme(programme.Id);
+            if (clientProgramme != null)
+            {
+                if (!isClient)
+                {
+                    var isBaseClientProg = await _programmeService.IsBaseClass(clientProgramme);
+                    if (isBaseClientProg)
+                    {
+                        ownerList = await _programmeService.GetOwnerForProgramme(programme.Id);
+                    }
+                }
+            }
+            //  ownerList = await _programmeService.GetOwnerForProgramme(programme.Id);
 
 
             if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsProgrammeManager)
             {
-                foreach (Organisation owner in ownerList.Where(o => o.DateDeleted == null).OrderBy(o => o.Name).Distinct())
+                var distinctOwners = ownerList.Where(o => o.DateDeleted == null)
+                                               .OrderBy(o => o.Name)
+                                               .Distinct();
+
+                foreach (Organisation owner in distinctOwners)
                 {
-                    ClientProgramme ownerclientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.RenewFromProgramme.Id);
-                    //if (ownerclientProgramme.ClientProgrammeExpiryDate < DateTime.Now.AddMonths(2))
-                    //{
-                    //    model.UpcomingDeals.Add(new OwnerItem
-                    //    {
-                    //        OwnerId = owner.Id.ToString(),
-                    //        OwnerName = owner.Name,
-                    //        ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
-                    //    });
-                    //}
+                    ClientProgramme ownerClientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.RenewFromProgramme.Id);
+
                     model.OwnerDeals.Add(new OwnerItem
                     {
                         OwnerId = owner.Id.ToString(),
                         OwnerName = owner.Name,
-                        ProgrammeId = programme.Id.ToString(),
-                        IsOwnerneedcloning = true
+                        ProgrammeId = programme.Id.ToString()
+                        //IsOwnerNeedCloning = true
                     });
                 }
             }
             else
             {
-                foreach (var clientorg in user.Organisations)
+                var clientOrgIds = user.Organisations.Select(clientorg => clientorg.Id);
+
+                foreach (var clientId in clientOrgIds)
                 {
-                    var clientProgList = await _programmeService.GetClientProgrammesByOwnerByProgramme(clientorg.Id, programme.Id);
+                    var clientProgList = await _programmeService.GetClientProgrammesByOwnerByProgramme(clientId, programme.Id);
                     if (clientProgList.Any())
                     {
                         model.OwnerDeals.Add(new OwnerItem
                         {
-                            OwnerId = clientorg.Id.ToString(),
-                            OwnerName = clientorg.Name,
+                            OwnerId = clientId.ToString(),
+                            OwnerName = user.Organisations.First(org => org.Id == clientId).Name,
                             ProgrammeId = clientProgramme.BaseProgramme.Id.ToString()
                         });
                     }
                 }
-
             }
+
 
             model.CurrentUserIsClient = "True";
             if (user.PrimaryOrganisation.IsBroker)
@@ -1490,7 +1486,7 @@ namespace DealEngine.WebUI.Controllers
               
                 if (programme.IsClientTaskDisabled && !programme.IsProgrammerenewed)
                 {
-                    model = await GetBrokerRenewedDashboard(user, clientList, programme);
+                    model = await GetBrokerRenewedDashboard(user, clientList.FirstOrDefault(), programme);
                 }else
                 if (programme.ProgMultBrokerMode)
                 {

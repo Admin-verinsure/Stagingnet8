@@ -4517,6 +4517,7 @@ namespace DealEngine.WebUI.Controllers
 
 
 
+
         [HttpPost]
         public async Task<IActionResult> GenerateEGlobal(IFormCollection collection)
         {
@@ -4740,7 +4741,6 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
-
 
 
         [HttpGet]
