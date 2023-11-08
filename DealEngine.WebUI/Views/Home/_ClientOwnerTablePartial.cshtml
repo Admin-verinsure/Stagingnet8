@@ -78,7 +78,11 @@
             <tr>
                 <td>@item.OwnerName </td>
                 <td>
-                        @if (!item.IsOwnerneedcloning)
+                        <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
+                            <a class="btn btn-primary btn-sm" href="/Home/ClientProgrammeCloning?ownerid=@item.OwnerId&programmeid=@item.ProgrammeId"><i class="fa fa-search"></i> View</a>
+                        </div>
+
+                      @*  @if (!item.IsOwnerneedcloning)
                         {
                             <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
                                 <a class="btn btn-primary btn-sm" href="/Home/ViewClientProgramme?ownerid=@item.OwnerId&programmeid=@item.ProgrammeId"><i class="fa fa-search"></i> View</a>
@@ -87,9 +91,9 @@
                         else
                         {
                             <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
-                                <a class="btn btn-primary btn-sm" href="/Home/ClientProgrammeCloning?ownerid=@item.OwnerId"><i class="fa fa-search"></i> View</a>
+                                <a class="btn btn-primary btn-sm" href="/Home/ClientProgrammeCloning?ownerid=@item.OwnerId&programmeid=@item.ProgrammeId"><i class="fa fa-search"></i> View</a>
                             </div>
-                        }
+                        }*@
 
                 </td>
             </tr>

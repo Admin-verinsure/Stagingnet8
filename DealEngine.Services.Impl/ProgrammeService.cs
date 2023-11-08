@@ -136,6 +136,7 @@ namespace DealEngine.Services.Impl
                 return null;
             foreach (var client in programme.ClientProgrammes)
             {
+                //clientList.Add(client);
                 var isBaseClass = await IsBaseClass(client);
                 if (isBaseClass)
                 {
@@ -312,6 +313,11 @@ namespace DealEngine.Services.Impl
         public async Task<ClientProgramme> GetClientProgrammebyOwnerName(String ProgName , String OwnerName)
         {
             return await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(c => c.Owner.Name == OwnerName && c.BaseProgramme.Name == ProgName);
+
+        }
+        public async Task<ClientProgramme> GetClientProgrammebyOwnerId(Guid  ProgID, Guid  OwnerId)
+        {
+            return await _clientProgrammeRepository.FindAll().FirstOrDefaultAsync(c => c.Owner.Id == OwnerId && c.BaseProgramme.Id == ProgID);
 
         }
 
@@ -1450,14 +1456,23 @@ namespace DealEngine.Services.Impl
 
             if (programme == null)
                 return null;
-            foreach (var client in programme.ClientProgrammes.Where(c => c.DateDeleted == null).OrderBy(c=>c.Owner.Name))
+
+            HashSet<string> uniqueOwnerIds = new HashSet<string>();
+
+            foreach (var client in programme.ClientProgrammes
+                .Concat(programme.RenewFromProgramme?.ClientProgrammes ?? Enumerable.Empty<ClientProgramme>())
+                .Where(c => c.DateDeleted == null)
+                .OrderBy(c => c.Owner.Name))
             {
-                if (!owners.ContainsKey(client.Owner.Id.ToString()))
+                string ownerId = client.Owner.Id.ToString();
+
+                if (!uniqueOwnerIds.Contains(ownerId))
                 {
                     ownerList.Add(client.Owner);
-                    owners.Add(client.Owner.Id.ToString(), client.Owner);
+                    uniqueOwnerIds.Add(ownerId);
                 }
             }
+
 
             return ownerList;
         }

@@ -4516,6 +4516,8 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
+
+
         [HttpPost]
         public async Task<IActionResult> GenerateEGlobal(IFormCollection collection)
         {
@@ -4550,14 +4552,15 @@ namespace DealEngine.WebUI.Controllers
                     //send out notification email
                     await _emailService.SendSystemEmailClientNumberNotify(user, programme.BaseProgramme, programme.InformationSheet, programme.InformationSheet.Owner);
 
-                } else
+                }
+                else
                 {
                     var xmlPayload = eGlobalSerializer.SerializePolicy(programme, user, _unitOfWork, transactionreferenceid, paymentType, false, false, null);
 
                     var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
 
                     //used for eglobal request and response log
-                   await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
+                    await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
 
                     EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
 

@@ -606,21 +606,24 @@ namespace DealEngine.WebUI.Controllers
                 if (model.DocumentId != Guid.Empty)
                 {
                     document = await _documentRepository.GetByIdAsync(model.DocumentId);
-                    if (document != null)
+                    if (document == null)
                     {
-                        document.DateDeleted = DateTime.Now;
-                        await _documentRepository.AddAsync(document);
+                        //document.DateDeleted = DateTime.Now;
+                        //await _documentRepository.AddAsync(document);
+                    
+                        document = new SystemDocument(user, model.Name, MediaTypeNames.Text.Html, model.DocumentType);
+                       
                     }
+                    document.Description = model.Description;
+                    document.Contents = _fileService.ToBytes(System.Net.WebUtility.HtmlDecode(model.Content));
+                    document.OwnerOrganisation = user.PrimaryOrganisation;
+                    document.IsTemplate = true;
+                    document.RenderToPDF = model.RenderToPDF;
+                    await _documentRepository.AddAsync(document);
 
                 }
 
-                document = new SystemDocument(user, model.Name, MediaTypeNames.Text.Html, model.DocumentType);
-                document.Description = model.Description;
-                document.Contents = _fileService.ToBytes(System.Net.WebUtility.HtmlDecode(model.Content));
-                document.OwnerOrganisation = user.PrimaryOrganisation;
-                document.IsTemplate = true;
-                document.RenderToPDF = model.RenderToPDF;
-                await _documentRepository.AddAsync(document);
+               
                 //if (model.ProductId != null)
                 //{
                 //    product = await _productRepository.GetByIdAsync(Guid.Parse(model.ProductId));
