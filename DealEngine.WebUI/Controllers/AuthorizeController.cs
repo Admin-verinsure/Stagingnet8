@@ -203,6 +203,27 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
+
+                // If they want to change TCUser
+                if (RoleName == "TCUser")
+                {
+                    var identityUser = await _userManager.FindByNameAsync(user.UserName);
+
+                    if (identityUser != null)
+                    {
+                        bool isTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
+
+                        if (!isTCUser)
+                        {
+                            return BadRequest("User not permitted to perform this action.");
+                        }
+                    }
+                    else
+                    {
+                        return BadRequest("User is not logged in.");
+                    }
+                }
+
                 var isRole = await _roleManager.RoleExistsAsync(RoleName);
                 if (isRole)
                 {
@@ -374,6 +395,35 @@ namespace DealEngine.WebUI.Controllers
                 return NoContent();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddClaim(string claimType, string claimValue)
+        {
+            try
+            {
+                // Check if the claim already exists
+                var existingClaim = await _claimService.GetTemplateByName(claimValue);
+                if (existingClaim != null)
+                {
+                    return Json(new { success = false, message = "A claim with this value already exists." });
+                }
+
+                // Create a new claim instance
+                var claim = new Domain.Entities.Claim(claimType, claimValue);
+
+                // Add the claim using the ClaimService
+                await _claimService.AddClaim(claim);
+
+                // Return a success response
+                return Json(new { success = true, message = "Claim created successfully!" });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                return Json(new { success = false, message = "Error creating the claim." });
+            }
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> GetUsersByRole(string roleName)
         {
@@ -401,33 +451,6 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<IActionResult> CreateClaim(string claimType, string claimValue)
-        {
-            try
-            {
-                // Check if the claim already exists
-                var existingClaim = await _claimService.GetTemplateByName(claimValue);
-                if (existingClaim != null)
-                {
-                    return Json(new { success = false, message = "A claim with this value already exists." });
-                }
-
-                // Create a new claim instance
-                var claim = new Domain.Entities.Claim(claimType, claimValue);
-
-                // Add the claim using the ClaimService
-                await _claimService.AddClaim(claim);
-
-                // Return a success response
-                return Json(new { success = true, message = "Claim created successfully!" });
-            }
-            catch (Exception ex)
-            {
-                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
-                return Json(new { success = false, message = "Error creating the claim." });
-            }
-        }
 
 
 
