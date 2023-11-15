@@ -974,7 +974,7 @@ namespace DealEngine.WebUI.Controllers
 
                 foreach (Organisation owner in distinctOwners)
                 {
-                    ClientProgramme ownerClientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.RenewFromProgramme.Id);
+                   // ClientProgramme ownerClientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.RenewFromProgramme.Id);
 
                     model.OwnerDeals.Add(new OwnerItem
                     {
