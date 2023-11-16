@@ -230,7 +230,7 @@
             claimsList.empty(); // Clear the list
 
             claims.forEach(function (claim) {
-                var checkboxItem = $('<div class="claim-item" style="width: 50%;"><input type="checkbox" id="CurrentRoleClaim_' + claim + '" name="currentRoleClaims" value="' + claim + '"><label for="CurrentRoleClaim_' + claim + '">' + claim + '</label></div>');
+                var checkboxItem = $('<div class="claim-item" style="width: 50%;"><input type="checkbox" id="CurrentRoleClaim_' + claim + '" name="claimsToRemove" value="' + claim + '"><label for="CurrentRoleClaim_' + claim + '">' + claim + '</label></div>');
 
                 claimsList.append(checkboxItem);
             });
@@ -245,7 +245,7 @@
             claimsContainerBox.empty();
 
             availableClaims.forEach(function (claim) {
-                var checkboxItem = $('<div class="claim-item"><input type="checkbox" id="' + claim + '" name="selectedClaims" value="' + claim + '"><label for="' + claim + '">' + claim + '</label></div>');
+                var checkboxItem = $('<div class="claim-item"><input type="checkbox" id="' + claim + '" name="claimsToAdd" value="' + claim + '"><label for="' + claim + '">' + claim + '</label></div>');
                 claimsContainerBox.append(checkboxItem);
             });
         }
@@ -308,6 +308,8 @@
         // Manage Claims
 
         function SaveClaim() {
+            debugger;
+
             var claimName = $('#newClaimName').val();
 
             // Check if the claimName is not empty
@@ -322,7 +324,7 @@
             };
 
             $.ajax({
-                url: '@Url.Action("CreateClaim", "Authorize")',
+                url: '@Url.Action("AddClaim", "Authorize")',
                 type: "POST",
                 data: postData
             })
