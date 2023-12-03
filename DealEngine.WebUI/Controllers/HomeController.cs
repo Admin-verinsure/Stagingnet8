@@ -849,8 +849,17 @@ namespace DealEngine.WebUI.Controllers
             IList<Organisation> ownerList = new List<Organisation>();
             Organisation owner = await _organisationService.GetOrganisation(ownerid);
             Programme programme = await _programmeService.GetProgrammeById(programmeid);
+            ClientProgramme client = null;
+            if (programme.RenewFromProgramme != null)
+            {
+                 client = await _programmeService.GetClientProgrammebyOwnerId(programme.RenewFromProgramme.Id, ownerid);
 
-            ClientProgramme client = await _programmeService.GetClientProgrammebyOwnerId(programme.RenewFromProgramme.Id, ownerid);
+            }
+            else
+            {
+                 client = await _programmeService.GetClientProgrammebyOwnerId(programme.Id, ownerid);
+
+            }
 
             ProgrammeItem model = new ProgrammeItem(programme);
             DateTime tme = DateTime.Now.AddMonths(3);
@@ -974,7 +983,7 @@ namespace DealEngine.WebUI.Controllers
 
                 foreach (Organisation owner in distinctOwners)
                 {
-                    ClientProgramme ownerClientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.RenewFromProgramme.Id);
+                   // ClientProgramme ownerClientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.RenewFromProgramme.Id);
 
                     model.OwnerDeals.Add(new OwnerItem
                     {
