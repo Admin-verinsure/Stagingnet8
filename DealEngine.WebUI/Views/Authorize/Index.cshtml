@@ -94,6 +94,52 @@
                     </div>
 
                 </div>
+                <div class="card">
+                    <div class="card-header" id="headingManageUsers">
+                        <h2 class="mb-0 accordion-header">
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseManageUsers" aria-expanded="false" aria-controls="collapseManageUsers">
+                                Manage Users
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseManageUsers" class="accordion-collapse collapse" aria-labelledby="headingManageUsers" data-bs-parent="#accordionExample">
+                        <div class="card-body">
+                            <ul class="nav nav-tabs" id="userTabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="create-user-tab" data-bs-toggle="tab" href="#createUser" role="tab" aria-controls="createUser" aria-selected="true">Create User</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="edit-user-tab" data-bs-toggle="tab" href="#editUser" role="tab" aria-controls="editUser" aria-selected="false">Edit User</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="delete-user-tab" data-bs-toggle="tab" href="#deleteUser" role="tab" aria-controls="deleteUser" aria-selected="false">Delete User</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="userTabsContent">
+                                <div class="tab-pane fade show active" id="createUser" role="tabpanel" aria-labelledby="create-user-tab">
+                                    <!-- Create User Form -->
+                                    <div class="container" id="CreateUserForm">
+                                        @await Html.PartialAsync("AddUserForm", Model)
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="editUser" role="tabpanel" aria-labelledby="edit-user-tab">
+                                    <!-- Edit User Form -->
+                                    <div class="container" id="EditUserForm">
+@*                                         @await Html.PartialAsync("AddUserForm", Model)
+ *@                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="deleteUser" role="tabpanel" aria-labelledby="delete-user-tab">
+                                    <!-- Delete User Form -->
+                                    <div class="container" id="DeleteUserForm">
+@*                                         @await Html.PartialAsync("AddUserForm", Model)
+ *@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card">
                     <div class="card-header">
@@ -303,8 +349,6 @@
                 });
         }
 
-
-
         // Manage Claims
 
         function SaveClaim() {
@@ -340,8 +384,6 @@
                     alert("Unable to save.");
                 });
         }
-
-
 
         // List Users By Role
 
@@ -461,7 +503,6 @@
             });
         }
 
-
         function confirmDelete(action, itemName) {
             var confirmDelete = confirm("Are you sure you want to delete the " + action + ": " + itemName + "?");
             if (confirmDelete) {
@@ -523,7 +564,71 @@
                     alert('An error occurred while trying to delete the claim.');
                 }
             });
-        }        
+        }
+
+        // Manage Users
+        
+        // Add User
+
+        function toggleBrokerFields() {
+            var clientOrBroker = document.getElementById('ClientOrBroker').value;
+            var brokerFields = document.getElementById('brokerFields');
+            if (clientOrBroker === 'Broker') {
+                brokerFields.style.display = 'block';
+                document.getElementById('SalespersonUsername').setAttribute('required', '');
+                document.getElementById('EmployeeNumber').setAttribute('required', '');
+            } else {
+                brokerFields.style.display = 'none';
+                document.getElementById('SalespersonUsername').removeAttribute('required');
+                document.getElementById('EmployeeNumber').removeAttribute('required');
+            }
+        }
+
+        function SaveUser() {
+            var firstName = $('#InputFirstName').val();
+            var lastName = $('#InputLastName').val();
+            var email = $('#InputEmail').val();
+            var homePhone = $('#InputHomePhone').val();
+            var mobilePhone = $('#InputMobilePhone').val();
+            var clientOrBroker = $('#ClientOrBroker').val();
+            var oktaUID = $('#OktaUID').val();
+            var salespersonUsername = $('#SalespersonUsername').val();
+            var employeeNumber = $('#EmployeeNumber').val();
+
+            // Generate username
+            var randomNum = Math.floor(Math.random() * 1000);
+            var username = firstName.replace(/\s+/g, '') + '_' + lastName.replace(/\s+/g, '') + randomNum;
+
+            var postData = {
+                Username: username,
+                FirstName: firstName,
+                LastName: lastName,
+                Email: email,
+                HomePhone: homePhone,
+                MobilePhone: mobilePhone,
+                ClientOrBroker: clientOrBroker,
+                OktaUID: oktaUID,
+                SalespersonUsername: salespersonUsername,
+                EmployeeNumber: employeeNumber
+            };
+
+            $.ajax({
+                url: '@Url.Action("CreateUser", "Authorize")', // Adjust URL as needed
+                type: "POST",
+                data: postData
+            })
+                .done(function (data) {
+                    // Handle success
+                    alert("User added successfully!");
+                    location.reload();
+                })
+                .fail(function (a, s, d) {
+                    // Handle error
+                    alert("Unable to save.");
+                });
+        }
+
+        //
 
         // Add Claim to User - Deprecated function
 

@@ -1,0 +1,58 @@
+﻿@model DealEngine.WebUI.Models.Authorization.AuthorizeViewModel
+
+<form id="addUserForm">
+    <div class="form-group col-12">
+        <h3>Add New User</h3>
+    </div>
+
+    <div class="form-group col-12">
+        <label for="InputFirstName">First Name</label>
+        <input type="text" class="form-control" id="InputFirstName" placeholder="Enter first name">
+    </div>
+
+    <div class="form-group col-12">
+        <label for="InputLastName">Last Name</label>
+        <input type="text" class="form-control" id="InputLastName" placeholder="Enter last name">
+    </div>
+
+    <div class="form-group col-12">
+        <label for="InputEmail">Email</label>
+        <input type="email" class="form-control" id="InputEmail" placeholder="Enter email">
+    </div>
+
+    <div class="form-group col-12">
+        <label for="InputHomePhone">Home Phone</label>
+        <input type="tel" class="form-control" id="InputHomePhone" placeholder="Enter home phone">
+    </div>
+
+    <div class="form-group col-12">
+        <label for="InputMobilePhone">Mobile Phone</label>
+        <input type="tel" class="form-control" id="InputMobilePhone" placeholder="Enter mobile phone">
+    </div>
+
+    <div class="form-group col-12">
+        <label for="ClientOrBroker">Client or Broker?</label>
+        <select class="form-control" id="ClientOrBroker" required onchange="toggleBrokerFields()">
+            <option value="">Select...</option>
+            <option value="Client">Client</option>
+            <option value="Broker">Broker</option>
+        </select>
+    </div>
+
+    <div class="form-group col-12">
+        <label for="OktaUID">Okta UID</label>
+        <input type="text" class="form-control" id="OktaUID" placeholder="Enter Okta UID (e.g 00uixa271s6x7qt8I0h7)">
+    </div>
+
+    <div class="form-group col-12" id="brokerFields" style="display: none;">
+        <label for="SalespersonUsername">Salesperson Username (EGlobal ID)</label>
+        <input type="text" class="form-control" id="SalespersonUsername" placeholder="Enter Salesperson Username (e.g u1310555)">
+
+        <label for="EmployeeNumber">Employee Number</label>
+        <input type="text" class="form-control" id="EmployeeNumber" placeholder="Enter Employee Number">
+    </div>
+
+    <div class="form-group col-12 p-2">
+        <button type="button" class="btn btn-primary btn-lg" onclick="SaveUser()">Add User</button>
+    </div>
+</form>

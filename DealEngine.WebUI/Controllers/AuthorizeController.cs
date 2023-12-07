@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using NHibernate.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using DealEngine.WebUI.Models;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -574,6 +575,25 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
+        {
+            //// Implement user creation logic
+            //// Validate data, create user, handle errors, etc.
+
+            //User user = new User(null, Guid.NewGuid(), model.Username);
+            //user.FirstName = model.FirstName;
+            //user.LastName = model.LastName;
+            //user.FullName = model.FirstName + " " + model.LastName;
+            //user.Email = model.Email;
+            //user.Phone = model.HomePhone;
+            //user.MobilePhone = model.MobilePhone;
+            //user.Password = ""; // Set password as needed
+
+            //// Save user to database or perform other actions
+
+            return Ok(); // Or appropriate response
+        }
 
     }
 }
