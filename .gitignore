@@ -25,3 +25,4 @@ sqlite3
 /DealEngine.WebUI/appsettings.json
 /DealEngine.WebUI/wwwroot/Image/*
 !/DealEngine.WebUI/wwwroot/Image/.gitkeep
+/.vs
