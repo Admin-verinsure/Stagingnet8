@@ -876,8 +876,28 @@ namespace DealEngine.WebUI.Models
                     },
                 new SelectListItem
                     {
-                        Text = "Other",
+                        Text = "Other type of Club entity",
                         Value = "Other"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Club Trust – non-trading",
+                        Value = "ClubTrustnontrading"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Club Trust – trading",
+                        Value = "ClubTrusttrading"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Rotary Company",
+                        Value = "RotaryCompany"
+                    },
+                new SelectListItem
+                    {
+                        Text = "Rotary Int Entity",
+                        Value = "RotaryIntEntity"
                     }
             };
             return _Types;
