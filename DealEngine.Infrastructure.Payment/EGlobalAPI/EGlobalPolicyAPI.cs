@@ -1224,7 +1224,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             EBixPolicy.IncomeClass = EGlobalPolicy.IncomeClass;
 
             EBixPolicy.Department = EbixDepartment;
-            EBixPolicy.RiskCode = EGlobalPolicy.Package.RiskCode;
+            EBixPolicy.RiskCode = EGlobalPolicy.Package.RiskCode; 
             EBixPolicy.UserIDServ = EbixUser;
             EBixPolicy.CreatedByUser = EbixUser;
             EBixPolicy.StatementDescription = EGlobalPolicy.GetDescription2;    // Invoice description

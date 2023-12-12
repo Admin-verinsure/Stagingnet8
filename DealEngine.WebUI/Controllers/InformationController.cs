@@ -1768,7 +1768,7 @@ namespace DealEngine.WebUI.Controllers
                 if (CloneProgramme.BaseProgramme.ProgEnableEmail)
                 {
                     //send out information sheet update notification email
-                    await _emailService.SendSystemEmailUISUpdateNotify(createdBy, CloneProgramme.BaseProgramme, CloneProgramme.InformationSheet, CloneProgramme.InformationSheet.Owner);
+                   await _emailService.SendSystemEmailUISUpdateNotify(createdBy, CloneProgramme.BaseProgramme, CloneProgramme.InformationSheet, CloneProgramme.InformationSheet.Owner);
                 }
 
                 return (RedirectToAction("EditInformation", new { id = CloneProgramme.Id, updateType = updateType }));
@@ -2346,6 +2346,7 @@ namespace DealEngine.WebUI.Controllers
                             Path = path,
                             ClientInformationSheet = clientProgramme.InformationSheet,
                             OwnerOrganisationName = model.DocumentOrganisation,
+                            DocEffectiveDate = model.DocEffectiveDate,
                             Extension = extension
                         };
 

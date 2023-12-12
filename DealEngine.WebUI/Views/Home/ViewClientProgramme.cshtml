@@ -40,6 +40,7 @@
 
                 </div>
                 <div class="modal-body">
+                  
                     <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="DealId" name="DealId" placeholder="Vessel Name" value="" required>
 
                     <table class="table table-striped">
@@ -220,7 +221,7 @@
             debugger;
 
             $('.modal').css({ "width": "50%", "margin-left": "25%" });
-            var dealId = $(e.relatedTarget).data('data-dealitem-id');
+            var dealId = $(e.relatedTarget).data('dealitem-id');
             console.log("dealId=" + dealId)
             $(e.currentTarget).find('input[name="DealId"]').val(dealId);
             $(e.currentTarget).find('input[name="ProgrammeId"]').val("@Model.Programme.Id");
@@ -228,7 +229,7 @@
 
         $('#myUnlockModal').on('show.bs.modal', function (e) {
             $('.modal').css({ "width": "40%", "margin-left": "30%" });
-            var dealId = $(e.relatedTarget).data('data-dealitem-id');
+            var dealId = $(e.relatedTarget).data('dealitem-id');
             $(e.currentTarget).find('input[id="UnlockId"]').val(dealId);
         });
 

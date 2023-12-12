@@ -11,353 +11,352 @@
        data-toggle="table"
        data-show-columns-search="true"
        data-show-columns-toggle-all="true"
-       data-visible-search="true"
-       >
-    
+       data-visible-search="true">
 
-        <thead>
+
+    <thead>
+        <tr>
+            <th data-field="name" data-sortable="true">Client Name</th>
+            <th data-field="status" data-sortable="true">Status</th>
+            <th data-sortable="false"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Deals)
+        {
             <tr>
-                <th data-field="name" data-sortable="true">Client Name</th>
-                <th data-field="status" data-sortable="true">Status</th>
-                <th data-sortable="false"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Deals)
-            {
-                <tr>
-                    @if (item.SubClientProgrammes.Count > 0)
-                    {
-                        <td>
-                            <div class="accordion" id="subsystemAccodion">
-                                <div class="card">
-                                    <div class="card-header" id="heading_@item.Id">
-                                        <h5 class="mb-0">
-                                            @if (item.IsChange)
-                                            {
-                                                @(item.Name + "  (Reference: " + item.ReferenceId + ") Change ")
-                                            }
-                                            else
-                                            {
-                                                @(item.Name + "  (Reference: " + item.ReferenceId + ") ")
-                                            }
+                @if (item.SubClientProgrammes.Count > 0)
+                {
+                    <td>
+                        <div class="accordion" id="subsystemAccodion">
+                            <div class="card">
+                                <div class="card-header" id="heading_@item.Id">
+                                    <h5 class="mb-0">
+                                        @if (item.IsChange)
+                                        {
+                                            @(item.Name + "  (Reference: " + item.ReferenceId + ") Change ")
+                                        }
+                                        else
+                                        {
+                                            @(item.Name + "  (Reference: " + item.ReferenceId + ") ")
+                                        }
 
-                                        </h5>
-                                    </div>
+                                    </h5>
                                 </div>
-                                <div class="card">
-                                    <div class="card-header" id="heading_@item.SubClientProgrammes.FirstOrDefault().Id">
-                                        <h2 class="mb-0">
-                                            <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@item.SubClientProgrammes.FirstOrDefault().Id" aria-expanded="false" aria-controls="collapse_@item.SubClientProgrammes.FirstOrDefault().Id">
-                                                Subclients
-                                            </button>
-                                        </h2>
-                                    </div>
-                                    <div id="collapse_@item.SubClientProgrammes.FirstOrDefault().Id" class="collapse" aria-labelledby="heading_@item.SubClientProgrammes.FirstOrDefault().Id" data-parent="#subsystemAccodion">
-                                        <div class="card-body">
-                                            <table class="table table-striped">
-                                                <thead class="thead-light">
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="heading_@item.SubClientProgrammes.FirstOrDefault().Id">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_@item.SubClientProgrammes.FirstOrDefault().Id" aria-expanded="false" aria-controls="collapse_@item.SubClientProgrammes.FirstOrDefault().Id">
+                                            Subclients
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="collapse_@item.SubClientProgrammes.FirstOrDefault().Id" class="collapse" aria-labelledby="heading_@item.SubClientProgrammes.FirstOrDefault().Id" data-parent="#subsystemAccodion">
+                                    <div class="card-body">
+                                        <table class="table table-striped">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>
+                                                        Client
+                                                    </th>
+                                                    <th>
+                                                        Status
+                                                    </th>
+                                                    <th>
+                                                        View
+                                                    </th>
+                                                    <th>
+                                                        <a class="btn btn-primary btn-xs" href="~/Home/ViewSubClientProgrammes?clientProgrammeId=@item.Id">View all</a>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var client in item.SubClientProgrammes)
+                                                {
                                                     <tr>
-                                                        <th>
-                                                            Client
-                                                        </th>
-                                                        <th>
-                                                            Status
-                                                        </th>
-                                                        <th>
-                                                            View
-                                                        </th>
-                                                        <th>
-                                                            <a class="btn btn-primary btn-xs" href="~/Home/ViewSubClientProgrammes?clientProgrammeId=@item.Id">View all</a>
-                                                        </th>
+                                                        <td>
+                                                            @client.Owner.Name
+                                                        </td>
+                                                        <td>
+                                                            @client.InformationSheet.Status
+                                                        </td>
+                                                        <td>
+                                                            <a class="btn btn-primary btn-xs" href="~/Home/ViewSubClientProgramme?subClientProgrammeId=@client.Id">View</a>
+                                                        </td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach (var client in item.SubClientProgrammes)
-                                                    {
-                                                        <tr>
-                                                            <td>
-                                                                @client.Owner.Name
-                                                            </td>
-                                                            <td>
-                                                                @client.InformationSheet.Status
-                                                            </td>
-                                                            <td>
-                                                                <a class="btn btn-primary btn-xs" href="~/Home/ViewSubClientProgramme?subClientProgrammeId=@client.Id">View</a>
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                }
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
-                        </td>
+                        </div>
+                    </td>
+                }
+                else
+                {
+                    @if (item.IsChange)
+                    {
+                        <td>@(item.Name + "  (Reference: " + item.ReferenceId + ") Change") </td>
                     }
                     else
                     {
-                        @if (item.IsChange)
-                        {
-                            <td>@(item.Name + "  (Reference: " + item.ReferenceId + ") Change") </td>
-                        }
-                        else
-                        {
-                            <td>@(item.Name + "  (Reference: " + item.ReferenceId + ") ") </td>
-                        }
-
+                        <td>@(item.Name + "  (Reference: " + item.ReferenceId + ") ") </td>
                     }
 
-                    <td>@(item.Status + "  (" + item.GetStatusDisplay(item.AgreementStatus)+ item.DocSendDate + ") " )</td>
-                    <td>
-                        <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
+                }
 
-                            @if (Model.CurrentUserIsProgrammeManager == "True") //Permissions for programme manager (view only)
+                <td>@(item.Status + "  (" + item.GetStatusDisplay(item.AgreementStatus) + item.DocSendDate + ") ")</td>
+                <td>
+                    <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
+
+                        @if (Model.CurrentUserIsProgrammeManager == "True") //Permissions for programme manager (view only)
+                        {
+                            if (item.Status.StartsWith("Bound"))
                             {
-                                if (item.Status.StartsWith("Bound"))
+                                <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-search"></i> View</a>
+                                <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
+                            }
+                            else if (item.Status.StartsWith("Submitted"))
+                            {
+                                if (item.SubClientProgrammes.Count > 0)
                                 {
-                                    <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-search"></i> View</a>
-                                    <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
-                                }
-                                else if (item.Status.StartsWith("Submitted"))
-                                {
-                                    if (item.SubClientProgrammes.Count > 0)
-                                    {
-                                        if (item.IsSubclientSubmitted)
-                                        {
-                                            <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
-                                        }
-                                    }
-                                    else
+                                    if (item.IsSubclientSubmitted)
                                     {
                                         <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
                                     }
+                                }
+                                else
+                                {
+                                    <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
+                                }
+
+                            }
+                            else if (item.Status == "Not Taken Up")
+                            {
+                                <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
+                            }
+                        }
+                        else //Permissions for non-programme manager
+                        {
+                            if (item.Status.StartsWith("Bound"))
+                            {
+                                <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-search"></i> View</a>
+                                if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                                {
+                                    <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
+                                }
+                                if (((item.Status == "Bound and invoiced" && Model.Programme.UsesEGlobal) || (item.Status == "Bound" && !Model.Programme.UsesEGlobal)) &&
+                                Model.Programme.AllowUsesChange && item.NextInfoSheet == false)
+                                {
+                                    <a href="#myChangeModal" aria-hidden="true" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-dealitem-id="@item.Id">
+                                        <i class="fa fa-edit"></i> Update
+                                    </a>
 
                                 }
-                                else if (item.Status == "Not Taken Up")
+
+                            }
+                            else if (item.Status == "Started")
+                            {
+                                <a class="btn btn-primary btn-sm" href="/Information/EditInformation/@item.Id"><i class="fa fa-arrow-right"></i> Go</a>
+                                if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                                {
+                                    <a class="btn btn-primary btn-sm" href="/Information/ResetStatus/@item.Id"><i class="fa fa-arrow-right"></i> Reset Status</a>
+                                }
+                            }
+                            else if (item.Status.StartsWith("Submitted"))
+                            {
+                                <a class="btn btn-primary btn-sm" href="/Information/EditInformation/@item.Id"><i class="fa fa-arrow-right"></i> Go</a>
+                                if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                                {
+                                    @*<a class="btn btn-primary btn-sm" href="/Information/Unlock/@item.Id"><i class="fa fa-unlock"></i> Unlock</a>*@
+                                    <a href="#myUnlockModal" aria-hidden="true" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Unlock</a>
+
+                                }
+                                if (item.SubClientProgrammes.Count > 0)
+                                {
+                                    if ((Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True") && (item.IsSubclientSubmitted))
+                                    {
+                                        <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
+                                    }
+                                }
+                                else
+                                {
+                                    if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                                    {
+                                        <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
+                                    }
+                                }
+
+                            }
+                            else if (item.Status == "Not Started")
+                            {
+                                <a class="btn btn-primary btn-sm" href="/Information/EditInformation/@item.Id"><i class="fa fa-arrow-right"></i> Go</a>
+                            }
+                            else if (item.Status == "Not Taken Up")
+                            {
+                                <a class="btn btn-primary btn-sm" href="/Information/Resume/@item.Id"><i class="fa fa-unlock"></i> Resume</a>
+                                if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                                {
+                                    <a class="btn btn-primary btn-sm" href="/Information/Unlock/@item.Id"><i class="fa fa-unlock"></i> Unlock</a>
+                                }
+                                if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
                                 {
                                     <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
                                 }
                             }
-                            else //Permissions for non-programme manager
-                            {
-                                if (item.Status.StartsWith("Bound"))
-                                {
-                                    <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-search"></i> View</a>
-                                    if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-                                    {
-                                        <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
-                                    }
-                                    if (((item.Status == "Bound and invoiced" && Model.Programme.UsesEGlobal) || (item.Status == "Bound" && !Model.Programme.UsesEGlobal)) &&
-                                        Model.Programme.AllowUsesChange && item.NextInfoSheet == false)
-                                    {
-                                        <a href="#myChangeModal" aria-hidden="true" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-dealitem-id="@item.Id">
-                                            <i class="fa fa-edit"></i> Update
-                                        </a>
-
-                                    }
-
-                                }
-                                else if (item.Status == "Started")
-                                {
-                                    <a class="btn btn-primary btn-sm" href="/Information/EditInformation/@item.Id"><i class="fa fa-arrow-right"></i> Go</a>
-                                    if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-                                    {
-                                        <a class="btn btn-primary btn-sm" href="/Information/ResetStatus/@item.Id"><i class="fa fa-arrow-right"></i> Reset Status</a>
-                                    }
-                                }
-                                else if (item.Status.StartsWith("Submitted"))
-                                {
-                                    <a class="btn btn-primary btn-sm" href="/Information/EditInformation/@item.Id"><i class="fa fa-arrow-right"></i> Go</a>
-                                    if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-                                    {
-                                        @*<a class="btn btn-primary btn-sm" href="/Information/Unlock/@item.Id"><i class="fa fa-unlock"></i> Unlock</a>*@
-                                        <a href="#myUnlockModal" aria-hidden="true" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-dealitem-id="@item.Id"><i class="fa fa-edit"></i> Unlock</a>
-
-                                    }
-                                    if (item.SubClientProgrammes.Count > 0)
-                                    {
-                                        if ((Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True") && (item.IsSubclientSubmitted))
-                                        {
-                                            <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-                                        {
-                                            <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
-                                        }
-                                    }
-
-                                }
-                                else if (item.Status == "Not Started")
-                                {
-                                    <a class="btn btn-primary btn-sm" href="/Information/EditInformation/@item.Id"><i class="fa fa-arrow-right"></i> Go</a>
-                                }
-                                else if (item.Status == "Not Taken Up")
-                                {
-                                    <a class="btn btn-primary btn-sm" href="/Information/Resume/@item.Id"><i class="fa fa-unlock"></i> Resume</a>
-                                    if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-                                    {
-                                        <a class="btn btn-primary btn-sm" href="/Information/Unlock/@item.Id"><i class="fa fa-unlock"></i> Unlock</a>
-                                    }
-                                    if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-                                    {
-                                        <a class="btn btn-primary btn-sm" href="/Agreement/ViewAcceptedAgreement/@item.Id"><i class="fa fa-edit"></i> Manage</a>
-                                    }
-                                }
-                            }
-                        </div>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <div id="myChangeModal" class="modal" aria-hidden="true">
-        <form id="ProdForm" class="" action="~/Information/UpdateInformation" method="post">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title" style="color:blue; font-size:22px">Update Details</h3>
-                        @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" id=""></button>
-
+                        }
                     </div>
-                    <div class="modal-body">
-                        <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="DealId" name="DealId" placeholder="Vessel Name" value="" required>
-                        <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="ProgrammeId" id="ProgrammeId" name="ProgrammeId" value="" required>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
-                        <table class="table table-striped">
+<div id="myChangeModal" class="modal" aria-hidden="true">
+    <form id="ProdForm" class="" action="~/Information/UpdateInformation" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color:blue; font-size:22px">Update Details</h3>
+                    @*<button type="button" class="close" id="CreateUISModalClose" data-bs-dismiss="modal">&times;</button>*@
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id=""></button>
+
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="DealId" name="DealId" placeholder="Vessel Name" value="" required>
+                    <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="ProgrammeId" id="ProgrammeId" name="ProgrammeId" value="" required>
+
+                    <table class="table table-striped">
+                        <tr>
+                            <td>
+                                <label for="changeType" class="required">Update Type</label>
+                            </td>
+                            <td>
+                                <select class="form-select" id="ChangeType" name="ChangeType" title="" required>
+                                    <option selected="selected" value="">-- Select here --</option>
+
+                                    @if (Model.UpdateTypes != null)
+                                    {
+                                        @if (Model.CurrentUserIsBroker == "True")
+                                        {
+
+                                            @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsBroker))
+                                            {
+                                                @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
+                                                {
+                                                    <option value="@updateType.ValueType"> @updateType.NameType</option>
+                                                }
+                                            }
+                                        }
+                                        @if (Model.CurrentUserIsInsurer == "True")
+                                        {
+
+                                            @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsInsurer))
+                                            {
+                                                @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
+                                                {
+                                                    <option value="@updateType.ValueType"> @updateType.NameType</option>
+                                                }
+                                            }
+                                        }
+
+                                        @if (Model.CurrentUserIsTC == "True")
+                                        {
+
+                                            @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsTc))
+                                            {
+                                                @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
+                                                {
+                                                    <option value="@updateType.ValueType"> @updateType.NameType</option>
+                                                }
+                                            }
+                                        }
+                                        @if (Model.CurrentUserIsClient == "True")
+                                        {
+
+                                            @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsClient))
+                                            {
+                                                @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
+                                                {
+                                                    <option value="@updateType.ValueType"> @updateType.NameType</option>
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateChangeType"></p>
+                            </td>
+                        </tr>
+                        @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                        {
                             <tr>
                                 <td>
-                                    <label for="changeType" class="required">Update Type</label>
+                                    <label for="Reason" class="required">Reason</label>
                                 </td>
                                 <td>
-                                    <select class="form-select" id="ChangeType" name="ChangeType" title="" required>
+                                    <select class="form-select " id="ChangeReason" name="Reason" title="" required>
                                         <option selected="selected" value="">-- Select here --</option>
-
-                                        @if (Model.UpdateTypes != null)
-                                        {
-                                            @if (Model.CurrentUserIsBroker == "True")
-                                            {
-
-                                                @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsBroker))
-                                                {
-                                                    @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
-                                                    {
-                                                        <option value="@updateType.ValueType"> @updateType.NameType</option>
-                                                    }
-                                                }
-                                            }
-                                            @if (Model.CurrentUserIsInsurer == "True")
-                                            {
-
-                                                @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsInsurer))
-                                                {
-                                                    @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
-                                                    {
-                                                        <option value="@updateType.ValueType"> @updateType.NameType</option>
-                                                    }
-                                                }
-                                            }
-
-                                            @if (Model.CurrentUserIsTC == "True")
-                                            {
-
-                                                @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsTc))
-                                                {
-                                                    @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
-                                                    {
-                                                        <option value="@updateType.ValueType"> @updateType.NameType</option>
-                                                    }
-                                                }
-                                            }
-                                            @if (Model.CurrentUserIsClient == "True")
-                                            {
-
-                                                @foreach (var updateType in Model.UpdateTypes.Where(t => t.TypeIsClient))
-                                                {
-                                                    @if (Model.SelectedUpdateTypes.Contains(updateType.ValueType))
-                                                    {
-                                                        <option value="@updateType.ValueType"> @updateType.NameType</option>
-                                                    }
-                                                }
-                                            }
-
-                                        }
+                                        <option Value="TC_cancelbusinessSoldOrClosed_lgi">Business Sold or Closed</option>
+                                        <option Value="TC_changeInCoverReq_lgi">Change in Cover Requirements</option>
+                                        <option Value="TC_changeOfBroker_lgi">Change of Broker</option>
+                                        <option Value="TC_canceldissatisfiedWithClaims_lgi">Cancel -Dissatisfied with claims</option>
+                                        <option Value="TC_Cancel -dissatisfiedWithSvc_lgi">Cancel -Dissatisfied with service</option>
+                                        <option Value="TC_goneIntoGlobalAcct_lgi">Gone into Global Account</option>
+                                        <option Value="TC_lapsenonpayment">Laspe - Non payment</option>
+                                        <option Value="TC_Cancel - policyReplaced_lgi">Policy replaced</option>
+                                        <option Value="TC_Declined - premiumtoohigh_lgi">Declined Quote – Premium too high</option>
+                                        <option Value="TC_Declined – cover not required_lgi">Declined Quote – Cover Not required</option>
                                     </select>
                                 </td>
                                 <td>
-                                    <p class="validationContainer" id="validateChangeType"></p>
+                                    <p class="validationContainer" id="validateChangeReason"></p>
                                 </td>
                             </tr>
-                            @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-                            {
-                                <tr>
-                                    <td>
-                                        <label for="Reason" class="required">Reason</label>
-                                    </td>
-                                    <td>
-                                        <select class="form-select " id="ChangeReason" name="Reason" title="" required>
-                                            <option selected="selected" value="">-- Select here --</option>
-                                            <option Value="TC_cancelbusinessSoldOrClosed_lgi">Business Sold or Closed</option>
-                                            <option Value="TC_changeInCoverReq_lgi">Change in Cover Requirements</option>
-                                            <option Value="TC_changeOfBroker_lgi">Change of Broker</option>
-                                            <option Value="TC_canceldissatisfiedWithClaims_lgi">Cancel -Dissatisfied with claims</option>
-                                            <option Value="TC_Cancel -dissatisfiedWithSvc_lgi">Cancel -Dissatisfied with service</option>
-                                            <option Value="TC_goneIntoGlobalAcct_lgi">Gone into Global Account</option>
-                                            <option Value="TC_lapsenonpayment">Laspe - Non payment</option>
-                                            <option Value="TC_Cancel - policyReplaced_lgi">Policy replaced</option>
-                                            <option Value="TC_Declined - premiumtoohigh_lgi">Declined Quote – Premium too high</option>
-                                            <option Value="TC_Declined – cover not required_lgi">Declined Quote – Cover Not required</option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <p class="validationContainer" id="validateChangeReason"></p>
-                                    </td>
-                                </tr>
-                            }
+                        }
 
-                            @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
-                            {
-                                <tr>
-                                    <td>
-                                        <label for="ReasonDesc" class="required">Reason Description</label>
-                                    </td>
-                                    <td>
-                                        @Html.TextAreaFor(m => m.ChangeReason.Description, new { @class = "form-control", @required = "" })
-                                    </td>
-                                    <td>
-                                        <p class="validationContainer" id="validateDescription"></p>
-                                    </td>
-                                </tr>
-                            }
+                        @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
+                        {
                             <tr>
                                 <td>
-                                    <label for="EffectiveDate" class="required">Effective Date</label>
+                                    <label for="ReasonDesc" class="required">Reason Description</label>
                                 </td>
                                 <td>
-                                    @Html.TextBoxFor(m => m.ChangeReason.EffectiveDate, new { @class = "form-control", @type = "date", @required = "" })
+                                    @Html.TextAreaFor(m => m.ChangeReason.Description, new { @class = "form-control", @required = "" })
                                 </td>
                                 <td>
-                                    <p class="validationContainer" id="validateEffectivedate"></p>
+                                    <p class="validationContainer" id="validateDescription"></p>
                                 </td>
                             </tr>
-                        </table>
+                        }
+                        <tr>
+                            <td>
+                                <label for="EffectiveDate" class="required">Effective Date</label>
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.ChangeReason.EffectiveDate, new { @class = "form-control", @type = "date", @required = "" })
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateEffectivedate"></p>
+                            </td>
+                        </tr>
+                    </table>
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary btn-xs" id="ReportView"> Update</button>
-                        @*<button id="next" type="submit" class="btn btn-success btn-sm">Submit</button>*@
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-xs" id="ReportView"> Update</button>
+                    @*<button id="next" type="submit" class="btn btn-success btn-sm">Submit</button>*@
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
+</div>
 
-    @*<div id="myChangeModal" class="modal container" role="dialog" aria-hidden="true">
+@*<div id="myChangeModal" class="modal container" role="dialog" aria-hidden="true">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title" style="color:blue; font-size:22px">Update Details</h3>
@@ -492,43 +491,43 @@
         </div>*@
 
 
-    <div id="myUnlockModal" class="modal" aria-hidden="true">
-        <form id="ProdForm" class="" action="" method="post">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" id=""></button>
+<div id="myUnlockModal" class="modal" aria-hidden="true">
+    <form id="ProdForm" class="" action="" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" id=""></button>
 
-                    </div>
-                    <div class="modal-body">
-                        <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="UnlockId" name="DealId" required>
-                        <table class="table table-striped">
-                            <tr>
-                                <td>
-                                    <label for="ReasonDesc" class="required">Unlock Reason Description</label>
-                                </td>
-                                <td>
-                                    <textarea class="form-control" data-type="TEXTAREA" id="UnlockDescription" name="ReasonDesc" placeholder="Notes" value=""></textarea>
-                                </td>
-                                <td>
-                                    <p class="validationContainer" id="validateDescription"></p>
-                                </td>
-                            </tr>
-                        </table>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" hidden type="text" data-type="TEXTBOX" data-name="DealId" id="UnlockId" name="DealId" required>
+                    <table class="table table-striped">
+                        <tr>
+                            <td>
+                                <label for="ReasonDesc" class="required">Unlock Reason Description</label>
+                            </td>
+                            <td>
+                                <textarea class="form-control" data-type="TEXTAREA" id="UnlockDescription" name="ReasonDesc" placeholder="Notes" value=""></textarea>
+                            </td>
+                            <td>
+                                <p class="validationContainer" id="validateDescription"></p>
+                            </td>
+                        </tr>
+                    </table>
 
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success btn-sm" onclick="postUnlockData();" data-bs-toggle="tab">Submit</button>
 
-                    </div>
                 </div>
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
+</div>
 
 
-    @*<div id="myUnlockModal" class="modal container" role="dialog">
+@*<div id="myUnlockModal" class="modal container" role="dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title" style="color:blue; font-size:22px">Unlock Details</h3>
