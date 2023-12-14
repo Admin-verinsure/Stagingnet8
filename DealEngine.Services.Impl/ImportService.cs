@@ -4384,9 +4384,9 @@ namespace DealEngine.Services.Impl
         public async Task createIndividualstoldap(User CreatedUser)
         {
             //addresses need to be on one line            
-            var fileName = WorkingDirectory + "rotarymemberdataexsitinguploadtest.csv";
+            var fileName = WorkingDirectory + "rotarymemberdatanewuploadtest.csv";
             var currentUser = CreatedUser;
-            Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
+            Guid programmeID = Guid.Parse("8c080869-f4b0-4c96-8f6c-fb22382d6d57");
             StreamReader reader;
             User user = null;
             User localuser = null;
@@ -4406,21 +4406,21 @@ namespace DealEngine.Services.Impl
                     string[] parts = line.Split(',');
                     user = null;
                     organisation = null;
-                    if (parts.Length >= 5)
-                    {
-                        userName = parts[4];
-                    }
-                    else
-                    {
-                        userName = "";
-                    }
+                    //if (parts.Length >= 5)
+                    //{
+                    //    userName = parts[4];
+                    //}
+                    //else
+                    //{
+                    //    userName = "";
+                    //}
 
-                    email = parts[3];
+                    email = parts[2];
                     try
                     {
-                        if (!string.IsNullOrWhiteSpace(parts[3]))
+                        if (!string.IsNullOrWhiteSpace(parts[2]))
                         {
-                            user = _ldapService.GetUserByEmailforupload(parts[3]);
+                            user = _ldapService.GetUserByEmailforupload(parts[2]);
                         }
 
                         if (user == null)
@@ -4428,7 +4428,7 @@ namespace DealEngine.Services.Impl
 
                             if (userName == "")
                             {
-                                userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
+                                userName = parts[0].Replace(" ", string.Empty) + "_" + parts[1].Replace(" ", string.Empty);
                                 Random random = new Random();
                                 int randomNumber = random.Next(10, 99);
                                 userName = userName + randomNumber.ToString();
@@ -4437,9 +4437,9 @@ namespace DealEngine.Services.Impl
                                 if (user == null)
                                 {
                                     user = new User(currentUser, Guid.NewGuid(), userName);
-                                user.FirstName = parts[1];
-                                user.LastName = parts[2];
-                                user.FullName = parts[1] + " " + parts[2];
+                                user.FirstName = parts[0];
+                                user.LastName = parts[1];
+                                user.FullName = parts[0] + " " + parts[1];
                                 user.Email = email;
                                 user.Phone = "12345";
 
