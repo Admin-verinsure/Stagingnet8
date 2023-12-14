@@ -2,10 +2,11 @@
 
 @{
     var agreementStatus = Model.Status;
+    var bypassreferral = Model.Isprogrammebypassrefferal;
     string clientMessage = "";
     bool Isenablebacktoclient = false;
 
-    if (agreementStatus == "Referred" || agreementStatus == "Authorised"  )
+    if ((agreementStatus == "Referred" || agreementStatus == "Authorised") && !bypassreferral)
     {
         clientMessage = @"Thank you for completing the information sheet.  Due to some answers in the information sheet, it has been referred to your broker and insurer for manual processing.  They will contact you with more information.  In the meantime if you have any questions, please contact your broker.  Please click on the 'Back to Dashboard' button below to go back to the dashboard.  Thank you.";
 
@@ -91,7 +92,7 @@
 }
 
 
-@if (Model.Status == "Referred" || Model.Status == "Authorised")
+@if ((Model.Status == "Referred" || Model.Status == "Authorised") && !bypassreferral)
 {
     
     <script type="text/javascript">

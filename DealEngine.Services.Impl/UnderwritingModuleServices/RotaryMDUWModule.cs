@@ -68,6 +68,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
+            bool isclubtrustselect = false;
+            ////ClientInformationAnswer TransitionalLicenseNum = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.TransitionalLicenseNum", clientInformationSheetID);
+
+            //if (agreement.ClientInformationSheet.)
 
             int extLimit = 0;
             int extExcess = 500;

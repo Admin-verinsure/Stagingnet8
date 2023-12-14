@@ -114,6 +114,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool EnablePackageRate { get; set; }
         public virtual bool IsPolicyperiodclone { get; set; }
         public virtual bool IsProgrammerenewed { get; set; }
+        public virtual bool IsProgrammebypassrefferal { get; set; }
 
 
 

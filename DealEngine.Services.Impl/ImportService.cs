@@ -4508,13 +4508,13 @@ namespace DealEngine.Services.Impl
                             }
                         }
 
-                        //if (userName == "")
-                        //{
-                        //    userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
-                        //    Random random = new Random();
-                        //    int randomNumber = random.Next(10, 99);
-                        //    userName = userName + randomNumber.ToString();
-                        //}
+                        if (userName == "")
+                        {
+                            userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
+                            Random random = new Random();
+                            int randomNumber = random.Next(10, 99);
+                            userName = userName + randomNumber.ToString();
+                        }
 
 
 
@@ -4584,9 +4584,9 @@ namespace DealEngine.Services.Impl
         public async Task ImportRotaryServiceIndividuals(User CreatedUser)
         {
             //addresses need to be on one line            
-            var fileName = WorkingDirectory + "rotarymemberdataexsitinguploadtest.csv";
+            var fileName = WorkingDirectory + "rotarymemberdatanewuploadtest.csv";
             var currentUser = CreatedUser;
-            Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
+            Guid programmeID = Guid.Parse("8c080869-f4b0-4c96-8f6c-fb22382d6d57");
             StreamReader reader;
             User localuser = null;
             User user = null;
@@ -4613,13 +4613,13 @@ namespace DealEngine.Services.Impl
                     //    userName = "";
                     //}
                     userName = "";
-                    email = parts[3];
+                    email = parts[2];
                     try
                     {
 
-                        if (!string.IsNullOrWhiteSpace(parts[3]))
+                        if (!string.IsNullOrWhiteSpace(parts[2]))
                         {
-                            user = _ldapService.GetUserByEmailforupload(parts[3]);
+                            user = _ldapService.GetUserByEmailforupload(parts[2]);
                         }
 
                         if (user != null)
@@ -4632,7 +4632,7 @@ namespace DealEngine.Services.Impl
 
                             if (userName == "")
                                 {
-                                    userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
+                                    userName = parts[0].Replace(" ", string.Empty) + "_" + parts[1].Replace(" ", string.Empty);
                                     Random random = new Random();
                                     int randomNumber = random.Next(10, 99);
                                     userName = userName + randomNumber.ToString();
@@ -4641,25 +4641,25 @@ namespace DealEngine.Services.Impl
                               
                                     
                                         localuser = new User(currentUser, Guid.NewGuid(), userName);
-                                        localuser.FirstName = parts[1];
-                                        localuser.LastName = parts[2];
-                                        localuser.FullName = parts[1] + " " + parts[2];
+                                        localuser.FirstName = parts[0];
+                                        localuser.LastName = parts[1];
+                                        localuser.FullName = parts[0] + " " + parts[1];
                                         localuser.Email = email;
                                         localuser.Phone = "12345";
                                    
 
 
                         OrganisationType ownerType = new OrganisationType("Corporation – Limited liability");
-                        InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, "Corporation – Limited liability");
+                        InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, "Administrator");
                         OrganisationalUnit ownerUnit = new OrganisationalUnit(currentUser, "Corporation – Limited liability", "Head Office", null);
                        
 
-                        organisation = await _organisationService.GetOrganisationByEmail(email);
+                        organisation = await _organisationService.GetOrganisationByName(parts[5]);
                         
                             if (organisation == null)
                             {
                                 var organisationType = await _organisationTypeService.GetOrganisationTypeByName("Corporation – Limited liability");
-                                organisation = new Organisation(currentUser, Guid.NewGuid(), parts[0], organisationType, parts[3]);
+                                organisation = new Organisation(currentUser, Guid.NewGuid(), parts[5], organisationType, parts[2]);
                                 await _organisationService.CreateNewOrganisation(organisation);
                             }
 
