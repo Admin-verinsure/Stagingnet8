@@ -4414,7 +4414,7 @@ namespace DealEngine.Services.Impl
                     //{
                     //    userName = "";
                     //}
-
+                    userName = "";
                     email = parts[2];
                     try
                     {
