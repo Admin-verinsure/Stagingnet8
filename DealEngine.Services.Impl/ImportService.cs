@@ -4662,6 +4662,10 @@ namespace DealEngine.Services.Impl
                                 organisation = new Organisation(currentUser, Guid.NewGuid(), parts[5], organisationType, parts[2]);
                                 await _organisationService.CreateNewOrganisation(organisation);
                             }
+                            else
+                            {
+                            organisation.Email = email;
+                            }
 
 
 
