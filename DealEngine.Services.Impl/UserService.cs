@@ -351,7 +351,7 @@ namespace DealEngine.Services.Impl
 
 		public async Task<User> GetUserPrimaryOrganisationOrEmail(Organisation org)
 		{
-			var user = await _userRepository.FindAll().FirstOrDefaultAsync(u => u.PrimaryOrganisation == org);
+			var user = await _userRepository.FindAll().OrderByDescending(u => u.DateCreated).FirstOrDefaultAsync(u => u.PrimaryOrganisation == org);
 
 			try
 			{
