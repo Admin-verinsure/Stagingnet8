@@ -1,4 +1,11 @@
-﻿
+﻿@{
+    var companyLogo = ViewData["companyLogo"] as string;
+}
+
+@if (companyLogo == "Marsh")
+{
+    <a href="https://proposalonline.com" class="btn btn-outline-secondary" style="color: #A90229;">Login to ProposalOnline</a>
+}
 
 @if (User.Identity.IsAuthenticated)
 {
