@@ -1,4 +1,5 @@
 ﻿using Bismuth.Ldap;
+using DealEngine.Domain.Entities;
 using System.Collections.Generic;
 
 namespace DealEngine.Infrastructure.Ldap.Interfaces
@@ -10,7 +11,8 @@ namespace DealEngine.Infrastructure.Ldap.Interfaces
 
 		string GetDn (TEntity entity, string baseDn);
 		LdapEntry ToLdap (TEntity entity, string baseDn);
-		List<ModifyAttribute> ToModify (TEntity entity);
+        LdapEntry ToLdapPassword(TEntity entity, string baseDn, string password);
+        List<ModifyAttribute> ToModify (TEntity entity);
 	}
 }
 

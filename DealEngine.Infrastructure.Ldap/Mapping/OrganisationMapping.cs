@@ -61,10 +61,36 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 			if (entity.OrganisationType != null)
 				AddNonNullAttribute (entry, "businesscategory", entity.OrganisationType.Name);
 
+
 			return entry;
 		}
 
-		public List<ModifyAttribute> ToModify (Organisation entity)
+        public LdapEntry ToLdapPassword(Organisation entity, string baseDn, string password)
+        {
+            LdapEntry entry = new LdapEntry(GetDn(entity, baseDn))
+                .AddAttribute("o", entity.Id.ToString())
+                .AddAttribute("objectclass", "top", "pilotOrganization", "domainRelatedObject");
+
+            AddNonNullAttribute(entry, "ou", "organisation");
+            AddNonNullAttribute(entry, "buildingname", entity.Name);
+            AddNonNullAttribute(entry, "description", entity.Description);
+            AddNonNullAttribute(entry, "telephonenumber", entity.Phone);
+            AddDefaultAttribute(entry, "associateddomain", entity.Domain, "#");
+            if (entity.OrganisationType != null)
+                AddNonNullAttribute(entry, "businesscategory", entity.OrganisationType.Name);
+
+            // Add the password attribute
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                // Assuming the password is already hashed or in the correct format for LDAP
+                entry.AddAttribute("userPassword", password);
+            }
+
+            return entry;
+        }
+
+
+        public List<ModifyAttribute> ToModify (Organisation entity)
 		{
 			var orgMods = new List<ModifyAttribute> ();
 			AddNonNullAttribute (orgMods, "telephonenumber", ModificationType.Replace, entity.Phone);

@@ -58,9 +58,40 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> Index()
         {
             User user = null;
+            AuthorizeViewModel model = new AuthorizeViewModel();
+            IList<Organisation> orderedOrganisationList = null;
             try
             {
                 user = await CurrentUser();
+                if (user != null)
+                {
+                    var identityUser = await _userManager.FindByNameAsync(user.UserName);
+
+                    model.IsTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
+                }
+
+                if (model.IsTCUser)
+                {
+                    var organisationList = await _organisationService.GetAllOrganisations();
+                    orderedOrganisationList = organisationList
+                        .Where(o => o.OrganisationType?.Name == "Insurer")
+                        .GroupBy(o => o.Name)
+                        .Select(group => group.First())
+                        .OrderBy(o => o.Name)
+                        .ToList();
+                }
+                else
+                {
+                    // Only load their own Insurer Organisation if they're not TCUser. 
+                    var insurerOrganisation = user.Organisations.FirstOrDefault(o => o.OrganisationType?.Name == "Insurer");
+                    IList<Organisation> organisationList = new List<Organisation>();
+                    organisationList.Add(insurerOrganisation);
+                    orderedOrganisationList = organisationList.OrderBy(o => o.Name).ToList();
+                    if (insurerOrganisation.Name.Contains("Marsh & McLennan Agency"))
+                        model.isMarshUser = true;
+                    else
+                        model.isMarshUser = false;
+                }
 
                 var userList = await _userService.GetAllUsers();
                 var orderedUserList = userList.OrderBy(u => u.UserName).ToList();
@@ -73,12 +104,13 @@ namespace DealEngine.WebUI.Controllers
                     claimList = await _claimService.GetClaimsAllClaimsList();
                 }
 
-                AuthorizeViewModel model = new AuthorizeViewModel
+                model = new AuthorizeViewModel
                 {
                     RoleList = await _roleManager.Roles.ToListAsync(),
                     UserList = orderedUserList,
                     ClaimList = claimList,
-                    RoleClaims = new Dictionary<string, List<string>>()
+                    RoleClaims = new Dictionary<string, List<string>>(),
+                    OrganisationList = orderedOrganisationList
                 };         
 
                 foreach (var role in model.RoleList)
@@ -96,13 +128,6 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 model.RoleClaims = roleClaimsDictionary;
-
-                if (user != null)
-                {
-                    var identityUser = await _userManager.FindByNameAsync(user.UserName);
-
-                    model.IsTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
-                }
 
                 return View(model);
             }
@@ -578,22 +603,85 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserViewModel model)
         {
-            //// Implement user creation logic
-            //// Validate data, create user, handle errors, etc.
+            // Declare key variables
+            string username, firstName, lastName, email, homePhone, mobilePhone;
+            string userType, organisationId, oktaUID, salespersonUsername, employeeNumber, password;
 
-            //User user = new User(null, Guid.NewGuid(), model.Username);
-            //user.FirstName = model.FirstName;
-            //user.LastName = model.LastName;
-            //user.FullName = model.FirstName + " " + model.LastName;
-            //user.Email = model.Email;
-            //user.Phone = model.HomePhone;
-            //user.MobilePhone = model.MobilePhone;
-            //user.Password = ""; // Set password as needed
+            if (model == null)
+            {
+                return BadRequest("Invalid data. The user data cannot be null.");
+            }
 
-            //// Save user to database or perform other actions
+            // Assign values from the model
+            firstName = model.FirstName;
+            lastName = model.LastName;
+            email = model.Email;
+            homePhone = model.HomePhone;
+            mobilePhone = model.MobilePhone;
+            userType = model.UserType;
+            organisationId = model.OrganisationId;
+            oktaUID = model.OktaUID;
+            salespersonUsername = model.SalespersonUsername;
+            employeeNumber = model.EmployeeNumber;
+            password = model.Password;
 
-            return Ok(); // Or appropriate response
+            // Generate a username
+            Random random = new Random();
+            username = firstName.Replace(" ", string.Empty) + "_" + lastName.Replace(" ", string.Empty) + random.Next(1000);
+
+            // Create a new User instance
+            User user = new User(null, Guid.NewGuid(), username)
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                FullName = firstName + " " + lastName,
+                Email = email,
+                Phone = homePhone,
+                MobilePhone = mobilePhone,                
+                OktaUID = oktaUID,
+                SalesPersonUserName = salespersonUsername,
+                EmployeeNumber = employeeNumber,
+                Password = password
+            };
+            try
+            {
+                // Save user to application's database
+                bool createdUser = await _userService.CreateUserBrokerOrg(user, userType); // LDAP User, PrimaryOrg, OrgType etc.
+
+                if (createdUser)
+                {
+                    // Create Identity user
+                    var identityUser = new IdentityUser
+                    {
+                        UserName = username,
+                        Email = model.Email
+                    };
+
+                    var identityResult = await _userManager.CreateAsync(identityUser, user.Password);
+                    if (!identityResult.Succeeded)
+                    {
+                        // Handle errors (e.g., return an error response)
+                        var errors = string.Join("; ", identityResult.Errors.Select(e => e.Description));
+                        return BadRequest(identityResult.Errors);
+                    }
+
+                    // Assign roles based on UserType
+                    if (model.UserType == "Broker")
+                    {
+                        // Example: Assign "Broker" role
+                        await _userManager.AddToRoleAsync(identityUser, "Broker");
+                    }
+                    else if (model.UserType == "Client")
+                    {
+                        await _userManager.AddToRoleAsync(identityUser, "Client");
+                    }
+                }
+                return Ok(new { message = "User created successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
-
     }
 }
