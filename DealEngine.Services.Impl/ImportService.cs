@@ -4384,9 +4384,9 @@ namespace DealEngine.Services.Impl
         public async Task createIndividualstoldap(User CreatedUser)
         {
             //addresses need to be on one line            
-            var fileName = WorkingDirectory + "rotarymemberdataexsitinguploadtest.csv";
+            var fileName = WorkingDirectory + "rotarymemberdatanewuploadtest.csv";
             var currentUser = CreatedUser;
-            Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
+            Guid programmeID = Guid.Parse("8c080869-f4b0-4c96-8f6c-fb22382d6d57");
             StreamReader reader;
             User user = null;
             User localuser = null;
@@ -4406,21 +4406,21 @@ namespace DealEngine.Services.Impl
                     string[] parts = line.Split(',');
                     user = null;
                     organisation = null;
-                    if (parts.Length >= 5)
-                    {
-                        userName = parts[4];
-                    }
-                    else
-                    {
-                        userName = "";
-                    }
-
-                    email = parts[3];
+                    //if (parts.Length >= 5)
+                    //{
+                    //    userName = parts[4];
+                    //}
+                    //else
+                    //{
+                    //    userName = "";
+                    //}
+                    userName = "";
+                    email = parts[2];
                     try
                     {
-                        if (!string.IsNullOrWhiteSpace(parts[3]))
+                        if (!string.IsNullOrWhiteSpace(parts[2]))
                         {
-                            user = _ldapService.GetUserByEmailforupload(parts[3]);
+                            user = _ldapService.GetUserByEmailforupload(parts[2]);
                         }
 
                         if (user == null)
@@ -4428,7 +4428,7 @@ namespace DealEngine.Services.Impl
 
                             if (userName == "")
                             {
-                                userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
+                                userName = parts[0].Replace(" ", string.Empty) + "_" + parts[1].Replace(" ", string.Empty);
                                 Random random = new Random();
                                 int randomNumber = random.Next(10, 99);
                                 userName = userName + randomNumber.ToString();
@@ -4437,9 +4437,9 @@ namespace DealEngine.Services.Impl
                                 if (user == null)
                                 {
                                     user = new User(currentUser, Guid.NewGuid(), userName);
-                                user.FirstName = parts[1];
-                                user.LastName = parts[2];
-                                user.FullName = parts[1] + " " + parts[2];
+                                user.FirstName = parts[0];
+                                user.LastName = parts[1];
+                                user.FullName = parts[0] + " " + parts[1];
                                 user.Email = email;
                                 user.Phone = "12345";
 
@@ -4508,13 +4508,13 @@ namespace DealEngine.Services.Impl
                             }
                         }
 
-                        //if (userName == "")
-                        //{
-                        //    userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
-                        //    Random random = new Random();
-                        //    int randomNumber = random.Next(10, 99);
-                        //    userName = userName + randomNumber.ToString();
-                        //}
+                        if (userName == "")
+                        {
+                            userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
+                            Random random = new Random();
+                            int randomNumber = random.Next(10, 99);
+                            userName = userName + randomNumber.ToString();
+                        }
 
 
 
@@ -4579,14 +4579,153 @@ namespace DealEngine.Services.Impl
                 }
             }
         }
+        //public async Task ImportRotaryServiceIndividuals(User CreatedUser)
+        //{
+        //    //addresses need to be on one line            
+        //    var fileName = WorkingDirectory + "rotarymemberdatanewuploadtest.csv";
+        //    var currentUser = CreatedUser;
+        //    Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
+        //    StreamReader reader;
+        //    User localuser = null;
+        //    User user = null;
+
+        //    Organisation organisation = null;
+        //    string line;
+        //    string email;
+        //    int lineCount = 0;
+        //    var userName = "";
+        //    using (reader = new StreamReader(fileName))
+        //    {
+        //        while (!reader.EndOfStream)
+        //        {
+
+        //            line = reader.ReadLine();
+        //            string[] parts = line.Split(',');
+        //            organisation = null;
+        //            //if (parts.Length >= 5)
+        //            //{
+        //            //    userName = parts[4];
+        //            //}
+        //            //else
+        //            //{
+        //            //    userName = "";
+        //            //}
+        //            userName = "";
+        //            email = parts[2];
+        //            try
+        //            {
+
+        //                if (!string.IsNullOrWhiteSpace(parts[2]))
+        //                {
+        //                    user = _ldapService.GetUserByEmailforupload(parts[2]);
+        //                }
+
+        //                if (user != null)
+        //                {
+        //                    if (user.UserName != null)
+        //                    {
+        //                        userName = user.UserName;
+        //                    }
+        //                }
+
+        //                if (userName == "")
+        //                {
+        //                    userName = parts[0].Replace(" ", string.Empty) + "_" + parts[1].Replace(" ", string.Empty);
+        //                    Random random = new Random();
+        //                    int randomNumber = random.Next(10, 99);
+        //                    userName = userName + randomNumber.ToString();
+        //                }
+
+
+
+        //                localuser = new User(currentUser, Guid.NewGuid(), userName);
+        //                localuser.FirstName = parts[0];
+        //                localuser.LastName = parts[1];
+        //                localuser.FullName = parts[0] + " " + parts[1];
+        //                localuser.Email = email;
+        //                localuser.Phone = "12345";
+
+
+
+        //                OrganisationType ownerType = new OrganisationType("Corporation – Limited liability");
+        //                InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, "Administrator");
+        //                OrganisationalUnit ownerUnit = new OrganisationalUnit(currentUser, "Corporation – Limited liability", "Head Office", null);
+
+
+        //                organisation = await _organisationService.GetOrganisationByName(parts[5]);
+
+        //                if (organisation == null)
+        //                {
+        //                    var organisationType = await _organisationTypeService.GetOrganisationTypeByName("Corporation – Limited liability");
+        //                    organisation = new Organisation(currentUser, Guid.NewGuid(), parts[5], organisationType, parts[2]);
+        //                    await _organisationService.CreateNewOrganisation(organisation);
+        //                }
+        //                else
+        //                {
+        //                    organisation.Email = email;
+        //                }
+
+        //                organisation.OrganisationalUnits.Add(ownerUnit);
+        //                organisation.InsuranceAttributes.Add(ownerAttribute);
+        //                var sheet = await _clientInformationService.GetClientInformationSheetFromOrganisation(organisation);
+        //                var clientProgramme = await _programmeService.CreateClientProgrammeFor(programmeID, localuser, organisation);
+
+
+        //                if (clientProgramme!= null)
+        //                {
+        //                    if (!localuser.Organisations.Any(org => org.Id == clientProgramme.Owner.Id))
+        //                    {
+        //                        localuser.Organisations.Add(clientProgramme.Owner);
+        //                    }
+
+        //                }
+
+
+        //                if (!localuser.Organisations.Contains(organisation))
+        //                    localuser.Organisations.Add(organisation);
+        //                localuser.SetPrimaryOrganisation(organisation);
+
+
+
+        //                await _userService.ApplicationCreateUser(localuser);
+
+        //                var programme = await _programmeService.GetProgramme(programmeID);
+        //                //var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, localuser, organisation);
+        //               // var reference = await _referenceService.GetLatestReferenceId();
+        //               // var sheet = await _clientInformationService.IssueInformationFor(localuser, organisation, clientProgramme, reference);
+        //               //await _referenceService.CreateClientInformationReference(sheet);
+
+        //                using (var uow = _unitOfWork.BeginUnitOfWork())
+        //                {
+        //                   // clientProgramme.BrokerContactUser = programme.BrokerContactUser;
+        //                    //sheet.ClientInformationSheetAuditLogs.Add(new AuditLog(localuser, sheet, null, programme.Name + "UIS issue Process Completed"));
+        //                    try
+        //                    {
+        //                        await uow.Commit();
+        //                    }
+        //                    catch (Exception ex)
+        //                    {
+        //                        throw new Exception(ex.Message);
+        //                    }
+        //                }
+        //                lineCount++;
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                Console.WriteLine(ex.Message + lineCount);
+        //            }
+        //        }
+        //    }
+        //}
+
 
 
         public async Task ImportRotaryServiceIndividuals(User CreatedUser)
         {
             //addresses need to be on one line            
-            var fileName = WorkingDirectory + "rotarymemberdataexsitinguploadtest.csv";
+            var fileName = WorkingDirectory + "rotarymemberdatanewuploadtest.csv";
             var currentUser = CreatedUser;
-            Guid programmeID = Guid.Parse("680a7234-275c-4a1a-8c8e-8a5362ce8973");
+            Guid programmeID = Guid.Parse("8c080869-f4b0-4c96-8f6c-fb22382d6d57");
             StreamReader reader;
             User localuser = null;
             User user = null;
@@ -4613,13 +4752,13 @@ namespace DealEngine.Services.Impl
                     //    userName = "";
                     //}
                     userName = "";
-                    email = parts[3];
+                    email = parts[2];
                     try
                     {
 
-                        if (!string.IsNullOrWhiteSpace(parts[3]))
+                        if (!string.IsNullOrWhiteSpace(parts[2]))
                         {
-                            user = _ldapService.GetUserByEmailforupload(parts[3]);
+                            user = _ldapService.GetUserByEmailforupload(parts[2]);
                         }
 
                         if (user != null)
@@ -4632,7 +4771,7 @@ namespace DealEngine.Services.Impl
 
                             if (userName == "")
                                 {
-                                    userName = parts[1].Replace(" ", string.Empty) + "_" + parts[2].Replace(" ", string.Empty);
+                                    userName = parts[0].Replace(" ", string.Empty) + "_" + parts[1].Replace(" ", string.Empty);
                                     Random random = new Random();
                                     int randomNumber = random.Next(10, 99);
                                     userName = userName + randomNumber.ToString();
@@ -4641,26 +4780,30 @@ namespace DealEngine.Services.Impl
                               
                                     
                                         localuser = new User(currentUser, Guid.NewGuid(), userName);
-                                        localuser.FirstName = parts[1];
-                                        localuser.LastName = parts[2];
-                                        localuser.FullName = parts[1] + " " + parts[2];
+                                        localuser.FirstName = parts[0];
+                                        localuser.LastName = parts[1];
+                                        localuser.FullName = parts[0] + " " + parts[1];
                                         localuser.Email = email;
                                         localuser.Phone = "12345";
                                    
 
 
                         OrganisationType ownerType = new OrganisationType("Corporation – Limited liability");
-                        InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, "Corporation – Limited liability");
+                        InsuranceAttribute ownerAttribute = new InsuranceAttribute(currentUser, "Administrator");
                         OrganisationalUnit ownerUnit = new OrganisationalUnit(currentUser, "Corporation – Limited liability", "Head Office", null);
                        
 
-                        organisation = await _organisationService.GetOrganisationByEmail(email);
+                        organisation = await _organisationService.GetOrganisationByName(parts[5]);
                         
                             if (organisation == null)
                             {
                                 var organisationType = await _organisationTypeService.GetOrganisationTypeByName("Corporation – Limited liability");
-                                organisation = new Organisation(currentUser, Guid.NewGuid(), parts[0], organisationType, parts[3]);
+                                organisation = new Organisation(currentUser, Guid.NewGuid(), parts[5], organisationType, parts[2]);
                                 await _organisationService.CreateNewOrganisation(organisation);
+                            }
+                            else
+                            {
+                            organisation.Email = email;
                             }
 
 
@@ -4676,6 +4819,7 @@ namespace DealEngine.Services.Impl
                         var programme = await _programmeService.GetProgramme(programmeID);
                         var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, localuser, organisation);
                         var reference = await _referenceService.GetLatestReferenceId();
+                        
                         var sheet = await _clientInformationService.IssueInformationFor(localuser, organisation, clientProgramme, reference);
                         await _referenceService.CreateClientInformationReference(sheet);
 

@@ -2292,7 +2292,8 @@ namespace DealEngine.WebUI.Controllers
                             EditEnabled = true,
                             ClientAgreementId = agreement.Id,
                             ClientProgrammeId = clientProgramme.Id,
-                            Declaration = clientProgramme.BaseProgramme.Declaration
+                            Declaration = clientProgramme.BaseProgramme.Declaration,
+                            Isprogrammebypassrefferal = clientProgramme.BaseProgramme.IsProgrammebypassrefferal
                         };
 
                         model.Advisory = await _milestoneService.SetMilestoneFor("Agreement Status - Declined", user, answerSheet);

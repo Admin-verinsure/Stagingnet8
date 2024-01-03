@@ -7,7 +7,16 @@
     <!-- Bread crumb is created dynamically -->
     <!-- row -->
     <div class="form-group row">
-        <strong>Upload your club constitution and club trust deed </strong>
+        <strong>
+            Please upload your Constitution or Trust Deed
+            for each Named Party by selecting the Named Party from
+            your list of named parties.
+            Please then upload the relevant document for that
+            Named Party ensuring you have added the Effective Date.
+            If a further party needs to be added to
+            complete this you can go back and add
+            named parties at any time
+        </strong>
 
     </div>
 
@@ -39,6 +48,25 @@
             </div>
 
             <div class="form-group row">
+                <label class="col-sm-2 col-form-label required">Document Date:</label>
+                <div class="col col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <input type="text" id="DocEffectiveDate" name="DocEffectiveDate" class="form-control datepicker" placeholder="Please select Effective Date for this Document" required />
+                    <span name="DocEffectiveDate" class="text-danger"></span>
+                </div>
+                <div class="col col-xs-12 col-sm-1 col-md-1 col-lg-1">
+                    <i id="elem" href="#"
+                       class="fa fa-question-circle cgpopover"
+                       data-bs-placement="bottom"
+                       data-bs-container="body"
+                       data-bs-html="true"
+                       data-bs-toggle="popover"
+                       data-bs-content="This date can be either the date signed or approved or submitted if filed with Government"></i>
+
+                </div>
+                <span asp-validation-for="DocEffectiveDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group row">
                 <label class="col-sm-2 col-form-label">File</label>
                 <div class="col-sm-10">
                     <div class="custom-file">
@@ -57,22 +85,6 @@
             <button id="" onclick="" type="submit" class="btn btn-primary">Upload File</button>
             <br /><br />
             <br />
-            @*<div class="form-group row">
-                    <strong>Uploaded documents for sheet. </strong>
-
-                </div>
-                @foreach (var doc in Model.ClientInformationSheet.documents)
-                {
-                    <div class="form-group row">
-                        <div class="col-sm-10">
-                            <a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
-                                @doc.Name
-                            </a>
-                        </div>
-                    </div>
-
-
-                }*@
 
         </form>
 
@@ -109,7 +121,7 @@
                     <div class="col-sm-2 col-md-2">
                     </div>
                     <label class="col-sm-2 col-md-2 col-form-label">@doc.OwnerOrganisationName</label>
-                    <div class="col-sm-3 col-md-3">
+                    <div class="col-sm-2 col-md-2">
                         @*<a class="btn btn-primary btn-sm" href="/File/GetDocument?id=@doc.Id&format=@doc.Extension"> @doc.Name </a>*@
                         @*<a class="btn btn-primary btn-sm" href="@doc.Path" aria-hidden="true" style="color:white">
                             @doc.Name
@@ -120,8 +132,8 @@
                         @*<a class="btn btn-primary btn-xs" style="color:white; font-size:10pt; border:0;" href="/File/GetuploadedDoc/(@doc.path)?format=@doc.ContentType"><i class="fa fa-download"></i> Get PDF</a>*@
 
                     </div>
-
-                    <div class="col-sm-2 col-md-2">
+                    <label class="col-sm-2 col-md-2 col-form-label">@doc.DocEffectiveDate</label>
+                    <div class="col-sm-1 col-md-1">
                         <button class="btn btn-danger rounded-0" value="@doc.Id" onclick="deletedoc('@doc.Id','@doc.Name')"><i class="fa fa-trash"></i></button>
 
                     </div>
@@ -140,8 +152,9 @@
 @section pagespecific {
 
     <script type="text/javascript">
+       
         $(document).ready(function () {
-
+            debugger;
 
             var $form = $("#DocUploadForm");
             $form.submit(function () {
@@ -154,11 +167,13 @@
                 return false;
             });
 
-
+            
             function refreshdoclist() {
                 location.reload();
                 $("[id='Document uploads']").trigger("click");
             }
+
+            
         });
     </script>
 }

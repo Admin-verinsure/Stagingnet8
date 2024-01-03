@@ -162,7 +162,7 @@
                                 </div>
                             </div>
 
-                            @*<div class="form-group">
+                           @* <div class="form-group">
                                 <div class="row">
                                     <div class="col-6">
                                         <label for="locationBuildings" class="label required">
@@ -170,7 +170,7 @@
                                         </label>
                                     </div>
                                     <div class="col-6">
-                                        @Html.DropDownListFor(m => m.LocationViewModel.Locations, Model.LocationViewModel.LocationType, new { id = "locationtypeoptions", @class = "form-select", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "LocationViewModel" })
+                            @Html.DropDownListFor(m => m.LocationViewModel.Locations, Model.LocationViewModel.Locations, new { id = "locationtypeoptions", @class = "form-select", @onchange = "OnChange(this.id, this.name)", @required = "", @form = "LocationViewModel" })
                                     </div>
                                 </div>
                             </div>*@

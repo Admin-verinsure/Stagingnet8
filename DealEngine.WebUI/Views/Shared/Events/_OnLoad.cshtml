@@ -265,7 +265,7 @@
                     }
                 }
                 if (Method == "Owner") {
-
+                    debugger;
                     if (document.getElementById("HideOrganisationType") != null) { 
                     document.getElementById("HideOrganisationType").hidden = true;
                     document.getElementById("HideInsuranceAttribute").hidden = true;
@@ -473,4 +473,10 @@
             }
         } catch (ex) { debugger; }
     }
+
+
+    $("#DocEffectiveDate").datepicker({
+      
+        dateFormat: "dd/mm/yy"
+    });
 </script>

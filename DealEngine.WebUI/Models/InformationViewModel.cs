@@ -109,6 +109,7 @@ namespace DealEngine.WebUI.Models
         //public Organisation DocumentOrganisation { get; set; }
         public string DocumentOrganisation { get; set; }
         public string DocumentName { get; set; }
+        public DateTime DocEffectiveDate { get; set; }
 
         public Guid ClientProgrammeId { get; set; }
         public bool IsHardRefferalEnable { get; set; }
