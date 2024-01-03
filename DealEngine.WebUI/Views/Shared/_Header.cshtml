@@ -158,7 +158,7 @@
                 <label style="font-size:20px; color:#395ca2"> @User.Identity.Name</label>
             }
             <div class="btn-group" role="group" aria-label="Basic example">
-                @await Html.PartialAsync("_TopRight")
+                @await Html.PartialAsync("_TopRight", new ViewDataDictionary(ViewData) { { "companyLogo", companyLogo } })
             </div>
         </nav>
     </div>   
