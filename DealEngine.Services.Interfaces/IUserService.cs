@@ -26,5 +26,6 @@ namespace DealEngine.Services.Interfaces
         Task<User> GetMarshUser(string okta_uid);
         Task<User> GetUserByFirstName(string firstName);
         Task<IList<User>> GetUsersByLastName(string lastName);
+        Task<bool> CreateUserBrokerOrg(User user, string userType);
     }
 }

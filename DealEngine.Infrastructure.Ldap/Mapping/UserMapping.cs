@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.Ldap.Interfaces;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DealEngine.Infrastructure.Ldap.Mapping
 {
@@ -46,27 +48,52 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 			return "uid=" + entity.UserName + ",ou=users," + baseDn;
 		}
 
-		public LdapEntry ToLdap (User entity, string baseDn)
+		public LdapEntry ToLdap(User entity, string baseDn)
 		{
-			List<ObjectAttribute> attributes = new List<ObjectAttribute> ();
-			attributes.Add (new ObjectAttribute ("uid", entity.UserName));
+			List<ObjectAttribute> attributes = new List<ObjectAttribute>();
+			attributes.Add(new ObjectAttribute("uid", entity.UserName));
 
-			LdapEntry entry = new LdapEntry (GetDn (entity, baseDn))
-				.AddAttribute ("uid", entity.UserName)
-				.AddAttribute ("objectclass", "top", "person", "organizationalPerson", "inetOrgPerson")
-				.AddAttribute ("employeenumber", entity.Id.ToString ());
-				//.AddAttribute ("uniqueIdentifier", entity.Id.ToString ());		// Removed in RFC4524 schema
-			AddNonNullAttribute (entry, "mail", entity.Email);
-			AddNonNullAttribute (entry, "sn", entity.LastName);
-			AddNonNullAttribute (entry, "givenname", entity.FirstName);
+			LdapEntry entry = new LdapEntry(GetDn(entity, baseDn))
+				.AddAttribute("uid", entity.UserName)
+				.AddAttribute("objectclass", "top", "person", "organizationalPerson", "inetOrgPerson")
+				.AddAttribute("employeenumber", entity.Id.ToString());
+			//.AddAttribute ("uniqueIdentifier", entity.Id.ToString ());		// Removed in RFC4524 schema
+			AddNonNullAttribute(entry, "mail", entity.Email);
+			AddNonNullAttribute(entry, "sn", entity.LastName);
+			AddNonNullAttribute(entry, "givenname", entity.FirstName);
 			AddNonNullAttribute(entry, "cn", entity.FirstName + " " + entity.LastName);
 			// TODO - add org Id map here
 			//entry.AddAttribute ("o", entity.Organisations.Select (o => o.Id.ToString ()).ToArray());
-			
+
 			return entry;
 		}
 
-		public List<ModifyAttribute> ToModify (User entity)
+        public LdapEntry ToLdapPassword(User entity, string baseDn, string password)
+        {
+            List<ObjectAttribute> attributes = new List<ObjectAttribute>();
+            attributes.Add(new ObjectAttribute("uid", entity.UserName));
+
+            LdapEntry entry = new LdapEntry(GetDn(entity, baseDn))
+                .AddAttribute("uid", entity.UserName)
+                .AddAttribute("objectclass", "top", "person", "organizationalPerson", "inetOrgPerson")
+                .AddAttribute("employeenumber", entity.Id.ToString());
+            //.AddAttribute ("uniqueIdentifier", entity.Id.ToString ());		// Removed in RFC4524 schema
+            AddNonNullAttribute(entry, "mail", entity.Email);
+            AddNonNullAttribute(entry, "sn", entity.LastName);
+            AddNonNullAttribute(entry, "givenname", entity.FirstName);
+			AddNonNullAttribute(entry, "cn", entity.FirstName + " " + entity.LastName);
+            entry.AddAttribute("o", entity.PrimaryOrganisation.Id.ToString());
+
+            if (!string.IsNullOrWhiteSpace(password))
+            {
+                string hashedPassword = GenerateSSHA(password);
+                entry.AddAttribute("userPassword", hashedPassword);
+            }
+
+            return entry;
+        }
+
+        public List<ModifyAttribute> ToModify (User entity)
 		{
 			var userMods = new List<ModifyAttribute> ();
 			AddNonNullAttribute (userMods, "mail", ModificationType.Replace, entity.Email);
@@ -81,6 +108,30 @@ namespace DealEngine.Infrastructure.Ldap.Mapping
 
 			return userMods;
 		}
-	}
+
+        private string GenerateSSHA(string password)
+        {
+            using (var sha1 = new SHA1Managed())
+            {
+                byte[] salt = new byte[4];
+                using (var rng = new RNGCryptoServiceProvider())
+                {
+                    rng.GetBytes(salt);
+                }
+
+                byte[] pwdBytes = Encoding.UTF8.GetBytes(password);
+                byte[] pwdWithSaltBytes = new byte[pwdBytes.Length + salt.Length];
+                Buffer.BlockCopy(pwdBytes, 0, pwdWithSaltBytes, 0, pwdBytes.Length);
+                Buffer.BlockCopy(salt, 0, pwdWithSaltBytes, pwdBytes.Length, salt.Length);
+
+                byte[] hash = sha1.ComputeHash(pwdWithSaltBytes);
+                byte[] hashWithSalt = new byte[hash.Length + salt.Length];
+                Buffer.BlockCopy(hash, 0, hashWithSalt, 0, hash.Length);
+                Buffer.BlockCopy(salt, 0, hashWithSalt, hash.Length, salt.Length);
+
+                return "{SSHA}" + Convert.ToBase64String(hashWithSalt);
+            }
+        }
+    }
 }
 

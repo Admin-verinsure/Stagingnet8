@@ -15,7 +15,8 @@ namespace DealEngine.Infrastructure.Ldap.Interfaces
 		Organisation GetOrganisation (Guid organisationId);
 		void SetPasswordPolicyFor (User user, string passwordPolicyName);
 		void Create (User user);
-		void Create (Organisation organisation);
+        void CreateWithPassword(User user, string password);
+        void Create (Organisation organisation);
 		void Update (User user);
 		void Update (Organisation organisation);
 		void GlobalBan (User user);

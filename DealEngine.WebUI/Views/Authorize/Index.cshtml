@@ -570,30 +570,35 @@
         
         // Add User
 
-        function toggleBrokerFields() {
-            var clientOrBroker = document.getElementById('ClientOrBroker').value;
-            var brokerFields = document.getElementById('brokerFields');
-            if (clientOrBroker === 'Broker') {
-                brokerFields.style.display = 'block';
-                document.getElementById('SalespersonUsername').setAttribute('required', '');
-                document.getElementById('EmployeeNumber').setAttribute('required', '');
-            } else {
-                brokerFields.style.display = 'none';
-                document.getElementById('SalespersonUsername').removeAttribute('required');
-                document.getElementById('EmployeeNumber').removeAttribute('required');
-            }
-        }
-
         function SaveUser() {
+            debugger;
             var firstName = $('#InputFirstName').val();
             var lastName = $('#InputLastName').val();
             var email = $('#InputEmail').val();
             var homePhone = $('#InputHomePhone').val();
             var mobilePhone = $('#InputMobilePhone').val();
-            var clientOrBroker = $('#ClientOrBroker').val();
+            var userType = $('#UserType').val();
+            var organisationId = $('#Organisation').val();
             var oktaUID = $('#OktaUID').val();
             var salespersonUsername = $('#SalespersonUsername').val();
             var employeeNumber = $('#EmployeeNumber').val();
+            var password = $('#InputPassword').val();
+
+
+            // Basic validation
+            if (!firstName || !lastName || !email || !userType) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+
+            var organisationName = $('#Organisation option:selected').text();
+            var isBrokerWithMarsh = userType === 'Broker' && organisationName.includes('Marsh');
+
+            // Additional validation for brokers associated with 'Marsh'
+            if (isBrokerWithMarsh && (!oktaUID || !salespersonUsername || !employeeNumber)) {
+                alert("Please fill in all required fields for a Broker associated with Marsh.");
+                return;
+            }
 
             // Generate username
             var randomNum = Math.floor(Math.random() * 1000);
@@ -606,10 +611,12 @@
                 Email: email,
                 HomePhone: homePhone,
                 MobilePhone: mobilePhone,
-                ClientOrBroker: clientOrBroker,
+                UserType: userType,
+                OrganisationId: organisationId,
                 OktaUID: oktaUID,
                 SalespersonUsername: salespersonUsername,
-                EmployeeNumber: employeeNumber
+                EmployeeNumber: employeeNumber,
+                Password: password
             };
 
             $.ajax({
@@ -622,13 +629,38 @@
                     alert("User added successfully!");
                     location.reload();
                 })
-                .fail(function (a, s, d) {
-                    // Handle error
-                    alert("Unable to save.");
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    var errorMsg = jqXHR.responseJSON && jqXHR.responseJSON.error ? jqXHR.responseJSON.error : "Unknown error occurred";
+                    alert("Error: " + errorMsg);
                 });
         }
 
-        //
+        function toggleBrokerFields() {
+            var userType = $('#UserType').val();
+            var organisationName = $('#Organisation option:selected').text();
+            var isBrokerWithMarsh = userType === 'Broker' && organisationName.includes('Marsh');
+
+            var brokerFields = document.getElementById('brokerFields');
+            var brokerRequiredAsterisks = document.querySelectorAll('.broker-required');
+
+            if (isBrokerWithMarsh) {
+                $('#marshNote').show();
+                brokerFields.style.display = 'block';
+                brokerRequiredAsterisks.forEach(function (asterisk) {
+                    asterisk.style.display = 'inline';
+                });
+            } else {
+                $('#marshNote').hide();
+                brokerFields.style.display = 'none';
+                brokerRequiredAsterisks.forEach(function (asterisk) {
+                    asterisk.style.display = 'none';
+                });
+            }
+        }
+
+        $('#UserType').change(toggleBrokerFields);
+        $('#Organisation').change(toggleBrokerFields);
+        toggleBrokerFields();
 
         // Add Claim to User - Deprecated function
 

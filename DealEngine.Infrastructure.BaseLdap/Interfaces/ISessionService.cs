@@ -4,6 +4,6 @@ namespace DealEngine.Infrastructure.BaseLdap.Interfaces
 {
     public interface ISessionService
     {
-        LdapConnection GetConnection();       
+        LdapConnection GetConnection();
     }
 }

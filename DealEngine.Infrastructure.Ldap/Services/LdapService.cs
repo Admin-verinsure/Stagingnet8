@@ -135,6 +135,21 @@ namespace DealEngine.Infrastructure.Ldap.Services
 			//		Create (org);
 		}
 
+		public void CreateWithPassword(User user, string password)
+		{
+
+			using (LdapClient client = GetLdapServer(true))
+			{
+				LdapEntry entry = _userMapping.ToLdapPassword(user, _ldapConfiguration.BaseDn, password);
+				var addRequest = new AddRequest(client.NextMessageId, entry);
+				var response = client.Send<AddResponse>(addRequest);
+				client.Unbind();
+				if (response.ResultCode > 0)
+					throw new Exception("Unable to create user in Ldap: " + response.ErrorMessage);
+			}
+		}
+
+
 		public void Create (Organisation organisation)
         {
             using (LdapClient client = GetLdapServer(true))
