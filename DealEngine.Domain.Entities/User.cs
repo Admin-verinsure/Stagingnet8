@@ -103,6 +103,9 @@ namespace DealEngine.Domain.Entities
 			}
 		}
 
+        // Organisation User belongs to
+        public virtual Organisation SecondaryOrganisation { get; set; }
+
         public virtual IList<SelectListItem> GetInitialSelectOptions()
         {
             var _Types = new List<SelectListItem>()

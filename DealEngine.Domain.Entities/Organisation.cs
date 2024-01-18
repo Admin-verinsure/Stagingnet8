@@ -121,6 +121,14 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsBroker { get; set; }
         public virtual bool IsInsurer { get; set; }
         public virtual bool IsTC { get; set; }
+        public virtual bool IsSecondaryOrg { get; set; }
+        public virtual bool isAssociation { get; set; }
+        public virtual bool isClient { get; set; }
+        public virtual bool isInsuredNamedParty { get; set; }
+        public virtual bool isCoInsurer { get; set; }
+        public virtual bool isExcessLayerInsurer { get; set; }
+        public virtual bool isReInsurer { get; set; }
+        public virtual bool isCaptive { get; set; }
         public virtual bool IsProgrammeManager { get; set; }
         public virtual bool IsApproved { get; set; }
         public virtual string Clientmembership { get; set; }

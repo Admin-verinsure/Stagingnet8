@@ -30,8 +30,9 @@
         <input type="tel" class="form-control" id="InputMobilePhone" placeholder="Enter mobile phone">
     </div>
 
+    <!-- Default User Type Selection -->
 
-    <!-- User Type Selection -->
+    <!--
     <div class="form-group col-12">
         <label for="UserType">User Type<span style="color: red;">*</span></label>
         <select class="form-control" id="UserType" onchange="toggleBrokerFields()">
@@ -42,19 +43,21 @@
             <option value="Association">Association</option>
         </select>
     </div>
+    -->
 
     <!-- Organisation Input -->
     <div class="form-group col-12">
-        <label for="Organisation">Organisation<span style="color: red;">*</span></label>
-        <select class="form-control" id="Organisation" onchange="toggleBrokerFields()">
-            <!-- UC1 Preload to user that is browsing's Organisation -->
-            <!-- UC2 TCUser Load all Organisations -->
+        <label for="Organisations">Organisations<span style="color: red;">*</span></label>
+        <select class="form-control" id="Organisations" multiple onchange="loadOrganisationDetails()">
             @foreach (var org in Model.OrganisationList)
             {
                 <option value="@org.Id">@org.Name</option>
             }
         </select>
+        <small class="form-text text-muted">Hold control (Ctrl) for multi-select.</small>
     </div>
+
+    <div id="dynamicOrgUserTypes"></div>
 
     <div class="form-group col-12" id="brokerFields" style="display: none;">
         <label for="OktaUID">Okta UID<span style="color: red;">*</span></label>
@@ -76,9 +79,6 @@
                 Note: This password will not be your Okta password. It can be used for accessing https://staging.mnzconnect.com (Marsh DealEngine UAT).
             </small>
         }
-        <small id="marshNote" class="form-text text-muted" style="display: none;">
-            Note: This password will not be your Okta password. It can be used for accessing https://staging.mnzconnect.com (Marsh DealEngine UAT).
-        </small>
     </div>
 
     <div class="form-group col-12 p-2">

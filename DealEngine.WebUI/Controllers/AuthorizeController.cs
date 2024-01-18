@@ -60,21 +60,26 @@ namespace DealEngine.WebUI.Controllers
             User user = null;
             AuthorizeViewModel model = new AuthorizeViewModel();
             IList<Organisation> orderedOrganisationList = null;
+            IdentityUser identityUser = null;
             try
             {
                 user = await CurrentUser();
                 if (user != null)
                 {
-                    var identityUser = await _userManager.FindByNameAsync(user.UserName);
+                    identityUser = await _userManager.FindByNameAsync(user.UserName);
 
                     model.IsTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
                 }
 
+
+                // Insurer logic is wrong now, we want secondaryOrganisations
                 if (model.IsTCUser)
                 {
+                    // All secondary Orgs
                     var organisationList = await _organisationService.GetAllOrganisations();
                     orderedOrganisationList = organisationList
-                        .Where(o => o.OrganisationType?.Name == "Insurer")
+                        //.Where(o => o.OrganisationType?.Name == "Insurer")
+                        .Where(o => o.IsSecondaryOrg == true)
                         .GroupBy(o => o.Name)
                         .Select(group => group.First())
                         .OrderBy(o => o.Name)
@@ -82,15 +87,37 @@ namespace DealEngine.WebUI.Controllers
                 }
                 else
                 {
+                    // Use Users SecondaryOrg 
                     // Only load their own Insurer Organisation if they're not TCUser. 
-                    var insurerOrganisation = user.Organisations.FirstOrDefault(o => o.OrganisationType?.Name == "Insurer");
-                    IList<Organisation> organisationList = new List<Organisation>();
-                    organisationList.Add(insurerOrganisation);
-                    orderedOrganisationList = organisationList.OrderBy(o => o.Name).ToList();
-                    if (insurerOrganisation.Name.Contains("Marsh & McLennan Agency"))
+
+                    Organisation secondaryOrg = user.SecondaryOrganisation;
+
+                    if (secondaryOrg != null && secondaryOrg.Name.Contains("Marsh"))
+                    {
                         model.isMarshUser = true;
-                    else
-                        model.isMarshUser = false;
+                    }
+                    else { model.isMarshUser = false; }
+
+                    if (await _userManager.IsInRoleAsync(identityUser, "BrokerAdmin"))
+                    {
+                        // Get Secondary Organisations that user is BrokerAdmin for? Not possible as that's not how it works, Roles need to match the Secondary Org name?
+                        // So you'd look at your Organisations, check if they have the Role for that Organisations and they also have BrokerAdmin, only add the Organisation if they 
+                        // have the matching role. So they'll be in the Org list right? 
+                        // Example User:
+                        // Warren 
+                        // Role BrokerAdmin = True 
+                        // Warren.SecondaryOrganisation = null
+                        // Warren.Organisations where secondaryOrg = true 
+                        // 
+                    }
+
+                    //var insurerOrganisation = user.Organisations.FirstOrDefault(o => o.OrganisationType?.Name == "Insurer");
+                    IList<Organisation> organisationList = new List<Organisation>
+                    {
+                        secondaryOrg
+                    };
+
+                    orderedOrganisationList = organisationList.OrderBy(o => o.Name).ToList();
                 }
 
                 var userList = await _userService.GetAllUsers();
@@ -476,10 +503,6 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
-
-
-
-
         [HttpPost]
         public async Task<IActionResult> DeleteClaim(string claimType, string claimValue)
         {
@@ -601,6 +624,80 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetOrganisationDetails([FromBody] IList<Guid> organisationIds)
+        {
+            try
+            {
+                IList<string> rolesToAllocate = new List<string>();
+
+                var responseList = new List<OrganisationRolesResponse>();
+
+                foreach (Guid id in organisationIds)
+                {
+                    var secondaryOrg = await _organisationService.GetOrganisation(id);
+
+                    rolesToAllocate.Clear();
+                    if (secondaryOrg.IsBroker)
+                    {
+                        rolesToAllocate.Add("Broker");
+                        rolesToAllocate.Add("SeniorBroker");
+                        rolesToAllocate.Add("BrokerAdmin");
+                    }
+                    if (secondaryOrg.IsInsurer)
+                    {
+                        rolesToAllocate.Add("Underwriter");
+                        rolesToAllocate.Add("SeniorUnderwriter");
+                        rolesToAllocate.Add("InsurerAdmin");
+                    }
+                    if (secondaryOrg.isAssociation)
+                    {
+                        rolesToAllocate.Add("AssociationAdmin");
+                    }
+                    if (secondaryOrg.isClient)
+                    {
+                        rolesToAllocate.Add("Client");
+                    }
+                    if (secondaryOrg.isInsuredNamedParty)
+                    {
+                        rolesToAllocate.Add("NamedParty");
+                    }
+                    if (secondaryOrg.isCoInsurer)
+                    {
+                        rolesToAllocate.Add("CoInsuredUnderwriter");
+                    }
+                    if (secondaryOrg.isExcessLayerInsurer)
+                    {
+                        rolesToAllocate.Add("ExcessLayerUnderwriter");
+                    }
+                    if (secondaryOrg.isReInsurer)
+                    {
+                        rolesToAllocate.Add("ReinsurerUnderwriter");
+                    }
+                    if (secondaryOrg.isCaptive)
+                    {
+                        rolesToAllocate.Add("CaptiveUnderwriter");
+                    }
+
+                    rolesToAllocate.Add(secondaryOrg.Name.Replace(" ", ""));
+                    
+                    responseList.Add(new OrganisationRolesResponse
+                    {
+                        OrganisationId = id,
+                        Name = secondaryOrg.Name,
+                        Roles = rolesToAllocate.Distinct().ToList()
+                    });
+                }              
+
+                return Ok(responseList);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting organisation details: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserViewModel model)
         {
             // Declare key variables
@@ -684,4 +781,6 @@ namespace DealEngine.WebUI.Controllers
             }
         }
     }
+
+
 }

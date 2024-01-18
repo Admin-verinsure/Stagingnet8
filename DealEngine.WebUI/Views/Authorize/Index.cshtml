@@ -635,32 +635,95 @@
                 });
         }
 
-        function toggleBrokerFields() {
-            var userType = $('#UserType').val();
-            var organisationName = $('#Organisation option:selected').text();
-            var isBrokerWithMarsh = userType === 'Broker' && organisationName.includes('Marsh');
 
-            var brokerFields = document.getElementById('brokerFields');
-            var brokerRequiredAsterisks = document.querySelectorAll('.broker-required');
+        function loadOrganisationDetails() {
+            debugger;
+            var selectedOrgs = $('#Organisations').val();
+            var postData = JSON.stringify(selectedOrgs);
 
-            if (isBrokerWithMarsh) {
-                $('#marshNote').show();
-                brokerFields.style.display = 'block';
-                brokerRequiredAsterisks.forEach(function (asterisk) {
-                    asterisk.style.display = 'inline';
+            $.ajax({
+                url: '@Url.Action("GetOrganisationDetails", "Authorize")', // Adjust URL as needed
+                type: "POST",
+                contentType: "application/json",
+                data: postData
+            })
+                // .done(function (response) {
+                //     debugger; 
+
+                //     // Clear existing dynamic fields
+                //     $('#dynamicOrgUserTypes').empty();
+
+                //     // For each organisation, create a new select input for user type
+                //     response.forEach(org => {
+                //         var selectHtml = '<div class="form-group col-12">' +
+                //             '<label for="UserType_' + org.id + '">' + org.name + ' User Type</label>' +
+                //             '<select class="form-control" id="UserType_' + org.id + '">';
+
+                //         org.Roles.forEach(type => {
+                //             selectHtml += '<option value="' + type + '">' + type + '</option>';
+                //         });
+
+                //         selectHtml += '</select></div>';
+                //         $('#dynamicOrgUserTypes').append(selectHtml);
+                //     });
+                // })
+
+                .done(function (response) {
+                    // Clear existing dynamic fields
+                    $('#dynamicOrgUserTypes').empty();
+                    debugger;
+
+                    // For each organisation, create a new select input for role
+                    response.forEach(org => {
+                        var selectHtml = '<div class="form-group col-12">' +
+                            '<label for="UserType_' + org.organisationId + '">User Type for ' + org.name + '</label>' +
+                            '<select class="form-control" id="UserType_' + org.organisationId + '">';
+
+                        if (org.roles && Array.isArray(org.roles)) {
+                            org.roles.forEach(role => {
+                                selectHtml += '<option value="' + role + '">' + role + '</option>';
+                            });
+                        }
+
+                        selectHtml += '</select></div>';
+                        $('#dynamicOrgUserTypes').append(selectHtml);
+                    });
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    var errorMsg = jqXHR.responseJSON && jqXHR.responseJSON.error ? jqXHR.responseJSON.error : "Unknown error occurred";
+                    alert("Error: " + errorMsg);
                 });
-            } else {
-                $('#marshNote').hide();
-                brokerFields.style.display = 'none';
-                brokerRequiredAsterisks.forEach(function (asterisk) {
-                    asterisk.style.display = 'none';
-                });
-            }
+
+            // AJAX call to backend to get details for selected organizations
+            // On success, dynamically create additional selection boxes or display roles
         }
 
-        $('#UserType').change(toggleBrokerFields);
-        $('#Organisation').change(toggleBrokerFields);
-        toggleBrokerFields();
+        // function toggleBrokerFields() {
+        //     var userType = $('#UserType').val();
+        //     var organisationName = $('#Organisation option:selected').text();
+        //     var isBrokerWithMarsh = userType === 'Broker' && organisationName.includes('Marsh');
+
+        //     var brokerFields = document.getElementById('brokerFields');
+        //     var brokerRequiredAsterisks = document.querySelectorAll('.broker-required');
+
+        //     if (isBrokerWithMarsh) {
+        //         $('#marshNote').show();
+        //         brokerFields.style.display = 'block';
+        //         brokerRequiredAsterisks.forEach(function (asterisk) {
+        //             asterisk.style.display = 'inline';
+        //         });
+        //     } else {
+        //         $('#marshNote').hide();
+        //         brokerFields.style.display = 'none';
+        //         brokerRequiredAsterisks.forEach(function (asterisk) {
+        //             asterisk.style.display = 'none';
+        //         });
+        //     }
+        // }
+
+        //$('#UserType').change(toggleBrokerFields);
+        //$('#Organisation').change(toggleBrokerFields);
+        //toggleBrokerFields();
 
         // Add Claim to User - Deprecated function
 

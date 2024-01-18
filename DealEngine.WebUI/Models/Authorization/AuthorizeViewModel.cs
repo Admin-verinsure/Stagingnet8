@@ -22,5 +22,12 @@ namespace DealEngine.WebUI.Models.Authorization
         public string SelectedUserEmail { get; set; }
         public IList<string> SelectedUserRoles { get; set; }
     }
+
+    public class OrganisationRolesResponse
+    {
+        public Guid OrganisationId { get; set; }
+        public string Name { get; set; }
+        public IList<string> Roles { get; set; }
+    }
 }
 
