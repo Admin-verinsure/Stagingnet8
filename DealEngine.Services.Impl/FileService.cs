@@ -1120,7 +1120,7 @@ namespace DealEngine.Services.Impl
                         strabusiness = "No Associated Business Insureds.";
                     }
 
-                    if (string.IsNullOrEmpty(strallrotarynamedparties))
+                    if (string.IsNullOrEmpty(strallrotarynamedparties) && agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("Rotary Oceania Associations"))
                     {
                         strabusiness = "No Additional Insureds.";
                     }
