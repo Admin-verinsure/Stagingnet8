@@ -214,14 +214,19 @@ namespace DealEngine.WebUI.Controllers
                     clientProgramme.EGlobalBranchCode = Collection["ClientProgramme.EGlobalBranchCode"];
                     clientProgramme.BrokerContactUser = await _userService.GetUserById(Guid.Parse(Collection["ClientProgramme.BrokerContactId"]));
                     clientProgramme.BrokerContactId = clientProgramme.BrokerContactUser.Id;
+                    clientProgramme.EGlobalExternalContactNumber = Collection["ClientProgramme.EGlobalExternalContactNumber"];
                     await _programmeService.Update(clientProgramme);
                     User OwnerUser = await _userService.GetUserPrimaryOrganisationOrEmail(clientProgramme.Owner);
                     if(OwnerUser != null)
                     {
 
                         OwnerUser.Email = Collection["Organisation.Email"];
-                        OwnerUser.PrimaryOrganisation.Email = Collection["Organisation.Email"];
-                        OwnerUser.PrimaryOrganisation.Name = Collection["Organisation.Name"];
+                        if(OwnerUser.PrimaryOrganisation != null)
+                        {
+                            OwnerUser.PrimaryOrganisation.Email = Collection["Organisation.Email"];
+                            OwnerUser.PrimaryOrganisation.Name = Collection["Organisation.Name"];
+                        }
+                        
                         await _userService.Update(OwnerUser);
                     }
                 }
