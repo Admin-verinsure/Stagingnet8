@@ -88,34 +88,41 @@ namespace DealEngine.WebUI.Controllers
                 else
                 {
                     // Use Users SecondaryOrg 
-                    // Only load their own Insurer Organisation if they're not TCUser. 
+                    // Load only own SecondaryOrg & Organisations for selection
 
                     Organisation secondaryOrg = user.SecondaryOrganisation;
 
+                    // Set isMarshUser
                     if (secondaryOrg != null && secondaryOrg.Name.Contains("Marsh"))
                     {
                         model.isMarshUser = true;
                     }
                     else { model.isMarshUser = false; }
 
-                    if (await _userManager.IsInRoleAsync(identityUser, "BrokerAdmin"))
-                    {
-                        // Get Secondary Organisations that user is BrokerAdmin for? Not possible as that's not how it works, Roles need to match the Secondary Org name?
-                        // So you'd look at your Organisations, check if they have the Role for that Organisations and they also have BrokerAdmin, only add the Organisation if they 
-                        // have the matching role. So they'll be in the Org list right? 
-                        // Example User:
-                        // Warren 
-                        // Role BrokerAdmin = True 
-                        // Warren.SecondaryOrganisation = null
-                        // Warren.Organisations where secondaryOrg = true 
-                        // 
-                    }
-
-                    //var insurerOrganisation = user.Organisations.FirstOrDefault(o => o.OrganisationType?.Name == "Insurer");
+                    // Add main secondaryOrg
                     IList<Organisation> organisationList = new List<Organisation>
                     {
                         secondaryOrg
                     };
+
+                    // Populate Orgs
+                    if (await _userManager.IsInRoleAsync(identityUser, "BrokerAdmin"))
+                    {
+                        // We want Organisations that this user belongs to (has the org role for)                                             
+                        
+                        // Check other organisations for SecondaryOrgs
+                        foreach (Organisation org in user.Organisations)
+                        {
+                            if (org.IsSecondaryOrg == true)
+                            {
+                                string orgRole = org.Name.Replace(" ", "");
+                                if (await _userManager.IsInRoleAsync(identityUser, orgRole))
+                                {
+                                    organisationList.Add(org);
+                                }
+                            }
+                        }
+                    }
 
                     orderedOrganisationList = organisationList.OrderBy(o => o.Name).ToList();
                 }
@@ -678,7 +685,7 @@ namespace DealEngine.WebUI.Controllers
                         rolesToAllocate.Add("CaptiveUnderwriter");
                     }
 
-                    rolesToAllocate.Add(secondaryOrg.Name.Replace(" ", ""));
+                    
                     
                     responseList.Add(new OrganisationRolesResponse
                     {
@@ -702,8 +709,12 @@ namespace DealEngine.WebUI.Controllers
         {
             // Declare key variables
             string username, firstName, lastName, email, homePhone, mobilePhone;
-            string userType, organisationId, oktaUID, salespersonUsername, employeeNumber, password;
+            string  oktaUID, salespersonUsername, employeeNumber, password;
+            IList<string> rolesForUser = new List<string>();
+            Organisation secondaryOrganisation = null;
+            IList<Organisation> organisations = null;
 
+            //userType, organisationId,
             if (model == null)
             {
                 return BadRequest("Invalid data. The user data cannot be null.");
@@ -715,8 +726,20 @@ namespace DealEngine.WebUI.Controllers
             email = model.Email;
             homePhone = model.HomePhone;
             mobilePhone = model.MobilePhone;
-            userType = model.UserType;
-            organisationId = model.OrganisationId;
+            if (model.MainOrganisationId != Guid.Empty)
+            {
+                secondaryOrganisation = await _organisationService.GetOrganisation(model.MainOrganisationId);
+            }
+            if (model.SelectedOrganisations != null)
+            {
+                foreach (Guid orgId in model.SelectedOrganisations)
+                {
+                    Organisation organisation = await _organisationService.GetOrganisation(orgId);
+                    organisations.Add(organisation);
+                }                 
+            }
+
+
             oktaUID = model.OktaUID;
             salespersonUsername = model.SalespersonUsername;
             employeeNumber = model.EmployeeNumber;
@@ -734,45 +757,69 @@ namespace DealEngine.WebUI.Controllers
                 FullName = firstName + " " + lastName,
                 Email = email,
                 Phone = homePhone,
-                MobilePhone = mobilePhone,                
+                MobilePhone = mobilePhone,
+                SecondaryOrganisation = secondaryOrganisation,
+                Organisations = organisations,
                 OktaUID = oktaUID,
                 SalesPersonUserName = salespersonUsername,
                 EmployeeNumber = employeeNumber,
                 Password = password
             };
+
+            // Process selected organizations and roles
+            foreach (var orgId in model.SelectedOrganisations)
+            {
+                var selectedSecondaryOrganization = await _organisationService.GetOrganisation(orgId);
+                rolesForUser.Add(selectedSecondaryOrganization.Name.Replace(" ", ""));
+            }
+
+            foreach (var role in model.Roles)
+            {
+
+                rolesForUser.Add(role);
+            }
+
             try
             {
+                // Check if they're a broker
+                
+                // So what OrganisationTypes are we creating? 
+
+                // Default
+                // Broker 
+
                 // Save user to application's database
-                bool createdUser = await _userService.CreateUserBrokerOrg(user, userType); // LDAP User, PrimaryOrg, OrgType etc.
 
-                if (createdUser)
-                {
-                    // Create Identity user
-                    var identityUser = new IdentityUser
-                    {
-                        UserName = username,
-                        Email = model.Email
-                    };
+                //bool createdUser = await _userService.CreateUserBrokerOrg(user, userType); // LDAP User, PrimaryOrg, OrgType etc.
 
-                    var identityResult = await _userManager.CreateAsync(identityUser, user.Password);
-                    if (!identityResult.Succeeded)
-                    {
-                        // Handle errors (e.g., return an error response)
-                        var errors = string.Join("; ", identityResult.Errors.Select(e => e.Description));
-                        return BadRequest(identityResult.Errors);
-                    }
+                //if (createdUser)
+                //{
+                //    // Create Identity user
+                //    var identityUser = new IdentityUser
+                //    {
+                //        UserName = username,
+                //        Email = model.Email
+                //    };
 
-                    // Assign roles based on UserType
-                    if (model.UserType == "Broker")
-                    {
-                        // Example: Assign "Broker" role
-                        await _userManager.AddToRoleAsync(identityUser, "Broker");
-                    }
-                    else if (model.UserType == "Client")
-                    {
-                        await _userManager.AddToRoleAsync(identityUser, "Client");
-                    }
-                }
+                //    var identityResult = await _userManager.CreateAsync(identityUser, user.Password);
+                //    if (!identityResult.Succeeded)
+                //    {
+                //        // Handle errors (e.g., return an error response)
+                //        var errors = string.Join("; ", identityResult.Errors.Select(e => e.Description));
+                //        return BadRequest(identityResult.Errors);
+                //    }
+
+                //    // Assign roles based on UserType
+                //    if (model.UserType == "Broker")
+                //    {
+                //        // Example: Assign "Broker" role
+                //        await _userManager.AddToRoleAsync(identityUser, "Broker");
+                //    }
+                //    else if (model.UserType == "Client")
+                //    {
+                //        await _userManager.AddToRoleAsync(identityUser, "Client");
+                //    }
+                //}
                 return Ok(new { message = "User created successfully" });
             }
             catch (Exception ex)
