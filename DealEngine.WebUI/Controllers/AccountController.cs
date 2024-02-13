@@ -32,6 +32,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.IO;
 using System.Web;
+using NLog;
 #endregion
 
 namespace DealEngine.WebUI.Controllers
@@ -383,6 +384,9 @@ namespace DealEngine.WebUI.Controllers
                 if (resultCode == 0)
                 {
                     var user = await _userService.GetUser(userName);
+                    var Username = user.UserName;
+                    var PrimaryOrganizationName = user.PrimaryOrganisation.Name;
+                    //Logger.Debug("User: {UserName} with primary organization: {PrimaryOrganizationName}", user.UserName, user.PrimaryOrganisation.Name);
 
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {

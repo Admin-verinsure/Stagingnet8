@@ -20,6 +20,9 @@ using System.Data;
 using DealEngine.Services.Impl;
 using FluentNHibernate.Conventions;
 using Microsoft.Extensions.Azure;
+using DealEngine.WebUI.Models.Programme;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using ServiceStack;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -1551,6 +1554,7 @@ namespace DealEngine.WebUI.Controllers
             await _signInManager.SignInAsync(deUser, true);
             var currentUser = await _userService.GetApplicationUserByEmail(deUser.Email);
             using (var uow = _unitOfWork.BeginUnitOfWork())
+
             {
                 currentUser.IsLoggedout = false;
                 currentUser.LoggedInTime = DateTime.UtcNow;
@@ -1558,6 +1562,62 @@ namespace DealEngine.WebUI.Controllers
             }
             return Redirect("~/Home/Index");
 
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> CreateProgRenewal(IFormCollection form)
+        {
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
+                var brokers = await _userService.GetBrokerUsers();
+
+
+                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse("8f9f5f3e-e0f1-488c-8c29-1391b0fb8265"));///Dummy programme for renewal
+
+                ProgrammeInfoViewModel model = new ProgrammeInfoViewModel(brokers, programme, null);
+                List<Programme> programmes = await _programmeService.GetAllProgrammes();
+                List<SelectListItem> programmenames = new List<SelectListItem>();
+                model.Programme = programme;
+                foreach (Programme prog in programmes)
+                {
+                    programmenames.Add(
+                        new SelectListItem
+                        {
+                            Text = prog.Name,
+                            Value = prog.Id.ToString(),
+                            Selected = false
+                        });
+                }
+
+
+
+                //foreach (Programme prog in await _programmeService.GetAllProgrammes())
+                //{
+                //    programmenames.Add(prog.Name);
+                //}
+
+                 model.ProgrammeRenewalFrom = programmenames;
+
+                //ProgrammeInfoViewModel model = await _programmeService.GetProgrammeInfoViewModel(Guid.Parse('8f9f5f3e-e0f1-488c-8c29-1391b0fb8265'));///Dummy programme for renewal
+
+                return View("CreateProgRenewal", model);
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
         }
 
         [HttpGet]

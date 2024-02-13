@@ -115,7 +115,8 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsPolicyperiodclone { get; set; }
         public virtual bool IsProgrammerenewed { get; set; }
         public virtual bool IsProgrammebypassrefferal { get; set; }
-
+        public virtual string ProgrammeRenewalDateon { get; set; }
+        //public virtual List<string> ProgrammeRenewalFrom { get; set; }
 
 
         protected Programme() : this(null) { }
