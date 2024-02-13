@@ -571,14 +571,26 @@
         // Add User
 
         function SaveUser() {
-            debugger;
             var firstName = $('#InputFirstName').val();
             var lastName = $('#InputLastName').val();
             var email = $('#InputEmail').val();
             var homePhone = $('#InputHomePhone').val();
             var mobilePhone = $('#InputMobilePhone').val();
-            //var userType = $('#UserType').val();
-            var selectedOrgs = $('#Organisations').val();
+            
+            var organisationRoleMappings = [];
+            $('#dynamicOrgUserTypes .form-group').each(function () {
+                var orgId = $(this).find('.form-check-input').attr('id').split('_')[1];
+                var selectedRole = $(this).find('select').val();
+
+                // Create an object for each organisation-role mapping
+                var mapping = {
+                    organisationId: orgId,
+                    roleId: selectedRole // Update to roleIds if multiple
+                };
+
+                organisationRoleMappings.push(mapping);
+            });
+
             var mainOrgId = null;
             $('.form-check-input').each(function () {
                 if ($(this).is(':checked')) {
@@ -586,30 +598,10 @@
                 }
             });
 
-
-            var rolesToAdd = new Set(); // Using a Set to ensure uniqueness
-
-            // Iterate through each selected organization ID
-            selectedOrgs.forEach(function (orgId) {
-                // Construct the ID for the corresponding user type dropdown
-                var userTypeDropdownId = 'UserType_' + orgId;
-
-                // Select the dropdown and get its value
-                var selectedUserTypes = $('#' + userTypeDropdownId).val();
-
-                // Add each selected user type to the set
-                rolesToAdd.add(selectedUserType);
-            });
-
-            var uniqueRolesToAdd = Array.from(rolesToAdd);
-
-
-
             var oktaUID = $('#OktaUID').val();
             var salespersonUsername = $('#SalespersonUsername').val();
             var employeeNumber = $('#EmployeeNumber').val();
             var password = $('#InputPassword').val();
-
 
             // TODO - imrpove on Basic validation
             if (!firstName || !lastName || !email) {
@@ -629,7 +621,7 @@
 
             // Generate username
             var randomNum = Math.floor(Math.random() * 1000);
-            var username = firstName.replace(/\s+/g, '') + '_' + lastName.replace(/\s+/g, '') + randomNum;
+            var username = firstName.replace(/\s+/g, '') + lastName.replace(/\s+/g, '') + randomNum;
 
             var postData = {
                 Username: username,
@@ -638,10 +630,8 @@
                 Email: email,
                 HomePhone: homePhone,
                 MobilePhone: mobilePhone,
-                Organisations: selectedOrgs,
+                OrganisationRoleMappings: organisationRoleMappings,
                 MainOrganisationId: mainOrgId,
-                Roles: uniqueRolesToAdd,
-                //UserType: userType,
                 OktaUID: oktaUID,
                 SalespersonUsername: salespersonUsername,
                 EmployeeNumber: employeeNumber,
@@ -649,12 +639,11 @@
             };
 
             $.ajax({
-                url: '@Url.Action("CreateUser", "Authorize")', // Adjust URL as needed
+                url: '@Url.Action("CreateUser", "Authorize")',
                 type: "POST",
                 data: postData
             })
                 .done(function (data) {
-                    // Handle success
                     alert("User added successfully!");
                     location.reload();
                 })
@@ -711,7 +700,7 @@
             var postData = JSON.stringify(selectedOrgs);
 
             $.ajax({
-                url: '@Url.Action("GetOrganisationDetails", "Authorize")', // Adjust URL as needed
+                url: '@Url.Action("GetOrganisationDetails", "Authorize")',
                 type: "POST",
                 contentType: "application/json",
                 data: postData
@@ -720,7 +709,7 @@
                     // Clear existing dynamic fields
                     $('#dynamicOrgUserTypes').empty();
 
-                    // For each organisation, create a new select input for role and a checkbox for main organization
+                    // For each organisation, create a new select input for role and a checkbox for main organisation
                     response.forEach(org => {
                         var contentHtml = '<div class="form-group col-12">' +
                             '<label for="UserType_' + org.organisationId + '">User Type for ' + org.name + '</label>' +
@@ -734,16 +723,16 @@
 
                         contentHtml += '</select>';
 
-                        // Adding checkbox for selecting main organization
+                        // Adding checkbox for selecting main organisation
                         contentHtml += '<div class="form-check">' +
                             '<input class="form-check-input" type="checkbox" value="" id="MainOrg_' + org.organisationId + '">' +
-                            '<label class="form-check-label" for="MainOrg_' + org.organisationId + '">Main Organization</label>' +
+                            '<label class="form-check-label" for="MainOrg_' + org.organisationId + '">Main Employing Organisation</label>' +
                             '</div></div>';
 
                         $('#dynamicOrgUserTypes').append(contentHtml);
                     });
 
-                    // Logic to ensure only one checkbox can be selected as Main Organization
+                    // Logic to ensure only one checkbox can be selected as Main Employing Organisation
                     $('.form-check-input').on('change', function () {
                         $('.form-check-input').not(this).prop('checked', false);
                     });
@@ -753,7 +742,6 @@
                     alert("Error: " + errorMsg);
                 });
         }
-
 
 
         // function toggleBrokerFields() {

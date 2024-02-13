@@ -730,14 +730,14 @@ namespace DealEngine.WebUI.Controllers
             {
                 secondaryOrganisation = await _organisationService.GetOrganisation(model.MainOrganisationId);
             }
-            if (model.SelectedOrganisations != null)
-            {
-                foreach (Guid orgId in model.SelectedOrganisations)
-                {
-                    Organisation organisation = await _organisationService.GetOrganisation(orgId);
-                    organisations.Add(organisation);
-                }                 
-            }
+            //if (model.SelectedOrganisations != null)
+            //{
+            //    foreach (Guid orgId in model.SelectedOrganisations)
+            //    {
+            //        Organisation organisation = await _organisationService.GetOrganisation(orgId);
+            //        organisations.Add(organisation);
+            //    }                 
+            //}
 
 
             oktaUID = model.OktaUID;
@@ -748,6 +748,9 @@ namespace DealEngine.WebUI.Controllers
             // Generate a username
             Random random = new Random();
             username = firstName.Replace(" ", string.Empty) + "_" + lastName.Replace(" ", string.Empty) + random.Next(1000);
+
+            // Roles to Organisation
+
 
             // Create a new User instance
             User user = new User(null, Guid.NewGuid(), username)
@@ -766,18 +769,18 @@ namespace DealEngine.WebUI.Controllers
                 Password = password
             };
 
-            // Process selected organizations and roles
-            foreach (var orgId in model.SelectedOrganisations)
-            {
-                var selectedSecondaryOrganization = await _organisationService.GetOrganisation(orgId);
-                rolesForUser.Add(selectedSecondaryOrganization.Name.Replace(" ", ""));
-            }
+            //// Process selected organizations and roles - Need User-Role-Organization Relationship instead.
+            //foreach (var orgId in model.SelectedOrganisations)
+            //{
+            //    var selectedSecondaryOrganization = await _organisationService.GetOrganisation(orgId);
+            //    rolesForUser.Add(selectedSecondaryOrganization.Name.Replace(" ", ""));
+            //}
 
-            foreach (var role in model.Roles)
-            {
+            //foreach (var role in model.Roles)
+            //{
 
-                rolesForUser.Add(role);
-            }
+            //    rolesForUser.Add(role);
+            //}
 
             try
             {
