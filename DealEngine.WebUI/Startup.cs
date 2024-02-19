@@ -29,6 +29,8 @@ using DealEngine.WebUI.Helpers;
 using DealEngine.Services.Interfaces;
 using DealEngine.Services.Impl;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 
 namespace DealEngine.WebUI
 {
@@ -114,7 +116,11 @@ namespace DealEngine.WebUI
             services.AddScoped<IReportBuilderService, ReportBuilderService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
-
+            services.AddLogging(loggingBuilder =>
+            {
+                loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                loggingBuilder.AddNLog(); // Register NLog with the logging framework
+            });
             //var jobKey = new JobKey("ReportSchedular");.......
             services.AddQuartz(q =>
             {

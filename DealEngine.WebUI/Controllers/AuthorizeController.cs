@@ -55,46 +55,15 @@ namespace DealEngine.WebUI.Controllers
         }
 
         // GET: Authorize
+        // GET: Authorize
         public async Task<IActionResult> Index()
         {
             User user = null;
-            AuthorizeViewModel model = new AuthorizeViewModel();
-            IList<Organisation> orderedOrganisationList = null;
             try
             {
                 user = await CurrentUser();
-                if (user != null)
-                {
-                    var identityUser = await _userManager.FindByNameAsync(user.UserName);
-
-                    model.IsTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
-                }
-
-                if (model.IsTCUser)
-                {
-                    var organisationList = await _organisationService.GetAllOrganisations();
-                    orderedOrganisationList = organisationList
-                        .Where(o => o.OrganisationType?.Name == "Insurer")
-                        .GroupBy(o => o.Name)
-                        .Select(group => group.First())
-                        .OrderBy(o => o.Name)
-                        .ToList();
-                }
-                else
-                {
-                    // Only load their own Insurer Organisation if they're not TCUser. 
-                    var insurerOrganisation = user.Organisations.FirstOrDefault(o => o.OrganisationType?.Name == "Insurer");
-                    IList<Organisation> organisationList = new List<Organisation>();
-                    organisationList.Add(insurerOrganisation);
-                    orderedOrganisationList = organisationList.OrderBy(o => o.Name).ToList();
-                    if (insurerOrganisation.Name.Contains("Marsh & McLennan Agency"))
-                        model.isMarshUser = true;
-                    else
-                        model.isMarshUser = false;
-                }
 
                 var userList = await _userService.GetAllUsers();
-                var orderedUserList = userList.OrderBy(u => u.UserName).ToList();
                 var roleList = new List<IdentityRole>();
 
                 var claimList = await _claimService.GetClaimsAllClaimsList();
@@ -104,30 +73,17 @@ namespace DealEngine.WebUI.Controllers
                     claimList = await _claimService.GetClaimsAllClaimsList();
                 }
 
-                model = new AuthorizeViewModel
-                {
-                    RoleList = await _roleManager.Roles.ToListAsync(),
-                    UserList = orderedUserList,
-                    ClaimList = claimList,
-                    RoleClaims = new Dictionary<string, List<string>>(),
-                    OrganisationList = orderedOrganisationList
-                };         
+                AuthorizeViewModel model = new AuthorizeViewModel();
 
-                foreach (var role in model.RoleList)
+                model.RoleList = new List<IdentityRole>();
+                model.UserList = new List<User>();
+                model.ClaimList = claimList;
+                model.RoleList = await _roleManager.Roles.ToListAsync();
+
+                if (userList.Count != 0)
                 {
-                    var claimsInRole = await _roleManager.GetClaimsAsync(role);
-                    model.RoleClaims[role.Name] = claimsInRole.Select(c => c.Value).ToList();
+                    model.UserList = userList;
                 }
-
-                var roleClaimsDictionary = new Dictionary<string, List<string>>();
-
-                foreach (var role in model.RoleList)
-                {
-                    var claimsInRole = await _roleManager.GetClaimsAsync(role);
-                    roleClaimsDictionary[role.Name] = claimsInRole.Select(c => c.Value).ToList();
-                }
-
-                model.RoleClaims = roleClaimsDictionary;
 
                 return View(model);
             }
@@ -137,6 +93,7 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
 
         [HttpPost]
         public async Task<IActionResult> AddRole(string RoleName, string[] Claims)

@@ -1122,6 +1122,7 @@ namespace DealEngine.Services.Impl
 
                     if (string.IsNullOrEmpty(strallrotarynamedparties) && agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("Rotary Oceania Associations"))
                     {
+
                         strabusiness = "No Additional Insureds.";
                     }
 

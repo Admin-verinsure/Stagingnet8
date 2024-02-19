@@ -25,11 +25,11 @@
             </div>
         </div>
     </div>
-   @* <div class="row">
-        <div class="container">
-                    <label>  My Dashboard</label>
+    @* <div class="row">
+    <div class="container">
+    <label>  My Dashboard</label>
 
-         </div>
+    </div>
     </div>*@
     <!-- widget grid -->
     <section id="widget-grid" class="">
@@ -70,7 +70,7 @@
                                     <div class="">
                                         <div class="alert alert-info alert-dismissible" role="alert">
                                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="width: 0em; height: 0em;">
-                                            @*<span aria-hidden="true">&times;</span>*@
+                                                @*<span aria-hidden="true">&times;</span>*@
                                             </button>
                                             There are currently no pending tasks.
                                         </div>
@@ -92,14 +92,15 @@
                                                 </div>
                                                 @if (Model.CurrentUserType == "Broker")
                                                 {
-                                                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                                                    <button style="vertical-align: middle;" onclick="RemoveTask('@task.Id', '@task.URL', '@task.Name')" type="button" class="pull-right btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
-                                                </div>
+                                                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                                                        <button style="vertical-align: middle;" onclick="RemoveTask('@task.Id', '@task.URL', '@task.Name')" type="button" class="pull-right btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+                                                    </div>
                                                 }
-                                                else {
-                                                <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
-                                                    <button  style="vertical-align: middle;" type="button" class="pull-right btn btn-secondary btn-sm" id="trash"><span class="fa fa-trash"></span></button>
-                                                </div>
+                                                else
+                                                {
+                                                    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                                                        <button style="vertical-align: middle;" type="button" class="pull-right btn btn-secondary btn-sm" id="trash"><span class="fa fa-trash"></span></button>
+                                                    </div>
                                                 }
                                             </div>
                                             <p class="m-1"></p>
@@ -327,21 +328,21 @@
                                                 <td><a class="btn btn-success btn-sm disabled pull-right" style="width:100px;" href="#"><i class="fa fa-search"></i> In Dev</a></td>
                                             </tr>
                                         }
-                                        @if (User.HasClaim("ViewFileGallery","ViewFileGallery"))
+                                        @if (User.HasClaim("ViewFileGallery", "ViewFileGallery"))
                                         {
-                                        <tr>
-                                            <td>File Manager</td>
-                                            <td>Manage Images and Upload Files</td>
-                                            <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="/Image/ManageImage"><i class="fa fa-search"></i> View</a></td>
-                                        </tr>
+                                            <tr>
+                                                <td>File Manager</td>
+                                                <td>Manage Images and Upload Files</td>
+                                                <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="/Image/ManageImage"><i class="fa fa-search"></i> View</a></td>
+                                            </tr>
                                         }
-                                        @if (User.HasClaim("ViewReport","ViewReport"))
-                                        { 
-                                        <tr>
-                                            <td>Report Manager</td>
-                                            <td>Generate a Report</td>
-                                            <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="/Report/CreateReport"><i class="fa fa-search"></i> View</a></td>
-                                        </tr>
+                                        @if (User.HasClaim("ViewReport", "ViewReport"))
+                                        {
+                                            <tr>
+                                                <td>Report Manager</td>
+                                                <td>Generate a Report</td>
+                                                <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="/Report/CreateReport"><i class="fa fa-search"></i> View</a></td>
+                                            </tr>
                                         }
                                         @if (User.HasClaim("ViewMilestones", "ViewMilestones"))
                                         {
@@ -402,13 +403,13 @@
                                         }
                                         @if (User.HasClaim("ViewUsers", "ViewUsers"))
                                         {
-                                    <tr>
-                                        <td>Users</td>
-                                        <td>User Management</td>
-                                        <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="/Admin/CreateUser"><i class="fa fa-search"></i> Check User </a></td>
+                                            <tr>
+                                                <td>Users</td>
+                                                <td>User Management</td>
+                                                <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="/Admin/CreateUser"><i class="fa fa-search"></i> Check User </a></td>
 
-                                        @*<td><a class="btn btn-success btn-sm disabled pull-right" style="width:100px;" href="#"><i class="fa fa-search"></i> In Dev</a></td>*@
-                                    </tr>
+                                                @*<td><a class="btn btn-success btn-sm disabled pull-right" style="width:100px;" href="#"><i class="fa fa-search"></i> In Dev</a></td>*@
+                                            </tr>
                                         }
                                         @if (User.HasClaim("ViewWater", "ViewWater"))
                                         {
@@ -424,8 +425,8 @@
                         </div>
                     </div>
                 }
-                @if (User.IsInRole("TCUser") || User.IsInRole("BrokerAdmin"))
-                { 
+                @if (User.IsInRole("TCUser"))
+                {
                     <div class="form-group">
                         <div class="card">
                             <div class="card-header text-white" style="background-color:#3276b1">
@@ -436,41 +437,22 @@
                             <div class="card-body">
                                 <table class="table table-striped table-hover table-condensed">
                                     <tbody>
-                                        @if (User.HasClaim("ViewAdminManageAdmin", "ViewAdminManageAdmin")){
-                                           <tr>
-                                                <td>Manage Admin function</td>
-                                                <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="~/Admin/Index"><i class="fa fa-search"></i> View</a></td>
-                                            </tr>
-                                        }
-                                        @if (User.HasClaim("ViewAdminRolesClaims", "ViewAdminRolesClaims"))
-                                        {
-
-                                            <tr>
-                                                <td>Manage User Roles/Claims</td>
-                                                <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="~/Authorize/Index"><i class="fa fa-search"></i> View</a></td>
-                                            </tr>
-                                        
-                                        }                                   
-                                        @if (User.HasClaim("ViewAdminRSAUsers", "ViewAdminRSAUsers"))
-                                        {
-                                            <tr>
-                                                <td>Manage Rsa Users</td>
-                                                <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="~/Admin/ManageRsaUsers"><i class="fa fa-search"></i> View</a></td>
-                                            </tr>
-                                        }
-                                        @if (User.HasClaim("ViewAdminUpdateType", "ViewAdminUpdateType"))
-                                        {
-                                            <tr>
-                                                <td>Update Type</td>
-                                                <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="~/Admin/UpdateType"><i class="fa fa-search"></i> View</a></td>
-                                            </tr>
-                                        }     
-                                        
-                                         <tr>
-                                                <td>Create Programme Renewal</td>
-                                                <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="~/Admin/CreateProgRenewal"><i class="fa fa-search"></i> View</a></td>
-                                         </tr>
-
+                                        <tr>
+                                            <td>Manage Admin function</td>
+                                            <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="~/Admin/Index"><i class="fa fa-search"></i> View</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Manage Permissions</td>
+                                            <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="~/Authorize/Index"><i class="fa fa-search"></i> View</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Manage Rsa Users</td>
+                                            <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="~/Admin/ManageRsaUsers"><i class="fa fa-search"></i> View</a></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Update Type</td>
+                                            <td><a class="btn btn-success btn-sm pull-right" style="width:100px;" href="~/Admin/UpdateType"><i class="fa fa-search"></i> View</a></td>
+                                        </tr>
 
                                     </tbody>
                                 </table>
@@ -537,61 +519,60 @@
 
 <!-- end widget grid -->
 <!-- END MAIN CONTENT -->
-
 @section pagespecific {
     <script src="~/Scripts/insuranceicons.js"></script>
     <script type="text/javascript">
 
 
-    function showUserTaskModal() {
-        $('#addTaskModal').modal('show');
-    }
-
-    function ViewTask(id) {
-        $.ajax({
-            url: '@Url.Action("ViewTask", "Home")',
-            type: "GET",
-            data: { id }
-        })
-            .done(function (url) {
-              //  $("#ViewTask").on('load',url, function () {
-             })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                debugger;
-                alert("There was an error while trying to save Task." + jqXHR);
-            });
-    }
-
-    function createTask() {
-        var TaskCategory = $('input[name=TaskPriorityModal]:checked').val();
-        var CategoryValue;
-        if (TaskCategory == 'Critical') {
-            CategoryValue = '1';
-        } else {
-            CategoryValue = '0';
+        function showUserTaskModal() {
+            $('#addTaskModal').modal('show');
         }
-        var TaskDueDate = $('#TaskDueDateModal').val();
-        var TaskDetail = $('#TaskDetailModal').val();
-        var TaskDescription = $('#TaskDescriptionModal').val();
 
-        $.ajax({
-            url: '@Url.Action("AddTask", "Home")',
-            type: "POST",
-            data: { CategoryValue, TaskDueDate, TaskDetail, TaskDescription }
-        })
-            .done(function (data) {
-                $('#addTaskModal').modal('hide');
-                $.smallBox({
-                    title: "Task has been saved",
-                    color: "#5F895F",
-                    iconSmall: "fa fa-check bounce animated",
-                    timeout: 4000
-                });
+        function ViewTask(id) {
+            $.ajax({
+                url: '@Url.Action("ViewTask", "Home")',
+                type: "GET",
+                data: { id }
             })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                alert("There was an error while trying to save Task.");
-            });
-    }
+                .done(function (url) {
+                    //  $("#ViewTask").on('load',url, function () {
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    debugger;
+                    alert("There was an error while trying to save Task." + jqXHR);
+                });
+        }
+
+        function createTask() {
+            var TaskCategory = $('input[name=TaskPriorityModal]:checked').val();
+            var CategoryValue;
+            if (TaskCategory == 'Critical') {
+                CategoryValue = '1';
+            } else {
+                CategoryValue = '0';
+            }
+            var TaskDueDate = $('#TaskDueDateModal').val();
+            var TaskDetail = $('#TaskDetailModal').val();
+            var TaskDescription = $('#TaskDescriptionModal').val();
+
+            $.ajax({
+                url: '@Url.Action("AddTask", "Home")',
+                type: "POST",
+                data: { CategoryValue, TaskDueDate, TaskDetail, TaskDescription }
+            })
+                .done(function (data) {
+                    $('#addTaskModal').modal('hide');
+                    $.smallBox({
+                        title: "Task has been saved",
+                        color: "#5F895F",
+                        iconSmall: "fa fa-check bounce animated",
+                        timeout: 4000
+                    });
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    alert("There was an error while trying to save Task.");
+                });
+        }
 
         $(document).ready(function () {
             /*

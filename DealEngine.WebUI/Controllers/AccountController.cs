@@ -54,13 +54,14 @@ namespace DealEngine.WebUI.Controllers
         RoleManager<IdentityRole> _roleManager;
         ILdapService _ldapService;
         IOrganisationalUnitService _organisationalUnitService;
-        ILogger<AccountController> _logger;
+        Microsoft.Extensions.Logging.ILogger<AccountController> _logger;
         IApplicationLoggingService _applicationLoggingService;
         IHttpClientService _httpClientService;
         IAppSettingService _appSettingService;
         IImportService _importService;
         IUnitOfWork _unitOfWork;
         IMapperSession<User> _userRepository;
+      //  private readonly NLog.ILogger _nlogger;
 
         public AccountController(
             IUnitOfWork unitOfWork,
@@ -70,7 +71,7 @@ namespace DealEngine.WebUI.Controllers
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            ILogger<AccountController> logger,
+            Microsoft.Extensions.Logging.ILogger<AccountController> logger,
             IHttpClientService httpClientService,
             IOrganisationService organisationService,
             ILdapService ldapService,
@@ -79,6 +80,7 @@ namespace DealEngine.WebUI.Controllers
             IFileService fileService,
             IOrganisationalUnitService organisationalUnitService,
             IMapperSession<User> userRepository,
+           // NLog.ILogger nlogger,
             IAppSettingService appSettingService) : base(userService)
         {
             _unitOfWork = unitOfWork;
@@ -98,6 +100,7 @@ namespace DealEngine.WebUI.Controllers
             _organisationalUnitService = organisationalUnitService;
             _appSettingService = appSettingService;
             _userRepository = userRepository;
+            //_nlogger = nlogger;
         }
 
         // GET: /account/forgotpassword
@@ -386,7 +389,7 @@ namespace DealEngine.WebUI.Controllers
                     var user = await _userService.GetUser(userName);
                     var Username = user.UserName;
                     var PrimaryOrganizationName = user.PrimaryOrganisation.Name;
-                    //Logger.Debug("User: {UserName} with primary organization: {PrimaryOrganizationName}", user.UserName, user.PrimaryOrganisation.Name);
+                    //_nlogger.Info("User: {UserName} with primary organization: {PrimaryOrganizationName}", user.UserName, user.PrimaryOrganisation.Name);
 
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
