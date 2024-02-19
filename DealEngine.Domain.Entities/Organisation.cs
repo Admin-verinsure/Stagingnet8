@@ -122,13 +122,13 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsInsurer { get; set; }
         public virtual bool IsTC { get; set; }
         public virtual bool IsSecondaryOrg { get; set; }
-        public virtual bool isAssociation { get; set; }
-        public virtual bool isClient { get; set; }
-        public virtual bool isInsuredNamedParty { get; set; }
-        public virtual bool isCoInsurer { get; set; }
-        public virtual bool isExcessLayerInsurer { get; set; }
-        public virtual bool isReInsurer { get; set; }
-        public virtual bool isCaptive { get; set; }
+        public virtual bool IsAssociation { get; set; }
+        public virtual bool IsClient { get; set; }
+        public virtual bool IsInsuredNamedParty { get; set; }
+        public virtual bool IsCoInsurer { get; set; }
+        public virtual bool IsExcessLayerInsurer { get; set; }
+        public virtual bool IsReInsurer { get; set; }
+        public virtual bool IsCaptive { get; set; }
         public virtual bool IsProgrammeManager { get; set; }
         public virtual bool IsApproved { get; set; }
         public virtual string Clientmembership { get; set; }
@@ -282,6 +282,34 @@ namespace DealEngine.Domain.Entities
             {
                 Domain = "#",
                 Email = owner.Email
+            };
+        }
+
+        public static Organisation CreateBrokerOrganisation(User creatingUser, User owner, OrganisationType organisationType)
+        {
+            return new Organisation(creatingUser, Guid.NewGuid(), "Broker user organisation for " + owner.FullName, organisationType)
+            {
+                Domain = "#",
+                Email = owner.Email,
+                IsBroker = true
+            };
+        }
+        public static Organisation CreateInsurerOrganisation(User creatingUser, User owner, OrganisationType organisationType)
+        {
+            return new Organisation(creatingUser, Guid.NewGuid(), "Insurer user organisation for " + owner.FullName, organisationType)
+            {
+                Domain = "#",
+                Email = owner.Email,
+                IsInsurer = true
+            };
+        }
+        public static Organisation CreateAssociationOrganisation(User creatingUser, User owner, OrganisationType organisationType)
+        {
+            return new Organisation(creatingUser, Guid.NewGuid(), "Association user organisation for " + owner.FullName, organisationType)
+            {
+                Domain = "#",
+                Email = owner.Email,
+                IsAssociation = true
             };
         }
     }

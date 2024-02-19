@@ -17,6 +17,8 @@ using System.Linq;
 using NHibernate.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using DealEngine.WebUI.Models;
+//using Microsoft.AspNet.Identity;
+using DealEngine.Services.Impl;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -27,17 +29,18 @@ namespace DealEngine.WebUI.Controllers
         IClaimTemplateService _claimTemplateService;
         RoleManager<IdentityRole> _roleManager;
         UserManager<IdentityUser> _userManager;
-        
+        IUserRoleOrganisationService _userRoleOrganisationService;
         IOrganisationService _organisationService;
         IApplicationLoggingService _applicationLoggingService;
         ILogger<AuthorizeController> _logger;
 
         public AuthorizeController(
-            IUserService userService, 
-            IClaimService claimService, 
-            IClaimTemplateService claimTemplateService, 
-            RoleManager<IdentityRole> roleManager, 
-            UserManager<IdentityUser> userManager, 
+            IUserService userService,
+            IClaimService claimService,
+            IClaimTemplateService claimTemplateService,
+            RoleManager<IdentityRole> roleManager,
+            UserManager<IdentityUser> userManager,
+            IUserRoleOrganisationService userRoleOrganisationService,
             IOrganisationService organisationService,
             IApplicationLoggingService applicationLoggingService,
             ILogger<AuthorizeController> logger
@@ -48,6 +51,7 @@ namespace DealEngine.WebUI.Controllers
             _applicationLoggingService = applicationLoggingService;
             _organisationService = organisationService;
             _userManager = userManager;
+            _userRoleOrganisationService = userRoleOrganisationService;
             _roleManager = roleManager;
             _claimService = claimService;
             _claimTemplateService = claimTemplateService;
@@ -109,7 +113,7 @@ namespace DealEngine.WebUI.Controllers
                     if (await _userManager.IsInRoleAsync(identityUser, "BrokerAdmin"))
                     {
                         // We want Organisations that this user belongs to (has the org role for)                                             
-                        
+
                         // Check other organisations for SecondaryOrgs
                         foreach (Organisation org in user.Organisations)
                         {
@@ -145,7 +149,7 @@ namespace DealEngine.WebUI.Controllers
                     ClaimList = claimList,
                     RoleClaims = new Dictionary<string, List<string>>(),
                     OrganisationList = orderedOrganisationList
-                };         
+                };
 
                 foreach (var role in model.RoleList)
                 {
@@ -206,14 +210,14 @@ namespace DealEngine.WebUI.Controllers
 
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
-                     
+
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> DeleteRoleSelect(string RoleName)
         {
@@ -418,7 +422,7 @@ namespace DealEngine.WebUI.Controllers
                 user = await CurrentUser();
                 var appUser = await _userService.GetUserById(Guid.Parse(UserId));
                 var identityUser = await _userManager.FindByNameAsync(appUser.UserName);
-                if(identityUser != null)
+                if (identityUser != null)
                 {
                     foreach (var cl in Claims)
                     {
@@ -429,7 +433,7 @@ namespace DealEngine.WebUI.Controllers
 
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
@@ -445,14 +449,14 @@ namespace DealEngine.WebUI.Controllers
                 var claimvalue = form["value"];
                 var claimtype = form["type"];
                 Domain.Entities.Claim claim = new Domain.Entities.Claim(claimtype, claimvalue);
-                await _claimService.AddClaim(claim);                
+                await _claimService.AddClaim(claim);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
-                return NoContent();
+            return NoContent();
         }
 
         [HttpPost]
@@ -492,7 +496,7 @@ namespace DealEngine.WebUI.Controllers
                 var usersInRole = await _userManager.GetUsersInRoleAsync(roleName);
 
                 var userDtos = usersInRole
-                .OrderBy(u => u.UserName)    
+                .OrderBy(u => u.UserName)
                 .Select(u => new
                 {
                     u.Id,
@@ -656,44 +660,42 @@ namespace DealEngine.WebUI.Controllers
                         rolesToAllocate.Add("SeniorUnderwriter");
                         rolesToAllocate.Add("InsurerAdmin");
                     }
-                    if (secondaryOrg.isAssociation)
+                    if (secondaryOrg.IsAssociation)
                     {
                         rolesToAllocate.Add("AssociationAdmin");
                     }
-                    if (secondaryOrg.isClient)
+                    if (secondaryOrg.IsClient)
                     {
                         rolesToAllocate.Add("Client");
                     }
-                    if (secondaryOrg.isInsuredNamedParty)
+                    if (secondaryOrg.IsInsuredNamedParty)
                     {
                         rolesToAllocate.Add("NamedParty");
                     }
-                    if (secondaryOrg.isCoInsurer)
+                    if (secondaryOrg.IsCoInsurer)
                     {
                         rolesToAllocate.Add("CoInsuredUnderwriter");
                     }
-                    if (secondaryOrg.isExcessLayerInsurer)
+                    if (secondaryOrg.IsExcessLayerInsurer)
                     {
                         rolesToAllocate.Add("ExcessLayerUnderwriter");
                     }
-                    if (secondaryOrg.isReInsurer)
+                    if (secondaryOrg.IsReInsurer)
                     {
                         rolesToAllocate.Add("ReinsurerUnderwriter");
                     }
-                    if (secondaryOrg.isCaptive)
+                    if (secondaryOrg.IsCaptive)
                     {
                         rolesToAllocate.Add("CaptiveUnderwriter");
                     }
 
-                    
-                    
                     responseList.Add(new OrganisationRolesResponse
                     {
                         OrganisationId = id,
                         Name = secondaryOrg.Name,
                         Roles = rolesToAllocate.Distinct().ToList()
                     });
-                }              
+                }
 
                 return Ok(responseList);
             }
@@ -709,14 +711,19 @@ namespace DealEngine.WebUI.Controllers
         {
             // Declare key variables
             string username, firstName, lastName, email, homePhone, mobilePhone;
-            string  oktaUID, salespersonUsername, employeeNumber, password;
+            string oktaUID, salespersonUsername, employeeNumber, password;
             IList<string> rolesForUser = new List<string>();
+            IList<OrganisationRoleMapping> organisationRoleMappings = model.OrganisationRoleMappings;
             Organisation secondaryOrganisation = null;
             IList<Organisation> organisations = null;
+            IdentityRole primaryOrganisationRole = null;
+            string userType = null;
+            IList<IdentityRole> roles = null;
 
             //userType, organisationId,
             if (model == null)
             {
+                _logger.LogWarning("Attempted to create user with null model.");
                 return BadRequest("Invalid data. The user data cannot be null.");
             }
 
@@ -726,111 +733,145 @@ namespace DealEngine.WebUI.Controllers
             email = model.Email;
             homePhone = model.HomePhone;
             mobilePhone = model.MobilePhone;
-            if (model.MainOrganisationId != Guid.Empty)
-            {
-                secondaryOrganisation = await _organisationService.GetOrganisation(model.MainOrganisationId);
-            }
-            //if (model.SelectedOrganisations != null)
-            //{
-            //    foreach (Guid orgId in model.SelectedOrganisations)
-            //    {
-            //        Organisation organisation = await _organisationService.GetOrganisation(orgId);
-            //        organisations.Add(organisation);
-            //    }                 
-            //}
-
-
-            oktaUID = model.OktaUID;
-            salespersonUsername = model.SalespersonUsername;
-            employeeNumber = model.EmployeeNumber;
-            password = model.Password;
-
-            // Generate a username
-            Random random = new Random();
-            username = firstName.Replace(" ", string.Empty) + "_" + lastName.Replace(" ", string.Empty) + random.Next(1000);
-
-            // Roles to Organisation
-
-
-            // Create a new User instance
-            User user = new User(null, Guid.NewGuid(), username)
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                FullName = firstName + " " + lastName,
-                Email = email,
-                Phone = homePhone,
-                MobilePhone = mobilePhone,
-                SecondaryOrganisation = secondaryOrganisation,
-                Organisations = organisations,
-                OktaUID = oktaUID,
-                SalesPersonUserName = salespersonUsername,
-                EmployeeNumber = employeeNumber,
-                Password = password
-            };
-
-            //// Process selected organizations and roles - Need User-Role-Organization Relationship instead.
-            //foreach (var orgId in model.SelectedOrganisations)
-            //{
-            //    var selectedSecondaryOrganization = await _organisationService.GetOrganisation(orgId);
-            //    rolesForUser.Add(selectedSecondaryOrganization.Name.Replace(" ", ""));
-            //}
-
-            //foreach (var role in model.Roles)
-            //{
-
-            //    rolesForUser.Add(role);
-            //}
 
             try
             {
-                // Check if they're a broker
-                
-                // So what OrganisationTypes are we creating? 
+                _logger.LogInformation("Initiating user creation for: {Email}", model.Email);
 
-                // Default
-                // Broker 
+                if (model.MainOrganisationId != Guid.Empty)
+                {
+                    secondaryOrganisation = await _organisationService.GetOrganisation(model.MainOrganisationId);
+                }
 
-                // Save user to application's database
+                oktaUID = model.OktaUID;
+                salespersonUsername = model.SalespersonUsername;
+                employeeNumber = model.EmployeeNumber;
+                password = model.Password;
 
-                //bool createdUser = await _userService.CreateUserBrokerOrg(user, userType); // LDAP User, PrimaryOrg, OrgType etc.
+                // Generate a username
+                Random random = new Random();
+                username = firstName.Replace(" ", string.Empty) + "_" + lastName.Replace(" ", string.Empty) + random.Next(1000);
 
-                //if (createdUser)
-                //{
-                //    // Create Identity user
-                //    var identityUser = new IdentityUser
-                //    {
-                //        UserName = username,
-                //        Email = model.Email
-                //    };
+                // Determine UserType for Primary Organization & Add Organisations so can add to User
+                foreach (OrganisationRoleMapping organisationRoleMapping in organisationRoleMappings)
+                {
 
-                //    var identityResult = await _userManager.CreateAsync(identityUser, user.Password);
-                //    if (!identityResult.Succeeded)
-                //    {
-                //        // Handle errors (e.g., return an error response)
-                //        var errors = string.Join("; ", identityResult.Errors.Select(e => e.Description));
-                //        return BadRequest(identityResult.Errors);
-                //    }
+                    Organisation org = await _organisationService.GetOrganisation(organisationRoleMapping.OrganisationId);
+                    organisations.Add(org);
 
-                //    // Assign roles based on UserType
-                //    if (model.UserType == "Broker")
-                //    {
-                //        // Example: Assign "Broker" role
-                //        await _userManager.AddToRoleAsync(identityUser, "Broker");
-                //    }
-                //    else if (model.UserType == "Client")
-                //    {
-                //        await _userManager.AddToRoleAsync(identityUser, "Client");
-                //    }
-                //}
+                    // For the main employing Organisation Set the userType for creating PrimaryOrg
+                    if (organisationRoleMapping.OrganisationId == secondaryOrganisation.Id)
+                    {
+                        var role = await _roleManager.FindByIdAsync(organisationRoleMapping.RoleId);
+                        primaryOrganisationRole = role;
+
+                        if (role.Name.Contains("Broker"))
+                        {
+                            userType = "Broker";
+                        }
+                        else if (role.Name.Contains("Underwriter") || role.Name.Contains("InsurerAdmin"))
+                        {
+                            userType = "Insurer";
+                        }
+                        else if (role.Name.Contains("Association"))
+                        {
+                            userType = "Association";
+                        }
+                        else
+                        {
+                            userType = "Client";
+                        }
+                    }
+                }
+
+                // Create a new User instance
+                User user = new User(null, Guid.NewGuid(), username)
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    FullName = firstName + " " + lastName,
+                    Email = email,
+                    Phone = homePhone,
+                    MobilePhone = mobilePhone,
+                    SecondaryOrganisation = secondaryOrganisation,
+                    Organisations = organisations,
+                    OktaUID = oktaUID,
+                    SalesPersonUserName = salespersonUsername,
+                    EmployeeNumber = employeeNumber,
+                    Password = password
+                };
+
+                bool createdUser = await _userService.CreateUserPrimaryOrgOrgTypeAndLDAP(user, userType);
+
+                if (!createdUser)
+                {
+                    _logger.LogWarning("Failed to create user in application and LDAP for: {Email}", model.Email);
+                    return BadRequest("Failed to create user.");
+                }
+
+
+                if (createdUser)
+                {
+                    _logger.LogInformation("User created successfully in application and LDAP for: {Email}", model.Email);
+                    var identityUser = new IdentityUser
+                    {
+                        UserName = username,
+                        Email = model.Email
+                    };
+
+                    // Create Identity User
+                    var identityResult = await _userManager.CreateAsync(identityUser, user.Password);
+
+                    if (!identityResult.Succeeded)
+                    {
+                        // Handle errors (e.g., return an error response)
+                        _logger.LogError("Identity user creation failed for: {Email}. Errors: {Errors}", model.Email, string.Join(", ", identityResult.Errors.Select(e => e.Description)));
+                        return BadRequest(identityResult.Errors);
+                    }
+
+                    // TODO - Assign Roles based on Organisation To Role Mapping's
+                    List<string> uniqueRoleIds = organisationRoleMappings
+                        .Select(orm => orm.RoleId)
+                        .Distinct()
+                        .ToList();
+
+                    foreach (string roleId in uniqueRoleIds)
+                    {
+                        IdentityRole roleToAdd = await _roleManager.FindByIdAsync(roleId);
+                        if (roleToAdd != null)
+                        {
+                            roles.Add(roleToAdd);
+                        }
+                    }
+
+                    foreach (IdentityRole role in roles)
+                    {
+                        await _userManager.AddToRoleAsync(identityUser, role.Name);
+                    }
+
+                    // TODO - Create UserRoleOrg mappings 
+                    foreach (OrganisationRoleMapping orm in organisationRoleMappings)
+                    {
+                        UserRoleOrganisation userRoleOrg = new UserRoleOrganisation(user);
+                        Organisation org = await _organisationService.GetOrganisation(orm.OrganisationId);
+                        userRoleOrg.Organisation = org;
+                        userRoleOrg.RoleId = orm.RoleId;
+                        userRoleOrg.User = user;
+
+                        await _userRoleOrganisationService.AddUserRoleOrganisationAsync(userRoleOrg);
+                    }
+
+                    _logger.LogInformation("Identity user and roles created successfully for: {Email}", model.Email);
+                }
+
+                _logger.LogInformation("Completed user creation process for: {Email}", model.Email);
                 return Ok(new { message = "User created successfully" });
             }
+    
             catch (Exception ex)
             {
                 return BadRequest(new { error = ex.Message });
             }
         }
     }
-
-
 }
