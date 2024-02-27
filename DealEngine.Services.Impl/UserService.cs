@@ -14,6 +14,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Novell.Directory.Ldap;
 using NHibernate;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace DealEngine.Services.Impl
 {
@@ -463,7 +464,10 @@ namespace DealEngine.Services.Impl
                 SetUpUserAndOrganisation(user, userType);
                 _logger.LogDebug($"User and primary organisation setup completed for {user.Email}.");
 
-                Organisation primaryOrg = user.PrimaryOrganisation;
+                // Ensure Correct PrimaryOrganisation is set
+                var primaryOrg = user.Organisations
+                    .FirstOrDefault(o => o.OrganisationType != null && o.OrganisationType.Name == userType);
+                user.PrimaryOrganisation = primaryOrg;
 
                 // Create LDAP User
                 string ldapPassword = user.Password;
@@ -507,7 +511,7 @@ namespace DealEngine.Services.Impl
         {
             try
             {
-                _ldapService.Create(organisation);
+                _ldapService.CreateNoFakeTimeout(organisation);
                 return true;
             }
             catch (Exception ex)
@@ -518,22 +522,21 @@ namespace DealEngine.Services.Impl
         }
 
         private void SetUpUserAndOrganisation(User user, string userType)
-		{
-			if (userType == "Broker")
-			{
-				CreateBrokerUserOrganisation(user);
-			}
-			if (userType == "Insurer")
-			{
-				CreateInsurerUserOrganisation(user);
-
+        {
+            if (userType == "Broker")
+            {
+                CreateBrokerUserOrganisation(user);
             }
-            if (userType == "Association")
+            else if (userType == "Insurer")
+            {
+                CreateInsurerUserOrganisation(user);
+            }
+            else if (userType == "Association")
             {
                 CreateAssociationUserOrganisation(user);
             }
             else
-			{
+            {
                 CreateDefaultUserOrganisation(user);
             }
         }

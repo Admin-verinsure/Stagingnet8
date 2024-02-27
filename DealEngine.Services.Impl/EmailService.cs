@@ -1342,7 +1342,31 @@ namespace DealEngine.Services.Impl
             //using hardcoded variables
             EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, organisationUser.Email);
             string subject = "Rejoin Programme";
-            string body = "Dear "+organisationUser.FirstName+", A change on your insurance policy requires an action by you. If or when you wish rejoin 'Programme' Please login and action the task that is on your task list";
+            string body = "Dear " + organisationUser.FirstName + ", A change on your insurance policy requires an action by you. If or when you wish rejoin 'Programme' Please login and action the task that is on your task list";
+            email.From(DefaultSender);
+            email.WithSubject(subject);
+            email.UseHtmlBody(true);
+            email.WithBody(body);
+            email.Send();
+        }
+
+        public async Task CreateUserEmail(User createdUser)
+        {
+            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, createdUser.Email);
+            string subject = "Account creation for " + createdUser.UserName;
+            string body = "Dear " + createdUser.FirstName + ", Your DealEngine username is " + createdUser.UserName + ".";
+            email.From(DefaultSender);
+            email.WithSubject(subject);
+            email.UseHtmlBody(true);
+            email.WithBody(body);
+            email.Send();
+        }
+
+        public async Task CreateUserCreatedByEmail(User createdUser, User createdByUser)
+        {
+            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, createdByUser.Email);
+            string subject = "You created User " + createdUser.UserName;
+            string body = "Dear " + createdByUser.FirstName + ", You have created an Account with username " + createdUser.UserName + ".";
             email.From(DefaultSender);
             email.WithSubject(subject);
             email.UseHtmlBody(true);

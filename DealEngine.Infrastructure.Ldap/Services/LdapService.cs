@@ -150,7 +150,34 @@ namespace DealEngine.Infrastructure.Ldap.Services
 		}
 
 
-		public void Create (Organisation organisation)
+		public void Create(Organisation organisation)
+		{
+			using (LdapClient client = GetLdapServer(true))
+			{
+				LdapEntry entry = _organisationMapping.ToLdap(organisation, _ldapConfiguration.BaseDn);
+				var addRequest = new AddRequest(client.NextMessageId, entry);
+				var response = client.Send<AddResponse>(addRequest);
+				client.Unbind();
+				if (response.ResultCode == 68)
+				{
+					var nameExistsException = new Exception("NameAlreadyBoundException");
+					nameExistsException.HResult = 68;
+					throw nameExistsException;
+				}
+				else if (response.ResultCode == 0) // This actually means success not LdapTimeOut. Created function below to use and not break anything. https://ldap.com/ldap-result-code-reference/
+                {
+					var ldapTimeOut = new Exception("LdapTimeOut");
+					ldapTimeOut.HResult = 68;
+					throw ldapTimeOut;
+				}
+				else if (response.ResultCode > 0)
+				{
+					throw new Exception("Unable to create organisation in Ldap: " + response.ErrorMessage);
+				}
+			}
+		}
+
+        public void CreateNoFakeTimeout(Organisation organisation)
         {
             using (LdapClient client = GetLdapServer(true))
             {
@@ -163,12 +190,6 @@ namespace DealEngine.Infrastructure.Ldap.Services
                     var nameExistsException = new Exception("NameAlreadyBoundException");
                     nameExistsException.HResult = 68;
                     throw nameExistsException;
-                }
-                else if (response.ResultCode == 0)
-                {
-                    var ldapTimeOut = new Exception("LdapTimeOut");
-					ldapTimeOut.HResult = 68;
-                    throw ldapTimeOut;
                 }
                 else if (response.ResultCode > 0)
                 {

@@ -22,6 +22,7 @@ namespace DealEngine.WebUI.Models
         public IList<OrganisationRoleMapping> OrganisationRoleMappings { get; set; }
         public Guid MainOrganisationId { get; set; }
         public string OktaUID { get; set; }
+        public string ProposalOnlineUsername { get; set; }
         public string SalespersonUsername { get; set; }
         public string EmployeeNumber { get; set; }
         public string Password { get; set; }
@@ -31,7 +32,7 @@ namespace DealEngine.WebUI.Models
     {
         public Guid OrganisationId { get; set; }
 
-        public string RoleId { get; set; }
+        public string RoleName { get; set; }
 
         public OrganisationRoleMapping() {}
         

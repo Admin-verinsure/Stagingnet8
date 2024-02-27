@@ -17,7 +17,8 @@ namespace DealEngine.Infrastructure.Ldap.Interfaces
 		void Create (User user);
         void CreateWithPassword(User user, string password);
         void Create (Organisation organisation);
-		void Update (User user);
+        void CreateNoFakeTimeout(Organisation organisation);
+        void Update (User user);
 		void Update (Organisation organisation);
 		void GlobalBan (User user);
 		void RemoveGlobalBan (User user);

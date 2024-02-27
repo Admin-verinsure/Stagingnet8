@@ -585,7 +585,7 @@
                 // Create an object for each organisation-role mapping
                 var mapping = {
                     organisationId: orgId,
-                    roleId: selectedRole // Update to roleIds if multiple
+                    roleName: selectedRole // Update to roleIds if multiple
                 };
 
                 organisationRoleMappings.push(mapping);
@@ -599,30 +599,28 @@
             });
 
             var oktaUID = $('#OktaUID').val();
+            var proposalOnlineUsername = $('#ProposalOnlineUsername').val();
+
             var salespersonUsername = $('#SalespersonUsername').val();
             var employeeNumber = $('#EmployeeNumber').val();
             var password = $('#InputPassword').val();
 
-            // TODO - imrpove on Basic validation
-            if (!firstName || !lastName || !email) {
+            if (!firstName || !lastName || !email || !password) {
                 alert("Please fill in all required fields.");
                 return;
             }
 
-            /*
-                //var organisationName = $('#Organisation option:selected').text();
-                //var isBrokerWithMarsh = userType === 'Broker' && organisationName.includes('Marsh');
-
-                // Additional validation for brokers associated with 'Marsh'
-                if (isBrokerWithMarsh && (!oktaUID || !salespersonUsername || !employeeNumber)) {
-                    alert("Please fill in all required fields for a Broker associated with Marsh.");
-                    return;
-            }*/
+            // Conditional validation for Okta UID when brokerFields is visible
+            if ($('#brokerFields').is(':visible') && !oktaUID) {
+                alert("Please enter the Okta UID.");
+                return;
+            }
 
             // Generate username
             var randomNum = Math.floor(Math.random() * 1000);
             var username = firstName.replace(/\s+/g, '') + lastName.replace(/\s+/g, '') + randomNum;
 
+            debugger;
             var postData = {
                 Username: username,
                 FirstName: firstName,
@@ -633,6 +631,7 @@
                 OrganisationRoleMappings: organisationRoleMappings,
                 MainOrganisationId: mainOrgId,
                 OktaUID: oktaUID,
+                ProposalOnlineUsername: proposalOnlineUsername,
                 SalespersonUsername: salespersonUsername,
                 EmployeeNumber: employeeNumber,
                 Password: password
@@ -644,7 +643,7 @@
                 data: postData
             })
                 .done(function (data) {
-                    alert("User added successfully!");
+                    alert("Successfully created User: " + data.username + ". An email has been sent to retain a record of the username.");
                     location.reload();
                 })
                 .fail(function (jqXHR, textStatus, errorThrown) {
@@ -652,48 +651,6 @@
                     alert("Error: " + errorMsg);
                 });
         }
-
-
-        // function loadOrganisationDetails() {
-        //     debugger;
-        //     var selectedOrgs = $('#Organisations').val();
-        //     var postData = JSON.stringify(selectedOrgs);
-
-        //     $.ajax({
-        //         url: 'ATUrl.Action("GetOrganisationDetails", "Authorize")', // Adjust URL as needed
-        //         type: "POST",
-        //         contentType: "application/json",
-        //         data: postData
-        //     })
-        //         .done(function (response) {
-        //             // Clear existing dynamic fields
-        //             $('#dynamicOrgUserTypes').empty();
-        //             debugger;
-
-        //             // For each organisation, create a new select input for role
-        //             response.forEach(org => {
-        //                 var selectHtml = '<div class="form-group col-12">' +
-        //                     '<label for="UserType_' + org.organisationId + '">User Type for ' + org.name + '</label>' +
-        //                     '<select class="form-control" id="UserType_' + org.organisationId + '">';
-
-        //                 if (org.roles && Array.isArray(org.roles)) {
-        //                     org.roles.forEach(role => {
-        //                         selectHtml += '<option value="' + role + '">' + role + '</option>';
-        //                     });
-        //                 }
-
-        //                 selectHtml += '</select></div>';
-        //                 $('#dynamicOrgUserTypes').append(selectHtml);
-        //             });
-        //         })
-        //         .fail(function (jqXHR, textStatus, errorThrown) {
-        //             var errorMsg = jqXHR.responseJSON && jqXHR.responseJSON.error ? jqXHR.responseJSON.error : "Unknown error occurred";
-        //             alert("Error: " + errorMsg);
-        //         });
-
-        //     // AJAX call to backend to get details for selected organizations
-        //     // On success, dynamically create additional selection boxes or display roles
-        // }
 
         function loadOrganisationDetails() {
             var selectedOrgs = $('#Organisations').val();
@@ -709,6 +666,17 @@
                     // Clear existing dynamic fields
                     $('#dynamicOrgUserTypes').empty();
 
+                    var isMarshSelected = response.some(org => org.name === "Marsh Limited NZ");
+
+                    if (isMarshSelected){
+                        $('#brokerFields').show();
+                    } 
+                    else {
+                        $('#brokerFields').hide();
+                    }
+                    var firstCheckboxAdded = false;
+                    
+
                     // For each organisation, create a new select input for role and a checkbox for main organisation
                     response.forEach(org => {
                         var contentHtml = '<div class="form-group col-12">' +
@@ -723,9 +691,11 @@
 
                         contentHtml += '</select>';
 
-                        // Adding checkbox for selecting main organisation
+                        var checkedAttribute = !firstCheckboxAdded ? ' checked' : '';
+                        firstCheckboxAdded = true;
+
                         contentHtml += '<div class="form-check">' +
-                            '<input class="form-check-input" type="checkbox" value="" id="MainOrg_' + org.organisationId + '">' +
+                            '<input class="form-check-input" type="checkbox" value="" id="MainOrg_' + org.organisationId + '"' + checkedAttribute + '>' +
                             '<label class="form-check-label" for="MainOrg_' + org.organisationId + '">Main Employing Organisation</label>' +
                             '</div></div>';
 
@@ -742,7 +712,48 @@
                     alert("Error: " + errorMsg);
                 });
         }
+        /*
 
+                // function loadOrganisationDetails() {
+                //     debugger;
+                //     var selectedOrgs = $('#Organisations').val();
+                //     var postData = JSON.stringify(selectedOrgs);
+
+                //     $.ajax({
+                //         url: 'ATUrl.Action("GetOrganisationDetails", "Authorize")', // Adjust URL as needed
+                //         type: "POST",
+                //         contentType: "application/json",
+                //         data: postData
+                //     })
+                //         .done(function (response) {
+                //             // Clear existing dynamic fields
+                //             $('#dynamicOrgUserTypes').empty();
+                //             debugger;
+
+                //             // For each organisation, create a new select input for role
+                //             response.forEach(org => {
+                //                 var selectHtml = '<div class="form-group col-12">' +
+                //                     '<label for="UserType_' + org.organisationId + '">User Type for ' + org.name + '</label>' +
+                //                     '<select class="form-control" id="UserType_' + org.organisationId + '">';
+
+                //                 if (org.roles && Array.isArray(org.roles)) {
+                //                     org.roles.forEach(role => {
+                //                         selectHtml += '<option value="' + role + '">' + role + '</option>';
+                //                     });
+                //                 }
+
+                //                 selectHtml += '</select></div>';
+                //                 $('#dynamicOrgUserTypes').append(selectHtml);
+                //             });
+                //         })
+                //         .fail(function (jqXHR, textStatus, errorThrown) {
+                //             var errorMsg = jqXHR.responseJSON && jqXHR.responseJSON.error ? jqXHR.responseJSON.error : "Unknown error occurred";
+                //             alert("Error: " + errorMsg);
+                //         });
+
+                //     // AJAX call to backend to get details for selected organizations
+                //     // On success, dynamically create additional selection boxes or display roles
+                // }
 
         // function toggleBrokerFields() {
         //     var userType = $('#UserType').val();
@@ -791,7 +802,17 @@
         //             alert("Unable to save.");
         //         });
         // }
+                        
+        //var organisationName = $('#Organisation option:selected').text();
+        //var isBrokerWithMarsh = userType === 'Broker' && organisationName.includes('Marsh');
 
+        // Additional validation for brokers associated with 'Marsh'
+        //     if (isBrokerWithMarsh && (!oktaUID || !salespersonUsername || !employeeNumber)) {
+        //         alert("Please fill in all required fields for a Broker associated with Marsh.");
+        //         return;
+        // }
+
+    */
     </script>
 }
 

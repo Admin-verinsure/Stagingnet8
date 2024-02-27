@@ -26,6 +26,7 @@ namespace DealEngine.WebUI.Controllers
     public class AuthorizeController : BaseController
     {
         IClaimService _claimService;
+        IEmailService _emailService;
         IClaimTemplateService _claimTemplateService;
         RoleManager<IdentityRole> _roleManager;
         UserManager<IdentityUser> _userManager;
@@ -36,6 +37,7 @@ namespace DealEngine.WebUI.Controllers
 
         public AuthorizeController(
             IUserService userService,
+            IEmailService emailService,
             IClaimService claimService,
             IClaimTemplateService claimTemplateService,
             RoleManager<IdentityRole> roleManager,
@@ -56,6 +58,7 @@ namespace DealEngine.WebUI.Controllers
             _claimService = claimService;
             _claimTemplateService = claimTemplateService;
             _userService = userService;
+            _emailService = emailService;
         }
 
         // GET: Authorize
@@ -711,14 +714,14 @@ namespace DealEngine.WebUI.Controllers
         {
             // Declare key variables
             string username, firstName, lastName, email, homePhone, mobilePhone;
-            string oktaUID, salespersonUsername, employeeNumber, password;
+            string oktaUID, proposalOnlineUsername, salespersonUsername, employeeNumber, password;
             IList<string> rolesForUser = new List<string>();
             IList<OrganisationRoleMapping> organisationRoleMappings = model.OrganisationRoleMappings;
             Organisation secondaryOrganisation = null;
-            IList<Organisation> organisations = null;
+            IList<Organisation> organisations = new List<Organisation>();
             IdentityRole primaryOrganisationRole = null;
             string userType = null;
-            IList<IdentityRole> roles = null;
+            IList<IdentityRole> roles = new List<IdentityRole>();
 
             //userType, organisationId,
             if (model == null)
@@ -744,13 +747,21 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 oktaUID = model.OktaUID;
+                proposalOnlineUsername = model.ProposalOnlineUsername;
                 salespersonUsername = model.SalespersonUsername;
                 employeeNumber = model.EmployeeNumber;
                 password = model.Password;
 
-                // Generate a username
-                Random random = new Random();
-                username = firstName.Replace(" ", string.Empty) + "_" + lastName.Replace(" ", string.Empty) + random.Next(1000);
+                if (proposalOnlineUsername == null)
+                {
+                    // Generate a username
+                    Random random = new Random();
+                    username = firstName.Replace(" ", string.Empty) + "_" + lastName.Replace(" ", string.Empty) + random.Next(1000);
+                }
+                else {
+                    username = proposalOnlineUsername;
+                }
+
 
                 // Determine UserType for Primary Organization & Add Organisations so can add to User
                 foreach (OrganisationRoleMapping organisationRoleMapping in organisationRoleMappings)
@@ -762,7 +773,7 @@ namespace DealEngine.WebUI.Controllers
                     // For the main employing Organisation Set the userType for creating PrimaryOrg
                     if (organisationRoleMapping.OrganisationId == secondaryOrganisation.Id)
                     {
-                        var role = await _roleManager.FindByIdAsync(organisationRoleMapping.RoleId);
+                        var role = await _roleManager.FindByNameAsync(organisationRoleMapping.RoleName);
                         primaryOrganisationRole = role;
 
                         if (role.Name.Contains("Broker"))
@@ -770,7 +781,7 @@ namespace DealEngine.WebUI.Controllers
                             userType = "Broker";
                         }
                         else if (role.Name.Contains("Underwriter") || role.Name.Contains("InsurerAdmin"))
-                        {
+                        { 
                             userType = "Insurer";
                         }
                         else if (role.Name.Contains("Association"))
@@ -829,15 +840,14 @@ namespace DealEngine.WebUI.Controllers
                         return BadRequest(identityResult.Errors);
                     }
 
-                    // TODO - Assign Roles based on Organisation To Role Mapping's
-                    List<string> uniqueRoleIds = organisationRoleMappings
-                        .Select(orm => orm.RoleId)
+                    List<string> uniqueRoleNames = organisationRoleMappings
+                        .Select(orm => orm.RoleName)
                         .Distinct()
                         .ToList();
 
-                    foreach (string roleId in uniqueRoleIds)
+                    foreach (string roleName in uniqueRoleNames)
                     {
-                        IdentityRole roleToAdd = await _roleManager.FindByIdAsync(roleId);
+                        IdentityRole roleToAdd = await _roleManager.FindByNameAsync(roleName);
                         if (roleToAdd != null)
                         {
                             roles.Add(roleToAdd);
@@ -849,13 +859,13 @@ namespace DealEngine.WebUI.Controllers
                         await _userManager.AddToRoleAsync(identityUser, role.Name);
                     }
 
-                    // TODO - Create UserRoleOrg mappings 
                     foreach (OrganisationRoleMapping orm in organisationRoleMappings)
                     {
                         UserRoleOrganisation userRoleOrg = new UserRoleOrganisation(user);
-                        Organisation org = await _organisationService.GetOrganisation(orm.OrganisationId);
-                        userRoleOrg.Organisation = org;
-                        userRoleOrg.RoleId = orm.RoleId;
+                        //Organisation org = await _organisationService.GetOrganisation(orm.OrganisationId);
+                        userRoleOrg.OrganisationId = orm.OrganisationId;
+                        IdentityRole getRoleId = await _roleManager.FindByNameAsync(orm.RoleName);
+                        userRoleOrg.RoleId = getRoleId.Id;
                         userRoleOrg.User = user;
 
                         await _userRoleOrganisationService.AddUserRoleOrganisationAsync(userRoleOrg);
@@ -864,10 +874,16 @@ namespace DealEngine.WebUI.Controllers
                     _logger.LogInformation("Identity user and roles created successfully for: {Email}", model.Email);
                 }
 
+                //await _emailService.CreateUserEmail(user);
+
+                var creatingUser = await CurrentUser();
+                //await _emailService.CreateUserCreatedByEmail(user, creatingUser);
+
                 _logger.LogInformation("Completed user creation process for: {Email}", model.Email);
-                return Ok(new { message = "User created successfully" });
+                return Ok(new { message = "User created successfully", username = user.UserName });
+
             }
-    
+
             catch (Exception ex)
             {
                 return BadRequest(new { error = ex.Message });

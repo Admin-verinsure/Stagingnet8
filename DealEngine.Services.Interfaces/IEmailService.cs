@@ -50,6 +50,8 @@ namespace DealEngine.Services.Interfaces
         Task RsaLogEmail(string recipient, string loginUserUserName, string requestXML, string responseXML);
         Task EGlobalLogEmail(string recipient, string transactionreferenceid, string requestXML, string responseXML);
         Task JoinOrganisationEmail(User organisationUser);
+        Task CreateUserEmail(User createdUser);
+        Task CreateUserCreatedByEmail(User createdUser, User creatingUser);
         Task RemoveOrganisationUserEmail(User removedUser, User brokerContactUser, ClientInformationSheet sheet);
         Task RsaNotificationEmail(string recipient, string rsausername);
         Task SendReportsViaEmail(string recipent, string workbook);
