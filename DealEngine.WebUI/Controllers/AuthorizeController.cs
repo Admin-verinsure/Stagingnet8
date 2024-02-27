@@ -34,8 +34,10 @@ namespace DealEngine.WebUI.Controllers
         IOrganisationService _organisationService;
         IApplicationLoggingService _applicationLoggingService;
         ILogger<AuthorizeController> _logger;
+        IAppSettingService _appSettingService;
 
         public AuthorizeController(
+            IAppSettingService appSettingService,
             IUserService userService,
             IEmailService emailService,
             IClaimService claimService,
@@ -51,6 +53,7 @@ namespace DealEngine.WebUI.Controllers
         {
             _logger = logger;
             _applicationLoggingService = applicationLoggingService;
+            _appSettingService = appSettingService;
             _organisationService = organisationService;
             _userManager = userManager;
             _userRoleOrganisationService = userRoleOrganisationService;
@@ -874,10 +877,15 @@ namespace DealEngine.WebUI.Controllers
                     _logger.LogInformation("Identity user and roles created successfully for: {Email}", model.Email);
                 }
 
-                //await _emailService.CreateUserEmail(user);
+                string isLinuxEnv = _appSettingService.IsLinuxEnv;
 
-                var creatingUser = await CurrentUser();
-                //await _emailService.CreateUserCreatedByEmail(user, creatingUser);
+                if (isLinuxEnv == "True")
+                {
+                    await _emailService.CreateUserEmail(user);
+
+                    var creatingUser = await CurrentUser();
+                    await _emailService.CreateUserCreatedByEmail(user, creatingUser);
+                }
 
                 _logger.LogInformation("Completed user creation process for: {Email}", model.Email);
                 return Ok(new { message = "User created successfully", username = user.UserName });
