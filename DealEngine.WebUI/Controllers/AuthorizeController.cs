@@ -318,7 +318,34 @@ namespace DealEngine.WebUI.Controllers
                         // Check if the claim already exists to avoid duplicates
                         if (!currentClaims.Any(c => c.Value == template.Value))
                         {
-                            await _roleManager.AddClaimAsync(role, claim);
+                            try
+                            {
+                                var result = await _roleManager.AddClaimAsync(role, claim);
+
+                                if (!result.Succeeded)
+                                {
+                                    var errorMessages = string.Join(", ", result.Errors.Select(e => e.Description));
+                                    _logger.LogError("Failed to add claim: {claim} to role: {role}. Errors: {errors}", claim, RoleName, errorMessages);
+                                    return BadRequest($"Failed to update role: {errorMessages}");
+                                }
+                                else
+                                {
+                                    _logger.LogInformation("Successfully added claim: {claim} to role: {role}", claim, RoleName); // Log success
+                                }
+
+                                var claims = await _roleManager.GetClaimsAsync(role);
+
+                                _logger.LogInformation("Claims for role {RoleName}:", RoleName);
+                                foreach (var claim2 in claims)
+                                {
+                                    _logger.LogInformation("  - Type: {ClaimType}, Value: {ClaimValue}", claim2.Type, claim2.Value);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "Exception occurred when adding claim {ClaimType} to role {RoleName}", claim.Type, role.Name);
+                            }
+
                         }
                     }
 
