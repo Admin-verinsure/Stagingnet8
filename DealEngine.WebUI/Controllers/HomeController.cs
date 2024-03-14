@@ -198,8 +198,10 @@ namespace DealEngine.WebUI.Controllers
                 }
                 else
                 {
-                    _nlogger.LogInformation("Visited the Homecontrolle Index method but user is not client for  " + user.UserName);
+                    _nlogger.LogInformation("Visited the Homecontroller Index method but user is not client for  " + user.UserName);
                     programmeList = await _programmeService.GetAllProgrammes();
+                    _nlogger.LogInformation("Visited the Homecontroller Index method with programme list for user " + user.UserName + " programmeList:- "+ programmeList.Count);
+
                 }
 
                 foreach (Programme programme in programmeList.Distinct().OrderByDescending(proglist => proglist.DateCreated))

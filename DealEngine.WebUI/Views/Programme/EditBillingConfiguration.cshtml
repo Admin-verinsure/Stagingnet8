@@ -95,6 +95,8 @@
                         </td>
 
                     </tr>
+                   @* if(@Model.BrokerContactUser.DefaultOU != null)
+                    {
                     <tr>
 
                         <td align="left">
@@ -106,6 +108,8 @@
                         </td>
 
                     </tr>
+                    }
+                    *@
                     <tr>
                         <td align="left" colspan="2">
                             <button onclick="SaveBillingConfiguration()" class="btn btn-success btn-sm" id="SaveBillingConfiguration"><i class="fa fa-edit"></i>Save</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
