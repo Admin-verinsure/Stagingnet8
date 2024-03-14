@@ -1014,7 +1014,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             {
                 EbixDepartment = EGlobalPolicy.ClientProgramme.BrokerContactUser.DefaultOU.EbixDepartmentCode;
             }
-            
+
 
             // Create the Queue
             EGlobalPolicy.Queue = new EBixQueue()
