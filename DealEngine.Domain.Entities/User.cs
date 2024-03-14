@@ -32,6 +32,7 @@ namespace DealEngine.Domain.Entities
             RemoveAdvisorNotifyProgrammes = new List<Programme>();
             UISUpdateNotifyProgrammes = new List<Programme>();
             ClientNumberNotifyProgrammes = new List<Programme>();
+            UserRoleOrganisations = new List<UserRoleOrganisation>();
             //InitialNameOptions = GetInitialSelectOptions();
         }
 
@@ -66,7 +67,9 @@ namespace DealEngine.Domain.Entities
 
         public virtual string FullName { get; set; }
 
-		public virtual string Description { get; set; }
+        public virtual IList<UserRoleOrganisation> UserRoleOrganisations { get; set; }
+
+        public virtual string Description { get; set; }
         public virtual Image ProfilePicture { get; set; }
 
 		public virtual bool Locked { get; protected set; }
@@ -102,6 +105,9 @@ namespace DealEngine.Domain.Entities
 				_primaryOrganisation = value;
 			}
 		}
+
+        // Organisation User belongs to
+        public virtual Organisation SecondaryOrganisation { get; set; }
 
         public virtual IList<SelectListItem> GetInitialSelectOptions()
         {

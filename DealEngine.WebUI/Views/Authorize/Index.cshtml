@@ -7,86 +7,245 @@
                     <div class="card-header" id="headingOne">
                         <h2 class="mb-0 accordion-header">
                             <button class="btn btn-link " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Configure Role
+                                Manage Roles
                             </button>
                         </h2>
                     </div>
-                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                         <div class="card-body">
-                            <div class="container" id="AddRoleForm">
-                                <form>
-                                    <div class="form-group">
+
+                            <ul class="nav nav-tabs" id="roleTabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="add-role-tab" data-bs-toggle="tab" href="#addRole" role="tab" aria-controls="addRole" aria-selected="true">Add Role</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="update-role-tab" data-bs-toggle="tab" href="#updateRole" role="tab" aria-controls="updateRole" aria-selected="false">Update Role</a>
+                                </li>
+                                @if (Model.IsTCUser)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="delete-role-tab" data-bs-toggle="tab" href="#deleteRole" role="tab" aria-controls="deleteRole" aria-selected="false">Delete Role</a>
+                                    </li>
+                                }
+                            </ul>
+
+                            <div class="tab-content" id="roleTabsContent">
+                                <div class="tab-pane fade show active" id="addRole" role="tabpanel" aria-labelledby="add-role-tab">
+                                    <div class="container" id="AddRoleForm">
                                         @await Html.PartialAsync("AddRoleForm", Model)
                                     </div>
-                                    <div class="form-group">
+                                </div>
+                                <div class="tab-pane fade" id="updateRole" role="tabpanel" aria-labelledby="update-role-tab">
+                                    <div class="container" id="UpdateRoleForm">
                                         @await Html.PartialAsync("UpdateRoleForm", Model)
                                     </div>
+                                </div>
+                                @if (Model.IsTCUser)
+                                {
+                                    <div class="tab-pane fade" id="deleteRole" role="tabpanel" aria-labelledby="delete-role-tab">
+                                        <div class="container" id="DeleteRoleForm">
+                                            @await Html.PartialAsync("DeleteRoleForm", Model)
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingtwo">
+                        <h2 class="mb-0 accordion-header">
+                            <button class="btn btn-link " type="button" data-bs-toggle="collapse" data-bs-target="#collapsetwo" aria-expanded="false" aria-controls="collapsetwo">
+                                Manage Claims
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapsetwo" class="accordion-collapse collapse" aria-labelledby="headingtwo" data-bs-parent="#accordionExample">
+                        <div class="card-body">
+
+                            <ul class="nav nav-tabs" id="claimTabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="add-claim-tab" data-bs-toggle="tab" href="#addClaim" role="tab" aria-controls="addClaim" aria-selected="true">Add Claim</a>
+                                </li>
+                                @if (Model.IsTCUser)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="delete-claim-tab" data-bs-toggle="tab" href="#deleteClaim" role="tab" aria-controls="deleteClaim" aria-selected="false">Delete Claim</a>
+                                    </li>
+                                }
+                            </ul>
+
+                            <div class="tab-content" id="claimTabsContent">
+                                <div class="tab-pane fade show active" id="addClaim" role="tabpanel" aria-labelledby="add-claim-tab">
+                                    <div class="container" id="AddClaimForm">
+                                        @await Html.PartialAsync("AddClaimForm", Model)
+                                    </div>
+                                </div>
+                                @if (Model.IsTCUser)
+                                {
+                                    <div class="tab-pane fade" id="deleteClaim" role="tabpanel" aria-labelledby="delete-claim-tab">
+                                        <div class="container" id="DeleteClaimForm">
+                                            @await Html.PartialAsync("DeleteClaimForm", Model)
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card">
+                    <div class="card-header" id="headingManageUsers">
+                        <h2 class="mb-0 accordion-header">
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseManageUsers" aria-expanded="false" aria-controls="collapseManageUsers">
+                                Manage Users
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseManageUsers" class="accordion-collapse collapse" aria-labelledby="headingManageUsers" data-bs-parent="#accordionExample">
+                        <div class="card-body">
+                            <ul class="nav nav-tabs" id="userTabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="create-user-tab" data-bs-toggle="tab" href="#createUser" role="tab" aria-controls="createUser" aria-selected="true">Create User</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="edit-user-tab" data-bs-toggle="tab" href="#editUser" role="tab" aria-controls="editUser" aria-selected="false">Edit User</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="delete-user-tab" data-bs-toggle="tab" href="#deleteUser" role="tab" aria-controls="deleteUser" aria-selected="false">Delete User</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="userTabsContent">
+                                <div class="tab-pane fade show active" id="createUser" role="tabpanel" aria-labelledby="create-user-tab">
+                                    <!-- Create User Form -->
+                                    <div class="container" id="CreateUserForm">
+                                        @await Html.PartialAsync("AddUserForm", Model)
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="editUser" role="tabpanel" aria-labelledby="edit-user-tab">
+                                    <!-- Edit User Form -->
+                                    <div class="container" id="EditUserForm">
+@*                                         @await Html.PartialAsync("AddUserForm", Model)
+ *@                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="deleteUser" role="tabpanel" aria-labelledby="delete-user-tab">
+                                    <!-- Delete User Form -->
+                                    <div class="container" id="DeleteUserForm">
+@*                                         @await Html.PartialAsync("AddUserForm", Model)
+ *@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="mb-0 accordion-header">
+                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapsethree" aria-expanded="false" aria-controls="collapsethree">
+                                Manage User Roles
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapsethree" class="accordion-collapse collapse" aria-labelledby="headingthree" data-bs-parent="#accordionExample">
+                        <div class="card-body">
+                            <!-- Nav Tabs and Search Form -->
+                            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                                <div class="container-fluid">
+                                    <ul class="nav nav-tabs" id="manageRolesTabs" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="list-users-role-tab" data-bs-toggle="tab" href="#listUsersRole" role="tab" aria-controls="listUsersRole" aria-selected="true">List Users by Role</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="add-role-user-tab" data-bs-toggle="tab" href="#addRoleUser" role="tab" aria-controls="addRoleUser" aria-selected="false">Add Role to User</a>
+                                        </li>
+                                        @if (Model.IsTCUser)
+                                        {
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="remove-role-user-tab" data-bs-toggle="tab" href="#removeRoleUser" role="tab" aria-controls="removeRoleUser" aria-selected="false">Remove Role from User</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                    <form class="d-flex" id="searchForm">
+                                        <input class="form-control me-2" type="search" placeholder="Search by Last Name" aria-label="Search" id="lastName" name="lastName">
+                                        <button class="btn btn-outline-success" type="button" onclick="searchUser()">Search</button>
+                                    </form>
+                                </div>
+                            </nav>
+
+                            <!-- Tab Content -->
+                            <div class="tab-content" id="roleTabsContent">
+                                <div class="tab-pane fade show active" id="listUsersRole" role="tabpanel" aria-labelledby="list-users-role-tab">
+                                    <!-- List Users By Role Form -->
+                                    <div class="container" id="ListUsersByRoleForm">
+                                        @await Html.PartialAsync("ListUsersByRole", Model)
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="addRoleUser" role="tabpanel" aria-labelledby="add-role-user-tab">
+                                    <!-- Add Role to User Form -->
+                                    <div class="container" id="AddRoleToUserForm">
+                                        @await Html.PartialAsync("AddRoleToUserForm", Model)
+                                    </div>
+                                </div>
+                                @if (Model.IsTCUser)
+                                {
+                                    <div class="tab-pane fade" id="removeRoleUser" role="tabpanel" aria-labelledby="remove-role-user-tab">
+                                        <!-- Remove Role from User Form -->
+                                        <div class="container" id="RemoveRoleUserForm">
+                                            @await Html.PartialAsync("RemoveRoleUserForm", Model)
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="mt-3" id="usersDetailsContainer">
+                                <!-- User details cards will be appended here -->
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                @* Hidden Add Claims to User Page Section
+                    <div class="card">
+                        <div class="card-header" id="headingThree">
+                            <h2 class="mb-0 accordion-header">
+                                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Add Claims to User
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+
+                            <div class="card-body">
+                                <form id="userclaimform">
                                     <div class="form-group">
-                                        @await Html.PartialAsync("DeleteRoleForm", Model)
+                                        <select class="form-select" id="AddClaimUser" data-placeholder="Select User">
+                                            @foreach (var user in Model.UserList)
+                                            {
+                                                <option value="@user.Id">@user.UserName</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <select class="cselect form-select" data-placeholder="Add Claims" id="AddUserClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)">
+                                            @foreach (var claim in Model.ClaimList)
+                                            {
+                                                <option value="@claim.Value">@claim.Value</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="SaveClaimToUser()">Save</button>
                                     </div>
                                 </form>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header" id="headingThree">
-                        <h2 class="mb-0 accordion-header">
-                            <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                                Add Claims to User
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
 
-                        <div class="card-body">
-                            <form id="userclaimform">
-                                <div class="form-group">
-                                    <select class="form-select" id="AddClaimUser" data-placeholder="Select User">
-                                        @foreach (var user in Model.UserList)
-                                        {
-                                            <option value="@user.Id">@user.UserName</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <select class="cselect form-select" data-placeholder="Add Claims" id="AddUserClaims" multiple="multiple" name="@Html.NameFor(m => m.ClaimList)">
-                                        @foreach (var claim in Model.ClaimList)
-                                        {
-                                            <option value="@claim.Value">@claim.Value</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <button type="button" class="btn btn-primary btn-sm" onclick="SaveClaimToUser()">Save</button>
-                                </div>
-                            </form>
                         </div>
-
                     </div>
-                </div>
-                <div class="card">
-                    <div class="card-header" id="headingfour">
-                        <h2 class="mb-0 accordion-header">
-                            <button class="btn btn-link " type="button" data-bs-toggle="collapse" data-bs-target="#collapsefour" aria-expanded="false" aria-controls="collapsefour">
-                                Add Role to User
-                            </button>
-                        </h2>
-                    </div>
-                    <div id="collapsefour" class="accordion-collapse collapse" aria-labelledby="headingfour" data-bs-parent="#accordionExample">
-                        <div class="card-body">
-                            <div class="container" id="AddRoleToUserForm">
-                                @await Html.PartialAsync("AddRoleToUserForm", Model)
-                            </div>
-                        </div>
-                        @*<div class="card-footer">
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-primary" onclick="AddRoleToUser()">Add User Permissions</button>
-                        <button type="button" class="btn btn-primary">Delete</button>
-                        </div>
-                        </div>*@
-                    </div>
-                </div>
+                *@
             </div>
         </div>
     </div>
@@ -96,50 +255,84 @@
 @section pagespecific {
     <script type="text/javascript">
 
-        $(document).ready(function () {
-            $('#AddRoleClaims').chosen({ width: '100%' });
-        });
+        var roleClaimsDictionary = @Html.Raw(Json.Serialize(Model.RoleClaims));
+
+        // Manage Roles
 
         $(document).ready(function () {
-            $('#UpdateClaims').chosen({ width: '100%' });
+            $('#UpdateRoleSelect').on('change', function () {
+                var selectedRole = $(this).val();
+                showClaimsForRole(selectedRole);
+                populateClaimsCheckboxesForRole(selectedRole);
+            });
         });
 
-        $(document).ready(function () {
-            $('#AddUserRoleSelect').chosen({ width: '100%' });
-        });
+        function showClaimsForRole(role) {
+            debugger;
 
-        $(document).ready(function () {
-            $('#AddUserClaims').chosen({ width: '100%' });
-        });
+            var claims = roleClaimsDictionary[role] || [];
 
-        function ShowClaim() {
-            $("#claimList").hide();
+            var claimsList = $('#roleClaimsList');
+            claimsList.empty(); // Clear the list
+
+            claims.forEach(function (claim) {
+                var checkboxItem = $('<div class="claim-item" style="width: 50%;"><input type="checkbox" id="CurrentRoleClaim_' + claim + '" name="claimsToRemove" value="' + claim + '"><label for="CurrentRoleClaim_' + claim + '">' + claim + '</label></div>');
+
+                claimsList.append(checkboxItem);
+            });
         }
 
-        function SaveClaimToUser() {
-            var userId = document.getElementById('AddClaimUser').value;
-            var claims = $('#AddUserClaims').val();
-            postData = { UserId: userId, Claims: claims }
+        function populateClaimsCheckboxesForRole(roleName) {
+            var associatedClaims = roleClaimsDictionary[roleName] || [];
+            var allClaims = @Html.Raw(Json.Serialize(Model.ClaimList.Select(c => c.Value)));
+            var availableClaims = allClaims.filter(claim => !associatedClaims.includes(claim));
+
+            var claimsContainerBox = $('#claims-container-box');
+            claimsContainerBox.empty();
+
+            availableClaims.forEach(function (claim) {
+                var checkboxItem = $('<div class="claim-item"><input type="checkbox" id="' + claim + '" name="claimsToAdd" value="' + claim + '"><label for="' + claim + '">' + claim + '</label></div>');
+                claimsContainerBox.append(checkboxItem);
+            });
+        }
+
+        function UpdateRole() {
+            debugger;
+            var roleName = $('#UpdateRoleSelect').val();
+            var claimsToAdd = $("input[name='claimsToAdd']:checked").map(function () {
+                return $(this).val();
+            }).get();
+            var claimsToRemove = $("input[name='claimsToRemove']:checked").map(function () {
+                return $(this).val();
+            }).get();
+
+            var postData = {
+                RoleName: roleName,
+                ClaimsToAdd: claimsToAdd,
+                ClaimsToRemove: claimsToRemove
+            };
+            
             $.ajax({
-                url: '@Url.Action("CreateUserToClaim", "Authorize")',
+                url: '@Url.Action("UpdateRole", "Authorize")',
                 type: "POST",
                 data: postData
             })
-                .done(function (data) {
-                    $('#Success').alert();
-                    location.reload();
-                })
-                .fail(function (a, s, d) {
-                    debugger;
-                    alert("Unable to save.");
-                });
+            .done(function (data) {
+                location.reload();
+                $('#Success').alert();
+            })
+            .fail(function (a, s, d) {
+                alert("Unable to save.");
+            });
         }
 
         function SaveRole() {
             var roleName = $('#InputRoleName').val();
-            var claim = $('#AddRoleClaims').val();
-            var organisationId = $('#organisationId').val();
-            var postData = { RoleName: roleName, Claims: claim, OrganisationId: organisationId }
+            var claims = [];
+            $('input[name="selectedClaimsForNewRole"]:checked').each(function () {
+                claims.push($(this).val());
+            });
+            var postData = { RoleName: roleName, Claims: claims}
 
             $.ajax({
                 url: '@Url.Action("AddRole", "Authorize")',
@@ -156,42 +349,74 @@
                 });
         }
 
-        function UpdateRole() {
-            var roleName = $('#UpdateRoleSelect').val();
-            var claim = $('#UpdateClaims').val();
-            var postData = { RoleName: roleName, Claims: claim }
+        // Manage Claims
+
+        function SaveClaim() {
+            debugger;
+
+            var claimName = $('#newClaimName').val();
+
+            // Check if the claimName is not empty
+            if (!claimName) {
+                alert("Please enter a claim name.");
+                return;
+            }
+
+            var postData = {
+                claimType: claimName,
+                claimValue: claimName
+            };
+
             $.ajax({
-                url: '@Url.Action("UpdateRole", "Authorize")',
+                url: '@Url.Action("AddClaim", "Authorize")',
                 type: "POST",
                 data: postData
             })
                 .done(function (data) {
-                    location.reload();
-                    $('#Success').alert();
+                    if (data.success) {
+                        alert("Claim added successfully!");
+                        location.reload();
+                    } else {
+                        alert("Error adding claim: " + data.message);
+                    }
                 })
                 .fail(function (a, s, d) {
                     alert("Unable to save.");
                 });
         }
 
-        function DeleteRole() {
-            var e = document.getElementById("DeleteRoleSelect");
-            var roleName = e.options[e.selectedIndex].text;
+        // List Users By Role
+
+        $(document).ready(function () {
+            $('#RoleSelect').on('change', function () {
+                var selectedRole = $(this).val();
+                fetchUsersForRole(selectedRole);
+            });
+        });
+
+        function fetchUsersForRole(role) {
             debugger;
-            var postData = { RoleName: roleName }
             $.ajax({
-                url: '@Url.Action("DeleteRoleSelect", "Authorize")',
-                type: "POST",
-                data: postData
+                url: '@Url.Action("GetUsersByRole", "Authorize")',
+                type: "GET",
+                data: { roleName: role }
             })
                 .done(function (data) {
-                    location.reload();
-                    $('#Success').alert();
+                    debugger;
+                    var usersList = $('#usersList');
+                    usersList.empty(); // Clear the list
+
+                    data.forEach(function (user) {
+                        var listItem = $('<li data-user-id="' + user.id + '">Username: ' + user.userName + ', Email: ' + user.email + '</li>');
+                        usersList.append(listItem);
+                    });
                 })
-                .fail(function (a, s, d) {
-                    alert("Unable to save.");
+                .fail(function () {
+                    alert("Unable to fetch users.");
                 });
         }
+
+        // Add Role to User
 
         function SaveRoleToUser() {
             var userId = $('#AddUser').val();
@@ -212,19 +437,395 @@
                 });
         }
 
-        function AddRole() {
-            $('#AddRoleForm').show();
-            $('#UpdateRoleForm').hide();
+        function RemoveRoleFromUser() {
+            var userId = $('#RemoveUser').val();
+            var roleIds = $('#RemoveUserRoleSelect').val();
+            var postData = { UserId: userId, RoleIds: roleIds }
+
+            $.ajax({
+                url: '@Url.Action("RemoveRoleFromUser", "Authorize")',
+                type: "POST",
+                traditional: true,
+                data: postData
+            })
+                .done(function (data) {
+                    location.reload();
+                    $('#Success').alert();
+                })
+                .fail(function (a, s, d) {
+                    alert("Unable to save.");
+                });
         }
 
-        function AddRoleToUser() {
-            $('#AddRoleToUserForm').show();
+        function searchUser() {
+            var lastName = $('#lastName').val();
+            $.ajax({
+                url: '/Authorize/GetUserDetailsByLastName',
+                type: 'GET',
+                data: { lastName: lastName },
+                success: function (data) {
+                    if (data && data.length > 0) {
+                        $('#usersDetailsContainer').empty(); // Clear previous search results
+                        var firstUserId = null;
+                        data.forEach(function (user, index) {
+                            if (index === 0) {
+                                firstUserId = user.id; // Store the ID of the first user
+                            }
+                            var userCard = `
+                                <div class="card mt-3">
+                                    <div class="card-header">
+                                        User Details
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item"><strong>Username:</strong> ${user.userName}</li>
+                                        <li class="list-group-item"><strong>First Name:</strong> ${user.firstName}</li>
+                                        <li class="list-group-item"><strong>Last Name:</strong> ${user.lastName}</li>
+                                        <li class="list-group-item"><strong>Email:</strong> ${user.email}</li>
+                                        <li class="list-group-item"><strong>Roles:</strong> ${user.roles.join(', ')}</li>
+                                    </ul>
+                                </div>
+                            `;
+                            $('#usersDetailsContainer').append(userCard);
+                        });
+
+                        // Set the selected user in the dropdowns
+                        if (firstUserId !== null) {
+                            $('#AddUser').val(firstUserId);
+                            $('#RemoveUser').val(firstUserId);
+                        }
+                    } else {
+                        alert('No user found with that last name');
+                    }
+                },
+                error: function () {
+                    alert('Failed to load user details');
+                }
+            });
         }
 
-        function EditRole() {
-            $('#AddRoleForm').hide();
-            $('#UpdateRoleForm').show();
+        function confirmDelete(action, itemName) {
+            var confirmDelete = confirm("Are you sure you want to delete the " + action + ": " + itemName + "?");
+            if (confirmDelete) {
+                // If confirmed, proceed with the deletion
+                if (action === 'role') {
+                    deleteRole(itemName);
+                } else if (action === 'claim') {
+                    deleteClaim(itemName);
+                }
+            }
         }
 
+        function deleteRole(roleName) {
+            var e = document.getElementById("DeleteRoleSelect");
+            var roleName = e.options[e.selectedIndex].text;
+            debugger;
+            var postData = { RoleName: roleName }
+            $.ajax({
+                url: '@Url.Action("DeleteRoleSelect", "Authorize")',
+                type: "POST",
+                data: postData
+            })
+                .done(function (data) {
+                    location.reload();
+                    $('#Success').alert();
+                })
+                .fail(function (a, s, d) {
+                    alert("Unable to save.");
+                });
+        }
+
+        function deleteClaim(claimName) {
+            var selectedClaimValue = $('#DeleteClaimSelect').val();
+
+            if (!selectedClaimValue) {
+                alert('Please select a claim to delete.');
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete this claim? This action cannot be undone.')) {
+                return;
+            }
+
+            $.ajax({
+                url: '/Authorize/DeleteClaim', // Update this URL if it's different
+                type: 'POST',
+                data: {
+                    claimValue: selectedClaimValue
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert('Claim deleted successfully.');
+                        location.reload(); // Reload the page to reflect the changes
+                    } else {
+                        alert('Error deleting claim: ' + response.message);
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while trying to delete the claim.');
+                }
+            });
+        }
+
+        // Manage Users
+        
+        // Add User
+
+        function SaveUser() {
+            var firstName = $('#InputFirstName').val();
+            var lastName = $('#InputLastName').val();
+            var email = $('#InputEmail').val();
+            var homePhone = $('#InputHomePhone').val();
+            var mobilePhone = $('#InputMobilePhone').val();
+            
+            var organisationRoleMappings = [];
+            $('#dynamicOrgUserTypes .form-group').each(function () {
+                var orgId = $(this).find('.form-check-input').attr('id').split('_')[1];
+                var selectedRole = $(this).find('select').val();
+
+                // Create an object for each organisation-role mapping
+                var mapping = {
+                    organisationId: orgId,
+                    roleName: selectedRole // Update to roleIds if multiple
+                };
+
+                organisationRoleMappings.push(mapping);
+            });
+
+            var mainOrgId = null;
+            $('.form-check-input').each(function () {
+                if ($(this).is(':checked')) {
+                    mainOrgId = $(this).attr('id').split('_')[1];
+                }
+            });
+
+            var oktaUID = $('#OktaUID').val();
+            var proposalOnlineUsername = $('#ProposalOnlineUsername').val();
+
+            var salespersonUsername = $('#SalespersonUsername').val();
+            var employeeNumber = $('#EmployeeNumber').val();
+            var password = $('#InputPassword').val();
+
+            if (!firstName || !lastName || !email || !password) {
+                alert("Please fill in all required fields.");
+                return;
+            }
+
+            // Conditional validation for Okta UID when brokerFields is visible
+            if ($('#brokerFields').is(':visible') && !oktaUID) {
+                alert("Please enter the Okta UID.");
+                return;
+            }
+
+            // Generate username
+            var randomNum = Math.floor(Math.random() * 1000);
+            var username = firstName.replace(/\s+/g, '') + lastName.replace(/\s+/g, '') + randomNum;
+
+            debugger;
+            var postData = {
+                Username: username,
+                FirstName: firstName,
+                LastName: lastName,
+                Email: email,
+                HomePhone: homePhone,
+                MobilePhone: mobilePhone,
+                OrganisationRoleMappings: organisationRoleMappings,
+                MainOrganisationId: mainOrgId,
+                OktaUID: oktaUID,
+                ProposalOnlineUsername: proposalOnlineUsername,
+                SalespersonUsername: salespersonUsername,
+                EmployeeNumber: employeeNumber,
+                Password: password
+            };
+
+            $.ajax({
+                url: '@Url.Action("CreateUser", "Authorize")',
+                type: "POST",
+                data: postData
+            })
+                .done(function (data) {
+                    alert("Successfully created User: " + data.username + ". An email has been sent to retain a record of the username.");
+                    location.reload();
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    var errorMsg = jqXHR.responseJSON && jqXHR.responseJSON.error ? jqXHR.responseJSON.error : "Unknown error occurred";
+                    alert("Error: " + errorMsg);
+                });
+        }
+
+        function loadOrganisationDetails() {
+            var selectedOrgs = $('#Organisations').val();
+            var postData = JSON.stringify(selectedOrgs);
+
+            $.ajax({
+                url: '@Url.Action("GetOrganisationDetails", "Authorize")',
+                type: "POST",
+                contentType: "application/json",
+                data: postData
+            })
+                .done(function (response) {
+                    // Clear existing dynamic fields
+                    $('#dynamicOrgUserTypes').empty();
+
+                    var isMarshSelected = response.some(org => org.name === "Marsh Limited NZ");
+
+                    if (isMarshSelected){
+                        $('#brokerFields').show();
+                    } 
+                    else {
+                        $('#brokerFields').hide();
+                    }
+                    var firstCheckboxAdded = false;
+                    
+
+                    // For each organisation, create a new select input for role and a checkbox for main organisation
+                    response.forEach(org => {
+                        var contentHtml = '<div class="form-group col-12">' +
+                            '<label for="UserType_' + org.organisationId + '">User Type for ' + org.name + '</label>' +
+                            '<select class="form-control" id="UserType_' + org.organisationId + '">';
+
+                        if (org.roles && Array.isArray(org.roles)) {
+                            org.roles.forEach(role => {
+                                contentHtml += '<option value="' + role + '">' + role + '</option>';
+                            });
+                        }
+
+                        contentHtml += '</select>';
+
+                        var checkedAttribute = !firstCheckboxAdded ? ' checked' : '';
+                        firstCheckboxAdded = true;
+
+                        contentHtml += '<div class="form-check">' +
+                            '<input class="form-check-input" type="checkbox" value="" id="MainOrg_' + org.organisationId + '"' + checkedAttribute + '>' +
+                            '<label class="form-check-label" for="MainOrg_' + org.organisationId + '">Main Employing Organisation</label>' +
+                            '</div></div>';
+
+                        $('#dynamicOrgUserTypes').append(contentHtml);
+                    });
+
+                    // Logic to ensure only one checkbox can be selected as Main Employing Organisation
+                    $('.form-check-input').on('change', function () {
+                        $('.form-check-input').not(this).prop('checked', false);
+                    });
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    var errorMsg = jqXHR.responseJSON && jqXHR.responseJSON.error ? jqXHR.responseJSON.error : "Unknown error occurred";
+                    alert("Error: " + errorMsg);
+                });
+        }
+        /*
+
+                // function loadOrganisationDetails() {
+                //     debugger;
+                //     var selectedOrgs = $('#Organisations').val();
+                //     var postData = JSON.stringify(selectedOrgs);
+
+                //     $.ajax({
+                //         url: 'ATUrl.Action("GetOrganisationDetails", "Authorize")', // Adjust URL as needed
+                //         type: "POST",
+                //         contentType: "application/json",
+                //         data: postData
+                //     })
+                //         .done(function (response) {
+                //             // Clear existing dynamic fields
+                //             $('#dynamicOrgUserTypes').empty();
+                //             debugger;
+
+                //             // For each organisation, create a new select input for role
+                //             response.forEach(org => {
+                //                 var selectHtml = '<div class="form-group col-12">' +
+                //                     '<label for="UserType_' + org.organisationId + '">User Type for ' + org.name + '</label>' +
+                //                     '<select class="form-control" id="UserType_' + org.organisationId + '">';
+
+                //                 if (org.roles && Array.isArray(org.roles)) {
+                //                     org.roles.forEach(role => {
+                //                         selectHtml += '<option value="' + role + '">' + role + '</option>';
+                //                     });
+                //                 }
+
+                //                 selectHtml += '</select></div>';
+                //                 $('#dynamicOrgUserTypes').append(selectHtml);
+                //             });
+                //         })
+                //         .fail(function (jqXHR, textStatus, errorThrown) {
+                //             var errorMsg = jqXHR.responseJSON && jqXHR.responseJSON.error ? jqXHR.responseJSON.error : "Unknown error occurred";
+                //             alert("Error: " + errorMsg);
+                //         });
+
+                //     // AJAX call to backend to get details for selected organizations
+                //     // On success, dynamically create additional selection boxes or display roles
+                // }
+
+        // function toggleBrokerFields() {
+        //     var userType = $('#UserType').val();
+        //     var organisationName = $('#Organisation option:selected').text();
+        //     var isBrokerWithMarsh = userType === 'Broker' && organisationName.includes('Marsh');
+
+        //     var brokerFields = document.getElementById('brokerFields');
+        //     var brokerRequiredAsterisks = document.querySelectorAll('.broker-required');
+
+        //     if (isBrokerWithMarsh) {
+        //         $('#marshNote').show();
+        //         brokerFields.style.display = 'block';
+        //         brokerRequiredAsterisks.forEach(function (asterisk) {
+        //             asterisk.style.display = 'inline';
+        //         });
+        //     } else {
+        //         $('#marshNote').hide();
+        //         brokerFields.style.display = 'none';
+        //         brokerRequiredAsterisks.forEach(function (asterisk) {
+        //             asterisk.style.display = 'none';
+        //         });
+        //     }
+        // }
+
+        //$('#UserType').change(toggleBrokerFields);
+        //$('#Organisation').change(toggleBrokerFields);
+        //toggleBrokerFields();
+
+        // Add Claim to User - Deprecated function
+
+        // function SaveClaimToUser() {
+        //     var userId = document.getElementById('AddClaimUser').value;
+        //     var claims = $('#AddUserClaims').val();
+        //     postData = { UserId: userId, Claims: claims }
+        //     $.ajax({
+        //         url: 'ATUrl.Action("CreateUserToClaim", "Authorize")',
+        //         type: "POST",
+        //         data: postData
+        //     })
+        //         .done(function (data) {
+        //             $('#Success').alert();
+        //             location.reload();
+        //         })
+        //         .fail(function (a, s, d) {
+        //             debugger;
+        //             alert("Unable to save.");
+        //         });
+        // }
+                        
+        //var organisationName = $('#Organisation option:selected').text();
+        //var isBrokerWithMarsh = userType === 'Broker' && organisationName.includes('Marsh');
+
+        // Additional validation for brokers associated with 'Marsh'
+        //     if (isBrokerWithMarsh && (!oktaUID || !salespersonUsername || !employeeNumber)) {
+        //         alert("Please fill in all required fields for a Broker associated with Marsh.");
+        //         return;
+        // }
+
+    */
     </script>
+}
+
+@section PageStyles {
+    <style>
+        .claims-container {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .claim-item {
+            width: 50%;
+            box-sizing: border-box;
+        }
+    </style>
 }

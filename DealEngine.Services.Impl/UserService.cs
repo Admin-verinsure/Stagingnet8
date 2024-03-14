@@ -14,6 +14,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Novell.Directory.Ldap;
 using NHibernate;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace DealEngine.Services.Impl
 {
@@ -346,13 +347,29 @@ namespace DealEngine.Services.Impl
 
 		protected async Task CreateBrokerUserOrganisation(User user)
 		{
-			OrganisationType personalOrganisationType = new OrganisationType(user, "Broker");
-			Organisation defaultOrganisation = Organisation.CreateDefaultOrganisation(user, user, personalOrganisationType);
-			defaultOrganisation.IsBroker = true;
-			user.Organisations.Add(defaultOrganisation);
+			OrganisationType brokerOrganisationType = new OrganisationType(user, "Broker");
+			Organisation brokerOrganisation = Organisation.CreateBrokerOrganisation(user, user, brokerOrganisationType);
+            brokerOrganisation.IsBroker = true;
+			user.Organisations.Add(brokerOrganisation);
 		}
 
-		public async Task<List<User>> GetLockedUsers()
+		protected async Task CreateInsurerUserOrganisation(User user)
+		{
+			OrganisationType insurerOrganisationType = new OrganisationType(user, "Insurer");
+			Organisation insurerOrganisation = Organisation.CreateInsurerOrganisation(user, user, insurerOrganisationType);
+            insurerOrganisation.IsInsurer = true;
+			user.Organisations.Add(insurerOrganisation);
+		}
+
+        protected async Task CreateAssociationUserOrganisation(User user)
+        {
+            OrganisationType associationOrganisationType = new OrganisationType(user, "Association");
+            Organisation associationOrganisation = Organisation.CreateAssociationOrganisation(user, user, associationOrganisationType);
+            associationOrganisation.IsAssociation = true;
+            user.Organisations.Add(associationOrganisation);
+        }
+
+        public async Task<List<User>> GetLockedUsers()
 		{
 			return await _userRepository.FindAll().Where(u => u.Locked == true).ToListAsync();
 		}
@@ -436,90 +453,35 @@ namespace DealEngine.Services.Impl
 			}
 			return user;
 		}
-		/* Old version
-		//public async Task<bool> CreateUserBrokerOrg(User user, string userType)
-		//{
-		//	string ldapPassword = user.Password;
 
-		//	// Don't commit the User/Org until LDAP user is created successfully.
-		//	using (var uow = _unitOfWork.BeginUnitOfWork())
-		//          {
-		//              // LDAP, User Object, Set Organisation to isBroker if they're a broker...
-		//              try {
-		//			// Default Orgs
-		//			if (userType == "Broker")
-		//			{
-		//				await CreateBrokerUserOrganisation(user);
-		//			}
-		//			else
-		//			{
-		//				await CreateDefaultUserOrganisation(user);
-		//			}
-
-		//			// We don't want to keep the password we are saving in LDAP in the DB, but user requires a placeholder password to save the record.
-		//			user.Password = "modWG9qrVnKM7UW";
-		//                  Organisation primaryOrg = user.PrimaryOrganisation;
-
-		//                  // Create User 
-		//                  await _userRepository.AddAsync(user);
-
-		//			// Create LDAP User
-		//			try
-		//			{
-		//				_ldapService.CreateWithPassword(user, ldapPassword);
-		//			}
-		//			catch (Exception ex)
-		//			{
-		//                      //await Update(user);
-		//                      await uow.Rollback();
-		//				_logger.LogWarning($"LDAP User creation failed: {ex.Message}. Aborting user creation.");
-		//                      throw new Exception($"LDAP User creation failed: {ex.Message}.");
-		//                  }
-
-		//			// Create LDAP Default Organisation
-		//			try
-		//			{
-		//				_ldapService.Create(primaryOrg);
-		//			}
-		//			catch (Exception ex)
-		//			{
-		//				await uow.Rollback();
-		//				_logger.LogWarning($"LDAP Organisation creation failed: {ex.Message}. Aborting user creation.");
-		//                      throw new Exception($"LDAP Org creation failed: {ex.Message}.");
-		//                  }
-
-		//                  await uow.Commit();
-		//                  return true;
-		//		}
-		//		catch (Exception ex)
-		//		{
-		//                  // Log and handle the exception
-		//                  await uow.Rollback();
-		//			_logger.LogError($"User creation failed: {ex.Message}");
-		//                  throw new Exception($"User creation failed: {ex.Message}");
-		//                  //return false;
-		//		}				
-		//	}
-		//}*/
-
-		public async Task<bool> CreateUserBrokerOrg(User user, string userType)
+		public async Task<bool> CreateUserPrimaryOrgOrgTypeAndLDAP(User user, string userType)
         {
 			try
 			{
-				// Set up user and organisation for DB
-				SetUpUserAndOrganisation(user, userType);
-                Organisation primaryOrg = user.PrimaryOrganisation;
+                _logger.LogInformation($"Starting user creation for {user.Email} with userType {userType}.");
+
+                // Set up user and organisation for DB
+                SetUpUserAndOrganisation(user, userType);
+                _logger.LogDebug($"User and primary organisation setup completed for {user.Email}.");
+
+                // Ensure Correct PrimaryOrganisation is set
+                var primaryOrg = user.Organisations
+                    .FirstOrDefault(o => o.OrganisationType != null && o.OrganisationType.Name == userType);
+                user.PrimaryOrganisation = primaryOrg;
 
                 // Create LDAP User
                 string ldapPassword = user.Password;
 				user.Password = "modWG9qrVnKM7UW"; // Placeholder password for DB
 
 				CreateLdapUser(user, ldapPassword);
+                _logger.LogDebug($"LDAP user created for {user.Email}.");
 
-                CreateLdapOrganisation(primaryOrg);
+				CreateLdapOrganisation(primaryOrg);
+                _logger.LogDebug($"LDAP organisation created for {primaryOrg.Name}.");
 
-                // Create User in the repository
-                await _userRepository.AddAsync(user);
+				// Create User in the repository
+				await _userRepository.AddAsync(user);
+                _logger.LogInformation($"User creation completed successfully for {user.Email}.");
 
                 return true;
             }
@@ -549,7 +511,7 @@ namespace DealEngine.Services.Impl
         {
             try
             {
-                _ldapService.Create(organisation);
+                _ldapService.CreateNoFakeTimeout(organisation);
                 return true;
             }
             catch (Exception ex)
@@ -564,6 +526,14 @@ namespace DealEngine.Services.Impl
             if (userType == "Broker")
             {
                 CreateBrokerUserOrganisation(user);
+            }
+            else if (userType == "Insurer")
+            {
+                CreateInsurerUserOrganisation(user);
+            }
+            else if (userType == "Association")
+            {
+                CreateAssociationUserOrganisation(user);
             }
             else
             {
