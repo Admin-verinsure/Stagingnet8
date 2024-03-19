@@ -362,10 +362,10 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
             <div class="form-group">
                 @foreach (var item in Model)
                 {
-
+@*
                     @if ((item.Status != "Declined by Insurer" || item.Status != "Declined by Insured" || item.Status != "Cancelled") &&
 (item.Status == "Bound" || item.Status == "Bound and invoice pending" || item.Status == "Bound and invoiced"))
-                    {
+                    {*@
                         <h3><strong>Documents </strong></h3>
 
                         @await Html.PartialAsync("Partials/ViewAgreementDocs", item.Documents)
@@ -381,7 +381,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
 
                         }
 
-                    }
+                    @*}*@
                     <!-- loop through process once only!! -->
                     break;
                 }

@@ -3553,9 +3553,10 @@ namespace DealEngine.WebUI.Controllers
                                         //renderedDoc = await _fileService.FormatCKHTMLforConversion(renderedDoc);
                                     }
                                 }
-                                agreement.Documents.Add(renderedDoc);
                                 documents = renderedDoc;
                                 await _fileService.UploadFile(renderedDoc);
+                                agreement.Documents.Add(renderedDoc); ///shifted as new documents were not able to add in agreement they get generated only after upload
+
 
                             }
 
