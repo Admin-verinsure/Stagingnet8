@@ -156,6 +156,7 @@ namespace DealEngine.Services.Impl
             var modules = new IUnderwritingModule[] {
                 new EmptyUWModule(),
                 new RotaryASUWModule(),
+                new RotaryGLUWModule(),
                 new RotaryMDUWModule(),
                 new RotaryREUWModule(),
                 new RotaryMVUWModule(),
