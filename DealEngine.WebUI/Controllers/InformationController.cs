@@ -1015,10 +1015,20 @@ namespace DealEngine.WebUI.Controllers
             user = await CurrentUser();
 
             if (user.IsLoggedout)
+            {
+                _logger.LogInformation("EditInformation but User  " + user.UserName + " is Loggedout");
+
                 return PageNotFound();
+            }
+                
 
             if (user == null)
+            {
+                _logger.LogInformation("EditInformation but User  " + user.UserName + " is null");
+
                 return PageNotFound();
+            }
+               
 
             try
             {

@@ -9,6 +9,7 @@
     <PackageReference Include="CoreWCF.Http" Version="1.0.1" />
     <PackageReference Include="CoreWCF.NetTcp" Version="1.0.1" />
     <PackageReference Include="CoreWCF.Primitives" Version="1.0.1" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.6.1" />
   </ItemGroup>
 
   <ItemGroup>

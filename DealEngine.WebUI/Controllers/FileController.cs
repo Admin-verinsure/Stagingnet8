@@ -25,6 +25,8 @@ using System.Net;
 //using FastReport.Export.PdfSimple.PdfObjects;
 using NReco.PdfGenerator;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
+using Microsoft.CodeAnalysis;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -551,7 +553,7 @@ namespace DealEngine.WebUI.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> CreateDocument(string id, string productId)
+        public async Task<IActionResult> CreateDocument(string productId,string id = null)
         {
             DocumentViewModel model = new DocumentViewModel();
             User user =  await CurrentUser(); 
@@ -619,17 +621,34 @@ namespace DealEngine.WebUI.Controllers
                     document.OwnerOrganisation = user.PrimaryOrganisation;
                     document.IsTemplate = true;
                     document.RenderToPDF = model.RenderToPDF;
-                    await _documentRepository.AddAsync(document);
+                    await _documentRepository.UpdateAsync(document);
 
                 }
+                else
+                {
+                    ///only to create new document
+                    
+                        //document.DateDeleted = DateTime.Now;
+                        //await _documentRepository.AddAsync(document);
 
-               
-                //if (model.ProductId != null)
-                //{
-                //    product = await _productRepository.GetByIdAsync(Guid.Parse(model.ProductId));
-                //    product.Documents.Add(document);
-                //    await _productRepository.AddAsync(product);
-                //}
+                        document = new SystemDocument(user, model.Name, MediaTypeNames.Text.Html, model.DocumentType);
+
+                    
+                    document.Description = model.Description;
+                    document.Contents = _fileService.ToBytes(System.Net.WebUtility.HtmlDecode(model.Content));
+                    document.OwnerOrganisation = user.PrimaryOrganisation;
+                    document.IsTemplate = true;
+                    document.RenderToPDF = model.RenderToPDF;
+                    await _documentRepository.AddAsync(document);
+
+                    if (model.ProductId != null)
+                    {
+                        product = await _productRepository.GetByIdAsync(Guid.Parse(model.ProductId));
+                        product.Documents.Add(document);
+                        await _productRepository.AddAsync(product);
+                    }
+
+                }
 
                 return View(model);
             }
@@ -655,18 +674,14 @@ namespace DealEngine.WebUI.Controllers
                 if (user == null)
                     return PageNotFound();
                 //List<SystemDocument> docs = _documentRepository.FindAll().Where(d => d.DateDeleted == null && user.PrimaryOrganisation == d.OwnerOrganisation && d.IsTemplate).ToList();
-                Product prod = await _productRepository.GetByIdAsync(productid);
-                List<SystemDocument> docs = prod.Documents.Where(d => d.DateDeleted == null &&  d.IsTemplate).ToList();
+                Product prod = null;
+                List<SystemDocument> docs = null;
 
                 if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsInsurer)
                 {
-                    //docs = _documentRepository.FindAll().Where(d => !d.DateDeleted.HasValue && d.IsTemplate);
-                    //if(productId != null)
-                    //{
-                    //    var products = await _productRepository.GetByIdAsync(Guid.Parse(productId));
-                    //    docs = products.Documents.ToList();
-                    //}
-
+                    prod = await _productRepository.GetByIdAsync(productid);
+                    docs=prod.Documents.Where(d => d.DateDeleted == null && d.IsTemplate).ToList();
+                    
                 }
 
                 if (docs.Count != 0)
@@ -754,6 +769,7 @@ namespace DealEngine.WebUI.Controllers
                             Type = documentType,
                             Owner = doc.OwnerOrganisation.Name,
                             Id = doc.Id,
+                            ProductId =productid.ToString(),
                         });
 
                         ViewBag.IsTC = user.PrimaryOrganisation.IsTC;
@@ -763,7 +779,11 @@ namespace DealEngine.WebUI.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("CreateDocument");
+                    var routeValues = new {  productId = productid };
+
+                    // Redirect to MyAction with two parameters
+                    return RedirectToAction("CreateDocument", routeValues);
+
                 }
 
                 return View(models);

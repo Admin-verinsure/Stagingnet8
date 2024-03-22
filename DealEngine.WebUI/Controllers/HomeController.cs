@@ -60,6 +60,8 @@ namespace DealEngine.WebUI.Controllers
         ISchedularJobService _schedularjobService;
         private readonly ISchedulerFactory schedulerFactory;
         IProgrammeReportsService _programmeReportsService;
+        private readonly ILogger<HomeController> _nlogger;
+
 
         // IScheduler _scheduler;
         public IScheduler Scheduler;
@@ -87,7 +89,8 @@ namespace DealEngine.WebUI.Controllers
             IMilestoneService milestoneService,
             ISchedularJobService schedularjobService,
             ISchedulerFactory schedulerFactory,
-            IProgrammeReportsService programmeReportsService
+            IProgrammeReportsService programmeReportsService,
+            ILogger<HomeController> nlogger
 
             // IScheduler scheduler
 
@@ -118,6 +121,7 @@ namespace DealEngine.WebUI.Controllers
             _milestoneService = milestoneService;
             _schedularjobService = schedularjobService;
             _programmeReportsService = programmeReportsService;
+            _nlogger = nlogger;
             this.schedulerFactory = schedulerFactory;
             ;
             // _scheduler = scheduler;
@@ -132,7 +136,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.Title = "DealEngine Dashboard";
-
+           
             DashboardViewModel model = new DashboardViewModel();
             model.ProductItems = new List<ProductItemV2>();
             model.DealItems = new List<ProductItem>();
@@ -142,7 +146,7 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
 
-
+                _nlogger.LogInformation("Visited the Home Index with user   " +user.UserName);
                 model.UserTasks = user.UserTasks.Where(t=>t.Completed == false && t.Removed == false).ToList();
                 model.DisplayDeals = true;
                 model.DisplayProducts = false;
@@ -174,6 +178,7 @@ namespace DealEngine.WebUI.Controllers
                     //var OrganisationsCheck = user.Organisations.Any();
                     if (user.Organisations == null || user.Organisations.Any() == false)
                     {
+                        _nlogger.LogError("Visited the Home Index but with No Organistaion for  user   " + user.UserName);
                         return RedirectToAction("UserWithNoOrganisation", "Error");
                     }
                     foreach (var clientorg in user.Organisations)
@@ -193,7 +198,10 @@ namespace DealEngine.WebUI.Controllers
                 }
                 else
                 {
+                    _nlogger.LogInformation("Visited the Homecontroller Index method but user is not client for  " + user.UserName);
                     programmeList = await _programmeService.GetAllProgrammes();
+                    _nlogger.LogInformation("Visited the Homecontroller Index method with programme list for user " + user.UserName + " programmeList:- "+ programmeList.Count);
+
                 }
 
                 foreach (Programme programme in programmeList.Distinct().OrderByDescending(proglist => proglist.DateCreated))
@@ -1470,10 +1478,19 @@ namespace DealEngine.WebUI.Controllers
             User user = null;
             user = await CurrentUser();
             if (user.IsLoggedout)
+            {
+                _logger.LogInformation("ViewProgramme but User  " + user.UserName + " is Loggedout");
+
                 return PageNotFound();
+            }
+
 
             if (user == null)
+            {
+                _logger.LogInformation("ViewProgramme but User  " + user.UserName + " is null");
+
                 return PageNotFound();
+            }
 
             List<DealItem> deals = new List<DealItem>();
             
@@ -2282,7 +2299,7 @@ namespace DealEngine.WebUI.Controllers
             decimal PIGrossPremiumTotal = 0M;
             decimal PINetPremiumToInsurerTotal = 0M;
 
-            //var ReportingDay = DateTime.Parse("9/10/2022 12:00:00 AM");
+            //var ReportingDay = DateTime.Parse("9/10/2023 12:00:00 AM");
             //var ReportingMonth = new DateTime(ReportingDay.Year, ReportingDay.Month, 1);
             //var ReportingFirstDay = ReportingMonth.AddMonths(-1);
             //var ReportingLastDay = ReportingMonth.AddDays(-1);

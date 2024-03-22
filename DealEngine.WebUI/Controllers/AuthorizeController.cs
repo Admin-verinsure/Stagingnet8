@@ -556,7 +556,8 @@ namespace DealEngine.WebUI.Controllers
                 User currentUser = await CurrentUser();
                 var identityUser = await _userManager.FindByNameAsync(currentUser.UserName);
 
-                if (identityUser != null) {
+                if (identityUser != null)
+                {
                     bool isTCUser = await _userManager.IsInRoleAsync(identityUser, "TCUser");
 
                     if (!isTCUser)
@@ -788,7 +789,8 @@ namespace DealEngine.WebUI.Controllers
                     Random random = new Random();
                     username = firstName.Replace(" ", string.Empty) + "_" + lastName.Replace(" ", string.Empty) + random.Next(1000);
                 }
-                else {
+                else
+                {
                     username = proposalOnlineUsername;
                 }
 
@@ -811,7 +813,7 @@ namespace DealEngine.WebUI.Controllers
                             userType = "Broker";
                         }
                         else if (role.Name.Contains("Underwriter") || role.Name.Contains("InsurerAdmin"))
-                        { 
+                        {
                             userType = "Insurer";
                         }
                         else if (role.Name.Contains("Association"))
