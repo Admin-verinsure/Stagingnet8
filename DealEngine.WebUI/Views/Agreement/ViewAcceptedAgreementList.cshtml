@@ -152,7 +152,9 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                         <li class="nav-item">
                                                     <a href="~/Agreement/CancellAgreement/@item.ClientAgreementId" class="dropdown-item"> Cancel Policy </a>
                                         </li>
-                                    }
+                                    }  
+                                }
+
                                             @if (item.UsesEglobal)
                                             {
                                                 <li class="nav-item">
@@ -160,8 +162,6 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                                                 </li>
                                             }
 
-                                          
-                                }
                                     </ul>
                                 </div>
 

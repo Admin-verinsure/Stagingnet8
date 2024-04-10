@@ -84,30 +84,35 @@
                             <input id="clientId" class="form-control col-3" type="text">
                         </td>
                     </tr>
-                    <tr>
+                <td align="left">
+                    <b>Broker Salesperson User:</b>
+                </td>
 
-                        <td align="left">
-                            <b>Broker Salesperson User:</b>
-                        </td>
+                <td align="left">
+                        @Model.BrokerContactUser.FullName (@Model.BrokerContactUser.FirstName @Model.BrokerContactUser.LastName)
+                </td>
 
-                        <td align="left">
-                            @Model.BrokerContactUser.FullName (@Model.BrokerContactUser.SalesPersonUserName)
-                        </td>
+                </tr>
 
-                    </tr>
+                <tr>
 
-                    <tr>
+                    <td align="left">
+                        <b>Client External Contact Reference number:</b>
+                    </td>
 
-                        <td align="left">
-                            <b>Client External Contact Reference number:</b>
-                        </td>
+                    <td align="left">
+                        <input type="text" id="eglobalExternalContactNumber" value="@Model.ClientProgramme.EGlobalExternalContactNumber" />
+                        <label for="updateCheckbox">Update before proceeding</label>
+                        <input type="checkbox" id="updateCheckbox" />
+                        <button onclick="updateIfChecked()">Update</button>
+                    </td>
 
-                        <td align="left">
-                            @Model.ClientProgramme.EGlobalExternalContactNumber (@Model.ClientProgramme.EGlobalExternalContactNumber)
-                        </td>
 
-                    </tr>
-                    @if(Model.BrokerContactUser.DefaultOU != null)
+
+
+                </tr>
+
+                    @if (Model.BrokerContactUser.DefaultOU != null)
                     {
                     <tr>
 
@@ -338,15 +343,16 @@
         var programmeId;
 
         function SendInvoice() {
-                        debugger;
-
+            debugger;
+            var eGlobalExternalContactNumber = document.getElementById("eglobalExternalContactNumber").value;
+            var updateBeforeProceeding = document.getElementById("updateCheckbox").checked;
             programmeId = "@Model.ClientProgramme.Id";
             $('#getExistingUser').show();
             $.ajax({
-            type: "POST",
-            url: "@Url.Action("SendInvoice", "Programme")",
-            data: { programmeId : programmeId },
-            traditional: true,
+                type: "POST",
+                url: "@Url.Action("SendInvoice", "Programme")",
+                data: { programmeId: programmeId, EGlobalExternalContactNumber: eGlobalExternalContactNumber, updateBeforeProceeding: updateBeforeProceeding },
+                traditional: true,
             })
                 .done(function (data) {
                     $('#getExistingUser').hide();
