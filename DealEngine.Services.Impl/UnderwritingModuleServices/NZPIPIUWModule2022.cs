@@ -356,7 +356,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 //set admin fee $65 for change//changing to 0  for invoice issue for nzpi 2023
                 agreement.BrokerFee = 65;
 
-                var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PI"));
+                var PreviousAgreement = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.Where(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "PI") && p.DateDeleted == null).FirstOrDefault();
                 foreach (var term in PreviousAgreement.ClientAgreementTerms)
                 {
                     if (term.Bound)
