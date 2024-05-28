@@ -1513,7 +1513,7 @@ namespace DealEngine.Services.Impl
             {
                 mergeFields.Add(new KeyValuePair<string, string>("[[UISIssuer]]", uISIssuer.FullName));
                 mergeFields.Add(new KeyValuePair<string, string>("[[UISIssuerEmail]]", uISIssuer.Email));
-
+                 
 
             }
             if(clientInformationSheet != null)
