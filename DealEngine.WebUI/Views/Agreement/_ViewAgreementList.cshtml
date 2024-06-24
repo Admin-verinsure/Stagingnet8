@@ -9,16 +9,17 @@
         </div>
         <div class="card-body">
             <div class="client-form">
-                
                 @foreach (var item in Model)
                 {
-                    @await Html.PartialAsync("Partials/ViewAgreement", item) ;
+                    <div id="agreement-@item.ClientAgreementId">
+                        @await Html.PartialAsync("Partials/ViewAgreement", item)
+                    </div>
                 }
-               
             </div>
         </div>
     </div>
 </div>
+
 
 
 @*@section pagespecific {

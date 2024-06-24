@@ -117,6 +117,32 @@
                     </tr>
                 }
                 <tr>
+    <td width="260" height="40">
+        <strong>Policy:</strong>
+    </td>
+    <td width="350" height="40">
+        <button type="button" class="btn btn-success btn-sm dropdown-toggle nav-item" data-bs-toggle="dropdown" aria-expanded="false">
+            Edit Policy
+        </button>
+                        <ul class="dropdown-menu">
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" onclick="openEditAgreement('@Url.Action("EditAgreement", "Agreement", new { id = Model.ClientAgreementId })')" class="dropdown-item">Edit Policy Dates</a>
+                            </li>
+                          
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" onclick="openEditAgreement('@Url.Action("EditTerms", "Agreement", new { id = Model.ClientAgreementId,productname = Model.ProductCode })')" class="dropdown-item">Edit Policy Limits</a>
+                            </li>
+                        </ul>
+    </td>
+</tr>
+
+                <!-- Placeholder for the edit form -->
+                <tr>
+                    <td colspan="2">
+                        <div id="agreement-@Model.ClientAgreementId"></div>
+                    </td>
+                </tr>
+                <tr>
                     <td width="260" height="40">
                         <strong>Policy Start Date:</strong>
                     </td>
@@ -474,7 +500,7 @@ else
                             </td>
 
 
-
+@*
                             @if (!Model.ClientInformationSheet.Programme.BaseProgramme.DisableEditLimit)
                             {
                                 <td>
@@ -483,7 +509,7 @@ else
                                 <a href="#EditDateModal" data-bs-toggle="modal" data-sub-type="@Model.ProductCode" data-sub-id="@Model.ClientAgreementId">Edit Dates</a>
 
                             </td>
-                            }
+                            }*@
                             
 
                         </tr>
@@ -815,7 +841,6 @@ else
 
 
 
-
 <style>
 
     #header > :first-child, aside {
@@ -881,6 +906,36 @@ else
         }) .fail(function (jqXHR, textStatus, errorThrown) {
         alert("There was an error while trying to get the Cover Options.");
         });*@
+            //function loadEditForm(agreementId, action) {
+            //    debugger;
+            //    $.ajax({
+            //        url: '/Agreement/' + action + '/' + agreementId,
+            //        type: 'GET',
+            //        success: function (data) {
+            //            $('#edit-form-' + agreementId).html(data);
+            //        },
+            //        error: function (xhr, status, error) {
+            //            console.error('Error loading edit form:', error);
+            //        }
+            //    });
+            //}
+
+        function submitEditForm(agreementId) {
+            var form = $('#edit-form-' + agreementId + ' form');
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function (data) {
+                    $('#agreement-' + agreementId).replaceWith(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error submitting edit form:', error);
+                }
+            });
+        }
+
+
 
     </script>
 
@@ -888,6 +943,7 @@ else
 
 <script>
     $(document).ready(function () {
+
         $('#getStartDate').on('show.bs.modal', function (e) {
             $('.modal').css('width', '600px');
             $('.modal').css('length', '600px');
@@ -996,40 +1052,6 @@ else
 
 
 
-        //    if ("@Model.InformationSheetStatus" == "Started") {
-        //        debugger;
-        //        var progId = $("#ClientProgrammeId").val();
-        //        var postData = { ProgrammeId: progId };
-
-        //        $.ajax({
-        //            url: '@Url.Action("GetdefaultCoverOptions", "Information")',
-        //            type: "POST",
-        //            data: postData
-        //        }).done(function (data) {
-        //            if (data.optionitems != "") {
-        //                for (var item = 0; item < data.optionitems.length; item++) {
-        //                    var arr = data.optionitems[item];
-        //                    var count = 0;
-        //                    var queryselector = "" + "input[name=\'" + arr[count] + "\'][value=\'" + arr[count + 1] + "\']";
-
-        //                    $(queryselector).attr('checked', true);
-        //                }
-        //            }
-        //            debugger;
-
-        //@*var TermLimitTotal = @ViewBag.TermLimitTotal;*@
-
-        //                document.getElementById("Limittotal").innerHTML = data.termlimit;
-
-        //        }).fail(function (jqXHR, textStatus, errorThrown) {
-        //            alert("There was an error while trying to save default cover option.");
-        //        });
-
-        //    }
-
-
-
-
         $('#SubQuoteTermModal').on('show.bs.modal', function (e) {
             debugger;
             $('.modal').css('width', '600px');
@@ -1121,6 +1143,7 @@ else
         });
 
 
+
         $("#btntermnextbuttn").click(function () {
             debugger;
 
@@ -1129,12 +1152,77 @@ else
         });
 
 
+        //var clientAgreementId = localStorage.getItem('redirectToViewAgreement');
+        //debugger;
+        //if (clientAgreementId) {
+        //    // Perform the redirection
+        //    window.location.href = '@Url.Action("ViewAgreement", "Agreement")' + '?id=' + clientAgreementId;
+        //    // Remove the flag from local storage
+        //    localStorage.removeItem('redirectToViewAgreement');
+        //}
 
+
+            //setInterval(function() {
+            //    debugger; 
+            //    var clientAgreementId = localStorage.getItem('redirectToViewAgreement');
+            //    debugger;`
+            //    if (clientAgreementId) {
+            //    // Perform the redirection
+            //    window.location.href = '@Url.Action("ViewAgreement", "Agreement")' + '?id=' + clientAgreementId;
+            //    // Remove the flag from local storage
+            //    localStorage.removeItem('redirectToViewAgreement');
+            //    }
+            //}, 1000); // Check every second
+
+
+        //window.addEventListener('message', function (event) {
+        //    debugger;
+        //    if (event.data === 'reload') {
+        //        location.reload();
+        //    }
+        //});
+
+         $.ajax({
+                    url: $(this).attr('action'),
+                    type: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    data: $(this).serialize(),
+                   success: function (data) {
+                     // Set a flag in local storage
+                    // localStorage.setItem('redirectToViewAgreement', '@Model.ClientAgreementId');
+                      //  localStorage.setItem('redirectToViewAgreement', 'testing local storage');
+                        localStorage.setItem('reloadParent', 'true');
+                     // Close the current window
+                     window.close();
+                        $("#agreementView").load(url, function () {});
+                      },
+                    error: function (xhr, status, error) {
+                        console.error('Error submitting form:', error);
+                    }
+                });
+
+
+        function openEditAgreement(url) {
+            debugger;
+            var childWindow = window.open(url, 'Edit Agreement', 'width=600,height=400');
+
+            var checkChild = setInterval(function() {
+                debugger;
+                if (childWindow.closed) {      
+                    debugger;
+                    clearInterval(checkChild);
+                    debugger;
+                    window.location.href = '@Url.Action("ViewAgreement", "Agreement")' + '?id=' + clientProgrammeId;
+                    window.location.reload();
+                }
+            }, 1000);
+        }
 
     });
 
 
 
 </script>
-
 

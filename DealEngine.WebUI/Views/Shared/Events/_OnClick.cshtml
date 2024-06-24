@@ -1358,4 +1358,55 @@
 
     //}
 
+
+     function loadEditForm(agreementId, action) {
+                debugger;
+                $.ajax({
+                    url: '/Agreement/' + action + '/' + agreementId,
+                    type: 'GET',
+                    success: function (data) {
+                        $('#edit-form-' + agreementId).html(data);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading edit form:', error);
+                    }
+                });
+     }
+
+
+      function openEditAgreement(url) {
+            debugger;
+            var childWindow = window.open(url, 'Edit Agreement', 'width=600,height=400');
+            var clientprogrammeId = document.getElementById("ClientProgrammeId").value;
+            debugger;
+            ////onclick
+            var checkChild = setInterval(function() {
+                debugger;
+                if (childWindow.closed) {      
+                    debugger;
+                    clearInterval(checkChild);
+                    debugger;
+                //$("#agreementView").load(url, function () { });
+                //window.location.href = '@Url.Action("ViewAgreement", "Agreement")' + '?id=' + clientprogrammeId;
+                //    window.location.reload();
+
+
+                // Construct the URL
+                 var url = '@Url.Action("ViewAgreement", "Agreement")' + '?id=' + clientprogrammeId;
+
+                // Use the jQuery load function to load the content into the element with id "agreementView"
+                $("#agreementView").load(url, function(response, status, xhr) {
+                if (status == "error") {
+                // Handle the error here
+                var msg = "Sorry but there was an error: ";
+                $("#agreementView").html(msg + xhr.status + " " + xhr.statusText);
+                } else {
+                  // Optionally handle the successful load here
+                 }
+                });
+
+                }
+            }, 1000);
+        }
+
 </script>

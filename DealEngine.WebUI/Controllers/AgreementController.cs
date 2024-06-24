@@ -8,11 +8,13 @@ using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Agreement;
 using DealEngine.WebUI.Models.Programme;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using NHibernate.Mapping;
 using NReco.PdfGenerator;
 using ServiceStack;
@@ -2034,7 +2036,7 @@ namespace DealEngine.WebUI.Controllers
                     model.ProgrammeId = agreement.ClientInformationSheet.Programme.BaseProgramme.Id;
                     model.InsuranceRoles = insuranceRoles;
                     model.ProductName = agreement.Product.Name;
-
+                    //model.ProductCode = agreement.Product.UnderwritingModuleCode;
                     var prodcodesubtring = agreement.Product.UnderwritingModuleCode.Substring(agreement.Product.UnderwritingModuleCode.IndexOf("_") + 1);
                     var hjg = prodcodesubtring.IndexOf("_");
                     if (hjg > 0)
@@ -2594,6 +2596,16 @@ namespace DealEngine.WebUI.Controllers
 
                 ViewBag.Title = answerSheet.Programme.BaseProgramme.Name + " Edit Agreement for " + insured.Name;
 
+
+                //if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                //{
+                //    return PartialView("Partials/EditAgreement", model);
+                //}
+                //else
+                //{
+                //    return View("EditAgreement", model);
+                //}
+
                 return View("EditAgreement", model);
             }
             catch (Exception ex)
@@ -2611,6 +2623,11 @@ namespace DealEngine.WebUI.Controllers
             {
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(model.ClientAgreementId);
                 ClientInformationSheet answerSheet = agreement.ClientInformationSheet;
+                Organisation insured = answerSheet.Owner;
+                var insuranceRoles = new List<InsuranceRoleViewModel>();
+                insuranceRoles.Add(new InsuranceRoleViewModel { RoleName = "Client", Name = insured.Name, ManagedBy = "", Email = "" });
+
+                //insuranceRoles.Add(new InsuranceRoleViewModel { RoleName = "Client", Name = insured.Name, ManagedBy = "", Email = "" });
                 user = await CurrentUser();
                 using (var uow = _unitOfWork.BeginUnitOfWork())
                 {
@@ -2628,15 +2645,24 @@ namespace DealEngine.WebUI.Controllers
                     agreement.TerritoryLimit = model.TerritoryLimit;
                     agreement.ProfessionalBusiness = model.ProfessionalBusiness;
                     agreement.InsuredName = model.InsuredName;
-
+                  
                     string auditLogDetail = "Agreement details have been modified by " + user.FullName;
                     AuditLog auditLog = new AuditLog(user, answerSheet, agreement, auditLogDetail);
                     agreement.ClientAgreementAuditLogs.Add(auditLog);
 
                     await uow.Commit();
                 }
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                   // var updatedAgreement = await _clientAgreementService.GetAgreement(model.ClientAgreementId);
+                   // var updatedModel = new ViewAgreementViewModel(updatedAgreement, model.ClientInformationSheet, agreement.ClientInformationSheet.Programme, CultureInfo.CurrentCulture);
+                    // var updatedModel = new ViewAgreementViewModel(updatedAgreement, model.ClientInformationSheet, UserCulture);
+                    //updatedModel.InsuranceRoles = insuranceRoles;
+                    //return Json("True");
+                    return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
+                }
 
-                return Redirect("/Agreement/ViewAcceptedAgreement/" + answerSheet.Programme.Id);
+                return RedirectToAction("ViewAcceptedAgreement", new { id = model.ClientProgrammeId });
             }
             catch (Exception ex)
             {

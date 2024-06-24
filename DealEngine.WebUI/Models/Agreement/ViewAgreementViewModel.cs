@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using DealEngine.Domain.Entities;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using NHibernate.Mapping;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 
 namespace DealEngine.WebUI.Models.Agreement
@@ -35,6 +38,31 @@ namespace DealEngine.WebUI.Models.Agreement
                 GetBoats(agreement, sheet);
             }
         }
+
+
+        public ViewAgreementViewModel(ClientAgreement agreement, ClientInformationSheet answerSheet, ClientProgramme programme, CultureInfo userCulture)
+        {
+            InformationSheetId = answerSheet.Id;
+            ClientAgreementId = agreement.Id;
+            ClientProgrammeId = programme.Id;
+            StartDate = agreement.InceptionDate.ToString("dd-MM-yyyy", userCulture);
+            EndDate = agreement.ExpiryDate.ToString("dd-MM-yyyy", userCulture);
+            AdministrationFee = agreement.BrokerFee.ToString("C", userCulture);
+            BrokerageRate = (agreement.Brokerage / 100).ToString("P2", userCulture);
+            CurrencySymbol = "fa fa-dollar";
+            ClientNumber = agreement.ClientNumber;
+            PolicyNumber = agreement.PolicyNumber;
+            RetroactiveDate = agreement.RetroactiveDate;
+            ContinuityDate = agreement.ContinuityDate;
+            TerritoryLimit = agreement.TerritoryLimit;
+            Jurisdiction = agreement.Jurisdiction;
+            ProfessionalBusiness = agreement.ProfessionalBusiness;
+            InsuredName = agreement.InsuredName;
+            ClientInformationSheet = answerSheet;
+            InformationSheetStatus = answerSheet.Status;
+        }
+
+
 
         private void  GetPaymentMethodOptions()
         {
