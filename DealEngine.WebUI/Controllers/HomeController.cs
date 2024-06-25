@@ -1136,15 +1136,15 @@ namespace DealEngine.WebUI.Controllers
                 foreach (Organisation owner in ownerList.Where(o => o.DateDeleted == null).OrderBy(o => o.Name).Distinct())
                 {
                     ClientProgramme ownerclientProgramme = await  _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.Id) ;
-                    if (ownerclientProgramme != null && ownerclientProgramme.ClientProgrammeExpiryDate < DateTime.Now.AddMonths(2))
-                    {
-                        model.UpcomingDeals.Add(new OwnerItem
-                        {
-                            OwnerId = owner.Id.ToString(),
-                            OwnerName = owner.Name,
-                            ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
-                        });
-                    }
+                    //if (ownerclientProgramme != null && ownerclientProgramme.ClientProgrammeExpiryDate < DateTime.Now.AddMonths(2))
+                    //{
+                    //    model.UpcomingDeals.Add(new OwnerItem
+                    //    {
+                    //        OwnerId = owner.Id.ToString(),
+                    //        OwnerName = owner.Name,
+                    //        ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
+                    //    });
+                    //}
                         model.OwnerDeals.Add(new OwnerItem
                         {
                             OwnerId = owner.Id.ToString(),
