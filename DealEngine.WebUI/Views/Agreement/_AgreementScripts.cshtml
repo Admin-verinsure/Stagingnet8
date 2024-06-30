@@ -1,4 +1,4 @@
-﻿<script type="text/javascript">
+<script type="text/javascript">
 
      $('#boatTable').on('click', '.clickable-row', function (event) {
        $(this).addClass('active').siblings().removeClass('active');
@@ -829,7 +829,7 @@
                 async: true,
                 success: function () {
                     $("#myModal").modal("hide");
-                    alert("Saved Successfully!");
+                    alert("Saved Successfully!.\n Please close this tab.");
                     location.reload(true);
 
                 }
