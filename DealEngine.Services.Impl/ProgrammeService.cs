@@ -126,7 +126,48 @@ namespace DealEngine.Services.Impl
                                                       cp.Owner.Id == ownerOrganisationId && cp.InformationSheet != null && cp.DateDeleted == null).FirstOrDefault();
             return originalClientProgramme;
         }
+        public async Task<List<ClientProgramme>> GetClientProgrammesForRenewal(Guid programmeId)
+        {
+            Programme programme = await GetProgramme(programmeId);
+            var clientList = new List<ClientProgramme>();
+            if (programme == null)
+                return null;
+            // Find all eglobalclientnumbers that have client programmes with clientprogrammeexpirydate in 2025
+            var eglobalClientNumbersalreadycloned = programme.ClientProgrammes
+                .Where(cp => cp.ClientProgrammeExpiryDate.Year == 2025 && cp.EGlobalClientNumber != null)
+                .Select(cp => cp.EGlobalClientNumber)
+                .Distinct()
+                .ToList();
+//            var specificIds = new List<Guid>
+//{
+//    new Guid("8894e761-90ca-4203-aedf-b02f001ce0cf"),
+//    new Guid("9737cb44-fe21-45dc-9bf3-b0c10185f41d"),
+//    new Guid("ba120e75-6da4-4b5c-99a4-b07d0184d5fa")
+//};
+            // Filter out client programmes whose eglobalclientnumber is in the list of eglobalClientNumbersIn2025
+            var latestClientProgrammes = programme.ClientProgrammes
+                .Where(cp => cp.ClientProgrammeExpiryDate.Year != 2025 && !eglobalClientNumbersalreadycloned.Contains(cp.EGlobalClientNumber)
+                                                       && cp.EGlobalClientNumber != null )               
+                .GroupBy(cp => cp.EGlobalClientNumber)
+                .Select(g => g.OrderByDescending(cp => cp.DateCreated).FirstOrDefault())
+                .Where(cp => cp != null)
+                .ToList();
 
+            //foreach (var client in latestClientProgrammes)
+            //{
+            //    //clientList.Add(client);
+            //    var isBaseClass = await IsBaseClass(client);
+            //    if (isBaseClass)
+            //    {
+            //        if (client.DateDeleted == null)
+            //        {
+            //            clientList.Add(client);
+            //        }
+            //    }
+            //}
+
+            return latestClientProgrammes;
+        }
 
         public async Task<List<ClientProgramme>> GetClientProgrammesForProgramme(Guid programmeId)
         {
@@ -820,13 +861,13 @@ namespace DealEngine.Services.Impl
                     if (newClientInformationSheet.Programme.BaseProgramme.ProgDisableClaimInsHistoryPanel)
                     {
                         if (answer.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions" || 
-                            answer.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions" || 
-                            answer.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions"|| answer.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions")
+                            answer.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions" || 
+                            answer.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")
                         {
                             newClientInformationAnswer.Value = "0";
                         }
                         if (answer.ItemName == "ClaimsHistoryViewModel.DamageLossDetails" || answer.ItemName == "ClaimsHistoryViewModel.WithdrawnDetails" ||
-                        answer.ItemName == "ClaimsHistoryViewModel.RefusedDetails" || answer.ItemName == "ClaimsHistoryViewModel.StatutoryOffenceDetails" ||
+                         answer.ItemName == "ClaimsHistoryViewModel.StatutoryOffenceDetails" ||
                         answer.ItemName == "ClaimsHistoryViewModel.LiquidationDetails")
                         {
                             newClientInformationAnswer.Value = "";
