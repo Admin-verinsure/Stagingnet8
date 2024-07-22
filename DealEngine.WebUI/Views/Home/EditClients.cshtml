@@ -86,6 +86,27 @@
                             @Html.DropDownListFor(m => m.ClientProgramme.BrokerContactId, Model.BrokerContacts, new { @class = "form-select b", @id = "ClientProgramme.BrokerContactId", @required = "", @size = 1 })
                         </div>
 
+                        <label class="label">Insured Address</label><br />
+                        <div class="form-group">
+                            <label class="label">Street</label><br />
+                            @Html.TextBoxFor(m => m.Street, new { @class = "form-control b", @id = "Street", @required = "required", @size = 1 })
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label">Suburb</label><br />
+                            @Html.TextBoxFor(m => m.Suburb, new { @class = "form-control b", @id = "Suburb", @required = "required", @size = 1 })
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label">City</label><br />
+                            @Html.TextBoxFor(m => m.City, new { @class = "form-control b", @id = "City", @required = "required", @size = 1 })
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label">Postcode</label><br />
+                            @Html.TextBoxFor(m => m.Postcode, new { @class = "form-control b", @id = "Postcode", @required = "required", @size = 1 })
+                        </div>
+
 
                     </div>
                 </div>

@@ -146,7 +146,6 @@ namespace DealEngine.WebUI.Controllers
                 //EditClientsViewModel EditClientsViewModel = new EditClientsViewModel();
                 Programme programme = await _programmeService.GetProgrammeById(ProgId);
                 EditClientsViewModel model = new EditClientsViewModel(programme);
-
                 if (organisation != null)
                 {
                     var ClientProgrammes = await _programmeService.GetClientProgrammesByOwnerByProgramme(organisation.Id, ProgId);
@@ -154,6 +153,10 @@ namespace DealEngine.WebUI.Controllers
                     {
                         model.ClientProgramme = ClientProgrammes.FirstOrDefault();
                         model.Organisation = organisation;
+                        model.Street = ClientProgrammes.FirstOrDefault().InformationSheet.Locations.FirstOrDefault().Street;
+                        model.Suburb = ClientProgrammes.FirstOrDefault().InformationSheet.Locations.FirstOrDefault().Suburb;
+                        model.City = ClientProgrammes.FirstOrDefault().InformationSheet.Locations.FirstOrDefault().City;
+                        model.Postcode = ClientProgrammes.FirstOrDefault().InformationSheet.Locations.FirstOrDefault().Postcode;
 
                     }
                 }
@@ -211,12 +214,14 @@ namespace DealEngine.WebUI.Controllers
                 {
                     clientProgramme.EGlobalClientNumber = Collection["ClientProgramme.EGlobalClientNumber"];
                     clientProgramme.Tier = Collection["ClientProgramme.Tier"];
-                    clientProgramme.EGlobalBranchCode = Collection["ClientProgramme.EGlobalBranchCode"];
+                    clientProgramme.EGlobalBranchCode = Collection["C   lientProgramme.EGlobalBranchCode"];
                     clientProgramme.BrokerContactUser = await _userService.GetUserById(Guid.Parse(Collection["ClientProgramme.BrokerContactId"]));
                     clientProgramme.BrokerContactId = clientProgramme.BrokerContactUser.Id;
                     clientProgramme.EGlobalExternalContactNumber = Collection["ClientProgramme.EGlobalExternalContactNumber"];
                     await _programmeService.Update(clientProgramme);
                     User OwnerUser = await _userService.GetUserPrimaryOrganisationOrEmail(clientProgramme.Owner);
+
+
                     if(OwnerUser != null)
                     {
 

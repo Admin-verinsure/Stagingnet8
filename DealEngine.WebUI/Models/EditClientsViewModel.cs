@@ -134,5 +134,10 @@ namespace DealEngine.WebUI.Models
         //public List<User> BrokerContacts { get; set; }
         public ClientProgramme ClientProgramme { get; set; }
         public Domain.Entities.Programme Programme { get; set; }
+        public String Street { get; set; }
+        public String Suburb { get; set; }
+        public String City { get; set; }
+        public String Postcode { get; set; }
+
     }
 }
