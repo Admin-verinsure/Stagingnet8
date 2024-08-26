@@ -901,14 +901,21 @@ namespace DealEngine.WebUI.Controllers
 
             string oktaUid = DecryptString("LaOpzB19V4kUmRZn8aVKfg17HFCxuv9L", q);
             string oktaSingleUseToken = DecryptString("LaOpzB19V4kUmRZn8aVKfg17HFCxuv9L", t);
+            _logger.LogInformation("Inside OldLogin if block user value with oktaUid value " + oktaUid);
 
             user = await _userService.GetUserByOktaUID(oktaUid);
+            _logger.LogInformation("Inside OldLogin if block user value with user value " + user);
 
             // Check if the token is valid.
+            _logger.LogInformation("Inside OldLogin with AUth value " + isAuth);
             if (user != null)
             {
+                _logger.LogInformation("Inside OldLogin if block with AUth value " + isAuth);
+
                 if (user.OktaSingleUseToken.Equals(oktaSingleUseToken))
                 {
+                    _logger.LogInformation("Inside OldLogin if block user value with AUth value " + isAuth);
+
                     isAuth = true;
                 }
             }
@@ -920,6 +927,7 @@ namespace DealEngine.WebUI.Controllers
             // Delete old SingleUseToken from User so it can't be re-used.
             user.OktaSingleUseToken = null;
             await _userService.Update(user);
+            _logger.LogInformation("Inside OldLogin if block user value with AUth value2 " + isAuth);
 
             try
             {
@@ -957,6 +965,8 @@ namespace DealEngine.WebUI.Controllers
                 }
                 else
                 {
+                    _logger.LogInformation("Inside OldLogin else block user value with AUth value " + isAuth);
+
                     return LocalRedirect("~/Account/OktaErrorMessage");
                 }                
             }
