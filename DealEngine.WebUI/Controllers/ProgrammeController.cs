@@ -1237,6 +1237,50 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
+        public async Task<IActionResult> RenewClientProgamme(Guid Id)
+        {
+            ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
+            var product = new List<ProductInfoViewModel>();
+            User user = null;
+            //var programmeReports = new List<ProgrammeReports>();
+            try
+            {
+                user = await CurrentUser();
+                Programme programme = await _programmeService.GetProgrammeById(Id);
+                var programmeReports = await _programmeReportsService.GetAllProgrammeReports();
+                model.Programme = programme;
+                model.ProgrammeReports = programmeReports;
+                ViewBag.Title = "Edit Report Schedular";
+
+                return View("ManageSchedulars", model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        //public async Task<IActionResult> RenewClientProgamme(Guid Id)
+        //{
+        //    ProgrammeInfoViewModel model = new ProgrammeInfoViewModel();
+        //    User user = null;
+        //    try
+        //    {
+        //        user = await CurrentUser();
+        //        Programme programme = await _programmeService.GetProgrammeById(Id);
+        //        model.Programme = programme.RenewFromProgramme;
+
+        //        return View("RenewClientProgramme", model);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        //        return RedirectToAction("Error500", "Error");
+        //    }
+        //}
+
+
         [HttpPost]
         public async Task<IActionResult> GetReportInfo(Guid id , Guid progid)
         {

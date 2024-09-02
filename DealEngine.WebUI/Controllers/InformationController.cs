@@ -2077,13 +2077,15 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> RenewInformation(Guid id)
+        //public async Task<IActionResult> RenewInformation(Guid id)
+         public async Task<IActionResult> RenewInformation(IFormCollection formCollection)
         {
             User user = null;
 
             try
             {
-                ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(id);
+                var ProgrammeId = formCollection["ProgrammeId"];
+                ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(Guid.Parse(ProgrammeId));
                 user = await CurrentUser();
                 if (user.IsLoggedout)
                     return PageNotFound();
@@ -2092,7 +2094,7 @@ namespace DealEngine.WebUI.Controllers
                     return PageNotFound();
 
                 if (clientProgramme == null)
-                    throw new Exception("ClientProgramme (" + id + ") doesn't belong to User " + user.UserName);
+                    throw new Exception("ClientProgramme (" + Guid.Parse(ProgrammeId) + ") doesn't belong to User " + user.UserName);
 
                 ClientProgramme newClientProgramme = await _programmeService.CloneForRewenal(clientProgramme, user);
 
