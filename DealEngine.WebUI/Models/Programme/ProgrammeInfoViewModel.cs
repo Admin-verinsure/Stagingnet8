@@ -191,6 +191,7 @@ namespace DealEngine.WebUI.Models.Programme
         public string BoundDateTo { get; set; }
         public  Boolean IsBoundField { get; set; }
         public virtual IList<SelectListItem> ProgrammeRenewalFrom { get; set; }
+        public Domain.Entities.Programme OldProgramme { get; set; }
 
 
         //public IList<SelectListItem> ScheduleFrequency { get; set; }

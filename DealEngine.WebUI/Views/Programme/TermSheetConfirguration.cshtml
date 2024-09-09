@@ -151,12 +151,12 @@
                             <td>Images Management</td>
                             <td><a class="btn btn-success btn-sm disabled" href="#"><i class="fa fa-search"></i> In Dev</a></td>
                         </tr>
-                    <tr>
+                    <@*tr>
                         <td>Reports Schedular</td>
-                        <td>Configure the Schedular for Reports</td>
+                        <td>Configure theSchedular for Reports</td>
                         <td><a class="btn btn-success btn-sm" href="@Url.Action("RenewClientProgamme", "Programme", new { Id = @Model.Id ,RuleType ="Notification"})"><i class="fa fa-search"></i> View</a></td>
 
-                    </tr>
+                    </tr>*@
                         <tr>
                             <td>Reports Schedular</td>
                             <td>Configure the Schedular for Reports</td>
@@ -166,6 +166,8 @@
                     <tr>
                         <td>Renew ClientProgramme</td>
                         <td>Renew Client Programme</td>
+                        <td><a class="btn btn-success btn-sm" href="/Programme/RenewClientProgamme?Id=@Model.Id"><i class="fa fa-search"></i> View</a></td>
+
                         <td><a class="btn btn-success btn-sm" href="@Url.Action("RenewClientProgamme", "Programme", new { Id = @Model.Id})"><i class="fa fa-search"></i> View</a></td>
 
                     </tr>

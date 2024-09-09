@@ -1,0 +1,69 @@
+﻿@model DealEngine.WebUI.Models.Programme.ProgrammeInfoViewModel
+<!-- MAIN CONTENT -->
+
+<div class="container">
+    <form id="ReportForm" method="POST" action="~/Information/RenewInformation" novalidate>
+        <input type="text" class="form-control" value="@Model.Programme.Id" id="programmeId" name="ProgrammeId" hidden>
+        <input type="text" class="form-control" value="@Model.Programme.Name" id="programmeName" name="ProgrammeName" hidden>
+        <input type="text" class="form-control" value="@Model.Programme.NamedPartyUnitName" id="programmeNamedPartyUnitName" name="ProgrammeNamedPartyUnitName" hidden>
+
+        <div class="card">
+            <div class="card-header">
+                <h5>
+                    This page lists the client programmes available for this programme.
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped ">
+
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <section class="col col-1">
+
+                                        <label>Client Programme to Renew </label>
+                                    </section>
+                                    <section class="col col-2">
+@*                                        <label>Report Name </label>
+*@
+                                        <select class="form-select input-lg" id="ProgrammeRenewalFrom" name="ProgrammeRenewalFrom">
+                                            <option selected="selected" value="Select">---Select---</option>
+                                            @foreach (var option in Model.OldProgramme.ClientProgrammes)
+                                            {
+                                                <option value="@option.Id">@option.Owner.Name</option>
+                                            }
+
+                                        </select>
+                                    </section>
+
+                                   
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    </tbody>
+                    
+
+                </table>
+            </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-success btn-sm">
+            <i class="fa fa-save"></i> Submit
+        </button>
+
+    </form>
+</div>
+
+
+<script src="jquery.datetimepicker.js"></script>
+@section pagespecific {
+    @Html.Partial("_ProgrammeScripts")
+
+
+  
+}
