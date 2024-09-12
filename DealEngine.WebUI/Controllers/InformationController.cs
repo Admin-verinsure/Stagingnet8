@@ -33,6 +33,7 @@ using Newtonsoft.Json.Linq;
 using FluentNHibernate.Testing.Values;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using EServices.AccountProxy;
+using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -2084,23 +2085,23 @@ namespace DealEngine.WebUI.Controllers
 
             try
             {
-                var ProgrammeId = formCollection["ProgrammeId"];
-                ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(Guid.Parse(ProgrammeId));
+                Guid ClientProgId= Guid.Parse(formCollection["ProgrammeRenewalFrom"]);
+
+        //        ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(ClientProgId);
                 user = await CurrentUser();
+                Guid ProgrammeId = Guid.Parse(formCollection["ProgrammeId"]);
                 if (user.IsLoggedout)
                     return PageNotFound();
 
                 if (user == null)
                     return PageNotFound();
 
-                if (clientProgramme == null)
-                    throw new Exception("ClientProgramme (" + Guid.Parse(ProgrammeId) + ") doesn't belong to User " + user.UserName);
+                if (ClientProgId == null)
+                    throw new Exception("ClientProgramme (" + ProgrammeId + ") doesn't belong to User " + user.UserName);
+                ClientProgramme ClonedClientProgramme = await _programmeService.CloneForRenew(user, ClientProgId, ProgrammeId);
+                await _programmeService.Update(ClonedClientProgramme);
 
-                ClientProgramme newClientProgramme = await _programmeService.CloneForRewenal(clientProgramme, user);
-
-                await _programmeService.Update(newClientProgramme);
-
-                return Redirect("/Information/EditInformation/" + newClientProgramme.Id);
+                return Redirect("/Information/EditInformation/" + ClonedClientProgramme.Id);
             }
             catch (Exception ex)
             {
