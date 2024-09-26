@@ -82,6 +82,11 @@
 
     <div id="body" class="container-fluid">
         @RenderBody()
+        <!-- Floating Helpdesk Button -->
+
+        <a class="oe_unremovable btn_cta btn btn-primary fixed-helpdesk" href="https://verinsure.online/helpdesk" target="_blank">
+            <i class="fa fa-user-headset" style="font-size:28px;"></i> Visit Helpdesk
+        </a>
         <footer>
             <p style="vertical-align:central">&copy; 2024 - DealEngine</p>
         </footer>
@@ -94,3 +99,14 @@
 </html>
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    .fixed-helpdesk {
+        position: fixed; /* Fixed to the viewport */
+        right: 20px; /* 20px from the right of the screen */
+        bottom: 20px; /* 20px from the bottom of the screen */
+        z-index: 1000; /* Ensures it appears above other elements */
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+</style>
