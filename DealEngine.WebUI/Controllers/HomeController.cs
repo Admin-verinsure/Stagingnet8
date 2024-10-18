@@ -706,23 +706,23 @@ namespace DealEngine.WebUI.Controllers
             return model;
         }
 
-        private async Task<ProgrammeItem> GetBrokerRenewedListModel(User user, IList<ClientProgramme> clientList, Programme programme, bool isClient = false)
+        private async Task<ProgrammeItem> GetClientListModel(User user, IList<ClientProgramme> clientList, Programme programme, bool isClient = false)
         {
             var clientProgramme = clientList.FirstOrDefault();
             IList<Organisation> ownerList = new List<Organisation>();
             ProgrammeItem model = new ProgrammeItem(programme);
-            DateTime tme = DateTime.Now.AddMonths(3);
-            if (clientProgramme != null)
-            {
-                if (!isClient)
-                {
-                    var isBaseClientProg = await _programmeService.IsBaseClass(clientProgramme);
-                    if (isBaseClientProg)
-                    {
-                        ownerList = await _programmeService.GetOwnerForProgramme(clientProgramme.BaseProgramme.Id);
-                    }
-                }
-            }
+           // DateTime tme = DateTime.Now.AddMonths(3);
+            //if (clientProgramme != null)
+            //{
+            //    if (!isClient)
+            //    {
+            //        var isBaseClientProg = await _programmeService.IsBaseClass(clientProgramme);
+            //        if (isBaseClientProg)
+            //        {
+            //            ownerList = await _programmeService.GetOwnerForProgramme(clientProgramme.BaseProgramme.Id);
+            //        }
+            //    }
+            //}
             if (programme.RenewFromProgramme != null)
             {
                 List<ClientProgramme> renewClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
@@ -771,45 +771,45 @@ namespace DealEngine.WebUI.Controllers
                 }
             }
 
-            if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsProgrammeManager)
-            {
-                foreach (Organisation owner in ownerList.Where(o => o.DateDeleted == null).OrderBy(o => o.Name).Distinct())
-                {
-                    ClientProgramme ownerclientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.Id);
-                    //if (ownerclientProgramme.ClientProgrammeExpiryDate < DateTime.Now.AddMonths(2))
-                    //{
-                    //    model.UpcomingDeals.Add(new OwnerItem
-                    //    {
-                    //        OwnerId = owner.Id.ToString(),
-                    //        OwnerName = owner.Name,
-                    //        ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
-                    //    });
-                    //}
-                    model.OwnerDeals.Add(new OwnerItem
-                    {
-                        OwnerId = owner.Id.ToString(),
-                        OwnerName = owner.Name,
-                        ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
-                    });
-                }
-            }
-            else
-            {
-                foreach (var clientorg in user.Organisations)
-                {
-                    var clientProgList = await _programmeService.GetClientProgrammesByOwnerByProgramme(clientorg.Id, programme.Id);
-                    if (clientProgList.Any())
-                    {
-                        model.OwnerDeals.Add(new OwnerItem
-                        {
-                            OwnerId = clientorg.Id.ToString(),
-                            OwnerName = clientorg.Name,
-                            ProgrammeId = clientProgramme.BaseProgramme.Id.ToString()
-                        });
-                    }
-                }
+            //if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsProgrammeManager)
+            //{
+            //    foreach (Organisation owner in ownerList.Where(o => o.DateDeleted == null).OrderBy(o => o.Name).Distinct())
+            //    {
+            //        ClientProgramme ownerclientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.Id);
+            //        //if (ownerclientProgramme.ClientProgrammeExpiryDate < DateTime.Now.AddMonths(2))
+            //        //{
+            //        //    model.UpcomingDeals.Add(new OwnerItem
+            //        //    {
+            //        //        OwnerId = owner.Id.ToString(),
+            //        //        OwnerName = owner.Name,
+            //        //        ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
+            //        //    });
+            //        //}
+            //        model.OwnerDeals.Add(new OwnerItem
+            //        {
+            //            OwnerId = owner.Id.ToString(),
+            //            OwnerName = owner.Name,
+            //            ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
+            //        });
+            //    }
+            //}
+            //else
+            //{
+            //    foreach (var clientorg in user.Organisations)
+            //    {
+            //        var clientProgList = await _programmeService.GetClientProgrammesByOwnerByProgramme(clientorg.Id, programme.Id);
+            //        if (clientProgList.Any())
+            //        {
+            //            model.OwnerDeals.Add(new OwnerItem
+            //            {
+            //                OwnerId = clientorg.Id.ToString(),
+            //                OwnerName = clientorg.Name,
+            //                ProgrammeId = clientProgramme.BaseProgramme.Id.ToString()
+            //            });
+            //        }
+            //    }
 
-            }
+            //}
 
             model.CurrentUserIsClient = "True";
             if (user.PrimaryOrganisation.IsBroker)
@@ -1741,6 +1741,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ViewProgramme(Guid id)
         {
             User user = null;
+
             user = await CurrentUser();
             if (user.IsLoggedout)
             {
