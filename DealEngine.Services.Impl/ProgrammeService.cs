@@ -768,13 +768,22 @@ namespace DealEngine.Services.Impl
             newClientInformationSheet.UnlockDate = DateTime.MinValue;
             if(oldClientProgramme.InformationSheet.Answers.Count != 0 && (oldClientProgramme.BaseProgramme.NamedPartyUnitName == "Marsh Real Estate Programme" || oldClientProgramme.BaseProgramme.IsPolicyperiodclone))
             {
-                String policystartdate = oldClientProgramme.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate").FirstOrDefault().Value;
-                DateTime startdate = DateTime.ParseExact(policystartdate, "yyyy-mm-dd", CultureInfo.InvariantCulture);
-                string policyenddate = oldClientProgramme.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyEndDate").FirstOrDefault().Value;
-                DateTime enddate = DateTime.ParseExact(policyenddate, "yyyy-mm-dd", CultureInfo.InvariantCulture);
-                string newpolicyenddate = enddate.AddYears(1).ToString("yyyy-mm-dd");
+                //String ispolicystartdate = oldClientProgramme.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate");
+                // Provide a default value (e.g., empty string) if no answer satisfies the condition
+                string policystartdate = oldClientProgramme.InformationSheet.Answers
+                    .Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate")
+                    .FirstOrDefault()?.Value ?? string.Empty;
+
+                //String policystartdate = oldClientProgramme.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate").FirstOrDefault().Value;
+                if (!string.IsNullOrEmpty(policystartdate)) { 
+                    DateTime startdate = DateTime.ParseExact(policystartdate, "yyyy-mm-dd", CultureInfo.InvariantCulture);
+                    string policyenddate = oldClientProgramme.InformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyEndDate").FirstOrDefault().Value;
+                    DateTime enddate = DateTime.ParseExact(policyenddate, "yyyy-mm-dd", CultureInfo.InvariantCulture);
+                    string newpolicyenddate = enddate.AddYears(1).ToString("yyyy-mm-dd");
+                
                 newClientInformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyStartDate").FirstOrDefault().Value = policyenddate;
                 newClientInformationSheet.Answers.Where(ans => ans.ItemName == "GeneralViewModel.PolicyEndDate").FirstOrDefault().Value = newpolicyenddate;
+                }
             }
             
             newClientInformationSheet.RenewFromInformationSheet = oldClientProgramme.InformationSheet;
@@ -1537,6 +1546,11 @@ namespace DealEngine.Services.Impl
         //    //    //other attributes here 
         //    //});
         //}
+
+        public async Task<Programme> GetProgrammeByRenewalprogramme(Guid programmeid)
+        {
+            return await _programmeRepository.FindAll().FirstOrDefaultAsync(p => p.RenewFromProgramme.Id== programmeid);
+        }
 
     }
 }
