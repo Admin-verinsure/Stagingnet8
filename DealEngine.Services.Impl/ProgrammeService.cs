@@ -870,7 +870,7 @@ namespace DealEngine.Services.Impl
                     if (newClientInformationSheet.Programme.BaseProgramme.ProgDisableClaimInsHistoryPanel)
                     {
                         if (answer.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions" || answer.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions" ||
-                            answer.ItemName == "HasRefusedOptions"||
+                            answer.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions" ||
                             answer.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions" || 
                             answer.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")
                         {
