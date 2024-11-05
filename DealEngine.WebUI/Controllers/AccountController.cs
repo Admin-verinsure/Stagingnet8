@@ -119,107 +119,108 @@ namespace DealEngine.WebUI.Controllers
         }
 
         // GET: /account/resetpassword
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword()
-        {
-            if (User.Identity.IsAuthenticated)
-                return await RedirectToLocal();
-            //var currentUser = await CurrentUser();
-            //if (currentUser.IsLoggedout)
-            //    return PageNotFound();
+    //    [HttpGet]
+    //    [AllowAnonymous]
+    //    [ValidateAntiForgeryToken]
+    //    public async Task<IActionResult> ResetPassword()
+    //    {
+    //        if (User.Identity.IsAuthenticated)
+    //            return await RedirectToLocal();
+    //        //var currentUser = await CurrentUser();
+    //        //if (currentUser.IsLoggedout)
+    //        //    return PageNotFound();
 
-            //if (User == null)
-            //    return PageNotFound();
+    //        //if (User == null)
+    //        //    return PageNotFound();
 
-            // We do not want to use any existing identity information
-            EnsureLoggedOut();
+    //        // We do not want to use any existing identity information
+    //        EnsureLoggedOut();
 
-            return View();
-        }
+    //        return View();
+    //    }
 
-        // POST: /account/resetpassword
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(AccountResetPasswordModel viewModel)
-        {
-            DealEngine.Domain.Entities.User user = null;
-            string errorMessage = @"We have sent you an email to the email address we have recorded in the system, that email address is different from the one you supplied. 
-				Please check the other email addresses you may have used. If you cannot locate our email, 
-				please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details, we can re-establish your account with your broker.";
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(viewModel.Email))
-                {
-                    //System Email Testing
-                    //var testuser = _userService.GetUserByEmail("mcgtestuser2@techcertain.com");
-                    //var programme = _programmeService.GetAllProgrammes().FirstOrDefault(p => p.Name == "Demo Coastguard Programme");
-                    //var organisation = _organisationService.GetOrganisationByEmail("mcgtestuser2@techcertain.com");
-                    //var sheet = _clientInformationService.GetInformation(new Guid("bc3c9972-1733-41a1-8786-fa22229c66f8"));
-                    //_emailService.SendSystemEmailLogin("support@techcertain.com");
+    //    // POST: /account/resetpassword
+    //    [HttpPost]
+    //    [AllowAnonymous]
+    //    [ValidateAntiForgeryToken]
+    //    public async Task<IActionResult> ResetPassword(AccountResetPasswordModel viewModel)
+    //    {
+    //        DealEngine.Domain.Entities.User user = null;
+    //        string errorMessage = @"We have sent you an email to the email address we have recorded in the system, that email address is different from the one you supplied. 
+				//Please check the other email addresses you may have used. If you cannot locate our email, 
+				//please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details, we can re-establish your account with your broker.";
+    //        try
+    //        {
+    //            if (!string.IsNullOrWhiteSpace(viewModel.Email))
+    //            {
+    //                //System Email Testing
+    //                //var testuser = _userService.GetUserByEmail("mcgtestuser2@techcertain.com");
+    //                //var programme = _programmeService.GetAllProgrammes().FirstOrDefault(p => p.Name == "Demo Coastguard Programme");
+    //                //var organisation = _organisationService.GetOrganisationByEmail("mcgtestuser2@techcertain.com");
+    //                //var sheet = _clientInformationService.GetInformation(new Guid("bc3c9972-1733-41a1-8786-fa22229c66f8"));
+    //                //_emailService.SendSystemEmailLogin("support@techcertain.com");
 
-                    SingleUseToken token = await _authenticationService.GenerateSingleUseToken(viewModel.Email);
-                    user = await _userService.GetUserById(token.UserID);
-                    if (user != null)
-                    {
-                        //change the users password to an intermediate
-                        try
-                        {
-                            _ldapService.ChangePassword(user.UserName, "", _appSettingService.IntermediatePassword);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
+    //                SingleUseToken token = await _authenticationService.GenerateSingleUseToken(viewModel.Email);
+    //                user = await _userService.GetUserById(token.UserID);
+    //                if (user != null)
+    //                {
+    //                    //change the users password to an intermediate
+    //                    try
+    //                    {
+    //                        _ldapService.ChangePassword(user.UserName, "", _appSettingService.IntermediatePassword);
+    //                    }
+    //                    catch (Exception ex)
+    //                    {
+    //                        Console.WriteLine(ex.Message);
+    //                    }
 
-                        var deUser = await _userManager.FindByNameAsync(user.UserName);
-                        if (deUser != null)
-                        {
-                            var removePasswordResult = await _userManager.RemovePasswordAsync(deUser);
-                            var addPasswordResult = await _userManager.AddPasswordAsync(deUser, _appSettingService.IntermediatePassword);
-                            if (addPasswordResult.Succeeded)
-                            {
+    //                    var deUser = await _userManager.FindByNameAsync(user.UserName);
+    //                    if (deUser != null)
+    //                    {
+    //                        var removePasswordResult = await _userManager.RemovePasswordAsync(deUser);
+    //                        var addPasswordResult = await _userManager.AddPasswordAsync(deUser, _appSettingService.IntermediatePassword);
+    //                        if (addPasswordResult.Succeeded)
+    //                        {
 
-                            }
-                        }
+    //                        }
+    //                    }
 
-                        //get local domain
-                        string domain = "https://" + _appSettingService.domainQueryString; //HttpContext.Request.Url.GetLeftPart(UriPartial.Authority);
-                        await _emailService.SendPasswordResetEmail(viewModel.Email, token.Id, domain);
-                        ViewBag.EmailSent = true;
-                    }
+    //                    //get local domain
+    //                    string domain = "https://" + _appSettingService.domainQueryString; //HttpContext.Request.Url.GetLeftPart(UriPartial.Authority);
+    //                    await _emailService.SendPasswordResetEmail(viewModel.Email, token.Id, domain);
+    //                    ViewBag.EmailSent = true;
+    //                }
 
-                }
-            }
-            catch (System.Net.Mail.SmtpFailedRecipientsException exception)
-            {
-                await _applicationLoggingService.LogWarning(_logger, exception, user, HttpContext);
-                ModelState.AddModelError("FailureMessage", errorMessage);
-                return View(viewModel);
-            }
-            catch (MailKit.Net.Smtp.SmtpCommandException ex)
-            {
-                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-                ModelState.AddModelError("FailureMessage", "Oops, Email services are currently unavailable. The technical support staff have also been notified, and your password reset email will be sent once services have been restored.");
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-                Exception exception = ex;
-                while (exception.InnerException != null) exception = exception.InnerException;
+    //            }
+    //        }
+    //        catch (System.Net.Mail.SmtpFailedRecipientsException exception)
+    //        {
+    //            await _applicationLoggingService.LogWarning(_logger, exception, user, HttpContext);
+    //            ModelState.AddModelError("FailureMessage", errorMessage);
+    //            return View(viewModel);
+    //        }
+    //        catch (MailKit.Net.Smtp.SmtpCommandException ex)
+    //        {
+    //            await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+    //            ModelState.AddModelError("FailureMessage", "Oops, Email services are currently unavailable. The technical support staff have also been notified, and your password reset email will be sent once services have been restored.");
+    //            return View(viewModel);
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+    //            Exception exception = ex;
+    //            while (exception.InnerException != null) exception = exception.InnerException;
 
-                await _emailService.ContactSupport(_emailService.DefaultSender, exception.GetType().Name + ": " + exception.Message, "");
+    //            await _emailService.ContactSupport(_emailService.DefaultSender, exception.GetType().Name + ": " + exception.Message, "");
 
-                ModelState.AddModelError("FailureMessage", errorMessage);
-                if (exception is MultipleUsersFoundException)
-                    ModelState.AddModelError("FailureMessage", "We were unable to generate a password reset email for you.");
-                return View(viewModel);
-            }
+    //            ModelState.AddModelError("FailureMessage", errorMessage);
+    //            if (exception is MultipleUsersFoundException)
+    //                ModelState.AddModelError("FailureMessage", "We were unable to generate a password reset email for you.");
+    //            return View(viewModel);
+    //        }
 
-            return View();
-        }
+    //        return View();
+    //    }
 
         // GET: /account/changepassword
         [HttpGet]
