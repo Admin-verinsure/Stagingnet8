@@ -347,6 +347,7 @@ namespace DealEngine.WebUI.Controllers
                 ReturnUrl = returnUrl,
                 DomainString = _appSettingService.domainQueryString,
             };
+            ViewBag.oktaServiceURL = _appSettingService.oktaServiceURL;
 
             string authService = _appSettingService.AuthenticationService;
             if (authService == "Okta")
@@ -414,7 +415,6 @@ namespace DealEngine.WebUI.Controllers
                         deUser = await _userManager.FindByNameAsync(userName);
                     }
                     var result = await _signInManager.PasswordSignInAsync(deUser, password, viewModel.RememberMe, lockoutOnFailure: true);
-                    ViewBag.oktaServiceURL = _appSettingService.oktaServiceURL;
 
 
                     return LocalRedirect("~/Home/Index");
