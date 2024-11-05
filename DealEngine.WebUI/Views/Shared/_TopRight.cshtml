@@ -8,10 +8,14 @@
     {
         var username = User.Identity.Name;
         var encodedUsername = System.Net.WebUtility.UrlEncode(username);
-        <a href="@Model.oktaServiceURL" class="btn btn-xs-icon btn-info" style="color: #A90229;"><i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline</a>
-
+@*        <a href="@Model.oktaServiceURL" class="btn btn-xs-icon btn-info" style="color: #A90229;"><i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline</a>
+*@
       //  <a href="https://proposalonline.com/Account/Login?ReturnUrl=%2f&username=@encodedUsername" class="btn btn-xs-icon btn-info" style="color: #A90229;"><i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline</a>
-    }
+        <a href="Model.oktaServiceURL" class="btn btn-xs-icon btn-info" style="color: #A90229;"><i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline</a>
+
+  
+  
+  }
 
     <a class="btn btn-xs-icon btn-info" href="~/Account/Profile"><i class="fa fa-user" style="font-size:28px; margin-top:13px;"></i> Profile</a>
     <a class="btn btn-xs-icon btn-info" href="~/Home/Index"><i class="fa fa-home" style="font-size:28px; margin-top:13px;"></i> Dashboard</a>
