@@ -36,6 +36,8 @@ namespace DealEngine.Services.Interfaces
         string MarshEglobalEndpoint { get; }
         string MarshEglobalUsername { get; }
         string MarshEglobalPassword { get; }
+
+        string oktaServiceURL { get; }
         //string UploadedDocumentPath { get; }
     }
 }

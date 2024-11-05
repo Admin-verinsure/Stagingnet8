@@ -25,6 +25,7 @@ namespace DealEngine.WebUI.Models
         public string DevicePrint { get; set; }
         public string DomainString { get; set; }
         public string CallbackDomainString { get; set; }
+        public string oktaServiceURL { get; set; }
     }
 
     public class AccountResetPasswordModel : BaseViewModel

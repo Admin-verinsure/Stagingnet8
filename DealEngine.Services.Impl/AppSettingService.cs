@@ -247,5 +247,14 @@ namespace DealEngine.Services.Impl
                 return _configuration.GetValue<string>("MarshEglobalPassword");
             }
         }
+
+
+        public string oktaServiceURL
+        {
+            get
+            {
+                return _configuration.GetValue<string>("oktaServiceURL");
+            }
+        }
     }
 }

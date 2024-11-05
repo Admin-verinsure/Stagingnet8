@@ -414,8 +414,9 @@ namespace DealEngine.WebUI.Controllers
                         deUser = await _userManager.FindByNameAsync(userName);
                     }
                     var result = await _signInManager.PasswordSignInAsync(deUser, password, viewModel.RememberMe, lockoutOnFailure: true);
+                    viewModel.oktaServiceURL = _appSettingService.oktaServiceURL;
 
-                   
+
                     return LocalRedirect("~/Home/Index");
                 }
                 /*
