@@ -265,7 +265,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EPLViewModel.HaveAnyEmployeeYN").First().Value == "1")
                 {
-                    decadditionpremium = 20;
+                    decadditionpremium = 21;
                 }
             }
 
