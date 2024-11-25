@@ -61,7 +61,10 @@ namespace DealEngine.Services.Interfaces
         Task<ClientProgramme> GetClientProgrammebyProduct(Guid ProductId);
         Task<ClientProgramme> GetfirstClientProgrammesByOwner(Guid ownerid);
         Task<Programme> GetProgrammeByRenewalprogramme(Guid ProgrammeId);
+        Task<Programme> GetProgrammesByRenewfromProgramme(Guid Programmeid);
+        Task<List<Organisation>> GetOwnerForNewClientProgramme(Programme programmeId);
 
+        
         //Task<ProgrammeInfoViewModel> GetfirstClientProgrammesByOwner(Guid ownerid);
 
     }

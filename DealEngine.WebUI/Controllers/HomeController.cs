@@ -3,6 +3,7 @@ using AutoMapper;
 using ClosedXML.Excel;
 using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate;
+using DealEngine.Infrastructure.Ldap.Mapping;
 using DealEngine.Services.Interfaces;
 using DealEngine.WebUI.Models;
 using FluentNHibernate.Conventions;
@@ -1099,7 +1100,6 @@ namespace DealEngine.WebUI.Controllers
 
                 foreach (Organisation owner in distinctOwners)
                 {
-                   // ClientProgramme ownerClientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.RenewFromProgramme.Id);
 
                     model.OwnerDeals.Add(new OwnerItem
                     {
@@ -1108,7 +1108,31 @@ namespace DealEngine.WebUI.Controllers
                         ProgrammeId = programme.Id.ToString()
                         //IsOwnerNeedCloning = true
                     });
+
                 }
+
+                Programme Currentprogramme = await _programmeService.GetProgrammesByRenewfromProgramme(programme.Id);
+                List<Organisation> newownerList = await _programmeService.GetOwnerForNewClientProgramme(Currentprogramme);
+
+
+                var existingOwnerIds = model.OwnerDeals.Select(od => od.OwnerId).ToHashSet();
+
+                foreach (Organisation newowner in newownerList)
+                {
+                    if (!existingOwnerIds.Contains(newowner.Id.ToString()))
+                    {
+                        model.OwnerDeals.Add(new OwnerItem
+                        {
+                            OwnerId = newowner.Id.ToString(),
+                            OwnerName = newowner.Name,
+                            ProgrammeId = programme.Id.ToString()
+                            // IsOwnerNeedCloning = true
+                        });
+                    }
+                }
+
+
+
             }
             //else
             //{

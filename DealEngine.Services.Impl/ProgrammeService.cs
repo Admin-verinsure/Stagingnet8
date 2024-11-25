@@ -1528,6 +1528,34 @@ namespace DealEngine.Services.Impl
             return ownerList;
         }
 
+
+        public async Task<List<Organisation>> GetOwnerForNewClientProgramme(Programme programme)
+        {
+            //Programme programme = await GetProgramme(programmeId);
+            var ownerList = new List<Organisation>();
+            Dictionary<string, Organisation> owners = new Dictionary<string, Organisation>();
+
+            if (programme == null)
+                return null;
+
+            HashSet<string> uniqueOwnerIds = new HashSet<string>();
+
+            foreach (var client in programme.ClientProgrammes
+                .Where(c => c.DateDeleted == null && c.DateCreated >= programme.DateCreated)
+                .OrderBy(c => c.Owner.Name))
+            {
+                string ownerId = client.Owner.Id.ToString();
+
+                if (!uniqueOwnerIds.Contains(ownerId))
+                {
+                    ownerList.Add(client.Owner);
+                    uniqueOwnerIds.Add(ownerId);
+                }
+            }
+
+
+            return ownerList;
+        }
         public async Task<ClientProgramme> GetClientProgrammebyProduct(Guid Productid)
         {
             return  _clientProgrammeRepository.FindAll().Where(cp => cp.Products.Keys.Any(p => p.Id == Productid)).FirstOrDefault();
@@ -1536,6 +1564,12 @@ namespace DealEngine.Services.Impl
         public async Task<ClientProgramme> GetfirstClientProgrammesByOwner(Guid ownerOrganisationId)
         {
             return _clientProgrammeRepository.FindAll().Where(cp => cp.Owner.Id == ownerOrganisationId && cp.InformationSheet != null && cp.DateDeleted == null).OrderByDescending(cp => cp.DateCreated).FirstOrDefault();
+        }
+
+
+        public async Task<Programme> GetProgrammesByRenewfromProgramme(Guid Programmeid)
+        {
+            return _programmeRepository.FindAll().Where(cp => cp.RenewFromProgramme.Id == Programmeid).FirstOrDefault();
         }
 
         //public async Task UpdateFlag(Programme  Prog, String flagname, String flagval)
