@@ -1,11 +1,11 @@
-﻿using System;
+﻿using DealEngine.Domain.Entities.Abstracts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TechCertain.Domain.Entities.Abstracts;
 
-namespace TechCertain.Domain.Entities
+namespace DealEngine.Domain.Entities
 {
     public class ProductTerm : EntityBase
     {

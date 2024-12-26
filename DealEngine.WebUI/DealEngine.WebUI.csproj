@@ -56,6 +56,7 @@
 
    <ItemGroup>
     <Compile Remove="Controllers\InformationDemoController.cs" />
+    <Compile Remove="Models\Report\FullProposalReport.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -397,6 +398,7 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />    
     <PackageReference Include="ClosedXML" Version="0.95.4" />    
     <PackageReference Include="Cronos" Version="0.7.1" />    
+    <PackageReference Include="CsvHelper" Version="33.0.1" />    
     <PackageReference Include="ElmahCore" Version="1.2.5" />
     <PackageReference Include="HtmlToOpenXml.dll" Version="2.0.3" />
     <PackageReference Include="IO.Swagger" Version="1.0.0" />
@@ -433,6 +435,7 @@
     <PackageReference Include="PagedList.Mvc" Version="4.5.0" />
     <PackageReference Include="Quartz" Version="3.3.3" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
+    <PackageReference Include="QuestPDF" Version="2024.12.0" />
     <PackageReference Include="ReflectionIT.Mvc.Paging" Version="4.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     <PackageReference Include="System.Linq.Dynamic" Version="1.0.7" />
@@ -451,5 +454,4 @@
     <ProjectReference Include="..\DealEngine.Infrastructure.PolicyCenter\DealEngine.Infrastructure.PolicyCenter.csproj" />
 	<ProjectReference Include="..\DealEngine.Services.Impl\DealEngine.Services.Impl.csproj" />
   </ItemGroup>
-
 </Project>

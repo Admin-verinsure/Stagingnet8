@@ -576,7 +576,7 @@
         debugger;
         var selectedvalue = $("#ReportName :selected").val();
         var progid = $("#programmeId").val();
-        var postdata = { id: selectedvalue, progid: progid };
+        var postdata = { report: selectedvalue, progid: progid };
 
 	            $.ajax({
                     url: '@Url.Action("GetReportInfo", "Programme")',

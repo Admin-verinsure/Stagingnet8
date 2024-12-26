@@ -1,9 +1,22 @@
 ﻿@model DealEngine.WebUI.Models.ProgrammeItem
 <!-- MAIN CONTENT -->
 <div id="widget-grid" class="container">
-    @Html.HiddenFor(m => m.Programme.Id)
 
-    
+@*     @Html.HiddenFor("Programme.Id", ViewBag.programmedrenewed == Model.Programme.Id ? Model.Programme.Id : ViewBag.programmedrenewed)
+ *@    
+
+    @{
+        var programmedRenewed = ViewBag.programmedrenewed as Guid?;
+    }
+
+    @Html.Hidden("Programme.Id", Model.Programme.Id == programmedRenewed ? Model.Programme.Id : programmedRenewed)
+
+@*   @Html.HiddenFor("Programme.Id", Model.Programme.Id == ViewBag.programmedrenewed ? Model.Programme.Id : ViewBag.programmedrenewed)
+ *@
+        
+@*       @Html.HiddenFor(m => m.Programme.Id)
+ *@
+
 
     <div class="card">
         <div class="card-header text-white" style="background-color:#3276b1">

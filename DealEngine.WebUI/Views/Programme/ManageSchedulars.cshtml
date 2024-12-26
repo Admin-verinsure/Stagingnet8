@@ -33,6 +33,8 @@
                                             {
                                                 <option value="@option.Id">@Model.Programme.Claim  @option.progreportsName</option>
                                             }
+                                            <option value="Full Proposal Report">Full Proposal Report</option>
+
 
                                         </select>
                                     </section>
@@ -130,6 +132,17 @@
                                         <br />
                                         <button type="button" style="display:none" onclick="$('#RunOptionsDiv').show();" class="RunOptions" value="RunOptions">Run Options </button>
                                     </section>
+
+
+                                    <section class="col col-2">
+                                        <br />
+                                        <button class="RunOptions" type="button" onclick="callAnotherController(event)" name="FullProposal" value="@Model.RunNow">Run FullProposal Report</button>
+
+@*                                         <button class="RunOptions" onclick="callAnotherController(event)" name="FullProposal" value="@Model.RunNow">Run FullProposal Report</button>
+ *@
+@*                                         <button class="RunOptions" name="FullProposal" value="FullProposal">Run FullProposal Report </button>
+ *@                                    </section>
+
                                 </div>
                             </td>
 
@@ -236,6 +249,121 @@
             $("#start_hour").append('<option val="' + hr[i] + ':' + mi[1] + '">' + hr[i] + ':' + mi[1] + '</option>');
         }
     })
+
+
+
+
+    function callAnotherController(event) {
+    event.preventDefault();
+    debugger;
+
+    const programmeId = document.getElementById("programmeId").value;
+    const programmeName = document.getElementById("programmeName").value;
+    const reportName = document.getElementById("ReportName").value;
+
+    if (reportName === "Select") {
+        alert("Please select a valid report before proceeding.");
+        return;
+    }
+
+    const data = new FormData();
+    data.append("ProgrammeId", programmeId);
+    data.append("ProgrammeName", programmeName);
+    data.append("ReportName", reportName);
+
+    fetch('/Programme/Getfullproposalreport', {
+        method: 'POST',
+        body: data
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok.");
+        }
+        return response.blob(); // Parse the response as a Blob
+    })
+    .then(blob => {
+        // Create a temporary URL for the blob
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'FullProposalReport.csv'; // Set the file name
+        document.body.appendChild(a);
+        a.click(); // Trigger the download
+        window.URL.revokeObjectURL(url); // Clean up the URL object
+    })
+    .catch(error => {
+        console.error('Error while downloading the report:', error);
+    });
+}
+
+
+
+
+
+        // function callAnotherController(event) {
+        //             event.preventDefault();
+        //     debugger;
+        //     const programmeId = document.getElementById("programmeId").value;
+        //     const programmeName = document.getElementById("programmeName").value;
+        //     const reportName = document.getElementById("ReportName").value;
+
+        //     // Validate if a report has been selected
+        //     if (reportName === "Select") {
+        //         alert("Please select a valid report before proceeding.");
+        //         return;
+        //     }
+
+        //     // Prepare the data to send
+        //     const data = {
+        //         ProgrammeId: programmeId,
+        //         ProgrammeName: programmeName,
+        //         ReportName: reportName
+        //     };
+
+        //     // Send the AJAX request
+
+        //          $.ajax({ // make an AJAX request
+        //             type: "POST",
+        //             url: '..@Url.Action("Programme", "Getfullproposalreport")', // it's the URL of your component B
+        //             data: data, // serializes the form's elements
+        //             async: false,
+        //             success: function (data)
+        //             {
+        //                 templateId = data.templateId;
+        //                 sectionId = data.sectionId;
+        //                 itemId = data.itemId;
+        //             }
+        //         });
+
+        //   }
+
+
+
+
+        //     fetch('/ProgrammeController/Getfullproposalreport', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify(data)
+        //     })
+        //     .then(response => {
+        //         if (!response.ok) {
+        //             throw new Error("Network response was not ok.");
+        //         }
+        //         return response.json();
+        //     })
+        //     .then(data => {
+        //         alert("Report processed successfully: " + data.message);
+        //     })
+        //     .catch(error => {
+        //         console.error("There was a problem with the fetch operation:", error);
+        //     });
+        // }
+
+
+
 
     
     //$('#ReportSchedularTime').datetimepicker({

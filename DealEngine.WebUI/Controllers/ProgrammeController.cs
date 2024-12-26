@@ -19,6 +19,10 @@ using System.Threading.Tasks;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 using UpdateType = DealEngine.Domain.Entities.UpdateType;
 using NReco.PdfGenerator;
+using System.Text;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Xml.Linq;
+//using IO.Swagger.Model;
 //using Quartz;
 //using DealEngine.WebUI.Tasks;
 
@@ -53,6 +57,8 @@ namespace DealEngine.WebUI.Controllers
         IUpdateTypeService _updateTypeServices;
         IAppSettingService _appSettingService;
         IProgrammeReportsService _programmeReportsService;
+        ITerritoryService _territoryService;
+        IClientInformationAnswerService _clientInformationAnswerService;
         public ProgrammeController(
             ISerializerationService serializerationService,
             IClaimService claimService,
@@ -78,7 +84,9 @@ namespace DealEngine.WebUI.Controllers
             IEGlobalSubmissionService eGlobalSubmissionService,
                     IUpdateTypeService updateTypeService,
                     IAppSettingService appSettingService,
-                    IProgrammeReportsService programmeReportsService
+                    IProgrammeReportsService programmeReportsService,
+                     ITerritoryService territoryService,
+                     IClientInformationAnswerService clientInformationAnswerService
             )
             : base(userRepository)
         {
@@ -107,6 +115,8 @@ namespace DealEngine.WebUI.Controllers
             _updateTypeServices = updateTypeService;
             _appSettingService = appSettingService;
             _programmeReportsService = programmeReportsService;
+            _territoryService = territoryService;
+            _clientInformationAnswerService = clientInformationAnswerService;
         }
 
         [HttpGet]
@@ -539,7 +549,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     //throw new Exception(nameof(programme.EGlobalClientNumber) + " EGlobal client number");
                     //send out notification email
-                    await _emailService.SendSystemEmailClientNumberNotify(user, programme.BaseProgramme, programme.InformationSheet, programme.InformationSheet.Owner);
+             //       await _emailService.SendSystemEmailClientNumberNotify(user, programme.BaseProgramme, programme.InformationSheet, programme.InformationSheet.Owner);
                 } else
                 {
                    
@@ -1285,7 +1295,7 @@ namespace DealEngine.WebUI.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> GetReportInfo(Guid id , Guid progid)
+        public async Task<IActionResult> GetReportInfo(string report , Guid progid)
         {
             List<string> productname = new List<string>();
             User user = null;
@@ -1295,15 +1305,29 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
-                ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(id);
                 Programme prog = await _programmeService.GetProgrammeById(progid);
-                
-                if (programmeReports.programme.Contains(prog))
+
+                if(report != "Full Proposal Report")
                 {
-                    model.ifreportAvailable = true;
+                    ProgrammeReports programmeReports = await _programmeReportsService.GetProgrammeReportsById(Guid.Parse(report));
+                    if (programmeReports != null)
+                    {
+
+                        if (programmeReports.programme.Contains(prog)) // id == progid => full proposal report
+                        {
+                            model.ifreportAvailable = true;
+                        }
+                        model.Description = programmeReports.progreportsDescription;
+                        model.IsBoundField = programmeReports.IsBoundField;
+                    }
+                } else if (report == "Full Proposal Report")
+                {
+                    model.ifreportAvailable = true;                 
+                    model.Description = "Programme Full Proposal Report";
+                    model.IsBoundField =false;
+
                 }
-                model.Description = programmeReports.progreportsDescription;
-                model.IsBoundField = programmeReports.IsBoundField;
+
                 return Json(model);
             }
             catch (Exception ex)
@@ -1312,6 +1336,217 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Getfullproposalreport(IFormCollection formCollection)
+        {
+            // Extract and validate the data
+            var ProgrammeId = formCollection["ProgrammeId"];
+            var JobName = formCollection["ProgrammeName"];
+            //var JobDate = formCollection["ReportSchedularTime"];
+            //var JobTime = formCollection["start_hour"];
+            //var JobFunctionName = formCollection["ProgrammeName"];
+            //var ScheduleFrequency = formCollection["ScheduleFrequency"];
+            var ReportName = formCollection["ReportName"];
+            //var BoundDateFrom = formCollection["BoundDateFrom"];
+            //var BoundDateTo = formCollection["BoundDateTo"];
+
+
+
+            // Use the factory method to create a FullProposalReport
+            var programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+            //var clientprogrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
+
+            var csvData = new StringBuilder();
+
+            // Add the header row
+            csvData.AppendLine("Club Name,Organisations,Locations,Territories Percentage,Actual Commission Last Year,Estimated Commission Current Year,Estimated Commission Next Year,Activities Percentage Current Year,Cover Club Assets,Any Club Asset Over 15000,Scheduled Assets Over 15000,Club Real Estate,Club Motor Vehicle,Loss Experience,Claim Withdrawn,Insurance Issues,Criminal Offense,Bankruptcy,Buildings,General Liability,YouthProgrammeDetails,Documents,Declaration");
+
+            try
+            { //var fullProposalReport;
+                foreach (var clientprogramme in programme.ClientProgrammes
+                 .Where(cp => cp.InformationSheet.Status == "Submitted" || cp.InformationSheet.Status == "Started" || cp.InformationSheet.Status == "Not Started")
+                 .OrderBy(cp => cp.InformationSheet.Status == "Submitted" ? 1 :
+                   cp.InformationSheet.Status == "Started" ? 2 : 3)
+                  .ThenBy(cp => cp.DateCreated)
+                  .ThenBy(cp => cp.Owner.Name))
+                    //foreach (var clientprogramme in programme.ClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                {
+                    ClientInformationSheet clientInformationSheet = clientprogramme.InformationSheet;
+                    IList<Domain.Entities.Location> locations = clientInformationSheet.Locations;
+                    var locationdetails = "";
+                    foreach (Domain.Entities.Location loc in locations)
+                    {
+                        // locationdetails.add()
+                        locationdetails = "Location type:-" + loc.LocationType + " Name:-" + loc.CommonName 
+                            + "  street:-" + loc.Street + "" + loc.Suburb + "  " + loc.Postcode + " " + loc.City;
+
+                        //locationdetails.Add("{loc.LocationType}, {loc.CommonName}, {loc.Street}, {loc.Suburb}, {loc.Postcode}, {loc.City}");
+                        //locationdetails.Add("\n");
+
+                    }
+
+                    string  Territories = "";
+                    string Activities = "";
+                    var RevenueData = new List<RevenueData>();
+
+                    string organistaions = "";
+                    foreach(var org in clientInformationSheet.Organisation)
+                    {
+                        organistaions = organistaions + " Name:-  " + org.Name +"  Organisation Type:- "+org.OrganisationType.Name;
+                        foreach(var ous in org.OrganisationalUnits)
+                        {
+                            organistaions = organistaions + " Insurance Type :- " + ous.Name;
+                        }
+                    }
+
+                    if (clientInformationSheet.RevenueData != null)
+                    {
+                        foreach (var territory in clientInformationSheet.RevenueData.Territories.Where(ter=> ter.Selected == true))
+                        {
+                            Territories = Territories+
+                                "Location:" + territory.Location + " " +
+                                "Percentage" + territory.Percentage ;
+                                //Percentage = territory.Percentage,
+                                //Selected = territory.Selected                    
+                            
+                        }
+
+                        foreach (var activity in clientInformationSheet.RevenueData.Activities.Where(act => act.Selected == true))
+                        {
+                            Activities= Activities+"Description:" + 
+                                activity.Description+" "+
+                                "Percentage :" +  activity.Percentage;
+                            
+                        }
+
+
+
+                        RevenueData.Add(new RevenueData(null)
+                        {
+                            NextFinancialYearTotal = clientInformationSheet.RevenueData.NextFinancialYearTotal,
+                            CurrentYearTotal = clientInformationSheet.RevenueData.CurrentYearTotal,
+                            LastFinancialYearTotal = clientInformationSheet.RevenueData.LastFinancialYearTotal
+                        });
+
+
+                    }
+
+                    //foreach (Domain.Entities.Location loc in locations)
+                    //{
+                    //    // locationdetails.add()
+                    //    locationdetails.Add($"{loc.LocationType}, {loc.CommonName}, {loc.Street}, {loc.Suburb}, {loc.Postcode}, {loc.City}");
+                    //    locationdetails.Add("/n");
+
+                    //}
+                    var coverClubAssets = clientInformationSheet.Answers.Where(item => item.ItemName == "TAViewModel.HasClubTrustAssets");
+                    List<string> scheduledAssetsOver15000 = new List<string>();
+                    foreach (var club in clientInformationSheet.ClubTrustAssetsInfo)
+                    {
+                        scheduledAssetsOver15000.Add(club.Name + "Current Val:" + club.CurrentVal + "Replacement Val:" + club.ReplacementVal );
+                    }
+
+                    List<string> Buildings = new List<string>();
+
+                    foreach (var building in clientInformationSheet.Buildings)
+                    {
+                        Buildings.Add("Building Name:" + building.BuildingName + "Type:" + building.ConstructionType + "Location: " + building.Location.CommonName );
+                        Buildings.Add("Building Name:" + building.BuildingName + "Type:" + building.ConstructionType + "Location: " + building.Location.CommonName );
+
+                    }
+                    string documents = "";
+
+                    foreach(var doc in clientInformationSheet.documents)
+                    {
+                        documents = documents + doc.Name;
+                    }
+
+
+                    List<string> test = new List<string>();
+                    locationdetails = $"\"{locationdetails.Replace("\"", "\"\"")}\"";
+
+                    var fullProposalReport = FullProposalReport.Create(
+                    declaringOfficer: clientInformationSheet.Owner.Name,
+                    organisations: organistaions,
+                    locations: !string.IsNullOrEmpty(locationdetails) ? locationdetails :  "No locations" ,
+                    //locations: locationdetails.Count > 0 ? locationdetails : new List<string> { "No locations" },
+                    territoriesPercentage: !string.IsNullOrEmpty(Territories)? Territories : "No Territories" ,
+
+                    //territoriesPercentage: Territories.Count > 0 ? Territories : new List<string> { "No Territories" },                  
+                    actualCommissionLastYear: clientInformationSheet.RevenueData.LastFinancialYearTotal,
+                    estimatedCommissionCurrentYear: clientInformationSheet.RevenueData.CurrentYearTotal,
+                    estimatedCommissionNextYear: clientInformationSheet.RevenueData.NextFinancialYearTotal,
+                    activitiesPercentageCurrentYear: !string.IsNullOrEmpty(Activities) ? Activities : "No Activities",
+                    coverClubAssets: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssets")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    anyClubAssetOver15000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssetMore")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    scheduledAssetsOver15000: scheduledAssetsOver15000.Count >0 ? scheduledAssetsOver15000 : new List<string> { "No assets over 15000 scheduled" },                
+                    clubRealEstate: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustRealEstate")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    clubMotorVehicle: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustMotorVehicle")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    lossExperience5000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    claimWithdrawn: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    insuranceIssues: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    criminalOffense: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    bankruptcy: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    buildings: Buildings.Count > 0 ? Buildings : new List<string> { "No Buildings" },
+                    generalLiability: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.HasYouthProgramme")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails")?.Value?.ToString() != null ? clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value : "No Youth Programme",
+                    youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails")?.Value?.ToString() != null ? $"\"{clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value.Replace("\"", "\"\"")}\"": "\"No Youth Programme\"",
+                    documents: documents,
+                    declaration : clientInformationSheet.DeclaredBy != null ? clientInformationSheet.DeclaredBy.FirstName + " " + clientInformationSheet.DeclaredBy.LastName : "Not yet declared"
+                );
+
+
+
+
+
+                    //    var fullProposalReport = FullProposalReport.Create(
+                    //    declaringOfficer: clientInformationSheet.Owner.Name,
+                    //    locations: locationdetails,
+                    //    territoriesPercentage: Territories,
+                    //    actualCommissionLastYear: clientInformationSheet.RevenueData.LastFinancialYearTotal,
+                    //    estimatedCommissionCurrentYear: clientInformationSheet.RevenueData.CurrentYearTotal,
+                    //    estimatedCommissionNextYear: clientInformationSheet.RevenueData.NextFinancialYearTotal,
+                    //    activitiesPercentageCurrentYear: Activities,
+                    //    coverClubAssets: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssets")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    anyClubAssetOver15000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssetMore")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    scheduledAssetsOver15000: scheduledAssetsOver15000,
+                    //    clubRealEstate: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustRealEstate")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    clubMotorVehicle: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustMotorVehicle")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    lossExperience5000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    claimWithdrawn: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    insuranceIssues: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    criminalOffense: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    bankruptcy: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    buildings: Buildings,
+                    //    generalLiability: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.HasYouthProgramme")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value,
+                    //    declaration: clientInformationSheet.DeclaredBy.FirstName + "" + clientInformationSheet.DeclaredBy.LastName
+                    //);
+
+                    // Add the row for this report to the CSV
+                    csvData.AppendLine($"{fullProposalReport.DeclaringOfficer},{fullProposalReport.Organisations},{string.Join(" | ", fullProposalReport.Locations)},{string.Join(" | ", fullProposalReport.TerritoriesPercentage)},{fullProposalReport.ActualCommissionLastYear},{fullProposalReport.EstimatedCommissionCurrentYear},{fullProposalReport.EstimatedCommissionNextYear},{string.Join(" | ", fullProposalReport.ActivitiesPercentageCurrentYear)},{fullProposalReport.CoverClubAssets},{fullProposalReport.AnyClubAssetOver15000},{string.Join(" | ", fullProposalReport.ScheduledAssetsOver15000)},{fullProposalReport.ClubRealEstate},{fullProposalReport.ClubMotorVehicle},{fullProposalReport.lossExperience5000},{fullProposalReport.ClaimWithdrawn},{fullProposalReport.InsuranceIssues},{fullProposalReport.CriminalOffense},{fullProposalReport.Bankruptcy},{string.Join(" | ", fullProposalReport.Buildings)},{fullProposalReport.GeneralLiability},{fullProposalReport.Youthprogrammedetails},{fullProposalReport.Documents},{fullProposalReport.Declaration}");
+
+
+                    
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                //await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            var bytes = Encoding.UTF8.GetBytes(csvData.ToString());
+
+            // Return the file
+            var fileName = "FullProposalReport.csv";
+            return File(bytes, "text/csv", fileName);
+        }
+
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> SendProgReportsEmail(Guid id, String ReportAvailability, Guid progid)
@@ -2147,7 +2382,7 @@ namespace DealEngine.WebUI.Controllers
                 htmlToPdfConv.WkHtmlToPdfExeName = "wkhtmltopdf";
             }
             htmlToPdfConv.PdfToolPath = _appSettingService.NRecoPdfToolPath;
-            var margins = new PageMargins();
+            var margins = new NReco.PdfGenerator.PageMargins();
             margins.Bottom = 10;
             margins.Top = 10;
             margins.Left = 30;

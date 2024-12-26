@@ -11,6 +11,8 @@ namespace DealEngine.Services.Interfaces
         Task<TerritoryTemplate> GetTerritoryTemplateByName(string LocationName);
         Task AddTerritoryTemplate(TerritoryTemplate TerritoryTemplate);
         Task<Territory> CreateTerritory(Guid guid);
+        Task<List<Territory>> GetTerritory(Guid guid);
+
     }
 }
 

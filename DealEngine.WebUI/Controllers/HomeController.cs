@@ -1796,6 +1796,7 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 Programme programme = await _programmeService.GetProgrammeById(id);
+                ViewBag.programmedrenewed = programme.Id;
 
                 IList<ClientProgramme> clientList = new List<ClientProgramme>();
                 foreach (var clientorg in user.Organisations)
@@ -3623,13 +3624,14 @@ namespace DealEngine.WebUI.Controllers
                 var JobTime = formCollection["start_hour"];
                 var JobFunctionName = formCollection["ProgrammeName"];
                 var ScheduleFrequency = formCollection["ScheduleFrequency"];
-                var ReportId = formCollection["ReportName"];
+                var ReportName = formCollection["ReportName"];
                 var BoundDateFrom = formCollection["BoundDateFrom"];
                 var BoundDateTo = formCollection["BoundDateTo"];
+                
 
                 // DateTime datetime = Convert.ToDateTime(schedularjob.JobDate + " " + "11:46";
                 DateTime datetime = DateTime.Now;
-                ProgrammeReports programmeReport = await _programmeReportsService.GetProgrammeReportsById(Guid.Parse(ReportId));
+                ProgrammeReports programmeReport = await _programmeReportsService.GetProgrammeReportsById(Guid.Parse(ReportName));
 
                 SchedularJob schedularjob = new SchedularJob(JobName, ProgrammeId, JobDate, JobTime, programmeReport.progreportsValue,
                                                 ScheduleFrequency, "Active", typeof(SchedularJob), programmeReport.progreportsName,
