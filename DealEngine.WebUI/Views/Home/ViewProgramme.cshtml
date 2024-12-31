@@ -2,32 +2,23 @@
 <!-- MAIN CONTENT -->
 <div id="widget-grid" class="container">
 
-@*     @Html.HiddenFor("Programme.Id", ViewBag.programmedrenewed == Model.Programme.Id ? Model.Programme.Id : ViewBag.programmedrenewed)
- *@    
-
     @{
         var programmedRenewed = ViewBag.programmedrenewed as Guid?;
     }
 
     @Html.Hidden("Programme.Id", Model.Programme.Id == programmedRenewed ? Model.Programme.Id : programmedRenewed)
 
-@*   @Html.HiddenFor("Programme.Id", Model.Programme.Id == ViewBag.programmedrenewed ? Model.Programme.Id : ViewBag.programmedrenewed)
- *@
-        
-@*       @Html.HiddenFor(m => m.Programme.Id)
- *@
-
+    @{
+        var programmeId = Model.Programme.Id == programmedRenewed ? Model.Programme.Id : programmedRenewed;
+    }
 
     <div class="card">
         <div class="card-header text-white" style="background-color:#3276b1">
             <span class="widget-icon">
                 <h6><i class="fa fa-table text-light"></i> Insurance Information </h6>
             </span>
-
-
-           
-
         </div>
+
         <div class="card-body">
             <div class="row">
 
@@ -45,12 +36,10 @@
                             @if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")
                             {
                                 <li class="nav-item">
-                                    <a class="dropdown-item" href="#CreateUISModal" aria-hidden="true" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal">
-                                        Create Infosheet
-                                    </a>
+                                <a class="dropdown-item" href="#CreateUISModal" aria-hidden="true" data-progname-id="@programmeId" data-bs-toggle="modal">Create Infosheet</a>                             
                                 </li>
                                 <li class="nav-item">
-                                    <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="dropdown-item"> Issue Infosheet </a>
+                                <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@programmeId ,actionname="IssueUIS"})'" class="dropdown-item"> Issue Infosheet </a>
                                 </li>
 
                                 @*if (Model.IsSubclientEnabled)
@@ -63,29 +52,29 @@
                                 if (Model.IsRenewFromProgramme && Model.ProgEnableEmail)
                                 {
                                     <li class="nav-item">
-                                        <a onclick="location.href='@Url.Action("IssueRenewal", "Home", new { ProgrammeId = @Model.Programme.Id})'" class="dropdown-item">  Issue Renewal Notification </a>
+                                    <a onclick="location.href='@Url.Action("IssueRenewal", "Home", new { ProgrammeId = @programmeId})'" class="dropdown-item">  Issue Renewal Notification </a>
                                     </li>
                                 }
                                 if (Model.IsRenewFromProgramme && !Model.ProgEnableEmail)
                                 {
                                     <li class="nav-item">
-                                        <a onclick="location.href='@Url.Action("BrokerRenewal", "Home", new { ProgrammeId = @Model.Programme.Id})'" class="dropdown-item">  Broker Renew </a>
+                                    <a onclick="location.href='@Url.Action("BrokerRenewal", "Home", new { ProgrammeId = @programmeId})'" class="dropdown-item">  Broker Renew </a>
                                     </li>
                                 }
 
 
                                 <li class="nav-item">
-                                    <a class="dropdown-item" href="~/Home/IssueReminder?ProgrammeId=@Model.Programme.Id">Issue Reminder</a>
+                                    <a class="dropdown-item" href="~/Home/IssueReminder?ProgrammeId=@programmeId">Issue Reminder</a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a onclick="location.href='@Url.Action("EditClients", "Home", new { ProgrammeId=@Model.Programme.Id })'" class="dropdown-item"> Edit Client </a>
+                                <a onclick="location.href='@Url.Action("EditClients", "Home", new { ProgrammeId=@programmeId })'" class="dropdown-item"> Edit Client </a>
                                 </li>
                                 <li class="nav-item">
                                     @*<a class="btn btn-primary btn-sm" href="~/Home/GetBreakdown?ProgrammeId=@Model.ProgrammeId"><i class="fa fa-pencil"></i>Breakdown</a>*@
                                 </li>
                                 <li class="nav-item">
-                                    <a asp-controller="Home" asp-action="ReportView" asp-route-ProgrammeId="@Model.Programme.Id" class="dropdown-item">View Report </a>
+                                <a asp-controller="Home" asp-action="ReportView" asp-route-ProgrammeId=@programmeId class="dropdown-item">View Report </a>
                                 </li>
                             }
                             @*for NTU*@
@@ -93,23 +82,23 @@
                             {
 
                                 <li class="nav-item">
-                                    <a onclick="location.href='@Url.Action("NTUcreate", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="NTUcreate"})'" class="dropdown-item">  NTU Infosheet </a>
+                                <a onclick="location.href='@Url.Action("NTUcreate", "Home",new { ProgrammeId=@programmeId ,actionname="NTUcreate"})'" class="dropdown-item">  NTU Infosheet </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a onclick="location.href='@Url.Action("RestoreNTU", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="RestoreNTU"})'" class="dropdown-item">  Restore NTU Infosheet </a>
+                                <a onclick="location.href='@Url.Action("RestoreNTU", "Home",new { ProgrammeId=@programmeId ,actionname="RestoreNTU"})'" class="dropdown-item">  Restore NTU Infosheet </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a onclick="location.href='@Url.Action("RerenderDocs", "Agreement",new { ProgrammeId=@Model.Programme.Id})'" class="dropdown-item"> Re-render documents </a>
+                                <a onclick="location.href='@Url.Action("RerenderDocs", "Agreement",new { ProgrammeId=@programmeId})'" class="dropdown-item"> Re-render documents </a>
                                 </li>
                             }
                             else if (Model.CurrentUserIsProgrammeManager == "True")
                             {
                                 <li class="nav-item">
-                                    <a class="dropdown-item" href="#CreateUISModal" aria-hidden="true" data-progname-id="@Model.Programme.Id" data-bs-toggle="modal"> Create Infosheet</a>
+                                    <a class="dropdown-item" href="#CreateUISModal" aria-hidden="true" data-progname-id=@programmeId data-bs-toggle="modal"> Create Infosheet</a>
                                 </li>
 
                                 <li class="nav-item">
-                                    <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@Model.Programme.Id ,actionname="IssueUIS"})'" class="dropdown-item">Issue Infosheet </a>
+                                <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@programmeId ,actionname="IssueUIS"})'" class="dropdown-item">Issue Infosheet </a>
                                 </li>
                             }
 
@@ -361,8 +350,9 @@
 
                 </div>
                 <div class="modal-body">
-                    @Html.HiddenFor(m => m.Programme.Id)
-                    <div class="form-group">
+                    @Html.Hidden("Programme.Id", programmeId)
+@*                     @Html.HiddenFor(m => m.Programme.Id)
+ *@                    <div class="form-group">
                         @Html.LabelFor(m => m.OrganisationViewModel.OrganisationTypes, new { @class = "label required" })
                         <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="form-select" onclick="OrganisationTypeChange(this.value)" required>
                             @foreach (var option in Model.OrganisationViewModel.OrganisationTypes)
@@ -540,7 +530,8 @@
             var dealId = $(e.relatedTarget).data('dealitem-id');
             console.log("dealId=" + dealId)
             $(e.currentTarget).find('input[name="DealId"]').val(dealId);
-             $(e.currentTarget).find('input[name="ProgrammeId"]').val("@Model.Programme.Id");
+             // $(e.currentTarget).find('input[name="ProgrammeId"]').val("@Model.Programme.Id");
+            $(e.currentTarget).find('input[name="ProgrammeId"]').val("@programmeId");
         });
 
         $('#myUnlockModal').on('show.bs.modal', function (e) {
