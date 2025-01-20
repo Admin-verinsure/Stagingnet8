@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="CoreWCF.ConfigurationManager" Version="1.0.1" />
     <PackageReference Include="CoreWCF.Http" Version="1.0.1" />
     <PackageReference Include="CoreWCF.NetTcp" Version="1.0.1" />
