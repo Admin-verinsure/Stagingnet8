@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using NHibernate.Linq;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Dynamic.Core;
+//using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 
 namespace DealEngine.Services.Impl
 {
@@ -50,12 +51,41 @@ namespace DealEngine.Services.Impl
             return await _policyTermRepository.FindAll().ToListAsync();
 		}
 
-		public async Task<List<PolicyTermSection>> GetTerms(string orderField, string direction)
-		{
-			return await _policyTermRepository.FindAll().OrderBy(orderField + " " + direction).ToListAsync();
-		}
+        //public async Task<List<PolicyTermSection>> GetTerms(string orderField, string direction)
+        //{
+        //	return await _policyTermRepository.FindAll().OrderBy(orderField + " " + direction).ToListAsync();
+        //}
 
-		public async Task<bool> Deprecate (User deletedBy, Guid termId)
+
+        public async Task<List<PolicyTermSection>> GetTerms(string orderField, string direction)
+        {
+            var queryable = _policyTermRepository.FindAll();
+
+            switch (orderField.ToLower())
+            {
+                case "Name": // Example property
+                    queryable = direction.ToLower() == "asc"
+                        ? queryable.OrderBy(x => x.Name)
+                        : queryable.OrderByDescending(x => x.Name);
+                    break;
+
+                case "Description": // Example property
+                    queryable = direction.ToLower() == "asc"
+                        ? queryable.OrderBy(x => x.Description)
+                        : queryable.OrderByDescending(x => x.Description);
+                    break;
+
+                default:
+                    throw new ArgumentException($"Invalid order field: {orderField}");
+            }
+
+            return await queryable.ToListAsync();
+        }
+
+
+
+
+    public async Task<bool> Deprecate (User deletedBy, Guid termId)
 		{
 			PolicyTermSection term = await GetTerm(termId);
             await _policyTermRepository.RemoveAsync(term);
