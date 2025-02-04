@@ -545,7 +545,7 @@ namespace DealEngine.WebUI.Controllers
                 Guid transactionreferenceid = Guid.NewGuid();
 
                 //check Eglobal parameters
-                if (string.IsNullOrEmpty(programme.EGlobalClientNumber))
+                if (string.IsNullOrEmpty(programme.EGlobalClientNumber)) 
                 {
                     //throw new Exception(nameof(programme.EGlobalClientNumber) + " EGlobal client number");
                     //send out notification email
