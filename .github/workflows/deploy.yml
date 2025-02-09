@@ -65,7 +65,7 @@ jobs:
         run: |
           echo "🔑 Setting up SSH..."
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_STAGING_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.URLINSUREStagingMNZConnect }} >> ~/.ssh/known_hosts
           eval "$(ssh-agent -s)"
