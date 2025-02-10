@@ -90,14 +90,21 @@ jobs:
       - name: Execute Pre-Deployment Script
         run: |
           echo "🚀 Running pre-deployment script..."
-          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployPrep.sh'
+          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} "bash /home/ubuntu/projects/dealengine/DE-DeployPrep.sh"
 
       - name: Deploy Files via Rsync
         run: |
           echo "🚀 Deploying files via rsync..."
-          rsync -azhe "ssh -o StrictHostKeyChecking=no" ./publish_output/ ubuntu@${{ secrets.URLINSUREStagingMNZConnect }}:/home/ubuntu/projects/dealengine
+          rsync -azhe "ssh -o StrictHostKeyChecking=no" ./publish_output/ ubuntu@${{ secrets.URLINSUREStagingMNZConnect }}:/home/ubuntu/projects/dealengine/publish/
 
-      - name: Execute Final Deploy Script
+      - name: Verify Deployment
+        run: |
+          echo "📂 Checking deployed files..."
+          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} "ls -lah /home/ubuntu/projects/dealengine/publish/"
+
+      - name: Execute Final Deployment Script
         run: |
           echo "🚀 Running final deployment script..."
-          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployFin.sh'
+          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} "bash /home/ubuntu/projects/dealengine/DE-DeployFin.sh"
+
+
