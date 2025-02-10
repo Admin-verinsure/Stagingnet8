@@ -55,12 +55,6 @@ jobs:
         with:
           fetch-depth: 0  # Ensures full repo is fetched
 
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-output
-          path: ./publish_output
-
       - name: Setup SSH
         run: |
           echo "🔑 Setting up SSH..."
@@ -79,20 +73,19 @@ jobs:
           sed -i "s|https://localhost:44323/Image/CKUpload|https://${{ secrets.URLINSUREStagingMNZConnect }}/Image/CKUpload|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
           sed -i "s|https://localhost:44323/Image/|https://${{ secrets.URLINSUREStagingMNZConnect }}/Image/|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
 
+      - name: Execute Pre-Deployment Script
+        run: |
+          echo "🚀 Running pre-deployment script..."
+          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployPrep.sh'
+
       - name: Deploy Files via Rsync
         run: |
           echo "🚀 Deploying files via rsync..."
           rsync -azhe "ssh -o StrictHostKeyChecking=no" ./publish_output/ ubuntu@${{ secrets.URLINSUREStagingMNZConnect }}:/home/ubuntu/projects/dealengine
 
-      - name: Replace appsettings.json with Backup
-        run: |
-          echo "🔄 Replacing appsettings.json with backup..."
-          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} << 'EOF'
-            cp /home/ubuntu/backup/appsettings.json /home/ubuntu/projects/dealengine/appsettings.json
-            echo "✅ appsettings.json replaced successfully!"
-          EOF
-     
       - name: Execute Final Deploy Script
         run: |
-          echo "🚀 Running final deployment script on server..."
+          echo "🚀 Running final deployment script..."
           ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployFin.sh'
+  
+    
