@@ -79,32 +79,19 @@ jobs:
           sed -i "s|https://localhost:44323/Image/CKUpload|https://${{ secrets.URLINSUREStagingMNZConnect }}/Image/CKUpload|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
           sed -i "s|https://localhost:44323/Image/|https://${{ secrets.URLINSUREStagingMNZConnect }}/Image/|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
 
-      - name: Verify Publish Directory Before Deployment
-        run: |
-          echo "📂 Checking publish_output directory before deployment..."
-          if [ -d "./publish_output" ]; then
-            echo "✅ Publish directory exists. Proceeding with deployment."
-            ls -la ./publish_output
-          else
-            echo "❌ ERROR: Publish directory not found!"
-            exit 1
-          fi
-
       - name: Deploy Files via Rsync
         run: |
           echo "🚀 Deploying files via rsync..."
           rsync -azhe "ssh -o StrictHostKeyChecking=no" ./publish_output/ ubuntu@${{ secrets.URLINSUREStagingMNZConnect }}:/home/ubuntu/projects/dealengine
 
-      - name: Verify Deployment Timestamp
+      - name: Replace appsettings.json with Backup
         run: |
-          echo "🕒 Checking file timestamps on server..."
-          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} "ls -lt /home/ubuntu/projects/dealengine/ | head -n 10"
-
-      - name: Verify File Content (Version Check)
-        run: |
-          echo "📄 Checking deployed version file..."
-          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} "cat /home/ubuntu/projects/dealengine/version.txt || echo '⚠️ No version file found'"
-
+          echo "🔄 Replacing appsettings.json with backup..."
+          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} << 'EOF'
+            cp /home/ubuntu/backup/appsettings.json /home/ubuntu/projects/dealengine/appsettings.json
+            echo "✅ appsettings.json replaced successfully!"
+          EOF
+     
       - name: Execute Final Deploy Script
         run: |
           echo "🚀 Running final deployment script on server..."
