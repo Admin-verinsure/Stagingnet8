@@ -7,48 +7,9 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  build:
-    name: Build .NET 8
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0  # Ensures full repo is fetched
-
-      - name: Setup .NET 8
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
-
-      - name: Clean and Restore Dependencies
-        run: |
-          dotnet nuget locals all --clear
-          dotnet clean
-          dotnet restore
-
-      - name: Build Project
-        run: dotnet build -c Release --no-restore
-
-      - name: Publish Project
-        run: |
-          echo "🔧 Creating publish output directory..."
-          mkdir -p ./publish_output
-          echo "🚀 Running dotnet publish..."
-          dotnet publish DealEngine.WebUI/DealEngine.WebUI.csproj -c Release --no-restore -o ./publish_output
-          echo "📂 Checking publish_output directory..."
-          ls -la ./publish_output  # Debugging step
-
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-output
-          path: ./publish_output
-
   deploy_stagingmnzconnect:
     name: Deploy to Marsh Staging
     runs-on: ubuntu-latest
-    needs: build  # Ensures deployment only runs after a successful build
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -78,6 +39,23 @@ jobs:
           echo "🚀 Running pre-deployment script..."
           ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployPrep.sh'
 
+      - name: Build & Publish .NET 8 Project
+        run: |
+          echo "🔧 Running dotnet publish..."
+          dotnet restore
+          dotnet build -c Release
+          dotnet publish DealEngine.WebUI/DealEngine.WebUI.csproj -c Release --no-restore -o ./publish_output
+          echo "📂 Checking publish_output directory..."
+          ls -la ./publish_output  # Debugging step
+
+      - name: Verify Publish Directory Before Deployment
+        run: |
+          echo "📂 Checking if publish_output exists..."
+          if [ ! -d "./publish_output" ]; then
+            echo "❌ ERROR: publish_output directory not found!"
+            exit 1
+          fi
+
       - name: Deploy Files via Rsync
         run: |
           echo "🚀 Deploying files via rsync..."
@@ -87,5 +65,3 @@ jobs:
         run: |
           echo "🚀 Running final deployment script..."
           ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployFin.sh'
-  
-    
