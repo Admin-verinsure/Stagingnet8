@@ -851,8 +851,7 @@ namespace DealEngine.Infrastructure.Payment.EGlobalAPI
             {
                 EGlobalPolicy.EGlobalPolicyRiskConfig.Add(new EGlobalPolicyRiskConfig(packageProduct));
             }
-                foreach(
-                ClientAgreement clientAgreement in EGlobalPolicy.ClientProgramme.Agreements)
+                foreach(ClientAgreement clientAgreement in EGlobalPolicy.ClientProgramme.Agreements)
                 {
                     foreach (PackageProduct packageProducts in EGlobalPolicy.Package.PackageProducts)
                     {

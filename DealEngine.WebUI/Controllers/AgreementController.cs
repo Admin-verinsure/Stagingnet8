@@ -9,6 +9,7 @@ using DealEngine.WebUI.Models.Agreement;
 using DealEngine.WebUI.Models.Programme;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlAgilityPack;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -2958,6 +2959,8 @@ namespace DealEngine.WebUI.Controllers
                 {
                     if (model.EndorsementNameToAdd != null && model.Content != null)
                     {
+                        model.Content = CleanCkEditorContent(model.Content);
+
                         await _clientAgreementEndorsementService.AddClientAgreementEndorsement(user, model.EndorsementNameToAdd, "Exclusion", agreement.Product, model.Content, 100, agreement);
                     }
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -2980,7 +2983,7 @@ namespace DealEngine.WebUI.Controllers
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
                         clientAgreementendorsement.Name = model.EndorsementNameToAdd;
-                        clientAgreementendorsement.Value = model.Content;
+                        clientAgreementendorsement.Value = CleanCkEditorContent(model.Content);
                         clientAgreementendorsement.DateDeleted = null;
                         await uow.Commit();
 
@@ -2994,6 +2997,44 @@ namespace DealEngine.WebUI.Controllers
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
+        }
+
+
+        private string CleanCkEditorContent(string htmlContent)
+        {
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(htmlContent);
+
+            // 1. Replace &nbsp; with normal spaces
+            var textNodes = htmlDoc.DocumentNode.SelectNodes("//text()[contains(., '&nbsp;')]");
+            if (textNodes != null)
+            {
+                foreach (var node in textNodes)
+                {
+                    node.InnerHtml = node.InnerHtml.Replace("&nbsp;", " ");
+                }
+            }
+
+            // 2. Remove empty paragraphs <p>&nbsp;</p> or <p> </p>
+            var emptyParagraphs = htmlDoc.DocumentNode.SelectNodes("//p[normalize-space(.)='']");
+            if (emptyParagraphs != null)
+            {
+                foreach (var emptyP in emptyParagraphs)
+                {
+                    emptyP.Remove();
+                }
+            }
+
+            // 3. (Optional) Normalize extra spaces inside text nodes
+            foreach (var node in htmlDoc.DocumentNode.DescendantsAndSelf())
+            {
+                if (node.NodeType == HtmlNodeType.Text)
+                {
+                    node.InnerHtml = System.Text.RegularExpressions.Regex.Replace(node.InnerHtml, @"\s{2,}", " ");
+                }
+            }
+
+            return htmlDoc.DocumentNode.OuterHtml;
         }
 
         [HttpPost]

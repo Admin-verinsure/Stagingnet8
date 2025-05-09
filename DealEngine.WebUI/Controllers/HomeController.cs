@@ -859,16 +859,21 @@ namespace DealEngine.WebUI.Controllers
         public async Task<ActionResult> ClientProgrammeCloning(Guid ownerid, Guid programmeid)
         {
             IList<Organisation> ownerList = new List<Organisation>();
+            Programme newprogramme = null;
             Organisation owner = await _organisationService.GetOrganisation(ownerid);
             Programme programme = await _programmeService.GetProgrammeById(programmeid);
-            Programme newprogramme = await _programmeService.GetProgrammeByRenewalprogramme(programmeid);
+            if (!programme.IsProgrammerenewed)
+            {
+                 newprogramme = await _programmeService.GetProgrammeByRenewalprogramme(programmeid);
+
+            }
 
             ClientProgramme client = null;
             if (newprogramme != null)
             {
                 programme = newprogramme;
             }
-            if (programme.RenewFromProgramme != null)
+            if (programme.RenewFromProgramme != null && !programme.IsProgrammerenewed)
             {
                 client = await _programmeService.GetClientProgrammebyOwnerId(programme.RenewFromProgramme.Id, ownerid);
 
@@ -1095,41 +1100,45 @@ namespace DealEngine.WebUI.Controllers
 
             if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsProgrammeManager)
             {
+
+
+                Programme Currentprogramme = await _programmeService.GetProgrammesByRenewfromProgramme(programme.Id);
+                List<Organisation> newownerList = await _programmeService.GetOwnerForNewClientProgramme(Currentprogramme);
+
+
+
+                foreach (Organisation newowner in newownerList)
+                {
+                    
+                        model.OwnerDeals.Add(new OwnerItem
+                        {
+                            OwnerId = newowner.Id.ToString(),
+                            OwnerName = newowner.Name,
+                            ProgrammeId = Currentprogramme.Id.ToString()
+                            // IsOwnerNeedCloning = true
+                        });
+                    
+                }
+                var existingOwnerIds = model.OwnerDeals.Select(od => od.OwnerId).ToHashSet();
+
+
+
                 var distinctOwners = ownerList.Where(o => o.DateDeleted == null)
                                                .OrderBy(o => o.Name)
                                                .Distinct();
 
                 foreach (Organisation owner in distinctOwners)
                 {
-
+                   if (!existingOwnerIds.Contains(owner.Id.ToString()))
+                   {
                     model.OwnerDeals.Add(new OwnerItem
                     {
                         OwnerId = owner.Id.ToString(),
                         OwnerName = owner.Name,
-                        ProgrammeId = programme.Id.ToString()
+                        ProgrammeId = Currentprogramme.Id.ToString()
                         //IsOwnerNeedCloning = true
                     });
-
-                }
-
-                Programme Currentprogramme = await _programmeService.GetProgrammesByRenewfromProgramme(programme.Id);
-                List<Organisation> newownerList = await _programmeService.GetOwnerForNewClientProgramme(Currentprogramme);
-
-
-                var existingOwnerIds = model.OwnerDeals.Select(od => od.OwnerId).ToHashSet();
-
-                foreach (Organisation newowner in newownerList)
-                {
-                    if (!existingOwnerIds.Contains(newowner.Id.ToString()))
-                    {
-                        model.OwnerDeals.Add(new OwnerItem
-                        {
-                            OwnerId = newowner.Id.ToString(),
-                            OwnerName = newowner.Name,
-                            ProgrammeId = programme.Id.ToString()
-                            // IsOwnerNeedCloning = true
-                        });
-                    }
+                   }
                 }
 
 
@@ -1797,7 +1806,14 @@ namespace DealEngine.WebUI.Controllers
             {
                 Programme programme = await _programmeService.GetProgrammeById(id);
                 ViewBag.programmedrenewed = programme.Id;
-
+                //if (programme.IsProgrammerenewed)
+                //{
+                //    ViewBag.programmedrenewed = programme.Id;
+                //}
+                //else
+                //{
+                //    ViewBag.programmedrenewed =  programme.RenewFromProgramme.Id;
+                //}
                 IList<ClientProgramme> clientList = new List<ClientProgramme>();
                 foreach (var clientorg in user.Organisations)
                 {
@@ -1832,6 +1848,10 @@ namespace DealEngine.WebUI.Controllers
                 if (programme.ProgMultBrokerMode)
                 {
                     model = await GetRenewedOwner(user, clientList, programme);
+                }
+                else if(programme.IsProgrammerenewed)
+                {
+                    model = await GetBrokerDashboard(user, clientList, programme);
                 }
                 else
                 {
@@ -1882,6 +1902,20 @@ namespace DealEngine.WebUI.Controllers
                         await uow.Commit();
                     }
                 }
+
+
+                //                @{
+                //                    var programmedRenewed = ViewBag.programmedrenewed as Guid?;
+                //                }
+
+                //                @Html.Hidden("Programme.Id", Model.Programme.Id == programmedRenewed ? Model.Programme.Id : programmedRenewed)
+
+                //@{
+                //                    var programmeId = Model.Programme.Id == programmedRenewed ? Model.Programme.Id : programmedRenewed;
+                //                }
+
+
+                
                 model.UpdateTypes = updateTypeModel.OrderBy(acat => acat.UpdateTypes).ToList();
                 return View(model);
 

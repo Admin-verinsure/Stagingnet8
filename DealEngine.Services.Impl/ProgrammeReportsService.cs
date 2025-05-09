@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Services.Interfaces;
-//using System.Linq.Dynamic.Core;
+using System.Linq.Dynamic.Core;
 
 namespace DealEngine.Services.Impl
 {

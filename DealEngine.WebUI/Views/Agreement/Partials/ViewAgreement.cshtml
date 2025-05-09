@@ -532,8 +532,26 @@ else
                     <div class="col-3 font-md">
                         <strong>Extension Options</strong>
                     </div>
+                    <div class="col-4 font-md">
+                        <a type="button" class="btn btn-success btn-sm" href="javascript:void(0);" onclick="openEditAgreement('@Url.Action("EditExtensionTerms", "Agreement", new { id = Model.ClientAgreementId,productname = Model.ProductCode })')"> Edit Extension Limits</a>
+                    </div>
                 </div>
 
+                  @*   <button type="button"
+                            class="btn btn-success btn-sm dropdown-toggle nav-item"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        Edit Extension Limits
+                    </button> *@
+                   @*  <li class="nav-item">
+                        <a href="@Url.Action("EditExtensionTerms", "Agreement", new { id = @item.ClientAgreementId, productname = @item.ProductCode })" class="dropdown-item"> Edit Policy Extension </a>
+
+                    </li> *@
+@*                     <a type="button" class="btn btn-success btn-sm" href="javascript:void(0);" onclick="openEditAgreement('@Url.Action("EditExtensionTerms", "Agreement", new { id = Model.ClientAgreementId,productname = Model.ProductCode })')"> Edit Extension Limits</a>
+ *@                
+
+                
+                <div/>
                 <div class="row">
                     <table class="table table-bordered table-responsive-md table-striped text-center" id="@Model.ProductName Extension">
                         <tr>
@@ -1203,6 +1221,39 @@ else
                     }
                 });
 
+
+                  // function openEditAgreement(editUrl, viewUrl) {
+                  //     // open the popup
+                  //     const child = window.open(editUrl, 'Edit Agreement', 'width=600,height=400');
+
+                  //     // poll until it’s closed
+                  //     const timer = setInterval(() => {
+                  //       if (!child || child.closed) {
+                  //         clearInterval(timer);
+                  //         // now navigate to the fully-formed ViewAgreement URL
+                  //         window.location.href = '@Url.Action("ViewAgreement", "Agreement")' + '?id=' + clientProgrammeId;
+
+                  //         window.location.href = viewUrl;
+                  //       }
+                  //     }, 500);
+                  //   }
+
+
+
+                // <script>
+                //     function openEditAgreement(editUrl, viewUrl) {
+                //       // open the popup
+                //       const child = window.open(editUrl, 'Edit Agreement', 'width=600,height=400');
+
+                //       // poll until it’s closed
+                //       const timer = setInterval(() => {
+                //         if (!child || child.closed) {
+                //           clearInterval(timer);
+                //           // now navigate to the fully-formed ViewAgreement URL
+                //           window.location.href = viewUrl;
+                //         }
+                //       }, 500);
+                //     }
 
         function openEditAgreement(url) {
             debugger;

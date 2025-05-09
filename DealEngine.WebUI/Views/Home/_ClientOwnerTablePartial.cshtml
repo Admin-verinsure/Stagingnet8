@@ -50,6 +50,18 @@
 </div>
 
 }*@
+
+
+@* @{
+    var programmedRenewed = ViewBag.programmedrenewed as Guid?;
+}
+
+@Html.Hidden("Programme.Id", Model.Programme.Id == programmedRenewed ? Model.Programme.Id : programmedRenewed)
+
+@{
+    var programmeId = Model.Programme.Id == programmedRenewed ? Model.Programme.Id : programmedRenewed;
+} *@
+
 <div class="card-header text-white" style="background-color:#3276b1">
     <h6> <i class="fa fa-comments"></i> Deals </h6>
 </div>

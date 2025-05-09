@@ -184,27 +184,31 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
                 {
                     var PreviousAgreementExtension = agreement.ClientInformationSheet.PreviousInformationSheet.Programme.Agreements.FirstOrDefault(p => p.ClientAgreementTerms.Any(i => i.SubTermType == "CL"));
-                    foreach (var termExtension in PreviousAgreementExtension.ClientAgreementTermExtensions)
+                    if (PreviousAgreementExtension != null)
                     {
-                        if (termExtension.Bound)
+                        foreach (var termExtension in PreviousAgreementExtension.ClientAgreementTermExtensions)
                         {
-                            var PreviousBoundPremiumExtension = termExtension.Premium;
-                            if (termExtension.BasePremium > 0 && PreviousAgreementExtension.ClientInformationSheet.IsChange)
+                            if (termExtension.Bound)
                             {
-                                PreviousBoundPremiumExtension = termExtension.BasePremium;
+                                var PreviousBoundPremiumExtension = termExtension.Premium;
+                                if (termExtension.BasePremium > 0 && PreviousAgreementExtension.ClientInformationSheet.IsChange)
+                                {
+                                    PreviousBoundPremiumExtension = termExtension.BasePremium;
+                                }
+                                termSEFextension.PremiumDiffer = (decSEFPremium - PreviousBoundPremiumExtension) * coverperiodindaysforchange / agreementperiodindays;
+                                termSEFextension.PremiumPre = PreviousBoundPremiumExtension;
+                                if (termSEFextension.TermLimit == termExtension.TermLimit && termSEFextension.Excess == termExtension.Excess && termSEFextension.ExtentionName == termExtension.ExtentionName)
+                                {
+                                    termSEFextension.Bound = true;
+                                }
                             }
-                            termSEFextension.PremiumDiffer = (decSEFPremium - PreviousBoundPremiumExtension) * coverperiodindaysforchange / agreementperiodindays;
-                            termSEFextension.PremiumPre = PreviousBoundPremiumExtension;
-                            if (termSEFextension.TermLimit == termExtension.TermLimit && termSEFextension.Excess == termExtension.Excess && termSEFextension.ExtentionName == termExtension.ExtentionName)
+                            else
                             {
-                                termSEFextension.Bound = true;
+                                termSEFextension.PremiumDiffer = decSEFPremium * coverperiodindaysforchange / agreementperiodindays;
+                                termSEFextension.PremiumPre = 0;
                             }
-                        } else
-                        {
-                            termSEFextension.PremiumDiffer = decSEFPremium * coverperiodindaysforchange / agreementperiodindays;
-                            termSEFextension.PremiumPre = 0;
-                        }
 
+                        }
                     }
                 }
 

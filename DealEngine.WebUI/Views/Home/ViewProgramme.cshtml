@@ -2,15 +2,15 @@
 <!-- MAIN CONTENT -->
 <div id="widget-grid" class="container">
 
-    @{
+     @{
         var programmedRenewed = ViewBag.programmedrenewed as Guid?;
     }
-
-    @Html.Hidden("Programme.Id", Model.Programme.Id == programmedRenewed ? Model.Programme.Id : programmedRenewed)
-
+    
+    @Html.Hidden("Programme.Id", Model.Programme.Id == programmedRenewed)
+     
     @{
-        var programmeId = Model.Programme.Id == programmedRenewed ? Model.Programme.Id : programmedRenewed;
-    }
+        var programmeId = ViewBag.programmedrenewed as Guid?;
+    } 
 
     <div class="card">
         <div class="card-header text-white" style="background-color:#3276b1">
