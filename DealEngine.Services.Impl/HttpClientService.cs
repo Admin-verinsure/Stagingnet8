@@ -290,6 +290,7 @@ namespace DealEngine.Services.Impl
             try
             {
                 HttpClient client = new HttpClient(_socketsHttpHandler);
+           //     _logger.LogInformation("EGlobalStatus Request URL: {0}", _httpRequestMessage.RequestUri);
                 response = await client.SendAsync(_httpRequestMessage);
                 response.EnsureSuccessStatusCode();
                 responseMessage = await response.Content.ReadAsStringAsync();

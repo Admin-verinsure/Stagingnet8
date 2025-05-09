@@ -84,7 +84,8 @@ namespace DealEngine.WebUI
                 options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
                 options.SlidingExpiration = true;
             });
-            services.AddAutoMapper(typeof(Startup).Assembly);
+            AutoMapper.ServiceCollectionExtensions.AddAutoMapper(services, typeof(Startup).Assembly);
+            //services.AddAutoMapper(typeof(Startup).Assembly);
             services.AddRepositories();
             services.AddBaseLdap();
             services.AddElmah(options =>
