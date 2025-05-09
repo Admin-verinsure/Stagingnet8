@@ -2,6 +2,9 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Security;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +22,7 @@ namespace DealEngine.Services.Impl
         IMapperSession<LogInfo> _logInfoMapperSession;
         IAppSettingService _appSettingService;
         public HttpClientService(
-            IMapperSession<LogInfo> logInfoMapperSession, 
+            IMapperSession<LogInfo> logInfoMapperSession,
             IAppSettingService appSettingService
             )
         {
@@ -29,7 +32,7 @@ namespace DealEngine.Services.Impl
 
         public async Task<string> Analyze(string analyzeRequest)
         {
-            var responseMessage = "";            
+            var responseMessage = "";
             string service = "https://" + _appSettingService.MarshRSAEndPoint;
             string SOAPAction = "rsa:analyze:Analyze";
 
@@ -40,6 +43,10 @@ namespace DealEngine.Services.Impl
             _socketsHttpHandler = new SocketsHttpHandler()
             {
                 Credentials = new NetworkCredential("MarshNZSOAPUser", _appSettingService.MarshRSACredentials),
+                SslOptions = new SslClientAuthenticationOptions
+                {
+                    EnabledSslProtocols = SslProtocols.Tls12
+                }
             };
 
             _httpRequestMessage = new HttpRequestMessage
@@ -51,16 +58,23 @@ namespace DealEngine.Services.Impl
             _httpRequestMessage.Headers.Add("SOAPAction", SOAPAction);
 
             try
-            {               
-                HttpClient client = new HttpClient(_socketsHttpHandler);
+            {
+                HttpClient client = new HttpClient(_socketsHttpHandler)
+                {
+                    DefaultRequestVersion = HttpVersion.Version11
+                };
+
+                _httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
+                _httpRequestMessage.Headers.UserAgent.ParseAdd("DealEngine/1.0");
+
                 response = await client.SendAsync(_httpRequestMessage);
                 response.EnsureSuccessStatusCode();
-                responseMessage = await response.Content.ReadAsStringAsync();                
+                responseMessage = await response.Content.ReadAsStringAsync();
 
                 client.Dispose();
             }
             catch (HttpRequestException e)
-            {                
+            {
                 responseMessage = e.Message + " status code not 200";
             }
             catch (Exception ex)
@@ -69,13 +83,13 @@ namespace DealEngine.Services.Impl
             }
             _socketsHttpHandler.Dispose();
             _httpRequestMessage.Dispose();
-            
+
             return responseMessage;
         }
 
         public async Task<string> UpdateUser(string updateRequest)
         {
-            var responseMessage = "";            
+            var responseMessage = "";
             string service = "https://" + _appSettingService.MarshRSAEndPoint;
             string SOAPAction = "rsa:udpateuser:UpdateUser";
 
@@ -86,6 +100,10 @@ namespace DealEngine.Services.Impl
             _socketsHttpHandler = new SocketsHttpHandler()
             {
                 Credentials = new NetworkCredential("MarshNZSOAPUser", _appSettingService.MarshRSACredentials),
+                SslOptions = new SslClientAuthenticationOptions
+                {
+                    EnabledSslProtocols = SslProtocols.Tls12
+                }
             };
 
             _httpRequestMessage = new HttpRequestMessage
@@ -98,10 +116,17 @@ namespace DealEngine.Services.Impl
 
             try
             {
-                HttpClient client = new HttpClient(_socketsHttpHandler);
+                HttpClient client = new HttpClient(_socketsHttpHandler)
+                {
+                    DefaultRequestVersion = HttpVersion.Version11
+                };
+
+                _httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
+                _httpRequestMessage.Headers.UserAgent.ParseAdd("DealEngine/1.0");
+
                 response = await client.SendAsync(_httpRequestMessage);
                 response.EnsureSuccessStatusCode();
-                responseMessage = await response.Content.ReadAsStringAsync();                
+                responseMessage = await response.Content.ReadAsStringAsync();
 
                 client.Dispose();
             }
@@ -115,7 +140,7 @@ namespace DealEngine.Services.Impl
             }
             _socketsHttpHandler.Dispose();
             _httpRequestMessage.Dispose();
-            
+
             return responseMessage;
         }
 
@@ -132,6 +157,10 @@ namespace DealEngine.Services.Impl
             _socketsHttpHandler = new SocketsHttpHandler()
             {
                 Credentials = new NetworkCredential("MarshNZSOAPUser", _appSettingService.MarshRSACredentials),
+                SslOptions = new SslClientAuthenticationOptions
+                {
+                    EnabledSslProtocols = SslProtocols.Tls12
+                }
             };
 
             _httpRequestMessage = new HttpRequestMessage
@@ -144,10 +173,17 @@ namespace DealEngine.Services.Impl
 
             try
             {
-                HttpClient client = new HttpClient(_socketsHttpHandler);
+                HttpClient client = new HttpClient(_socketsHttpHandler)
+                {
+                    DefaultRequestVersion = HttpVersion.Version11
+                };
+
+                _httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
+                _httpRequestMessage.Headers.UserAgent.ParseAdd("DealEngine/1.0");
+
                 response = await client.SendAsync(_httpRequestMessage);
                 response.EnsureSuccessStatusCode();
-                responseMessage = await response.Content.ReadAsStringAsync();                
+                responseMessage = await response.Content.ReadAsStringAsync();
 
                 client.Dispose();
             }
@@ -179,6 +215,10 @@ namespace DealEngine.Services.Impl
             _socketsHttpHandler = new SocketsHttpHandler()
             {
                 Credentials = new NetworkCredential("MarshNZSOAPUser", _appSettingService.MarshRSACredentials),
+                SslOptions = new SslClientAuthenticationOptions
+                {
+                    EnabledSslProtocols = SslProtocols.Tls12
+                }
             };
 
             _httpRequestMessage = new HttpRequestMessage
@@ -191,7 +231,13 @@ namespace DealEngine.Services.Impl
 
             try
             {
-                HttpClient client = new HttpClient(_socketsHttpHandler);
+                HttpClient client = new HttpClient(_socketsHttpHandler)
+                {
+                    DefaultRequestVersion = HttpVersion.Version11
+                };
+                _httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
+                _httpRequestMessage.Headers.UserAgent.ParseAdd("DealEngine/1.0");
+
                 response = await client.SendAsync(_httpRequestMessage);
                 response.EnsureSuccessStatusCode();
                 responseMessage = await response.Content.ReadAsStringAsync();
@@ -215,7 +261,7 @@ namespace DealEngine.Services.Impl
 
         public async Task<string> CreateEGlobalInvoice(string xmlPayload)
         {
-            var responseMessage ="";            
+            var responseMessage = "";
             var SOAPAction = @"http://www.example.org/invoice-service/createInvoice";
             var service = "https://" + _appSettingService.MarshEglobalEndpoint; //"https://stg.eglobalinvp.marsh.com/services/invoice/service"; //"https://staging.ap.marsh.com:19443/services/invoice/service"; old staging end point
             var body = generateBody(xmlPayload);
@@ -226,6 +272,10 @@ namespace DealEngine.Services.Impl
             _socketsHttpHandler = new SocketsHttpHandler()
             {
                 Credentials = new NetworkCredential(_appSettingService.MarshEglobalUsername, _appSettingService.MarshEglobalPassword),
+                SslOptions = new SslClientAuthenticationOptions
+                {
+                    EnabledSslProtocols = SslProtocols.Tls12
+                }
             };
 
             _httpRequestMessage = new HttpRequestMessage
@@ -238,8 +288,14 @@ namespace DealEngine.Services.Impl
 
             try
             {
-                HttpClient client = new HttpClient(_socketsHttpHandler);
+                HttpClient client = new HttpClient(_socketsHttpHandler)
+                {
+                    DefaultRequestVersion = HttpVersion.Version11
+                };
                 //client.Timeout = TimeSpan.FromSeconds(300);
+                _httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
+                _httpRequestMessage.Headers.UserAgent.ParseAdd("DealEngine/1.0");
+
                 response = await client.SendAsync(_httpRequestMessage);
                 //response = await client.SendAsync(_httpRequestMessage, HttpCompletionOption.ResponseHeadersRead);
                 Thread.Sleep(1000);
@@ -249,11 +305,11 @@ namespace DealEngine.Services.Impl
             }
             catch (HttpRequestException e)
             {
-               responseMessage = e.Message + " status code not 200";
+                responseMessage = e.Message + " status code not 200";
             }
             catch (Exception ex)
             {
-               responseMessage = ex.Message + ex.InnerException + ex.StackTrace;
+                responseMessage = ex.Message + ex.InnerException + ex.StackTrace;
             }
             _socketsHttpHandler.Dispose();
             _httpRequestMessage.Dispose();
@@ -271,12 +327,16 @@ namespace DealEngine.Services.Impl
             HttpResponseMessage response;
             SocketsHttpHandler _socketsHttpHandler;
             HttpRequestMessage _httpRequestMessage;
-            XmlSerializer serializer; 
-            StringReader rdr;           
+            XmlSerializer serializer;
+            StringReader rdr;
 
             _socketsHttpHandler = new SocketsHttpHandler()
             {
-                Credentials = new NetworkCredential(_appSettingService.MarshEglobalUsername, _appSettingService.MarshEglobalPassword),                
+                Credentials = new NetworkCredential(_appSettingService.MarshEglobalUsername, _appSettingService.MarshEglobalPassword),
+                SslOptions = new SslClientAuthenticationOptions
+                {
+                    EnabledSslProtocols = SslProtocols.Tls12
+                }
             };
 
             _httpRequestMessage = new HttpRequestMessage
@@ -289,8 +349,14 @@ namespace DealEngine.Services.Impl
 
             try
             {
-                HttpClient client = new HttpClient(_socketsHttpHandler);
-           //     _logger.LogInformation("EGlobalStatus Request URL: {0}", _httpRequestMessage.RequestUri);
+                HttpClient client = new HttpClient(_socketsHttpHandler)
+                {
+                    DefaultRequestVersion = HttpVersion.Version11
+                };
+
+                _httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
+                _httpRequestMessage.Headers.UserAgent.ParseAdd("DealEngine/1.0");
+
                 response = await client.SendAsync(_httpRequestMessage);
                 response.EnsureSuccessStatusCode();
                 responseMessage = await response.Content.ReadAsStringAsync();
@@ -342,6 +408,10 @@ namespace DealEngine.Services.Impl
                 // User.salespersonusername
                 // User.insurersalespersonusername
                 Credentials = new NetworkCredential("rchand", "julie.eastall_micro"), // _appSettingService.MarshEglobalUsername
+                SslOptions = new SslClientAuthenticationOptions
+                {
+                    EnabledSslProtocols = SslProtocols.Tls12
+                }
             };
 
             _httpRequestMessage = new HttpRequestMessage
@@ -354,8 +424,14 @@ namespace DealEngine.Services.Impl
 
             try
             {
-                HttpClient client = new HttpClient(_socketsHttpHandler);
+                HttpClient client = new HttpClient(_socketsHttpHandler)
+                {
+                    DefaultRequestVersion = HttpVersion.Version11
+                };
                 // client.Timeout = TimeSpan.FromSeconds(300);
+                _httpRequestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("text/xml"));
+                _httpRequestMessage.Headers.UserAgent.ParseAdd("DealEngine/1.0");
+
                 response = await client.SendAsync(_httpRequestMessage);
                 // response = await client.SendAsync(_httpRequestMessage, HttpCompletionOption.ResponseHeadersRead);
                 Thread.Sleep(1000);
@@ -391,7 +467,7 @@ namespace DealEngine.Services.Impl
                                 </soapenv:Body>
                             </soapenv:Envelope>";
             string strxml = string.Format(body, htmlEncodedString);
-            
+
             return strxml;
         }
         private string GenerateGetSiteActiveSoapBody()
@@ -407,7 +483,7 @@ namespace DealEngine.Services.Impl
 
             return body;
         }
-                
+
         #region GetEGlobalResponse
         // NOTE: Generated code may require at least .NET Framework 4.5 or .NET Core/Standard 2.0.
         /// <remarks/>
