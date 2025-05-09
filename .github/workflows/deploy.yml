@@ -3,7 +3,7 @@ name: Marsh CICD Pipeline
 on:
   push:
     branches:
-      - Stagingnet8 
+      - Stagingnet8
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
