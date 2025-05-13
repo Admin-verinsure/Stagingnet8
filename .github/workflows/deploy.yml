@@ -3,8 +3,17 @@ name: Marsh CICD Pipeline
 on:
   push:
     branches:
-      - Stagingnet8 
-  workflow_dispatch:  # Allows manual triggering
+      - Stagingnet8
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select environment to deploy'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
 
 jobs:
   build:
@@ -14,7 +23,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Ensures full repo is fetched
+          fetch-depth: 0
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v3
@@ -32,12 +41,9 @@ jobs:
 
       - name: Publish Project
         run: |
-          echo "🔧 Creating publish output directory..."
           mkdir -p ./publish_output
-          echo "🚀 Running dotnet publish..."
           dotnet publish DealEngine.WebUI/DealEngine.WebUI.csproj -c Release --no-restore -o ./publish_output
-          echo "📂 Checking publish_output directory..."
-          ls -la ./publish_output  # Debugging step
+          ls -la ./publish_output
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -45,15 +51,16 @@ jobs:
           name: build-output
           path: ./publish_output
 
-  deploy_stagingmnzconnect:
-    name: Deploy to Marsh Staging
+  deploy:
+    name: Deploy to Selected Environment
     runs-on: ubuntu-latest
-    needs: build  # Ensures deployment only runs after a successful build
+    needs: build
+    if: github.event.inputs.environment == 'staging' || github.event.inputs.environment == 'production'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Ensures full repo is fetched
+          fetch-depth: 0
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
@@ -65,23 +72,31 @@ jobs:
         run: |
           echo "🔑 Setting up SSH..."
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_STAGING_KEY }}" > ~/.ssh/id_rsa
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            echo "${{ secrets.SSH_PROD_KEY }}" > ~/.ssh/id_rsa
+            ssh-keyscan -H ${{ secrets.URLINSUREProduction }} >> ~/.ssh/known_hosts
+          else
+            echo "${{ secrets.SSH_STAGING_KEY }}" > ~/.ssh/id_rsa
+            ssh-keyscan -H ${{ secrets.URLINSUREStagingMNZConnect }} >> ~/.ssh/known_hosts
+          fi
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.URLINSUREStagingMNZConnect }} >> ~/.ssh/known_hosts
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa
 
       - name: Replace URLs in CKEditor
         run: |
-          echo "🔧 Updating CKEditor URLs..."
-          sed -i "s|https://localhost:44323/Image/CKGetAllImages|https://${{ secrets.URLINSUREStagingMNZConnect }}/Image/CKGetAllImages|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-          sed -i "s|https://localhost:44323/Image/_|https://${{ secrets.URLINSUREStagingMNZConnect }}/Image/_|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-          sed -i "s|https://localhost:44323/Image/CKUpload|https://${{ secrets.URLINSUREStagingMNZConnect }}/Image/CKUpload|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
-          sed -i "s|https://localhost:44323/Image/|https://${{ secrets.URLINSUREStagingMNZConnect }}/Image/|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            HOST=${{ secrets.URLINSUREProduction }}
+          else
+            HOST=${{ secrets.URLINSUREStagingMNZConnect }}
+          fi
+          sed -i "s|https://localhost:44323/Image/CKGetAllImages|https://$HOST/Image/CKGetAllImages|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+          sed -i "s|https://localhost:44323/Image/_|https://$HOST/Image/_|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+          sed -i "s|https://localhost:44323/Image/CKUpload|https://$HOST/Image/CKUpload|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
+          sed -i "s|https://localhost:44323/Image/|https://$HOST/Image/|g" DealEngine.WebUI/wwwroot/ckeditor/ckeditor5-techcertain/build/ckeditor.js
 
-      - name: Verify Publish Directory Before Deployment
+      - name: Verify Publish Directory
         run: |
-          echo "📂 Checking if publish_output exists..."
           if [ ! -d "./publish_output" ]; then
             echo "❌ ERROR: publish_output directory not found!"
             exit 1
@@ -89,22 +104,32 @@ jobs:
 
       - name: Execute Pre-Deployment Script
         run: |
-          echo "🚀 Running pre-deployment script..."
-          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployPrep.sh'
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            ssh ubuntu@${{ secrets.URLINSUREProduction }} './DE-DeployPrep.sh'
+          else
+            ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployPrep.sh'
+          fi
 
       - name: Deploy Files via Rsync
         run: |
-          echo "🚀 Deploying files via rsync..."
-          rsync -azhe "ssh -o StrictHostKeyChecking=no" ./publish_output/ ubuntu@${{ secrets.URLINSUREStagingMNZConnect }}:/home/ubuntu/projects/dealengine/publish/
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            rsync -azhe "ssh -o StrictHostKeyChecking=no" ./publish_output/ ubuntu@${{ secrets.URLINSUREProduction }}:/home/ubuntu/projects/dealengine/publish/
+          else
+            rsync -azhe "ssh -o StrictHostKeyChecking=no" ./publish_output/ ubuntu@${{ secrets.URLINSUREStagingMNZConnect }}:/home/ubuntu/projects/dealengine/publish/
+          fi
 
       - name: Verify Deployment
         run: |
-          echo "📂 Checking deployed files..."
-          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} "ls -lah /home/ubuntu/projects/dealengine/publish/"
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            ssh ubuntu@${{ secrets.URLINSUREProduction }} "ls -lah /home/ubuntu/projects/dealengine/publish/"
+          else
+            ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} "ls -lah /home/ubuntu/projects/dealengine/publish/"
+          fi
 
       - name: Execute Final Deployment Script
         run: |
-          echo "🚀 Running final deployment script..."
-          ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployFin.sh'
-
-
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            ssh ubuntu@${{ secrets.URLINSUREProduction }} './DE-DeployFin.sh'
+          else
+            ssh ubuntu@${{ secrets.URLINSUREStagingMNZConnect }} './DE-DeployFin.sh'
+          fi
