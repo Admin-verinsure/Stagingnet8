@@ -482,23 +482,40 @@
 
                 var serializeddata = $("#" + form.id).serialize();
                 debugger;
-                $.ajax({
-                    url: '@Url.Action("AddOrganisation", "Organisation")',
-                    type: "POST",
-                    async: false,
-                    data: $("#" + form.id).serialize(),
-                    success: function (Data) {
-                        location.reload();
-                    }, error: function (request, error) {
-                        debugger;
-                    }
-                });
+               $.ajax({
+                url: '@Url.Action("AddOrganisation", "Organisation")',
+                type: "POST",
+                async: false,
+                data: $("#" + form.id).serialize(),
+                success: function (Data) {
+                    document.getElementById("loadingSpinner").style.display = "none";
+                    var msg = document.getElementById("statusMessage");
+                    msg.className = "alert alert-success";
+                    msg.innerText = "Organisation successfully added!";
+                    msg.style.display = "block";
+                    $('#getDetailsModal').modal('hide');
+
+                    setTimeout(() => location.reload(), 1500);
+                },
+                error: function () {
+                    document.getElementById("loadingSpinner").style.display = "none";
+                    var msg = document.getElementById("statusMessage");
+                    msg.className = "alert alert-danger";
+                    msg.innerText = "Failed to add Organisation.";
+                    msg.style.display = "block";
+                    $('#getDetailsModal').modal('hide');
+                }
+               });
             }
             catch (ex) {
-                debugger;
-                console.log(ex, element.Name);
+                document.getElementById("loadingSpinner").style.display = "none";
+                var msg = document.getElementById("statusMessage");
+                msg.className = "alert alert-danger";
+                msg.innerText = ex.toString();
+                msg.style.display = "block";
+                $('#getDetailsModal').modal('hide');
             }
-            $('#getDetailsModal').modal('hide');
+            // $('#getDetailsModal').modal('hide');
         }
         else {
              window.alert(ErrorMessage);

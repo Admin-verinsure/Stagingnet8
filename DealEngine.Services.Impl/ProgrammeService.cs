@@ -1509,6 +1509,9 @@ namespace DealEngine.Services.Impl
                 return null;
 
             HashSet<string> uniqueOwnerIds = new HashSet<string>();
+            // var cpcount = programme.ClientProgrammes.Count;
+            //var cprenewcount =programme.RenewFromProgramme?.ClientProgrammes.Count() ?? 0;
+            //var total=  ownerList.Count;
 
             foreach (var client in programme.ClientProgrammes
                 .Concat(programme.RenewFromProgramme?.ClientProgrammes ?? Enumerable.Empty<ClientProgramme>())
