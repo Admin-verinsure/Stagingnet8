@@ -482,13 +482,16 @@
 
                 var serializeddata = $("#" + form.id).serialize();
                 debugger;
+                 document.getElementById("loadingSpinner").style.display = "block";
+
                $.ajax({
                 url: '@Url.Action("AddOrganisation", "Organisation")',
                 type: "POST",
                 async: false,
                 data: $("#" + form.id).serialize(),
                 success: function (Data) {
-                    document.getElementById("loadingSpinner").style.display = "none";
+                                        document.getElementById("loadingSpinner").style.display = "block";
+
                     var msg = document.getElementById("statusMessage");
                     msg.className = "alert alert-success";
                     msg.innerText = "Organisation successfully added!";

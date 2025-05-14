@@ -343,13 +343,16 @@
 
 
 
-    <!-- Place spinner and status message HERE, outside the form -->
-    <div id="loadingSpinner" style="display:none; position: fixed; z-index: 9999; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
+<div id="loadingSpinner" style="display:none; position: fixed; z-index: 9999; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
     </div>
+    <div style="margin-top: 10px; font-size: 16px; color: #007bff;">
+        Loading, please wait...
+    </div>
+</div>
 
     <div id="statusMessage" class="alert" style="display:none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000;"></div>
 
-   
+
+
