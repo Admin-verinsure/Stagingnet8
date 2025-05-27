@@ -546,4 +546,16 @@
      }
 
 
+
+
+     ///////////////////////// to disable validation for empty input fields
+       // disable validation on hidden required inputs
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('#myForm input[required]').forEach(function(inp) {
+        if (window.getComputedStyle(inp).display === 'none') {
+          inp.disabled = true;
+        }
+      });
+    });
+
 </script>
