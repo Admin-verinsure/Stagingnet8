@@ -1360,17 +1360,14 @@ namespace DealEngine.WebUI.Controllers
             var csvData = new StringBuilder();
 
             // Add the header row
-            csvData.AppendLine("Club Name,Organisations,Locations,Territories Percentage,Actual Commission Last Year,Estimated Commission Current Year,Estimated Commission Next Year,Activities Percentage Current Year,Cover Club Assets,Any Club Asset Over 15000,Scheduled Assets Over 15000,Club Real Estate,Club Motor Vehicle,Loss Experience,Claim Withdrawn,Insurance Issues,Criminal Offense,Bankruptcy,Buildings,General Liability,YouthProgrammeDetails,Documents,Declaration");
+            csvData.AppendLine("Club Name,Organisations,Locations,Territories Percentage,Actual Commission Last Year,Estimated Commission Current Year,Estimated Commission Next Year,Activities Percentage Current Year,Cover Club Assets,Any Club Asset Over 15000,Scheduled Assets Over 15000,Club Real Estate,Club Motor Vehicle,Loss Experience,Claim Withdrawn,Insurance Issues,Criminal Offense,Bankruptcy,Buildings,General Liability,Documents,Declaration");
 
             try
             { //var fullProposalReport;
                 foreach (var clientprogramme in programme.ClientProgrammes
-                 .Where(cp => cp.InformationSheet.Status == "Submitted" || cp.InformationSheet.Status == "Started" || cp.InformationSheet.Status == "Not Started")
-                 .OrderBy(cp => cp.InformationSheet.Status == "Submitted" ? 1 :
-                   cp.InformationSheet.Status == "Started" ? 2 : 3)
-                  .ThenBy(cp => cp.DateCreated)
-                  .ThenBy(cp => cp.Owner.Name))
-                    //foreach (var clientprogramme in programme.ClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                 .Where(cp => cp.InformationSheet.Status == "Bound and invoiced")
+                 .OrderBy(cp => cp.InformationSheet.Owner.Name)
+                  .ThenBy(cp => cp.DateCreated))
                 {
                     ClientInformationSheet clientInformationSheet = clientprogramme.InformationSheet;
                     IList<Domain.Entities.Location> locations = clientInformationSheet.Locations;
@@ -1490,7 +1487,7 @@ namespace DealEngine.WebUI.Controllers
                     buildings: Buildings.Count > 0 ? Buildings : new List<string> { "No Buildings" },
                     generalLiability: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.HasYouthProgramme")?.Value?.ToString() == "1" ? "Yes" : "No",
                     //youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails")?.Value?.ToString() != null ? clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value : "No Youth Programme",
-                    youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails")?.Value?.ToString() != null ? $"\"{clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value.Replace("\"", "\"\"")}\"": "\"No Youth Programme\"",
+                    ////youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails")?.Value?.ToString() != null ? $"\"{clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value.Replace("\"", "\"\"")}\"": "\"No Youth Programme\"",
                     documents: documents,
                     declaration : clientInformationSheet.DeclaredBy != null ? clientInformationSheet.DeclaredBy.FirstName + " " + clientInformationSheet.DeclaredBy.LastName : "Not yet declared"
                 );

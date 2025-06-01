@@ -64,7 +64,6 @@ namespace DealEngine.Domain.Entities
            string bankruptcy,
            List<string> buildings,
            string generalLiability,
-           string youthprogrammedetails,
            string documents,
            string declaration)
         {
@@ -90,7 +89,6 @@ namespace DealEngine.Domain.Entities
                 Bankruptcy = bankruptcy,
                 Buildings = buildings,
                 GeneralLiability = generalLiability,
-                Youthprogrammedetails = youthprogrammedetails,
                 Documents= documents,
                 Declaration = declaration
             };
