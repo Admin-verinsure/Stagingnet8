@@ -10,14 +10,18 @@
         var encodedUsername = System.Net.WebUtility.UrlEncode(username);
         @*        <a href="@Model.oktaServiceURL" class="btn btn-xs-icon btn-info" style="color: #A90229;"><i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline</a>
 *@
-      //  <a href="https://proposalonline.com/Account/Login?ReturnUrl=%2f&username=@encodedUsername" class="btn btn-xs-icon btn-info" style="color: #A90229;"><i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline</a>
+      //  <a href="https://mpakstaging.proposalonline.com/Account/Login?ReturnUrl=%2f&username=@encodedUsername" class="btn btn-xs-icon btn-info" style="color: #A90229;"><i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline</a>
       //  <a href="ViewBag.oktaServiceURL" class="btn btn-xs-icon btn-info" style="color: #A90229;"><i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline</a>
 
-        <a href="https://proposalonline.com/Account/Login?ReturnUrl=%2f&username=@encodedUsername"
+        <a href="https://mpakstaging.proposalonline.com/Account/Login?ReturnUrl=%2f&username=@encodedUsername"
    class="btn btn-xs-icon btn-info" style="color: #A90229;">
             <i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline
         </a>
 
+         <a href="https://mpakstaging.proposalonline.com/Account/Login"
+   class="btn btn-xs-icon btn-info" style="color: #A90229;">
+            <i class="fa fa-external-link-square" style="font-size:28px; margin-top:13px;"></i> Login to ProposalOnline
+        </a>
         <a href="http://iqws.intechiq.com" class="btn btn-primary" target="_blank">
             Launch IQ Office
         </a>
