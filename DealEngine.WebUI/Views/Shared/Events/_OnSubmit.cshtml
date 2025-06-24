@@ -482,16 +482,21 @@
 
                 var serializeddata = $("#" + form.id).serialize();
                 debugger;
-                 document.getElementById("loadingSpinner").style.display = "block";
+                     const spinner = document.getElementById("loadingSpinner");
+                     const msg = document.getElementById("statusMessage");
 
+                     spinner.style.display = "block";
+                     msg.className = "alert alert-info";
+                     msg.innerText = "Adding organisation, please wait...";
+                     msg.style.display = "block";
                $.ajax({
                 url: '@Url.Action("AddOrganisation", "Organisation")',
                 type: "POST",
                 async: false,
                 data: $("#" + form.id).serialize(),
                 success: function (Data) {
-                                        document.getElementById("loadingSpinner").style.display = "block";
-
+                                        // document.getElementById("loadingSpinner").style.display = "block";
+                    spinner.style.display = "none";
                     var msg = document.getElementById("statusMessage");
                     msg.className = "alert alert-success";
                     msg.innerText = "Organisation successfully added!";
@@ -501,7 +506,8 @@
                     setTimeout(() => location.reload(), 1500);
                 },
                 error: function () {
-                    document.getElementById("loadingSpinner").style.display = "none";
+                  //  document.getElementById("loadingSpinner").style.display = "none";
+                    spinner.style.display = "none";
                     var msg = document.getElementById("statusMessage");
                     msg.className = "alert alert-danger";
                    let errorMessage = "Something went wrong. Please try again.";
