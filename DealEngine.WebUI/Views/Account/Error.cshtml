@@ -67,6 +67,8 @@
         $(function () {
             // Validation
             $("#login-form").validate({
+                /// ignore required validation for hidden fileds.
+                                ignore: ":hidden",
                 // Rules for form validation
                 rules: {
                     email: {

@@ -20,28 +20,28 @@ namespace DealEngine.Domain.Entities
 
         public virtual string EglobalClientNumber { get; set; }
         public virtual string EglobalBranch { get; set; }
-        public virtual decimal NameofApplicant { get; set; }
-        public virtual decimal SubsidiaryCompanies { get; set; }
-        public virtual decimal PhoneNumber { get; set; }
+        public virtual string NameofApplicant { get; set; }
+        public virtual string SubsidiaryCompanies { get; set; }
+        public virtual string PhoneNumber { get; set; }
         public virtual string Email { get; set; }
         public virtual string PostalAddress { get; set; }
 
         public virtual string NumberofYearsBusiness { get; set; }
         public virtual string PeriodofInsuranceFrom { get; set; }
-        public virtual decimal PeriodofInsuranceTo { get; set; }
-        public virtual decimal GeneralLiabilityLimit { get; set; }
-        public virtual decimal StatutoryLiabilityLimit { get; set; }
-        public virtual string EmployersLiabilityLimit { get; set; }
+        public virtual string PeriodofInsuranceTo { get; set; }
+        public virtual double GeneralLiabilityLimit { get; set; }
+        public virtual double StatutoryLiabilityLimit { get; set; }
+        public virtual double EmployersLiabilityLimit { get; set; }
         public virtual string RetroactiveDate { get; set; }
 
         public virtual string BusinessoutsideofNewZealand { get; set; }
 
         public virtual string NumberEmployeesinNZ { get; set; }
-        public virtual decimal NumberlocationsNZ { get; set; }
-        public virtual decimal DescriptionActivity { get; set; }
-        public virtual decimal NameInsured { get; set; }
-        public virtual string CurrentYearTurnover { get; set; }
-        public virtual string NextYearTurnover { get; set; }
+        public virtual string NumberlocationsNZ { get; set; }
+        public virtual string DescriptionActivity { get; set; }
+        public virtual string NameInsured { get; set; }
+        public virtual decimal CurrentYearTurnover { get; set; }
+        public virtual decimal NextYearTurnover { get; set; }
 
         public virtual string jointventureactivites { get; set; }
         public virtual string contructionactivites { get; set; }
@@ -50,15 +50,15 @@ namespace DealEngine.Domain.Entities
         public virtual string Businessisabletopay { get; set; }
 
 
-        public virtual decimal CurrentAssets { get; set; }
-        public virtual decimal TotalAssets { get; set; }
-        public virtual decimal CurrentLiabilities { get; set; }
-        public virtual decimal TotalLiabilities { get; set; }
+        public virtual string CurrentAssets { get; set; }
+        public virtual string TotalAssets { get; set; }
+        public virtual string CurrentLiabilities { get; set; }
+        public virtual string TotalLiabilities { get; set; }
 
 
-        public virtual decimal anydirectorhanydirector { get; set; }
-        public virtual decimal anydirectorhanydirector5yr { get; set; }
-        public virtual decimal Declinedrenewpolicy  { get; set; }
+        public virtual string Anydirectorhanydirector { get; set; }
+        public virtual string Anydirectorclaim5yr { get; set; }
+        public virtual string Declinedrenewpolicy  { get; set; }
 		public virtual decimal withdrawnaclaim { get; set; }
         public virtual string declinedanyclaim { get; set; }
         public virtual string declaredbankrupt { get; set; }
@@ -73,40 +73,41 @@ namespace DealEngine.Domain.Entities
            string submissionReference,
     string eglobalClientNumber,
     string eglobalBranch,
-    decimal nameofApplicant,
-    decimal subsidiaryCompanies,
-    decimal phoneNumber,
+    string nameofApplicant,
+    string subsidiaryCompanies,
+    string phoneNumber,
     string email,
     string postalAddress,
     string numberOfYearsBusiness,
     string periodOfInsuranceFrom,
-    decimal periodOfInsuranceTo,
-    decimal generalLiabilityLimit,
-    decimal statutoryLiabilityLimit,
-    string employersLiabilityLimit,
+    string periodOfInsuranceTo,
+    double generalLiabilityLimit,
+    double statutoryLiabilityLimit,
+    double employersLiabilityLimit,
     string retroactiveDate,
     string businessoutsideofNewZealand,
     string numberEmployeesinNZ,
-    decimal numberlocationsNZ,
-    decimal descriptionActivity,
-    decimal nameInsured,
-    string currentYearTurnover,
-    string nextYearTurnover,
+    string numberlocationsNZ,
+    string descriptionActivity,
+    string nameInsured,
+    decimal currentYearTurnover,
+    decimal nextYearTurnover,
     string jointventureactivites,
     string contructionactivites,
     string applyInsolvencyExclusion,
     string businessisabletopay,
-    decimal currentAssets,
-    decimal totalAssets,
-    decimal currentLiabilities,
-    decimal totalLiabilities,
-    decimal anydirectorhanydirector,
-    decimal anydirectorhanydirector5yr,
-    decimal declinedrenewpolicy,
-    decimal withdrawnaclaim,
-    string declinedanyclaim,
-    string declaredbankrupt,
-    string anycriminaloffence)
+    string currentAssets,
+    string totalAssets,
+    string currentLiabilities,
+    string totalLiabilities,
+    string anydirectorproceedings,
+    string anydirectorclaim5yr,
+    string declinedrenewpolicy
+   // decimal withdrawnaclaim,
+  //  string declinedanyclaim,
+  //  string declaredbankrupt,
+   // string anycriminaloffence
+    )
         {
             return new FullProposalReport
     {
@@ -140,13 +141,13 @@ namespace DealEngine.Domain.Entities
         TotalAssets                     = totalAssets,
         CurrentLiabilities              = currentLiabilities,
         TotalLiabilities                = totalLiabilities,
-        anydirectorhanydirector         = anydirectorhanydirector,
-        anydirectorhanydirector5yr      = anydirectorhanydirector5yr,
-        Declinedrenewpolicy             = declinedrenewpolicy,
-        withdrawnaclaim                 = withdrawnaclaim,
-        declinedanyclaim                = declinedanyclaim,
-        declaredbankrupt                = declaredbankrupt,
-        anycriminaloffence              = anycriminaloffence
+        Anydirectorhanydirector         = anydirectorproceedings,
+        Anydirectorclaim5yr = anydirectorclaim5yr,
+        Declinedrenewpolicy             = declinedrenewpolicy
+       // withdrawnaclaim                 = withdrawnaclaim,
+        //declinedanyclaim                = declinedanyclaim,
+       // declaredbankrupt                = declaredbankrupt,
+        //anycriminaloffence              = anycriminaloffence
     };
         }
 

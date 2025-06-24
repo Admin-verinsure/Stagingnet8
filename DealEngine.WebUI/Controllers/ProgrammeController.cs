@@ -1337,223 +1337,289 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Getfullproposalreport(IFormCollection formCollection)
-        //{
-        //    // Extract and validate the data
-        //    var ProgrammeId = formCollection["ProgrammeId"];
-        //    var JobName = formCollection["ProgrammeName"];
-        //    //var JobDate = formCollection["ReportSchedularTime"];
-        //    //var JobTime = formCollection["start_hour"];
-        //    //var JobFunctionName = formCollection["ProgrammeName"];
-        //    //var ScheduleFrequency = formCollection["ScheduleFrequency"];
-        //    var ReportName = formCollection["ReportName"];
-        //    //var BoundDateFrom = formCollection["BoundDateFrom"];
-        //    //var BoundDateTo = formCollection["BoundDateTo"];
+        [HttpPost]
+        public async Task<IActionResult> Getfullproposalreport(IFormCollection formCollection)
+        {
+            // Extract and validate the data
+            var ProgrammeId = formCollection["ProgrammeId"];
+            var JobName = formCollection["ProgrammeName"];
+            //var JobDate = formCollection["ReportSchedularTime"];
+            //var JobTime = formCollection["start_hour"];
+            //var JobFunctionName = formCollection["ProgrammeName"];
+            //var ScheduleFrequency = formCollection["ScheduleFrequency"];
+            var ReportName = formCollection["ReportName"];
+            //var BoundDateFrom = formCollection["BoundDateFrom"];
+            //var BoundDateTo = formCollection["BoundDateTo"];
 
 
 
-        //    // Use the factory method to create a FullProposalReport
-        //    var programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
-        //    //var clientprogrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
+            // Use the factory method to create a FullProposalReport
+            var programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+            //var clientprogrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
 
-        //    var csvData = new StringBuilder();
+            var csvData = new StringBuilder();
 
-        //    // Add the header row
-        //    csvData.AppendLine("Club Name,Organisations,Locations,Territories Percentage,Actual Commission Last Year,Estimated Commission Current Year,Estimated Commission Next Year,Activities Percentage Current Year,Cover Club Assets,Any Club Asset Over 15000,Scheduled Assets Over 15000,Club Real Estate,Club Motor Vehicle,Loss Experience,Claim Withdrawn,Insurance Issues,Criminal Offense,Bankruptcy,Buildings,General Liability,Documents,Declaration");
+            // Add the header row
+            csvData.AppendLine("Submission Reference,EGlobal Client Number,EGlobal Branch,Applicant Name,Phone,Email,Subsidiary Companies,Postal Address,Current Year Turnover,Next Year Turnover,Construction Activities,Joint Venture Activities,Business Outside NZ,Years in Business,Policy Start Date,Policy End Date,Insured Name,General Liability Limit,Statutory Liability Limit,Employers Liability Limit,Employees in NZ,Locations in NZ,Retroactive Date,Description of Activity,Current Assets,Total Assets,Current Liabilities,Total Liabilities,Any Director Proceedings,Any Director Claim Last 5Yrs,Business Able To Pay,Apply Insolvency Exclusion,Declined or Refused Policy");
+            //csvData.AppendLine("Club Name,Organisations,Locations,Territories Percentage,Actual Commission Last Year,Estimated Commission Current Year,Estimated Commission Next Year,Activities Percentage Current Year,Cover Club Assets,Any Club Asset Over 15000,Scheduled Assets Over 15000,Club Real Estate,Club Motor Vehicle,Loss Experience,Claim Withdrawn,Insurance Issues,Criminal Offense,Bankruptcy,Buildings,General Liability,Documents,Declaration");
 
-        //    try
-        //    { //var fullProposalReport;
-        //        foreach (var clientprogramme in programme.ClientProgrammes
-        //         .Where(cp => cp.InformationSheet.Status == "Bound and invoiced")
-        //         .OrderBy(cp => cp.InformationSheet.Owner.Name)
-        //          .ThenBy(cp => cp.DateCreated))
-        //        {
-        //            ClientInformationSheet clientInformationSheet = clientprogramme.InformationSheet;
-        //            IList<Domain.Entities.Location> locations = clientInformationSheet.Locations;
-        //            var postallocationdetails = "";
-        //            foreach (Domain.Entities.Location loc in locations.Where(loc => loc.LocationType == "Postal"))
-        //            {
-        //                // locationdetails.add()
-        //                postallocationdetails = "Location type:-" + loc.LocationType + " Name:-" + loc.CommonName 
-        //                    + "  street:-" + loc.Street + "" + loc.Suburb + "  " + loc.Postcode + " " + loc.City;
-
-        //                //locationdetails.Add("{loc.LocationType}, {loc.CommonName}, {loc.Street}, {loc.Suburb}, {loc.Postcode}, {loc.City}");
-        //                //locationdetails.Add("\n");
-
-        //            }
-
-        //            string  Territories = "";
-        //            string Activities = "";
-        //            var RevenueData = new List<RevenueData>();
-
-        //            string organistaions = "";
-        //            foreach(var org in clientInformationSheet.Organisation)
-        //            {
-        //                organistaions = organistaions + " Name:-  " + org.Name +"  Organisation Type:- "+org.OrganisationType.Name;
-        //                foreach(var ous in org.OrganisationalUnits)
-        //                {
-        //                    organistaions = organistaions + " Insurance Type :- " + ous.Name;
-        //                }
-        //            }
-
-        //            if (clientInformationSheet.RevenueData != null)
-        //            {
-        //                foreach (var territory in clientInformationSheet.RevenueData.Territories.Where(ter=> ter.Selected == true))
-        //                {
-        //                    Territories = Territories+
-        //                        "Location:" + territory.Location + " " +
-        //                        "Percentage" + territory.Percentage ;
-        //                        //Percentage = territory.Percentage,
-        //                        //Selected = territory.Selected                    
-                            
-        //                }
-
-        //                foreach (var activity in clientInformationSheet.RevenueData.Activities.Where(act => act.Selected == true,))
-        //                {
-        //                    Activities= Activities+"Description:" + 
-        //                        activity.Description+" "+
-        //                        "Percentage :" +  activity.Percentage;
-                            
-        //                }
+            try
+            { //var fullProposalReport;
+                foreach (var clientprogramme in programme.ClientProgrammes
+                .Where(cp => cp.InformationSheet.Status == "Bound and invoiced")
+                .OrderBy(cp => cp.InformationSheet.Owner.Name)
+                .ThenBy(cp => cp.DateCreated)
+                .Take(25))
+                {
+                    ClientInformationSheet clientInformationSheet = clientprogramme.InformationSheet;
+                    IList<Domain.Entities.Location> locations = clientInformationSheet.Locations;
+                    var postallocationdetails = "";
+                    foreach (Domain.Entities.Location loc in locations.Where(loc => loc.LocationType == "Postal"))
+                    {
+                        // locationdetails.add()
+                        postallocationdetails = "Location type:-" + loc.LocationType + " Name:-" + loc.CommonName
+                            + "  street:-" + loc.Street + "" + loc.Suburb + "  " + loc.Postcode + " " + loc.City;
 
 
+                    }
 
-        //                RevenueData.Add(new RevenueData(null)
-        //                {
-        //                    NextFinancialYearTotal = clientInformationSheet.RevenueData.NextFinancialYearTotal,
-        //                    CurrentYearTotal = clientInformationSheet.RevenueData.CurrentYearTotal,
-        //                    LastFinancialYearTotal = clientInformationSheet.RevenueData.LastFinancialYearTotal
-        //                });
+                    string Territories = "";
+                    string Activities = "";
+                    var RevenueData = new List<RevenueData>();
+                    var GeneralLiabilityLimit = 0.0;
+                    var StatutoryLiabilityLimit = 0.0;
+                    var EmployersLiabilityLimit = 0.0;
 
+                    string organistaions = "";
 
-        //            }
+                    foreach(ClientAgreement agreement in clientprogramme.Agreements)
+                    {
 
-        //            //foreach (Domain.Entities.Location loc in locations)
-        //            //{
-        //            //    // locationdetails.add()
-        //            //    locationdetails.Add($"{loc.LocationType}, {loc.CommonName}, {loc.Street}, {loc.Suburb}, {loc.Postcode}, {loc.City}");
-        //            //    locationdetails.Add("/n");
-
-        //            //}
-        //            var coverClubAssets = clientInformationSheet.Answers.Where(item => item.ItemName == "TAViewModel.HasClubTrustAssets");
-        //            List<string> scheduledAssetsOver15000 = new List<string>();
-        //            foreach (var club in clientInformationSheet.ClubTrustAssetsInfo)
-        //            {
-        //                scheduledAssetsOver15000.Add(club.Name + "Current Val:" + club.CurrentVal + "Replacement Val:" + club.ReplacementVal );
-        //            }
-
-        //            List<string> Buildings = new List<string>();
-
-        //            foreach (var building in clientInformationSheet.Buildings)
-        //            {
-        //                Buildings.Add("Building Name:" + building.BuildingName + "Type:" + building.ConstructionType + "Location: " + building.Location.CommonName );
-        //                Buildings.Add("Building Name:" + building.BuildingName + "Type:" + building.ConstructionType + "Location: " + building.Location.CommonName );
-
-        //            }
-        //            string documents = "";
-
-        //            foreach(var doc in clientInformationSheet.documents)
-        //            {
-        //                documents = documents + doc.Name;
-        //            }
+                        foreach (var term in agreement.ClientAgreementTerms.Where(t => t.Bound))
+                        {
+                            switch (term.SubTermType)
+                            {
+                                case "PL":
+                                    GeneralLiabilityLimit = term.TermLimit;
+                                    break;
+                                case "SL":
+                                    StatutoryLiabilityLimit = term.TermLimit;
+                                    break;
+                                case "EL":
+                                    EmployersLiabilityLimit = term.TermLimit;
+                                    break;
+                            }
+                        }
 
 
-        //            List<string> test = new List<string>();
-        //            postallocationdetails = $"\"{postallocationdetails.Replace("\"", "\"\"")}\"";
+                    }
+                    foreach (var org in clientInformationSheet.Organisation)
+                    {
+                        //organistaions = organistaions + " Name:-  " + org.Name + "  Organisation Type:- " + org.OrganisationType.Name;
+                        foreach (var ous in org.OrganisationalUnits)
+                        {
+                            if (ous.Name == "Subsidiary Company organisation")
+                            {
+                                organistaions = organistaions + " Subsidiary Org name :- " + org.Name;
 
-        //            var fullProposalReport = FullProposalReport.Create(
-        //                submissionReference: clientInformationSheet.ReferenceId,
-        //                eglobalClientNumber: clientInformationSheet.Programme.EGlobalClientNumber,
-        //                eglobalBranch : clientInformationSheet.Programme.EGlobalBranchCode,
-        //                nameofApplicant: clientInformationSheet.Owner.Name,
-        //                phoneNumber: clientInformationSheet.Owner.Phone,
-        //                email: clientInformationSheet.Owner.Email,
-        //                nameofApplicant: clientInformationSheet.Owner.Name,
-        //                postalAddress: !string.IsNullOrEmpty(postallocationdetails) ? postallocationdetails :  "No locations" ,
-        //                currentYearTurnover: clientInformationSheet.RevenueData.CurrentYearTotal,
-        //                nextYearTurnover: clientInformationSheet.RevenueData.NextFinancialYearTotal,
-        //                contructionactivites: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "PIViewModel.HasFirmEngageOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                            }
+                        }
+                    }
 
-        //                jointventureactivites: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "PIViewModel.HasJointVentureActivitiesOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    if (clientInformationSheet.RevenueData != null)
+                    {
+                        foreach (var territory in clientInformationSheet.RevenueData.Territories.Where(ter => ter.Selected == true))
+                        {
+                            Territories = Territories +
+                                "Location:" + territory.Location + " " +
+                                "Percentage" + territory.Percentage;
+                            //Percentage = territory.Percentage,
+                            //Selected = territory.Selected                    
 
-                        
-        //                //locations: locationdetails.Count > 0 ? locationdetails : new List<string> { "No locations" },
-        //                businessoutsideofNewZealand: !string.IsNullOrEmpty(Territories)? Territories : "No Territories" ,
-        //                numberOfYearsBusiness: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "BIViewModel.FirmDate")?.Value?.ToString(),
-        //                periodOfInsuranceFrom: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GeneralViewModel.PolicyStartDate")?.Value?.ToString(),
-        //                periodOfInsuranceTo: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "BIViewModel.PolicyEndDate")?.Value?.ToString(),
-        //                nameInsured : !string.IsNullOrEmpty(organistaions) ? organistaions : "No Insured",
-        //                retroactiveDate : 
-        //            //territoriesPercentage: Territories.Count > 0 ? Territories : new List<string> { "No Territories" },                  
-        //           // actualCommissionLastYear: clientInformationSheet.RevenueData.LastFinancialYearTotal,
-                    
-        //          //  coverClubAssets: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssets")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            anyClubAssetOver15000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssetMore")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            scheduledAssetsOver15000: scheduledAssetsOver15000.Count >0 ? scheduledAssetsOver15000 : new List<string> { "No assets over 15000 scheduled" },                
-        //            clubRealEstate: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustRealEstate")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            clubMotorVehicle: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustMotorVehicle")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            lossExperience5000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            claimWithdrawn: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            insuranceIssues: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            criminalOffense: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            bankruptcy: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            buildings: Buildings.Count > 0 ? Buildings : new List<string> { "No Buildings" },
-        //            generalLiability: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.HasYouthProgramme")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails")?.Value?.ToString() != null ? clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value : "No Youth Programme",
-        //            ////youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails")?.Value?.ToString() != null ? $"\"{clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value.Replace("\"", "\"\"")}\"": "\"No Youth Programme\"",
-        //            documents: documents,
-        //            declaration : clientInformationSheet.DeclaredBy != null ? clientInformationSheet.DeclaredBy.FirstName + " " + clientInformationSheet.DeclaredBy.LastName : "Not yet declared"
-        //        );
+                        }
+
+                        foreach (var activity in clientInformationSheet.RevenueData.Activities.Where(act => act.Selected == true))
+                        {
+                            Activities = Activities + "Description:" +
+                                activity.Description + " " +
+                                "Percentage :" + activity.Percentage;
+
+                        }
 
 
 
+                        RevenueData.Add(new RevenueData(null)
+                        {
+                            NextFinancialYearTotal = clientInformationSheet.RevenueData.NextFinancialYearTotal,
+                            CurrentYearTotal = clientInformationSheet.RevenueData.CurrentYearTotal,
+                            LastFinancialYearTotal = clientInformationSheet.RevenueData.LastFinancialYearTotal
+                        });
 
 
-        //            //    var fullProposalReport = FullProposalReport.Create(
-        //            //    declaringOfficer: clientInformationSheet.Owner.Name,
-        //            //    locations: locationdetails,
-        //            //    territoriesPercentage: Territories,
-        //            //    actualCommissionLastYear: clientInformationSheet.RevenueData.LastFinancialYearTotal,
-        //            //    estimatedCommissionCurrentYear: clientInformationSheet.RevenueData.CurrentYearTotal,
-        //            //    estimatedCommissionNextYear: clientInformationSheet.RevenueData.NextFinancialYearTotal,
-        //            //    activitiesPercentageCurrentYear: Activities,
-        //            //    coverClubAssets: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssets")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    anyClubAssetOver15000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssetMore")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    scheduledAssetsOver15000: scheduledAssetsOver15000,
-        //            //    clubRealEstate: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustRealEstate")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    clubMotorVehicle: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustMotorVehicle")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    lossExperience5000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    claimWithdrawn: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    insuranceIssues: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    criminalOffense: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    bankruptcy: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    buildings: Buildings,
-        //            //    generalLiability: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.HasYouthProgramme")?.Value?.ToString() == "1" ? "Yes" : "No",
-        //            //    youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value,
-        //            //    declaration: clientInformationSheet.DeclaredBy.FirstName + "" + clientInformationSheet.DeclaredBy.LastName
-        //            //);
+                    }
 
-        //            // Add the row for this report to the CSV
-        //            csvData.AppendLine($"{fullProposalReport.DeclaringOfficer},{fullProposalReport.Organisations},{string.Join(" | ", fullProposalReport.Locations)},{string.Join(" | ", fullProposalReport.TerritoriesPercentage)},{fullProposalReport.ActualCommissionLastYear},{fullProposalReport.EstimatedCommissionCurrentYear},{fullProposalReport.EstimatedCommissionNextYear},{string.Join(" | ", fullProposalReport.ActivitiesPercentageCurrentYear)},{fullProposalReport.CoverClubAssets},{fullProposalReport.AnyClubAssetOver15000},{string.Join(" | ", fullProposalReport.ScheduledAssetsOver15000)},{fullProposalReport.ClubRealEstate},{fullProposalReport.ClubMotorVehicle},{fullProposalReport.lossExperience5000},{fullProposalReport.ClaimWithdrawn},{fullProposalReport.InsuranceIssues},{fullProposalReport.CriminalOffense},{fullProposalReport.Bankruptcy},{string.Join(" | ", fullProposalReport.Buildings)},{fullProposalReport.GeneralLiability},{fullProposalReport.Youthprogrammedetails},{fullProposalReport.Documents},{fullProposalReport.Declaration}");
+                    //foreach (Domain.Entities.Location loc in locations)
+                    //{
+                    //    // locationdetails.add()
+                    //    locationdetails.Add($"{loc.LocationType}, {loc.CommonName}, {loc.Street}, {loc.Suburb}, {loc.Postcode}, {loc.City}");
+                    //    locationdetails.Add("/n");
+
+                    //}
+                    //var coverClubAssets = clientInformationSheet.Answers.Where(item => item.ItemName == "TAViewModel.HasClubTrustAssets");
+                    //List<string> scheduledAssetsOver15000 = new List<string>();
+                    //foreach (var club in clientInformationSheet.ClubTrustAssetsInfo)
+                    //{
+                    //    scheduledAssetsOver15000.Add(club.Name + "Current Val:" + club.CurrentVal + "Replacement Val:" + club.ReplacementVal);
+                    //}
+
+                    List<string> Buildings = new List<string>();
+
+                    foreach (var building in clientInformationSheet.Buildings)
+                    {
+                        Buildings.Add("Building Name:" + building.BuildingName + "Type:" + building.ConstructionType + "Location: " + building.Location.CommonName);
+                        Buildings.Add("Building Name:" + building.BuildingName + "Type:" + building.ConstructionType + "Location: " + building.Location.CommonName);
+
+                    }
+                    string documents = "";
+
+                    foreach (var doc in clientInformationSheet.documents)
+                    {
+                        documents = documents + doc.Name;
+                    }
 
 
-                    
-        //        }
+                    List<string> test = new List<string>();
+                    postallocationdetails = $"\"{postallocationdetails.Replace("\"", "\"\"")}\"";
+
+                    var fullProposalReport = FullProposalReport.Create(
+                        submissionReference: clientInformationSheet.ReferenceId,
+                        eglobalClientNumber: clientInformationSheet.Programme.EGlobalClientNumber,
+                        eglobalBranch: clientInformationSheet.Programme.EGlobalBranchCode,
+                        nameofApplicant: clientInformationSheet.Owner.Name,
+                        phoneNumber: clientInformationSheet.Owner.Phone,
+                        email: clientInformationSheet.Owner.Email,
+                        subsidiaryCompanies: !string.IsNullOrEmpty(organistaions) ? organistaions : "No Subsidiary Companies",
+                        postalAddress: !string.IsNullOrEmpty(postallocationdetails) ? postallocationdetails : "No locations",
+                        currentYearTurnover: clientInformationSheet.RevenueData.CurrentYearTotal,
+                        nextYearTurnover: clientInformationSheet.RevenueData.NextFinancialYearTotal,
+                        contructionactivites: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "PIViewModel.HasFirmEngageOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+
+                        jointventureactivites: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "PIViewModel.HasJointVentureActivitiesOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
 
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-        //        return RedirectToAction("Error500", "Error");
-        //    }
-        //    var bytes = Encoding.UTF8.GetBytes(csvData.ToString());
+                        //locations: locationdetails.Count > 0 ? locationdetails : new List<string> { "No locations" },
+                        businessoutsideofNewZealand: !string.IsNullOrEmpty(Territories) ? Territories : "No Territories",
+                        numberOfYearsBusiness: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "BIViewModel.FirmDate")?.Value?.ToString(),
+                        periodOfInsuranceFrom: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GeneralViewModel.PolicyStartDate")?.Value?.ToString(),
+                        periodOfInsuranceTo: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GeneralViewModel.PolicyEndDate")?.Value?.ToString(),
+                        nameInsured: !string.IsNullOrEmpty(organistaions) ? organistaions : "No Insured",
+                        generalLiabilityLimit: GeneralLiabilityLimit,
+                        statutoryLiabilityLimit: StatutoryLiabilityLimit,
+                        employersLiabilityLimit: EmployersLiabilityLimit,
+                        numberEmployeesinNZ : "",
+                        numberlocationsNZ: "",
+                        retroactiveDate :"",
+                        descriptionActivity:"",
+                    //territoriesPercentage: Territories.Count > 0 ? Territories : new List<string> { "No Territories" },                  
+                    // actualCommissionLastYear: clientInformationSheet.RevenueData.LastFinancialYearTotal,
 
-        //    // Return the file
-        //    var fileName = "FullProposalReport.csv";
-        //    return File(bytes, "text/csv", fileName);
-        //}
+                    //  coverClubAssets: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssets")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    currentAssets: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "MLViewModel.AssetCurrent").Value,
+                    totalAssets: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "MLViewModel.AssetTotal").Value,
+
+                    currentLiabilities: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "MLViewModel.AfterTaxNumber").Value,
+                    totalLiabilities: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "MLViewModel.TotalLiability").Value,
+
+
+                    anydirectorproceedings: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "MLViewModel.HasAnyLawBreachOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    anydirectorclaim5yr: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "MLViewModel.HasAnyClaimMadeOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+
+                    businessisabletopay: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "MLViewModel.HasAblePayOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    applyInsolvencyExclusion: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "MLViewModel.HasInsolvencyOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+
+                    declinedrenewpolicy: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions")?.Value?.ToString() == "1" ? "Yes" : "No"
+
+                );
+
+
+
+
+
+                    //    var fullProposalReport = FullProposalReport.Create(
+                    //    declaringOfficer: clientInformationSheet.Owner.Name,
+                    //    locations: locationdetails,
+                    //    territoriesPercentage: Territories,
+                    //    actualCommissionLastYear: clientInformationSheet.RevenueData.LastFinancialYearTotal,
+                    //    estimatedCommissionCurrentYear: clientInformationSheet.RevenueData.CurrentYearTotal,
+                    //    estimatedCommissionNextYear: clientInformationSheet.RevenueData.NextFinancialYearTotal,
+                    //    activitiesPercentageCurrentYear: Activities,
+                    //    coverClubAssets: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssets")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    anyClubAssetOver15000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "TAViewModel.HasClubTrustAssetMore")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    scheduledAssetsOver15000: scheduledAssetsOver15000,
+                    //    clubRealEstate: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustRealEstate")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    clubMotorVehicle: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "CPViewModel.HasClubTrustMotorVehicle")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    lossExperience5000: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasDamageLossOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    claimWithdrawn: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasWithdrawnOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    insuranceIssues: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasRefusedOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    criminalOffense: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasStatutoryOffenceOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    bankruptcy: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "ClaimsHistoryViewModel.HasLiquidationOptions")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    buildings: Buildings,
+                    //    generalLiability: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.HasYouthProgramme")?.Value?.ToString() == "1" ? "Yes" : "No",
+                    //    youthprogrammedetails: clientInformationSheet.Answers.FirstOrDefault(item => item.ItemName == "GLViewModel.YouthProgrammesDetails").Value,
+                    //    declaration: clientInformationSheet.DeclaredBy.FirstName + "" + clientInformationSheet.DeclaredBy.LastName
+                    //);
+
+                    // Add the row for this report to the CSV
+                    csvData.AppendLine($"{fullProposalReport.SubmissionReference}," +
+                                       $"{fullProposalReport.EglobalClientNumber}," +
+                                       $"{fullProposalReport.EglobalBranch}," +
+                                       $"{fullProposalReport.NameofApplicant}," +
+                                       $"{fullProposalReport.PhoneNumber}," +
+                                       $"{fullProposalReport.Email}," +
+                                       $"{fullProposalReport.SubsidiaryCompanies}," +
+                                       $"{fullProposalReport.PostalAddress}," +
+                                       $"{fullProposalReport.CurrentYearTurnover}," +
+                                       $"{fullProposalReport.NextYearTurnover}," +
+                                       $"{fullProposalReport.contructionactivites}," +
+                                       $"{fullProposalReport.jointventureactivites}," +
+                                       $"{fullProposalReport.BusinessoutsideofNewZealand}," +
+                                       $"{fullProposalReport.NumberofYearsBusiness}," +
+                                       $"{fullProposalReport.PeriodofInsuranceFrom}," +
+                                       $"{fullProposalReport.PeriodofInsuranceTo}," +
+                                       $"{fullProposalReport.NameInsured}," +
+                                       $"{fullProposalReport.GeneralLiabilityLimit}," +
+                                       $"{fullProposalReport.StatutoryLiabilityLimit}," +
+                                       $"{fullProposalReport.EmployersLiabilityLimit}," +
+                                       $"{fullProposalReport.NumberEmployeesinNZ}," +
+                                       $"{fullProposalReport.NumberlocationsNZ}," +
+                                       $"{fullProposalReport.RetroactiveDate}," +
+                                       $"{fullProposalReport.DescriptionActivity}," +
+                                       $"{fullProposalReport.CurrentAssets}," +
+                                       $"{fullProposalReport.TotalAssets}," +
+                                       $"{fullProposalReport.CurrentLiabilities}," +
+                                       $"{fullProposalReport.TotalLiabilities}," +
+                                       $"{fullProposalReport.Anydirectorhanydirector}," +
+                                       $"{fullProposalReport.Anydirectorclaim5yr}," +
+                                       $"{fullProposalReport.Businessisabletopay}," +
+                                       $"{fullProposalReport.ApplyInsolvencyExclusion}," +
+                                       $"{fullProposalReport.Declinedrenewpolicy}");
+
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                //await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+            var bytes = Encoding.UTF8.GetBytes(csvData.ToString());
+
+            // Return the file
+            var fileName = "FullProposalReport.csv";
+            return File(bytes, "text/csv", fileName);
+        }
 
 
 
