@@ -492,7 +492,6 @@
                $.ajax({
                 url: '@Url.Action("AddOrganisation", "Organisation")',
                 type: "POST",
-                async: false,
                 data: $("#" + form.id).serialize(),
                 success: function (Data) {
                                         // document.getElementById("loadingSpinner").style.display = "block";
