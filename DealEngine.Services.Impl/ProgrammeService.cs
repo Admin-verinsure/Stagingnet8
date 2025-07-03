@@ -1544,7 +1544,9 @@ namespace DealEngine.Services.Impl
             HashSet<string> uniqueOwnerIds = new HashSet<string>();
 
             foreach (var client in programme.ClientProgrammes
-                .Where(c => c.DateDeleted == null && c.DateCreated >= programme.DateCreated && c.InformationSheet.Status == "Bound and invoiced")
+                .Where(c => c.DateDeleted == null &&
+               ((c.DateCreated >= programme.DateCreated && c.InformationSheet.Status == "Bound and invoiced") ||
+                programme.IsProgrammerenewed == false))
                 .OrderBy(c => c.Owner.Name))
             {
                 string ownerId = client.Owner.Id.ToString();
