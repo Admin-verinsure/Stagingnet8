@@ -3,7 +3,7 @@ name: Marsh CICD Pipeline
 on:
   push:
     branches:
-      - Stagingnet8
+      - rotary2025
   workflow_dispatch:
     inputs:
       environment:
