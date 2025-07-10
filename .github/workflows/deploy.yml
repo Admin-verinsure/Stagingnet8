@@ -3,7 +3,7 @@ name: Marsh CICD Pipeline
 on:
   push:
     branches:
-      - Stagingnet8
+      - dealengine-rotary-main
   workflow_dispatch:
     inputs:
       environment:
