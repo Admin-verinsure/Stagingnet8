@@ -24,6 +24,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic;
+//using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
 using Document = DealEngine.Domain.Entities.Document;

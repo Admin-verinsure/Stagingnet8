@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>HTML to PDF converter for .NET Framework / .NET Core (WkHtmlToPdf wrapper). Generates pretty-looking PDF by HTML template or web page URL. Supports page header/footer, page numbering, custom fonts, javascript execution.</Description>
@@ -57,6 +57,14 @@ Please contact support@nrecosite.com if you want to get demo key for evaluation/
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net20' ">
     <Reference Include="System" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Quartz" Version="3.14.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="QuestPDF" Version="2025.7.0" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net20'">
     <DefineConstants>$(DefineConstants);LIGHT</DefineConstants>

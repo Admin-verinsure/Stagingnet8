@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
   <PropertyGroup>
 	  <LangVersion>preview</LangVersion>
     <TargetFramework>net8.0</TargetFramework>
@@ -8,10 +8,10 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
-    <PackageReference Include="ClosedXML" Version="0.95.4" />
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
     <PackageReference Include="CoreWCF.Http" Version="1.0.1" />
     <PackageReference Include="CoreWCF.Primitives" Version="1.0.1" />
-    <PackageReference Include="CsvHelper" Version="33.0.1" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
     <PackageReference Include="ElmahCore" Version="1.2.5" />
     <PackageReference Include="ElmahCore.Postgresql" Version="1.2.5" />
     <PackageReference Include="Microsoft.AspNet.Identity.Core" Version="2.2.3" />
@@ -19,13 +19,13 @@
     <PackageReference Include="NHibernate" Version="5.5.2" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.6.1" />
     <PackageReference Include="Npgsql" Version="9.0.2" />
-    <PackageReference Include="NReco.PdfGenerator.LT" Version="1.1.17" />
-    <PackageReference Include="Quartz" Version="3.3.3" />
+    <PackageReference Include="NReco.PdfGenerator.LT" Version="1.2.1" />
+    <PackageReference Include="Quartz" Version="3.14.0" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
     <PackageReference Include="Quartz.NetCore.DependencyInjection" Version="5.0.0" />
-    <PackageReference Include="QuestPDF" Version="2024.12.0" />
+    <PackageReference Include="QuestPDF" Version="2025.7.0" />
     <PackageReference Include="ServiceStack.Client" Version="5.7.0" />
-    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.2" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.6" />
     <PackageReference Include="Unity" Version="5.11.10" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
   </ItemGroup>

@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DealEngine.Infrastructure.FluentNHibernate;
 using System.Linq.Dynamic;
+//using System.Linq.Dynamic.Core;
 using NHibernate.Linq;
 
 namespace DealEngine.WebUI.Controllers

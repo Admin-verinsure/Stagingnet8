@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="Current">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <FileUpgradeFlags>40</FileUpgradeFlags>
@@ -8,5 +8,9 @@
   <ItemGroup>
     <ProjectReference Include="..\DealEngine.Domain.Entities\DealEngine.Domain.Entities.csproj" />
     <ProjectReference Include="..\DealEngine.Infrastructure.FluentNHibernate\DealEngine.Infrastructure.FluentNHibernate.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Quartz" Version="3.14.0" />
+    <PackageReference Include="QuestPDF" Version="2025.7.0" />
   </ItemGroup>
 </Project>

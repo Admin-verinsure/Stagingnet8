@@ -1,6 +1,4 @@
-﻿
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Domain.Entities;
@@ -18,6 +16,7 @@ using DealEngine.WebUI.Helpers;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Linq.Dynamic;
+//using System.Linq.Dynamic.Core;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using DealEngine.Infrastructure.Ldap.Interfaces;
