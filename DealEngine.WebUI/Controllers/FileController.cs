@@ -25,7 +25,7 @@ using System.Net;
 //using FastReport.Export.PdfSimple.PdfObjects;
 using NReco.PdfGenerator;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
-using Microsoft.CodeAnalysis;
+//using Microsoft.CodeAnalysis;
 using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace DealEngine.WebUI.Controllers
@@ -395,7 +395,7 @@ namespace DealEngine.WebUI.Controllers
                                 MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
                                 new DocumentFormat.OpenXml.Wordprocessing.Document(new Body()).Save(mainPart);
                                 HtmlConverter converter = new HtmlConverter(mainPart); // refer to this: https://github.com/onizet/html2openxml/wiki/Tags-Supported
-                                converter.ImageProcessing = ImageProcessing.ManualProvisioning;
+                                //converter.ImageProcessing = ImageProcessing.ManualProvisioning;
                                 Body body = mainPart.Document.Body;
                                 converter.ParseHtml(html);
 

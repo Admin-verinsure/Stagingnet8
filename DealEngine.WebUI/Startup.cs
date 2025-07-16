@@ -125,7 +125,7 @@ namespace DealEngine.WebUI
             //var jobKey = new JobKey("ReportSchedular");.......
             services.AddQuartz(q =>
             {
-                q.UseMicrosoftDependencyInjectionScopedJobFactory();
+                //q.UseMicrosoftDependencyInjectionScopedJobFactory();
 
             });
             //services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));.....

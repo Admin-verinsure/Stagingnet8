@@ -39,7 +39,7 @@ namespace DealEngine.Infrastructure.Email
 					MainDocumentPart mainPart = wordDocument.AddMainDocumentPart ();
 					new Document (new Body ()).Save (mainPart);
                     HtmlConverter converter = new HtmlConverter (mainPart);
-					converter.ImageProcessing = ImageProcessing.AutomaticDownload;
+					//converter.ImageProcessing = ImageProcessing.AutomaticDownload;
 					converter.ParseHtml (html);
 				}
 				byte [] bytes = virtualFile.ToArray ();

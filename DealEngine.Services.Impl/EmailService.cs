@@ -1267,7 +1267,7 @@ namespace DealEngine.Services.Impl
                             MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
                             new DocumentFormat.OpenXml.Wordprocessing.Document(new Body()).Save(mainPart);
                             HtmlConverter converter = new HtmlConverter(mainPart);
-                            converter.ImageProcessing = ImageProcessing.ManualProvisioning;
+                            //converter.ImageProcessing = ImageProcessing.ManualProvisioning;
                             converter.ParseHtml(html);
                         }
                         return new Attachment(new MemoryStream(virtualFile.ToArray()), document.Name + ".docx");

@@ -396,44 +396,51 @@
 
   <ItemGroup>    
     <PackageReference Include="AutoMapper" Version="13.0.1" />    
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />    
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />  
     <PackageReference Include="ClosedXML" Version="0.105.0" />    
     <PackageReference Include="CsvHelper" Version="33.1.0" />    
-    <PackageReference Include="ElmahCore" Version="1.2.5" />    
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />    
+    <PackageReference Include="ElmahCore" Version="2.1.2" />    
+    <PackageReference Include="ElmahCore.Postgresql" Version="2.1.2" />    
+    <PackageReference Include="FluentNHibernate" Version="3.4.1" />    
     <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
-    <PackageReference Include="HtmlToOpenXml.dll" Version="2.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.9" />    
-    <PackageReference Include="FastReport.OpenSource.Data.Postgres" Version="2020.2.0" />    
-    <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2020.2.0" />    
-    <PackageReference Include="FastReport.OpenSource.Web" Version="2020.2.9" />    
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.2.0" />    
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.9" />    
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.9">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="HtmlToOpenXml.dll" Version="3.0.2" />
+    <!-- <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.9" /> -->   
+    <!--<PackageReference Include="FastReport.OpenSource.Data.Postgres" Version="2020.2.0" />-->    
+    <!--<PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2020.2.0" />-->  
+    <!--<PackageReference Include="FastReport.OpenSource.Web" Version="2020.2.9" /> -->   
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />    
+    <!-- <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml" Version="2.2.0" />-->    
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.18" />    
+    <PackageReference Include="Microsoft.CodeAnalysis.VisualBasic" Version="4.14.0" />    
+    <!-- <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.8.0" />-->    
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
+    <!--<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.9" />-->
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.7" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NHibernate" Version="5.5.2" />
+    <PackageReference Include="NHibernate.AspNetCore.Identity" Version="3.1.2" />
     <PackageReference Include="NHibernateProfiler.Appender" Version="6.0.6048" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
-    <PackageReference Include="Npgsql" Version="9.0.2" />
+    <PackageReference Include="NLog" Version="6.0.1" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="6.0.1" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="6.0.1" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="NReco.PdfGenerator.LT" Version="1.2.1" />
     <PackageReference Include="PagedList.Mvc" Version="4.5.0" />
     <PackageReference Include="Quartz" Version="3.14.0" />
-    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.14.0" />
     <PackageReference Include="QuestPDF" Version="2025.7.0" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
-    <PackageReference Include="System.Drawing.Common" Version="8.0.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.7" />
+    <!--<PackageReference Include="System.Drawing.Common" Version="8.0.0" />-->
     <PackageReference Include="System.Linq.Dynamic" Version="1.0.8" />
     <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.6" />
-    <PackageReference Include="System.Text.Json" Version="9.0.1" />
+    <PackageReference Include="System.Text.Json" Version="9.0.7" />
     <PackageReference Include="Unity" Version="5.11.10" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="X.PagedList.Mvc" Version="8.0.7" />
+    <!--<PackageReference Include="X.PagedList.Mvc" Version="8.0.7" />-->
     <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
   </ItemGroup>
 
