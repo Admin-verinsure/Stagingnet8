@@ -36,9 +36,11 @@ namespace DealEngine.Services.Interfaces
         string MarshEglobalEndpoint { get; }
         string MarshEglobalUsername { get; }
         string MarshEglobalPassword { get; }
-
         string oktaServiceURL { get; }
-        //string UploadedDocumentPath { get; }
+        string OdooServerworkingendpoint { get; }
+        string OdooServerDB { get; }
+        string LoginID { get; }
+        string LoginKey { get; }
     }
 }
 

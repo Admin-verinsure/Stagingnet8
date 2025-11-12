@@ -1,6 +1,13 @@
 ﻿@model EditClientsViewModel
 
 <div class="container">
+
+    <form method="post" action="/Agreement/OdooTaskExtension">
+  <button type="submit">Create Odoo Task</button>
+</form>
+
+
+
     <form method="POST" action="~/Services/PostClient" novalidate>
         <div class="card">
             <div class="card-header">

@@ -34,6 +34,7 @@ using FluentNHibernate.Testing.Values;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using EServices.AccountProxy;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
+using System.Globalization;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -542,6 +543,16 @@ namespace DealEngine.WebUI.Controllers
                             count++;
                         }
                     }
+                }
+
+
+                foreach (var Clubactivities in clientProgramme.BaseProgramme.ClubActivities)
+                {
+
+
+
+
+
                 }
                 model.LimitsSelected = OptionItems;
                 // model.DeclarationMessage = sheet.Programme.BaseProgramme.Declaration;
@@ -1063,7 +1074,29 @@ namespace DealEngine.WebUI.Controllers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("CPViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("CTViewModel", StringComparison.CurrentCulture)));
 
+                var activities = clientProgramme?.BaseProgramme?.ClubActivities ?? Enumerable.Empty<DealEngine.Domain.Entities.ClubActivities>();
+
+                // previously saved selections (may be GUIDs or Names from older saves)
+                var selected = new HashSet<string>(model.GLViewModel.DoesProtectChildren ?? new List<string>(),
+                                                   StringComparer.OrdinalIgnoreCase);
+
+                var options = new List<SelectListItem>();
+                foreach (var act in activities.Where(a => a != null))
+                {
+                    var idStr = act.Id.ToString();
+                    var name = act.Name ?? "(unnamed)";
+
+                    options.Add(new SelectListItem
+                    {
+                        Value = idStr,                 // store/post the GUID
+                        Text = name,                  // show the name
+                        Selected = selected.Contains(idStr) || selected.Contains(name)
+                    });
+                }
+
+                model.GLViewModel.DoesProtectChildrenOptions = options;
 
                 if (sheet.Status == "Not Started")
                 {
@@ -1109,75 +1142,253 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-        private async Task BuildModelFromAnswer(InformationViewModel model, IEnumerable<ClientInformationAnswer> Model)
+
+        private static List<string> SplitMulti(string? raw)
         {
-            //build models from answers
-            foreach (var answer in Model)
+            if (string.IsNullOrWhiteSpace(raw)) return new List<string>();
+            raw = raw.Trim();
+
+            // JSON array support: ["1","2","3"]
+            if (raw.StartsWith("[") && raw.EndsWith("]"))
             {
                 try
                 {
-                    var modelName = "";
-                    var split = answer.ItemName.Split('.').ToList();
-                    if (split.FirstOrDefault() == "PMINZEPLViewModel")
-                    {
-                        modelName = "EPLViewModel";
-                    }
-                    else if (split.FirstOrDefault() == "PMINZPIViewModel")
-                    {
-                        modelName = "PIViewModel";
-                    }
-                    else
-                    {
-                        modelName = split.FirstOrDefault();
-                    }
-                    if (split.Count > 1)
-                    {
-                        var modeltype = typeof(InformationViewModel).GetProperty(modelName);
-                        var reflectModel = modeltype.GetValue(model);
-
-                        var property = reflectModel.GetType().GetProperty(split.LastOrDefault());
-                        if (typeof(string) == property.PropertyType)
-                        {
-                            property.SetValue(reflectModel, answer.Value);
-                        }
-                        if (typeof(int) == property.PropertyType)
-                        {
-                            int.TryParse(answer.Value, out int intvalue);
-                            property.SetValue(reflectModel, intvalue);
-                        }
-                        if (typeof(decimal) == property.PropertyType)
-                        {
-                            decimal.TryParse(answer.Value, out decimal decvalue);
-                            property.SetValue(reflectModel, decvalue);
-                        }
-                        if (typeof(IList<SelectListItem>) == property.PropertyType)
-                        {
-                            var propertylist = (IList<SelectListItem>)property.GetValue(reflectModel);
-                            var options = answer.Value.Split(',').ToList();
-                            foreach (var option in options)
-                            {
-                                propertylist.FirstOrDefault(i => i.Value == option).Selected = true;
-                            }
-                            property.SetValue(reflectModel, propertylist);
-                        }
-                        if (typeof(DateTime) == property.PropertyType)
-                        {
-                            var date = DateTime.Parse(answer.Value);
-                            property.SetValue(reflectModel, date);
-                        }
-                        if (typeof(DateTime?) == property.PropertyType)
-                        {
-                            var date = DateTime.Parse(answer.Value);
-                            property.SetValue(reflectModel, date.ToString("dd/MM/yyyy"));
-                        }
-                    }
+                    var arr = System.Text.Json.JsonSerializer.Deserialize<List<string>>(raw);
+                    if (arr != null) return arr.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToList();
                 }
-                catch (Exception ex)
+                catch { /* fall through to CSV */ }
+            }
+
+            // CSV: 1,2,3
+            return raw.Split(',')
+                      .Select(s => s.Trim())
+                      .Where(s => s.Length > 0)
+                      .ToList();
+        }
+
+        private async Task BuildModelFromAnswer(InformationViewModel model, IEnumerable<ClientInformationAnswer> answers)
+        {
+            foreach (var answer in answers)
+            {
+                try
                 {
-                    Console.WriteLine("");
+                    var split = (answer.ItemName ?? "").Split('.').ToList();
+                    if (split.Count == 0) continue;
+
+                    var modelName = split.First();
+                    if (modelName == "PMINZEPLViewModel") modelName = "EPLViewModel";
+                    else if (modelName == "PMINZPIViewModel") modelName = "PIViewModel";
+
+                    if (split.Count <= 1) continue;
+                    var propName = split.Last();
+
+                    var modelProp = typeof(InformationViewModel).GetProperty(modelName);
+                    if (modelProp == null) continue;
+
+                    var reflectModel = modelProp.GetValue(model);
+                    if (reflectModel == null) continue;
+
+                    var prop = reflectModel.GetType().GetProperty(propName);
+                    if (prop == null) continue;
+
+                    var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+
+                    // --- scalars ---
+                    if (targetType == typeof(string))
+                    {
+                        prop.SetValue(reflectModel, answer.Value);
+                        continue;
+                    }
+
+                    if (targetType == typeof(int))
+                    {
+                        if (int.TryParse(answer.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
+                            prop.SetValue(reflectModel, i);
+                        continue;
+                    }
+
+                    if (targetType == typeof(decimal))
+                    {
+                        if (decimal.TryParse(answer.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d))
+                            prop.SetValue(reflectModel, d);
+                        continue;
+                    }
+
+                    if (targetType == typeof(bool))
+                    {
+                        if (bool.TryParse(answer.Value, out var b)) prop.SetValue(reflectModel, b);
+                        else if (int.TryParse(answer.Value, out var bi)) prop.SetValue(reflectModel, bi != 0);
+                        continue;
+                    }
+
+                    if (targetType == typeof(DateTime))
+                    {
+                        if (DateTime.TryParse(answer.Value, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out var dt))
+                            prop.SetValue(reflectModel, dt);
+                        continue;
+                    }
+
+                    if (prop.PropertyType == typeof(DateTime?))
+                    {
+                        if (DateTime.TryParse(answer.Value, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out var dt))
+                            prop.SetValue(reflectModel, (DateTime?)dt);
+                        else
+                            prop.SetValue(reflectModel, (DateTime?)null);
+                        continue;
+                    }
+
+                    // --- collections: string/int lists & arrays ---
+                    if (prop.PropertyType == typeof(List<string>) || prop.PropertyType == typeof(IList<string>) || prop.PropertyType == typeof(string[]))
+                    {
+                        var list = SplitMulti(answer.Value);
+                        if (prop.PropertyType == typeof(string[]))
+                            prop.SetValue(reflectModel, list.ToArray());
+                        else
+                            prop.SetValue(reflectModel, list);
+
+                        // Also mark sibling "...Options" (IList<SelectListItem>) as selected if present
+                        var optionsProp = reflectModel.GetType().GetProperty(propName + "Options");
+                        if (optionsProp != null && typeof(IList<SelectListItem>).IsAssignableFrom(optionsProp.PropertyType))
+                        {
+                            var opts = (IList<SelectListItem>)(optionsProp.GetValue(reflectModel) ?? new List<SelectListItem>());
+                            var set = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
+                            foreach (var o in opts) o.Selected = set.Contains(o.Value?.Trim() ?? "");
+                            optionsProp.SetValue(reflectModel, opts);
+                        }
+                        continue;
+                    }
+
+                    if (prop.PropertyType == typeof(List<int>) || prop.PropertyType == typeof(int[]))
+                    {
+                        var list = SplitMulti(answer.Value)
+                                   .Select(s => int.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var v) ? (int?)v : null)
+                                   .Where(v => v.HasValue).Select(v => v!.Value).ToList();
+
+                        if (prop.PropertyType == typeof(int[]))
+                            prop.SetValue(reflectModel, list.ToArray());
+                        else
+                            prop.SetValue(reflectModel, list);
+                        continue;
+                    }
+
+                    // --- select option lists (mark selected) ---
+                    if (typeof(IList<SelectListItem>).IsAssignableFrom(prop.PropertyType))
+                    {
+                        var list = (IList<SelectListItem>)(prop.GetValue(reflectModel) ?? new List<SelectListItem>());
+                        var selected = SplitMulti(answer.Value);
+                        var set = new HashSet<string>(selected, StringComparer.OrdinalIgnoreCase);
+                        foreach (var o in list) o.Selected = set.Contains(o.Value?.Trim() ?? "");
+                        prop.SetValue(reflectModel, list);
+                        continue;
+                    }
+
+                    // --- enums (optional) ---
+                    if (targetType.IsEnum)
+                    {
+                        try
+                        {
+                            // Allows either name or numeric value
+                            var enumVal = Enum.Parse(targetType, answer.Value, ignoreCase: true);
+                            prop.SetValue(reflectModel, enumVal);
+                        }
+                        catch { /* ignore parse errors */ }
+                        continue;
+                    }
+
+                    // Add more type handlers here as needed...
+                }
+                catch
+                {
+                    // log if you want; keeping silent like your original
                 }
             }
         }
+        //private async Task BuildModelFromAnswer(InformationViewModel model, IEnumerable<ClientInformationAnswer> Model)
+        //{
+        //    //build models from answers
+        //    foreach (var answer in Model)
+        //    {
+        //        try
+        //        {
+        //            var split = answer.ItemName.Split('.').ToList();
+        //            if (split.Count == 0) continue;
+
+        //            var modelName = split.First();
+        //            if (modelName == "PMINZEPLViewModel") modelName = "EPLViewModel";
+        //            else if (modelName == "PMINZPIViewModel") modelName = "PIViewModel";
+        //            else{
+        //                modelName = split.FirstOrDefault();
+        //            }
+        //            if (split.Count > 1)
+        //            {
+        //                var modeltype = typeof(InformationViewModel).GetProperty(modelName);
+        //                var reflectModel = modeltype.GetValue(model);
+
+        //                var property = reflectModel.GetType().GetProperty(split.LastOrDefault());
+        //                if (typeof(string) == property.PropertyType)
+        //                {
+        //                    property.SetValue(reflectModel, answer.Value);
+        //                }
+        //                if (typeof(int) == property.PropertyType)
+        //                {
+        //                    int.TryParse(answer.Value, out int intvalue);
+        //                    property.SetValue(reflectModel, intvalue);
+        //                }
+        //                if (typeof(decimal) == property.PropertyType)
+        //                {
+        //                    decimal.TryParse(answer.Value, out decimal decvalue);
+        //                    property.SetValue(reflectModel, decvalue);
+        //                }
+        //                if (typeof(IList<SelectListItem>) == property.PropertyType)
+        //                {
+        //                    var propertylist = (IList<SelectListItem>)property.GetValue(reflectModel);
+        //                    var options = answer.Value.Split(',').ToList();
+        //                    foreach (var option in options)
+        //                    {
+        //                        propertylist.FirstOrDefault(i => i.Value == option).Selected = true;
+        //                    }
+        //                    property.SetValue(reflectModel, propertylist);
+        //                }
+        //                if (typeof(DateTime) == property.PropertyType)
+        //                {
+        //                    var date = DateTime.Parse(answer.Value);
+        //                    property.SetValue(reflectModel, date);
+        //                }
+        //                if (typeof(DateTime?) == property.PropertyType)
+        //                {
+        //                    var date = DateTime.Parse(answer.Value);
+        //                    property.SetValue(reflectModel, date.ToString("dd/MM/yyyy"));
+        //                }
+        //                // --- collections: string/int lists & arrays ---
+        //                if (property.PropertyType == typeof(List<string>) || property.PropertyType == typeof(IList<string>) || property.PropertyType == typeof(string[]))
+        //                {
+        //                    var list = SplitMulti(answer.Value);
+        //                    if (property.PropertyType == typeof(string[]))
+        //                        property.SetValue(reflectModel, list.ToArray());
+        //                    else
+        //                        property.SetValue(reflectModel, list);
+
+        //                    // Also mark sibling "...Options" (IList<SelectListItem>) as selected if present
+        //                    var optionsProp = reflectModel.GetType().GetProperty(propName + "Options");
+        //                    if (optionsProp != null && typeof(IList<SelectListItem>).IsAssignableFrom(optionsProp.PropertyType))
+        //                    {
+        //                        var opts = (IList<SelectListItem>)(optionsProp.GetValue(reflectModel) ?? new List<SelectListItem>());
+        //                        var set = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
+        //                        foreach (var o in opts) o.Selected = set.Contains(o.Value?.Trim() ?? "");
+        //                        optionsProp.SetValue(reflectModel, opts);
+        //                    }
+        //                    continue;
+        //                }
+
+
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Console.WriteLine("");
+        //        }
+        //    }
+        //}
 
         private async Task GetTrustDataModel(InformationViewModel model, ClientInformationSheet sheet)
         {

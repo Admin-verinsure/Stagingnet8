@@ -27,6 +27,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Document = DealEngine.Domain.Entities.Document;
 using SystemDocument = DealEngine.Domain.Entities.Document;
+using DealEngine.WebUI.ServiceReference;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -70,6 +71,7 @@ namespace DealEngine.WebUI.Controllers
         //convert to service?
         IMapperSession<Rule> _ruleRepository;
         IMapperSession<SystemDocument> _documentRepository;
+        IOdooTaskGateway _odooTaskGateway;
         #endregion
 
         public AgreementController(
@@ -107,7 +109,8 @@ namespace DealEngine.WebUI.Controllers
             IEGlobalSubmissionService eGlobalSubmissionService,
             IClientAgreementTermCanService clientAgreementTermCanService,
             IClientAgreementBVTermCanService clientAgreementBVTermCanService,
-            IUpdateTypeService updateTypeService
+            IUpdateTypeService updateTypeService,
+            IOdooTaskGateway odooTaskGateway
             )
             : base(userRepository)
         {
@@ -145,6 +148,8 @@ namespace DealEngine.WebUI.Controllers
             _clientAgreementBVTermCanService = clientAgreementBVTermCanService;
             _serializationService = serializerationService;
             _updateTypeService = updateTypeService;
+            _odooTaskGateway = odooTaskGateway;
+
 
             ViewBag.Title = "";
         }
@@ -2330,6 +2335,35 @@ namespace DealEngine.WebUI.Controllers
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> OdooTaskExtension()
+        {
+            // ⚠️ Keep the API key on the server (env var/appsettings), never in the browser.
+            //  var key = Environment.GetEnvironmentVariable("ODOO_KEY") ?? "<<<PUT_KEY_HERE_FOR_LOCAL_TESTS>>>";
+
+            using var odoo = new OdooTaskExtension(
+               api: _appSettingService.OdooServerworkingendpoint,   // your working endpoint
+               db : _appSettingService.OdooServerDB,
+               login : _appSettingService.LoginID,
+               key:  _appSettingService.LoginKey
+            );
+            //          using var odoo = new OdooTaskExtension(
+            //    api: "https://not4profit.online/jsonrpc",   // your working endpoint
+            //    db: "not4profitodoo18",
+            //    login: "ashuchauhan@verinsure.online",
+            //    key: key
+            //);
+
+            await odoo.LoginAsync();
+
+            var taskId = await odoo.CreateTaskAsync(
+                title: "Test from button",
+                projectId: 34,                                // from your URL
+                notes: $"Created at {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC"
+            );
+
+            return Ok(new { odooTaskId = taskId });
         }
 
 

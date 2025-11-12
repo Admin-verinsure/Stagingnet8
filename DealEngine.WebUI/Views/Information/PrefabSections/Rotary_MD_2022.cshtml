@@ -2,45 +2,16 @@
 
 <form id="TAViewModel" class="is-valid" data-accordianId="Cover Trust Assets">
 
-    <label class="label">
-        <strong>
-            Your Requirements for Extra Covers:
-            If you want a quote for covers for please select yes below:
-        </strong>
-    </label>
-    <br />
-    <br />
-
-    <div class="form-group">
-        <div class="row">
-
-            <div class="col-9">
-                <label class="label required">
-                    Do you want cover or your Club or Club Trust assets (not real estate) ?
-                </label>
-            </div>
-            <div class="col-3">
-                <select id="HasClubTrustAssets" name="TAViewModel.HasClubTrustAssets" class="form-select" onchange="OnChange(this.id, this.name)" required>
-                    @foreach (var option in Model.TAViewModel.HasClubTrustAssets)
-                    {
-                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                    }
-                </select>
-            </div>
-        </div>
+    <div class="mt-2 mb-3">
+        <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#trustAdvisoryPanel" aria-expanded="false" aria-controls="trustAdvisoryPanel">
+            <h5 class="m-0"><strong>Material Damage Advisory</strong></h5>
+        </button>
     </div>
 
-    
-    <div id="TAViewModel.HasClubTrustAssets" hidden>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-11">
-                    <label for="Scheduledassets" class="label required">
-                        Your quote request has been referred to the broker who will provide the relevant forms
-                    </label>
-                </div>
-               
-            </div>
+    <div class="collapse" id="trustAdvisoryPanel">
+        <div class="card card-body">
+            <!-- advisory text ... -->
+            This cover is automatically provided..
         </div>
     </div>
 
@@ -49,7 +20,8 @@
         <div class="row">
             <div class="col-9">
                 <label class="label required">
-                    Is any one Club or trust asset worth more than $15000?
+
+                    Do you have any individual asset valued at more than $5000?
 
                 </label>
             </div>
@@ -70,7 +42,7 @@
             <div class="row">
                 <div class="col-9">
                     <label for="Scheduledassets" class="label required">
-                        Scheduled assets over $15000:
+                        Scheduled assets over $5000:
                     </label>
                 </div>
                 <div class="col-10">

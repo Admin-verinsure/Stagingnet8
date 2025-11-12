@@ -1,0 +1,99 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="MLViewModel" class="is-valid" data-accordianId="Club Trust ML">
+
+    <!-- Panel Header -->
+    <div class="mb-3">
+        <h5><strong>Insurance covers for other risks</strong></h5>
+    </div>
+
+    <!-- Button under label -->
+    <div class="mt-2 mb-3">
+        <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#trustAdvisoryPanel" aria-expanded="false" aria-controls="trustAdvisoryPanel">
+            <h5><strong>Insurance covers for other risks advisory</strong></h5>
+        </button>
+    </div>
+
+    <!-- Collapsible panel -->
+    <div class="collapse" id="trustAdvisoryPanel">
+        <div class="card card-body">
+            Management liability combines covers for risks not included in the public liability policy.
+            Examples are privacy or health and safety breaches, cyber risks, loss of money, officers’ mistakes and more.
+            The questions below are asked to ensure that those risks can be managed going forward.
+        </div>
+    </div>
+
+    <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Our District, Club or Company website is on:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="MLViewModelWebsite" name="MLViewModel.MLViewModelWebsite" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.MLViewModelWebsite)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+     <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Financial details are kept using:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="MLViewModelAccounting" name="MLViewModel.MLViewModelAccounting" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.MLViewModelAccounting)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Other records are kept on:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="MLViewModelStorage" name="MLViewModel.MLViewModelStorage" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.MLViewModelStorage)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Our District, Club or Company financials are:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="MLViewModelCompanyFinancial" name="MLViewModel.MLViewModelCompanyFinancial" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.MLViewModelCompanyFinancial)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+</form>

@@ -1,0 +1,121 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="GLViewModel" class="is-valid" data-accordianId="Club Trust ML">
+    
+
+    <div class="mt-2 mb-3">
+        <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#trustAdvisoryPanel" aria-expanded="false" aria-controls="trustAdvisoryPanel">
+            <h5 class="m-0"><strong>Public or General Liability advisory</strong></h5>
+        </button>
+    </div>
+
+    <div class="collapse" id="trustAdvisoryPanel">
+        <div class="card card-body">
+            <!-- advisory text ... -->
+            This cover is required to ensure that your activities are insured for third party risks...
+        </div>
+    </div>
+
+    <!-- Single select: Yes/No -->
+    <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Does your District/Club/Company or Program involve care and protection of children?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="DoesProtectChildrenYesNo"
+                        name="GLViewModel.DoesProtectChildrenOptionValue"
+                        class="form-select"
+                        onchange="OnChange(this.id, this.name)"
+                        required>
+                    @foreach (var option in Model.GLViewModel.DoesProtectChildrenOption)
+                    {
+                        <option selected="@(option.Value == Model.GLViewModel.DoesProtectChildrenOptionValue)"
+                                value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multi select: Activities (hidden until Yes) -->
+  <!-- Hidden until Yes -->
+<div id="GLViewModel.DoesProtectChildrenOptionValue" hidden>
+  <div class="row">
+
+  <div class="col-9">
+    <label class="label required">Please select all activities from the drop down list.</label>
+  </div>
+
+  <div class="col-3">
+    <div class="dropdown w-100" id="ChildrenActivitiesDropdown" data-bs-auto-close="outside">
+      <button class="btn btn-outline-secondary w-100 dropdown-toggle"
+              type="button"
+              id="ChildrenActivitiesToggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+        Select activities
+      </button>
+
+      <div class="dropdown-menu w-100 p-2" aria-labelledby="ChildrenActivitiesToggle" style="max-height: 260px; overflow:auto;">
+        @{
+          var idx = 0;
+          var selected = Model.GLViewModel.DoesProtectChildren ?? new List<string>();
+        }
+        @foreach (var option in Model.GLViewModel.DoesProtectChildrenOptions)
+        {
+            var id = $"act_{idx++}";
+            var isChecked = selected.Contains(option.Value);
+            <div class="form-check mb-1">
+              <input class="form-check-input activity-check"
+                     type="checkbox"
+                     id="@id"
+                     name="GLViewModel.DoesProtectChildren"     
+                     value="@option.Value"
+                     @(isChecked ? "checked=\"checked\"" : "") />
+              <label class="form-check-label" for="@id">@option.Text</label>
+            </div>
+        }
+
+      </div>
+    </div>
+  </div>
+  
+ </div>
+</div>
+
+
+    <!-- Single select: Police checked -->
+    <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Do you ensure that all your members or volunteers are Police checked if they are or are likely to be in sole care of a child regardless of the amount of time that the child might be in sole care?
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="VolunteerPoliceChecked"
+                        name="GLViewModel.DoesvolunteerpolicecheckedValue"
+                        class="form-select"
+                        data-rule="Reverse"
+                        onchange="OnChange(this.id, this.name)"
+                        required>
+                    @foreach (var option in Model.GLViewModel.Doesvolunteerpolicechecked)
+                    {
+                        <option selected="@(option.Value == Model.GLViewModel.DoesvolunteerpolicecheckedValue)"
+                                value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="GLViewModel.DoesvolunteerpolicecheckedValue" hidden>
+        <label class="label fw-bold text-danger">
+            Your Youth Protection Officer will contact you to assist you with how to do this.
+        </label>
+    </div>
+
+</form>

@@ -1,0 +1,50 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="MLViewModel" class="is-valid" data-accordianId="Club Trust Runout ML">
+    
+
+    <div class="mt-2 mb-3">
+        <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#trustAdvisoryPanel" aria-expanded="false" aria-controls="trustAdvisoryPanel">
+            <h5 class="m-0"><strong>Ceasing operations and de-registering advisory</strong></h5>
+        </button>
+    </div>
+
+    <div class="collapse" id="trustAdvisoryPanel">
+        <div class="card card-body">
+            <!-- advisory text ... -->
+            <b>Advisory runout cover for claims on General/Public Liability and any Management Liability </b>
+            Runout cover is advised if your Club or District is closing down and NOT amalgamating your District or Club with another District or Club or re-settling a trust.  
+            If continuing the insurance can be provided under the other entity provided that it is already in place.  In either case there will need to be a an agreement that 
+            records the amalgamated entity assumes responsibility for the prior activities of the District 
+            or Club or in the case of a trust the re-settled trust indemnifies the prior trustees against any liabilities that may arise from the ‘old’ trusts previous activities.
+        </div>
+    </div>
+
+
+    <!-- Single select: Police checked -->
+    <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-6">
+                <label class="label required">
+                    Do you expect your Club or club trust(s) to cease operations,close or be de-registered or be re-settled in 2026?
+                </label>
+            </div>
+            <div class="col-3">
+
+            <select id="HasRunoutOptions" name="MLViewModel.HasRunoutOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                @foreach (var option in Model.MLViewModel.HasRunoutOptions)
+                {
+                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                }
+            </select>
+           </div>
+        </div>
+    </div>
+
+    <div id="MLViewModel.HasRunoutOptions"  hidden>
+        <label class="label fw-bold text-danger">
+                Thank you – a member of the insurance team will contact you to advise on what is called RUNOUT cover and whether that is needed.
+        </label>
+    </div>
+
+</form>

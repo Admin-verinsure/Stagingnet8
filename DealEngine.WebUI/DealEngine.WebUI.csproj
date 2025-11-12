@@ -384,6 +384,14 @@
 
   <ItemGroup>
     <Content Update="nlog.config" CopyToOutputDirectory="PreserveNewest" />
+    <Content Update="Views\Information\PrefabSections\Rotary_Runout_PL_ML.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Information\PrefabSections\Rotary_TrustCover.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="wwwroot\ckeditor\ckeditor5-techcertain-email\build\ckeditor.css">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
