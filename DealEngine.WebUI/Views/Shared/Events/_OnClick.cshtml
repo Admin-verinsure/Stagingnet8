@@ -1253,6 +1253,29 @@
         }
     };
 
+
+      function deleteEvent(eventid) {
+         debugger;
+          if (eventid != "") {
+
+              $.ajax({
+              url: '@Url.Action("DeleteEvents", "information")',
+             type: "Post",
+                    data: { Eventid: eventid },
+             async: true
+             })
+                  .done(function (data) {
+                      debugger;
+                      if (data === true) {
+                          location.reload();
+                           $("#eventstable").trigger("click");
+                    }
+                });
+
+         }
+     };
+
+
    function deletedoc(docid,docname) {
         debugger;
        if (docid != "") {
@@ -1296,6 +1319,75 @@
 
 
     }
+
+     function AddNewEvent() {
+        // Get next row index (1-based to match server-side i)
+        var rowcounter = document.getElementById("eventstable").rows.length + 1;
+
+        var newRow = $("<tr>");
+        var cols = '';
+
+        // Hidden Id (empty for new row)
+        cols += '<td hidden>' +
+                    '<input class="form-control rounded-0" type="hidden" ' +
+                           'name="EventsInfoId ' + rowcounter + '" value=""/>' +
+                '</td>';
+
+        // Month Planned (text)
+        cols += '<td>' +
+                    '<input class="form-control rounded-0" type="text" ' +
+                           'name="MonthPlanned ' + rowcounter + '" ' +
+                           'placeholder="Month Planned" />' +
+                '</td>';
+
+        // Event Name (text)
+        cols += '<td>' +
+                    '<input class="form-control rounded-0" type="text" ' +
+                           'name="EventName ' + rowcounter + '" ' +
+                           'placeholder="Event Name" />' +
+                '</td>';
+
+        // Location (text)
+        cols += '<td>' +
+                    '<input class="form-control rounded-0" type="text" ' +
+                           'name="Location ' + rowcounter + '" ' +
+                           'placeholder="Location" />' +
+                '</td>';
+
+        // Health & Safety Plan dropdown (Yes/No)
+        cols += '<td>' +
+                    '<select name="HealthSafetyPlan ' + rowcounter + '" class="form-select" required>' +
+                        '<option value="">-- Select --</option>' +
+                        '<option value="Yes">Yes</option>' +
+                        '<option value="No">No</option>' +
+                    '</select>' +
+                '</td>';
+
+        // Event Type dropdown
+        cols += '<td>' +
+                    '<select name="EventType ' + rowcounter + '" class="form-select" required>' +
+                        '<option value="">-- Select Event Type --</option>' +
+                        '<option value="Fundraiser">Fundraiser</option>' +
+                        '<option value="Adventure">Adventure</option>' +
+                        '<option value="Sports">Sports</option>' +
+                        '<option value="Stall">Stall</option>' +
+                        '<option value="Display">Display</option>' +
+                        '<option value="Other">Other</option>' +
+                    '</select>' +
+                '</td>';
+
+        // Delete button
+        cols += '<td>' +
+                    '<button class="btn btn-danger rounded-0" type="button" ' +
+                            'onclick="$(this).closest(\'tr\').remove();" id="deleteRow">' +
+                        '<i class="fa fa-trash"></i>' +
+                    '</button>' +
+                '</td>';
+
+        newRow.append(cols);
+        $("#eventstable").append(newRow);
+    }
+
 
     function AddNewRow() {
         //event.preventDefault();

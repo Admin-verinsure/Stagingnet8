@@ -1,5 +1,7 @@
-﻿using DealEngine.Services.Interfaces;
-using DealEngine.Domain.Entities;
+﻿using DealEngine.Domain.Entities;
+using DealEngine.Services.Interfaces;
+using DocumentFormat.OpenXml.Drawing.Diagrams;
+using DocumentFormat.OpenXml.Spreadsheet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +58,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
 
             bool bolworkoutsidenz = false;
+            bool assetover5000 = false;
 
             if (agreement.ClientInformationSheet.RevenueData != null)
             {
@@ -67,6 +70,19 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     }
                 }
             }
+
+            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "TAViewModel.HasClubTrustAssetMore").Any())
+            {
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "TAViewModel.HasClubTrustAssetMore").First().Value == "1")
+                {
+                    assetover5000 = true;
+                }
+            }
+
+
+
+
+            //  if(agreement.ClientInformationSheet.Product)
 
             bool isclubtrustselect = false;
             ////ClientInformationAnswer TransitionalLicenseNum = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.TransitionalLicenseNum", clientInformationSheetID);
@@ -168,6 +184,12 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Referral points per agreement
             //Operates Outside of NZ
             uwrfoperatesoutsideofnz(underwritingUser, agreement, bolworkoutsidenz);
+            if (assetover5000)
+            {
+                UWTask(underwritingUser, agreement, assetover5000);
+
+            }
+
 
             //Update agreement status
             if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
@@ -319,6 +341,39 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     agreement.ClientAgreementReferrals.FirstOrDefault(cref => cref.ActionName == "uwrfoperatesoutsideofnz" && cref.DateDeleted == null).Status = "";
                 }
             }
+        }
+
+
+
+        void UWTask(User underwritingUser, ClientAgreement agreement, bool assetover5000)
+        {
+            if (assetover5000)
+            {
+                bool alreadyExists = agreement.Product.OdooTaskSpecs
+                    .Any(t => t.Title == "Case trade MD cover over $5000");
+
+                if (!alreadyExists)
+                {
+                    var odooTaskSpec = new OdooTaskSpec(
+                        underwritingUser,
+                        "Case trade MD cover over $5000",
+                        44,
+                        agreement.Product,
+                        notes: "Case trade MD cover over $5000"
+                    );
+
+                    agreement.Product.OdooTaskSpecs.Add(odooTaskSpec);
+                }
+            }
+            else
+            {
+                foreach (var task in agreement.Product.OdooTaskSpecs)
+                {
+                    task.DateDeleted = DateTime.UtcNow;   // or whatever your system uses
+                    task.DeletedBy = underwritingUser;    // optional
+                }
+            }
+
         }
 
 

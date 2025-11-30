@@ -1,6 +1,6 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
-<form id="GLViewModel" class="is-valid" data-accordianId="Club Trust ML">
+<form id="GLViewModel" class="is-valid" data-accordianId="General Liability">
     
 
     <div class="mt-2 mb-3">
@@ -12,7 +12,9 @@
     <div class="collapse" id="trustAdvisoryPanel">
         <div class="card card-body">
             <!-- advisory text ... -->
-            This cover is required to ensure that your activities are insured for third party risks...
+            This cover is required to ensure that your activities are insured for third party risks.
+            Examples are fund raisers, activities in the community.  Events involving public places and special risk such as sporting events, stallholders, public attractions such as amusement devices must be scheduled as specific Rotary and insurance issues need to be covered.  Scheduling events is done on the next panel.  The questions on this panel relate to the risk involving care and protection of children in our programs.
+            Note: this cover does not cover motor vehicles
         </div>
     </div>
 
@@ -69,13 +71,15 @@
             var id = $"act_{idx++}";
             var isChecked = selected.Contains(option.Value);
             <div class="form-check mb-1">
-              <input class="form-check-input activity-check"
-                     type="checkbox"
-                     id="@id"
-                     name="GLViewModel.DoesProtectChildren"     
-                     value="@option.Value"
-                     @(isChecked ? "checked=\"checked\"" : "") />
-              <label class="form-check-label" for="@id">@option.Text</label>
+            <input class="form-check-input activity-check"
+                  type="checkbox"
+                  id="@id"
+                  name="GLViewModel.DoesProtectChildren"
+                  value="@option.Value"
+                  @(isChecked ? "checked=\"checked\"" : "")
+                  onchange="updateChildrenActivitiesLabel()" />
+
+            <label class="form-check-label" for="@id">@option.Text</label>
             </div>
         }
 
@@ -119,3 +123,6 @@
     </div>
 
 </form>
+
+
+

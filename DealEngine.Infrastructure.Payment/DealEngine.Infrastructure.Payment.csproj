@@ -2,7 +2,7 @@
   <PropertyGroup>
 	  <LangVersion>preview</LangVersion>
     <TargetFramework>net8.0</TargetFramework>
-    <FileUpgradeFlags>40</FileUpgradeFlags>
+	  <FileUpgradeFlags>40</FileUpgradeFlags>
     <UpgradeBackupLocation>C:\inetpub\wwwroot\DealEngine2019core\Backup\DealEngine.Infrastructure.Payment\</UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>

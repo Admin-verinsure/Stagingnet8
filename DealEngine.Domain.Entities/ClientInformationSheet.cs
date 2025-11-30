@@ -54,6 +54,8 @@ namespace DealEngine.Domain.Entities
         public virtual IList<AuditLog> ClientInformationSheetAuditLogs { get; set; }
         public virtual User DeclaredBy { get; set; }
         public virtual DateTime DeclaredDate { get; set; }
+        public virtual EventsInfo eventsInfo { get; set; }
+
 
         public virtual void declared(User user)
         {

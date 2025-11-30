@@ -256,5 +256,36 @@ namespace DealEngine.Services.Impl
                 return _configuration.GetValue<string>("oktaServiceURL");
             }
         }
+
+        public string OdooServerworkingendpoint
+        {
+            get
+            {
+                return _configuration.GetValue<string>("OdooServerworkingendpoint");
+            }
+        }
+        public string OdooServerDB
+        {
+            get
+            {
+                return _configuration.GetValue<string>("OdooServerDB");
+            }
+        }
+        public string LoginID
+        {
+            get
+            {
+                return _configuration.GetValue<string>("LoginID");
+            }
+        }
+        public string LoginKey
+        {
+            get
+            {
+                return _configuration.GetValue<string>("LoginKey");
+            }
+        }
+
+       
     }
 }

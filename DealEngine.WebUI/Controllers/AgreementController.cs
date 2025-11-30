@@ -2336,38 +2336,129 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
-        [HttpPost]
-        public async Task<IActionResult> OdooTaskExtension()
-        {
-            // ⚠️ Keep the API key on the server (env var/appsettings), never in the browser.
-            //  var key = Environment.GetEnvironmentVariable("ODOO_KEY") ?? "<<<PUT_KEY_HERE_FOR_LOCAL_TESTS>>>";
 
-            using var odoo = new OdooTaskExtension(
-               api: _appSettingService.OdooServerworkingendpoint,   // your working endpoint
-               db : _appSettingService.OdooServerDB,
-               login : _appSettingService.LoginID,
-               key:  _appSettingService.LoginKey
-            );
-            //          using var odoo = new OdooTaskExtension(
-            //    api: "https://not4profit.online/jsonrpc",   // your working endpoint
-            //    db: "not4profitodoo18",
-            //    login: "ashuchauhan@verinsure.online",
-            //    key: key
-            //);
+// using DealEngine.Services.Interfaces;                 // IOdooTaskGateway
+// using DealEngine.Integrations.Odoo.Models;           // OdooTaskSpec (wherever you put it)
 
-            await odoo.LoginAsync();
+public async Task<IActionResult> OdooTaskExtension()
+    {
+            User user = await CurrentUser();
 
-            var taskId = await odoo.CreateTaskAsync(
-                title: "Test from button",
-                projectId: 34,                                // from your URL
-                notes: $"Created at {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC"
-            );
+             await _odooTaskGateway.OdooGatewayconnection(
+            _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
+            _appSettingService.OdooServerDB,              // e.g. not4profitodoo18
+            _appSettingService.LoginID,                   // e.g. ashuchauhan@verinsure.online
+            _appSettingService.LoginKey                   // API key
+        );
 
-            return Ok(new { odooTaskId = taskId });
-        }
+        // 1) single create
+        var singleId = await _odooTaskGateway.CreateTaskAsync(
+            title: $"Test from button {DateTime.UtcNow:HH:mm:ss}",
+            projectId: 34,
+            notes: $"UTC {DateTime.UtcNow:O}"
+        );
+
+        // 2) bulk create (one JSON-RPC call)
+        var now = DateTime.UtcNow;
+            //    var bulkIds = await _odooTaskGateway.CreateTasksAsync(new[]
+            //    {
+            //    new OdooTaskSpec(user,$"POC A {now:HH:mm:ss}", 43, notes: "bulk #1"),
+            //    new OdooTaskSpec(user,$"POC B {now:HH:mm:ss}", 43, notes: "bulk #2"),
+            //    new OdooTaskSpec(user,$"POC C {now:HH:mm:ss}", 43, notes: "bulk #3"),
+            //});
+
+            //return Ok(new
+            //{
+            //    singleCreatedId = singleId,
+            //    bulkCreatedIds = bulkIds,
+            //    bulkCount = bulkIds.Length
+            //});
+            return Ok();
+    }
 
 
-        [HttpGet]
+
+
+    //[HttpPost]
+    //public async Task<IActionResult> OdooTaskExtension()
+    //{
+    //    // ⚠️ Keep the API key on the server (env var/appsettings), never in the browser.
+    //    //  var key = Environment.GetEnvironmentVariable("ODOO_KEY") ?? "<<<PUT_KEY_HERE_FOR_LOCAL_TESTS>>>";
+
+    //    using var odoo = new OdooTaskExtension(
+    //       api: _appSettingService.OdooServerworkingendpoint,   // your working endpoint
+    //       db : _appSettingService.OdooServerDB,
+    //       login : _appSettingService.LoginID,
+    //       key:  _appSettingService.LoginKey
+    //    );
+    //    //          using var odoo = new OdooTaskExtension(
+    //    //    api: "https://not4profit.online/jsonrpc",   // your working endpoint
+    //    //    db: "not4profitodoo18",
+    //    //    login: "ashuchauhan@verinsure.online",
+    //    //    key: key
+    //    //);
+
+    //    await odoo.LoginAsync();
+
+    //    var taskId = await odoo.CreateTaskAsync(
+    //        title: "Test from button",
+    //        projectId: 34,                                // from your URL
+    //        notes: $"Created at {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC"
+    //    );
+
+    //    return Ok(new { odooTaskId = taskId });
+    //}
+
+    //    public async Task<IActionResult> OdooTaskExtension()
+    //    {
+    //        await _odooTaskGateway.OdooGatewayconnection(
+    //            _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
+    //            _appSettingService.OdooServerDB,              // e.g. not4profitodoo18
+    //            _appSettingService.LoginID,                   // e.g. ashuchauhan@verinsure.online
+    //            _appSettingService.LoginKey                   // API key
+    //        );
+
+    //        var taskId = await _odooTaskGateway.CreateTaskAsync(
+    //            "Test from button", 34, $"UTC {DateTime.UtcNow:O}"
+    //        );
+    //        await _odooTaskGateway.CreateTasksAsync(new[]
+    //{
+    //    new OdooTaskSpec($"POC A {DateTime.UtcNow:HH:mm:ss}", 34, Notes: "bulk #1"),
+    //    new OdooTaskSpec($"POC B {DateTime.UtcNow:HH:mm:ss}", 34, Notes: "bulk #2", Deadline: DateTime.UtcNow.AddDays(2)),
+    //    new OdooTaskSpec($"POC C {DateTime.UtcNow:HH:mm:ss}", 34, Notes: "bulk #3")
+    //});
+
+
+
+
+
+    //    return Ok(new { odooTaskId = taskId });
+    //}
+
+
+    //public async Task<IActionResult> OdooTaskExtension()
+    //{
+    //    using var odoo = new OdooTaskExtension(
+    //        api: _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
+    //        db: _appSettingService.OdooServerDB,
+    //        login: _appSettingService.LoginID,
+    //        key: _appSettingService.LoginKey
+    //    );
+
+    //    await odoo.LoginAsync();
+
+    //    var now = DateTime.UtcNow;
+
+    //    var id = await odoo.CreateTaskAsync("Test from button", projectId: 34, notes: "hello");
+    //    var ids = await odoo.CreateTasksAsync(new[] {
+    //    new OdooTaskSpec("Bulk A", 34),
+    //    new OdooTaskSpec("Bulk B", 34, Notes: "with deadline", Deadline: DateTime.UtcNow.AddDays(2))});
+    //    return Ok(new { created = ids });
+
+    //}
+
+
+    [HttpGet]
         public async Task<IActionResult> ViewAgreementDeclarationReport(String id)
         {
             var models = new BaseListViewModel<ViewAgreementViewModel>();

@@ -13,8 +13,10 @@ namespace DealEngine.Services.Interfaces
         Task<int> CreateTaskAsync(string title, int projectId, string? notes = null, DateTime? deadline = null, int? assigneeUserId = null,
                                IEnumerable<int>? tagIds = null);
         Task<int?> GetUserIdByEmailAsync(string email);
+        Task<int[]> CreateTasksAsync(IEnumerable<OdooTaskSpec> tasks);
 
-   
+
+
 
     }
 }

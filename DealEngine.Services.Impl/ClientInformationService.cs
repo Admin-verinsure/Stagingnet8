@@ -105,11 +105,19 @@ namespace DealEngine.Services.Impl
 
         public async Task UpdateInformation(ClientInformationSheet sheet)
         {
-            await _customerInformationRepository.UpdateAsync(sheet);
+            try
+            {
+                await _customerInformationRepository.UpdateAsync(sheet);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         public async Task SaveAnswersFor(ClientInformationSheet sheet, IFormCollection collection, User user)
         {
+            try { 
             if (sheet == null)
                 throw new ArgumentNullException(nameof(sheet));
             if (collection == null)
@@ -118,6 +126,11 @@ namespace DealEngine.Services.Impl
             BuildAnswerFromModel(sheet, collection, user);
             await UpdateInformation(sheet);
             await _userService.Update(user);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private async void BuildAnswerFromModel(ClientInformationSheet sheet, IFormCollection collection, User user)
@@ -144,6 +157,8 @@ namespace DealEngine.Services.Impl
             SaveAnswer( sheet, collection, collection.Keys.Where(s => s.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("CPViewModel", StringComparison.CurrentCulture)));
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("CTViewModel", StringComparison.CurrentCulture)));
+            SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("EventsViewModel", StringComparison.CurrentCulture)));
+
 
         }
 

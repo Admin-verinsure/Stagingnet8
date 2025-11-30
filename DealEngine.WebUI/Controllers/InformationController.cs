@@ -1,40 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using DealEngine.Domain.Entities;
-using DealEngine.Services.Interfaces;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using DealEngine.WebUI.Models;
-using DealEngine.WebUI.Models.Programme;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http;
 using DealEngine.Infrastructure.FluentNHibernate;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
-using System.Linq.Dynamic;
-using DocumentFormat.OpenXml.Bibliography;
-using DealEngine.WebUI.Models.Information;
-using NHibernate.Linq;
-using SystemDocument = DealEngine.Domain.Entities.Document;
-using Document = DealEngine.Domain.Entities.Document;
-using System.Net.Mime;
-using NReco.PdfGenerator;
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
-using System.Text;
 using DealEngine.Services.Impl;
-using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
+using DealEngine.Services.Interfaces;
+using DealEngine.WebUI.Models;
+using DealEngine.WebUI.Models.Information;
+using DealEngine.WebUI.Models.Programme;
+using DocumentFormat.OpenXml.Bibliography;
+using EServices.AccountProxy;
+using FluentNHibernate.Testing.Values;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using FluentNHibernate.Testing.Values;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using EServices.AccountProxy;
-using Microsoft.VisualStudio.Web.CodeGeneration.Design;
+using NHibernate.Linq;
+using NReco.PdfGenerator;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Linq.Dynamic;
+using System.Net.Mime;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Document = DealEngine.Domain.Entities.Document;
+using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
+using SystemDocument = DealEngine.Domain.Entities.Document;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -84,6 +85,8 @@ namespace DealEngine.WebUI.Controllers
         IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
         ISerializerationService _serializerationService;
         UserManager<IdentityUser> _userManager;
+        IEventsInfoService _eventsInfoService;
+        IOdooTaskGateway _odooTaskGateway;
 
         //IAssetData _assetData;
         IMapperSession<ClubTrustAssetsInfo> _clubTrustAssetsInfoRepository;
@@ -139,6 +142,9 @@ namespace DealEngine.WebUI.Controllers
             UserManager<IdentityUser> userManager,
 
             IWebHostEnvironment hostingEnv,
+            IEventsInfoService eventsInfoService,
+            IOdooTaskGateway odooTaskGateway,
+
 
         //IGeneratePdf generatePdf,
         IClientAgreementExtensionTermService clientAgreementExtensionTermService,
@@ -193,6 +199,9 @@ namespace DealEngine.WebUI.Controllers
             _hostingEnv = hostingEnv;
             _userManager = userManager;
             _serializerationService = serializerationService;
+            _eventsInfoService = eventsInfoService;
+            _odooTaskGateway = odooTaskGateway;
+
 
             //_generatePdf = generatePdf;
         }
@@ -1075,6 +1084,7 @@ namespace DealEngine.WebUI.Controllers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("CPViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("CTViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("EventsViewModel", StringComparison.CurrentCulture)));
 
                 var activities = clientProgramme?.BaseProgramme?.ClubActivities ?? Enumerable.Empty<DealEngine.Domain.Entities.ClubActivities>();
 
@@ -1119,6 +1129,10 @@ namespace DealEngine.WebUI.Controllers
                 {
                     updateType = "common_you";
                 }
+                await GetEventsDataModel(model, sheet);
+
+
+
 
                 model.selectedUpdateType = new List<string>();
                 model.IsHardRefferalEnable = clientProgramme.BaseProgramme.EnableHardRefer;
@@ -1408,22 +1422,27 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        private async Task GetEventsDataModel(InformationViewModel model, ClientInformationSheet sheet)
+        {
+            try
+            {
+                if (sheet != null)
+                {
+                    var gj = model.EventsViewModel.HasClubTrustEvent;
+                    IList<EventsInfo> eventsInfo = await _eventsInfoService.GetEvents(sheet.Id);
+                    //AssetData asset = await _assetData.GetAssetDataBySheetId(sheet.Id);
+                    if (eventsInfo.Count > 0)
+                    {
+                        model.EventsViewModel.EventsInfo = eventsInfo;  
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
 
-        //private async Task GetDocumentUploadModel(InformationViewModel model, File file)
-        //{
-        //    try
-        //    {
-        //        if (file..Any())
-        //        {
-        //            model.RoleDataViewModel = _mapper.Map<RoleDataViewModel>(roleData);
-        //            model.RoleDataViewModel.AdditionalRoleInformationViewModel = _mapper.Map<AdditionalRoleInformationViewModel>(roleData.AdditionalRoleInformation);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //    }
-        //}
 
         private async Task GetRoleViewModel(InformationViewModel model, RoleData roleData)
         {
@@ -1548,6 +1567,23 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DeleteEvents(Guid Eventid)
+        {
+            User user = null;
+            try
+            {
+                EventsInfo eventsInfo = await _eventsInfoService.GetEventsById(Eventid);
+                user = await CurrentUser();
+                await _eventsInfoService.DeleteEventsById(user, eventsInfo);
+                return new JsonResult(true);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+        [HttpPost]
         public async Task<IActionResult> DeleteDoc(Guid DocId)
         {
             User user = null;
@@ -1658,11 +1694,14 @@ namespace DealEngine.WebUI.Controllers
         {
             Guid sheetId = Guid.Empty;
             User user = null;
+            var eventval = 0;
+
             try
             {
                 user = await CurrentUser();
                 sheetId = Guid.Parse(collection["AnswerSheetId"]);
                 ClientInformationSheet sheet = await _clientInformationService.GetInformation(sheetId);
+                eventval = int.Parse(collection["EventsViewModel.HasClubTrustEvent"]);
                 if (sheet == null)
                     return Json("Failure");
 
@@ -1675,6 +1714,12 @@ namespace DealEngine.WebUI.Controllers
                     SaveTrustAssetAnswer(user, sheet, collection);
 
                 }
+
+                if (eventval == 1)
+                {
+                    SaveEventsAnswer(user, sheet, collection);
+
+                }
                 return Json("Success");
             }
             catch (Exception ex)
@@ -1683,6 +1728,8 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
 
         [HttpPost]
         private async Task SaveTrustAssetAnswer(User user, ClientInformationSheet sheet, IFormCollection collection)
@@ -1696,6 +1743,7 @@ namespace DealEngine.WebUI.Controllers
                 Guid ownerid = Guid.Parse(collection["CTAViewModelOwner " + i]);
                 Organisation ownerorg = await _organisationService.GetOrganisation(ownerid);
                 //ClubTrustAssetsInfo clubTrustAssetsInfo = null;
+                //collection["CTAViewModelDescriptionorName 1"].Count() > 0;
                 while (collection["CTAViewModelDescriptionorName " + i].Count() > 0) // condition
                 {
                     Boolean exists = false;
@@ -1707,27 +1755,94 @@ namespace DealEngine.WebUI.Controllers
                         using (var uow = _unitOfWork.BeginUnitOfWork())
                         {
                             //ClubTrustAssetsInfo clubTrustAssetsInfo = await _clubAssetInfoService.GetClubAssetById(sheet.Id);
-                            foreach(var asset in ClubTrustAssetsInfo)
+                            foreach (var asset in ClubTrustAssetsInfo)
                             {
-                                if(asset.Name == collection["CTAViewModelDescriptionorName " + i])
+                                if (asset.Name == collection["CTAViewModelDescriptionorName " + i])
                                 {
                                     exists = true;
                                 }
                             }
-                            
 
-                        if (!exists)
-                        {
-                           ClubTrustAssetsInfo clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["CTAViewModelDescriptionorName " + i],
-                                                                            int.Parse(collection["CTAViewModelCurrentValue " + i]),
-                                                                            int.Parse(collection["CTAViewModelReplacementValue " + i]),
-                                                                            ownerorg, sheet, user);
 
-                            await _clubAssetInfoService.UpdateClubAsset(clubTrustAssetsInfo);
-                        }
+                            if (!exists)
+                            {
+                                ClubTrustAssetsInfo clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["CTAViewModelDescriptionorName " + i],
+                                                                                 int.Parse(collection["CTAViewModelCurrentValue " + i]),
+                                                                                 int.Parse(collection["CTAViewModelReplacementValue " + i]),
+                                                                                 ownerorg, sheet, user);
+
+                                await _clubAssetInfoService.UpdateClubAsset(clubTrustAssetsInfo);
+                            }
 
                             await uow.Commit();
                         }
+
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    i++;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+
+        [HttpPost]
+        private async Task<EventsInfo> SaveEventsAnswer(User user, ClientInformationSheet sheet, IFormCollection collection)
+        {
+          //  List<ClubTrustAssetsInfo> ClubTrustAssetsInfolist = new List<ClubTrustAssetsInfo>();
+            IList<EventsInfo> EventsInfo = await _eventsInfoService.GetEvents(sheet.Id);
+            EventsInfo eventsInfo = null;
+            try
+            {
+                int i = 1; // initialization
+                           // Guid ownerid = Guid.Parse(collection["CTAViewModelOwner " + i]);
+                           // Organisation ownerorg = await _organisationService.GetOrganisation(ownerid);
+                           //ClubTrustAssetsInfo clubTrustAssetsInfo = null;
+                var gjghj = "EventName " + i;
+                var eventsvar = collection["EventName " + i];
+                var eventsvawerer = collection["EventName 1"];
+
+
+
+                while (collection["EventName " + i].Count() > 0) // condition
+                {
+                    Boolean exists = false;
+
+
+                    //var assetname = collection["CTAViewModelDescriptionorName " + i];
+                    try
+                    {
+                        //using (var uow = _unitOfWork.BeginUnitOfWork())
+                        //{
+                            //ClubTrustAssetsInfo clubTrustAssetsInfo = await _clubAssetInfoService.GetClubAssetById(sheet.Id);
+                            foreach(var events in EventsInfo)
+                            {
+                                if(events.EventName == collection["EventName " + i])
+                                {
+                                    exists = true;
+                                }
+                            }
+
+
+                            if (!exists)
+                            {
+
+                                eventsInfo = new EventsInfo(collection["MonthPlanned " + i], collection["EventName " + i], collection["Location " + i], collection["HealthSafetyPlan " + i], collection["EventType " + i],sheet, user);
+                                await _eventsInfoService.UpdateEvents(eventsInfo);
+                               // await uow.Commit();  // ✔ REQUIRED
+
+                            }
+
+                            //await uow.Commit();
+                        //}
                         
 
                     }
@@ -1743,6 +1858,8 @@ namespace DealEngine.WebUI.Controllers
             {
 
             }
+
+            return eventsInfo;
         }
 
         //string jsonString = JsonSerializer.Serialize(weatherForecast);
@@ -1867,11 +1984,50 @@ namespace DealEngine.WebUI.Controllers
                             await GenerateUWM(user, sheet, sheet.ReferenceId);
                             if (sheet.Programme.BaseProgramme.ProgEnableEmail)
                             {
-                           await _emailService.SendSystemEmailAllSubUISComplete(sheet.Owner, sheet.Programme.BaseProgramme, sheet);
+                       //    await _emailService.SendSystemEmailAllSubUISComplete(sheet.Owner, sheet.Programme.BaseProgramme, sheet);
                             }
                             //sheet = baseSheet;
                         }
                     }
+
+                    await _odooTaskGateway.OdooGatewayconnection(
+                        _appSettingService.OdooServerworkingendpoint, 
+                        _appSettingService.OdooServerDB,              
+                        _appSettingService.LoginID,                   
+                        _appSettingService.LoginKey                  
+                     );
+
+                    // List<OdooTaskSpec> Odootasks = new List<OdooTaskSpec>();
+
+                    // foreach (var agreement in clientProgramme.Agreements)
+                    // {
+                    //     foreach(var Odootask in agreement.Product.OdooTaskSpecs)
+                    //     { Odootasks.Add(Odootask); }
+
+                    // }
+                    //await _odooTaskGateway.CreateTasksAsync(Odootasks);
+
+
+
+                    var specs = clientProgramme.Agreements
+       .SelectMany(a => a.Product.OdooTaskSpecs)
+       .Select(t => new OdooTaskSpec(
+           title: t.Title,
+           projectId: t.ProjectId,
+           notes: t.Notes,
+           product:t.Product,
+           createdBy:t.CreatedBy
+           
+       ))
+       .ToList();
+
+                    if (specs.Count == 0)
+                        return Ok(new { created = Array.Empty<int>(), count = 0 });
+
+                    // 2) ONE RPC: bulk create all tasks at once
+                    var createdIds = await _odooTaskGateway.CreateTasksAsync(specs);
+
+
 
                     if (sheet.Programme.BaseProgramme.ProgEnableEmail)
                     {
@@ -1888,8 +2044,8 @@ namespace DealEngine.WebUI.Controllers
                     {
                         if (agreement.Status == "Referred")
                         {
-                            await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
-                            await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
+                         //   await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
+                           // await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
                         }
                     }
                 }

@@ -1,36 +1,37 @@
 ﻿
+using AutoMapper;
+using DealEngine.Infrastructure.AppInitialize;
+using DealEngine.Infrastructure.AppInitialize.BaseLdapPackage;
+using DealEngine.Infrastructure.AppInitialize.Nhibernate;
+using DealEngine.Infrastructure.AppInitialize.Repositories;
+using DealEngine.Infrastructure.AppInitialize.Services;
+using DealEngine.Services.Impl;
+using DealEngine.Services.Interfaces;
+using DealEngine.WebUI.Helpers;
+using DealEngine.WebUI.Models;
+using ElmahCore.Mvc;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.HttpOverrides;
-using DealEngine.Infrastructure.AppInitialize.Nhibernate;
-using DealEngine.Infrastructure.AppInitialize.BaseLdapPackage;
-using DealEngine.Infrastructure.AppInitialize.Services;
-using DealEngine.Infrastructure.AppInitialize.Repositories;
-using DealEngine.WebUI.Models;
 using Microsoft.Extensions.Hosting;
-using DealEngine.Infrastructure.AppInitialize;
-using ElmahCore.Mvc;
-using Microsoft.AspNetCore.Localization;
-using AutoMapper;
-using Newtonsoft.Json;
-using System;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Newtonsoft.Json;
+using NLog.Extensions.Logging;
 using Quartz;
-using System.Collections.Specialized;
 using Quartz.Impl;
 using Quartz.Spi;
-using DealEngine.WebUI.Helpers;
-using DealEngine.Services.Interfaces;
-using DealEngine.Services.Impl;
+using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
+using System.Collections.Specialized;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace DealEngine.WebUI
 {
@@ -117,6 +118,16 @@ namespace DealEngine.WebUI
             services.AddScoped<IReportBuilderService, ReportBuilderService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IProgrammeService, ProgrammeService>();
+            // 1) HttpClient factory (needed for OdooTaskExtension)
+            services.AddHttpClient();
+
+            // 2) Register your gateway implementation
+            services.AddScoped<DealEngine.Services.Interfaces.IOdooTaskGateway>(sp =>
+            {
+                var http = sp.GetRequiredService<IHttpClientFactory>().CreateClient();
+                return new DealEngine.WebUI.ServiceReference.OdooTaskExtension(http);
+            });
+
             services.AddLogging(loggingBuilder =>
             {
                 loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);

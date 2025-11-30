@@ -1487,4 +1487,36 @@
     };
 
 
+
+    function updateChildrenActivitiesLabel() {
+        const selected = [];
+
+        document.querySelectorAll('#ChildrenActivitiesDropdown .activity-check:checked')
+            .forEach(cb => {
+                const label = cb.parentElement.querySelector('label');
+                if (label) {
+                    selected.push(label.innerText.trim());
+                }
+            });
+
+        const btn = document.getElementById('ChildrenActivitiesToggle');
+
+        if (!btn) return;
+
+        if (selected.length === 0) {
+            btn.innerText = "Select activities";
+        } else if (selected.length === 1) {
+            btn.innerText = selected[0];
+        } else {
+            btn.innerText = selected.length + " activities selected";
+        }
+    }
+
+    // Run once on page load so previously saved values show correctly
+    document.addEventListener("DOMContentLoaded", function () {
+        updateChildrenActivitiesLabel();
+    });
+
+
+
 </script>

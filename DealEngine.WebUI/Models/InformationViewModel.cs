@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using DealEngine.Domain.Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
-using DealEngine.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Http;
 
 namespace DealEngine.WebUI.Models
 {
@@ -46,7 +47,7 @@ namespace DealEngine.WebUI.Models
             TAViewModel = new TAViewModel();
             CPViewModel = new CPViewModel();
             CTViewModel = new CTViewModel();
-
+            EventsViewModel = new EventsViewModel();
         }
         public User User { get; set; }
         public OrganisationViewModel OrganisationViewModel { get; set; }
@@ -104,6 +105,8 @@ namespace DealEngine.WebUI.Models
         public CPViewModel CPViewModel { get; set; }
         public AssetData AssetData { get; set; }
         public TAViewModel TAViewModel { get; set; }
+        public EventsViewModel EventsViewModel { get; set; }
+
         public IList<Document> DocumentList { get; set; }
         //public File File{ get; set; }
         public IFormFile File { get; set; }
@@ -1620,13 +1623,14 @@ namespace DealEngine.WebUI.Models
         {
             return new List<SelectListItem>()
             {
+                new SelectListItem { Text = "-- Select --", Value = "0" },
                 new SelectListItem
                 {
-                    Text = "Audited", Value = "0"
+                    Text = "Audited", Value = "1"
                 },
                 new SelectListItem
                 {
-                    Text = "Formally Reviewed", Value = "1"
+                    Text = "Formally Reviewed", Value = "2"
                 },
                 new SelectListItem
                 { Text = "Not Sure", Value = "3" }
@@ -2354,33 +2358,53 @@ namespace DealEngine.WebUI.Models
 
     }
 
-    //public class ClubTrustAssetsInfoViewModel
-    //{
-    //    public ClubTrustAssetsInfoViewModel() { }
-    //    public ClubTrustAssetsInfoViewModel(Domain.Entities.ClientProgramme clientprogramme)
-    //    {
-    //        ClubTrustAssetsInfolist = GetClubTrustAssets(clientprogramme);
-    //    }
 
-    //    private IList<ClubTrustAssetsInfo> GetClubTrustAssets(Domain.Entities.ClientProgramme clientprogramme)
-    //    {
-    //        ClubTrustAssetsInfolist = new List<ClubTrustAssetsInfo>();
-    //        foreach (var asset in clientprogramme.ClubTrustAssetsInfo)
-    //        {
-    //            ClubTrustAssetsInfolist.Add(new ClubTrustAssetsInfo(null)
-    //            {
-    //                Name = asset.Name,
-    //                CurrentVal = asset.CurrentVal,
-    //                ReplacementVal = asset.ReplacementVal,
-    //                Owner = asset.Owner
-    //            });
-    //        }
-    //        return ClubTrustAssetsInfolist;
-    //    }
-
-    //    public IList<ClubTrustAssetsInfo> ClubTrustAssetsInfolist { get; set; }
+    public class EventsViewModel : BaseViewModel
+    {
+        public EventsViewModel()
+        {
+            HasClubTrustAssets = GetSelectListOptions();
+            HasClubTrustEvent = GetSelectListOptions();
+        }
+        public EventsViewModel(ClientInformationSheet clientInformationSheet)
+        {
+            HasClubTrustAssets = GetSelectListOptions();
+            HasClubTrustEvent = GetSelectListOptions();
+            EventsInfo = GetClubTrustAssets(clientInformationSheet);
+        }
 
 
-    //}
+        private IList<EventsInfo> GetClubTrustAssets(ClientInformationSheet clientInformationSheet)
+        {
+            EventsInfo = new List<EventsInfo>();
+            //foreach (var ClubTrustAsset in clientInformationSheet.EventsInfo)
+            //{
+            //    EventsInfo.Add(ClubTrustAsset);
+            //}
+            return EventsInfo;
+        }
+        public IList<SelectListItem> HasClubTrustAssets { get; set; }
+        public IList<SelectListItem> HasClubTrustEvent { get; set; }
+        public IList<EventsInfo> EventsInfo { get; set; }
 
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+    }
+
+   
 }

@@ -1,0 +1,180 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="EventsViewModel" class="is-valid" data-accordianId="Event Plan">
+
+    <div class="mt-2 mb-3">
+        <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#EventsAdvisoryPanel" aria-expanded="false" aria-controls="trustAdvisoryPanel">
+            <h5 class="m-0"><strong>Events involving the public</strong></h5>
+        </button>
+    </div>
+
+    <div class="collapse" id="EventsAdvisoryPanel">
+        <div class="card card-body">
+            <!-- advisory text ... -->
+            
+            Public liability cover is provided for events in hospitality venues or are simple fundraisers such as diners, conferences, Bunnings  BBQs are covered.
+            All other events should be advised to the insurance team, especially if the event:
+            (a)  is set in a public place and/or
+            (b)  includes activities such as adventure or sporting activities and/or
+            (c) involves stalls, public displays (especially fireworks), bouncy castles etc.
+            Each need to be listed so the insurance team can assist to ensure that there is proper cover in place.
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+
+                    Does your District or Club or club trust(s) plan to run an event in 2026? 
+
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="HasClubTrustEvent" name="EventsViewModel.HasClubTrustEvent" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.EventsViewModel.HasClubTrustEvent)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="EventsViewModel.HasClubTrustEvent" hidden>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label for="Scheduledassets" class="label required">
+                        please enter the planned events:
+                    </label>
+                </div>
+                <div class="col-10">
+
+                     <div class="container py-1">
+                        <div class="row">
+                            <div class="col-lg-12 mx-auto">
+                                <div class="card rounded-0 border-0 shadow">
+                                    <div class="card-body p-5">
+
+                                        <div class="table-responsive">
+                                            <table class="table" name="EventsViewModel.EventsInfo">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Month Planned</th>
+                                                        <th scope="col">Event Name</th>
+                                                        <th scope="col">Location</th>
+                                                        <th scope="col">Health & Safety Plan done</th>
+                                                        <th scope="col">Event Type</th>
+                                                        <th scope="col"></th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody id="eventstable">
+    @if (Model.EventsViewModel.EventsInfo != null)
+    {
+        int i = 1;
+
+        foreach (var option in Model.EventsViewModel.EventsInfo)
+        {
+            <tr>
+                <td hidden>
+                    <input class="form-control rounded-0" type="text" name='EventsInfoId @i' value="@option.Id">
+                </td>
+
+                <td>
+                    <input class="form-control rounded-0" type="text" 
+                           name='MonthPlanned @i' placeholder="Month Planned" value="@option.Month">
+                </td>
+
+                <td>
+                    <input class="form-control rounded-0" type="text"
+                           name='EventName @i' placeholder="Event Name" value="@option.EventName">
+                </td>
+
+                <td>
+                    <input class="form-control rounded-0" type="text"
+                           name='Location @i' placeholder="Location" value="@option.Location">
+                </td>
+
+                <!-- Health & Safety Plan dropdown -->
+                <td>
+                    <select name="HealthSafetyPlan @i" class="form-select" required>
+                        <option value="">-- Select --</option>
+                        <option value="Yes" selected="@(option.HealthSafetyPlan == "Yes" ? "selected" : null)">Yes</option>
+                        <option value="No"  selected="@(option.HealthSafetyPlan == "No"  ? "selected" : null)">No</option>
+                     </select>
+ 
+                </td>
+
+                <!-- Event Type dropdown -->
+                <td>
+                                                                    <select name="EventType @i" class="form-select" required>
+                                                                        <option value="">-- Select Event Type --</option>
+
+                                                                        <option value="Fundraiser"
+                                                                                selected="@(option.EventType == "Fundraiser" ? "selected" : null)">
+                                                                            Fundraiser
+                                                                        </option>
+
+                                                                        <option value="Adventure"
+                                                                                selected="@(option.EventType == "Adventure" ? "selected" : null)">
+                                                                            Adventure
+                                                                        </option>
+
+                                                                        <option value="Sports"
+                                                                                selected="@(option.EventType == "Sports" ? "selected" : null)">
+                                                                            Sports
+                                                                        </option>
+
+                                                                        <option value="Stall"
+                                                                                selected="@(option.EventType == "Stall" ? "selected" : null)">
+                                                                            Stall
+                                                                        </option>
+
+                                                                        <option value="Display"
+                                                                                selected="@(option.EventType == "Display" ? "selected" : null)">
+                                                                            Display
+                                                                        </option>
+
+                                                                        <option value="Other"
+                                                                                selected="@(option.EventType == "Other" ? "selected" : null)">
+                                                                            Other
+                                                                        </option>
+                                                                    </select>
+
+                </td>
+
+                <td>
+                    <button class="btn btn-danger rounded-0" type="button"
+                            onclick="deleteEvent('@option.Id')">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+
+            i++;
+        }
+    }
+</tbody>
+
+                                            </table>
+                                        </div>
+                                        <a class="btn btn-primary rounded-0 btn-block" onclick="AddNewEvent()" id="insertRow">Add new row</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                       
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+
+</form>
