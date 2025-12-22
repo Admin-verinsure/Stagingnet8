@@ -66,6 +66,9 @@
           var idx = 0;
           var selected = Model.GLViewModel.DoesProtectChildren ?? new List<string>();
         }
+
+        @if (Model.GLViewModel.DoesProtectChildrenOptions?.Any() == true)
+        {
         @foreach (var option in Model.GLViewModel.DoesProtectChildrenOptions)
         {
             var id = $"act_{idx++}";
@@ -82,7 +85,9 @@
             <label class="form-check-label" for="@id">@option.Text</label>
             </div>
         }
-
+        }else{
+        <div class="text-danger">No activities loaded</div>
+        }
       </div>
     </div>
   </div>

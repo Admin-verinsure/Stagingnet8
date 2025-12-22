@@ -3814,6 +3814,8 @@ public async Task<IActionResult> OdooTaskExtension()
                                     await _fileService.UploadFile(renderedDoc);
                                 }
 
+
+
                             }
                         }
                     }
@@ -4056,7 +4058,22 @@ public async Task<IActionResult> OdooTaskExtension()
 
                                     }
 
+                                    var extraAttachments = new List<SystemDocument>();
 
+                                    if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
+                                    {
+                                        var physicalPath = _appSettingService.FileBasePhysicalPath;
+
+                                        if (System.IO.File.Exists(physicalPath))
+                                        {
+                                            documents.Add(new SystemDocument
+                                            {
+                                                Path = physicalPath,
+                                                ContentType = "application/pdf",
+                                                DocumentType = 0 // optional, match your PDF type
+                                            });
+                                        }
+                                    }
 
                                     if (programme.BaseProgramme.ProgEnableEmail)
                                     {
@@ -5292,7 +5309,7 @@ public async Task<IActionResult> OdooTaskExtension()
                 PartialViewResult result = (PartialViewResult)await ViewAgreement(id);
                 var models = (BaseListViewModel<ViewAgreementViewModel>)result.Model;
 
-                var agreeDocList = new List<Document>();
+                List<Document> agreeDocList = new List<Document>();
 
                 foreach (ViewAgreementViewModel model in models)
                 {
@@ -5313,8 +5330,8 @@ public async Task<IActionResult> OdooTaskExtension()
                     model.ClientProgrammeId = id;
                     foreach (ClientAgreement agreement in programme.Agreements.Where(a => a.DateDeleted == null && a.InsurerDeclined !=true))
                     {
-                        agreeDocList = agreement.GetDocuments();
-                        foreach (Document doc in agreeDocList)
+                        //agreeDocList = (List<Document>)agreement.Documents;
+                        foreach (Document doc in agreement.Documents)
                         {
                             if ((!doc.Name.EqualsIgnoreCase("Information Sheet Report") && doc.DocumentType != 8) && !programme.BaseProgramme.IsPdfDoc)
                             {
@@ -5349,14 +5366,14 @@ public async Task<IActionResult> OdooTaskExtension()
 
                 ClientProgramme programme1 = await _programmeService.GetClientProgrammebyId(id);
                 ViewBag.Sheetstatus = programme1.InformationSheet.Status;
-                if (programme1.IsDocsApproved && programme1.BaseProgramme.ProgEnableHidedoctoClient)
-                {
+                //if (programme1.IsDocsApproved && programme1.BaseProgramme.ProgEnableHidedoctoClient)
+                //{
                     ViewBag.showDocs = true;
-                }
-                else
-                {
-                    ViewBag.showDocs = false;
-                }
+                //}
+                //else
+                //{
+                //    ViewBag.showDocs = false;
+                //}
                 return View("ViewAcceptedAgreementList", models);
             }
             catch (Exception ex)

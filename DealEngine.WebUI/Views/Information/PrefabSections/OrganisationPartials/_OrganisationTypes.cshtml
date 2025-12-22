@@ -7,7 +7,12 @@
     <div class="form-group col-md-6">
         <div class="form-group" id="HideInsuranceAttribute">
             @Html.LabelFor(m => m.OrganisationViewModel.InsuranceAttributes, new { @class = "label required" })
-            <select id="Organisation.InsuranceAttribute" name="OrganisationViewModel.InsuranceAttribute" class="form-select" data-rule="OrganisationType" onchange="OnChange(this.id, this.name)" required>
+            <select id="Organisation.InsuranceAttribute"
+                    name="OrganisationViewModel.InsuranceAttribute"
+                    class="form-select"
+                    data-rule="OrganisationType"
+                    onchange="OnChange(this.id, this.name)"
+                    required>
                 @foreach (var option in @Model.OrganisationViewModel.InsuranceAttributes)
                 {
                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>
@@ -22,8 +27,11 @@
             <select id="Organisation.OrganisationType" name="OrganisationViewModel.OrganisationType" class="form-select" onchange="OnChange(this.id, this.name)" required>
                 @foreach (var option in Model.OrganisationViewModel.OrganisationTypes)
                 {
-                    <option selected="@option.Selected" value="@option.Value">@option.Text</option>
-                }
+                    <option id="@(option.Value)" value="@option.Value" selected="@option.Selected">
+                        @option.Text
+                    </option>
+@*                     <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+ *@                }
             </select>
         </div>
         @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Marsh Real Estate Programme" || Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")

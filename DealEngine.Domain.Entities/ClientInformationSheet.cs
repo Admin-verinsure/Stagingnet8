@@ -76,6 +76,7 @@ namespace DealEngine.Domain.Entities
         public virtual IList<ResearchHouse> ResearchHouses { get; set; }
         public virtual IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
 
+         public virtual OrganisationAttribute OrganisationAttribute { get; set; }
         protected ClientInformationSheet (User createdBy)
 			: base (createdBy)
 		{

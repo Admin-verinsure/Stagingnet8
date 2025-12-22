@@ -28,6 +28,13 @@ using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using Microsoft.CodeAnalysis;
 using DocumentFormat.OpenXml.Office2010.Excel;
 
+using OpenHtmlToPdf;
+using PdfSharpCore.Pdf;
+using PdfSharpCore;
+using System.IO;
+
+
+
 namespace DealEngine.WebUI.Controllers
 {
     [Authorize]
@@ -71,7 +78,7 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetInvoicePDF(Guid Id, Guid ClientProgrammeId, string invoicename)
+        public async Task<IActionResult> GetInvoicePDF1(Guid Id, Guid ClientProgrammeId, string invoicename)
         {
             ClientProgramme clientprogramme = await _programmeService.GetClientProgrammebyId(ClientProgrammeId);
             ClientInformationSheet clientInformationSheet = clientprogramme.InformationSheet;
@@ -129,6 +136,79 @@ namespace DealEngine.WebUI.Controllers
             return File(pdfBytes, "application/pdf", invoicename + ".pdf");
 
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetInvoicePDF(
+    Guid Id,
+    Guid ClientProgrammeId,
+    string invoicename)
+        {
+            ClientProgramme clientprogramme =
+                await _programmeService.GetClientProgrammebyId(ClientProgrammeId);
+
+            ClientInformationSheet clientInformationSheet =
+                clientprogramme.InformationSheet;
+
+            SystemDocument doc =
+                await _documentRepository.GetByIdAsync(Id);
+
+            // Convert document bytes to HTML
+            string html = _fileService.FromBytes(doc.Contents);
+
+            // Inject head + styles
+            if (doc.DocumentType == 8) // Apollo Invoice
+            {
+                html = html.Insert(0,
+                    "<head><meta charset='utf-8'></head>");
+            }
+            else
+            {
+                html = html.Insert(0,
+                    @"<head>
+                <meta charset='utf-8'>
+                <style>
+                    img { height:auto; max-width:300px; }
+                    body { font-family: Arial, Helvetica, sans-serif; }
+                </style>
+              </head>");
+            }
+
+            // Character fixes (keep as-is from legacy)
+            html = html.Replace("“", "&quot;")
+                       .Replace("”", "&quot;")
+                       .Replace(" – ", "--")
+                       .Replace("&nbsp;", " ")
+                       .Replace("’", "&#146;")
+                       .Replace("‘", "&#39;")
+                       .Replace("ä", "&#228;")
+                       .Replace("ë", "&#235;")
+                       .Replace("ö", "&#246;")
+                       .Replace("ü", "&#252;");
+
+            // Fix legacy image paths
+            string badURL = "../../../images/";
+            string newURL = "https://" + _appSettingService.domainQueryString + "/Image/";
+            html = html.Replace(badURL, newURL);
+
+            // Convert HTML → PDF
+            byte[] pdfBytes = Pdf
+                .From(html)
+                .WithGlobalSetting("orientation", "Portrait")
+                .WithGlobalSetting("margin.top", "10mm")
+                .WithGlobalSetting("margin.bottom", "10mm")
+                .WithGlobalSetting("margin.left", "30mm")
+                .WithGlobalSetting("margin.right", "10mm")
+                .WithObjectSetting("footer.center", "Page [page] of [toPage]")
+                .Content();
+
+            return File(
+                pdfBytes,
+                "application/pdf",
+                invoicename + ".pdf"
+            );
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetPDF(Guid Id, Guid ClientProgrammeId)

@@ -27,8 +27,9 @@
                     <a class="btn btn-primary btn-xs" href="~/Home/Index" id="backbutton"><i class="fa fa-home"></i> Back to Dashboard </a>
                     <a class="btn btn-primary btn-xs" href="~/Home/ViewProgramme/@Model.FirstOrDefault().ProgrammeId" id="backbutton"><i class="fa fa-random"></i> Back to Programme </a>
                    
-                    <a class="btn btn-primary btn-xs" href="~/Home/ViewSubClientProgrammes?clientProgrammeId=@Model.FirstOrDefault().ClientProgrammeId" id="backbutton"><i class="fa fa-random"></i> Back to Client </a>
-                   
+@*                     <a class="btn btn-primary btn-xs" href="~/Home/ViewClientProgramme?clientProgrammeId=@Model.FirstOrDefault().ClientProgrammeId" id="backbutton"><i class="fa fa-random"></i> Back to Client </a>
+ *@                    <a class="btn btn-primary btn-xs" href="~/Home/ViewSubClientProgrammes?clientProgrammeId=@Model.FirstOrDefault().ClientProgrammeId" id="backbutton"><i class="fa fa-random"></i> Back to Client </a>
+
 @*                        <a href="@Url.Action("EditBillingConfiguration", "Programme", new { programmeId = Model.FirstOrDefault().ClientProgrammeId })" class="dropdown-item"> Billing Information Configuration </a>
 *@                   
                 </div>

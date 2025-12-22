@@ -20,8 +20,8 @@ namespace DealEngine.WebUI.Models
             if (ClientInformationSheet != null)
             {
                 Programme = ClientInformationSheet.Programme.BaseProgramme;
-                if(Programme.NamedPartyUnitName == "NZFSG Programme" || Programme.NamedPartyUnitName == "TripleA Programme" || Programme.NamedPartyUnitName == "Apollo Programme" || 
-                    Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" || 
+                if (Programme.NamedPartyUnitName == "NZFSG Programme" || Programme.NamedPartyUnitName == "TripleA Programme" || Programme.NamedPartyUnitName == "Apollo Programme" ||
+                    Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
                     Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme" || Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
                 {
                     AdvisorUnit = new AdvisorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
@@ -31,11 +31,11 @@ namespace DealEngine.WebUI.Models
                     BarristerUnit = new BarristerUnit(null, null, null, null);
                     EmployeeUnit = new EmployeeUnit(null, null, null, null);
 
-                    if (Programme.NamedPartyUnitName == "NZFSG Programme") 
-                    { 
-                        InsuranceAttributes = GetAdvisorTypes1(); 
-                    } 
-                    else if(Programme.NamedPartyUnitName == "TripleA Programme")
+                    if (Programme.NamedPartyUnitName == "NZFSG Programme")
+                    {
+                        InsuranceAttributes = GetAdvisorTypes1();
+                    }
+                    else if (Programme.NamedPartyUnitName == "TripleA Programme")
                     {
                         InsuranceAttributes = GetAdvisorTypes2();
                     }
@@ -43,22 +43,24 @@ namespace DealEngine.WebUI.Models
                     {
                         InsuranceAttributes = GetAdvisorTypes5();
                     }
-                    else if (Programme.NamedPartyUnitName == "Apollo Programme" || Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" || 
+                    else if (Programme.NamedPartyUnitName == "Apollo Programme" || Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
                         Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme")
                     {
                         InsuranceAttributes = GetAdvisorTypes3();
-                        if(Programme.NamedPartyUnitName == "Apollo Programme") 
-                        { 
-                            HasAssociationOptions = GetAssociationOptions1(); 
-                        } else if (Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
-                        { 
-                            HasAssociationOptions = GetAssociationOptions2(); 
-                        } else
+                        if (Programme.NamedPartyUnitName == "Apollo Programme")
+                        {
+                            HasAssociationOptions = GetAssociationOptions1();
+                        }
+                        else if (Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme")
+                        {
+                            HasAssociationOptions = GetAssociationOptions2();
+                        }
+                        else
                         {
                             HasAssociationOptions = GetAssociationOptions3();
                         }
                     }
-                    
+
                     HasRetiredorDeceasedOptions = GetStandardSelectOptions();
                     HasRegisteredOptions = GetHasRegisteredOptions();
                     OrganisationTypes = GetOrganisationTypes();
@@ -87,7 +89,7 @@ namespace DealEngine.WebUI.Models
                     HasMajorShareHolder = GetBooleanSelectOptions();
                 }
 
-                if (Programme.NamedPartyUnitName == "NZFSG ML Programme" || Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme"|| Programme.NamedPartyUnitName == "Apollo ML Programme")
+                if (Programme.NamedPartyUnitName == "NZFSG ML Programme" || Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability ML Programme" || Programme.NamedPartyUnitName == "Apollo ML Programme")
                 {
                     DirectorUnit = new DirectorUnit(null, null, null, null);//organisation.FirstOrDefault(o=>o.OrganisationalUnits.Any(o=>o.Type == "Advisor"));
 
@@ -112,7 +114,7 @@ namespace DealEngine.WebUI.Models
                     HasIsADNZmemberOptions = GetStandardSelectOptions();
                     HasIsOtherdirectorshipOptions = GetStandardSelectOptions();
                 }
-                
+
                 if (Programme.NamedPartyUnitName == "NZPI Programme")
                 {
                     InsuranceAttributes = GetContractorTypes();
@@ -121,7 +123,7 @@ namespace DealEngine.WebUI.Models
                     HasContractedInsuredOptions = GetBooleanSelectOptions();
                     HasPrincipalOptions = GetBooleanSelectOptions();
                 }
-                if(Programme.NamedPartyUnitName == "First Mate Cover")
+                if (Programme.NamedPartyUnitName == "First Mate Cover")
                 {
                     InterestedPartyUnit = new InterestedPartyUnit(null, null, null, null);
                     InsuranceAttributes = GetMarshTypes();
@@ -151,14 +153,14 @@ namespace DealEngine.WebUI.Models
                 Organisation = ClientInformationSheet.Owner;
                 //if (Organisations.Any(o => o.Id != (ClientInformationSheet.Owner.Id)))
                 Organisations.Add(ClientInformationSheet.Owner);
-                foreach(var sheetOrg in ClientInformationSheet.Organisation)
+                foreach (var sheetOrg in ClientInformationSheet.Organisation)
                 {
-                    if(Organisations.FirstOrDefault(o=>o.Id == sheetOrg.Id) == null)
-                        Organisations.Add(sheetOrg);                                        
+                    if (Organisations.FirstOrDefault(o => o.Id == sheetOrg.Id) == null)
+                        Organisations.Add(sheetOrg);
                 }
-                
+
             }
-            if(OrgUser != null)
+            if (OrgUser != null)
             {
                 User = OrgUser;
             }
@@ -593,10 +595,10 @@ namespace DealEngine.WebUI.Models
                         Text = "Major Share Holder (Not being a PM)",
                         Value = "Major Share Holder"
                     }
-                    
+
                 };
             return _Types;
-        }      
+        }
         private IList<SelectListItem> GetLicencedOptions()
         {
             var _Types = new List<SelectListItem>()
@@ -739,31 +741,40 @@ namespace DealEngine.WebUI.Models
                     {
                         Text = "Private Individual",
                         Value = "Private"
+                    },new SelectListItem
+                    {
+                        Text = "Registered Incorporated Society – New Zealand",
+                        Value = "Governance_1"
                     },
                     new SelectListItem
                     {
-                        Text = "Trading Trust",
-                        Value = "Trading Trust"
+                        Text = "Registered Company – New Zealand",
+                        Value = "Governance_2"
                     },
                     new SelectListItem
                     {
-                        Text = "Holding Trust",
-                        Value = "Holding Trust"
+                        Text = "Registered Charity – New Zealand",
+                        Value = "Governance_3"
                     },
                     new SelectListItem
                     {
-                        Text = "Incorporated Society",
-                        Value = "Incorporated Society"
+                        Text = "Trust or Foundation not being a registered charity",
+                        Value = "Governance_4"
                     },
                     new SelectListItem
                     {
-                        Text = "Company",
-                        Value = "Company"
+                        Text = "Registered Incorporated entity – Outside New Zealand",
+                        Value = "Governance_5"
                     },
                     new SelectListItem
                     {
-                        Text = "other- NOT incorporated",
-                        Value = "Other"
+                        Text = "Rotary International Other – MDO, Action Group Fellowship Group",
+                        Value = "Governance_6"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Unregistered entity",
+                        Value = "Governance_7"
                     }
                 };
             return _Types;
@@ -774,7 +785,7 @@ namespace DealEngine.WebUI.Models
         {
             var _Types = new List<SelectListItem>();
             _Types = new List<SelectListItem>() {
-                   
+
                     new SelectListItem
                     {
                         Text = "Private ",
@@ -795,14 +806,14 @@ namespace DealEngine.WebUI.Models
                         Text = "Run Off",
                         Value = "RunOff"
                     }
-                    
+
                 };
             return _Types;
         }
         private IList<SelectListItem> GetHasRegisteredOptions()
         {
             var _Types = new List<SelectListItem>();
-            _Types = new List<SelectListItem>() {                            
+            _Types = new List<SelectListItem>() {
                 new SelectListItem
                     {
                         Text = "-- Select --",
@@ -845,6 +856,7 @@ namespace DealEngine.WebUI.Models
 
         }
 
+
         private IList<SelectListItem> GetRolesTypes5()
         {
             var _Types = new List<SelectListItem>();
@@ -861,44 +873,64 @@ namespace DealEngine.WebUI.Models
                     },
                 new SelectListItem
                     {
-                        Text = "Trustee",
-                        Value = "Trustee"
+                        Text = "Rotary Club",
+                        Value = "RotaryClub"
                     },
                 new SelectListItem
                     {
-                        Text = "Incorporated Society Officer",
-                        Value = "Incorporated Society Officer"
+                        Text = "Rotaract",
+                        Value = "Rotaract"
                     },
                 new SelectListItem
                     {
-                        Text = "Director",
-                        Value = "Director"
+                        Text = "Rotary Community Corps",
+                        Value = "RotaryCommunityCorps"
                     },
                 new SelectListItem
-                    {
-                        Text = "Other type of Club entity",
-                        Value = "Other"
-                    },
+                   {
+                       Text = "Rotary Club Trust – 1 only",
+                       Value = "RotaryClubTrustOneOnly"
+                   },
                 new SelectListItem
-                    {
-                        Text = "Club Trust – non-trading",
-                        Value = "ClubTrustnontrading"
-                    },
+                   {
+                       Text = "Rotary Other/Extra Club Trust(s)",
+                       Value = "RotaryOtherExtraClubTrusts"
+                   },
                 new SelectListItem
-                    {
-                        Text = "Club Trust – trading",
-                        Value = "ClubTrusttrading"
-                    },
+                   {
+                       Text = "Rotary District",
+                       Value = "RotaryDistrict"
+                   },
                 new SelectListItem
-                    {
+                   {
+                        Text = "Rotary Special Purpose Trust",
+                        Value = "RotarySpecialPurposeTrust"
+                   },
+                new SelectListItem
+                   {
                         Text = "Rotary Company",
                         Value = "RotaryCompany"
-                    },
+                   },
                 new SelectListItem
-                    {
-                        Text = "Rotary Int Entity",
-                        Value = "RotaryIntEntity"
-                    }
+                   {
+                        Text = "Rotary Multi-District Organisation",
+                        Value = "RotaryMultiDistrictOrganisation"
+                   },
+                new SelectListItem
+                   {
+                        Text = "Rotary RI Action Group",
+                        Value = "RotaryRIActionGroup"
+                },
+                new SelectListItem
+                {
+                        Text = "Rotary RI Fellowship Group",
+                        Value = "RotaryRIFellowshipGroup"
+                },
+                new SelectListItem
+                {
+                        Text = "Rotary - Other",
+                        Value = "RotaryOther"
+                }
             };
             return _Types;
 
@@ -971,7 +1003,7 @@ namespace DealEngine.WebUI.Models
 
         }
         private IList<SelectListItem> GetAdvisorTypes5()
-        { 
+        {
             var _Types = new List<SelectListItem>();
             _Types = new List<SelectListItem>() {
                     new SelectListItem
@@ -1010,7 +1042,7 @@ namespace DealEngine.WebUI.Models
 
         private IList<SelectListItem> GetAdvisorTypes3()
         {
-            
+
             var _Types = new List<SelectListItem>();
             _Types = new List<SelectListItem>() {
                 new SelectListItem
@@ -1066,13 +1098,14 @@ namespace DealEngine.WebUI.Models
         public Guid ProgrammeId { get; set; }
         public Domain.Entities.Organisation Organisation { get; set; }
         public User User { get; set; }
-        [Display(Name ="Role")]
+        [Display(Name = "Organisation Types")]
         [JsonIgnore]
         public IList<SelectListItem> InsuranceAttributes { get; set; }
-        [Display(Name = "Organisation Type")]
+       
         [JsonIgnore]
         public IList<SelectListItem> Individuals { get; set; }
         [JsonIgnore]
+        [Display(Name = "Governance")]
         public IList<SelectListItem> OrganisationTypes { get; set; }
         [JsonIgnore]
         public IList<SelectListItem> HasRetiredorDeceasedOptions { get; set; }
@@ -1101,7 +1134,7 @@ namespace DealEngine.WebUI.Models
         [JsonIgnore]
         public IList<SelectListItem> CertTypes { get; set; }
         [JsonIgnore]
-        public IList<SelectListItem> HasIsTripleAApprovalOptions { get; set; }        
+        public IList<SelectListItem> HasIsTripleAApprovalOptions { get; set; }
         [JsonIgnore]
         public IList<SelectListItem> HasMajorShareHolder { get; set; }
         [JsonIgnore]
@@ -1138,12 +1171,39 @@ namespace DealEngine.WebUI.Models
         public BarristerUnit BarristerUnit { get; set; }
         public EmployeeUnit EmployeeUnit { get; set; }
 
-        
+
         [JsonIgnore]
         public IList<SelectListItem> HasBarristerPrincipalOptions { get; set; }
         public RealEstateDirectorUnit RealEstateDirectorUnit { get; set; }
         public RealEstateRunOffUnit RealEstateRunOffUnit { get; set; }
         public SubsidiaryUnit SubsidiaryUnit { get; set; }
+
+        public int? ActiveFeePaying { get; set; }
+        public int? Honorary { get; set; }
+        public int? Associate { get; set; }
+        public int? Family { get; set; }
+        public int? Community { get; set; }
+        public int? Volunteer { get; set; }
+        public int? Corporate { get; set; }   // corporate ×3 logic happens in JS
+        public int? Alumni { get; set; }
+        public int? Trustees { get; set; }
+        public int? OtherMembers { get; set; }
+
+        public int? ClubTotal { get; set; }
+
+        public int? Dist_Rotary { get; set; }
+        public int? Dist_Rotaract { get; set; }
+        public int? Dist_Interact { get; set; }
+        public int? Dist_RotaKids { get; set; }
+        public int? Dist_CommunityCore { get; set; }
+        public int? DistrictTotal { get; set; }
+        public int? SPT_Companies { get; set; }
+        public int? SPT_TradingTrusts { get; set; }
+        public bool SPT_RevenueOver1m { get; set; }
+        public int? SPT_Revenue { get; set; }            // Only required if Yes
+        public int? SPT_Total { get; set; }              // Companies + TradingTrusts
+        public OrganisationAttribute OrganisationAttribute { get; set; }
+
 
     }
 }

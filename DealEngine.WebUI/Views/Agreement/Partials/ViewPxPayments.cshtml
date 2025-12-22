@@ -19,10 +19,10 @@
 
 }
 
-    <div class="container" id="pxpaycontainer">
+  <div class="container" id="pxpaycontainer">
         <label class="radio">
-            @if (Model.HasCCPayment)
-            {
+           @if (Model.HasCCPayment)
+           {
                 <input id="paymentCreditCard" name="paymentRadio" type="radio">
                 <i></i><strong>
                     Credit Card -- $@premiumsGSTBrokerFeeCC including GST
@@ -31,30 +31,128 @@
                 <p>The total amount to be charged to your credit card will be $@premiumsGSTBrokerFeeInv + 1.5 % surcharge</p>
                 <p>Payment can be made by Visa or MasterCard.</p>
                 <br />
-            }
-            @if (Model.HasInvoicePayment)
-            {
-                <input id="paymentEGlobal" name="paymentRadio" type="radio">
-                <i></i><strong>
-                    Payment on Invoice (Direct Credit) -- $@premiumsGSTBrokerFeeInv including GST
-                </strong>
-                <p>You may elect to pay us on invoice by making a Direct Credit to our bank account.</p>
-                <p>Please note, our bank details are included on your invoice and our payment terms require settlement immediately on receipt of our invoice.</p>
-                <p>If you wish to pay by monthly instalments using a premium funding loan, please refer to the link in the email you receive with your invoice.</p>
-            }
+           
+           }
+         
+            
         </label>
 
-    </div>
+    @if (Model.HasInvoicePayment)
+    {
+        <input id="paymentEGlobal" name="paymentRadio" type="radio">
+
+        <div id="invoiceModal" class="modal-overlay">
+            <div class="modal-box">
+                <h4>Information</h4>
+
+                <p>
+                    Thank you for submitting this InfoSheet.<br />
+                    No payment is required at this stage.<br /><br />
+                    The next step will be when the renewal is confirmed.
+                    At that point you will receive an email advising the
+                    Certificate of Insurance has been released.
+                </p>
+
+                <div class="modal-actions">
+                    @* <button type="button"
+                            class="btn btn-success"
+                            onclick="submitPayment()">
+                        OK
+                    </button> *@
+
+
+                    <a class="btn btn-primary btn-xs"
+                       href="#"
+                       onclick="location.href='/Agreement/RenderDocuments?id=' +
+                    document.getElementById('AnswerSheetId').value; return false;">
+                        <i class="fa fa-random"></i> Back to Client
+                    </a>
+
+
+
+@* 
+                    <button id="NextNoPayment" onclick="bypassPayment()" class="btn btn-primary">Next</button>
+
+ *@
+                    <button type="button"
+                            class="btn btn-danger"
+                            onclick="closeInvoiceModal()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+
+
+  </div>
+
+
+
 
 <script type="text/javascript">
+
+    // hide next button immediately
     var nextbutton1 = document.getElementsByClassName("sw-btn-next");
-    $(nextbutton1).addClass("hidden");
-    $(nextbutton1).hide();
+    $(nextbutton1).addClass("hidden").hide();
+        var hasInvoicePayment = @(Model.HasInvoicePayment ? "true" : "false");
+     // SmartWizard / partial-safe auto show
+    setTimeout(function () {
+        if (hasInvoicePayment === true) {
+            var modal = document.getElementById("invoiceModal");
+            if (modal) {
+                modal.style.display = "flex";
+            }
+        }
+    }, 200); // small delay fixes wizard rendering
+
+    function confirmInvoicePayment() {
+        document.getElementById("invoiceModal").style.display = "none";
+           var radio = document.getElementById("paymentEGlobal");
+        if (radio) {
+            radio.checked = true;
+        }
+
+        submitPayment();
+    }
+
+    function closeInvoiceModal() {
+        document.getElementById("invoiceModal").style.display = "none";
+    }
+
 </script>
 
-<style>
 
+<style>
     #pxpaycontainer {
         margin-left: 0 !important;
     }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+
+    .modal-box {
+        background: #fff;
+        padding: 22px;
+        border-radius: 8px;
+        width: 420px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
+
+    .modal-actions {
+        text-align: right;
+        margin-top: 18px;
+    }
+
+        .modal-actions .btn {
+            margin-left: 8px;
+        }
 </style>

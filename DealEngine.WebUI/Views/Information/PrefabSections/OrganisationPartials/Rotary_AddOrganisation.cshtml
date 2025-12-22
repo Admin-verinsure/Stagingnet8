@@ -23,6 +23,253 @@
         @Html.LabelFor(m => m.OrganisationViewModel.Organisation.Phone, new { @class = "label required" })
         @Html.TextBoxFor(m => m.OrganisationViewModel.Organisation.Phone, new { @class = "form-control", @id = "Organisation.Phone" })
     </div>
+    
+    <!-- ============================== -->
+    <!-- CLUB MEMBER TABLE -->
+    <!-- ============================== -->
+    <div id="ClubMemberTable" class="mt-4" hidden>
+
+        <label>Please enter your member or customer numbers as set out in your Rules or bylaws</label>
+
+        <table class="table table-bordered">
+            <tr>
+                <th>Category</th>
+                <th>
+                    Count <span style="color:red; font-size:12px;">(Integers only)</span>
+                </th>
+            </tr>
+
+            <tr>
+                <td>Active Fee Paying</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.ActiveFeePaying,
+                    new { @id = "ActiveFeePaying", @type = "number", @min = "0", @step = "1", @class = "form-control member-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Honorary</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Honorary,
+                                        new { @id = "Honorary", @type = "number", @min = "0", @step = "1", @class = "form-control member-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Associate</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Associate,
+                                        new { @id = "Associate", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Family</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Family,
+                                        new { @id = "Family", @type = "number", @min = "0", @step = "1", @class = "form-control member-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Community</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Community,
+                                        new { @id = "Community", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Volunteer</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Volunteer,
+                                        new { @id = "Volunteer", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Corporate (×3 members each)</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Corporate,
+                                        new { @id = "Corporate", @type = "number", @min = "0", @step = "1", @class = "form-control member-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Alumni</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Alumni,
+                                        new { @id = "Alumni", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Trustees</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Trustees,
+                                        new { @id = "Trustees", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Other</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.OtherMembers,
+                                        new { @id = "OtherMembers", @type = "number", @min = "0", @step = "1", @class = "form-control" })
+                </td>
+            </tr>
+
+            <tr class="fw-bold">
+                <td>Total Members</td>
+                <td>
+                    <span id="TotalMembers">0</span>
+                    <input type="hidden"
+                           id="ClubTotal"
+                           name="OrganisationViewModel.OrganisationAttribute.ClubTotal" />
+                </td>
+            </tr>
+
+        </table>
+    </div>
+
+
+
+    <!-- ============================== -->
+    <!-- DISTRICT PANEL TABLE -->
+    <!-- ============================== -->
+    <div id="DistrictTable" class="mt-4" hidden>
+
+        <label>Please enter your District numbers</label>
+
+        <table class="table table-bordered">
+
+            <tr>
+                <th>Category</th>
+                <th>Count <span style="color:red;">(Integers only)</span></th>
+            </tr>
+
+            <tr>
+                <td>Rotary</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Dist_Rotary,
+                                        new { @id = "Dist_Rotary", @type = "number", @min = "0", @step = "1", @class = "form-control district-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Rotaract</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Dist_Rotaract,
+                                        new { @id = "Dist_Rotaract", @type = "number", @min = "0", @step = "1", @class = "form-control district-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Interact</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Dist_Interact,
+                                        new { @id = "Dist_Interact", @type = "number", @min = "0", @step = "1", @class = "form-control district-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Rota-Kids</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Dist_RotaKids,
+                                        new { @id = "Dist_RotaKids", @type = "number", @min = "0", @step = "1", @class = "form-control district-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Community Core</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Dist_CommunityCore,
+                                        new { @id = "Dist_CommunityCore", @type = "number", @min = "0", @step = "1", @class = "form-control district-count" })
+                </td>
+            </tr>
+
+            <tr class="fw-bold">
+                <td>Total</td>
+                <td>
+                    <span id="DistrictTotal">0</span>
+                    <input type="hidden"
+                           id="DistrictTotalHidden"
+                           name="OrganisationViewModel.OrganisationAttribute.DistrictTotal" />
+                </td>
+            </tr>
+
+        </table>
+    </div>
+
+    <!-- ============================== -->
+    <!-- SPECIAL PURPOSE TRUST TABLE -->
+    <!-- ============================== -->
+    <div id="SpecialPurposeTrustTable" class="mt-4" hidden>
+
+        <label>Please enter your Club numbers</label>
+
+        <table class="table table-bordered">
+
+            <tr>
+                <th>Category</th>
+                <th>Value <span style="color:red;">(Integers only)</span></th>
+            </tr>
+
+            <tr>
+                <td>Number of Companies</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.SPT_Companies,
+                                        new { @id = "SPT_Companies", @type = "number", @min = "0", @step = "1", @class = "form-control spt-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Number of Trading Trusts</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.SPT_TradingTrusts,
+                                        new { @id = "SPT_TradingTrusts", @type = "number", @min = "0", @step = "1", @class = "form-control spt-count" })
+                </td>
+            </tr>
+
+            <tr>
+                <td>Do companies/trading trusts have revenue over NZD $1m?</td>
+                <td>
+                    @Html.DropDownListFor(
+                                        m => m.OrganisationViewModel.OrganisationAttribute.SPT_RevenueOver1m,
+                                        new List<SelectListItem>
+                                        {
+                                        new SelectListItem { Text = "-- Select --", Value = "" },
+                                        new SelectListItem { Text = "YES", Value = "YES" },
+                                        new SelectListItem { Text = "NO", Value = "NO" }
+                                        },
+                                        new { @id = "SPT_RevenueOver1m", @class = "form-select" }
+                                        )
+                </td>
+            </tr>
+
+            <tr id="SPT_RevenueRow" hidden>
+                <td>Enter aggregate revenue (NZD)</td>
+                <td>
+                    @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.SPT_Revenue,
+                                        new { @id = "SPT_Revenue", @type = "number", @min = "0", @step = "1", @class = "form-control spt-count" })
+                </td>
+            </tr>
+
+            <tr class="fw-bold">
+                <td>Total Entities</td>
+                <td>
+                    <span id="SPT_Total">0</span>
+                    <input type="hidden"
+                           id="SPT_TotalHidden"
+                           name="OrganisationViewModel.OrganisationAttribute.SPT_Total" />
+                </td>
+            </tr>
+
+
+        </table>
+
+    </div>
+
 
 </div>
 

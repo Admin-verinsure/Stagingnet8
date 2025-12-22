@@ -348,14 +348,37 @@ namespace DealEngine.WebUI.Controllers
 
                 if (TypeName == "Administrator")
                 {
+                    User user = null;
+                    Guid userid = Guid.Parse(collection["OrganisationViewModel.User.Id"].ToString());
+                    if (userid != Guid.Empty)
+                    {
+                        user = await _userService.GetUserById(userid);
+
+                    }
+                    else
+                    {
+                        user = await _userService.GetUserByEmail(jsonUser.Email);
+
+                    }
+
+
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
 
-                        User user = await _userService.GetUserByEmail(jsonUser.Email);
-                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id)) { 
-                        user.Organisations.Add(clientProgramme.Owner);
+                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id))
+                        {
+                            user.Organisations.Add(clientProgramme.Owner);
+                            // clientProgramme.Owner = user;
+                            clientProgramme.Owner.Email = user.Email;
+                            user.PrimaryOrganisation = clientProgramme.Owner;
+
                         }
                         await uow.Commit();
+                    }
+
+                    if (clientProgramme.BaseProgramme.ProgEnableEmail)
+                    {
+                        await _emailService.CreateUserAdministrator(user, clientProgramme.Owner);
                     }
                 }
 
@@ -363,6 +386,50 @@ namespace DealEngine.WebUI.Controllers
                 await _organisationService.PostOrganisation(collection, organisation);
                 if (!Sheet.Organisation.Contains(organisation))
                     Sheet.Organisation.Add(organisation);
+
+                // =======================================================
+                // ⭐ SAVE ORGANISATION ATTRIBUTE (CLUB / DISTRICT / SPT DATA)
+                // =======================================================
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    // Load existing OrganisationAttribute or create new
+                    OrganisationAttribute attr = Sheet.OrganisationAttribute;
+                    if (attr == null)
+                    {
+                        attr = new OrganisationAttribute(currentUser);
+                        Sheet.OrganisationAttribute = attr;
+                    }
+
+                    // Map values from form collection
+                    attr.ActiveFeePaying = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ActiveFeePaying"]);
+                    attr.Honorary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Honorary"]);
+                    attr.Associate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Associate"]);
+                    attr.Family = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Family"]);
+                    attr.Community = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Community"]);
+                    attr.Volunteer = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Volunteer"]);
+                    attr.Corporate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Corporate"]);
+                    attr.Alumni = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Alumni"]);
+                    attr.Trustees = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Trustees"]);
+                    attr.OtherMembers = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.OtherMembers"]);
+                    attr.ClubTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ClubTotal"]);
+
+                    attr.Dist_Rotary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotary"]);
+                    attr.Dist_Rotaract = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotaract"]);
+                    attr.Dist_Interact = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Interact"]);
+                    attr.Dist_RotaKids = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_RotaKids"]);
+                    attr.Dist_CommunityCore = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_CommunityCore"]);
+                    attr.DistrictTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.DistrictTotal"]);
+
+                    attr.SPT_Companies = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Companies"]);
+                    attr.SPT_TradingTrusts = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_TradingTrusts"]);
+                    attr.SPT_RevenueOver1m = collection["OrganisationViewModel.OrganisationAttribute.SPT_RevenueOver1m"];
+                    attr.SPT_Revenue = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Revenue"]);
+                    attr.SPT_Total = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Total"]);
+
+                    // Commit attribute save
+                    await uow.Commit();
+                }
+
 
                 await _clientInformationService.UpdateInformation(Sheet);
                 //return Ok();
@@ -375,6 +442,13 @@ namespace DealEngine.WebUI.Controllers
             }
 
             //condition for organisation exists
+        }
+
+        private int? TryParseInt(string value)
+        {
+            if (int.TryParse(value, out int result))
+                return result;
+            return null;
         }
 
 

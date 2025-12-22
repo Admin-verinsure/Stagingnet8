@@ -1049,42 +1049,46 @@ namespace DealEngine.Services.Impl
                                 }
                             }
 
-                            var rotarydirector = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Director");
-                            if (rotarydirector != null)
+                            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("Rotary Oceania Associations"))
                             {
-                                if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                var rotaryparty = uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name != "Administartor");
+                                if (rotaryparty != null)
                                 {
-                                    strallrotarynamedparties = uisorg.Name;
-                                }
-                                else
-                                {
-                                    strallrotarynamedparties += ", " + uisorg.Name;
+                                    if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                    {
+                                        strallrotarynamedparties = uisorg.Name;
+                                    }
+                                    else
+                                    {
+                                        strallrotarynamedparties += ", " + uisorg.Name;
+                                    }
                                 }
                             }
-                            var rotarytrustee = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Trustee");
-                            if (rotarytrustee != null)
-                            {
-                                if (string.IsNullOrEmpty(strallrotarynamedparties))
-                                {
-                                    strallrotarynamedparties = uisorg.Name;
-                                }
-                                else
-                                {
-                                    strallrotarynamedparties += ", " + uisorg.Name;
-                                }
-                            }
-                            var rotaryincorporatedsocietyofficer = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Incorporated Society Officer");
-                            if (rotaryincorporatedsocietyofficer != null)
-                            {
-                                if (string.IsNullOrEmpty(strallrotarynamedparties))
-                                {
-                                    strallrotarynamedparties = uisorg.Name;
-                                }
-                                else
-                                {
-                                    strallrotarynamedparties += ", " + uisorg.Name;
-                                }
-                            }
+                               
+                            //var rotarytrustee = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Trustee");
+                            //if (rotarytrustee != null)
+                            //{
+                            //    if (string.IsNullOrEmpty(strallrotarynamedparties))
+                            //    {
+                            //        strallrotarynamedparties = uisorg.Name;
+                            //    }
+                            //    else
+                            //    {
+                            //        strallrotarynamedparties += ", " + uisorg.Name;
+                            //    }
+                            //}
+                            //var rotaryincorporatedsocietyofficer = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Incorporated Society Officer");
+                            //if (rotaryincorporatedsocietyofficer != null)
+                            //{
+                            //    if (string.IsNullOrEmpty(strallrotarynamedparties))
+                            //    {
+                            //        strallrotarynamedparties = uisorg.Name;
+                            //    }
+                            //    else
+                            //    {
+                            //        strallrotarynamedparties += ", " + uisorg.Name;
+                            //    }
+                            //}
 
 
                         }

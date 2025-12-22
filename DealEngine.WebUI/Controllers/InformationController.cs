@@ -1057,6 +1057,52 @@ namespace DealEngine.WebUI.Controllers
                 var clientProgramme = await _programmeService.GetClientProgramme(id);
                 var sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
+
+
+                if (model.OrganisationViewModel.OrganisationAttribute == null)
+                {
+                    model.OrganisationViewModel.OrganisationAttribute = new OrganisationAttribute(null);
+                }
+
+                // ===============================================================
+                // ⭐ LOAD OrganisationAttribute VALUES FROM DATABASE INTO VIEWMODEL
+                // ===============================================================
+                if (sheet.OrganisationAttribute != null)
+                {
+                    var attr = sheet.OrganisationAttribute;
+                    var vm = model.OrganisationViewModel.OrganisationAttribute;
+
+                    // CLUB FIELDS
+                    vm.ActiveFeePaying = attr.ActiveFeePaying;
+                    vm.Honorary = attr.Honorary;
+                    vm.Associate = attr.Associate;
+                    vm.Family = attr.Family;
+                    vm.Community = attr.Community;
+                    vm.Volunteer = attr.Volunteer;
+                    vm.Corporate = attr.Corporate;
+                    vm.Alumni = attr.Alumni;
+                    vm.Trustees = attr.Trustees;
+                    vm.OtherMembers = attr.OtherMembers;
+                    vm.ClubTotal = attr.ClubTotal;
+
+                    // DISTRICT FIELDS
+                    vm.Dist_Rotary = attr.Dist_Rotary;
+                    vm.Dist_Rotaract = attr.Dist_Rotaract;
+                    vm.Dist_Interact = attr.Dist_Interact;
+                    vm.Dist_RotaKids = attr.Dist_RotaKids;
+                    vm.Dist_CommunityCore = attr.Dist_CommunityCore;
+                    vm.DistrictTotal = attr.DistrictTotal;
+
+                    // SPECIAL PURPOSE TRUST FIELDS
+                    vm.SPT_Companies = attr.SPT_Companies;
+                    vm.SPT_TradingTrusts = attr.SPT_TradingTrusts;
+                    vm.SPT_RevenueOver1m = attr.SPT_RevenueOver1m;
+                    vm.SPT_Revenue = attr.SPT_Revenue;
+                    vm.SPT_Total = attr.SPT_Total;
+                }
+
+
+
                 model.Advisory = await _milestoneService.SetMilestoneFor("Agreement Status - Not Started", user, sheet);
                 model.ClientProgrammeId = clientProgramme.Id;
                 //build custom models
@@ -1106,7 +1152,7 @@ namespace DealEngine.WebUI.Controllers
                     });
                 }
 
-                model.GLViewModel.DoesProtectChildrenOptions = options;
+               // model.GLViewModel.DoesProtectChildrenOptions = options;
 
                 if (sheet.Status == "Not Started")
                 {

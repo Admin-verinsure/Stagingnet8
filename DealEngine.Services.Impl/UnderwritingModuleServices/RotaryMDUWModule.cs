@@ -2,6 +2,7 @@
 using DealEngine.Services.Interfaces;
 using DocumentFormat.OpenXml.Drawing.Diagrams;
 using DocumentFormat.OpenXml.Spreadsheet;
+using QuestPDF.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,8 +43,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     mdterm.Delete(underwritingUser);
                 }
             }
+            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdadditionaladminfeeover", "mdadditionaladminfeeover", "mdstandardadminfee");
 
-            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdextensionpremiumover", "mdadditionaladminfeeover", "mdadditionaladminfeeover", "mdstandardadminfee");
+            //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdextensionpremiumover", "mdadditionaladminfeeover", "mdadditionaladminfeeover", "mdstandardadminfee");
 
             //Create default referral points based on the clientagreementrules
             if (agreement.ClientAgreementReferrals.Count == 0)
@@ -59,7 +61,18 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             bool bolworkoutsidenz = false;
             bool assetover5000 = false;
+            bool runout = false;
 
+
+            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "MLViewModel.HasRunoutOptions").Any())
+            {
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "MLViewModel.HasRunoutOptions").First().Value == "1")
+                {
+                    runout = true;
+                }
+            }
+
+            
             if (agreement.ClientInformationSheet.RevenueData != null)
             {
                 foreach (var uISTerritory in agreement.ClientInformationSheet.RevenueData.Territories)
@@ -80,15 +93,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
 
 
-
-
-            //  if(agreement.ClientInformationSheet.Product)
-
             bool isclubtrustselect = false;
             ////ClientInformationAnswer TransitionalLicenseNum = await _clientInformationAnswer.GetSheetAnsByName("FAPViewModel.TransitionalLicenseNum", clientInformationSheetID);
 
             //if (agreement.ClientInformationSheet.)
-
+            bool HasClubTrustAssetMore = false;
             int extLimit = 0;
             int extExcess = 500;
             decimal extPremium = 0M;
@@ -108,8 +117,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     }
                 }
             }
-            extPremium = extLoading * rates["mdextensionpremiumover"];
-            adminFee = rates["mdstandardadminfee"] + extLoading * rates["mdadditionaladminfeeover"];
+            //extPremium = extLoading * rates["mdextensionpremiumover"];
+            //adminFee = rates["mdstandardadminfee"] + extLoading * rates["mdadditionaladminfeeover"];
 
             int agreementperiodindays = 0;
             agreementperiodindays = (agreement.ExpiryDate - agreement.InceptionDate).Days;
@@ -139,6 +148,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium = TermPremium / coverperiodindays * agreementperiodindays;
             TermBrokerage = TermPremium * agreement.Brokerage / 100;
+            var attr = informationSheet?.OrganisationAttribute;
+            decimal premium = 0;
+
+            TermPremium += CalculatePremium(informationSheet, attr);
+
 
             ClientAgreementTerm termoption = GetAgreementTerm(underwritingUser, agreement, "MD", TermLimit, TermExcess);
             termoption.TermLimit = TermLimit;
@@ -179,17 +193,17 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 adminFee = 1750;
             }
 
-            agreement.BrokerFee = adminFee;
+            agreement.BrokerFee = 37.5m;
 
             //Referral points per agreement
             //Operates Outside of NZ
             uwrfoperatesoutsideofnz(underwritingUser, agreement, bolworkoutsidenz);
-            if (assetover5000)
+            if (assetover5000 || runout)
             {
-                UWTask(underwritingUser, agreement, assetover5000);
+                UWTask(underwritingUser, agreement, assetover5000, runout);
 
             }
-
+           
 
             //Update agreement status
             if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
@@ -343,9 +357,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
-
-
-        void UWTask(User underwritingUser, ClientAgreement agreement, bool assetover5000)
+        void UWTask(User underwritingUser, ClientAgreement agreement, bool assetover5000 , bool runout)
         {
             if (assetover5000)
             {
@@ -365,18 +377,64 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     agreement.Product.OdooTaskSpecs.Add(odooTaskSpec);
                 }
             }
-            else
+
+
+            if (runout)
             {
-                foreach (var task in agreement.Product.OdooTaskSpecs)
+                bool alreadyExists = agreement.Product.OdooTaskSpecs
+                    .Any(t => t.Title == "Case trade runout cover");
+
+                if (!alreadyExists)
                 {
-                    task.DateDeleted = DateTime.UtcNow;   // or whatever your system uses
-                    task.DeletedBy = underwritingUser;    // optional
+                    var odooTaskSpec = new OdooTaskSpec(
+                        underwritingUser,
+                        "Case trade runout cover",
+                        44,
+                        agreement.Product,
+                        notes: "Case trade runout cover"
+                    );
+
+                    agreement.Product.OdooTaskSpecs.Add(odooTaskSpec);
                 }
             }
+
+
+
 
         }
 
 
+
+        private decimal CalculatePremium(ClientInformationSheet informationSheet, OrganisationAttribute attr)
+        {
+            decimal entityChargeTotal = 0m;
+
+
+            foreach (var organisation in  informationSheet.Organisation.Where(o => o.DateDeleted == null && !o.Removed))
+            {
+                if(organisation.Id == informationSheet.Owner.Id)
+                {
+                    entityChargeTotal += 195m;
+                }
+                else
+                {
+                    foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
+                    {
+                        // Skip "Administrator" units
+                        if (unit.Name == "Administrator")
+                            continue;
+
+                        // Add entity charge ($195 per active entity)
+                        entityChargeTotal += 195m;
+                    }
+                }
+                   
+            }
+
+
+            return entityChargeTotal;
+
+        }
     }
 }
 

@@ -450,7 +450,8 @@ else
         <div id="Coveroptionssec" class="form-group">
             <div class="row">
                 <div class="col-3 font-md">
-                    <strong>Cover Options</strong>
+                    <strong>Cover Options</strong> 
+
                 </div>
             </div>
 
@@ -467,7 +468,7 @@ else
                         {
                             <th class="text-center" width="16%">Monthly Premium</th>
                         }
-                        <th class="text-center" width="17%" hidden>Dependableproduct</th>
+                        <th class="text-center" width="17%"></th>
 
                     </tr>
                     @foreach (var item in Model.MultiCoverOptions)
@@ -497,6 +498,8 @@ else
                             }
                             <td class="pt-3-half" width="12%" contenteditable="true" value="@item.Dependableproduct" hidden>
                                 @item.Dependableproduct
+
+
                             </td>
 
 

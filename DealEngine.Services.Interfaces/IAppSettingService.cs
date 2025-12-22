@@ -41,6 +41,7 @@ namespace DealEngine.Services.Interfaces
         string OdooServerDB { get; }
         string LoginID { get; }
         string LoginKey { get; }
+        string FileBasePhysicalPath { get; }
     }
 }
 

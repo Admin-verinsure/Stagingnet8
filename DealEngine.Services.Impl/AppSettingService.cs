@@ -286,6 +286,16 @@ namespace DealEngine.Services.Impl
             }
         }
 
-       
+        public string FileBasePhysicalPath
+        {
+            get
+            {
+                return _configuration.GetValue<string>("FileBasePhysicalPath");
+            }
+        }
+
+        
+
+
     }
 }

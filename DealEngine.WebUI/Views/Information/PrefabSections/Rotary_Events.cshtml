@@ -1,6 +1,6 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
-<form id="EventsViewModel" class="is-valid" data-accordianId="Event Plan">
+<form id="EventsViewModel" class="is-valid" data-accordianId="Events involving the public">
 
     <div class="mt-2 mb-3">
         <button class="btn btn-info" type="button" data-bs-toggle="collapse" data-bs-target="#EventsAdvisoryPanel" aria-expanded="false" aria-controls="trustAdvisoryPanel">
@@ -11,13 +11,13 @@
     <div class="collapse" id="EventsAdvisoryPanel">
         <div class="card card-body">
             <!-- advisory text ... -->
-            
-            Public liability cover is provided for events in hospitality venues or are simple fundraisers such as diners, conferences, Bunnings  BBQs are covered.
+            Public liability cover is provided for events in hospitality venues or are simple fund-raisers such as diners, conferences, Bunnings  BBQs are covered.
             All other events should be advised to the insurance team, especially if the event:
             (a)  is set in a public place and/or
             (b)  includes activities such as adventure or sporting activities and/or
             (c) involves stalls, public displays (especially fireworks), bouncy castles etc.
-            Each need to be listed so the insurance team can assist to ensure that there is proper cover in place.
+            Each need to be listed so the insurance team can assist to ensure that there is proper cover in place.  
+            For higher risk events your Club may wish to have dedicated public liability insurance by answering the question on extra cover.
         </div>
     </div>
 
@@ -176,5 +176,27 @@
     </div>
 
   
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+
+                    Do you want a member of the insurance team to contact you to discuss options for extra cover?
+
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="ExtraCoverOptions" name="EventsViewModel.ExtraCoverOptions" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.EventsViewModel.ExtraCoverOptions)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
 
 </form>

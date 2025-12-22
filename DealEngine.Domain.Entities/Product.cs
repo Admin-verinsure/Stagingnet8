@@ -62,6 +62,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool ProductInfofunc { get; set; }
         public virtual IList<OdooTaskSpec> OdooTaskSpecs { get; protected set; }
         protected Product() : base(null) { }
+        public virtual string ProductExtraInfo { get; set; }
 
         protected Product(User createdBy)
             : base(createdBy)

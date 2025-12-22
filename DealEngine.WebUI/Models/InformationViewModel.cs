@@ -1,5 +1,6 @@
 ﻿using DealEngine.Domain.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -1704,20 +1705,18 @@ namespace DealEngine.WebUI.Models
             HasClientFundsOptions = GetSelectListOptions();
             DoesProtectChildrenOption = GetSelectListOptions();
             DoesProtectChildrenOptionValue = "0"; // default
-
             // single-select (Yes/No/Not Sure)
             Doesvolunteerpolicechecked = GetDoesvolunteerpolicecheckedOptions();
             DoesvolunteerpolicecheckedValue = "0"; // default
-
             // multi-select (activities)
+            //DoesProtectChildrenOptions = new List<SelectListItem>();
+            DoesProtectChildrenOptions = GetSelectListOptionsforProtectionOptions();
             DoesProtectChildren = new List<string>();
-            DoesProtectChildrenOptions = new List<SelectListItem>();
-
 
         }
 
 
-        
+
         private IList<SelectListItem> GetDoesvolunteerpolicecheckedOptions()
         {
             return new List<SelectListItem>()
@@ -1732,6 +1731,36 @@ namespace DealEngine.WebUI.Models
                 
             };
         }
+
+
+        private IList<SelectListItem> GetSelectListOptionsforProtectionOptions()
+        {
+            return new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Rotary Youth Exchange (RYE)", Value = "RYE" },
+        new SelectListItem { Text = "Rotary Youth Programme of Enrichment (RYPEN)", Value = "RYPEN" },
+        new SelectListItem { Text = "Interact Club Sponsor Club", Value = "INTERACT_SPONSOR" },
+        new SelectListItem { Text = "Rota-Kids Sponsor Club", Value = "ROTAKIDS_SPONSOR" },
+        new SelectListItem { Text = "Rotary Australia New Zealand Student Exchange (RANZSE)", Value = "RANZSE" },
+        new SelectListItem { Text = "Road Safety Education (RYDA)", Value = "RYDA" },
+        new SelectListItem { Text = "Rotary National Science & Technology Forum", Value = "SCIENCE_FORUM" },
+        new SelectListItem { Text = "Rotary Eureka Science Awards", Value = "EUREKA" },
+        new SelectListItem { Text = "Model United Nations Assembly (MUNA)", Value = "MUNA" },
+        new SelectListItem { Text = "Interact", Value = "INTERACT" },
+        new SelectListItem { Text = "Innovative Young Minds (IYM)", Value = "IYM" },
+        new SelectListItem { Text = "ROTA Pacific", Value = "ROTA_PACIFIC" },
+        new SelectListItem { Text = "Trees for Survival", Value = "TREES_SURVIVAL" },
+        new SelectListItem { Text = "The Walsh Memorial Scout Flying School – sponsor", Value = "WALSH_SCOUT" },
+        new SelectListItem { Text = "The Spirit of Adventure – sponsor", Value = "SPIRIT_ADVENTURE" },
+        new SelectListItem { Text = "Outward Bound – sponsor", Value = "OUTWARD_BOUND" },
+        new SelectListItem { Text = "Turn Your Life Around (TYLA)", Value = "TYLA" },
+        new SelectListItem { Text = "Storytime Foundation", Value = "STORYTIME" },
+        new SelectListItem { Text = "ROMAC – inbound hosting", Value = "ROMAC" },
+        new SelectListItem { Text = "Other", Value = "OTHER" }
+    };
+        }
+
+
 
         //public IList<SelectListItem> DoesProtectChildrenOptions { get; set; }
 
@@ -1799,11 +1828,8 @@ namespace DealEngine.WebUI.Models
         public string DoesvolunteerpolicecheckedValue { get; set; } // <-- selected value
 
         // multi-select (activities)
-        public List<string> DoesProtectChildren { get; set; }              // selected values
-        public IList<SelectListItem> DoesProtectChildrenOptions { get; set; } // options
-
-
-
+        public IList<SelectListItem> DoesProtectChildrenOptions { get; }
+        public List<string> DoesProtectChildren { get; set; }
         public int CoverAmount { get; set; }
         public string VehicleDetails { get; set; }
         public string AssumeLiabilityDetails { get; set; }
@@ -2365,11 +2391,14 @@ namespace DealEngine.WebUI.Models
         {
             HasClubTrustAssets = GetSelectListOptions();
             HasClubTrustEvent = GetSelectListOptions();
+            ExtraCoverOptions = GetSelectListOptions();
         }
         public EventsViewModel(ClientInformationSheet clientInformationSheet)
         {
             HasClubTrustAssets = GetSelectListOptions();
             HasClubTrustEvent = GetSelectListOptions();
+            ExtraCoverOptions = GetSelectListOptions();
+
             EventsInfo = GetClubTrustAssets(clientInformationSheet);
         }
 
@@ -2385,6 +2414,8 @@ namespace DealEngine.WebUI.Models
         }
         public IList<SelectListItem> HasClubTrustAssets { get; set; }
         public IList<SelectListItem> HasClubTrustEvent { get; set; }
+        public IList<SelectListItem> ExtraCoverOptions { get; set; }
+
         public IList<EventsInfo> EventsInfo { get; set; }
 
         private IList<SelectListItem> GetSelectListOptions()
