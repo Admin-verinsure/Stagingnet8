@@ -1,12 +1,16 @@
-﻿using System;
+﻿using DealEngine.Domain.Entities;
+using DealEngine.Services.Impl;
+using DealEngine.Services.Interfaces; // <-- your interface namespace
+using Newtonsoft.Json;
+using NHibernate.Cfg;
+using ServiceStack;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using DealEngine.Services.Interfaces; // <-- your interface namespace
-using DealEngine.Domain.Entities;
 
 
 namespace DealEngine.WebUI.ServiceReference
@@ -15,7 +19,8 @@ namespace DealEngine.WebUI.ServiceReference
     {
         private readonly HttpClient _http;
         private readonly bool _ownsHttp;
-
+        private readonly HttpClient _httpClient;
+        private readonly AppSettingService _appSettings;
         // removed readonly so they can be set from OdooGatewayconnection()
         private string? _api;   // FULL jsonrpc URL, e.g. https://not4profit.online/jsonrpc
         private string? _db;    // e.g. not4profitodoo18
@@ -30,6 +35,12 @@ namespace DealEngine.WebUI.ServiceReference
             _http.Timeout = TimeSpan.FromSeconds(30);
         }
 
+        public OdooTaskExtension(HttpClient httpClient, AppSettingService appSettings)
+        {
+            _httpClient = httpClient;
+            _appSettings = appSettings;
+        }
+
         public void Dispose()
         {
             if (_ownsHttp) _http.Dispose();
@@ -37,7 +48,7 @@ namespace DealEngine.WebUI.ServiceReference
 
         // ---------------- IOdooTaskGateway ----------------
 
-        // Initialize connection + login. Returns uid.
+      //  Initialize connection + login.Returns uid.
         public async Task<int> OdooGatewayconnection(string endpoint, string db, string login, string key)
         {
             _api = (endpoint ?? throw new ArgumentNullException(nameof(endpoint))).TrimEnd('/');
@@ -50,31 +61,30 @@ namespace DealEngine.WebUI.ServiceReference
             return _uid;
         }
 
-        //public async Task<int[]> CreateTasksAsync(IEnumerable<OdooTaskSpec> tasks)
-        //{
-        //    EnsureLoggedIn();
+        public async Task<int[]> CreateTasksAsync(IEnumerable<OdooTaskSpec> tasks)
+        {
+            EnsureLoggedIn();
 
-        //    if (tasks is null) throw new ArgumentNullException(nameof(tasks));
+            if (tasks is null) throw new ArgumentNullException(nameof(tasks));
 
-        //    var valsList = tasks.Select(t =>
-        //    {
-        //        var vals = new Dictionary<string, object?>
-        //        {
-        //            ["name"] = t.Title ?? throw new ArgumentNullException(nameof(t.Title)),
-        //            ["project_id"] = t.ProjectId
-        //        };
-        //        if (!string.IsNullOrWhiteSpace(t.Notes)) vals["description"] = t.Notes;
-        //        if (t.Deadline is DateTime d) vals["date_deadline"] = d.ToString("yyyy-MM-dd");
-        //        if (t.AssigneeUserId is int u) vals["user_id"] = u;
-        //        if (t.TagIds is not null) vals["tag_ids"] = new object[] { new object[] { 6, 0, t.TagIds.ToArray() } };
-        //        return (object)vals;
-        //    }).ToArray();
+            var valsList = tasks.Select(t =>
+            {
+                var vals = new Dictionary<string, object?>
+                {
+                    ["name"] = t.Title ?? throw new ArgumentNullException(nameof(t.Title)),
+                    ["project_id"] = t.ProjectId
+                };
+                if (!string.IsNullOrWhiteSpace(t.Notes)) vals["description"] = t.Notes;
+                if (t.Deadline is DateTime d) vals["date_deadline"] = d.ToString("yyyy-MM-dd");
+                if (t.AssigneeUserId is int u) vals["user_id"] = u;
+                return (object)vals;
+            }).ToArray();
 
-        //    // One execute_kw with a list of value dicts → bulk create
-        //    var payload = ExecKw("project.task", "create", new object[] { valsList });
+            // One execute_kw with a list of value dicts → bulk create
+            var payload = ExecKw("project.task", "create", new object[] { valsList });
 
-        //    return await RpcAsync<int[]>(payload); // returns array of new task IDs
-        //}
+            return await RpcAsync<int[]>(payload); // returns array of new task IDs
+        }
 
 
         public async Task<int> CreateTaskAsync(string title, int projectId, string? notes = null,
@@ -118,28 +128,28 @@ namespace DealEngine.WebUI.ServiceReference
             return ids.Length > 0 ? ids[0] : null;
         }
 
-        // ---------------- extras you already had (optional to keep) ----------------
+       //  ---------------- extras you already had(optional to keep) ----------------
 
-        public async Task<int[]> CreateTasksAsync(IEnumerable<OdooTaskSpec> tasks)
-        {
-            EnsureLoggedIn();
+        //public async Task<int[]> CreateTasksAsync(IEnumerable<OdooTaskSpec> tasks)
+        //{
+        //    EnsureLoggedIn();
 
-            var valsList = tasks?.Select(t =>
-            {
-                var vals = new Dictionary<string, object?>
-                {
-                    ["name"] = t.Title ?? throw new ArgumentNullException(nameof(t.Title)),
-                    ["project_id"] = t.ProjectId
-                };
-                if (!string.IsNullOrWhiteSpace(t.Notes)) vals["description"] = t.Notes;
-               
-                //if (t.TagIds is not null) vals["tag_ids"] = new object[] { new object[] { 6, 0, t.TagIds.ToArray() } };
-                return (object)vals;
-            }).ToArray() ?? throw new ArgumentNullException(nameof(tasks));
+        //    var valsList = tasks?.Select(t =>
+        //    {
+        //        var vals = new Dictionary<string, object?>
+        //        {
+        //            ["name"] = t.Title ?? throw new ArgumentNullException(nameof(t.Title)),
+        //            ["project_id"] = t.ProjectId
+        //        };
+        //        if (!string.IsNullOrWhiteSpace(t.Notes)) vals["description"] = t.Notes;
 
-            var payload = ExecKw("project.task", "create", new object[] { valsList });
-            return await RpcAsync<int[]>(payload);
-        }
+        //        //if (t.TagIds is not null) vals["tag_ids"] = new object[] { new object[] { 6, 0, t.TagIds.ToArray() } };
+        //        return (object)vals;
+        //    }).ToArray() ?? throw new ArgumentNullException(nameof(tasks));
+
+        //    var payload = ExecKw("project.task", "create", new object[] { valsList });
+        //    return await RpcAsync<int[]>(payload);
+        //}
 
         public async Task<int?> FindProjectIdByNameAsync(string projectName)
         {
@@ -160,7 +170,7 @@ namespace DealEngine.WebUI.ServiceReference
             return count > 0;
         }
 
-        // ---------------- internals ----------------
+       //  ---------------- internals ----------------
 
         private async Task LoginAsync()
         {
@@ -212,7 +222,7 @@ namespace DealEngine.WebUI.ServiceReference
 
         private async Task<string> PostRawAsync(object payload)
         {
-            var req = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
+            var req = new StringContent(System.Text.Json.JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
             var res = await _http.PostAsync(_api!, req);
             res.EnsureSuccessStatusCode();
             return await res.Content.ReadAsStringAsync();
@@ -231,9 +241,9 @@ namespace DealEngine.WebUI.ServiceReference
 
             try
             {
-                return JsonSerializer.Deserialize<T>(resultProp.GetRawText())!;
+                return System.Text.Json.JsonSerializer.Deserialize<T>(resultProp.GetRawText())!;
             }
-            catch (JsonException je)
+            catch (System.Text.Json.JsonException je)
             {
                 throw new InvalidOperationException(
                     $"Failed to deserialize Odoo result to {typeof(T).Name}. Raw result: {resultProp}", je);
@@ -253,6 +263,99 @@ namespace DealEngine.WebUI.ServiceReference
                     args = new object[] { _db!, _uid, _key!, model, method, positionalArgs, kwargs ?? new Dictionary<string, object>() }
                 }
             };
+
+        public async Task<string> SendInvoiceAsync(object rpcPayload)
+        {
+            var json = JsonConvert.SerializeObject(rpcPayload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync(
+                _appSettings.OdooServerworkingendpoint, // NEW endpoint
+                content
+            );
+
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        // 🔹 Public method used by controller
+        public async Task<string> SendInvoiceAsync(
+            ClientInformationSheet sheet,
+            ClientProgramme programme,
+            decimal invoiceAmount)
+        {
+            var payload = BuildInvoicePayload(sheet, programme, invoiceAmount);
+
+            var json = JsonConvert.SerializeObject(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync(
+                _appSettings.OdooServerworkingendpoint,
+                content
+            );
+
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        // 🔹 Payload builder (PRIVATE – internal only)
+        private object BuildInvoicePayload(
+            ClientInformationSheet sheet,
+            ClientProgramme programme,
+            decimal amount)
+        {
+            return new
+            {
+                jsonrpc = "2.0",
+                method = "call",
+                id = $"ext-invoice-{Guid.NewGuid()}",
+                @params = new
+                {
+                    @ref = programme.Id.ToString(),
+
+                    customer = new
+                    {
+                        name = sheet.Owner.Name,
+                        email = sheet.Owner.Email,
+                        phone = sheet.Owner.Phone
+                    },
+
+                    currency = "NZD",
+                    invoice_date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
+                    due_date = DateTime.UtcNow.AddDays(14).ToString("yyyy-MM-dd"),
+                    payment_reference = programme.Id.ToString(),
+
+                    salesperson = new
+                    {
+                        login = "admin@verinsure.online"
+                    },
+
+                    policy = new
+                    {
+                        type_name = programme.BaseProgramme?.Name,
+                        name = programme.BaseProgramme?.Name,
+                        amount = amount,
+                        policy_number = programme.InformationSheet.ReferenceId,
+                        policy_duration = 12,
+                        payment_type = "Invoice"
+                    },
+
+                    lines = new[]
+                    {
+                    new
+                    {
+                        name = $"Annual Premium - {programme.BaseProgramme?.Name}",
+                        qty = 1,
+                        unit_price = amount,
+                        tax_names = Array.Empty<string>()
+                    }
+                }
+                }
+            };
+        }
+
+
+
     }
 
    

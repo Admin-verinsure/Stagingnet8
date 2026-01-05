@@ -7,6 +7,7 @@ using DealEngine.WebUI.Helpers;
 using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Agreement;
 using DealEngine.WebUI.Models.Programme;
+using DealEngine.WebUI.ServiceReference;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using HtmlAgilityPack;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
+using Newtonsoft.Json;
 using NHibernate.Mapping;
 using NReco.PdfGenerator;
 using ServiceStack;
@@ -23,11 +25,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Mime;
+using System.Text;
 using System.Threading.Tasks;
 using Document = DealEngine.Domain.Entities.Document;
 using SystemDocument = DealEngine.Domain.Entities.Document;
-using DealEngine.WebUI.ServiceReference;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -2340,41 +2343,41 @@ namespace DealEngine.WebUI.Controllers
 // using DealEngine.Services.Interfaces;                 // IOdooTaskGateway
 // using DealEngine.Integrations.Odoo.Models;           // OdooTaskSpec (wherever you put it)
 
-public async Task<IActionResult> OdooTaskExtension()
-    {
-            User user = await CurrentUser();
+//public async Task<IActionResult> OdooTaskExtension()
+//    {
+//            User user = await CurrentUser();
 
-             await _odooTaskGateway.OdooGatewayconnection(
-            _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
-            _appSettingService.OdooServerDB,              // e.g. not4profitodoo18
-            _appSettingService.LoginID,                   // e.g. ashuchauhan@verinsure.online
-            _appSettingService.LoginKey                   // API key
-        );
+//             await _odooTaskGateway.OdooGatewayconnection(
+//            _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
+//            _appSettingService.OdooServerDB,              // e.g. not4profitodoo18
+//            _appSettingService.LoginID,                   // e.g. ashuchauhan@verinsure.online
+//            _appSettingService.LoginKey                   // API key
+//        );
 
-        // 1) single create
-        var singleId = await _odooTaskGateway.CreateTaskAsync(
-            title: $"Test from button {DateTime.UtcNow:HH:mm:ss}",
-            projectId: 34,
-            notes: $"UTC {DateTime.UtcNow:O}"
-        );
+//        // 1) single create
+//        var singleId = await _odooTaskGateway.CreateTaskAsync(
+//            title: $"Test from button {DateTime.UtcNow:HH:mm:ss}",
+//            projectId: 34,
+//            notes: $"UTC {DateTime.UtcNow:O}"
+//        );
 
-        // 2) bulk create (one JSON-RPC call)
-        var now = DateTime.UtcNow;
-            //    var bulkIds = await _odooTaskGateway.CreateTasksAsync(new[]
-            //    {
-            //    new OdooTaskSpec(user,$"POC A {now:HH:mm:ss}", 43, notes: "bulk #1"),
-            //    new OdooTaskSpec(user,$"POC B {now:HH:mm:ss}", 43, notes: "bulk #2"),
-            //    new OdooTaskSpec(user,$"POC C {now:HH:mm:ss}", 43, notes: "bulk #3"),
-            //});
+//        // 2) bulk create (one JSON-RPC call)
+//        var now = DateTime.UtcNow;
+//            //    var bulkIds = await _odooTaskGateway.CreateTasksAsync(new[]
+//            //    {
+//            //    new OdooTaskSpec(user,$"POC A {now:HH:mm:ss}", 43, notes: "bulk #1"),
+//            //    new OdooTaskSpec(user,$"POC B {now:HH:mm:ss}", 43, notes: "bulk #2"),
+//            //    new OdooTaskSpec(user,$"POC C {now:HH:mm:ss}", 43, notes: "bulk #3"),
+//            //});
 
-            //return Ok(new
-            //{
-            //    singleCreatedId = singleId,
-            //    bulkCreatedIds = bulkIds,
-            //    bulkCount = bulkIds.Length
-            //});
-            return Ok();
-    }
+//            //return Ok(new
+//            //{
+//            //    singleCreatedId = singleId,
+//            //    bulkCreatedIds = bulkIds,
+//            //    bulkCount = bulkIds.Length
+//            //});
+//            return Ok();
+//    }
 
 
 
@@ -2662,7 +2665,7 @@ public async Task<IActionResult> OdooTaskExtension()
                 ViewBag.Title = clientProgramme.BaseProgramme.Name + " Payment for " + clientProgramme.Owner.Name;
 
                 bool requirePayment = false;
-                if ((clientProgramme.BaseProgramme.HasCCPayment || clientProgramme.BaseProgramme.HasInvoicePayment) && totalPayable > 0)
+                if (clientProgramme.BaseProgramme.HasCCPayment || clientProgramme.BaseProgramme.HasInvoicePayment)
                 {
                     requirePayment = true;
                 }
@@ -4134,13 +4137,14 @@ public async Task<IActionResult> OdooTaskExtension()
                     }
                 }
 
-                if (Action == "BindAgreement")
+
+               if (Action == "BindAgreement")
                 {
                     return Redirect("/Agreement/ViewAcceptedAgreement/" + programme.Id);
                 }
                 else
                 {
-                    var url = "/Agreement/ViewAcceptedAgreement/" + programme.Id;
+                    var url = "/Agreement/RenderDocuments/" + programme.InformationSheet.Id;
                     return Json(new { url });
                 }
 
@@ -4645,6 +4649,213 @@ public async Task<IActionResult> OdooTaskExtension()
             }
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> SendInvoiceToOdoo(IFormCollection collection)
+        {
+            Guid sheetId;
+            ClientInformationSheet sheet = null;
+            User user = null;
+
+            try
+            {
+                if (!Guid.TryParse(collection["AnswerSheetId"], out sheetId))
+                    return BadRequest("Invalid AnswerSheetId");
+
+                sheet = await _customerInformationService.GetInformation(sheetId);
+                var programme = sheet.Programme;
+
+                decimal totalPremium = 0;
+                decimal brokerFee = 0;
+                decimal GST = 1.15m;
+
+                foreach (var agreement in programme.Agreements)
+                {
+                    brokerFee += agreement.BrokerFee;
+
+                    var terms = await _clientAgreementTermService
+                        .GetAllAgreementTermFor(agreement);
+
+                    foreach (var term in terms.Where(t => t.Bound && t.DateDeleted == null))
+                    {
+                        totalPremium += programme.InformationSheet.IsChange &&
+                                        programme.InformationSheet.PreviousInformationSheet != null
+                                        ? term.PremiumDiffer
+                                        : term.Premium;
+
+                        foreach (var ext in term.ClientAgreement
+                            .ClientAgreementTermExtensions
+                            .Where(e => e.Bound))
+                        {
+                            totalPremium += ext.Premium;
+                        }
+                    }
+                }
+
+                var invoiceAmount = Math.Round((totalPremium + brokerFee) * GST, 2);
+
+                var odooResponse = await _odooTaskGateway.SendInvoiceAsync(
+                    sheet,
+                    programme,
+                    invoiceAmount);
+
+                return Ok(new
+                {
+                    success = true,
+                    odooResponse
+                });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> SendInvoiceToOdoo(IFormCollection collection)
+        //{
+        //    Guid sheetId;
+        //    ClientInformationSheet sheet = null;
+        //    User user = null;
+
+        //    try
+        //    {
+        //        if (!Guid.TryParse(collection["AnswerSheetId"], out sheetId))
+        //            return BadRequest("Invalid AnswerSheetId");
+
+        //        sheet = await _customerInformationService.GetInformation(sheetId);
+        //        var programme = sheet.Programme;
+
+        //        decimal totalPremium = 0;
+        //        decimal brokerFee = 0;
+        //        decimal GST = 1.15m;
+
+        //        foreach (var agreement in programme.Agreements)
+        //        {
+        //            brokerFee += agreement.BrokerFee;
+
+        //            var terms = await _clientAgreementTermService
+        //                .GetAllAgreementTermFor(agreement);
+
+        //            foreach (var term in terms.Where(t => t.Bound && t.DateDeleted == null))
+        //            {
+        //                totalPremium += programme.InformationSheet.IsChange &&
+        //                                programme.InformationSheet.PreviousInformationSheet != null
+        //                                ? term.PremiumDiffer
+        //                                : term.Premium;
+
+        //                foreach (var ext in term.ClientAgreement
+        //                    .ClientAgreementTermExtensions
+        //                    .Where(e => e.Bound))
+        //                {
+        //                    totalPremium += ext.Premium;
+        //                }
+        //            }
+        //        }
+
+        //        var invoiceAmount = Math.Round((totalPremium + brokerFee) * GST, 2);
+
+        //        var rpcPayload = OdooInvoicePayloadBuilder.Build(
+        //            sheet,
+        //            programme,
+        //            invoiceAmount
+        //        );
+
+        //        var response = await _odooTaskGateway.SendInvoiceAsync(rpcPayload);
+
+        //        return Ok(new
+        //        {
+        //            success = true,
+        //            odooResponse = response
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        //        return RedirectToAction("Error500", "Error");
+        //    }
+        //}
+
+
+        //    private object BuildOdooRpcPayload(
+        //ClientInformationSheet sheet,
+        //ClientProgramme programme,
+        //decimal amount)
+        //    {
+        //        return new
+        //        {
+        //            jsonrpc = "2.0",
+        //            method = "call",
+        //            id = $"ext-req-{Guid.NewGuid()}",
+        //            @params = new
+        //            {
+        //                @ref = programme.Id.ToString(),
+
+        //                customer = new
+        //                {
+        //                    name = sheet.Organisation?.Name,
+        //                    email = sheet.CreatedBy?.Email,
+        //                    phone = sheet.Organisation?.Phone
+        //                },
+
+        //                currency = "NZD",
+        //                invoice_date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
+        //                due_date = DateTime.UtcNow.AddDays(14).ToString("yyyy-MM-dd"),
+        //                payment_reference = programme.Id.ToString(),
+
+        //                salesperson = new
+        //                {
+        //                    login = "admin@verinsure.online"
+        //                },
+
+        //                policy = new
+        //                {
+        //                    type_name = programme.BaseProgramme?.Name,
+        //                    name = programme.Name,
+        //                    amount = amount,
+        //                    policy_number = programme.PolicyNumber,
+        //                    policy_duration = 12,
+        //                    payment_type = "fixed",
+
+        //                    agent = new
+        //                    {
+        //                        name = sheet.CreatedBy?.FullName,
+        //                        email = sheet.CreatedBy?.Email,
+        //                        phone = sheet.CreatedBy?.Phone
+        //                    }
+        //                },
+
+        //                lines = new[]
+        //                {
+        //            new
+        //            {
+        //                name = $"Annual Premium - {programme.Name}",
+        //                qty = 1,
+        //                unit_price = amount,
+        //                tax_names = Array.Empty<string>()
+        //            }
+        //        }
+        //            }
+        //        };
+        //    }
+
+
+        public async Task<string> SendAsync(object payload)
+        {
+            using var client = new HttpClient();
+
+            var json = JsonConvert.SerializeObject(payload);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync(
+                _appSettingService.OdooServerworkingendpoint,
+                content);
+
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
 
         [HttpGet]
         public async Task<IActionResult> ResumeGeneratePxPayment(Guid id)
@@ -5331,7 +5542,7 @@ public async Task<IActionResult> OdooTaskExtension()
                     foreach (ClientAgreement agreement in programme.Agreements.Where(a => a.DateDeleted == null && a.InsurerDeclined !=true))
                     {
                         //agreeDocList = (List<Document>)agreement.Documents;
-                        foreach (Document doc in agreement.Documents)
+                        foreach (Document doc in agreement.Documents.Where(doc => doc.DateDeleted== null))
                         {
                             if ((!doc.Name.EqualsIgnoreCase("Information Sheet Report") && doc.DocumentType != 8) && !programme.BaseProgramme.IsPdfDoc)
                             {
@@ -5589,7 +5800,8 @@ public async Task<IActionResult> OdooTaskExtension()
                 user = await CurrentUser();
                 var agreeDocList = new List<Document>();
                 Document renderedDoc;
-                foreach (ClientAgreement agreement in clientProgramme.Agreements)
+                foreach (ClientAgreement agreement 
+                    in clientProgramme.Agreements)
                 {
                     agreeDocList = agreement.GetDocuments();
                     foreach (Document doc in agreeDocList)
@@ -5598,6 +5810,8 @@ public async Task<IActionResult> OdooTaskExtension()
                         if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0) && !(doc.DocumentType == 99))
                         {
                             doc.Delete(user);
+                            agreement.Documents.Remove(doc);
+
                         }
                     }
 

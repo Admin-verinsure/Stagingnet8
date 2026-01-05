@@ -862,7 +862,7 @@ namespace DealEngine.Services.Impl
 
                 string strallrotarynamedparties = "";
 
-                if (agreement.ClientInformationSheet.Organisation.Count > 0)
+                if (agreement.ClientInformationSheet.Organisation.Count > 0 || agreement.ClientInformationSheet.Owner.Name != null)
                 {
 
                     foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
@@ -1048,8 +1048,8 @@ namespace DealEngine.Services.Impl
                                     }
                                 }
                             }
-
-                            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("Rotary Oceania Associations"))
+                            ///RotaryAssociationsProgramme Rotary Oceania Associations
+                            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("RotaryAssociationsProgramme"))
                             {
                                 var rotaryparty = uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name != "Administartor");
                                 if (rotaryparty != null)
@@ -1123,8 +1123,19 @@ namespace DealEngine.Services.Impl
                     {
                         strabusiness = "No Associated Business Insureds.";
                     }
+                    if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("RotaryAssociationsProgramme"))
+                    {
+                        if (string.IsNullOrEmpty(strallrotarynamedparties))
+                        {
+                            strallrotarynamedparties = agreement.ClientInformationSheet.Owner.Name;
+                        }
+                        else
+                        {
+                            strallrotarynamedparties += ", " + agreement.ClientInformationSheet.Owner.Name;
+                        }
 
-                    if (string.IsNullOrEmpty(strallrotarynamedparties) && agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("Rotary Oceania Associations"))
+                    }
+                    if (string.IsNullOrEmpty(strallrotarynamedparties) && agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("RotaryAssociationsProgramme"))
                     {
 
                         strabusiness = "No Additional Insureds.";

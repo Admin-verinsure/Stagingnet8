@@ -7266,6 +7266,7 @@
                 async: true
             }).done(function (data) {
                 $('#getDocumentsModal').hide();
+
                 window.location.href = data.url;
             }).fail(function (a, s, d) {
                 $('#getDocumentsModal').hide();

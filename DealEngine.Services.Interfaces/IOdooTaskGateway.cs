@@ -10,13 +10,17 @@ namespace DealEngine.Services.Interfaces
     {
 
         Task<int> OdooGatewayconnection(string OdooServerworkingendpoint, string OdooServerDB, string LoginID, string LoginKey);
-        Task<int> CreateTaskAsync(string title, int projectId, string? notes = null, DateTime? deadline = null, int? assigneeUserId = null,
-                               IEnumerable<int>? tagIds = null);
-        Task<int?> GetUserIdByEmailAsync(string email);
-        Task<int[]> CreateTasksAsync(IEnumerable<OdooTaskSpec> tasks);
+      //  Task<int> CreateTaskAsync(string title, int projectId, string? notes = null, DateTime? deadline = null, int? assigneeUserId = null,
+                              // IEnumerable<int>? tagIds = null);
+       // Task<int?> GetUserIdByEmailAsync(string email);
+       Task<int[]> CreateTasksAsync(IEnumerable<OdooTaskSpec> tasks);
 
+        Task<string> SendInvoiceAsync(object rpcPayload);
 
-
+        Task<string> SendInvoiceAsync(
+        ClientInformationSheet sheet,
+        ClientProgramme programme,
+        decimal invoiceAmount);
 
     }
 }

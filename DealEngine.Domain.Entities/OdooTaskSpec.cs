@@ -31,6 +31,9 @@ namespace DealEngine.Domain.Entities
         public virtual string Value { get; set; }
 
         public virtual Product Product { get; set; }
+        public virtual DateTime Deadline { get; set; }
+        public virtual int AssigneeUserId { get; set; }
+       // public object TagIds { get; set; }
         //public IEnumerable<int>? TagIds { get; set; }
 
     }
