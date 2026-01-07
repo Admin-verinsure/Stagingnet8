@@ -162,7 +162,6 @@ namespace DealEngine.WebUI.Controllers
                 {
                     _ldapService.ChangePassword(
                         user.UserName,
-                        "",
                         _appSettingService.IntermediatePassword
                     );
                 }
@@ -409,7 +408,7 @@ namespace DealEngine.WebUI.Controllers
                     string username = user.UserName;
 
                     //change the users password using admin
-                    if (_ldapService.ChangePassword(user.UserName, _appSettingService.IntermediatePassword, viewModel.Password))
+                    if (_ldapService.ChangePassword(user.UserName,  viewModel.Password))
                     {
                         var deUser = await _userManager.FindByNameAsync(user.UserName);
                         if (deUser != null)
@@ -452,7 +451,7 @@ namespace DealEngine.WebUI.Controllers
             catch (Exception ex)
             {
 
-                _ldapService.ChangePassword(user.UserName, "", _appSettingService.IntermediatePassword);
+                _ldapService.ChangePassword(user.UserName, _appSettingService.IntermediatePassword);
 
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
                 ModelState.AddModelError("passwordConfirm", "There was an error while trying to change your password. Please try again with a new password below.");

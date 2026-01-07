@@ -317,46 +317,132 @@ namespace DealEngine.Infrastructure.Ldap.Services
 			return organisations;
 		}
 
-        public bool ChangePassword(string username, string oldPassword, string newPassword)
+        /// <summary>
+        /// Changes password for an existing LDAP user.
+        /// Uses admin bind and resolves DN safely to prevent ghost users.
+        /// </summary>
+        public bool ChangePassword(string username, string newPassword)
         {
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentNullException(nameof(username));
+
             if (string.IsNullOrWhiteSpace(newPassword))
                 throw new ArgumentNullException(nameof(newPassword));
 
-            bool result = false;
+            using var client = GetAdminConnection();
 
-            string userDN = GetUsernameDN(username);
+            string userDN = ResolveUserDN(client, username);
 
-            string bindDN = userDN;
-            string bindPw = oldPassword;
-            Console.WriteLine(username + " " + oldPassword + " " + newPassword);
-            
-			if (string.IsNullOrWhiteSpace(oldPassword))
+            var modifyRequest = new ModifyRequest(client.NextMessageId)
             {
-				//string baseDN = _ldapConfiguration.BaseDn;
-				//bindDN = string.Format(_ldapConfiguration.AdminDn, baseDN);
-				bindDN = string.Format(_ldapConfiguration.AdminDn);
-                bindPw = _ldapConfiguration.AdminPassword;
-            }
-
-            using (LdapClient ldapClient = GetLdapConnection(bindDN, bindPw))
-            {
-                var modifyRequest = new ModifyRequest(ldapClient.NextMessageId)
+                EntryName = userDN,
+                Attributes = new List<ModifyAttribute>
                 {
-                    EntryName = userDN,
-                    Attributes = new List<ModifyAttribute> {
-                        new ModifyAttribute("userpassword", ModificationType.Replace, newPassword)
-                    }
-                };
-                var response = ldapClient.Send<ModifyResponse>(modifyRequest);
-                if (response.ResultCode == 0)
-                    return true;
+                    new ModifyAttribute(
+                        "userPassword",
+                        ModificationType.Replace,
+                        newPassword
+                    )
+                }
+            };
 
-                // error otherwise
-                throw new AuthenticationException(response.ErrorMessage) { ErrorCode = response.ResultCode, User = username };
+            var response = client.Send<ModifyResponse>(modifyRequest);
+
+            if (response.ResultCode != 0)
+            {
+                throw new AuthenticationException(response.ErrorMessage)
+                {
+                    ErrorCode = response.ResultCode,
+                    User = username
+                };
             }
+
+            return true;
         }
+
+        /// <summary>
+        /// Resolves the exact DN of a user by searching LDAP.
+        /// This avoids incorrect DN construction and duplicate entries.
+        /// </summary>
+        private string ResolveUserDN(LdapClient client, string username)
+        {
+            var searchResponse = client.Send<SearchResponse>(
+                new SearchRequest(client.NextMessageId)
+                {
+                    BaseObject = $"ou=users,{_ldapConfiguration.BaseDn}",
+                    Scope = SearchScope.Subtree,
+                    SearchFilter = $"(uid={username})",
+                    Attributes = new[] { "dn" }
+                });
+
+            if (!searchResponse.HasResults)
+                throw new Exception($"LDAP user '{username}' not found");
+
+            if (searchResponse.Results.Count > 1)
+                throw new Exception($"Multiple LDAP users found for uid={username}");
+
+			return searchResponse.Results[0].ObjectName;
+;
+        }
+
+        /// <summary>
+        /// Creates admin-bound LDAP connection
+        /// </summary>
+        private LdapClient GetAdminConnection()
+        {
+            var client = new LdapClient(
+                _ldapConfiguration.LdapHost,
+                _ldapConfiguration.LdapPort
+            );
+
+            client.Bind(
+                _ldapConfiguration.AdminDn,
+                _ldapConfiguration.AdminPassword,
+                BindAuthentication.Simple
+            );
+
+            return client;
+        }
+        //     public bool ChangePassword(string username, string oldPassword, string newPassword)
+        //     {
+        //         if (string.IsNullOrWhiteSpace(username))
+        //             throw new ArgumentNullException(nameof(username));
+        //         if (string.IsNullOrWhiteSpace(newPassword))
+        //             throw new ArgumentNullException(nameof(newPassword));
+
+        //         bool result = false;
+
+        //         string userDN = GetUsernameDN(username);
+
+        //         string bindDN = userDN;
+        //         string bindPw = oldPassword;
+        //         Console.WriteLine(username + " " + oldPassword + " " + newPassword);
+
+        //if (string.IsNullOrWhiteSpace(oldPassword))
+        //         {
+        //	//string baseDN = _ldapConfiguration.BaseDn;
+        //	//bindDN = string.Format(_ldapConfiguration.AdminDn, baseDN);
+        //	bindDN = string.Format(_ldapConfiguration.AdminDn);
+        //             bindPw = _ldapConfiguration.AdminPassword;
+        //         }
+
+        //         using (LdapClient ldapClient = GetLdapConnection(bindDN, bindPw))
+        //         {
+        //             var modifyRequest = new ModifyRequest(ldapClient.NextMessageId)
+        //             {
+        //                 EntryName = userDN,
+        //                 Attributes = new List<ModifyAttribute> {
+        //                     new ModifyAttribute("userpassword", ModificationType.Replace, newPassword)
+        //                 }
+        //             };
+        //             var response = ldapClient.Send<ModifyResponse>(modifyRequest);
+        //             if (response.ResultCode == 0)
+        //                 return true;
+
+        //             // error otherwise
+        //             throw new AuthenticationException(response.ErrorMessage) { ErrorCode = response.ResultCode, User = username };
+        //         }
+        //     }
 
         LdapClient GetLdapConnection()
         {
@@ -379,6 +465,8 @@ namespace DealEngine.Infrastructure.Ldap.Services
         {
             return string.Format(_ldapConfiguration.OpenLdapUserDNFromUsername, username, _ldapConfiguration.UserDN);
         }
+
+
     }
 }
 

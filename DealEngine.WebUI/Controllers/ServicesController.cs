@@ -4611,7 +4611,7 @@ namespace DealEngine.WebUI.Controllers
 
                         try
                         {
-                            _ldapService.ChangePassword(user.UserName, "", _appSettingService.IntermediatePassword);
+                            _ldapService.ChangePassword(user.UserName,_appSettingService.IntermediatePassword);
                             var programme = await _programmeService.GetCoastGuardProgramme();
                             var clientProgramme = await _programmeService.CreateClientProgrammeFor(programme.Id, user, organisation);
                             var reference = await _referenceService.GetLatestReferenceId();

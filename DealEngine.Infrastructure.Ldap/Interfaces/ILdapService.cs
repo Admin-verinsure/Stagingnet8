@@ -22,7 +22,7 @@ namespace DealEngine.Infrastructure.Ldap.Interfaces
 		void Update (Organisation organisation);
 		void GlobalBan (User user);
 		void RemoveGlobalBan (User user);
-        bool ChangePassword(string username, string oldPassword, string newPassword);
+        bool ChangePassword(string username, string newPassword);
         string GetUsernameDN(string username);
     }
 }
