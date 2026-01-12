@@ -1996,6 +1996,10 @@ namespace DealEngine.WebUI.Controllers
             Guid sheetId = Guid.Empty;
             User user = null;
 
+            //var claims = new OdooTaskSpecDtoViewModel;
+
+            //OdooTaskSpecDtoViewModel model = new OdooTaskSpecDtoViewModel();
+
             try
             {
                 user = await CurrentUser();
@@ -2054,18 +2058,15 @@ namespace DealEngine.WebUI.Controllers
                     //await _odooTaskGateway.CreateTasksAsync(Odootasks);
 
 
-
                     var specs = clientProgramme.Agreements
-       .SelectMany(a => a.Product.OdooTaskSpecs)
-       .Select(t => new OdooTaskSpec(
-           title: t.Title,
-           projectId: t.ProjectId,
-           notes: t.Notes,
-           product:t.Product,
-           createdBy:t.CreatedBy
-           
-       ))
-       .ToList();
+     .SelectMany(a => a.Product.OdooTaskSpecs) // domain entities with CreatedBy
+     .Select(t => new OdooTaskSpec(
+         title: t.Title,
+         projectId: t.ProjectId,
+         product: t.Product,
+         notes: t.Notes
+         ))
+     .ToList();
 
                     if (specs.Count == 0)
                         return Ok(new { created = Array.Empty<int>(), count = 0 });

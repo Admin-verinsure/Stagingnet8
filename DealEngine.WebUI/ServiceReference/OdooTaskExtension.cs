@@ -1,6 +1,7 @@
 ﻿using DealEngine.Domain.Entities;
 using DealEngine.Services.Impl;
 using DealEngine.Services.Interfaces; // <-- your interface namespace
+using DealEngine.WebUI.Models.Programme;
 using Newtonsoft.Json;
 using NHibernate.Cfg;
 using ServiceStack;
@@ -64,7 +65,6 @@ namespace DealEngine.WebUI.ServiceReference
         public async Task<int[]> CreateTasksAsync(IEnumerable<OdooTaskSpec> tasks)
         {
             EnsureLoggedIn();
-
             if (tasks is null) throw new ArgumentNullException(nameof(tasks));
 
             var valsList = tasks.Select(t =>
@@ -74,16 +74,14 @@ namespace DealEngine.WebUI.ServiceReference
                     ["name"] = t.Title ?? throw new ArgumentNullException(nameof(t.Title)),
                     ["project_id"] = t.ProjectId
                 };
-                if (!string.IsNullOrWhiteSpace(t.Notes)) vals["description"] = t.Notes;
-                if (t.Deadline is DateTime d) vals["date_deadline"] = d.ToString("yyyy-MM-dd");
-                if (t.AssigneeUserId is int u) vals["user_id"] = u;
+
+               
+
                 return (object)vals;
             }).ToArray();
 
-            // One execute_kw with a list of value dicts → bulk create
             var payload = ExecKw("project.task", "create", new object[] { valsList });
-
-            return await RpcAsync<int[]>(payload); // returns array of new task IDs
+            return await RpcAsync<int[]>(payload);
         }
 
 

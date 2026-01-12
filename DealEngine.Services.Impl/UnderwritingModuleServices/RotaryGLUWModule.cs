@@ -189,7 +189,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 if (!alreadyExists)
                 {
                     var odooTaskSpec = new OdooTaskSpec(
-                        underwritingUser,
                         "Trust governance check",
                         44,
                         agreement.Product,
@@ -208,7 +207,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 if (!alreadyExists)
                 {
                     var odooTaskSpec = new OdooTaskSpec(
-                        underwritingUser,
                         "Case  Youth programme check",
                         44,
                         agreement.Product,
@@ -227,7 +225,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 if (!alreadyExists)
                 {
                     var odooTaskSpec = new OdooTaskSpec(
-                        underwritingUser,
                         "Case  Event management check",
                         44,
                         agreement.Product,

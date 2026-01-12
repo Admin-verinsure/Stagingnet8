@@ -367,7 +367,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 if (!alreadyExists)
                 {
                     var odooTaskSpec = new OdooTaskSpec(
-                        underwritingUser,
                         "Case trade MD cover over $5000",
                         44,
                         agreement.Product,
@@ -387,7 +386,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 if (!alreadyExists)
                 {
                     var odooTaskSpec = new OdooTaskSpec(
-                        underwritingUser,
                         "Case trade runout cover",
                         44,
                         agreement.Product,
