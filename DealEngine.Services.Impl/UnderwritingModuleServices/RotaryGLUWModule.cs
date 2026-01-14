@@ -190,7 +190,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 {
                     var odooTaskSpec = new OdooTaskSpec(
                         "Trust governance check",
-                        44,
+                        agreement.ClientInformationSheet.Owner.OdooProjectId,
                         agreement.Product,
                         notes: "Trust governance check"
                     );
@@ -398,7 +398,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 else
                 {
                     int extraMembers = countedMembers - 15;
-                    total += basePremium + (extraMembers * 15m);
+                    total += basePremium + (extraMembers * 14.50m);
                 }
             }
 
@@ -440,8 +440,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                      orgType == "RotaryCompany")
             {
                 decimal basePremium = 712.50m;
-
-                bool over1m = attr.SPT_RevenueOver1m?.ToLower() == "yes";
+                bool over1m = false;
+                if (attr != null)
+                {
+                    over1m = attr.SPT_RevenueOver1m?.ToLower() == "yes";
+                }
 
                 if (over1m)
                 {

@@ -136,6 +136,8 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsHardRefferal { get; set; }
         public virtual bool OrganisaionClientOwner { get; set; }
         public virtual bool OrganisationClientAdmin { get; set; }
+        public virtual int OdooProjectId { get; set; }
+
         public virtual IList<OrganisationAttribute> OrganisationAttributes { get; set; }
         public virtual IList<InsuranceAttribute> InsuranceAttributes { get; set; }
         [Display(Name = "Initial")]
