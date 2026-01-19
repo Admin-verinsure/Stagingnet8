@@ -697,6 +697,8 @@ namespace DealEngine.WebUI.Controllers
                        
                     }
                     document.Description = model.Description;
+                    document.Name = model.Name;
+                    document.DocumentType = model.DocumentType;
                     document.Contents = _fileService.ToBytes(System.Net.WebUtility.HtmlDecode(model.Content));
                     document.OwnerOrganisation = user.PrimaryOrganisation;
                     document.IsTemplate = true;
