@@ -68,8 +68,11 @@ namespace DealEngine.Services.Impl
 
                         }
 
-                        if ((product.IsOptionalProduct || product.IsOptionalProductWithoutSelectOption) && sheet.Answers.Where(sa => sa.ItemName == product.OptionalProductRequiredAnswer).First().Value != "1")
-                        {
+                        var requiredAnswer = sheet.Answers.FirstOrDefault(sa => sa.ItemName == product.OptionalProductRequiredAnswer);
+
+                        if ((product.IsOptionalProduct || product.IsOptionalProductWithoutSelectOption)
+                            && requiredAnswer != null
+                            && requiredAnswer.Value != "1"){
                             if (product.IsOptionalProductBasedSub)
                             {
                                 bool prodsubuiscoverrequired = false;

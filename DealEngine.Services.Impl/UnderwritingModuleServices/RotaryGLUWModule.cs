@@ -22,157 +22,166 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             Guid id = agreement.Id;
             bool orgtype = false;
 
-            if (agreement.ClientAgreementRules.Count == 0)
-                foreach (var rule in product.Rules.Where(r => !string.IsNullOrWhiteSpace(r.Name)))
-                    agreement.ClientAgreementRules.Add(new ClientAgreementRule(underwritingUser, rule, agreement));
-
-            if (agreement.ClientAgreementEndorsements.Count == 0)
-                foreach (var endorsement in product.Endorsements.Where(e => !string.IsNullOrWhiteSpace(e.Name)))
-                    agreement.ClientAgreementEndorsements.Add(new ClientAgreementEndorsement(underwritingUser, endorsement, agreement));
-
-            if (agreement.ClientAgreementTerms.Where(ct => ct.SubTermType == "GL" && ct.DateDeleted == null) != null)
+            try
             {
-                foreach (ClientAgreementTerm asterm in agreement.ClientAgreementTerms.Where(ct => ct.SubTermType == "GL" && ct.DateDeleted == null))
+
+                if (agreement.ClientAgreementRules.Count == 0)
+                    foreach (var rule in product.Rules.Where(r => !string.IsNullOrWhiteSpace(r.Name)))
+                        agreement.ClientAgreementRules.Add(new ClientAgreementRule(underwritingUser, rule, agreement));
+
+                if (agreement.ClientAgreementEndorsements.Count == 0)
+                    foreach (var endorsement in product.Endorsements.Where(e => !string.IsNullOrWhiteSpace(e.Name)))
+                        agreement.ClientAgreementEndorsements.Add(new ClientAgreementEndorsement(underwritingUser, endorsement, agreement));
+
+                if (agreement.ClientAgreementTerms.Where(ct => ct.SubTermType == "GL" && ct.DateDeleted == null) != null)
                 {
-                    asterm.Delete(underwritingUser);
+                    foreach (ClientAgreementTerm asterm in agreement.ClientAgreementTerms.Where(ct => ct.SubTermType == "GL" && ct.DateDeleted == null))
+                    {
+                        asterm.Delete(underwritingUser);
+                    }
                 }
-            }
 
-            //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "aspremium");
+                //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "aspremium");
 
-            //Create default referral points based on the clientagreementrules
-            if (agreement.ClientAgreementReferrals.Count == 0)
-            {
-                foreach (var clientagreementreferralrule in agreement.ClientAgreementRules.Where(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null))
-                    agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, clientagreementreferralrule.Name, clientagreementreferralrule.Description, "", clientagreementreferralrule.Value, clientagreementreferralrule.OrderNumber, clientagreementreferralrule.DoNotCheckForRenew));
-            }
-            else
-            {
-                foreach (var clientagreementreferral in agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null))
-                    clientagreementreferral.Status = "";
-            }
-
-            int agreementperiodindays = 0;
-            agreementperiodindays = (agreement.ExpiryDate - agreement.InceptionDate).Days;
-
-            agreement.QuoteDate = DateTime.UtcNow;
-
-            int coverperiodindays = 0;
-            coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
-
-            int coverperiodindaysforchange = 0;
-            coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
-
-            string strProfessionalBusiness = "Community Services, fundraising activities and public events.";
-
-            agreement.ProfessionalBusiness = strProfessionalBusiness;
-
-            int TermExcess = 0;
-            TermExcess = 5000;
-
-            int TermLimit1mil = 10000000;
-            decimal TermPremium1mil = 0M;
-            decimal TermBrokerage1mil = 0M;
-           // var organisation = informationSheet.Organisation.FirstOrDefault();
-            var attr = informationSheet?.OrganisationAttribute;
-            decimal premium = 0;
-
-            IList<Organisation> organisations = informationSheet.Organisation;
-
-            foreach (Organisation organisation in organisations.Where(org => org.Removed == false))
-            {
-
-                foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
+                //Create default referral points based on the clientagreementrules
+                if (agreement.ClientAgreementReferrals.Count == 0)
                 {
-                    premium += CalculatePremium(unit.Name, attr, orgtype,organisation.Id, informationSheet.Owner.Id);
+                    foreach (var clientagreementreferralrule in agreement.ClientAgreementRules.Where(cr => cr.RuleCategory == "uwreferral" && cr.DateDeleted == null))
+                        agreement.ClientAgreementReferrals.Add(new ClientAgreementReferral(underwritingUser, agreement, clientagreementreferralrule.Name, clientagreementreferralrule.Description, "", clientagreementreferralrule.Value, clientagreementreferralrule.OrderNumber, clientagreementreferralrule.DoNotCheckForRenew));
                 }
-            }
-
-
-            bool Doesvolunteerpolicechecked = true;
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "GLViewModel.Doesvolunteerpolicechecked").Any())
-            {
-                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "GLViewModel.Doesvolunteerpolicechecked").First().Value == "2")
+                else
                 {
-                    Doesvolunteerpolicechecked = false;
+                    foreach (var clientagreementreferral in agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null))
+                        clientagreementreferral.Status = "";
                 }
-            }
 
-            bool HasClubTrustEvent = true;
-            bool ExtraCoverOptions = true;
+                int agreementperiodindays = 0;
+                agreementperiodindays = (agreement.ExpiryDate - agreement.InceptionDate).Days;
 
+                agreement.QuoteDate = DateTime.UtcNow;
 
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EventsViewModel.HasClubTrustEvent").Any())
-            {
-                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EventsViewModel.HasClubTrustEvent").First().Value == "1")
+                int coverperiodindays = 0;
+                coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
+
+                int coverperiodindaysforchange = 0;
+                coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
+
+                string strProfessionalBusiness = "Community Services, fundraising activities and public events.";
+
+                agreement.ProfessionalBusiness = strProfessionalBusiness;
+
+                int TermExcess = 0;
+                TermExcess = 5000;
+
+                int TermLimit1mil = 10000000;
+                decimal TermPremium1mil = 0M;
+                decimal TermBrokerage1mil = 0M;
+                // var organisation = informationSheet.Organisation.FirstOrDefault();
+                var attr = informationSheet?.OrganisationAttribute;
+                decimal premium = 0;
+
+                IList<Organisation> organisations = informationSheet.Organisation;
+
+                foreach (Organisation organisation in organisations.Where(org => org.Removed == false))
                 {
-                    HasClubTrustEvent = true;
-                }
-            }
 
-            if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EventsViewModel.ExtraCoverOptions").Any())
-            {
-                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EventsViewModel.ExtraCoverOptions").First().Value == "1")
+                    foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
+                    {
+                        premium += CalculatePremium(unit.Name, attr, orgtype, organisation.Id, informationSheet.Owner.Id);
+                    }
+                }
+
+
+                bool Doesvolunteerpolicechecked = true;
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "GLViewModel.Doesvolunteerpolicechecked").Any())
                 {
-                    ExtraCoverOptions = true;
+                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "GLViewModel.Doesvolunteerpolicechecked").First().Value == "2")
+                    {
+                        Doesvolunteerpolicechecked = false;
+                    }
                 }
-            }
 
-            if (orgtype || !Doesvolunteerpolicechecked)
-            {
-               // UWTask(underwritingUser, agreement, orgtype, Doesvolunteerpolicechecked);
-                UWTask(underwritingUser, agreement, orgtype, Doesvolunteerpolicechecked, HasClubTrustEvent, ExtraCoverOptions);
+                bool HasClubTrustEvent = true;
+                bool ExtraCoverOptions = true;
 
-            }
 
-            //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
-            TermPremium1mil = TermPremium1mil / coverperiodindays * agreementperiodindays;
-            TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EventsViewModel.HasClubTrustEvent").Any())
+                {
+                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EventsViewModel.HasClubTrustEvent").First().Value == "1")
+                    {
+                        HasClubTrustEvent = true;
+                    }
+                }
 
-            ClientAgreementTerm term1millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "GL", TermLimit1mil, TermExcess);
-            term1millimitpremiumoption.TermLimit = TermLimit1mil;
-            term1millimitpremiumoption.Premium = premium;
-            term1millimitpremiumoption.BasePremium = premium;
-            term1millimitpremiumoption.Excess = TermExcess;
-            term1millimitpremiumoption.BrokerageRate = agreement.Brokerage;
-            term1millimitpremiumoption.Brokerage = TermBrokerage1mil;
-            term1millimitpremiumoption.DateDeleted = null;
-            term1millimitpremiumoption.DeletedBy = null;
-            decimal targetPremium = 50m * 1.15m; // 50 + 15%
+                if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EventsViewModel.ExtraCoverOptions").Any())
+                {
+                    if (agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == "EventsViewModel.ExtraCoverOptions").First().Value == "1")
+                    {
+                        ExtraCoverOptions = true;
+                    }
+                }
 
-            if (premium == targetPremium)
-            {
-                agreement.BrokerFee = 0;
-            }
-            else
-            {
-                agreement.BrokerFee = agreement.Product.DefaultBrokerFee;
-            }
+                if (orgtype || !Doesvolunteerpolicechecked)
+                {
+                    // UWTask(underwritingUser, agreement, orgtype, Doesvolunteerpolicechecked);
+                    UWTask(underwritingUser, agreement, orgtype, Doesvolunteerpolicechecked, HasClubTrustEvent, ExtraCoverOptions);
+
+                }
+
+                //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
+                TermPremium1mil = TermPremium1mil / coverperiodindays * agreementperiodindays;
+                TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
+
+                ClientAgreementTerm term1millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "GL", TermLimit1mil, TermExcess);
+                term1millimitpremiumoption.TermLimit = TermLimit1mil;
+                term1millimitpremiumoption.Premium = premium;
+                term1millimitpremiumoption.BasePremium = premium;
+                term1millimitpremiumoption.Excess = TermExcess;
+                term1millimitpremiumoption.BrokerageRate = agreement.Brokerage;
+                term1millimitpremiumoption.Brokerage = TermBrokerage1mil;
+                term1millimitpremiumoption.DateDeleted = null;
+                term1millimitpremiumoption.DeletedBy = null;
+                decimal targetPremium = 50m * 1.15m; // 50 + 15%
+
+                if (premium == targetPremium)
+                {
+                    agreement.BrokerFee = 0;
+                }
+                else
+                {
+                    agreement.BrokerFee = agreement.Product.DefaultBrokerFee;
+                }
 
 
                 //Referral points per agreement
                 uwrasreferral(underwritingUser, agreement);
-            uwrfpriorinsurance(underwritingUser, agreement);
+                uwrfpriorinsurance(underwritingUser, agreement);
 
-            //Update agreement status
-            if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
-            {
-                agreement.Status = "Referred";
+                //Update agreement status
+                if (agreement.ClientAgreementReferrals.Where(cref => cref.DateDeleted == null && cref.Status == "Pending").Count() > 0)
+                {
+                    agreement.Status = "Referred";
+                }
+                else
+                {
+                    agreement.Status = "Quoted";
+                }
+
+                agreement.TerritoryLimit = "Worldwide";
+                agreement.Jurisdiction = "Worldwide";
+
+                agreement.InsuredName = informationSheet.Owner.Name;
+
+                string auditLogDetail = "Rotary AS UW created/modified";
+                AuditLog auditLog = new AuditLog(underwritingUser, informationSheet, agreement, auditLogDetail);
+                agreement.ClientAgreementAuditLogs.Add(auditLog);
+
+               
             }
-            else
+            catch (Exception ex)
             {
-                agreement.Status = "Quoted";
+
             }
-
-            agreement.TerritoryLimit = "Worldwide";
-            agreement.Jurisdiction = "Worldwide";
-
-            agreement.InsuredName = informationSheet.Owner.Name;
-
-            string auditLogDetail = "Rotary AS UW created/modified";
-            AuditLog auditLog = new AuditLog(underwritingUser, informationSheet, agreement, auditLogDetail);
-            agreement.ClientAgreementAuditLogs.Add(auditLog);
-
             return true;
 
         }
@@ -471,10 +480,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 total += basePremium;
             }
 
-            else if(orgid == ownerid)
-                {
-                   total += 50m;
-                }
+            //else if(orgid == ownerid)
+            //    {
+            //       total += 50m;
+            //    }
 
             // =============================================
             // APPLY GST LAST

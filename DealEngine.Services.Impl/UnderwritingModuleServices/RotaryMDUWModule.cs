@@ -43,8 +43,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     mdterm.Delete(underwritingUser);
                 }
             }
-            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdadditionaladminfeeover", "mdadditionaladminfeeover", "mdstandardadminfee");
-
+            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdstandardadminfee");
             //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdextensionpremiumover", "mdadditionaladminfeeover", "mdadditionaladminfeeover", "mdstandardadminfee");
 
             //Create default referral points based on the clientagreementrules
@@ -368,7 +367,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 {
                     var odooTaskSpec = new OdooTaskSpec(
                         "Case trade MD cover over $5000",
-                        44,
+                        agreement.ClientInformationSheet.Owner.OdooProjectId,
                         agreement.Product,
                         notes: "Case trade MD cover over $5000"
                     );

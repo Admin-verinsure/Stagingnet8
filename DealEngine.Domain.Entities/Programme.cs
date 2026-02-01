@@ -118,7 +118,7 @@ namespace DealEngine.Domain.Entities
         public virtual string ProgrammeRenewalDateon { get; set; }
         public virtual IList<ClubActivities> ClubActivities { get; protected set; }
 
-        //public virtual List<string> ProgrammeRenewalFrom { get; set; }
+        public virtual bool SendInvoiceToOdoo { get; set; }
 
 
         protected Programme() : this(null) { }

@@ -77,8 +77,6 @@
                         InformationSheetSubmit('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName', '@Model.ClientInformationSheet.Status', forms);
                         debugger;
                         var vesselExists = document.getElementById("Vessel");//tblBoat
-                        //var Isboatexist = document.querySelector('[aria-describedby="tblBoat_BoatName"]') !== null;
-                        //var Isboatexist = document.querySelector('[id="tblBoat"]') !== null;
                         var jqgh_tblBoat_BoatName = document.querySelector('[class="tblBoat_BoatName"]')
                         var Isboatexist = document.querySelector('[class="tblBoat_BoatName"]') !== null;
                         var IsboatNamecount = 0;
@@ -97,15 +95,9 @@
                            });
 
 
-                         //var NamedPartyExists = document.getElementById("Insured Details / Named Parties");
-
                        var IsPersonnelcount = 0;
                            $('#tblOrganisation tr').each(function () {
                            var $tds = $(this).find('td'),
-
-                                  // value = $tds.eq(2).text().toString();
-
-
                                value = $tds.eq(2).text().toString().replace(/\r?\n|\r/g, " ").trim();
 
 
@@ -127,9 +119,55 @@
                                value = $tds.eq(2).text().toString().replace(/\r?\n|\r/g, " ").trim();
 
                            if ( value == "EBarrister" || value == "JBarrister") {
-                               IsBarristercount++;
-                           }
+                               IsBarristercount++;}
                            });
+
+
+                     var IsRotaryNamedpartycount = 0;
+    debugger;
+
+    var rotaryRoles = [
+        "RotaryClub",
+        "Rotaract",
+        "RotaryCommunityCorps",
+        "RotaryClubTrustOneOnly",
+        "RotaryOtherExtraClubTrusts",
+        "RotaryDistrict",
+        "RotarySpecialPurposeTrust",
+        "RotaryCompany",
+        "RotaryMultiDistrictOrganisation",
+        "RotaryRIActionGroup",
+        "RotaryRIFellowshipGroup",
+        "RotaryOther"
+    ];
+
+    $('#tblOrganisation tr').each(function () {
+        var $tds = $(this).find('td');
+
+        if ($tds.length > 2) {
+            var value = $tds.eq(2).text()
+                .replace(/\r?\n|\r/g, " ")
+                .trim();
+
+            if (rotaryRoles.includes(value)) {
+                IsRotaryNamedpartycount++;
+            }
+        }
+    });
+
+    // If no rotary roles exist, value remains 0 automatically
+
+
+                    if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "RotaryAssociationsProgramme" && IsRotaryNamedpartycount == 0) {
+
+                               window.alert("Please add at least one named party in order for us to be able to provide you with a quote.");
+                           $("[id='Insured Details / Named Parties']").trigger("click");
+                               return false;
+
+
+                    }
+
+
 
                         var IsIndividualcount = 0;
                         debugger;
@@ -143,57 +181,7 @@
                            });
 
 
-                           //if ((Isboatexist == false || IsboatNamecount == 1) && (informationsheetstatus != "Bound") && vesselExists != null) {
-                           if ((Isboatexist == false || IsboatNamecount > 1) && (informationsheetstatus != "Bound") && vesselExists != null) {
-
-                               window.alert("Please complete the detailed information required for your vessel in the Vessel section in order for us to be able to provide you with a quote.");
-                               $("#Vessel").trigger("click");
-                               return false;
-
-                            }
-
-                        if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "PMINZ Programme" && IsPersonnelcount == 0) {
-
-                               window.alert("Please add at least one personnel in order for us to be able to provide you with a quote.");
-                           $("[id='Insured Details / Named Parties']").trigger("click");
-                               return false;
-
-
-                        }
-
-                         if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Technology Contractors Liability Programme" && IsIndividualcount == 0) {
-
-                               window.alert("Please add at least one individual in order for us to be able to provide you with a quote.");
-                           $("[id='Insured Details / Named Parties']").trigger("click");
-                               return false;
-
-
-                        }
-                        debugger;
-
-                         if (('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Apollo Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Abbott Financial Advisor Liability Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Financial Advice NZ Financial Advice Provider Liability Programme" ) &&  informationsheetstatus == "Started" ) {
-                             var fapele = document.getElementById("IsFapOrg");
-                             if (fapele != null) {
-                                var isfap = document.getElementById("IsFapOrg").value;
-                                  if (isfap != "true") {
-                                 window.alert("One party must be nominated as the FAP for this policy. Please answer \"YES\" to the Question which asks for one of the persons, entities or companies to be identified as THE FAP for this policy.");
-                                 $("[id='Insured Details / Named Parties']").trigger("click");
-                                 return false;
-                                    }
-                             }
-                        }
-
-                        if (('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Apollo Programme" || '@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "Apollo ML Programme" ) &&  informationsheetstatus == "Started" ) {
-                            if ('@Model.ClientProgramme.Owner' != null) {
-                                if ('@Model.ClientProgramme.Owner.DateofIncorportation' == null || '@Model.ClientProgramme.Owner.DateofIncorportation' == "") {
-                                    window.alert("Please edit and enter \"Date of Company Incorporation\" for owner.");
-                                $("[id='Insured Details / Named Parties']").trigger("click");
-                                return false;
-                            }
-                            }
-                        }
-
-                         if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "New Zealand Bar Association Liability Programme" && IsBarristercount == 0 && IsBarristerRequired == "Yes") {
+                        if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "New Zealand Bar Association Liability Programme" && IsBarristercount == 0 && IsBarristerRequired == "Yes") {
 
                                window.alert("Please add at least one Barrister in order for us to be able to provide you with a quote.");
                            $("[id='Insured Details / Named Parties']").trigger("click");
@@ -203,14 +191,7 @@
                         }
 
 
-                        if ($('#CompanyName').val() === "AON") {
-                            var nextbutton = document.getElementsByClassName("next");
-                            $(nextbutton).addClass("hidden");
-                            $(nextbutton).hide();
-                            var prevbutton = document.getElementsByClassName("previous");
-                            $(prevbutton).addClass("hidden");
-                            $(prevbutton).hide();
-                        }
+                      
                     }
                     $('#getAgreementModal').show();
                     var mainData = $("#tab_1 :input");
