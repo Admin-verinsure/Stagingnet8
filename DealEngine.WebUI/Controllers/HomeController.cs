@@ -205,7 +205,8 @@ namespace DealEngine.WebUI.Controllers
 
                 }
 
-                foreach (Programme programme in programmeList.Distinct().OrderByDescending(proglist => proglist.DateCreated))
+
+                foreach (Programme programme in programmeList.OrderByDescending(proglist => proglist.DateCreated))
                 {
                     model.ProgrammeItems.Add(new ProgrammeItem(programme)
                     {
