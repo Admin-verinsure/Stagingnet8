@@ -409,12 +409,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             foreach (var organisation in  informationSheet.Organisation.Where(o => o.DateDeleted == null && !o.Removed))
             {
-                if(organisation.Id == informationSheet.Owner.Id)
-                {
-                    entityChargeTotal += 195m;
-                }
-                else
-                {
+                
                     foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
                     {
                         // Skip "Administrator" units
@@ -424,7 +419,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         // Add entity charge ($195 per active entity)
                         entityChargeTotal += 195m;
                     }
-                }
+                
                    
             }
 

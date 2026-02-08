@@ -386,7 +386,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     (attr.Family ?? 0) +
                     ((attr.Corporate ?? 0) * 3);
             }
-            else if (orgType == "RotaractClub" || orgType == "RotaryCommunityCorp")
+            else if (orgType == "Rotaract" || orgType == "RotaryCommunityCorp")
             {
                 countedMembers += 1;   // Each counts as 1 club/member equivalent
             }
@@ -395,7 +395,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             // 1️⃣ CLUB PREMIUMS (Rotary, Rotaract, Community Corp)
             // =============================================
             if (orgType == "RotaryClub" ||
-                orgType == "RotaractClub" ||
+                orgType == "Rotaract" ||
                 orgType == "RotaryCommunityCorp")
             {
                 decimal basePremium = 257.50m; // includes admin fee

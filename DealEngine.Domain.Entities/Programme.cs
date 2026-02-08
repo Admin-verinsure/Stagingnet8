@@ -120,6 +120,7 @@ namespace DealEngine.Domain.Entities
 
         public virtual bool SendInvoiceToOdoo { get; set; }
 
+        public virtual bool SendWordingdocuments { get; set; }
 
         protected Programme() : this(null) { }
 

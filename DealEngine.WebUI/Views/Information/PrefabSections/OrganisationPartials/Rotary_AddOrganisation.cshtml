@@ -43,7 +43,7 @@
                 <td>Active Fee Paying</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.ActiveFeePaying,
-                    new { @id = "ActiveFeePaying", @type = "number", @min = "0", @step = "1", @class = "form-control member-count" })
+                    new { @id = "ActiveFeePaying", @type = "number", @min = "0", @step = "1", @class = "form-control member-count member-count-only" })
                 </td>
             </tr>
 
@@ -51,7 +51,7 @@
                 <td>Honorary</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Honorary,
-                                        new { @id = "Honorary", @type = "number", @min = "0", @step = "1", @class = "form-control member-count" })
+                                        new { @id = "Honorary", @type = "number", @min = "0", @step = "1", @class = "form-control member-count member-count-only" })
                 </td>
             </tr>
 
@@ -59,7 +59,7 @@
                 <td>Associate</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Associate,
-                                        new { @id = "Associate", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                                        new { @id = "Associate", @type = "number", @min = "0", @step = "1", @class = "form-control member-count-only" })
                 </td>
             </tr>
 
@@ -67,7 +67,7 @@
                 <td>Family</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Family,
-                                        new { @id = "Family", @type = "number", @min = "0", @step = "1", @class = "form-control member-count" })
+                                        new { @id = "Family", @type = "number", @min = "0", @step = "1", @class = "form-control member-count member-count-only" })
                 </td>
             </tr>
 
@@ -75,7 +75,7 @@
                 <td>Community</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Community,
-                                        new { @id = "Community", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                                        new { @id = "Community", @type = "number", @min = "0", @step = "1", @class = "form-control member-count-only" })
                 </td>
             </tr>
 
@@ -83,7 +83,7 @@
                 <td>Volunteer</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Volunteer,
-                                        new { @id = "Volunteer", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                                        new { @id = "Volunteer", @type = "number", @min = "0", @step = "1", @class = "form-control member-count-only" })
                 </td>
             </tr>
 
@@ -91,7 +91,7 @@
                 <td>Corporate (×3 members each)</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Corporate,
-                                        new { @id = "Corporate", @type = "number", @min = "0", @step = "1", @class = "form-control member-count" })
+                                        new { @id = "Corporate", @type = "number", @min = "0", @step = "1", @class = "form-control member-count member-count-only" })
                 </td>
             </tr>
 
@@ -99,7 +99,7 @@
                 <td>Alumni</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Alumni,
-                                        new { @id = "Alumni", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                                        new { @id = "Alumni", @type = "number", @min = "0", @step = "1", @class = "form-control member-count-only" })
                 </td>
             </tr>
 
@@ -107,7 +107,7 @@
                 <td>Trustees</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.Trustees,
-                                        new { @id = "Trustees", @type = "number", @min = "0", @step = "1", @class = "form-control " })
+                                        new { @id = "Trustees", @type = "number", @min = "0", @step = "1", @class = "form-control member-count-only" })
                 </td>
             </tr>
 
@@ -115,7 +115,7 @@
                 <td>Other</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.OtherMembers,
-                                        new { @id = "OtherMembers", @type = "number", @min = "0", @step = "1", @class = "form-control" })
+                                        new { @id = "OtherMembers", @type = "number", @min = "0", @step = "1", @class = "form-control member-count-only" })
                 </td>
             </tr>
 

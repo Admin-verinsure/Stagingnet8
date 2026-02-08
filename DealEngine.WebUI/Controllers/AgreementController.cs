@@ -4035,6 +4035,24 @@ namespace DealEngine.WebUI.Controllers
                     if (agreement.Product.IsOptionalCombinedProduct)
                         continue;
 
+
+                    if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
+                    {
+                        var physicalPath = _appSettingService.FileBasePhysicalPath;
+
+                        if (System.IO.File.Exists(physicalPath))
+                        {
+                            allPolicyDocuments.Add(new SystemDocument
+                            {
+                                Path = physicalPath,
+                                ContentType = "application/pdf",
+                                DocumentType = 0 // optional, match your PDF type
+                            });
+                        }
+                    }
+
+
+
                     foreach (var template in agreement.Product.Documents
                         .Where(d => d.DateDeleted == null && d.DocumentType != 10 && d.DocumentType != 7))
                     {

@@ -1,42 +1,44 @@
 ﻿//-------------------------------------------------------
 //  NUMERIC VALIDATION (NO LETTERS)
 //-------------------------------------------------------
-$(document).on("keypress", ".member-count, .district-count, .spt-count", function (e) {
-    if (!/[0-9]/.test(e.key)) {
-        e.preventDefault();
-    }
+$(document).on("input", ".district-count, .spt-count", function () {
+    this.value = this.value.replace(/\D/g, '');
 });
+$(document).on("input", ".member-count, .member-count-only", calculateTotals);
+
 
 // BLOCK NON-NUMERIC PASTE
-$(document).on("paste", ".member-count, .district-count, .spt-count", function (e) {
-    let paste = (e.originalEvent || e).clipboardData.getData('text');
-    if (!/^\d+$/.test(paste)) {
-        e.preventDefault();
-    }
+//$(document).on("paste", ".member-count, .district-count, .spt-count", function (e) {
+//    let paste = (e.originalEvent || e).clipboardData.getData('text');
+//    if (!/^\d+$/.test(paste)) {
+//        e.preventDefault();
+//    }
+//});
+
+$(document).on("input", ".member-count, .member-count-only", function () {
+    calculateTotals();
 });
-
-
 //-------------------------------------------------------
 //  CLUB MEMBER TOTAL — LIVE UPDATE
 //-------------------------------------------------------
-$(document).on("input", ".member-count", function () {
+//$(document).on("input", ".member-count", function () {
 
-    let total = 0;
+//    let total = 0;
 
-    $(".member-count").each(function () {
-        let val = parseInt($(this).val()) || 0;
+//    $(".member-count").each(function () {
+//        let val = parseInt($(this).val()) || 0;
 
-        // Corporate counts × 3
-        if (this.id === "Corporate") {
-            total += val * 3;
-        } else {
-            total += val;
-        }
-    });
+//        // Corporate counts × 3
+//        if (this.id === "Corporate") {
+//            total += val * 3;
+//        } else {
+//            total += val;
+//        }
+//    });
 
-    $("#TotalMembers").text(total);
-    $("#ClubTotal").val(total);   // SAVE TO HIDDEN FIELD
-});
+//    $("#TotalMembers").text(total);
+//    $("#ClubTotal").val(total);   // SAVE TO HIDDEN FIELD
+//});
 
 
 //-------------------------------------------------------
@@ -90,15 +92,26 @@ $(document).on("change", "#SPT_RevenueOver1m", function () {
 //-------------------------------------------------------
 $(document).ready(function () {
 
+
+    calculateTotals();
     // ----- CLUB INITIAL TOTAL -----
-    let clubTotal = 0;
-    $(".member-count").each(function () {
-        let val = parseInt($(this).val()) || 0;
-        if (this.id === "Corporate") clubTotal += val * 3;
-        else clubTotal += val;
-    });
-    $("#TotalMembers").text(clubTotal);
-    $("#ClubTotal").val(clubTotal);
+    //let clubTotal = 0;
+    //let clubTotaldisplay = 0;
+
+    //$(".member-count").each(function () {
+    //    let val = parseInt($(this).val()) || 0;
+    //    if (this.id === "Corporate") clubTotal += val * 3;
+    //    else clubTotal += val;
+    //});
+
+    //$(".member-count-only").each(function () {
+    //    let val = parseInt($(this).val()) || 0;
+    //    if (this.id === "Corporate") clubTotaldisplay += val * 3;
+    //    else clubTotaldisplay += val;
+    //});
+
+    //$("#TotalMembers").text(clubTotaldisplay);
+    //$("#ClubTotal").val(clubTotal);
 
 
     // ----- DISTRICT INITIAL TOTAL -----
@@ -127,3 +140,30 @@ $(document).ready(function () {
         $("#SPT_RevenueRow").hide();
     }
 });
+
+
+
+
+function calculateTotals() {
+    debugger;
+    let backendTotal = 0;
+    let uiOnlyTotal = 0;
+
+    $(".member-count").each(function () {
+        let val = parseInt($(this).val()) || 0;
+        backendTotal += (this.id === "Corporate") ? val * 3 : val;
+    });
+
+    $(".member-count-only").not(".member-count").each(function () {
+        let val = parseInt($(this).val()) || 0;
+        uiOnlyTotal += val;
+    });
+
+    let displayTotal = backendTotal + uiOnlyTotal;
+
+    $("#TotalMembers").text(displayTotal);
+    $("#ClubTotal").val(backendTotal);
+
+}
+
+
