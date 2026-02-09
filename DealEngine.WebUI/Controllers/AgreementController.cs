@@ -8,6 +8,7 @@ using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Agreement;
 using DealEngine.WebUI.Models.Programme;
 using DealEngine.WebUI.ServiceReference;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using HtmlAgilityPack;
@@ -4042,17 +4043,17 @@ namespace DealEngine.WebUI.Controllers
                 {
                     var documents = new List<SystemDocument>();
 
-                    foreach (var agreementId in agreementIds)
+                    foreach (var agreement in programme.Agreements.Where(a => a.Status == "Quoted"))
                     {
                         documents.AddRange(
-                            await BuildDocumentsAsync(programmeId, agreementId, userId)
+                            await BuildDocumentsAsync(programme, agreement)
                         );
                     }
 
                     var emailTemplate = programme.BaseProgramme.EmailTemplates
                         .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
 
-                    if (emailTemplate != null && documents.Any())
+                    if (programme.BaseProgramme.ProgEnableEmail && emailTemplate != null && documents.Any())
                     {
                         await _emailService.SendEmailViaEmailTemplate(
                             programme.Owner.Email,
@@ -4077,14 +4078,8 @@ namespace DealEngine.WebUI.Controllers
             });
         }
 
-        private async Task<List<SystemDocument>> BuildDocumentsAsync(
-    Guid programmeId,
-    Guid agreementId,
-    Guid userId)
+        private async Task<List<SystemDocument>> BuildDocumentsAsync(ClientProgramme programme,ClientAgreement agreement)
         {
-            var programme = await _programmeService.GetClientProgrammebyId(programmeId);
-            var agreement = await _clientAgreementService.GetAgreement(agreementId);
-
             var documents = new List<SystemDocument>();
 
             // render templates
@@ -4097,9 +4092,10 @@ namespace DealEngine.WebUI.Controllers
             }
 
             // add wording PDFs (filesystem only)
-            if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
+            var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
+            if (!string.IsNullOrWhiteSpace(path))
             {
-                var path = agreement.Product.WordingDownloadURL;
+               // path = agreement.Product.WordingDownloadURL;
                 if (System.IO.File.Exists(path))
                 {
                     documents.Add(new SystemDocument
@@ -4109,6 +4105,10 @@ namespace DealEngine.WebUI.Controllers
                         DocumentType = 0
                     });
                 }
+            }
+            else
+            {
+                _logger.LogError("File NOT found at path: {Path}", path);
             }
 
             return documents;
@@ -5441,7 +5441,7 @@ namespace DealEngine.WebUI.Controllers
                     }
                 };
 
-                var payloadJson = JsonConvert.SerializeObject(payload, Formatting.None);
+                var payloadJson = JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None);
 
                 // 3) Create invoice.poc.payload record
                 var createPayloadRec = ExecKwEnvelope(db, uid, key,
