@@ -22,15 +22,18 @@ using Newtonsoft.Json.Linq;
 using NHibernate;
 using NHibernate.Mapping;
 using NReco.PdfGenerator;
+using Org.BouncyCastle.Crypto.Agreement;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using static HibernatingRhinos.Profiler.Appender.CosmosDB.Http.CosmosEndpoints;
 using Document = DealEngine.Domain.Entities.Document;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 
@@ -3974,6 +3977,8 @@ namespace DealEngine.WebUI.Controllers
         {
             Guid sheetId;
             User user = null;
+            var allDocuments = new List<SystemDocument>();
+
 
             try
             {
@@ -4027,22 +4032,73 @@ namespace DealEngine.WebUI.Controllers
                     NHibernateUtil.Initialize(programmeCopy.BaseProgramme.EmailTemplates);
 
                     // 🔥 RUN BACKGROUND WORK (DO NOT AWAIT)
+                    var programmeId = programme.Id;
+                    var agreementId = agreement.Id;
+                    var userId = user.Id;
+
                     _ = Task.Run(async () =>
                     {
                         try
                         {
-                            await ProcessBoundAgreementAsync(programmeCopy, agreementCopy, userCopy );
+                            allDocuments = await ProcessBoundAgreementAsync(
+                                programmeId,
+                                agreementId,
+                                userId
+                            );
+
+                            // send ONE email here (or aggregate higher up)
                         }
                         catch (Exception ex)
                         {
                             _logger.LogError(ex,
                                 "Background policy processing failed for Agreement {AgreementId}",
-                                agreement.Id);
+                                agreementId);
                         }
                     });
 
 
                 }
+
+                // 4. SEND POLICY DOCUMENT EMAIL
+                if (programme.BaseProgramme.ProgEnableEmail &&
+                    !programme.BaseProgramme.ProgStopPolicyDocAutoRelease)
+                {
+                    var emailTemplate = programme.BaseProgramme.EmailTemplates
+                        .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+
+
+                    if (emailTemplate != null)
+                    {
+                        await _emailService.SendEmailViaEmailTemplate(
+                            programme.Owner.Email,
+                            emailTemplate,
+                            allDocuments,
+                            programme.InformationSheet,
+                            null
+                        );
+                    }
+
+                }
+
+
+                // =======================
+                // 🔢 TOTAL PREMIUM CALCULATION (HERE)
+                // =======================
+                decimal totalPremium = 0m;
+
+                if (programme.BaseProgramme.SendInvoiceToOdoo)
+                {
+                    totalPremium = programme.Agreements
+                        .Where(a => a.DateDeleted == null)
+                        .SelectMany(a => a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                        .Where(t => t.DateDeleted == null && t.Bound)
+                        .Sum(t => t.Premium);
+
+                    //  SendInvoiceToOdoo(programme.InformationSheet);
+                    SendInvoicePayloadPOC(programme.InformationSheet, programme, totalPremium);
+                }
+
+
 
                 using (var uow = _unitOfWork.BeginUnitOfWork())
                 {
@@ -4072,28 +4128,33 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-        private async Task ProcessBoundAgreementAsync(
-    ClientProgramme programme,
-    ClientAgreement agreement,
-    User user)
+
+        private async Task<List<SystemDocument>> ProcessBoundAgreementAsync(
+    Guid programmeId,
+    Guid agreementId,
+    Guid userId)
         {
-            // 1. DELETE OLD DOCUMENTS (same logic as original)
+            using var uow = _unitOfWork.BeginUnitOfWork();
+
+            // 🔒 fresh NHibernate session
+            var programme = await _programmeService.GetClientProgrammebyId(programmeId);
+            var agreement = await _clientAgreementService.GetAgreement(agreementId);
+            var user = await _userService.GetUserById(userId);
+
+            var allPolicyDocuments = new List<SystemDocument>();
+
+            // 1. Delete old documents
             foreach (var doc in agreement.GetDocuments())
             {
                 if (doc.Path != null &&
                     doc.ContentType == "application/pdf" &&
                     doc.DocumentType == 0)
-                {
                     continue;
-                }
 
                 doc.Delete(user);
             }
 
-            var documents = new List<SystemDocument>();
-            var premiumAdviceDocs = new List<SystemDocument>();
-
-            // 2. RE-RENDER TEMPLATES (policy + premium advice)
+            // 2. Render templates
             var templates = agreement.Product.Documents
                 .Where(d => d.DateDeleted == null && d.DocumentType != 10);
 
@@ -4101,77 +4162,119 @@ namespace DealEngine.WebUI.Controllers
             {
                 var rendered = await RerenderTemplate(template, agreement, programme);
 
-                if (template.DocumentType == 7)
-                    premiumAdviceDocs.Add(rendered);
-                else
-                    documents.Add(rendered);
+                if (template.DocumentType != 7)
+                    allPolicyDocuments.Add(rendered);
             }
-
-            // 3. ADD WORDING PDF FROM LOCAL PATH (IMPORTANT)
-            var physicalPath = _appSettingService.FileBasePhysicalPath;
-
-            if (!string.IsNullOrWhiteSpace(physicalPath))
-            {
-
-                if (System.IO.File.Exists(physicalPath))
+            
+                if (!agreement.IsPolicyDocSend)
                 {
-                    documents.Add(new SystemDocument
+                    agreement.IsPolicyDocSend = true;
+                    agreement.DocIssueDate = DateTime.Now;
+                    await uow.Commit();
+                }
+            
+            // 3. Add wording PDFs from folder
+            var wordingsFolder = _appSettingService.FileBasePhysicalPath;
+
+            if (!string.IsNullOrWhiteSpace(wordingsFolder) &&
+                Directory.Exists(wordingsFolder))
+            {
+                foreach (var file in Directory.GetFiles(wordingsFolder, "*.pdf"))
+                {
+                    allPolicyDocuments.Add(new SystemDocument
                     {
-                        Path = physicalPath,
+                        Path = file,
                         ContentType = "application/pdf",
                         DocumentType = 0
                     });
                 }
             }
 
-            // 4. SEND POLICY DOCUMENT EMAIL
-            if (programme.BaseProgramme.ProgEnableEmail &&
-                !programme.BaseProgramme.ProgStopPolicyDocAutoRelease)
-            {
-                var emailTemplate = programme.BaseProgramme.EmailTemplates
-                    .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+            await uow.Commit(); // ✅ ONE commit, clean state
 
-                if (emailTemplate != null)
-                {
-                    await _emailService.SendEmailViaEmailTemplate(
-                        programme.Owner.Email,
-                        emailTemplate,
-                        documents,
-                        agreement.ClientInformationSheet,
-                        agreement
-                    );
-
-                    if (!agreement.IsPolicyDocSend)
-                    {
-                        agreement.IsPolicyDocSend = true;
-                        agreement.DocIssueDate = DateTime.Now;
-                    }
-
-                }
-            }
-
-            //// 5. SEND PREMIUM ADVICE EMAIL
-            //if (programme.BaseProgramme.ProgEnableSendPremiumAdvice &&
-            //    agreement.Product.ProductEnablePremiumAdvice &&
-            //    !string.IsNullOrEmpty(programme.BaseProgramme.PremiumAdviceRecipent))
-            //{
-            //    await _emailService.SendPremiumAdviceEmail(
-            //        programme.BaseProgramme.PremiumAdviceRecipent,
-            //        premiumAdviceDocs,
-            //        agreement.ClientInformationSheet,
-            //        agreement,
-            //        programme.BaseProgramme.PremiumAdviceRecipentCC
-            //    );
-            //}
-
-            //// 6. SEND AGREEMENT BOUND NOTIFICATION
-            //await _emailService.SendSystemEmailAgreementBoundNotify(
-            //    programme.BrokerContactUser,
-            //    programme.BaseProgramme,
-            //    agreement,
-            //    programme.Owner
-            //);
+            return allPolicyDocuments;
         }
+
+
+
+
+        //    private async Task<<List>SystemDocument> ProcessBoundAgreementAsync(
+        //ClientProgramme programme,
+        //ClientAgreement agreement,
+        //User user)
+        //    {
+        //        // 1. DELETE OLD DOCUMENTS (same logic as original)
+        //        foreach (var doc in agreement.GetDocuments())
+        //        {
+        //            if (doc.Path != null &&
+        //                doc.ContentType == "application/pdf" &&
+        //                doc.DocumentType == 0)
+        //            {
+        //                continue;
+        //            }
+
+        //            doc.Delete(user);
+        //        }
+
+        //        var allPolicyDocuments = new List<SystemDocument>();
+        //        var premiumAdviceDocs = new List<SystemDocument>();
+
+        //        // 2. RE-RENDER TEMPLATES (policy + premium advice)
+        //        var templates = agreement.Product.Documents
+        //            .Where(d => d.DateDeleted == null && d.DocumentType != 10);
+
+        //        foreach (var template in templates)
+        //        {
+        //            var rendered = await RerenderTemplate(template, agreement, programme);
+
+        //            if (template.DocumentType == 7)
+        //                premiumAdviceDocs.Add(rendered);
+        //            else
+        //                allPolicyDocuments.Add(rendered);
+        //        }
+
+        //        // 3. ADD WORDING PDF FROM LOCAL PATH (IMPORTANT)
+        //        // 3. ADD ALL WORDING DOCUMENTS FROM LOCAL FOLDER
+        //        if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
+        //        {
+        //            var physicalPath = _appSettingService.FileBasePhysicalPath;
+
+        //            if (System.IO.File.Exists(physicalPath))
+        //            {
+        //                allPolicyDocuments.Add(new SystemDocument
+        //                {
+        //                    Path = physicalPath,
+        //                    ContentType = "application/pdf",
+        //                    DocumentType = 0 // optional, match your PDF type
+        //                });
+        //            }
+        //        }
+
+        //        return allPolicyDocuments;
+
+
+        //        //// 5. SEND PREMIUM ADVICE EMAIL
+        //        //if (programme.BaseProgramme.ProgEnableSendPremiumAdvice &&
+        //        //    agreement.Product.ProductEnablePremiumAdvice &&
+        //        //    !string.IsNullOrEmpty(programme.BaseProgramme.PremiumAdviceRecipent))
+        //        //{
+        //        //    await _emailService.SendPremiumAdviceEmail(
+        //        //        programme.BaseProgramme.PremiumAdviceRecipent,
+        //        //        premiumAdviceDocs,
+        //        //        agreement.ClientInformationSheet,
+        //        //        agreement,
+        //        //        programme.BaseProgramme.PremiumAdviceRecipentCC
+        //        //    );
+        //        //}
+
+        //        //// 6. SEND AGREEMENT BOUND NOTIFICATION
+        //        //await _emailService.SendSystemEmailAgreementBoundNotify(
+        //        //    programme.BrokerContactUser,
+        //        //    programme.BaseProgramme,
+        //        //    agreement,
+        //        //    programme.Owner
+        //        //);
+        //    }
 
 
 
