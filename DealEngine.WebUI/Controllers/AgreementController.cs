@@ -19,6 +19,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NHibernate;
 using NHibernate.Mapping;
 using NReco.PdfGenerator;
 using ServiceStack;
@@ -4020,7 +4021,10 @@ namespace DealEngine.WebUI.Controllers
 
                     // 🔥 EVERYTHING ELSE moved here
                     // await ProcessBoundAgreementAsync(programme, agreement, user);
-
+                    // Force-load lazy collections BEFORE background thread
+                    NHibernateUtil.Initialize(agreementCopy.Documents);
+                    NHibernateUtil.Initialize(agreementCopy.Product.Documents);
+                    NHibernateUtil.Initialize(programmeCopy.BaseProgramme.EmailTemplates);
 
                     // 🔥 RUN BACKGROUND WORK (DO NOT AWAIT)
                     _ = Task.Run(async () =>
@@ -4049,11 +4053,16 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 if (action == "BindAgreement")
-                    return Redirect("/Agreement/ViewAcceptedAgreement/" + programme.Id);
+                {
+                    return Json(new
+                    {
+                        redirectUrl = "/Agreement/ViewAcceptedAgreement/" + programme.Id
+                    });
+                }
 
                 return Json(new
                 {
-                    url = "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
+                    redirectUrl = "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
                 });
             }
             catch (Exception ex)
@@ -4132,13 +4141,12 @@ namespace DealEngine.WebUI.Controllers
                         agreement
                     );
 
-                    using var uow = _unitOfWork.BeginUnitOfWork();
                     if (!agreement.IsPolicyDocSend)
                     {
                         agreement.IsPolicyDocSend = true;
                         agreement.DocIssueDate = DateTime.Now;
-                        await uow.Commit();
                     }
+
                 }
             }
 
