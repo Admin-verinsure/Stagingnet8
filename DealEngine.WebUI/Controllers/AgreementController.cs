@@ -3972,8 +3972,153 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+
         [HttpPost]
         public async Task<IActionResult> ByPassPayment(IFormCollection collection)
+        {
+            Guid sheetId;
+            User user = null;
+
+            if (!Guid.TryParse(collection["AnswerSheetId"], out sheetId))
+                return BadRequest();
+
+            var sheet = await _customerInformationService.GetInformation(sheetId);
+            var programme = sheet.Programme;
+            user = await CurrentUser();
+
+            var action = collection["BindAgreement"];
+            var bindNotes = collection["BindNotes"];
+
+            var status = programme.BaseProgramme.UsesEGlobal
+                ? "Bound and invoice pending"
+                : "Bound";
+
+            var agreementIds = new List<Guid>();
+
+            foreach (var agreement in programme.Agreements.Where(a => a.Status == "Quoted"))
+            {
+                if (action == "BindAgreement")
+                {
+                    agreement.BindNotes = bindNotes;
+                    agreement.BindByUserID = user;
+                }
+
+                if (!agreement.ClientAgreementTerms.Any(t => t.DateDeleted == null && t.Bound))
+                {
+                    agreement.DateDeleted = DateTime.Now;
+                    continue;
+                }
+
+                agreement.Status = status;
+                agreement.BoundDate = DateTime.Now;
+                agreement.PolicyNumber =
+                    agreement.Product.ProductPolicyNumberPrefixString ??
+                    programme.BaseProgramme.PolicyNumberPrefixString +
+                    agreement.ClientInformationSheet.ReferenceId;
+
+                // mark as sent HERE, not in background
+                if (!agreement.IsPolicyDocSend)
+                {
+                    agreement.IsPolicyDocSend = true;
+                    agreement.DocIssueDate = DateTime.Now;
+                }
+
+                agreementIds.Add(agreement.Id);
+            }
+
+            using (var uow = _unitOfWork.BeginUnitOfWork())
+            {
+                programme.InformationSheet.Status = status;
+                await uow.Commit();
+            }
+
+            // 🔥 Background work: NO DB writes
+            var programmeId = programme.Id;
+            var userId = user.Id;
+
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    var documents = new List<SystemDocument>();
+
+                    foreach (var agreementId in agreementIds)
+                    {
+                        documents.AddRange(
+                            await BuildDocumentsAsync(programmeId, agreementId, userId)
+                        );
+                    }
+
+                    var emailTemplate = programme.BaseProgramme.EmailTemplates
+                        .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+
+                    if (emailTemplate != null && documents.Any())
+                    {
+                        await _emailService.SendEmailViaEmailTemplate(
+                            programme.Owner.Email,
+                            emailTemplate,
+                            documents,
+                            programme.InformationSheet,
+                            null
+                        );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Background policy document processing failed");
+                }
+            });
+
+            return Json(new
+            {
+                redirectUrl = action == "BindAgreement"
+                    ? "/Agreement/ViewAcceptedAgreement/" + programme.Id
+                    : "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
+            });
+        }
+
+        private async Task<List<SystemDocument>> BuildDocumentsAsync(
+    Guid programmeId,
+    Guid agreementId,
+    Guid userId)
+        {
+            var programme = await _programmeService.GetClientProgrammebyId(programmeId);
+            var agreement = await _clientAgreementService.GetAgreement(agreementId);
+
+            var documents = new List<SystemDocument>();
+
+            // render templates
+            foreach (var template in agreement.Product.Documents
+                .Where(d => d.DateDeleted == null && d.DocumentType != 10))
+            {
+                var rendered = await RerenderTemplate(template, agreement, programme);
+                if (template.DocumentType != 7)
+                    documents.Add(rendered);
+            }
+
+            // add wording PDFs (filesystem only)
+            if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
+            {
+                var path = agreement.Product.WordingDownloadURL;
+                if (System.IO.File.Exists(path))
+                {
+                    documents.Add(new SystemDocument
+                    {
+                        Path = path,
+                        ContentType = "application/pdf",
+                        DocumentType = 0
+                    });
+                }
+            }
+
+            return documents;
+        }
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ByPassPayment4(IFormCollection collection)
         {
             Guid sheetId;
             User user = null;
@@ -4040,7 +4185,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         try
                         {
-                            allDocuments = await ProcessBoundAgreementAsync(
+                            allDocuments = await ProcessBoundAgreementAsync4(
                                 programmeId,
                                 agreementId,
                                 userId
@@ -4129,12 +4274,12 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
-        private async Task<List<SystemDocument>> ProcessBoundAgreementAsync(
+        private async Task<List<SystemDocument>> ProcessBoundAgreementAsync4(
     Guid programmeId,
     Guid agreementId,
     Guid userId)
         {
-            using var uow = _unitOfWork.BeginUnitOfWork();
+            //using var uow = _unitOfWork.BeginUnitOfWork();
 
             // 🔒 fresh NHibernate session
             var programme = await _programmeService.GetClientProgrammebyId(programmeId);
@@ -4170,7 +4315,6 @@ namespace DealEngine.WebUI.Controllers
                 {
                     agreement.IsPolicyDocSend = true;
                     agreement.DocIssueDate = DateTime.Now;
-                    await uow.Commit();
                 }
 
             // 3. Add wording PDFs from folder
@@ -4188,9 +4332,6 @@ namespace DealEngine.WebUI.Controllers
                     });
                 }
             }
-
-
-            await uow.Commit(); // ✅ ONE commit, clean state
 
             return allPolicyDocuments;
         }
