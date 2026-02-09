@@ -4035,11 +4035,9 @@ namespace DealEngine.WebUI.Controllers
                     if (agreement.Product.IsOptionalCombinedProduct)
                         continue;
 
-
-                    if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
+                    var physicalPath = _appSettingService.FileBasePhysicalPath;
+                    if (!string.IsNullOrWhiteSpace(physicalPath) || physicalPath != "")
                     {
-                        var physicalPath = _appSettingService.FileBasePhysicalPath;
-
                         if (System.IO.File.Exists(physicalPath))
                         {
                             allPolicyDocuments.Add(new SystemDocument

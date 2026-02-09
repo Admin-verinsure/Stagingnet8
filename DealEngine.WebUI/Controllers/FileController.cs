@@ -465,31 +465,45 @@ namespace DealEngine.WebUI.Controllers
                     // DOCX
                     else if (format == "docx")
                     {
+                        // Prepare HTML only once
                         doc = await _fileService.FormatCKHTMLforConversion(doc);
                         html = _fileService.FromBytes(doc.Contents);
 
-                        using (MemoryStream virtualFile = new MemoryStream())
-                        {
-                            using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(virtualFile, WordprocessingDocumentType.Document))
-                            {
-                                MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
-                                new DocumentFormat.OpenXml.Wordprocessing.Document(new Body()).Save(mainPart);
-                                HtmlConverter converter = new HtmlConverter(mainPart); // refer to this: https://github.com/onizet/html2openxml/wiki/Tags-Supported
-                                converter.ImageProcessing = ImageProcessing.ManualProvisioning;
-                                Body body = mainPart.Document.Body;
-                                converter.ParseHtml(html);
+                        using var memoryStream = new MemoryStream();
 
-                                #region CSStesting code
-                                // Need to figure out how to add classes to style the document... (adding to the top of HTML document doesn't work, also lots of the table styling css doesn't actually work. Just the old way works where style isn't specified e.g <table width=\"100%\" border=\"0\"><tr style=\"font-weight: bold\"><td>Studio</td><td colspan=\"2\")
-                                // converter.HtmlStyles.DefaultStyle = converter.HtmlStyles.GetStyle("testClass");
-                                // converter.RefreshStyles();
-                                #endregion 
-                            }
-                            // RETURN DOCX
-                            return File(virtualFile.ToArray(), MediaTypeNames.Application.Octet, doc.Name + ".docx");
+                        using (var wordDocument = WordprocessingDocument.Create(
+                            memoryStream,
+                            WordprocessingDocumentType.Document,
+                            autoSave: true))
+                        {
+                            // Create main document part
+                            var mainPart = wordDocument.AddMainDocumentPart();
+
+                            mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document(
+                                  new Body()
+                            );
+
+                            // HTML → OpenXML conversion
+                            var converter = new HtmlConverter(mainPart)
+                            {
+                                ImageProcessing = ImageProcessing.ManualProvisioning
+                            };
+
+                            converter.ParseHtml(html);
+
+                            // Explicit save (important for reliability)
+                            mainPart.Document.Save();
                         }
-                    }
-                    else if (format == "pdf")
+
+                        // Reset stream before returning
+                        memoryStream.Position = 0;
+
+                        return File(
+                            memoryStream.ToArray(),
+                            MediaTypeNames.Application.Octet,
+                            $"{doc.Name}.docx"
+                        );
+                    } else if (format == "pdf")
                     {
                         // This is for ManageDocuments where we haven't hit ProcessRequestConfiguration which Formats and Converts the document
                         if (doc.IsTemplate == true)
