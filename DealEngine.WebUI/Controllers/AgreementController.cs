@@ -4049,16 +4049,11 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 if (action == "BindAgreement")
-                {
-                    return Json(new
-                    {
-                        redirectUrl = "/Agreement/ViewAcceptedAgreement/" + programme.Id
-                    });
-                }
+                    return Redirect("/Agreement/ViewAcceptedAgreement/" + programme.Id);
 
                 return Json(new
                 {
-                    redirectUrl = "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
+                    url = "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
                 });
             }
             catch (Exception ex)
