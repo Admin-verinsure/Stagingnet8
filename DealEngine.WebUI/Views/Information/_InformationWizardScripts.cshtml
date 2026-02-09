@@ -7238,7 +7238,6 @@
         //XXXXXXXXXXXXXXXXXXX
         function bypassPayment() {
             debugger;
-            event.preventDefault();
             $('#getDocumentsModal').show();
             $.ajax({
                 url: '@Url.Action("ByPassPayment", "Agreement")',
@@ -7248,9 +7247,12 @@
             }).done(function (data) {
                 $('#getDocumentsModal').hide();
 
-                window.location.href = data.url;
+                if (data && data.redirectUrl) {
+                   window.location.href = data.redirectUrl;
+                 }
             }).fail(function (a, s, d) {
                 $('#getDocumentsModal').hide();
+                 alert('Something went wrong. Please try again.');
             });
         }
         //XXXXXXXXXXXX

@@ -3992,6 +3992,11 @@ namespace DealEngine.WebUI.Controllers
 
                 foreach (var agreement in programme.Agreements.Where(a => a.Status == "Quoted"))
                 {
+
+                    var agreementCopy = agreement;
+                    var programmeCopy = programme;
+                    var userCopy = user;
+
                     if (action == "BindAgreement")
                     {
                         agreement.BindNotes = bindNotes;
@@ -4014,7 +4019,25 @@ namespace DealEngine.WebUI.Controllers
                         + agreement.ClientInformationSheet.ReferenceId;
 
                     // 🔥 EVERYTHING ELSE moved here
-                    await ProcessBoundAgreementAsync(programme, agreement, user);
+                    // await ProcessBoundAgreementAsync(programme, agreement, user);
+
+
+                    // 🔥 RUN BACKGROUND WORK (DO NOT AWAIT)
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            await ProcessBoundAgreementAsync(programmeCopy, agreementCopy, userCopy );
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex,
+                                "Background policy processing failed for Agreement {AgreementId}",
+                                agreement.Id);
+                        }
+                    });
+
+
                 }
 
                 using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -4026,11 +4049,16 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 if (action == "BindAgreement")
-                    return Redirect("/Agreement/ViewAcceptedAgreement/" + programme.Id);
+                {
+                    return Json(new
+                    {
+                        redirectUrl = "/Agreement/ViewAcceptedAgreement/" + programme.Id
+                    });
+                }
 
                 return Json(new
                 {
-                    url = "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
+                    redirectUrl = "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
                 });
             }
             catch (Exception ex)
@@ -4078,7 +4106,7 @@ namespace DealEngine.WebUI.Controllers
             // 3. ADD WORDING PDF FROM LOCAL PATH (IMPORTANT)
             var physicalPath = _appSettingService.FileBasePhysicalPath;
 
-            if (!string.IsNullOrWhiteSpace(physicalPath) || physicalPath != "")
+            if (!string.IsNullOrWhiteSpace(physicalPath))
             {
 
                 if (System.IO.File.Exists(physicalPath))
