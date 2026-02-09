@@ -4172,23 +4172,23 @@ namespace DealEngine.WebUI.Controllers
                     agreement.DocIssueDate = DateTime.Now;
                     await uow.Commit();
                 }
-            
-            // 3. Add wording PDFs from folder
-            var wordingsFolder = _appSettingService.FileBasePhysicalPath;
 
-            if (!string.IsNullOrWhiteSpace(wordingsFolder) &&
-                Directory.Exists(wordingsFolder))
+            // 3. Add wording PDFs from folder
+            if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
             {
-                foreach (var file in Directory.GetFiles(wordingsFolder, "*.pdf"))
+                var physicalPath = agreement.Product.WordingDownloadURL;
+
+                if (System.IO.File.Exists(physicalPath))
                 {
                     allPolicyDocuments.Add(new SystemDocument
                     {
-                        Path = file,
+                        Path = physicalPath,
                         ContentType = "application/pdf",
-                        DocumentType = 0
+                        DocumentType = 0 // optional, match your PDF type
                     });
                 }
             }
+
 
             await uow.Commit(); // ✅ ONE commit, clean state
 
