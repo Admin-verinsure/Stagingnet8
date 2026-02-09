@@ -54,7 +54,6 @@ namespace DealEngine.WebUI.Controllers
         UserManager<IdentityUser> _userManager;
         IMapperSession<User> _userRepository;
         IUpdateTypeService _updateTypeServices;
-        IPolicyCenterService _policyCenterService;
         IEmailService _emailService;
         public AdminController(
             IUpdateTypeService updateTypeService,
@@ -83,8 +82,7 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<Boat> boatRepository,
             IMapperSession<User> userRepository2,
             IReferenceService referenceService,
-            IEmailService emailService,
-            IPolicyCenterService policyCenterService
+            IEmailService emailService
             )
 			: base (userRepository)
 		{
@@ -113,7 +111,6 @@ namespace DealEngine.WebUI.Controllers
             _userRepository = userRepository2;
             _objectRepository = objectRepository;
             _updateTypeServices = updateTypeService;
-            _policyCenterService = policyCenterService;
             _emailService = emailService;
 
         }

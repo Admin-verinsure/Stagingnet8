@@ -76,6 +76,8 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<Rule> _ruleRepository;
         IMapperSession<SystemDocument> _documentRepository;
         IOdooTaskGateway _odooTaskGateway;
+        IPolicyCenterService _policyProcessingService;
+
         #endregion
 
         public AgreementController(
@@ -114,7 +116,8 @@ namespace DealEngine.WebUI.Controllers
             IClientAgreementTermCanService clientAgreementTermCanService,
             IClientAgreementBVTermCanService clientAgreementBVTermCanService,
             IUpdateTypeService updateTypeService,
-            IOdooTaskGateway odooTaskGateway
+            IOdooTaskGateway odooTaskGateway,
+            IPolicyCenterService policyProcessingService 
             )
             : base(userRepository)
         {
@@ -153,6 +156,7 @@ namespace DealEngine.WebUI.Controllers
             _serializationService = serializerationService;
             _updateTypeService = updateTypeService;
             _odooTaskGateway = odooTaskGateway;
+            _policyProcessingService = policyProcessingService;
 
 
             ViewBag.Title = "";
@@ -3970,6 +3974,184 @@ namespace DealEngine.WebUI.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ByPassPayment(IFormCollection collection)
+        {
+            Guid sheetId;
+            User user = null;
+
+            try
+            {
+                if (!Guid.TryParse(collection["AnswerSheetId"], out sheetId))
+                    return BadRequest();
+
+                var sheet = await _customerInformationService.GetInformation(sheetId);
+                var programme = sheet.Programme;
+                user = await CurrentUser();
+
+                var action = collection["BindAgreement"];
+                var bindNotes = collection["BindNotes"];
+
+                var status = programme.BaseProgramme.UsesEGlobal
+                    ? "Bound and invoice pending"
+                    : "Bound";
+
+                foreach (var agreement in programme.Agreements.Where(a => a.Status == "Quoted"))
+                {
+                    if (action == "BindAgreement")
+                    {
+                        agreement.BindNotes = bindNotes;
+                        agreement.BindByUserID = user;
+                    }
+
+                    if (!agreement.ClientAgreementTerms
+                            .Any(t => t.DateDeleted == null && t.Bound))
+                    {
+                        agreement.DateDeleted = DateTime.Now;
+                        continue;
+                    }
+
+                    agreement.Status = status;
+                    agreement.BoundDate = DateTime.Now;
+
+                    agreement.PolicyNumber =
+                        agreement.Product.ProductPolicyNumberPrefixString ??
+                        programme.BaseProgramme.PolicyNumberPrefixString
+                        + agreement.ClientInformationSheet.ReferenceId;
+
+                    // 🔥 EVERYTHING ELSE moved here
+                    await ProcessBoundAgreementAsync(programme, agreement, user);
+                }
+
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    if (programme.InformationSheet.Status != status)
+                        programme.InformationSheet.Status = status;
+
+                    await uow.Commit();
+                }
+
+                if (action == "BindAgreement")
+                    return Redirect("/Agreement/ViewAcceptedAgreement/" + programme.Id);
+
+                return Json(new
+                {
+                    url = "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        private async Task ProcessBoundAgreementAsync(
+    ClientProgramme programme,
+    ClientAgreement agreement,
+    User user)
+        {
+            // 1. DELETE OLD DOCUMENTS (same logic as original)
+            foreach (var doc in agreement.GetDocuments())
+            {
+                if (doc.Path != null &&
+                    doc.ContentType == "application/pdf" &&
+                    doc.DocumentType == 0)
+                {
+                    continue;
+                }
+
+                doc.Delete(user);
+            }
+
+            var documents = new List<SystemDocument>();
+            var premiumAdviceDocs = new List<SystemDocument>();
+
+            // 2. RE-RENDER TEMPLATES (policy + premium advice)
+            var templates = agreement.Product.Documents
+                .Where(d => d.DateDeleted == null && d.DocumentType != 10);
+
+            foreach (var template in templates)
+            {
+                var rendered = await RerenderTemplate(template, agreement, programme);
+
+                if (template.DocumentType == 7)
+                    premiumAdviceDocs.Add(rendered);
+                else
+                    documents.Add(rendered);
+            }
+
+            // 3. ADD WORDING PDF FROM LOCAL PATH (IMPORTANT)
+            var physicalPath = _appSettingService.FileBasePhysicalPath;
+
+            if (!string.IsNullOrWhiteSpace(physicalPath) || physicalPath != "")
+            {
+
+                if (System.IO.File.Exists(physicalPath))
+                {
+                    documents.Add(new SystemDocument
+                    {
+                        Path = physicalPath,
+                        ContentType = "application/pdf",
+                        DocumentType = 0
+                    });
+                }
+            }
+
+            // 4. SEND POLICY DOCUMENT EMAIL
+            if (programme.BaseProgramme.ProgEnableEmail &&
+                !programme.BaseProgramme.ProgStopPolicyDocAutoRelease)
+            {
+                var emailTemplate = programme.BaseProgramme.EmailTemplates
+                    .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+
+                if (emailTemplate != null)
+                {
+                    await _emailService.SendEmailViaEmailTemplate(
+                        programme.Owner.Email,
+                        emailTemplate,
+                        documents,
+                        agreement.ClientInformationSheet,
+                        agreement
+                    );
+
+                    using var uow = _unitOfWork.BeginUnitOfWork();
+                    if (!agreement.IsPolicyDocSend)
+                    {
+                        agreement.IsPolicyDocSend = true;
+                        agreement.DocIssueDate = DateTime.Now;
+                        await uow.Commit();
+                    }
+                }
+            }
+
+            //// 5. SEND PREMIUM ADVICE EMAIL
+            //if (programme.BaseProgramme.ProgEnableSendPremiumAdvice &&
+            //    agreement.Product.ProductEnablePremiumAdvice &&
+            //    !string.IsNullOrEmpty(programme.BaseProgramme.PremiumAdviceRecipent))
+            //{
+            //    await _emailService.SendPremiumAdviceEmail(
+            //        programme.BaseProgramme.PremiumAdviceRecipent,
+            //        premiumAdviceDocs,
+            //        agreement.ClientInformationSheet,
+            //        agreement,
+            //        programme.BaseProgramme.PremiumAdviceRecipentCC
+            //    );
+            //}
+
+            //// 6. SEND AGREEMENT BOUND NOTIFICATION
+            //await _emailService.SendSystemEmailAgreementBoundNotify(
+            //    programme.BrokerContactUser,
+            //    programme.BaseProgramme,
+            //    agreement,
+            //    programme.Owner
+            //);
+        }
+
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ByPassPaymentold2(IFormCollection collection)
         {
             Guid sheetId = Guid.Empty;
             ClientInformationSheet sheet = null;
