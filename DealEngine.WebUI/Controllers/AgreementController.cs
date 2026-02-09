@@ -4090,12 +4090,12 @@ namespace DealEngine.WebUI.Controllers
                 if (template.DocumentType != 7)
                     documents.Add(rendered);
             }
+            var path = agreement.Product.WordingDownloadURL;
 
             // add wording PDFs (filesystem only)
-            var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
-            if (!string.IsNullOrWhiteSpace(path))
+            //var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
+            if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
             {
-               // path = agreement.Product.WordingDownloadURL;
                 if (System.IO.File.Exists(path))
                 {
                     documents.Add(new SystemDocument
