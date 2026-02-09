@@ -76,7 +76,6 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<Rule> _ruleRepository;
         IMapperSession<SystemDocument> _documentRepository;
         IOdooTaskGateway _odooTaskGateway;
-        IPolicyCenterService _policyProcessingService;
 
         #endregion
 
@@ -116,9 +115,7 @@ namespace DealEngine.WebUI.Controllers
             IClientAgreementTermCanService clientAgreementTermCanService,
             IClientAgreementBVTermCanService clientAgreementBVTermCanService,
             IUpdateTypeService updateTypeService,
-            IOdooTaskGateway odooTaskGateway,
-            IPolicyCenterService policyProcessingService 
-            )
+            IOdooTaskGateway odooTaskGateway            )
             : base(userRepository)
         {
             _underwritingModule = underwritingModule;
@@ -156,7 +153,6 @@ namespace DealEngine.WebUI.Controllers
             _serializationService = serializerationService;
             _updateTypeService = updateTypeService;
             _odooTaskGateway = odooTaskGateway;
-            _policyProcessingService = policyProcessingService;
 
 
             ViewBag.Title = "";
