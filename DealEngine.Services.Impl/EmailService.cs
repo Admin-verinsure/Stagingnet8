@@ -1385,7 +1385,57 @@ namespace DealEngine.Services.Impl
             return null;
 		}
 
-		public async Task<List<Attachment>> ToAttachments(IEnumerable<SystemDocument> documents)
+        public async Task<List<Attachment>> ToAttachments(IEnumerable<SystemDocument> documents)
+        {
+            var attachments = new List<Attachment>();
+
+            foreach (var document in documents)
+            {
+                if (document.ContentType == null)
+                    continue;
+
+                // ? FILE SYSTEM PDF (your case)
+                if (document.Path != null &&
+                    document.ContentType == "application/pdf" &&
+                    document.DocumentType == 0)
+                {
+                    // ?? READ BYTES FIRST (THIS FIXES CORRUPTION)
+                    byte[] bytes = File.ReadAllBytes(document.Path);
+
+                    var stream = new MemoryStream(bytes); // ? DO NOT wrap in using
+
+                    attachments.Add(
+                        new Attachment(
+                            stream,
+                            document.Name ?? Path.GetFileName(document.Path),
+                            MediaTypeNames.Application.Pdf
+                        )
+                    );
+                }
+                // ? DB / IN-MEMORY PDF
+                else if (document.Contents != null)
+                {
+                    var stream = new MemoryStream(document.Contents);
+
+                    attachments.Add(
+                        new Attachment(
+                            stream,
+                            document.Name,
+                            MediaTypeNames.Application.Pdf
+                        )
+                    );
+                }
+                // ? OTHER FILE TYPES
+                else
+                {
+                    attachments.Add(await ToAttachment(document));
+                }
+            }
+
+            return attachments;
+        }
+
+        public async Task<List<Attachment>> ToAttachmentsold(IEnumerable<SystemDocument> documents)
 		{
 			List<Attachment> attachments = new List<Attachment> ();
 			foreach (SystemDocument document in documents)

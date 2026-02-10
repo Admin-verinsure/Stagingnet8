@@ -4041,8 +4041,8 @@ namespace DealEngine.WebUI.Controllers
                     if (agreement.Product.IsOptionalCombinedProduct)
                         continue;
 
-                    //  var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
-                    var path = agreement.Product.WordingDownloadURL;
+                      var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
+                    //var path = agreement.Product.WordingDownloadURL;
                     if (!string.IsNullOrWhiteSpace(path))
                     {
                     //    if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
@@ -4199,7 +4199,8 @@ namespace DealEngine.WebUI.Controllers
             var systemDocs = documents.Select(d => new SystemDocument
             {
                 Path = d.Url,
-                ContentType = d.ContentType,
+                Name = d.DisplayName ?? Path.GetFileName(d.Url), // 🔥 REQUIRED
+                ContentType = d.ContentType ?? "application/pdf",
                 DocumentType = d.DocType
             }).ToList();
 
