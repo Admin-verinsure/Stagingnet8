@@ -4054,6 +4054,7 @@ namespace DealEngine.WebUI.Controllers
                             allPolicyDocuments.Add(new SystemDocument
                             {
                                 Path = path,
+                                Name = Path.GetFileName(path),
                                 ContentType = "application/pdf",
                                 DocumentType = 0 // optional, match your PDF type
                             });
