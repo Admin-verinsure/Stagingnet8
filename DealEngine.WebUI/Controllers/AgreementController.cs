@@ -3977,6 +3977,182 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> ByPassPayment(IFormCollection collection)
         {
+            Guid sheetId = Guid.Empty;
+            ClientInformationSheet sheet = null;
+            User user = null;
+            var action = HttpContext.Request.Form["BindAgreement"];
+
+            try
+            {
+                if (!Guid.TryParse(HttpContext.Request.Form["AnswerSheetId"], out sheetId))
+                    return RedirectToAction("Error500", "Error");
+
+                sheet = await _customerInformationService.GetInformation(sheetId);
+                var programme = sheet.Programme;
+                user = await CurrentUser();
+
+                var status = programme.BaseProgramme.UsesEGlobal
+                    ? "Bound and invoice pending"
+                    : "Bound";
+
+                var allPolicyDocuments = new List<SystemDocument>();
+
+                foreach (var agreement in programme.Agreements)
+                {
+                    if (agreement.Status != "Quoted")
+                        continue;
+
+                    if (action == "BindAgreement")
+                    {
+                        agreement.BindNotes = HttpContext.Request.Form["BindNotes"];
+                        agreement.BindByUserID = user;
+                    }
+
+                    var boundTerms = agreement.ClientAgreementTerms
+                        .Where(t => t.DateDeleted == null && t.Bound)
+                        .ToList();
+
+                    if (!boundTerms.Any())
+                    {
+                        agreement.DateDeleted = DateTime.Now;
+                        continue;
+                    }
+
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        agreement.Status = status;
+                        agreement.BoundDate = DateTime.Now;
+
+                        if (!string.IsNullOrEmpty(programme.BaseProgramme.PolicyNumberPrefixString))
+                            agreement.PolicyNumber = programme.BaseProgramme.PolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
+
+                        if (!string.IsNullOrEmpty(agreement.Product.ProductPolicyNumberPrefixString))
+                            agreement.PolicyNumber = agreement.Product.ProductPolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
+
+                        await uow.Commit();
+                    }
+
+                    foreach (var doc in agreement.GetDocuments())
+                    {
+                        if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
+                            doc.Delete(user);
+                    }
+
+                    if (agreement.Product.IsOptionalCombinedProduct)
+                        continue;
+
+                    //  var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
+                    var path = agreement.Product.WordingDownloadURL;
+                    if (!string.IsNullOrWhiteSpace(path))
+                    {
+                    //    if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
+                    //{
+                        //var physicalPath = _appSettingService.FileBasePhysicalPath;
+
+                        if (System.IO.File.Exists(path))
+                        {
+                            allPolicyDocuments.Add(new SystemDocument
+                            {
+                                Path = path,
+                                ContentType = "application/pdf",
+                                DocumentType = 0 // optional, match your PDF type
+                            });
+                        }
+                    }
+
+
+
+                    foreach (var template in agreement.Product.Documents
+                        .Where(d => d.DateDeleted == null && d.DocumentType != 10 && d.DocumentType != 7))
+                    {
+                        var doc = await RerenderTemplate(template, agreement, programme);
+                        allPolicyDocuments.Add(doc);
+                    }
+
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        if (!agreement.IsPolicyDocSend)
+                        {
+                            agreement.IsPolicyDocSend = true;
+                            agreement.DocIssueDate = DateTime.Now;
+                            await uow.Commit();
+                        }
+                    }
+                }
+
+                // =======================
+                // 🔢 TOTAL PREMIUM CALCULATION (HERE)
+                // =======================
+                decimal totalPremium = 0m;
+
+                if (programme.BaseProgramme.SendInvoiceToOdoo)
+                {
+                    totalPremium = programme.Agreements
+                        .Where(a => a.DateDeleted == null)
+                        .SelectMany(a => a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                        .Where(t => t.DateDeleted == null && t.Bound)
+                        .Sum(t => t.Premium);
+
+                    //  SendInvoiceToOdoo(programme.InformationSheet);
+                    SendInvoicePayloadPOC(programme.InformationSheet, programme, totalPremium);
+                }
+
+                // 👉 totalPremium is now ready to send to Odoo
+                // await _odooService.SendInvoice(programme, totalPremium);
+
+                // =======================
+                // ✉️ SEND ONE POLICY EMAIL
+                // =======================
+                if (programme.BaseProgramme.ProgEnableEmail &&
+                    !programme.BaseProgramme.ProgStopPolicyDocAutoRelease &&
+                    allPolicyDocuments.Any())
+                {
+                    var emailTemplate = programme.BaseProgramme.EmailTemplates
+                        .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+
+                    if (emailTemplate != null)
+                    {
+                        await _emailService.SendEmailViaEmailTemplate(
+                            programme.Owner.Email,
+                            emailTemplate,
+                            allPolicyDocuments,
+                            programme.InformationSheet,
+                            null
+                        );
+                    }
+                }
+
+                if (programme.InformationSheet.Status != status)
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        programme.InformationSheet.Status = status;
+                        await uow.Commit();
+                    }
+                }
+
+                return Json(new
+                {
+                    redirectUrl = action == "BindAgreement"
+        ? "/Agreement/ViewAcceptedAgreement/" + programme.Id
+        : "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
+                });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ByPassPayment5(IFormCollection collection)
+        {
             Guid sheetId;
             User user = null;
 
@@ -4026,12 +4202,13 @@ namespace DealEngine.WebUI.Controllers
 
                 agreementIds.Add(agreement.Id);
             }
+            programme.InformationSheet.Status = status;
 
-            using (var uow = _unitOfWork.BeginUnitOfWork())
-            {
-                programme.InformationSheet.Status = status;
-                await uow.Commit();
-            }
+            //using (var uow = _unitOfWork.BeginUnitOfWork())
+            //{
+            //    programme.InformationSheet.Status = status;
+            //    await uow.Commit();
+            //}
 
             // 🔥 Background work: NO DB writes
             var programmeId = programme.Id;
@@ -4043,10 +4220,20 @@ namespace DealEngine.WebUI.Controllers
                 {
                     var documents = new List<SystemDocument>();
 
-                    foreach (var agreement in programme.Agreements.Where(a => a.Status == "Quoted"))
+                    foreach (var agreement in programme.Agreements.Where(a => a.Status == "Bound"))
                     {
+                        // 🔐 FORCE load while session is alive
+                        NHibernateUtil.Initialize(agreement.Product);
+                        NHibernateUtil.Initialize(agreement.Product.Documents);
+
+                        // 🔥 MATERIALIZE to List
+                        var agreedocuments =
+                            agreement.Product.Documents
+                                .Where(d => d.DateDeleted == null && d.DocumentType != 10)
+                                .ToList();
+
                         documents.AddRange(
-                            await BuildDocumentsAsync(programme, agreement)
+                            await BuildDocumentsAsync(programme, agreement, agreedocuments)
                         );
                     }
 
@@ -4078,23 +4265,23 @@ namespace DealEngine.WebUI.Controllers
             });
         }
 
-        private async Task<List<SystemDocument>> BuildDocumentsAsync(ClientProgramme programme,ClientAgreement agreement)
+        private async Task<List<SystemDocument>> BuildDocumentsAsync(ClientProgramme programme,ClientAgreement agreement, IEnumerable<Document> agreedocs)
         {
             var documents = new List<SystemDocument>();
 
             // render templates
-            foreach (var template in agreement.Product.Documents
-                .Where(d => d.DateDeleted == null && d.DocumentType != 10))
+            // 🔐 FORCE load while session is alive
+            foreach (var template in agreedocs)
             {
                 var rendered = await RerenderTemplate(template, agreement, programme);
                 if (template.DocumentType != 7)
                     documents.Add(rendered);
             }
-            var path = agreement.Product.WordingDownloadURL;
+            // var path = agreement.Product.WordingDownloadURL;
 
             // add wording PDFs (filesystem only)
-            //var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
-            if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
+            var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
+            if (!string.IsNullOrWhiteSpace(path))
             {
                 if (System.IO.File.Exists(path))
                 {
