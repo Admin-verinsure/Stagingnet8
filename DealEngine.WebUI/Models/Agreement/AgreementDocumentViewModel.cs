@@ -9,6 +9,7 @@ namespace DealEngine.WebUI.Models.Agreement
 		public Guid ClientAgreementId { get; set; }
 		public int DocType { get; set; }
 		public bool RenderToPDF { get; set; }
-	}
+        public string ContentType { get; set; }
+    }
 }
 

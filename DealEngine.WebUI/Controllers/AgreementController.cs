@@ -4097,30 +4097,62 @@ namespace DealEngine.WebUI.Controllers
                     SendInvoicePayloadPOC(programme.InformationSheet, programme, totalPremium);
                 }
 
+
+                var payload = allPolicyDocuments.Select(d => new AgreementDocumentViewModel
+                {
+                    DisplayName = d.Name,
+                    Url = d.Path,
+                    DocType = d.DocumentType,
+                    RenderToPDF = d.RenderToPDF
+                }).ToList();
+                var programmeId = programme.Id;
+                var informationSheetId = programme.InformationSheet.Id;
+                var ownerEmail = programme.Owner.Email;
+
+                // 🔥 FIRE AND FORGET (no NHibernate entities)
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await SendPolicyEmailInBackgroundAsync(
+                            programmeId,
+                            informationSheetId,
+                            ownerEmail,
+                            payload
+                        );
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Background email send failed");
+                    }
+                });
+
+
+
                 // 👉 totalPremium is now ready to send to Odoo
                 // await _odooService.SendInvoice(programme, totalPremium);
 
                 // =======================
                 // ✉️ SEND ONE POLICY EMAIL
                 // =======================
-                if (programme.BaseProgramme.ProgEnableEmail &&
-                    !programme.BaseProgramme.ProgStopPolicyDocAutoRelease &&
-                    allPolicyDocuments.Any())
-                {
-                    var emailTemplate = programme.BaseProgramme.EmailTemplates
-                        .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+                //if (programme.BaseProgramme.ProgEnableEmail &&
+                //    !programme.BaseProgramme.ProgStopPolicyDocAutoRelease &&
+                //    allPolicyDocuments.Any())
+                //{
+                //    var emailTemplate = programme.BaseProgramme.EmailTemplates
+                //        .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
 
-                    if (emailTemplate != null)
-                    {
-                        await _emailService.SendEmailViaEmailTemplate(
-                            programme.Owner.Email,
-                            emailTemplate,
-                            allPolicyDocuments,
-                            programme.InformationSheet,
-                            null
-                        );
-                    }
-                }
+                //    if (emailTemplate != null)
+                //    {
+                //        await _emailService.SendEmailViaEmailTemplate(
+                //            programme.Owner.Email,
+                //            emailTemplate,
+                //            allPolicyDocuments,
+                //            programme.InformationSheet,
+                //            null
+                //        );
+                //    }
+                //}
 
                 if (programme.InformationSheet.Status != status)
                 {
@@ -4145,6 +4177,39 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        private async Task SendPolicyEmailInBackgroundAsync(
+    Guid programmeId,
+    Guid informationSheetId,
+    string ownerEmail,
+    List<AgreementDocumentViewModel> documents)
+        {
+            // ⚠️ No NHibernate entities passed in
+            // Only simple data
+
+            var programme = await _programmeService.GetClientProgrammebyId(programmeId);
+            var informationSheet = await _customerInformationService.GetInformation(informationSheetId);
+
+            var emailTemplate = programme.BaseProgramme.EmailTemplates
+                .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+
+            if (emailTemplate == null || !documents.Any())
+                return;
+
+            var systemDocs = documents.Select(d => new SystemDocument
+            {
+                Path = d.Url,
+                ContentType = d.ContentType,
+                DocumentType = d.DocType
+            }).ToList();
+
+            await _emailService.SendEmailViaEmailTemplate(
+                ownerEmail,
+                emailTemplate,
+                systemDocs,
+                informationSheet,
+                null
+            );
+        }
 
 
 
