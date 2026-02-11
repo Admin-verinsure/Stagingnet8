@@ -36,6 +36,7 @@ namespace DealEngine.Services.Impl
         IApplicationLoggingService _applicationLoggingService;
         //ILogger<> _logger;
         IUpdateTypeService _updateTypeService;
+        ILogger<EmailService> _logger;
 
         private IConfiguration _configuration { get; set; }
 
@@ -47,6 +48,7 @@ namespace DealEngine.Services.Impl
             IMapperSession<ClientInformationSheet> clientInformationSheetmapperSession, 
             IAppSettingService appSettingService, 
             IApplicationLoggingService applicationLoggingService,
+            ILogger<EmailService> logger,
             IUpdateTypeService updateTypeService)
 		{
             _clientInformationSheetmapperSession = clientInformationSheetmapperSession;
@@ -58,6 +60,7 @@ namespace DealEngine.Services.Impl
             _appSettingService = appSettingService;
             _applicationLoggingService = applicationLoggingService;
             _updateTypeService = updateTypeService;
+            _logger = logger;
         }
 
         #region IEmailService implementation
@@ -209,11 +212,19 @@ namespace DealEngine.Services.Impl
             email.WithSubject (systememailsubject);
 			email.WithBody (systememailbody);
 			email.UseHtmlBody (true);
+            _logger.LogInformation("In email service :-  " + documents.Count);
+
             if (documents != null)
             {
                 var documentsList = await ToAttachments(documents);
+                _logger.LogInformation("In email service before attachments:-  " + documents.Count);
+
                 email.Attachments(documentsList.ToArray());
+                _logger.LogInformation("In email service after attachments:-  " + documents.Count);
+
                 email.Send();
+                _logger.LogInformation("In email service after email send:-  " + documents.Count);
+
             }
             else
             {
