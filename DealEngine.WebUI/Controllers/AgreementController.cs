@@ -4038,8 +4038,8 @@ namespace DealEngine.WebUI.Controllers
                     if (agreement.Product.IsOptionalCombinedProduct)
                         continue;
 
-                      var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
-                   // var path = agreement.Product.WordingDownloadURL;
+                     // var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
+                    var path = agreement.Product.WordingDownloadURL;
                     if (!string.IsNullOrWhiteSpace(path))
                     {
                     //    if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
