@@ -4038,7 +4038,7 @@ namespace DealEngine.WebUI.Controllers
                     if (agreement.Product.IsOptionalCombinedProduct)
                         continue;
 
-                     // var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
+                    //  var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
                     var path = agreement.Product.WordingDownloadURL;
                     if (!string.IsNullOrWhiteSpace(path))
                     {
@@ -4119,24 +4119,29 @@ namespace DealEngine.WebUI.Controllers
                 var programmeId = programme.Id;
                 var informationSheetId = programme.InformationSheet.Id;
                 var ownerEmail = programme.Owner.Email;
-
+                await SendPolicyEmailInBackgroundAsync(
+                           programmeId,
+                           informationSheetId,
+                           ownerEmail,
+                           payload
+                       );
                 // 🔥 FIRE AND FORGET (no NHibernate entities)
-                _ = Task.Run(async () =>
-                {
-                    try
-                    {
-                        await SendPolicyEmailInBackgroundAsync(
-                            programmeId,
-                            informationSheetId,
-                            ownerEmail,
-                            payload
-                        );
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Background email send failed");
-                    }
-                });
+                //_ = Task.Run(async () =>
+                //{
+                //    try
+                //    {
+                //        await SendPolicyEmailInBackgroundAsync(
+                //            programmeId,
+                //            informationSheetId,
+                //            ownerEmail,
+                //            payload
+                //        );
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        _logger.LogError(ex, "Background email send failed");
+                //    }
+                //});
 
 
 
