@@ -1388,50 +1388,57 @@ namespace DealEngine.Services.Impl
         public async Task<List<Attachment>> ToAttachments(IEnumerable<SystemDocument> documents)
         {
             var attachments = new List<Attachment>();
-
-            foreach (var document in documents)
+            try
             {
-                if (document.ContentType == null)
-                    continue;
-
-                // ? FILE SYSTEM PDF (your case)
-                if (document.Path != null &&
-                    document.ContentType == "application/pdf" &&
-                    document.DocumentType == 0)
+                foreach (var document in documents)
                 {
-                    // ?? READ BYTES FIRST (THIS FIXES CORRUPTION)
-                    byte[] bytes = File.ReadAllBytes(document.Path);
+                    if (document.ContentType == null)
+                        continue;
 
-                    var stream = new MemoryStream(bytes); // ? DO NOT wrap in using
+                    // ? FILE SYSTEM PDF (your case)
+                   
+                    
+                    if (document.ContentType == "application/pdf")
+                    {
+                            if (!string.IsNullOrEmpty(document.Path) && File.Exists(document.Path))
+                            {
+                                byte[] fileBytes = File.ReadAllBytes(document.Path);
+                                var stream = new MemoryStream(fileBytes);
 
-                    attachments.Add(
-                        new Attachment(
-                            stream,
-                            document.Name ?? Path.GetFileName(document.Path),
-                            MediaTypeNames.Application.Pdf
-                        )
-                    );
-                }
-                // ? DB / IN-MEMORY PDF
-                else if (document.Contents != null)
-                {
-                    var stream = new MemoryStream(document.Contents);
+                                attachments.Add(
+                                    new Attachment(
+                                        stream,
+                                        document.Name ?? Path.GetFileName(document.Path),
+                                        MediaTypeNames.Application.Pdf
+                                    )
+                                );
+                            }
+                            else if (document.Contents != null && document.Contents.Length > 0)
+                            {
+                                var stream = new MemoryStream(document.Contents);
 
-                    attachments.Add(
-                        new Attachment(
-                            stream,
-                            document.Name,
-                            MediaTypeNames.Application.Pdf
-                        )
-                    );
+                                attachments.Add(
+                                    new Attachment(
+                                        stream,
+                                        document.Name,
+                                        MediaTypeNames.Application.Pdf
+                                    )
+                                );
+                            }
+                    }
+
+                    // ? OTHER FILE TYPES
+                    else
+                    {
+                        attachments.Add(await ToAttachment(document));
+                    }
                 }
-                // ? OTHER FILE TYPES
-                else
-                {
-                    attachments.Add(await ToAttachment(document));
-                }
+
             }
+            catch (Exception ex)
+            {
 
+            }
             return attachments;
         }
 

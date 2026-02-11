@@ -4018,8 +4018,7 @@ namespace DealEngine.WebUI.Controllers
                         continue;
                     }
 
-                    using (var uow = _unitOfWork.BeginUnitOfWork())
-                    {
+                    
                         agreement.Status = status;
                         agreement.BoundDate = DateTime.Now;
 
@@ -4029,20 +4028,18 @@ namespace DealEngine.WebUI.Controllers
                         if (!string.IsNullOrEmpty(agreement.Product.ProductPolicyNumberPrefixString))
                             agreement.PolicyNumber = agreement.Product.ProductPolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
 
-                        await uow.Commit();
-                    }
 
-                    foreach (var doc in agreement.GetDocuments())
-                    {
-                        if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
-                            doc.Delete(user);
-                    }
+                    //foreach (var doc in agreement.GetDocuments())
+                    //{
+                    //    if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
+                    //        doc.Delete(user);
+                    //}
 
                     if (agreement.Product.IsOptionalCombinedProduct)
                         continue;
 
-                     // var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
-                    var path = agreement.Product.WordingDownloadURL;
+                      var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
+                   // var path = agreement.Product.WordingDownloadURL;
                     if (!string.IsNullOrWhiteSpace(path))
                     {
                     //    if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
@@ -4099,6 +4096,19 @@ namespace DealEngine.WebUI.Controllers
                 }
 
 
+
+                if (programme.InformationSheet.Status != status)
+                {
+                    
+                        programme.InformationSheet.Status = status;
+                       
+                }
+
+                // ✅ SINGLE COMMIT AT END
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    await uow.Commit();
+                }
                 var payload = allPolicyDocuments.Select(d => new AgreementDocumentViewModel
                 {
                     DisplayName = d.Name,
@@ -4155,14 +4165,6 @@ namespace DealEngine.WebUI.Controllers
                 //    }
                 //}
 
-                if (programme.InformationSheet.Status != status)
-                {
-                    using (var uow = _unitOfWork.BeginUnitOfWork())
-                    {
-                        programme.InformationSheet.Status = status;
-                        await uow.Commit();
-                    }
-                }
 
                 return Json(new
                 {
@@ -4173,8 +4175,10 @@ namespace DealEngine.WebUI.Controllers
             }
             catch (Exception ex)
             {
-                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-                return RedirectToAction("Error500", "Error");
+                _logger.LogError(ex.ToString());
+
+                _logger.LogError(ex, "ByPassPayment failed");
+                return StatusCode(500, ex.ToString());
             }
         }
 

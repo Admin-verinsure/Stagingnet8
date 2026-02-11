@@ -7251,8 +7251,11 @@
                    window.location.href = data.redirectUrl;
                  }
             }).fail(function (a, s, d) {
-                $('#getDocumentsModal').hide();
-                 alert('Something went wrong. Please try again.');
+                  $('#getDocumentsModal').hide();
+    console.log("Status:", xhr.status);
+    console.log("Response:", xhr.responseText);
+    console.log("Error:", error);
+    alert('Something went wrong. Check console.');
             });
         }
         //XXXXXXXXXXXX
