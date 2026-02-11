@@ -212,23 +212,27 @@ namespace DealEngine.Services.Impl
             email.WithSubject (systememailsubject);
 			email.WithBody (systememailbody);
 			email.UseHtmlBody (true);
-            _logger.LogInformation("In email service :-  " + documents.Count);
+            _logger.LogError("In email service :-  " + documents.Count);
 
             if (documents != null)
             {
                 var documentsList = await ToAttachments(documents);
-                _logger.LogInformation("In email service before attachments:-  " + documents.Count);
+                _logger.LogError("In email service before attachments:-  " + documents.Count);
 
                 email.Attachments(documentsList.ToArray());
-                _logger.LogInformation("In email service after attachments:-  " + documents.Count);
+                _logger.LogError("In email service after attachments:-  " + documents.Count);
 
                 email.Send();
-                _logger.LogInformation("In email service after email send:-  " + documents.Count);
+                _logger.LogError("In email service after email send:-  " + documents.Count);
 
             }
             else
             {
+                _logger.LogError("In email service in else part before email send:-  " + documents.Count);
+
                 email.Send();
+                _logger.LogError("In email service in else part after email send:-  " + documents.Count);
+
             }
         }
 
