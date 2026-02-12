@@ -1,26 +1,29 @@
-using System;
-using System.Linq;
-using System.Net.Mime;
-using System.IO;
-using DealEngine.Services.Interfaces;
-using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Domain.Entities;
+using DealEngine.Infrastructure.FluentNHibernate;
+using DealEngine.Services.Interfaces;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml;
+using Microsoft.Extensions.Logging;
+using NHibernate.Linq;
+using NReco.PdfGenerator;
+using OpenHtmlToPdf;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Globalization;
-using System.Threading.Tasks;
-using NHibernate.Linq;
-using SystemDocument = DealEngine.Domain.Entities.Document;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml;
-using HtmlToOpenXml;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.Extensions.Logging;
-using Document = DealEngine.Domain.Entities.Document;
-using System.Text.RegularExpressions;
-using NReco.PdfGenerator;
+using System.IO;
+using System.Linq;
+using System.Net.Mime;
 using System.Net.Sockets;
-
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Document = DealEngine.Domain.Entities.Document;
+using SystemDocument = DealEngine.Domain.Entities.Document;
+using IOFile = System.IO.File;
 namespace DealEngine.Services.Impl
 {
 	public class FileService : IFileService
@@ -1891,7 +1894,60 @@ namespace DealEngine.Services.Impl
         {
             return await _documentRepository.FindAll().Where(d => d.OwnerOrganisation == Owner && d.DateDeleted == null).ToListAsync();
         }
+
+
+
+        //public byte[] ConvertHtmlToPdf(string html)
+        //{
+        //    var tempHtml = Path.GetTempFileName() + ".html";
+        //    var tempPdf = Path.GetTempFileName() + ".pdf";
+
+        //    IOFile.WriteAllText(tempHtml, html);
+
+        //    var psi = new ProcessStartInfo
+        //    {
+        //        FileName = @"C:\wkhtmltopdf\bin\wkhtmltopdf.exe",
+        //        Arguments = $"\"{tempHtml}\" \"{tempPdf}\"",
+        //        UseShellExecute = false,
+        //        CreateNoWindow = true,
+        //        RedirectStandardOutput = true,
+        //        RedirectStandardError = true
+        //    };
+
+        //    using (var process = Process.Start(psi))
+        //    {
+        //        process.WaitForExit();
+        //    }
+
+        //    var pdfBytes = IOFile.ReadAllBytes(tempPdf);
+
+        //    IOFile.Delete(tempHtml);
+        //    IOFile.Delete(tempPdf);
+
+        //    return pdfBytes;
+        //}
+
+
         public async Task<Document> ConvertHTMLToPDF(Document doc)
+        {
+            string html = FromBytes(doc.Contents);
+
+            html = html.Replace("“", "&quot;");
+            html = html.Replace("”", "&quot;");
+            html = html.Replace(" – ", "--");
+            html = html.Replace("&nbsp;", " ");
+            html = html.Replace("'", "&#39;");
+
+            var pdfService = new PdfService();
+            var pdfBytes = await pdfService.GeneratePdfAsync(html);
+
+            User user = null;
+            Document document = new Document(user, doc.Name + ".pdf", "application/pdf", doc.DocumentType);
+            document.Contents = pdfBytes;
+
+            return document;
+        }
+        public async Task<Document> ConvertHTMLToPDFold1(Document doc)
         {
 
             string html = FromBytes(doc.Contents);

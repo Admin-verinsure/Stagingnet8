@@ -2,6 +2,7 @@ using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Infrastructure.Payment.EGlobalAPI;
 using DealEngine.Infrastructure.Payment.PxpayAPI;
+using DealEngine.Services.Impl;
 using DealEngine.Services.Interfaces;
 using DealEngine.WebUI.Helpers;
 using DealEngine.WebUI.Models;
@@ -23,19 +24,23 @@ using Newtonsoft.Json.Linq;
 using NHibernate;
 using NHibernate.Mapping;
 using NReco.PdfGenerator;
+using OpenHtmlToPdf;
 using Org.BouncyCastle.Crypto.Agreement;
 using ServiceStack;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
+using System.Text;
 using System.Threading.Tasks;
 using static HibernatingRhinos.Profiler.Appender.CosmosDB.Http.CosmosEndpoints;
 using Document = DealEngine.Domain.Entities.Document;
+using IOFile = System.IO.File;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 
 namespace DealEngine.WebUI.Controllers
@@ -5343,8 +5348,269 @@ namespace DealEngine.WebUI.Controllers
             return document;
         }
 
+        public async Task<Document> GetInvoicePDF(SystemDocument renderedDoc, string invoiceName)
+        {
+            User user = null;
+
+            // Convert stored bytes → HTML
+            string html = _fileService.FromBytes(renderedDoc.Contents);
+
+            // Inject meta + optional image styling
+            if (renderedDoc.DocumentType == 8) // Apollo Invoice
+            {
+                html = html.Insert(0,
+                    "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>");
+            }
+            else
+            {
+                html = html.Insert(0,
+                    "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>" +
+                    "<style>img { height:auto; max-width: 300px }</style>");
+            }
+
+            // Clean special characters (same as before)
+            html = html.Replace("“", "&quot;");
+            html = html.Replace("”", "&quot;");
+            html = html.Replace(" – ", "--");
+            html = html.Replace("&nbsp;", " ");
+            html = html.Replace("’", "&#146;");
+            html = html.Replace("‘", "&#39;");
+
+            // 🔥 Use Playwright PDF Service
+            var pdfService = new PdfService();
+            var pdfBytes = await pdfService.GeneratePdfAsync(html);
+
+            // Create Document
+            Document document = new Document(user, invoiceName, "application/pdf", renderedDoc.DocumentType);
+            document.Contents = pdfBytes;
+
+            return document;
+        }
+        public async Task<Document> GetInvoicePDF0987(SystemDocument doc, string invoicename)
+        {
+            User user = null;
+
+            // Convert document bytes to HTML
+            string html = _fileService.FromBytes(doc.Contents);
+
+            // Inject head + styles
+            if (doc.DocumentType == 8)
+            {
+                html = html.Insert(0, "<head><meta charset='utf-8'></head>");
+            }
+            else
+            {
+                html = html.Insert(0,
+                    @"<head>
+                <meta charset='utf-8'>
+                <style>
+                    img { height:auto; max-width:300px; }
+                    body { font-family: Arial, Helvetica, sans-serif; }
+                </style>
+              </head>");
+            }
+
+            // Character fixes
+            html = html.Replace("“", "&quot;")
+                       .Replace("”", "&quot;")
+                       .Replace(" – ", "--")
+                       .Replace("&nbsp;", " ")
+                       .Replace("’", "&#146;")
+                       .Replace("‘", "&#39;")
+                       .Replace("ä", "&#228;")
+                       .Replace("ë", "&#235;")
+                       .Replace("ö", "&#246;")
+                       .Replace("ü", "&#252;");
+
+            // Fix legacy image paths
+            string badURL = "../../../images/";
+            string newURL = "https://" + _appSettingService.domainQueryString + "/Image/";
+            html = html.Replace(badURL, newURL);
+
+            // Generate PDF using wkhtml (your new wrapper)
+            byte[] pdfBytes = Pdf
+                .From(html)
+                .WithGlobalSetting("orientation", "Portrait")
+                .WithGlobalSetting("margin.top", "10mm")
+                .WithGlobalSetting("margin.bottom", "10mm")
+                .WithGlobalSetting("margin.left", "30mm")
+                .WithGlobalSetting("margin.right", "10mm")
+                .WithObjectSetting("footer.center", "Page [page] of [toPage]")
+                .Content();
+
+            // ✅ Return Domain Document (like old method)
+            Document document = new Document(
+                user,
+                invoicename + ".pdf",
+                "application/pdf",
+                doc.DocumentType
+            );
+
+            document.Contents = pdfBytes;
+
+            return document;
+        }
+
+
+
+        //public async Task<Document> GetInvoicePDF12345( SystemDocument doc, string invoicename)
+        //{
+        //    //ClientProgramme clientprogramme =
+        //    //    await _programmeService.GetClientProgrammebyId(ClientProgrammeId);
+
+        //    //ClientInformationSheet clientInformationSheet =
+        //    //    clientprogramme.InformationSheet;
+
+        //    //SystemDocument doc =
+        //    //    await _documentRepository.GetByIdAsync(Id);
+
+        //    // Convert document bytes to HTML
+        //    string html = _fileService.FromBytes(doc.Contents);
+
+        //    // Inject head + styles
+        //    if (doc.DocumentType == 8) // Apollo Invoice
+        //    {
+        //        html = html.Insert(0,
+        //            "<head><meta charset='utf-8'></head>");
+        //    }
+        //    else
+        //    {
+        //        html = html.Insert(0,
+        //            @"<head>
+        //        <meta charset='utf-8'>
+        //        <style>
+        //            img { height:auto; max-width:300px; }
+        //            body { font-family: Arial, Helvetica, sans-serif; }
+        //        </style>
+        //      </head>");
+        //    }
+
+        //    // Character fixes (keep as-is from legacy)
+        //    html = html.Replace("“", "&quot;")
+        //               .Replace("”", "&quot;")
+        //               .Replace(" – ", "--")
+        //               .Replace("&nbsp;", " ")
+        //               .Replace("’", "&#146;")
+        //               .Replace("‘", "&#39;")
+        //               .Replace("ä", "&#228;")
+        //               .Replace("ë", "&#235;")
+        //               .Replace("ö", "&#246;")
+        //               .Replace("ü", "&#252;");
+
+        //    // Fix legacy image paths
+        //    string badURL = "../../../images/";
+        //    string newURL = "https://" + _appSettingService.domainQueryString + "/Image/";
+        //    html = html.Replace(badURL, newURL);
+
+        //    // Convert HTML → PDF
+        //    byte[] pdfBytes = Pdf
+        //        .From(html)
+        //        .WithGlobalSetting("orientation", "Portrait")
+        //        .WithGlobalSetting("margin.top", "10mm")
+        //        .WithGlobalSetting("margin.bottom", "10mm")
+        //        .WithGlobalSetting("margin.left", "30mm")
+        //        .WithGlobalSetting("margin.right", "10mm")
+        //        .WithObjectSetting("footer.center", "Page [page] of [toPage]")
+        //        .Content();
+
+        //    return File(
+        //        pdfBytes,
+        //        "application/pdf",
+        //        invoicename + ".pdf"
+        //    );
+        //}
+
+
+
         [HttpGet]
-        public async Task<Document> GetInvoicePDF(SystemDocument renderedDoc, string invoicename)
+    public async Task<Document> GetInvoicePDFolhgd(SystemDocument renderedDoc, string invoicename)
+    {
+        User user = null;
+
+        string html = _fileService.FromBytes(renderedDoc.Contents);
+
+        if (renderedDoc.DocumentType == 8)
+        {
+            html = html.Insert(0,
+                "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /></head>");
+        }
+        else
+        {
+            html = html.Insert(0,
+                "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />" +
+                "<style>img { height:auto; max-width:300px }</style></head>");
+        }
+
+        // Clean characters
+        html = html.Replace("“", "&quot;");
+        html = html.Replace("”", "&quot;");
+        html = html.Replace(" – ", "--");
+        html = html.Replace("&nbsp;", " ");
+        html = html.Replace("’", "&#146;");
+        html = html.Replace("‘", "&#39;");
+
+        // Temp file paths
+        var tempHtmlPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".html");
+        var tempPdfPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".pdf");
+
+        IOFile.WriteAllText(tempHtmlPath, html, Encoding.UTF8);
+
+        // Detect environment
+        string wkhtmlPath;
+
+        if (_appSettingService.IsLinuxEnv == "True")
+            wkhtmlPath = "wkhtmltopdf";   // installed via apt
+        else
+            wkhtmlPath = @"C:\inetpub\wwwroot\dealengine\wkhtmltopdf\wkhtmltox\bin\wkhtmltopdf.exe";
+
+        var arguments =
+            $"--enable-local-file-access " +
+            $"--margin-top 10mm --margin-bottom 10mm " +
+            $"--margin-left 30mm --margin-right 10mm " +
+            $"--footer-center \"Page [page] of [toPage]\" " +
+            $"\"{tempHtmlPath}\" \"{tempPdfPath}\"";
+
+        var processInfo = new ProcessStartInfo
+        {
+            FileName = wkhtmlPath,
+            Arguments = arguments,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardError = true
+        };
+
+        using (var process = Process.Start(processInfo))
+        {
+            await process.WaitForExitAsync();
+
+            if (process.ExitCode != 0)
+            {
+                var error = await process.StandardError.ReadToEndAsync();
+                throw new Exception("wkhtmltopdf failed: " + error);
+            }
+        }
+
+        var pdfBytes = IOFile.ReadAllBytes(tempPdfPath);
+
+        // Cleanup
+        IOFile.Delete(tempHtmlPath);
+        IOFile.Delete(tempPdfPath);
+
+        Document document = new Document(
+            user,
+            invoicename + ".pdf",
+            "application/pdf",
+            renderedDoc.DocumentType
+        );
+
+        document.Contents = pdfBytes;
+
+        return document;
+    }
+
+
+    [HttpGet]
+        public async Task<Document> GetInvoicePDFold(SystemDocument renderedDoc, string invoicename)
         {
             User user = null;
 
