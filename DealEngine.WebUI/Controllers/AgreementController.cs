@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using Microsoft.Playwright;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -86,7 +87,8 @@ namespace DealEngine.WebUI.Controllers
         IMapperSession<Rule> _ruleRepository;
         IMapperSession<SystemDocument> _documentRepository;
         IOdooTaskGateway _odooTaskGateway;
-
+        private readonly ICertificateBuilderService _certificateBuilderService;
+        private readonly ICertificatePdfService _certificatePdfService;
         #endregion
 
         public AgreementController(
@@ -125,7 +127,10 @@ namespace DealEngine.WebUI.Controllers
             IClientAgreementTermCanService clientAgreementTermCanService,
             IClientAgreementBVTermCanService clientAgreementBVTermCanService,
             IUpdateTypeService updateTypeService,
-            IOdooTaskGateway odooTaskGateway            )
+            IOdooTaskGateway odooTaskGateway,
+            ICertificateBuilderService certificateBuilderService,
+            ICertificatePdfService certificatePdfService
+            )
             : base(userRepository)
         {
             _underwritingModule = underwritingModule;
@@ -163,7 +168,8 @@ namespace DealEngine.WebUI.Controllers
             _serializationService = serializerationService;
             _updateTypeService = updateTypeService;
             _odooTaskGateway = odooTaskGateway;
-
+            _certificateBuilderService = certificateBuilderService;
+            _certificatePdfService = certificatePdfService;
 
             ViewBag.Title = "";
         }
@@ -3668,7 +3674,191 @@ namespace DealEngine.WebUI.Controllers
             return documents;
         }
 
+
         public async Task<SystemDocument> RerenderTemplate(SystemDocument template, ClientAgreement agreement, ClientProgramme programme)
+        {
+            Document renderedDoc;
+            var documents = new SystemDocument();
+            var documentspremiumadvice = new List<SystemDocument>();
+            User user = await CurrentUser();
+            try
+            {
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    List<SystemDocument> agreeDocList = agreement.GetDocuments();
+                    foreach (Document doc in agreeDocList.Where(doc => doc.Name == template.Name))
+                    {
+                        doc.Delete(user);
+                    }
+
+                    ClientInformationSheet sheet = agreement.ClientInformationSheet;
+                    if (template.ContentType == MediaTypeNames.Application.Pdf)
+                    {
+                        SystemDocument notRenderedDoc = await _fileService.GetDocumentByID(template.Id);
+                        agreement.Documents.Add(notRenderedDoc);
+                        documents = notRenderedDoc;
+                    }
+                    else
+                    {
+                        //render docs except invoice
+                        if (template.DocumentType != 4 && template.DocumentType != 6 && template.DocumentType != 9 && template.DocumentType != 12)
+                        {
+                            if (template.Name == "TripleA Individual TL Certificate" && !programme.BaseProgramme.IsPdfDoc)
+                            {
+                                if (agreement.Product.IsOptionalProductBasedSub &&
+                                    agreement.ClientInformationSheet.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                                {
+                                    renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+
+                                    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                    agreement.Documents.Add(renderedDoc);
+                                    //documents.Add(renderedDoc);
+                                    documents = renderedDoc;
+                                    await _fileService.UploadFile(renderedDoc);
+                                }
+                            }
+                            else if (template.DocumentType == 7)
+                            {
+                                renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                agreement.Documents.Add(renderedDoc);
+                                //documents.Add(renderedDoc);
+                                //documentspremiumadvice.Add(renderedDoc);
+                                documents = renderedDoc;
+                                await _fileService.UploadFile(renderedDoc);
+                            }
+                            else if (template.DocumentType == 8 && !programme.BaseProgramme.IsPdfDoc)
+                            {
+                                renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+
+                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                agreement.Documents.Add(renderedDoc);
+                                //documents.Add(renderedDoc);
+                                documents = renderedDoc;
+
+                                await _fileService.UploadFile(renderedDoc);
+                            }
+                            else if (programme.BaseProgramme.IsPdfDoc)
+                            {
+                                SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
+                                //  renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                                renderedDoc = await GenerateCertificate(agreement, programme);
+                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                agreement.Documents.Add(renderedDoc1);
+                                documents = renderedDoc;
+                                await _fileService.UploadFile(renderedDoc);
+                            }
+                            else
+                            {
+                                renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
+
+                                renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                renderedDoc.RenderToPDF = template.RenderToPDF;
+
+                                // Testing image alignment fix for generated doc
+                                renderedDoc = await _fileService.FormatCKHTMLforConversion(renderedDoc);
+
+                                if (programme.BaseProgramme.IsPdfDoc)
+                                {
+                                    if (renderedDoc.IsTemplate == true)
+                                    {
+                                        renderedDoc = await _fileService.ConvertHTMLToPDF(renderedDoc);
+                                        //renderedDoc = await _fileService.FormatCKHTMLforConversion(renderedDoc);
+                                    }
+                                }
+                                documents = renderedDoc;
+                                await _fileService.UploadFile(renderedDoc);
+                                agreement.Documents.Add(renderedDoc); ///shifted as new documents were not able to add in agreement they get generated only after upload
+
+
+                            }
+
+                        }
+                        else if (template.DocumentType == 4 && agreement.ClientInformationSheet.Programme.PaymentType == "Credit Card" && programme.BaseProgramme.IsPdfDoc)
+                        {
+                            SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
+                            renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+
+                            renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                            agreement.Documents.Add(renderedDoc1);
+                            documents = renderedDoc;
+                            await _fileService.UploadFile(renderedDoc);
+
+                        }
+                        else if (template.DocumentType == 12 && agreement.ClientInformationSheet.Programme.PaymentType == "Invoice" && programme.BaseProgramme.IsPdfDoc)
+                        {
+                            SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
+                            renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+
+                            renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                            agreement.Documents.Add(renderedDoc1);
+                            documents = renderedDoc;
+                            await _fileService.UploadFile(renderedDoc);
+                        }
+
+                        //render job certificate
+                        if (template.DocumentType == 9 && !programme.BaseProgramme.IsPdfDoc)
+                        {
+                            if (sheet.Jobs.Where(sj => sj.DateDeleted == null && !sj.Removed).Count() > 0)
+                            {
+                                foreach (var job in sheet.Jobs.Where(sj => sj.DateDeleted == null && !sj.Removed))
+                                {
+                                    renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, job);
+                                    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                    agreement.Documents.Add(renderedDoc);
+                                    documents = renderedDoc;
+                                    await _fileService.UploadFile(renderedDoc);
+                                }
+                            }
+                        }
+
+                        //render all subsystem
+                        if (template.DocumentType == 6)
+                        {
+                            foreach (var subSystemClient in sheet.SubClientInformationSheets)
+                            {
+                                if (agreement.Product.IsOptionalProductBasedSub)
+                                {
+                                    if (subSystemClient.Answers.Where(sa => sa.ItemName == agreement.Product.OptionalProductRequiredAnswer).First().Value == "1")
+                                    {
+                                        SystemDocument renderedDocSub = await _fileService.RenderDocument(user, template, agreement, subSystemClient, null);
+                                        renderedDocSub.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                        agreement.Documents.Add(renderedDocSub);
+                                        documents = renderedDocSub;
+                                        await _fileService.UploadFile(renderedDocSub);
+                                    }
+                                }
+                                else
+                                {
+                                    renderedDoc = await _fileService.RenderDocument(user, template, agreement, subSystemClient, null);
+                                    renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                    agreement.Documents.Add(renderedDoc);
+                                    documents = renderedDoc;
+                                    await _fileService.UploadFile(renderedDoc);
+                                }
+
+
+
+                            }
+                        }
+                    }
+
+
+                    uow.Commit();
+                }
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return documents;
+            }
+            return documents;
+
+        }
+
+
+
+        public async Task<SystemDocument> RerenderQuestTemplate(SystemDocument template, ClientAgreement agreement, ClientProgramme programme)
         {
             Document renderedDoc;
             var documents = new SystemDocument();
@@ -4068,7 +4258,10 @@ namespace DealEngine.WebUI.Controllers
                     foreach (var template in agreement.Product.Documents
                         .Where(d => d.DateDeleted == null && d.DocumentType != 10 && d.DocumentType != 7))
                     {
-                        var doc = await RerenderTemplate(template, agreement, programme);
+                       var doc = await RerenderTemplate(template, agreement, programme);
+                     //   var doc = await GenerateCertificate(agreement, programme);
+
+                        
                         allPolicyDocuments.Add(doc);
                     }
 
@@ -4194,6 +4387,39 @@ namespace DealEngine.WebUI.Controllers
                 return StatusCode(500, ex.ToString());
             }
         }
+
+
+
+        [HttpGet]
+        public async Task<SystemDocument> GenerateCertificate(ClientAgreement agreement, ClientProgramme programme)
+        {
+            var user = await CurrentUser();
+
+           // var agreement = await _agreementService.GetByIdAsync(agreementId);
+            //var programme = agreement.ClientInformationSheet.Programme;
+
+            // 1️⃣ Build aggregate model
+            var model = await _certificateBuilderService.BuildAsync(agreement, programme);
+
+            // 2️⃣ Generate PDF bytes via QuestPDF
+            var pdfBytes = await _certificatePdfService.GenerateAsync(model);
+
+            // 3️⃣ Create SystemDocument
+            var document = new SystemDocument(
+                user,
+                "Certificate of Currency",
+                "application/pdf",
+                8 // your DocumentType
+            );
+
+            document.Contents = pdfBytes;
+            document.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+
+
+
+            return document;
+        }
+
 
         private async Task SendPolicyEmailInBackgroundAsync(
     Guid programmeId,

@@ -32,6 +32,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.Http;
 using System.Threading.Tasks;
+using static DealEngine.Services.Interfaces.IAssetData;
+using ICertificatePdfService = DealEngine.Services.Interfaces.ICertificatePdfService;
 
 namespace DealEngine.WebUI
 {
@@ -139,6 +141,9 @@ namespace DealEngine.WebUI
                 q.UseMicrosoftDependencyInjectionScopedJobFactory();
 
             });
+
+            services.AddScoped<ICertificateBuilderService, CertificateBuilderService>();
+            services.AddScoped<ICertificatePdfService, CertificatePdfService>();
             //services.AddSingleton(new JobMetadata(Guid.NewGuid(), typeof(ReportSchedular), "Notify Job", "0/10 * * * * ?"));.....
             services.AddHttpContextAccessor();
             services.AddQuartzHostedService();
