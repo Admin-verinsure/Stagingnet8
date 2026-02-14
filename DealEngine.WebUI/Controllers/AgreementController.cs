@@ -4237,10 +4237,6 @@ namespace DealEngine.WebUI.Controllers
                     var path = agreement.Product.WordingDownloadURL;
                     if (!string.IsNullOrWhiteSpace(path))
                     {
-                    //    if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
-                    //{
-                        //var physicalPath = _appSettingService.FileBasePhysicalPath;
-
                         if (System.IO.File.Exists(path))
                         {
                             allPolicyDocuments.Add(new SystemDocument
@@ -4258,10 +4254,7 @@ namespace DealEngine.WebUI.Controllers
                     foreach (var template in agreement.Product.Documents
                         .Where(d => d.DateDeleted == null && d.DocumentType != 10 && d.DocumentType != 7))
                     {
-                       var doc = await RerenderTemplate(template, agreement, programme);
-                     //   var doc = await GenerateCertificate(agreement, programme);
-
-                        
+                       var doc = await RerenderTemplate(template, agreement, programme);                  
                         allPolicyDocuments.Add(doc);
                     }
 
@@ -4283,12 +4276,15 @@ namespace DealEngine.WebUI.Controllers
 
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
-                    totalPremium = programme.Agreements
-                        .Where(a => a.DateDeleted == null)
-                        .SelectMany(a => a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
-                        .Where(t => t.DateDeleted == null && t.Bound)
-                        .Sum(t => t.Premium);
-
+                        totalPremium = programme.Agreements
+                             .Where(a => a.DateDeleted == null)
+                             .Sum(a =>
+                                  (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                                  .Where(t => t.DateDeleted == null && t.Bound)
+                                 .Sum(t => t.Premium)
+                               +
+        // Add BrokerFee (if any)
+                                  (a.BrokerFee > 0 ? a.BrokerFee : 0));
                     //  SendInvoiceToOdoo(programme.InformationSheet);
                     SendInvoicePayloadPOC(programme.InformationSheet, programme, totalPremium);
                 }
@@ -7260,7 +7256,9 @@ namespace DealEngine.WebUI.Controllers
                                 ViewBag.IsReportSend = "" + agreement.IsFullProposalDocSend;
                                 if (programme.BaseProgramme.IsPdfDoc)
                                 {
-                                    model.Documents.Add(new AgreementDocumentViewModel { DisplayName = doc.Name + ".pdf", Url = "/File/GetInvoicePDF/" + doc.Id + "?ClientProgrammeId=" + programme.Id + "&invoicename=" + doc.Name, ClientAgreementId = agreement.Id, DocType = doc.DocumentType, RenderToPDF = doc.RenderToPDF });
+                                    model.Documents.Add(new AgreementDocumentViewModel { DisplayName = doc.Name, Url = "/File/GenerateCertificate?agreementid=" + agreement.Id + "&programmeid=" + programme.Id });
+
+                                  //  model.Documents.Add(new AgreementDocumentViewModel { DisplayName = doc.Name + ".pdf", Url = "/File/GetInvoicePDF/" + doc.Id + "?ClientProgrammeId=" + programme.Id + "&invoicename=" + doc.Name, ClientAgreementId = agreement.Id, DocType = doc.DocumentType, RenderToPDF = doc.RenderToPDF });
 
                                 }
                             }

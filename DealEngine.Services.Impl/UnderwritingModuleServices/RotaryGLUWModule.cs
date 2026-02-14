@@ -1,6 +1,7 @@
 ﻿using DealEngine.Domain.Entities;
 using DealEngine.Services.Interfaces;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Org.BouncyCastle.Crypto.Agreement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,7 +80,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 // var organisation = informationSheet.Organisation.FirstOrDefault();
                 var attr = informationSheet?.OrganisationAttribute;
                 decimal premium = 0;
-
+                agreement.BrokerFee = 0;
                 IList<Organisation> organisations = informationSheet.Organisation;
 
                 foreach (Organisation organisation in organisations.Where(org => org.Removed == false))
@@ -87,7 +88,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
                     foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
                     {
-                        premium += CalculatePremium(unit.Name, attr, orgtype, organisation.Id, informationSheet.Owner.Id);
+                        premium += CalculatePremium(unit.Name, attr, orgtype, organisation.Id, informationSheet.Owner.Id, agreement);
                     }
                 }
 
@@ -143,14 +144,16 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 term1millimitpremiumoption.DeletedBy = null;
                 decimal targetPremium = 50m * 1.15m; // 50 + 15%
 
+
                 if (premium == targetPremium)
                 {
                     agreement.BrokerFee = 0;
                 }
                 else
                 {
-                    agreement.BrokerFee = agreement.Product.DefaultBrokerFee;
+                    agreement.BrokerFee = agreement.BrokerFee;
                 }
+                agreement.BrokerFee  += agreement.BrokerFee * GST; ;
 
 
                 //Referral points per agreement
@@ -361,12 +364,14 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
 
 
-        private decimal CalculatePremium(string orgType, OrganisationAttribute attr,bool orgtype, Guid  orgid,Guid ownerid)
+        private decimal CalculatePremium(string orgType, OrganisationAttribute attr,bool orgtype, Guid  orgid,Guid ownerid,ClientAgreement agreement)
         {
             decimal total = 0m;
 
             const decimal GST = 0.15m;
 
+           // decimal BrokerFee = 0m;
+ 
             // =============================================
             // COUNTED MEMBERS (different for each org type)
             // =============================================
@@ -398,8 +403,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 orgType == "Rotaract" ||
                 orgType == "RotaryCommunityCorp")
             {
-                decimal basePremium = 257.50m; // includes admin fee
-
+                decimal basePremium = 288.70m; // includes admin fee
+                agreement.BrokerFee += 37.50m;
                 if (countedMembers < 15)
                 {
                     total += basePremium;
@@ -407,7 +412,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 else
                 {
                     int extraMembers = countedMembers - 15;
-                    total += basePremium + (extraMembers * 14.50m);
+                    total += basePremium + (extraMembers * 13.95m);
                 }
             }
 
@@ -417,14 +422,15 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             else if (orgType == "RotaryDistrict")
             {
                 int clubCount = attr.DistrictTotal ?? 0;
+                agreement.BrokerFee += 37.50m;
 
                 if (clubCount <= 40)
                 {
-                    total += 1250m;
+                    total += 1312.5m;
                 }
                 else
                 {
-                    total += 1250m + ((clubCount - 40) * 30m);
+                    total += 1312.5m + ((clubCount - 40) * 30m);
                 }
             }
 
@@ -434,11 +440,12 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             else if (orgType == "RotaryClubTrustOneOnly")
             {
                 int trusts = attr.Trustees ?? 0;
+                agreement.BrokerFee += 37.50m;
 
                 if (trusts > 1)
                 {
                     int extraTrusts = trusts - 1;
-                    total += extraTrusts * 300m;
+                    total += extraTrusts * 212.5m;
                 }
             }
 
@@ -448,7 +455,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             else if (orgType == "RotarySpecialPurposeTrust" ||
                      orgType == "RotaryCompany")
             {
-                decimal basePremium = 712.50m;
+                agreement.BrokerFee += 37.50m;
+
+                decimal basePremium = 1212.50m;
                 bool over1m = false;
                 if (attr != null)
                 {
@@ -475,8 +484,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                      orgType == "RotaryOther")
             {
                 decimal basePremium = 50m;
-
-                
                 total += basePremium;
             }
 

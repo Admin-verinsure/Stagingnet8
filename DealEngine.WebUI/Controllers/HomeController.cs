@@ -2328,6 +2328,43 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditUIS(string ProgrammeId, string actionname)
+        {
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+                IssueUISViewModel model = new IssueUISViewModel();
+                var clientProgrammes = new List<ClientProgramme>();
+                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+                List<ClientProgramme> mainClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
+
+                foreach (var client in mainClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                {
+                    if (client.DateDeleted == null && client.InformationSheet.Status != "Bound")
+                    {
+                        clientProgrammes.Add(client);
+                    }
+                }
+                model.ClientProgrammes = clientProgrammes;
+                model.ProgrammeId = ProgrammeId;
+               
+                    return View("EditUIS", model);
+                
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
 
 
 
@@ -4156,6 +4193,143 @@ namespace DealEngine.WebUI.Controllers
 
         [HttpPost]
         public async Task<IActionResult> IssueUIS(IFormCollection formCollection)
+        {
+            User user = null;
+            Programme programme = null;
+            string email = null;
+
+            try
+            {
+                user = await CurrentUser();
+                programme = await _programmeService.GetProgramme(Guid.Parse(formCollection["ProgrammeId"]));
+                var isSubUis = formCollection["IsSubUIS"];
+                foreach (var key in formCollection.Keys)
+                {
+                    try
+                    {
+                        email = key;
+                        var correctEmail = await _userService.GetUserByEmail(email);
+                        if (correctEmail != null)
+                        {
+                            if (programme.ProgEnableEmail)
+                            {
+                                var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(formCollection[key]));
+                                clientProgramme.IssueDate = DateTime.Now;
+                                await _programmeService.Update(clientProgramme);
+
+                                //get UIS instruction email attachement
+                                Product masterUISProduct = clientProgramme.BaseProgramme.Products.Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
+                                var UISAttachmentDocuments = new List<SystemDocument>();
+                                if (masterUISProduct != null)
+                                {
+                                    var UISAttachmentTemplateList = masterUISProduct.Documents.Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
+
+                                    foreach (SystemDocument template in UISAttachmentTemplateList)
+                                    {
+                                        SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, clientProgramme.InformationSheet, null);
+                                        SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                                        renderedDoc.OwnerOrganisation = clientProgramme.Owner;
+                                        UISAttachmentDocuments.Add(renderedDoc);
+                                        await _fileService.UploadFile(renderedDoc);
+                                    }
+                                }
+
+                                //send out login instruction email
+                                await _emailService.SendSystemEmailLogin(email);
+                                //send out information sheet instruction email
+                                EmailTemplate emailTemplate = null;
+
+                                if (isSubUis.Contains("true"))
+                                {
+                                    emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == "SendSubInformationSheetInstruction");
+                                }
+                                else
+                                {
+                                    emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == "SendInformationSheetInstruction");
+                                }
+                                if (emailTemplate != null)
+                                {
+                                    if (programme.ProgEnableProgEmailCC && !string.IsNullOrEmpty(programme.ProgEmailCCRecipent))
+                                    {
+                                        await _emailService.SendEmailViaEmailTemplateWithCC(email, emailTemplate, UISAttachmentDocuments, null, null, programme.ProgEmailCCRecipent);
+                                    }
+                                    else
+                                    {
+                                        await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
+                                    }
+                                }
+                                //send out uis issue notification email
+                                //await _emailService.SendSystemEmailUISIssueNotify(programme.BrokerContactUser, programme, sheet, programme.Owner);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                        continue;
+                        /// return RedirectToAction("Error500", "Error");
+                    }
+                }
+
+                return await RedirectToLocal();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                // return await RedirectToLocal();
+
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditUIS()
+        {
+            var form = Request.Form;
+            var ids = new HashSet<string>();
+            foreach (var key in form.Keys)
+            {
+                if (key.StartsWith("IsClub_"))
+                    ids.Add(key.Replace("IsClub_", ""));
+
+                if (key.StartsWith("IsDistrict_"))
+                    ids.Add(key.Replace("IsDistrict_", ""));
+
+                if (key.StartsWith("IsIndependentEntity_"))
+                    ids.Add(key.Replace("IsIndependentEntity_", ""));
+            }
+
+            foreach (var id in ids)
+            {
+                Guid clientProgrammeId = Guid.Parse(id);
+
+                bool isClub = form[$"IsClub_{id}"] == "on";
+                bool isDistrict = form[$"IsDistrict_{id}"] == "on";
+                bool isIndependent = form.ContainsKey($"IsIndependentEntity_{id}") &&
+                     form[$"IsIndependentEntity_{id}"] == "on";
+                string email = form[$"Email_{id}"];
+
+                var entity = await _programmeService.GetClientProgrammebyId(clientProgrammeId);
+
+                if (entity != null)
+                {
+                    entity.IsClub = isClub;
+                    entity.IsDistrict = isDistrict;
+                    entity.IsIndependentEntity = isIndependent;
+
+                    await _programmeService.Update(entity);
+                }
+            }
+
+            return await RedirectToLocal();
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> EditUIS1(IFormCollection formCollection)
         {
             User user = null;
             Programme programme = null;

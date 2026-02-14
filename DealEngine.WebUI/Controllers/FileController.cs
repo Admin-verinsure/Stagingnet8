@@ -1,37 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Mime;
-using SystemDocument = DealEngine.Domain.Entities.Document;
-using DealEngine.Domain.Entities;
+﻿using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate;
+using DealEngine.Services.Impl;
 using DealEngine.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
 using DealEngine.WebUI.Models;
-using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml;
-using HtmlToOpenXml;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
-using ServiceStack;
-using System.Diagnostics.CodeAnalysis;
+using HtmlToOpenXml;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Net;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 //using FastReport.Export.PdfSimple.PdfObjects;
 using NReco.PdfGenerator;
-using Microsoft.VisualStudio.Web.CodeGeneration.Design;
-using Microsoft.CodeAnalysis;
-using DocumentFormat.OpenXml.Office2010.Excel;
-
 using OpenHtmlToPdf;
-using PdfSharpCore.Pdf;
 using PdfSharpCore;
+using PdfSharpCore.Pdf;
+using ServiceStack;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Mime;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using static DealEngine.Services.Interfaces.IAssetData;
+using ICertificatePdfService = DealEngine.Services.Interfaces.ICertificatePdfService;
+using SystemDocument = DealEngine.Domain.Entities.Document;
 
 
 
@@ -49,6 +51,10 @@ namespace DealEngine.WebUI.Controllers
         IApplicationLoggingService _applicationLoggingService;
         ILogger<FileController> _logger;
         IAppSettingService _appSettingService;
+        private readonly ICertificateBuilderService _certificateBuilderService;
+        private readonly ICertificatePdfService _certificatePdfService;
+        IClientAgreementService _agreementService ;
+
         //      string _appData = "~/App_Data/";
         //string _uploadFolder = "uploads";
 
@@ -62,7 +68,10 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<SystemDocument> documentRepository,
             IMapperSession<Image> imageRepository,
             IMapperSession<Product> productRepository,
-            IAppSettingService appSettingService
+            IAppSettingService appSettingService,
+             ICertificateBuilderService certificateBuilderService,
+            ICertificatePdfService certificatePdfService,
+            IClientAgreementService clientAgreementService
             )
             : base(userRepository)
         {
@@ -75,6 +84,9 @@ namespace DealEngine.WebUI.Controllers
             _imageRepository = imageRepository;
             _productRepository = productRepository;
             _appSettingService = appSettingService;
+            _certificateBuilderService = certificateBuilderService;
+            _certificatePdfService = certificatePdfService;
+            _agreementService = clientAgreementService;
         }
 
         [HttpGet]
@@ -208,6 +220,43 @@ namespace DealEngine.WebUI.Controllers
                 invoicename + ".pdf"
             );
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateCertificate(Guid agreementid, Guid programmeid)
+        {
+            var user = await CurrentUser();
+
+             var agreement = await _agreementService.GetAgreement(agreementid);
+            var programme = agreement.ClientInformationSheet.Programme;
+
+            // 1️⃣ Build aggregate model
+            var model = await _certificateBuilderService.BuildAsync(agreement, programme);
+
+            // 2️⃣ Generate PDF bytes via QuestPDF
+            var pdfBytes = await _certificatePdfService.GenerateAsync(model);
+
+            // 3️⃣ Create SystemDocument
+            var document = new SystemDocument(
+                user,
+                "Certificate of Currency",
+                "application/pdf",
+                8 // your DocumentType
+            );
+
+            document.Contents = pdfBytes;
+            document.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+
+           // agreement.Documents.Add(document);
+
+          // await _fileService.UploadFile(document);
+          //  await _unitOfWork.Commit();
+
+            return File(pdfBytes, "application/pdf", "Certificate.pdf");
+
+            //return document;
+        }
+
 
 
         [HttpGet]
