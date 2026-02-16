@@ -4424,7 +4424,7 @@ namespace DealEngine.WebUI.Controllers
             // 3️⃣ Create SystemDocument
             var document = new SystemDocument(
                 user,
-                "Certificate of Currency",
+                model.CertificateTitle,
                 "application/pdf",
                 8 // your DocumentType
             );

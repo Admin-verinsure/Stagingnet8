@@ -28,7 +28,6 @@ namespace DealEngine.Services.Impl
 
             var model = new CertificateAggregateModel();
 
-            model.CertificateTitle = "Certificate of Currency";
 
             model.PolicyNumber = agreement.PolicyNumber;
 
@@ -46,6 +45,7 @@ namespace DealEngine.Services.Impl
                 _ =>
                     "Certificate"
             };
+            model.CertificateTitle = model.PolicyType;
 
 
             model.IssueDate =
