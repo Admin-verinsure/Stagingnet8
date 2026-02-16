@@ -1,6 +1,7 @@
 ﻿using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Services.Interfaces;
+using DealEngine.Services.Interfaces.Enums;
 using DealEngine.Services.Interfaces.Models;
 using NHibernate.Linq;
 using System;
@@ -17,8 +18,12 @@ namespace DealEngine.Services.Impl
     {
         public async Task<CertificateAggregateModel> BuildAsync(
             ClientAgreement agreement,
-            ClientProgramme programme)
+            ClientProgramme programme,
+            CertificateType certificateType
+            )
         {
+
+
             var sheet = agreement.ClientInformationSheet;
 
             var model = new CertificateAggregateModel();
@@ -27,8 +32,21 @@ namespace DealEngine.Services.Impl
 
             model.PolicyNumber = agreement.PolicyNumber;
 
-            model.PolicyType =
-                "Material Damage Reserve Fund Contribution Certificate";
+            model.PolicyType = certificateType switch
+            {
+                CertificateType.MD =>
+                    "Material Damage Cover Certificate",
+
+                CertificateType.AS =>
+                    "Associations Cover Certificate",
+
+                CertificateType.MLGGL =>
+                    "Rotary_Oceania_Associations_GL_Liability_Multiguard Cover Certificate",
+
+                _ =>
+                    "Certificate"
+            };
+
 
             model.IssueDate =
                 DateTime.UtcNow.ToString("dd MMMM yyyy",
@@ -84,16 +102,6 @@ namespace DealEngine.Services.Impl
             // Endorsements
             // ===============================
 
-            //var endorsements = agreement.ClientAgreementTerms
-            //    .Where(t => t.Bound)
-            //    .SelectMany(t => t.ClientAgreementEndorsements)
-            //    .Where(e => e.DateDeleted == null && !e.Removed)
-            //    .Select(e => e.Name);
-
-            //model.Endorsements =
-            //    endorsements.Any()
-            //        ? string.Join(", ", endorsements)
-            //        : "None";
 
             return model;
         }

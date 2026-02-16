@@ -15,11 +15,11 @@
                 <section class="col col-12 font-md">
                     @if (doc.RenderToPDF == true)
                     {
-                        <a href="@(doc.Url + "?format=pdf")"  id="@doc.DocType">@doc.DisplayName</a>
+                        <a href="@(doc.Url)"  id="@doc.DocType">@doc.DisplayName</a>
                     }
                     else
                     {
-                        <a href="@(doc.Url + "?format=docx")"  id="@doc.DocType">@doc.DisplayName</a>
+                        <a href="@(doc.Url )"  id="@doc.DocType">@doc.DisplayName</a>
                     }
                 </section>
             }

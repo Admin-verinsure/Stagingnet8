@@ -2,6 +2,7 @@
 using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Services.Impl;
 using DealEngine.Services.Interfaces;
+using DealEngine.Services.Interfaces.Enums;
 using DealEngine.WebUI.Models;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2010.Excel;
@@ -14,10 +15,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
+using Microsoft.Playwright;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 //using FastReport.Export.PdfSimple.PdfObjects;
 using NReco.PdfGenerator;
 using OpenHtmlToPdf;
+using Org.BouncyCastle.Crypto.Agreement;
 using PdfSharpCore;
 using PdfSharpCore.Pdf;
 using ServiceStack;
@@ -223,16 +226,16 @@ namespace DealEngine.WebUI.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GenerateCertificate(Guid agreementid, Guid programmeid)
+        public async Task<IActionResult> GenerateCertificate(Guid agreementid, Guid programmeid, CertificateType type)
         {
             var user = await CurrentUser();
 
-             var agreement = await _agreementService.GetAgreement(agreementid);
+            var agreement = await _agreementService.GetAgreement(agreementid);
             var programme = agreement.ClientInformationSheet.Programme;
 
             // 1️⃣ Build aggregate model
-            var model = await _certificateBuilderService.BuildAsync(agreement, programme);
-
+            var model = await _certificateBuilderService.BuildAsync(agreement, programme, type);
+            model.CertificateType = type;
             // 2️⃣ Generate PDF bytes via QuestPDF
             var pdfBytes = await _certificatePdfService.GenerateAsync(model);
 
@@ -247,10 +250,6 @@ namespace DealEngine.WebUI.Controllers
             document.Contents = pdfBytes;
             document.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
 
-           // agreement.Documents.Add(document);
-
-          // await _fileService.UploadFile(document);
-          //  await _unitOfWork.Commit();
 
             return File(pdfBytes, "application/pdf", "Certificate.pdf");
 
@@ -558,9 +557,12 @@ namespace DealEngine.WebUI.Controllers
                        // if (doc.IsTemplate == true)
                         //{
                             //doc = await _fileService.FormatCKHTMLforConversion(doc);
-                            doc = await _fileService.ConvertHTMLToPDF(doc);
+                          //  doc = await _fileService.ConvertHTMLToPDF(doc);
                        // }
-                        return File(doc.Contents, "application/pdf", doc.Name + ".pdf");
+
+
+
+                       // return File(doc.Contents, "application/pdf", doc.Name + ".pdf");
                     }
                 }
                 // PDF - When is this hit?
