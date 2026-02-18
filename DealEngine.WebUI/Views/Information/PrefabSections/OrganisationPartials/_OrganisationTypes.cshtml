@@ -46,7 +46,7 @@
         {
             <div class="form-group" id="EmailDiv">
                 @Html.LabelFor(m => m.OrganisationViewModel.User.Email, new { @class = "label required" })
-                @Html.TextBoxFor(m => m.OrganisationViewModel.User.Email, new { @class = "form-control", @id = "User.Email", @data_rule = "OrganisationEmail", @onchange = "OnChange(this.id, this.name)", @required = "", @type = "email" })
+                @Html.TextBoxFor(m => m.OrganisationViewModel.User.Email, new { @class = "form-control", @id = "User.Email",  @onchange = "OnChange(this.id, this.name)", @required = "", @type = "email" })
                 <div id="InvalidOrganisationEmail" class="invalid-feedback">Organisation email already exists - please enter a different email</div>
             </div>
         }

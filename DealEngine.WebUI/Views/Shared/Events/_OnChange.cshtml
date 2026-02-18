@@ -947,7 +947,8 @@
     // Show District table
     if (orgTypeValue.toLowerCase().includes("rotarydistrict")) {
         document.getElementById("DistrictTable").hidden = false;
-    }else{
+    }else
+    if (orgTypeValue!= "Administrator") {
         document.getElementById("SpecialPurposeTrustTable").hidden = false;
     }
 
