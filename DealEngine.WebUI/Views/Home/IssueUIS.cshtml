@@ -82,11 +82,12 @@
 </div>
 
 
+
+
 @section pagespecific {
-    <script type="text/javascript">
-
-
-        $('#select-all').on('click', function () {
+    <script>
+        // Select All clients
+          $('#select-all').on('click', function () {
             debugger;
             // Get all rows with search applied
             // Check/uncheck checkboxes for all rows in the table
@@ -95,25 +96,30 @@
 
         });
 
-         document.getElementById("clientSearch")
-            .addEventListener("keyup", function () {
+        // 🔥 Live Search Filter
+        document.getElementById("clientSearch")
+        .addEventListener("keyup", function () {
 
-                let searchValue = this.value.toLowerCase();
-                let rows = document.querySelectorAll("tbody tr");
+            let searchValue = this.value.toLowerCase();
+            let rows = document.querySelectorAll("tbody tr");
 
-                rows.forEach(function (row) {
+            rows.forEach(function (row) {
 
-                    let name = row.cells[1].innerText.toLowerCase();
-                    let email = row.cells[2].innerText.toLowerCase();
+                let nameInput = row.querySelector("td:nth-child(1) input.form-control");
+                let emailInput = row.querySelector("td:nth-child(2) input.form-control");
 
-                    if (name.includes(searchValue) || email.includes(searchValue)) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                });
+                let name = nameInput ? nameInput.value.toLowerCase() : "";
+                let email = emailInput ? emailInput.value.toLowerCase() : "";
+
+                if (name.includes(searchValue) || email.includes(searchValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
             });
-
+        });
     </script>
-
 }
+
+
+
