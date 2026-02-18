@@ -1058,6 +1058,9 @@ namespace DealEngine.WebUI.Controllers
                 var sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
 
+                model.IsClub = clientProgramme.IsClub;
+                model.IsDistrict = clientProgramme.IsDistrict;
+                model.IsIndependentEntity = clientProgramme.IsIndependentEntity;
 
                 if (model.OrganisationViewModel.OrganisationAttribute == null)
                 {

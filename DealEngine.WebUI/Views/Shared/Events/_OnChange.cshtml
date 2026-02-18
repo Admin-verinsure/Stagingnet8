@@ -775,7 +775,7 @@
         //var Role = document.getElementById("Organisation.InsuranceAttribute");
         var OrgTypeList = document.getElementById("Organisation.OrganisationType");
         if (Value == "Administrator" ||
-            
+
             Value == "Other") {
             //readonly Organisation Type personal
             //document.getElementById("OwnerFap").hidden = true;
@@ -940,21 +940,16 @@
         document.getElementById("SpecialPurposeTrustTable").hidden = true;
 
     // Show Club table for Club types
-    if (orgTypeValue.toLowerCase().includes("rotaryclub")) {
-        document.getElementById("ClubMemberTable").hidden = false;   
-    }
+    if (orgTypeValue=="RotaryClub" || orgTypeValue=="Rotaract" ||orgTypeValue=="RotaryCommunityCorps") {
+        document.getElementById("ClubMemberTable").hidden = false;
+    }else
 
     // Show District table
     if (orgTypeValue.toLowerCase().includes("rotarydistrict")) {
         document.getElementById("DistrictTable").hidden = false;
-    }
-
-    // Show Special Purpose Trust table
-    if (orgTypeValue === "RotarySpecialPurposeTrust" || orgTypeValue.toLowerCase().includes("rotarycompany")) {
+    }else{
         document.getElementById("SpecialPurposeTrustTable").hidden = false;
     }
-
-
 
     }
 

@@ -119,6 +119,9 @@ namespace DealEngine.WebUI.Models
         public Guid ClientProgrammeId { get; set; }
         public bool IsHardRefferalEnable { get; set; }
         public CTViewModel CTViewModel { get; set; }
+        public bool IsClub { get; set; }
+        public bool IsDistrict { get; set; }
+        public bool IsIndependentEntity { get; set; }
     }
 
 

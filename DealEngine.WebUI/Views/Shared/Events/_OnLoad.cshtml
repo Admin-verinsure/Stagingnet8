@@ -425,6 +425,75 @@
     }
 
 
+     function applyClientProgrammeRestrictions() {
+         debugger;
+           let isClub = document.getElementById("IsClubFlag")?.value;
+        let isDistrict = document.getElementById("IsDistrictFlag")?.value;
+        let isIndependent = document.getElementById("IsIndependentFlag")?.value;
+
+
+
+        let dropdown = document.getElementById("Organisation.InsuranceAttribute");
+
+        if (!dropdown) return;
+
+        // Enable everything first
+        for (let i = 0; i < dropdown.options.length; i++) {
+            dropdown.options[i].disabled = false;
+        }
+
+        function disable(values) {
+            for (let i = 0; i < dropdown.options.length; i++) {
+                if (values.includes(dropdown.options[i].value)) {
+                    dropdown.options[i].disabled = true;
+                }
+            }
+        }
+
+        if (isClub === "true") {
+            disable([
+                "RotaryDistrict",
+                "RotarySpecialPurposeTrust",
+                "RotaryMultiDistrictOrganisation",
+                "RotaryRIActionGroup",
+                "RotaryRIFellowshipGroup"
+            ]);
+        }
+
+        if (isDistrict === "true") {
+            disable([
+                "RotaryClub",
+                "Rotaract",
+                "RotaryCommunityCorps",
+                "RotaryClubTrustOneOnly",
+                "RotaryMultiDistrictOrganisation",
+                "RotarySpecialPurposeTrust",
+                "RotaryRIActionGroup",
+                "RotaryRIFellowshipGroup"
+            ]);
+        }
+
+        if (isIndependent === "true") {
+            disable([
+                "RotaryClub",
+                "RotaryDistrict",
+                "Rotaract",
+                "RotaryCommunityCorps",
+                "RotaryClubTrustOneOnly",
+                "RotaryRIActionGroup",
+                "RotaryRIFellowshipGroup"
+            ]);
+        }
+
+         // Reset invalid selection
+         let selected = dropdown.options[dropdown.selectedIndex];
+         if (selected && selected.disabled) {
+          dropdown.value = "0";
+         }
+     }
+
+
+
     function PopulateVehicleView(Method, OutPut) {
         debugger;
         try {
@@ -479,4 +548,13 @@
       
         dateFormat: "dd/mm/yy"
     });
+
+    $(function () {
+        applyClientProgrammeRestrictions();
+    });
+
+
+
+
 </script>
+

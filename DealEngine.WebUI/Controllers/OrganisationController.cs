@@ -323,6 +323,165 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> AddOrganisation(IFormCollection collection)
+        //{
+        //    User currentUser = await CurrentUser();
+
+        //    Guid.TryParse(collection["OrganisationViewModel.Organisation.Id"], out Guid organisationId);
+        //    Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid sheetId);
+
+        //    ClientInformationSheet sheet = await _clientInformationService.GetInformation(sheetId);
+
+        //    var jsonOrganisation = (Organisation)await _serialiserService
+        //        .GetDeserializedObject(typeof(Organisation), collection);
+
+        //    var jsonUser = (User)await _serialiserService
+        //        .GetDeserializedObject(typeof(User), collection);
+
+        //    string typeName = collection["OrganisationViewModel.InsuranceAttribute"];
+        //    string organisationTypeName = collection["OrganisationViewModel.OrganisationType"];
+
+        //    Organisation organisation = await _organisationService.GetOrganisation(organisationId);
+
+        //    ClientProgramme clientProgramme = await _programmeService
+        //        .GetClientProgrammebyId(Guid.Parse(collection["ClientProgrammeId"]));
+
+        //    try
+        //    {
+        //        // --------------------------------------------------
+        //        // 1️⃣ Create Organisation if new
+        //        // --------------------------------------------------
+        //        if (organisation == null)
+        //        {
+        //            organisation = await _organisationService.CreateOrganisation(
+        //                jsonUser.Email,
+        //                typeName,
+        //                jsonOrganisation.Name,
+        //                organisationTypeName,
+        //                jsonUser.FirstName,
+        //                jsonUser.LastName,
+        //                currentUser,
+        //                collection);
+        //        }
+
+        //        // --------------------------------------------------
+        //        // 2️⃣ Handle Administrator User
+        //        // --------------------------------------------------
+        //        if (typeName == "Administrator")
+        //        {
+        //            User user = null;
+
+        //            // Try by Id first
+        //            if (Guid.TryParse(collection["OrganisationViewModel.User.Id"], out Guid userId)
+        //                && userId != Guid.Empty)
+        //            {
+        //                user = await _userService.GetUserById(userId);
+        //            }
+
+        //            // Fallback by Email
+        //            if (user == null && !string.IsNullOrWhiteSpace(jsonUser.Email))
+        //            {
+        //                user = await _userService.GetUserByEmail(jsonUser.Email);
+        //            }
+
+        //            // If still null → create user
+        //            //if (user == null)
+        //            //{
+        //            //    user = await _userService.Create((User)jsonUser);
+        //            //        jsonUser.Email,
+        //            //        jsonUser.FirstName,
+        //            //        jsonUser.LastName,
+        //            //        currentUser
+        //            //    );
+        //            //}
+
+        //            using (var uow = _unitOfWork.BeginUnitOfWork())
+        //            {
+        //                // Attach organisation if not already attached
+        //                if (!user.Organisations.Any(o => o.Id == organisation.Id))
+        //                {
+        //                    user.Organisations.Add(organisation);
+        //                }
+
+        //                // Only set primary if none exists
+        //                if (user.PrimaryOrganisation == null)
+        //                {
+        //                    user.PrimaryOrganisation = organisation;
+        //                }
+
+        //                await uow.Commit();
+        //            }
+
+        //            // Send email if enabled
+        //            if (clientProgramme.BaseProgramme.ProgEnableEmail)
+        //            {
+        //                await _emailService.CreateUserAdministrator(user, organisation);
+        //            }
+        //        }
+
+        //        // --------------------------------------------------
+        //        // 3️⃣ Post Organisation Updates
+        //        // --------------------------------------------------
+        //        await _organisationService.PostOrganisation(collection, organisation);
+
+        //        if (!sheet.Organisation.Contains(organisation))
+        //            sheet.Organisation.Add(organisation);
+
+        //        // --------------------------------------------------
+        //        // 4️⃣ Save Organisation Attribute
+        //        // --------------------------------------------------
+        //        using (var uow = _unitOfWork.BeginUnitOfWork())
+        //        {
+        //            OrganisationAttribute attr = sheet.OrganisationAttribute;
+
+        //            if (attr == null)
+        //            {
+        //                attr = new OrganisationAttribute(currentUser);
+        //                sheet.OrganisationAttribute = attr;
+        //            }
+
+        //            attr.ActiveFeePaying = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ActiveFeePaying"]);
+        //            attr.Honorary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Honorary"]);
+        //            attr.Associate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Associate"]);
+        //            attr.Family = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Family"]);
+        //            attr.Community = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Community"]);
+        //            attr.Volunteer = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Volunteer"]);
+        //            attr.Corporate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Corporate"]);
+        //            attr.Alumni = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Alumni"]);
+        //            attr.Trustees = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Trustees"]);
+        //            attr.OtherMembers = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.OtherMembers"]);
+        //            attr.ClubTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ClubTotal"]);
+
+        //            attr.Dist_Rotary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotary"]);
+        //            attr.Dist_Rotaract = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotaract"]);
+        //            attr.Dist_Interact = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Interact"]);
+        //            attr.Dist_RotaKids = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_RotaKids"]);
+        //            attr.Dist_CommunityCore = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_CommunityCore"]);
+        //            attr.DistrictTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.DistrictTotal"]);
+
+        //            attr.SPT_Companies = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Companies"]);
+        //            attr.SPT_TradingTrusts = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_TradingTrusts"]);
+        //            attr.SPT_RevenueOver1m = collection["OrganisationViewModel.OrganisationAttribute.SPT_RevenueOver1m"];
+        //            attr.SPT_Revenue = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Revenue"]);
+        //            attr.SPT_Total = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Total"]);
+
+        //            await uow.Commit();
+        //        }
+
+        //        await _clientInformationService.UpdateInformation(sheet);
+
+        //        return Redirect("../Information/EditInformation?Id=" + sheet.Programme.Id);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+        //        return RedirectToAction("Error500", "Error");
+        //    }
+        //}
+
         [HttpPost]
         public async Task<IActionResult> AddOrganisation(IFormCollection collection)
         {
@@ -331,7 +490,7 @@ namespace DealEngine.WebUI.Controllers
             Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid Id);
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
 
-            var jsonOrganisation = (Organisation)await _serialiserService.GetDeserializedObject(typeof(Organisation), collection); 
+            var jsonOrganisation = (Organisation)await _serialiserService.GetDeserializedObject(typeof(Organisation), collection);
             var jsonUser = (User)await _serialiserService.GetDeserializedObject(typeof(User), collection);
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             string OrganisationTypeName = collection["OrganisationViewModel.OrganisationType"].ToString();
@@ -376,7 +535,7 @@ namespace DealEngine.WebUI.Controllers
                         await uow.Commit();
                     }
 
-                    if (clientProgramme.BaseProgramme.ProgEnableEmail)
+                    if (!clientProgramme.BaseProgramme.ProgEnableEmail)
                     {
                         await _emailService.CreateUserAdministrator(user, clientProgramme.Owner);
                     }

@@ -14,6 +14,13 @@
             </div>
 
             <div class="card-body">
+                <div class="d-flex justify-content-end mb-3 position-relative">
+                    <input type="text"
+                           id="clientSearch"
+                           class="form-control w-50 shadow-sm"
+                           placeholder="🔍 Search by Name or Email..."
+                           style="max-width: 350px;" />
+                </div>
 
                 <table class="table table-bordered table-striped align-middle">
                     <thead class="table-light">
@@ -82,7 +89,7 @@
 
             <div class="card-footer text-end">
                 <button type="submit" class="btn btn-success">
-                    Send
+                    Save
                 </button>
             </div>
 
@@ -97,6 +104,26 @@
             .addEventListener("change", function () {
                 let checkboxes = document.querySelectorAll(".client-checkbox");
                 checkboxes.forEach(cb => cb.checked = this.checked);
+            });
+
+        // 🔥 Live Search Filter
+        document.getElementById("clientSearch")
+            .addEventListener("keyup", function () {
+
+                let searchValue = this.value.toLowerCase();
+                let rows = document.querySelectorAll("tbody tr");
+
+                rows.forEach(function (row) {
+
+                    let name = row.cells[1].innerText.toLowerCase();
+                    let email = row.cells[2].innerText.toLowerCase();
+
+                    if (name.includes(searchValue) || email.includes(searchValue)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
             });
     </script>
 }

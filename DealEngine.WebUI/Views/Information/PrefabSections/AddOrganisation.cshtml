@@ -291,6 +291,12 @@
                     @Html.Hidden("AdministratorUnit", Model.OrganisationViewModel.AdministratorUnit.GetType().AssemblyQualifiedName, new { @id = "AdministratorUnit" })
                     @Html.Hidden("DirectorUnit", Model.OrganisationViewModel.DirectorUnit.GetType().AssemblyQualifiedName, new { @id = "DirectorUnit" })
                     @Html.Hidden("Unit", Model.OrganisationViewModel.AdvisorUnit.GetType().AssemblyQualifiedName, new { @id = "Unit" })
+
+                    <!-- 🔥 ADD THESE FLAGS -->
+                    <input type="hidden" id="IsClubFlag" value="@Model.IsClub.ToString().ToLower()" />
+                    <input type="hidden" id="IsDistrictFlag" value="@Model.IsDistrict.ToString().ToLower()" />
+                    <input type="hidden" id="IsIndependentFlag" value="@Model.IsIndependentEntity.ToString().ToLower()" />
+
                     @await Html.PartialAsync("PrefabSections/OrganisationPartials/Rotary_AddOrganisation", Model)
                 }
 
