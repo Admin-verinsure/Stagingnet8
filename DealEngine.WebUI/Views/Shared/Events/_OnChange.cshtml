@@ -519,7 +519,9 @@
     }
     function OrganisationTypeOnChange(Value) {
         //reset views to default
-        ResetOrganisationUnitView();
+
+        debuu
+        resetOrganisationUnitView();
         var List = document.getElementById("Organisation.OrganisationType");
         List.disabled = false;
         if (Value == "Advisor" ||
@@ -571,33 +573,7 @@
                 ContractorOnChange();
             }
 
-            //if (Value == "Run Off") {
-            //    debugger;
-            //    var RunOffUnit = document.getElementById("RunOffUnit");
-            //    if (RunOffUnit != null) {
-            //        document.getElementById("RunOffUnit").hidden = false;
-            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
-            //        //TradingName.addAttribute("required");
-            //    }
-            //    var Email = document.getElementById("EmailDiv");
-            //    if (Email != null) {
-            //        document.getElementById("EmailDiv").hidden = true;
-            //        Email.removeAttribute("required");
-            //    }
-            //} else {
-            //    var RunOffUnit = document.getElementById("RunOffUnit");
-            //    if (RunOffUnit != null) {
-            //        document.getElementById("RunOffUnit").hidden = true;
-            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
-            //        TradingName.removeAttribute("required");
-            //    }
-            //    var Email = document.getElementById("EmailDiv");
-            //    if (Email != null) {
-            //        document.getElementById("EmailDiv").hidden = false;
-            //    //    Email.addAttribute("required");
-            //    }
-            //}
-
+           
 
             for (var i = 0; i < List.options.length; i++) {
                 //if (List.options[i].text == "Private" && Value != "MREDirector") {
@@ -817,6 +793,19 @@
                     } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
                         OrgTypeList.options[i].hidden = true;
                     }
+
+                    // Unhide Private section
+                    var privateDiv = document.getElementById("RotaryAdminPrivate");
+                    if (privateDiv) {
+                       privateDiv.removeAttribute("hidden");
+                    }
+                    var privateDiv1 = document.getElementById("Else");
+    if (privateDiv1) {
+        privateDiv1.setAttribute("hidden", true);
+    }
+
+                    
+
                 }
 
                 $("#NoUserCreation").val(false);
@@ -1011,21 +1000,46 @@
     }
 
 
-    function AdministratorOnChange() {
-         var IsHideAdministrator = document.getElementById("HideAdministrator");
-        if (IsHideAdministrator != null) {
+        function AdministratorOnChange() {
 
-             document.querySelectorAll('.HideAdministrator').forEach(function(el) {
-                 el.style.display = 'unset';
-             });
+        // Unhide Private section
+        var privateDiv = document.getElementById("Private");
+        if (privateDiv) {
+            privateDiv.removeAttribute("hidden");
         }
 
-        document.querySelectorAll('.AdvisorUnit').forEach(function(el) {
-                 el.style.display = 'none';
+        var IsHideAdministrator = document.getElementById("HideAdministrator");
+        if (IsHideAdministrator != null) {
+            document.querySelectorAll('.HideAdministrator').forEach(function (el) {
+                el.style.display = 'unset';
+            });
+        }
+
+        document.querySelectorAll('.AdvisorUnit').forEach(function (el) {
+            el.style.display = 'none';
         });
-
-
     }
+
+
+
+
+    // function AdministratorOnChange() {
+    //      var IsHideAdministrator = document.getElementById("HideAdministrator");
+    //     if (IsHideAdministrator != null) {
+
+    //          document.querySelectorAll('.HideAdministrator').forEach(function(el) {
+    //              el.style.display = 'unset';
+    //          });
+    //     }
+
+    //     document.querySelectorAll('.AdvisorUnit').forEach(function(el) {
+    //              el.style.display = 'none';
+    //     });
+
+
+
+
+    // }
 
     function BarristerOnChange() {
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");

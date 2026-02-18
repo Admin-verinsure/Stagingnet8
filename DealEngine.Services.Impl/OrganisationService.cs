@@ -382,10 +382,10 @@ namespace DealEngine.Services.Impl
             Boolean usercreation = true;
             Boolean nousercreationflag = false;
 
-            if (Type == "Administrator")
-            {
-                 foundOrg = await GetOrganisationByEmail(Email);
-            }
+            //if (Type == "Administrator")
+            //{
+            //     foundOrg = await GetOrganisationByEmail(Email);
+            //}
 
             if (foundOrg == null)
             {

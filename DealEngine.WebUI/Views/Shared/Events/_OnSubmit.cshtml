@@ -574,26 +574,34 @@
 
 </script>
 
+<!-- 1️⃣ After jquery.validate + unobtrusive -->
+@* <script>
+    $.validator.setDefaults({
+        ignore: ":hidden"
+    });
+</script> *@
+
+<!-- 2️⃣ Your submit handler -->
 <script>
     document.addEventListener("submit", function (e) {
         const form = e.target;
-
-        // Only act on real forms
         if (!(form instanceof HTMLFormElement)) return;
 
-        form
-            .querySelectorAll("input[required], select[required], textarea[required]")
-            .forEach(function (field) {
+        form.querySelectorAll("input, select, textarea").forEach(function (field) {
 
-                const isHidden =
-                    field.type === "hidden" ||
-                    field.disabled ||
-                    field.offsetParent === null ||
-                    (typeof IsElementHidden === "function" && IsElementHidden(field));
+            const isHidden =
+                field.type === "hidden" ||
+                field.disabled ||
+                field.offsetParent === null;
 
-                if (isHidden) {
-                    field.removeAttribute("required");
+            if (isHidden) {
+                field.removeAttribute("required");
+
+                if (typeof $ !== "undefined") {
+                    $(field).rules("remove");
                 }
-            });
-    }, true); // capture phase – MUST be true
+            }
+        });
+    }, true);
 </script>
+
