@@ -83,7 +83,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 agreement.BrokerFee = 0;
                 IList<Organisation> organisations = informationSheet.Organisation;
 
-                foreach (Organisation organisation in organisations.Where(org => org.Removed == false))
+                foreach (Organisation organisation in organisations.Where(org => org.Removed == false && org.OrganisationType.Name != "Private"))
                 {
 
                     foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
@@ -377,11 +377,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             // =============================================
             int countedMembers = 0;
 
-            if(orgType == "RotaryClubTrustOneOnly" || orgType == "RotarySpecialPurposeTrust")
-            {
-                 orgtype = true;
+            //if(orgType == "RotaryClubTrustOneOnly" || orgType == "RotarySpecialPurposeTrust")
+            //{
+            //     orgtype = true;
 
-            }
+            //}
 
             if (orgType == "RotaryClub")
             {
@@ -403,7 +403,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 orgType == "Rotaract" ||
                 orgType == "RotaryCommunityCorp")
             {
-                decimal basePremium = 288.70m; // includes admin fee
+                decimal basePremium = 251.20m; // includes admin fee
                 agreement.BrokerFee += 37.50m;
                 if (countedMembers < 15)
                 {
@@ -439,7 +439,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             // =============================================
             else if (orgType == "RotaryClubTrustOneOnly")
             {
-                int trusts = attr.Trustees ?? 0;
+                int trusts = (attr.SPT_Companies ?? 0) + (attr.SPT_TradingTrusts ?? 0);
                 agreement.BrokerFee += 37.50m;
 
                 if (trusts > 1)

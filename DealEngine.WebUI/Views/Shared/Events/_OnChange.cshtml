@@ -820,9 +820,14 @@
     if (orgTypeValue.toLowerCase().includes("rotarydistrict")) {
         document.getElementById("DistrictTable").hidden = false;
     }else
-    if (orgTypeValue!= "Administrator") {
+    if (orgTypeValue=="RotarySpecialPurposeTrust" ||  orgTypeValue=="RotaryClubTrustOneOnly" ||
+    orgTypeValue=="RotaryCompany") {
         document.getElementById("SpecialPurposeTrustTable").hidden = false;
     }
+    // else
+    // if (orgTypeValue!= "Administrator") {
+    //     document.getElementById("SpecialPurposeTrustTable").hidden = false;
+    // }
 
     }
 

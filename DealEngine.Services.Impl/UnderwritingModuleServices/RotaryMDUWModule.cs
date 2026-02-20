@@ -192,7 +192,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 adminFee = 1750;
             }
 
-            agreement.BrokerFee = 37.5m;
+            agreement.BrokerFee = 37.5m * 1.15m; 
 
             //Referral points per agreement
             //Operates Outside of NZ
@@ -405,9 +405,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
         private decimal CalculatePremium(ClientInformationSheet informationSheet, OrganisationAttribute attr)
         {
             decimal entityChargeTotal = 0m;
+            const decimal GST = 0.15m;
+            // decimal BrokerFee = 0m;
 
 
-            foreach (var organisation in  informationSheet.Organisation.Where(o => o.DateDeleted == null && !o.Removed))
+            foreach (var organisation in  informationSheet.Organisation.Where(o => o.DateDeleted == null && !o.Removed && o.OrganisationType.Name != "Private"))
             {
                 
                     foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
@@ -422,6 +424,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 
                    
             }
+            entityChargeTotal += entityChargeTotal * GST;
 
 
             return entityChargeTotal;
