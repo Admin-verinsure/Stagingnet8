@@ -25,7 +25,7 @@ namespace DealEngine.WebUI.Controllers
         IOrganisationService _organisationService;
         IClientInformationService _clientInformationService;
         IApplicationLoggingService _applicationLoggingService;
-        ILogger<OrganisationController> _logger;        
+        ILogger<OrganisationController> _logger;
         IMilestoneService _milestoneService;
         IProgrammeService _programmeService;
         IMapper _mapper;
@@ -44,7 +44,7 @@ namespace DealEngine.WebUI.Controllers
             IUnitOfWork unitOfWork,
             IMapper mapper
             )
-            : base (userRepository)
+            : base(userRepository)
         {
             _mapper = mapper;
             _programmeService = programmeService;
@@ -67,7 +67,7 @@ namespace DealEngine.WebUI.Controllers
             Guid.TryParse(collection["ClientInformationSheet.Id"].ToString(), out Guid SheetId);
             ClientInformationSheet sheet = await _clientInformationService.GetInformation(SheetId);
             Organisation organisation = await _organisationService.GetOrganisationByEmail(email);
-            
+
             try
             {
                 var addr = new System.Net.Mail.MailAddress(email.Trim());
@@ -108,7 +108,7 @@ namespace DealEngine.WebUI.Controllers
             {
                 var addr = new System.Net.Mail.MailAddress(email);
                 ValidBackEndEmail = addr.Address == email;
-                
+
                 // Checks if you can create an email from the string (only works if it's a valid email)
                 if (ValidBackEndEmail == true)
                 {
@@ -133,7 +133,7 @@ namespace DealEngine.WebUI.Controllers
                 else
                 {
                     return Json(true); // Not Valid
-                }                                             
+                }
             }
             catch
             {
@@ -169,7 +169,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> GetFAPOrgsByClientProgrammeId(Guid clientProgrammeId)
         {
             User currentUser = await CurrentUser();
-            ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(clientProgrammeId);           
+            ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(clientProgrammeId);
             ClientInformationSheet lastInformationSheet = clientProgramme.InformationSheet;
 
             while (lastInformationSheet.NextInformationSheet != null)
@@ -227,7 +227,7 @@ namespace DealEngine.WebUI.Controllers
                     //var isTheFAP = org.OrganisationalUnits.FirstOrDefault(u => (u.isTheFAP == true) && (u.DateDeleted == null));
 
                 }
-               
+
                 var jsonObj = await _serialiserService.GetSerializedObject(JsonObjects);
                 return Json(jsonObj);
             }
@@ -244,7 +244,7 @@ namespace DealEngine.WebUI.Controllers
         //    User currentUser = await CurrentUser();
         //    ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(clientProgrammeId);
 
-            
+
         //    Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
 
         //    IList<OrganisationalUnit> allisTheFAPOUs = await _organisationalUnitRepository.FindAll().Where(ou => ou.isTheFAP == true).ToListAsync();
@@ -288,7 +288,7 @@ namespace DealEngine.WebUI.Controllers
 
                     //foreach (var Advisorunit in ListAdvisorunit)
                     //{
-                    if (ListAdvisorunit!= null && ListAdvisorunit.isTheFAP)
+                    if (ListAdvisorunit != null && ListAdvisorunit.isTheFAP)
                     {
                         if (ListAdvisorunit.FAPLicenseNumber == null)
                         {
@@ -304,13 +304,13 @@ namespace DealEngine.WebUI.Controllers
                         continue;
                     }
 
-                   // }
+                    // }
 
 
                     //var Advisorunit = (AdvisorUnit)org.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor");
 
                     //var orgHasFAPLicenseNumber = org.OrganisationalUnits.FirstOrDefault(ou => ou.FAPLicenseNumber != null);
-                   
+
                 }
 
                 var jsonObj = await _serialiserService.GetSerializedObject(JsonObjects);
@@ -488,12 +488,12 @@ namespace DealEngine.WebUI.Controllers
             User currentUser = await CurrentUser();
             Guid OrganisationId = Guid.Empty;
             var rawId = collection["OrganisationViewModel.Organisation.Id"].ToString();
-            
+
             if (!string.IsNullOrWhiteSpace(rawId))
             {
                 Guid.TryParse(rawId, out OrganisationId);
             }
-            
+
             Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid Id);
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
 
@@ -527,6 +527,7 @@ namespace DealEngine.WebUI.Controllers
 
                     }
 
+                    user = _mapper.Map(jsonUser, user);
 
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
@@ -539,7 +540,7 @@ namespace DealEngine.WebUI.Controllers
                         {
                             // Don't clear it for the same user
                             if (existingUser.Id != user.Id)
-                            { 
+                            {
                                 Organisation existingorg = await _organisationService.GetOrganisationByEmail(existingUser.Email);
                                 existingUser.PrimaryOrganisation = existingorg;
                                 await _userService.Update(existingUser);
@@ -548,8 +549,9 @@ namespace DealEngine.WebUI.Controllers
 
                         // 2️⃣ Now safely assign to new user
                         user.PrimaryOrganisation = clientProgramme.Owner;
-                       await _userService.Update(user);
-
+                        await _userService.Update(user);
+                        organisation.Name = collection["OrganisationViewModel.User.FirstName"] + " " + collection["OrganisationViewModel.User.LastName"];
+                          //  OrganisationViewModel.User.FirstName + OrganisationViewModel.User.FirstName
                         await uow.Commit();
 
 
@@ -645,11 +647,11 @@ namespace DealEngine.WebUI.Controllers
             Programme programme = await _programmeService.GetProgrammeById(Id);
             OrganisationViewModel model = new OrganisationViewModel(null, null);
             var marinas = await _organisationService.GetAllMarinas();
-            foreach(var mar in marinas)
+            foreach (var mar in marinas)
             {
                 model.Organisations.Add(mar);
             }
-            
+
             var institutes = await _organisationService.GetFinancialInstitutes();
             foreach (var inst in institutes)
             {
@@ -673,7 +675,7 @@ namespace DealEngine.WebUI.Controllers
             }
             return NoContent();
         }
-        
+
 
         [HttpPost]
         public async Task<IActionResult> PostMarina(IFormCollection model)
@@ -701,7 +703,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> PostInstitute(IFormCollection model)
         {
-            await _organisationService.PostInstitute(model); 
+            await _organisationService.PostInstitute(model);
             return NoContent();
         }
 
@@ -830,7 +832,7 @@ namespace DealEngine.WebUI.Controllers
             // We want to prepare which clientprogrammes we want to give to our ViewModel, 
             // which is Non deleted and Latest versions of a Programme (ie. Change and Original ones (if original and no change then won't have a nextInformationSheet) 
             var selectedClientProgrammes = new List<ClientProgramme>();
-            
+
             // Add Change ClientProgrammes
             foreach (var clientProgramme in allClientProgrammes.Where(p => p.DateDeleted == null && p.InformationSheet.Status != "Not Taken Up By Broker").Where(p => p.InformationSheet.IsChange == true).ToList())
             {
@@ -870,7 +872,7 @@ namespace DealEngine.WebUI.Controllers
                 changeDefaults.Add("Reason", "Change in cover requirements");
                 changeDefaults.Add("ReasonDesc", "Reattach Advisor");
                 changeDefaults.Add("ClientProgrammeID", Guid.Parse(collection["ClientProgrammeId"]).ToString());
-                clientProgramme = await _programmeService.CloneForUpdate(currentUser, null, changeDefaults);                
+                clientProgramme = await _programmeService.CloneForUpdate(currentUser, null, changeDefaults);
             }
 
             await _clientInformationService.DetachOrganisation(collection);
@@ -910,10 +912,10 @@ namespace DealEngine.WebUI.Controllers
             Guid Id = Guid.Parse(collection["ClientInformationSheet.Id"]);
             string Name = "Advisor";
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
-            foreach(var organisation in Sheet.Organisation)
+            foreach (var organisation in Sheet.Organisation)
             {
                 var advisorUnit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(i => i.Name == Name);
-                if(advisorUnit != null)
+                if (advisorUnit != null)
                 {
                     advisorUnit.IsPrincipalAdvisor = false;
                 }
@@ -944,7 +946,8 @@ namespace DealEngine.WebUI.Controllers
                     IfFapExistflag = true;
                 }
 
-                if (organisation.isOrganisationTheFAP) {
+                if (organisation.isOrganisationTheFAP)
+                {
                     IfFapExistflag = true;
                 }
 
@@ -989,7 +992,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveIsTheBarrister(IFormCollection collection)
         {
-            User currentUser = await CurrentUser(); 
+            User currentUser = await CurrentUser();
             Guid Id = Guid.Parse(collection["ClientInformationSheet.Id"]);
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
             foreach (var organisation in Sheet.Organisation)
@@ -1040,11 +1043,11 @@ namespace DealEngine.WebUI.Controllers
             organisation.Removed = true;
             await _organisationService.Update(organisation);
             ClientInformationSheet clientInformationSheet = await _clientInformationService.GetInformation(Guid.Parse(collection["ClientInformationId"]));
-           
-            if(clientInformationSheet != null)
+
+            if (clientInformationSheet != null)
             {
                 if (clientInformationSheet.IsChange)
-                {                    
+                {
                     var organisationUser = await _userService.GetUserPrimaryOrganisationOrEmail(organisation);
 
                     if (organisationUser != null)
@@ -1066,7 +1069,7 @@ namespace DealEngine.WebUI.Controllers
                         throw new ArgumentException("organisationUser cannot be null");
                     }
                 }
-                
+
             }
 
             return Ok();

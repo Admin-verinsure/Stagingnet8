@@ -97,6 +97,19 @@ namespace DealEngine.Services.Impl
             }
             // we don't want to query ldap. That way lies timeouts. Or Dragons.
         }
+
+        public async Task UpdateOrganisationsName(String OldName, String NewName,Guid Id)
+        {
+            Organisation org = await GetOrganisation(Id);
+
+            if(OldName != NewName)
+            {
+                org.Name = NewName;
+
+
+            }
+            // we don't want to query ldap. That way lies timeouts. Or Dragons.
+        }
         public async Task<Organisation> GetOrganisation(Guid organisationId)
         {
             if (organisationId != Guid.Empty)
@@ -125,6 +138,11 @@ namespace DealEngine.Services.Impl
                 UpdateOrganisationsEmail(organisation.Email, collection["OrganisationViewModel.User.Email"]);
 
             }
+            //if (organisation.Name != collection["OrganisationViewModel.User.Name"])
+            //{
+            //    UpdateOrganisationsName(collection["OrganisationViewModel.User.Name"].ToString(), organisation.Name, organisation.Id);
+
+            //}
             organisation = await UpdateOrganisation(collection, organisation);
 
             if (!string.IsNullOrWhiteSpace(TypeName))
@@ -261,7 +279,11 @@ namespace DealEngine.Services.Impl
             var jsonOrganisation = (Organisation)await _serializerationService.GetDeserializedObject(typeof(Organisation), collection);
             var OrganisationType = collection["OrganisationViewModel.OrganisationType"];
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
-          //  var user = await UpdateOrganisationUser(collection, organisation);
+            //  var user = await UpdateOrganisationUser(collection, organisation);
+           if(TypeName == "Administrator" && (jsonOrganisation.Name != organisation.Name ))
+           {
+                jsonOrganisation.Name = organisation.Name;
+           }
             organisation = _mapper.Map(jsonOrganisation, organisation);
 
             //if (user != null)
