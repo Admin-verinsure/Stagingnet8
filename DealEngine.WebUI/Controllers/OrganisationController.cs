@@ -486,7 +486,14 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> AddOrganisation(IFormCollection collection)
         {
             User currentUser = await CurrentUser();
-            Guid.TryParse(collection["OrganisationViewModel.Organisation.Id"], out Guid OrganisationId);
+            Guid OrganisationId = Guid.Empty;
+            var rawId = collection["OrganisationViewModel.Organisation.Id"].ToString();
+            
+            if (!string.IsNullOrWhiteSpace(rawId))
+            {
+                Guid.TryParse(rawId, out OrganisationId);
+            }
+            
             Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid Id);
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
 
@@ -524,15 +531,29 @@ namespace DealEngine.WebUI.Controllers
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
 
-                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id))
-                        {
-                            user.Organisations.Add(clientProgramme.Owner);
-                            // clientProgramme.Owner = user;
-                            clientProgramme.Owner.Email = user.Email;
-                            user.PrimaryOrganisation = clientProgramme.Owner;
+                        // 1️⃣ Get ALL users who currently have this org as primary
+                        var existingPrimaryUsers =
+                            await _userService.GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
 
+                        foreach (var existingUser in existingPrimaryUsers)
+                        {
+                            // Don't clear it for the same user
+                            if (existingUser.Id != user.Id)
+                            { 
+                                Organisation existingorg = await _organisationService.GetOrganisationByEmail(existingUser.Email);
+                                existingUser.PrimaryOrganisation = existingorg;
+                                await _userService.Update(existingUser);
+                            }
                         }
+
+                        // 2️⃣ Now safely assign to new user
+                        user.PrimaryOrganisation = clientProgramme.Owner;
+                       await _userService.Update(user);
+
                         await uow.Commit();
+
+
+                        var test = await _userService.GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
                     }
 
                     if (!clientProgramme.BaseProgramme.ProgEnableEmail)

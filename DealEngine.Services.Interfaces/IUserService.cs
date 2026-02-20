@@ -27,5 +27,7 @@ namespace DealEngine.Services.Interfaces
         Task<User> GetUserByFirstName(string firstName);
         Task<IList<User>> GetUsersByLastName(string lastName);
         Task<bool> CreateUserPrimaryOrgOrgTypeAndLDAP(User user, string userType);
+        Task<IList<User>> GetUsersByPrimaryOrganisationId(Guid organisationId);
+
     }
 }

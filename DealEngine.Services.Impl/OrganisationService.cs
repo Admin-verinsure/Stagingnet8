@@ -261,24 +261,24 @@ namespace DealEngine.Services.Impl
             var jsonOrganisation = (Organisation)await _serializerationService.GetDeserializedObject(typeof(Organisation), collection);
             var OrganisationType = collection["OrganisationViewModel.OrganisationType"];
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
-            var user = await UpdateOrganisationUser(collection, organisation);
+          //  var user = await UpdateOrganisationUser(collection, organisation);
             organisation = _mapper.Map(jsonOrganisation, organisation);
 
-            if (user != null)
-            {
+            //if (user != null)
+            //{
                
-                if (jsonOrganisation.Name != "")
-                {
-                    organisation.Name = jsonOrganisation.Name;
-                }
+            //    if (jsonOrganisation.Name != "")
+            //    {
+            //        organisation.Name = jsonOrganisation.Name;
+            //    }
 
-                if ((user.FirstName + " " + user.LastName) != organisation.Name && jsonOrganisation.Name != "" && TypeName != "")
-                {
-                    organisation.Name = user.FirstName + " " + user.LastName;
-                }
+            //    if ((user.FirstName + " " + user.LastName) != organisation.Name && jsonOrganisation.Name != "" && TypeName != "")
+            //    {
+            //        organisation.Name = user.FirstName + " " + user.LastName;
+            //    }
 
                
-            }
+            //}
             var isfap = collection["OrganisationViewModel.Organisation.isTheFAP"];
             organisation.Email = collection["OrganisationViewModel.User.Email"].ToString();
             if (isfap == "true")
@@ -382,10 +382,10 @@ namespace DealEngine.Services.Impl
             Boolean usercreation = true;
             Boolean nousercreationflag = false;
 
-            //if (Type == "Administrator")
-            //{
-            //     foundOrg = await GetOrganisationByEmail(Email);
-            //}
+            if (Type == "Administrator")
+            {
+                 foundOrg = await GetOrganisationByEmail(Email);
+            }
 
             if (foundOrg == null)
             {

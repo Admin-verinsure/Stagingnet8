@@ -521,6 +521,15 @@ namespace DealEngine.Services.Impl
             }
         }
 
+        public async Task<IList<User>> GetUsersByPrimaryOrganisationId(Guid organisationId)
+        {
+            return await _userRepository
+                .FindAll()
+                .Where(u =>
+                    u.PrimaryOrganisation != null &&
+                    u.PrimaryOrganisation.Id == organisationId)
+                .ToListAsync();
+        }
         private void SetUpUserAndOrganisation(User user, string userType)
         {
             if (userType == "Broker")

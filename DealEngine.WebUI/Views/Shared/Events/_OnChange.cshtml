@@ -573,7 +573,7 @@
                 ContractorOnChange();
             }
 
-           
+
 
             for (var i = 0; i < List.options.length; i++) {
                 //if (List.options[i].text == "Private" && Value != "MREDirector") {
@@ -750,29 +750,13 @@
         ResetOrganisationUnitView();
         //var Role = document.getElementById("Organisation.InsuranceAttribute");
         var OrgTypeList = document.getElementById("Organisation.OrganisationType");
+         var privateDiv = document.getElementById("RotaryAdminPrivate");
         if (Value == "Administrator" ||
 
             Value == "Other") {
             //readonly Organisation Type personal
             //document.getElementById("OwnerFap").hidden = true;
 
-            if (Value == "Administrator"){
-
-              for (var i = 0; i < OrgTypeList.options.length; i++) {
-                //if (List.options[i].text == "Private" && Value != "MREDirector") {
-                 if (OrgTypeList.options[i].value == "Private") {
-
-                        OrgTypeList.options[i].selected = true;
-                    document.getElementById("Private").hidden = false;
-
-
-                    var Email = document.getElementById("EmailDiv");
-                    if (Email != null) {
-                        document.getElementById("EmailDiv").hidden = false;
-                    }
-                  }
-              }
-            }
             if (Value == "Administrator") {
                 for (var i = 0; i < OrgTypeList.options.length; i++) {
                     if (OrgTypeList.options[i].text == "Private Individual") {
@@ -794,16 +778,15 @@
                         OrgTypeList.options[i].hidden = true;
                     }
 
+                     var Email = document.getElementById("EmailDiv");
+                    if (Email != null) {
+                        document.getElementById("EmailDiv").hidden = false;
+                    }
                     // Unhide Private section
-                    var privateDiv = document.getElementById("RotaryAdminPrivate");
+                   
                     if (privateDiv) {
                        privateDiv.removeAttribute("hidden");
                     }
-                    var privateDiv1 = document.getElementById("Else");
-    if (privateDiv1) {
-        privateDiv1.setAttribute("hidden", true);
-    }
-
                     
 
                 }
@@ -811,116 +794,16 @@
                 $("#NoUserCreation").val(false);
             }
 
+            document.getElementById("Else").hidden = true;
 
-            // if (Value == "Trustee") {
-            //     for (var i = 0; i < OrgTypeList.options.length; i++) {
-            //         if (OrgTypeList.options[i].text == "Private Individual") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Trading Trust") {
-            //             OrgTypeList.options[i].hidden = false;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Holding Trust") {
-            //             OrgTypeList.options[i].hidden = false;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Incorporated Society") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Company") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //     }
-            //     $("#NoUserCreation").val(true);
-
-            // }
-            // if (Value == "Incorporated Society Officer") {
-            //     for (var i = 0; i < OrgTypeList.options.length; i++) {
-            //         if (OrgTypeList.options[i].text == "Private Individual") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Trading Trust") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Holding Trust") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Incorporated Society") {
-            //             OrgTypeList.options[i].hidden = false;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Company") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //     }
-            //     $("#NoUserCreation").val(true);
-            // }
-            // if (Value == "Director") {
-            //     for (var i = 0; i < OrgTypeList.options.length; i++) {
-            //         if (OrgTypeList.options[i].text == "Private") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Trading Trust") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Holding Trust") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Incorporated Society") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Company") {
-            //             OrgTypeList.options[i].hidden = false;
-            //         } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //     }
-            //     $("#NoUserCreation").val(true);
-            // }
-
-
-            // if (Value == "Other") {
-            //     for (var i = 0; i < OrgTypeList.options.length; i++) {
-            //         if (OrgTypeList.options[i].text == "Private Individual") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Trading Trust") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Holding Trust") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Incorporated Society") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         }
-            //         if (OrgTypeList.options[i].text == "Company") {
-            //             OrgTypeList.options[i].hidden = true;
-            //         } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
-            //             OrgTypeList.options[i].hidden = false;
-            //         }
-            //     }
-            //     $("#NoUserCreation").val(true);
-
-            // }
-
-            document.getElementById("Else").hidden = false;
-
-        } else { document.getElementById("Else").hidden = false;}
+        } 
+        else { document.getElementById("Else").hidden = false;
+             if (privateDiv) {
+        privateDiv.hidden = true;
+        }
+        }
         DefaultRule("1", Value);
         NewOrganisationTypeupdate(Value);
-
-    //         if (Value.includes("Club")) {
-    //     console.log("SHOW table");
-    //     document.getElementById("ClubMemberTable").hidden = false;
-    // } else {
-    //     console.log("HIDE table");
-    //     document.getElementById("ClubMemberTable").hidden = true;
-    // }
-
-
-        // Always check the real value of Organisation.InsuranceAttribute
     let orgTypeValue = $("#Organisation\\.InsuranceAttribute").val();
 
     // If org type contains "Club", keep table open
