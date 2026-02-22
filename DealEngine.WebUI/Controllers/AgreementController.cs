@@ -5438,7 +5438,7 @@ namespace DealEngine.WebUI.Controllers
 
                 decimal totalPremium = 0;
                 decimal brokerFee = 0;
-                decimal GST = 1.15m;
+              //  decimal GST = 1.15m;
 
                 foreach (var agreement in programme.Agreements.Where(a => a.DateDeleted == null))
                 {
@@ -5458,7 +5458,7 @@ namespace DealEngine.WebUI.Controllers
                     }
                 }
 
-                var invoiceAmount = Math.Round((totalPremium + brokerFee) * GST, 2);
+                var invoiceAmount = Math.Round((totalPremium + brokerFee) , 2);
 
                 var odooResponse = await _odooTaskGateway.SendInvoiceAsync(
                     clientInformationSheet,
