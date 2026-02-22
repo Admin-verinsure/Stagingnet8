@@ -126,26 +126,21 @@
                      var IsRotaryNamedpartycount = 0;
     debugger;
 
-    var rotaryRoles = [
-        "RotaryClub",
-        "Rotaract",
-        "RotaryCommunityCorps",
-        "RotaryClubTrustOneOnly",
-        "RotaryOtherExtraClubTrusts",
-        "RotaryDistrict",
-        "RotarySpecialPurposeTrust",
-        "RotaryCompany",
-        "RotaryMultiDistrictOrganisation",
-        "RotaryRIActionGroup",
-        "RotaryRIFellowshipGroup",
-        "RotaryOther"
+        var rotaryRoles = [
+        "Governance_1",
+        "Governance_2",
+        "Governance_3",
+        "Governance_4",
+        "Governance_5",
+        "Governance_6",
+        "Governance_7"
     ];
 
     $('#tblOrganisation tr').each(function () {
         var $tds = $(this).find('td');
 
-        if ($tds.length > 2) {
-            var value = $tds.eq(2).text()
+        if ($tds.length > 3) {
+            var value = $tds.eq(3).text()
                 .replace(/\r?\n|\r/g, " ")
                 .trim();
 
@@ -160,8 +155,7 @@
 
                     if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "RotaryAssociationsProgramme" && IsRotaryNamedpartycount == 0) {
 
-                               window.alert("Please add at least one named party in order for us to be able to provide you with a quote.");
-                           $("[id='Insured Details / Named Parties']").trigger("click");
+    window.alert("Please add at least one Named Party (including the Insured / Policy Owner) in order for us to provide a quote. If you have not selected a Governance type for the Insured Policy Owner, please edit it and choose the appropriate Organisation Type.");                           $("[id='Insured Details / Named Parties']").trigger("click");
                                return false;
 
 

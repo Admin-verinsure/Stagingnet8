@@ -52,6 +52,7 @@
                         {
                             <th data-field="IsFap" data-sortable="true">Is Fap</th>
                         }
+                        <th data-field="IsPrincipal" data-sortable="true" class="d-none">Organisation Type</th>
                         <th data-field="deleteButton" data-sortable="false"></th>
                     </tr>
                 </thead>
@@ -79,7 +80,10 @@
                                 <td>
                                 </td>
                             }
-                            <td>
+
+                            <td class="d-none">
+                                @organisation.OrganisationType.Name
+
                             </td>
                         </tr>
                     }
@@ -172,10 +176,11 @@
 
                                 </td>
                             }
-                            @*<td>
-                                    <input id="IsFapOrg"  value="" type="hidden">
+                            <td class="d-none">
+                                @organisation.OrganisationType.Name
 
-                                </td>*@
+                            </td>
+
                             <td>
                                 <button onclick="RemoveOrganisation('@organisation.Id', 'Insured Details / Named Parties')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
                             </td>
