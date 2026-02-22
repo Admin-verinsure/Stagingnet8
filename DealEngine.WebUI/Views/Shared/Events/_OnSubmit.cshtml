@@ -514,16 +514,6 @@
                     msg.className = "alert alert-danger";
                    let errorMessage = "Something went wrong. Please try again.";
 
-                     if (xhr.responseJSON && xhr.responseJSON.message) {
-                     // If server returns JSON with a 'message' property
-                      errorMessage = xhr.responseJSON.message;
-                     } else if (xhr.responseText) {
-                      // Otherwise use raw response text (like an HTML error page or message)
-                      errorMessage = xhr.responseText;
-                     } else if (error) {
-                       // Fallback to XHR error object
-                     errorMessage = error;
-                     }
                       msg.innerText = errorMessage;
                       msg.style.display = "block";
 
