@@ -121,9 +121,7 @@
         <strong>Policy:</strong>
     </td>
     <td width="350" height="40">
-        <button type="button" class="btn btn-success btn-sm dropdown-toggle nav-item" data-bs-toggle="dropdown" aria-expanded="false">
-            Edit Policy Dates/Limits
-        </button>
+        <label> Policy dates and Limits are fixed </label>
                         <ul class="dropdown-menu">
                             <li class="nav-item">
                                 <a href="javascript:void(0);" onclick="openEditAgreement('@Url.Action("EditAgreement", "Agreement", new { id = Model.ClientAgreementId })')" class="dropdown-item">Edit Policy Dates</a>
@@ -517,7 +515,7 @@ else
 
                         </tr>
                     }
-                    @if (Model.IsOptionalProduct)
+                    @* @if (Model.IsOptionalProduct)
                     {
                         <tr>
                             <td><input type="radio" dirname="" name="@Model.ProductName" value="None"></td>
@@ -525,7 +523,7 @@ else
                                 <label> I don't want this cover</label>
                             </td>
                         </tr>
-                    }
+                    } *@
                 </table>
             </div>
 

@@ -415,7 +415,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
                     {
                         // Skip "Administrator" units
-                        if (unit.Name == "Administrator" || unit.Name == "Person - Individual")
+                        if (unit.Name == "Administrator" || unit.Name == "Person - Individual" || unit.Name  == "Corporation – Limited liability")
                             continue;
 
                         // Add entity charge ($195 per active entity)
