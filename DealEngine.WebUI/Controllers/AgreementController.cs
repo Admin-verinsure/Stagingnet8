@@ -5552,7 +5552,7 @@ namespace DealEngine.WebUI.Controllers
                         name = MATERIAL_DAMAGE,
                         qty = 1,
                         unit_price = Math.Round(materialDamagePremium, 2),
-                        product_guid = "GUID-FOR-MATERIAL-DAMAGE"
+                        product_guid = "c04b08a3"
                     });
                 }
 
@@ -5564,7 +5564,7 @@ namespace DealEngine.WebUI.Controllers
                         name = GLOBAL_GUARD,
                         qty = 1,
                         unit_price = Math.Round(globalGuardPremium, 2),
-                        product_guid = "GUID-FOR-GLOBAL-GUARD"
+                        product_guid = "6a1630f3"
                     });
                 }
 
@@ -5576,7 +5576,7 @@ namespace DealEngine.WebUI.Controllers
                         name = "Administrator Fee",
                         qty = 1,
                         unit_price = Math.Round(adminFee, 2),
-                        product_guid = "GUID-FOR-ADMIN-FEE"
+                        product_guid = "f221694f"
                     });
                 }
                 decimal totalAmount = materialDamagePremium
