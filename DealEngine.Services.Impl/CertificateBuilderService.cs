@@ -85,8 +85,13 @@ namespace DealEngine.Services.Impl
             // ===============================
 
             string namedParties = sheet.Owner.Name;
+            if (sheet.Organisation.Any(org =>
+        org.Removed == false &&
+        org.OrganisationType != null &&
+        org.OrganisationType.Name != "Private"))
+         //       if (sheet.Organisation.Where(org => org.Removed == false && org.OrganisationType.Name != "Private"))
 
-            if (sheet.Organisation.Any(o => !o.Removed && o.DateDeleted == null))
+               // if (sheet.Organisation.Any(o => !o.Removed && o.DateDeleted == null))
             {
                 var additional = sheet.Organisation
                     .Where(o => !o.Removed && o.DateDeleted == null)

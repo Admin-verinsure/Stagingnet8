@@ -405,7 +405,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
         private decimal CalculatePremium(ClientInformationSheet informationSheet, OrganisationAttribute attr)
         {
             decimal entityChargeTotal = 0m;
-            const decimal GST = 0.15m;
+            //const decimal GST = 0.15m;
             // decimal BrokerFee = 0m;
 
 
@@ -424,7 +424,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 
                    
             }
-            entityChargeTotal += entityChargeTotal * GST;
+            entityChargeTotal += entityChargeTotal ;
 
 
             return entityChargeTotal;

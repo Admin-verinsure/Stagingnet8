@@ -4291,20 +4291,34 @@ namespace DealEngine.WebUI.Controllers
                 // 🔢 TOTAL PREMIUM CALCULATION (HERE)
                 // =======================
                 decimal totalPremium = 0m;
+                const string MATERIAL_DAMAGE = "Rotary Material Damage";
+                const string GLOBAL_GUARD = "Rotary Multinational Liability (Global Guard GL)";
+
 
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
-                        totalPremium = programme.Agreements
-                             .Where(a => a.DateDeleted == null)
-                             .Sum(a =>
-                                  (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
-                                  .Where(t => t.DateDeleted == null && t.Bound)
-                                 .Sum(t => t.Premium)
-                               +
-        // Add BrokerFee (if any)
-                                  (a.BrokerFee > 0 ? a.BrokerFee : 0));
+                    decimal materialDamagePremium = programme.Agreements
+                         .Where(a => a.DateDeleted == null
+                         && a.Product?.Name == MATERIAL_DAMAGE).Sum(a =>
+                         (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                         .Where(t => t.DateDeleted == null && t.Bound)
+                         .Sum(t => t.Premium));
+
+                    decimal globalGuardPremium = programme.Agreements
+                        .Where(a => a.DateDeleted == null
+                                 && a.Product?.Name == GLOBAL_GUARD)
+                        .Sum(a =>
+                            (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                            .Where(t => t.DateDeleted == null && t.Bound)
+                            .Sum(t => t.Premium)
+                        );
+
+                    // ADMIN FEE = Sum of all BrokerFee across agreements
+                    decimal adminFee = programme.Agreements
+                        .Where(a => a.DateDeleted == null)
+                        .Sum(a => a.BrokerFee > 0 ? a.BrokerFee : 0);
                     //  SendInvoiceToOdoo(programme.InformationSheet);
-                    SendInvoicePayloadPOC(programme.InformationSheet, programme, totalPremium);
+                     SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamagePremium, globalGuardPremium, adminFee);
                 }
 
 
@@ -5482,10 +5496,13 @@ namespace DealEngine.WebUI.Controllers
         
 
      [HttpPost]
-    public async Task<IActionResult> SendInvoicePayloadPOC(ClientInformationSheet sheet, ClientProgramme programme, decimal invoiceAmount)
+       // SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamagePremium, globalGuardPremium, adminFee);
+
+        public async Task<IActionResult> SendInvoicePayloadPOC(ClientInformationSheet sheet, ClientProgramme programme, decimal materialDamagePremium,
+    decimal globalGuardPremium , decimal adminFee)
     {
         if (sheet is null || programme is null) return BadRequest("Invalid input.");
-        if (invoiceAmount <= 0) return BadRequest("Invoice amount must be > 0.");
+        if ((materialDamagePremium + globalGuardPremium) <= 0) return BadRequest("Invoice amount must be > 0.");
 
             // --- Odoo settings (from your appsettings-bound object) ---
             //var api = _odoo.ServerWorkingEndpoint.TrimEnd('/'); // MUST end with /jsonrpc
@@ -5499,6 +5516,8 @@ namespace DealEngine.WebUI.Controllers
                 var db = _appSettingService.OdooServerDB;
                 var login = _appSettingService.LoginID;
                 var key = _appSettingService.LoginKey;
+                const string MATERIAL_DAMAGE = "Rotary Material Damage";
+                const string GLOBAL_GUARD = "Rotary Multinational Liability (Global Guard GL)";
 
                 if (!api.EndsWith("/jsonrpc", StringComparison.OrdinalIgnoreCase))
                     throw new InvalidOperationException($"Endpoint must be .../jsonrpc. Got: {api}");
@@ -5519,56 +5538,83 @@ namespace DealEngine.WebUI.Controllers
                 var nowTag = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
                 var extRef = $"EXT-POLICY-{nowTag}";
 
-                // generate a 10-digit policy number starting with 1 (like POC)
                 var rnd = new Random();
                 var policyNum = long.Parse("1" + rnd.Next(0, 999_999_999).ToString("D9"));
 
+                var lines = new List<object>();
+
+
+                // 1️⃣ Rotary Material Damage
+                if (materialDamagePremium > 0)
+                {
+                    lines.Add(new
+                    {
+                        name = MATERIAL_DAMAGE,
+                        qty = 1,
+                        unit_price = Math.Round(materialDamagePremium, 2),
+                        product_guid = "GUID-FOR-MATERIAL-DAMAGE"
+                    });
+                }
+
+                // 2️⃣ Rotary Multinational Liability (Global Guard GL)
+                if (globalGuardPremium > 0)
+                {
+                    lines.Add(new
+                    {
+                        name = GLOBAL_GUARD,
+                        qty = 1,
+                        unit_price = Math.Round(globalGuardPremium, 2),
+                        product_guid = "GUID-FOR-GLOBAL-GUARD"
+                    });
+                }
+
+                // 3️⃣ Administrator Fee
+                if (adminFee > 0)
+                {
+                    lines.Add(new
+                    {
+                        name = "Administrator Fee",
+                        qty = 1,
+                        unit_price = Math.Round(adminFee, 2),
+                        product_guid = "GUID-FOR-ADMIN-FEE"
+                    });
+                }
+                decimal totalAmount = materialDamagePremium
+                    + globalGuardPremium
+                    + adminFee;
+
                 var payload = new
                 {
-                    // external idempotency key
-                    //ref = extRef,
+                    ext_ref = $"EXT-POLICY-{DateTime.UtcNow:yyyyMMddHHmmss}",
 
                     customer = new
                     {
                         name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
                         email = sheet.Owner?.Email,
-                        phone = "9871654321"
+                        phone = sheet.Owner?.Phone ?? ""
                     },
 
-                    currency = "NZD", // or your currency
+                    currency = "NZD",
                     invoice_date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
                     due_date = DateTime.UtcNow.AddDays(14).ToString("yyyy-MM-dd"),
 
-                    salesperson = new { login = _appSettingService.LoginID }, // or a fixed sales login
+                    salesperson = new
+                    {
+                        login = _appSettingService.LoginID
+                    },
 
                     policy = new
                     {
                         type_name = programme?.BaseProgramme?.Name ?? "Policy",
                         name = programme?.BaseProgramme?.Name ?? "Policy",
-                        amount = Math.Round(invoiceAmount, 2),
-                        policy_number = policyNum,
+                        amount = Math.Round(totalAmount, 2),
+                        policy_number = long.Parse("1" + new Random().Next(0, 999_999_999).ToString("D9")),
                         policy_duration = 12,
-                        payment_type = "fixed",
-
-                        agent = new
-                        {
-                            name = "Rahul Agent",
-                            email = "rahul.agent@verinsure.online",
-                            phone = "9871654321"
-                        }
+                        payment_type = "fixed"
                     },
 
-                    lines = new[]
-                    {
-                        new {
-                               name       = $"Annual Premium - {programme?.BaseProgramme?.Name ?? "Programme"}",
-                               qty        = 1,
-                               unit_price = Math.Round(invoiceAmount, 2),
-                              // tax_names  = System.Array.Empty<string>()
-                            }
-                    }
+                    lines = lines.ToArray()
                 };
-
                 var payloadJson = JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None);
 
                 // 3) Create invoice.poc.payload record
