@@ -5610,7 +5610,15 @@ namespace DealEngine.WebUI.Controllers
                         amount = Math.Round(totalAmount, 2),
                         policy_number = long.Parse("1" + new Random().Next(0, 999_999_999).ToString("D9")),
                         policy_duration = 12,
-                        payment_type = "fixed"
+                        payment_type = "fixed",
+
+                        // ✅ MUST BE INSIDE policy
+                        agent = new
+                        {
+                            name = "Craig Horrocks",
+                            email = "craigehorrocksnz@gmail.com",
+                            phone = "+6421683800"
+                        }
                     },
 
                     lines = lines.ToArray()
