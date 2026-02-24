@@ -424,7 +424,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 
                    
             }
-            entityChargeTotal += entityChargeTotal ;
+            // entityChargeTotal += entityChargeTotal ;
 
 
             return entityChargeTotal;
