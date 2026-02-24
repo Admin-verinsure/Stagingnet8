@@ -4292,31 +4292,32 @@ namespace DealEngine.WebUI.Controllers
                 // =======================
                 decimal totalPremium = 0m;
                 const string MATERIAL_DAMAGE = "Rotary Material Damage";
-                const string GLOBAL_GUARD = "Rotary Association-Multinational Liability (Global Guard GL)";
+                const string GLOBAL_GUARD = " Rotary Association-Multinational Liability (Global Guard GL)";
 
-
-                if (programme.BaseProgramme.SendInvoiceToOdoo)
-                {
-                    decimal materialDamagePremium = programme.Agreements
+                decimal materialDamagePremium = programme.Agreements
                          .Where(a => a.DateDeleted == null
                          && a.Product?.Name == MATERIAL_DAMAGE).Sum(a =>
                          (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
                          .Where(t => t.DateDeleted == null && t.Bound)
                          .Sum(t => t.Premium));
 
-                    decimal globalGuardPremium = programme.Agreements
-                        .Where(a => a.DateDeleted == null
-                                 && a.Product?.Name == GLOBAL_GUARD)
-                        .Sum(a =>
-                            (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
-                            .Where(t => t.DateDeleted == null && t.Bound)
-                            .Sum(t => t.Premium)
-                        );
+                decimal globalGuardPremium = programme.Agreements
+                    .Where(a => a.DateDeleted == null
+                             && a.Product?.Name == GLOBAL_GUARD)
+                    .Sum(a =>
+                        (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                        .Where(t => t.DateDeleted == null && t.Bound)
+                        .Sum(t => t.Premium)
+                    );
 
-                    // ADMIN FEE = Sum of all BrokerFee across agreements
-                    decimal adminFee = programme.Agreements
-                        .Where(a => a.DateDeleted == null)
-                        .Sum(a => a.BrokerFee > 0 ? a.BrokerFee : 0);
+                // ADMIN FEE = Sum of all BrokerFee across agreements
+                decimal adminFee = programme.Agreements
+                    .Where(a => a.DateDeleted == null)
+                    .Sum(a => a.BrokerFee > 0 ? a.BrokerFee : 0);
+
+                if (programme.BaseProgramme.SendInvoiceToOdoo)
+                {
+                    
                     //  SendInvoiceToOdoo(programme.InformationSheet);
                      SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamagePremium, globalGuardPremium, adminFee);
                 }
