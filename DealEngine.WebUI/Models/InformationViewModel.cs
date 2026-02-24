@@ -122,6 +122,8 @@ namespace DealEngine.WebUI.Models
         public bool IsClub { get; set; }
         public bool IsDistrict { get; set; }
         public bool IsIndependentEntity { get; set; }
+        public Guid Owner { get; set; }
+
     }
 
 

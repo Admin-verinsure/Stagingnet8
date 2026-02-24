@@ -4292,7 +4292,7 @@ namespace DealEngine.WebUI.Controllers
                 // =======================
                 decimal totalPremium = 0m;
                 const string MATERIAL_DAMAGE = "Rotary Material Damage";
-                const string GLOBAL_GUARD = "Rotary Multinational Liability (Global Guard GL)";
+                const string GLOBAL_GUARD = "Rotary Association-Multinational Liability (Global Guard GL)";
 
 
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
