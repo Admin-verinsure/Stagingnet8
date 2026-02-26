@@ -172,6 +172,8 @@ namespace DealEngine.WebUI.Controllers
                 IList<string> languages = new List<string>();
                 languages.Add("nz");
                 IList<Programme> programmeList = new List<Programme>();
+                HashSet<string> programmeNames = new HashSet<string>();
+
                 model.ProgrammeItems = new List<ProgrammeItem>();
                 if (model.CurrentUserType == "Client")
                 {
@@ -191,7 +193,14 @@ namespace DealEngine.WebUI.Controllers
                             {
                                 if (clientProgramme.InformationSheet.Status != "Not Taken Up By Broker")
                                 {
-                                    programmeList.Add(clientProgramme.BaseProgramme);
+                                    var prog = clientProgramme.BaseProgramme;
+
+                                    if (programmeNames.Add(prog.Name)) // Add returns false if already exists
+                                    {
+                                        programmeList.Add(prog);
+                                    }
+
+                                    //programmeList.Add(clientProgramme.BaseProgramme);
                                 }
                             }
                         }

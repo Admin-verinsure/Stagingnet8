@@ -64,14 +64,16 @@
                                 <td class="text-center">
                                     <input type="checkbox"
                                            class="club-checkbox"
-                                           name="IsClub_@clientProg.Id" />
+                                           name="IsClub_@clientProg.Id"
+                                           @(clientProg.IsClub ? "checked" : "") />
                                 </td>
 
                                 <!-- IsDistrict -->
                                 <td class="text-center">
                                     <input type="checkbox"
                                            class="district-checkbox"
-                                           name="IsDistrict_@clientProg.Id" />
+                                           name="IsDistrict_@clientProg.Id"
+                                           @(clientProg.IsDistrict ? "checked" : "") />
                                 </td>
 
                                 <!-- IsIndependentEntity -->
