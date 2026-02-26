@@ -151,9 +151,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
                 else
                 {
-                    agreement.BrokerFee = agreement.BrokerFee;
+                    agreement.BrokerFee = 37.50m;
                 }
-                agreement.BrokerFee  += agreement.BrokerFee * GST; ;
 
 
                 //Referral points per agreement
@@ -368,7 +367,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
         {
             decimal total = 0m;
 
-            const decimal GST = 0.15m;
 
            // decimal BrokerFee = 0m;
  
@@ -404,7 +402,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 orgType == "RotaryCommunityCorp")
             {
                 decimal basePremium = 251.20m; // includes admin fee
-                agreement.BrokerFee += 37.50m;
                 if (countedMembers < 15)
                 {
                     total += basePremium;
@@ -422,7 +419,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             else if (orgType == "RotaryDistrict")
             {
                 int clubCount = attr.DistrictTotal ?? 0;
-                agreement.BrokerFee += 37.50m;
 
                 if (clubCount <= 40)
                 {
@@ -440,7 +436,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             else if (orgType == "RotaryClubTrustOneOnly")
             {
                 int trusts = (attr.SPT_Companies ?? 0) + (attr.SPT_TradingTrusts ?? 0);
-                agreement.BrokerFee += 37.50m;
 
                 if (trusts > 1)
                 {
@@ -455,7 +450,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             else if (orgType == "RotarySpecialPurposeTrust" ||
                      orgType == "RotaryCompany")
             {
-                agreement.BrokerFee += 37.50m;
 
                 decimal basePremium = 1212.50m;
                 bool over1m = false;

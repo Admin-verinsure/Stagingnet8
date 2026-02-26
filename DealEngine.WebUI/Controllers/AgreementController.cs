@@ -4294,12 +4294,24 @@ namespace DealEngine.WebUI.Controllers
                 const string MATERIAL_DAMAGE = "Rotary Material Damage";
                 const string GLOBAL_GUARD = " Rotary Association-Multinational Liability (Global Guard GL)";
 
-                decimal materialDamagePremium = programme.Agreements
-                         .Where(a => a.DateDeleted == null
-                         && a.Product?.Name == MATERIAL_DAMAGE).Sum(a =>
-                         (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
-                         .Where(t => t.DateDeleted == null && t.Bound)
-                         .Sum(t => t.Premium));
+                //decimal materialDamagePremium = programme.Agreements
+                //         .Where(a => a.DateDeleted == null
+                //         && a.Product?.Name == MATERIAL_DAMAGE).Sum(a =>
+                //         (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                //         .Where(t => t.DateDeleted == null && t.Bound)
+                //         .Sum(t => t.Premium));
+
+                decimal materialDamageQty = programme.Agreements
+    .Where(a => a.DateDeleted == null
+             && a.Product?.Name == MATERIAL_DAMAGE)
+    .Sum(a =>
+        (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+        .Where(t => t.DateDeleted == null && t.Bound)
+        .Count()   // OR .Sum(t => t.Quantity)
+    );
+
+
+
 
                 decimal globalGuardPremium = programme.Agreements
                     .Where(a => a.DateDeleted == null
@@ -4311,15 +4323,20 @@ namespace DealEngine.WebUI.Controllers
                     );
 
                 // ADMIN FEE = Sum of all BrokerFee across agreements
-                decimal adminFee = programme.Agreements
-                    .Where(a => a.DateDeleted == null)
-                    .Sum(a => a.BrokerFee > 0 ? a.BrokerFee : 0);
+                //decimal adminFee = programme.Agreements
+                //    .Where(a => a.DateDeleted == null)
+                //    .Sum(a => a.BrokerFee > 0 ? a.BrokerFee : 0);
+
+                decimal adminFeeQty = programme.Agreements
+    .Where(a => a.DateDeleted == null)
+    .SelectMany(a => a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+    .Count(t => t.DateDeleted == null && t.Bound && t.Premium>0);
 
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
                     
                     //  SendInvoiceToOdoo(programme.InformationSheet);
-                     SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamagePremium, globalGuardPremium, adminFee);
+                     SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamageQty, globalGuardPremium, adminFeeQty);
                 }
 
 
@@ -5497,13 +5514,13 @@ namespace DealEngine.WebUI.Controllers
         
 
      [HttpPost]
-       // SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamagePremium, globalGuardPremium, adminFee);
+       // SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamageQty, globalGuardPremium, adminFeeQty);
 
-        public async Task<IActionResult> SendInvoicePayloadPOC(ClientInformationSheet sheet, ClientProgramme programme, decimal materialDamagePremium,
-    decimal globalGuardPremium , decimal adminFee)
+        public async Task<IActionResult> SendInvoicePayloadPOC(ClientInformationSheet sheet, ClientProgramme programme, decimal materialDamageQty,
+    decimal globalGuardPremium , decimal adminFeeQty)
     {
         if (sheet is null || programme is null) return BadRequest("Invalid input.");
-        if ((materialDamagePremium + globalGuardPremium) <= 0) return BadRequest("Invoice amount must be > 0.");
+        if ((materialDamageQty + globalGuardPremium) <= 0) return BadRequest("Invoice amount must be > 0.");
 
             // --- Odoo settings (from your appsettings-bound object) ---
             //var api = _odoo.ServerWorkingEndpoint.TrimEnd('/'); // MUST end with /jsonrpc
@@ -5546,14 +5563,13 @@ namespace DealEngine.WebUI.Controllers
 
 
                 // 1️⃣ Rotary Material Damage
-                if (materialDamagePremium > 0)
+                if (materialDamageQty  > 0)
                 {
                     lines.Add(new
                     {
                         name = MATERIAL_DAMAGE,
-                        qty = 1,
-                        unit_price = Math.Round(materialDamagePremium, 2),
-                        product_guid = "c04b08a3"
+                        qty = materialDamageQty,
+                        product_guid = "bbfc4377-af90-41ae-a69b-e7d23caf1284"
                     });
                 }
 
@@ -5563,26 +5579,26 @@ namespace DealEngine.WebUI.Controllers
                     lines.Add(new
                     {
                         name = GLOBAL_GUARD,
-                        qty = 1,
-                        unit_price = Math.Round(globalGuardPremium, 2),
-                        product_guid = "6a1630f3"
+                        qty = Math.Round(globalGuardPremium, 2),
+                       // unit_price = Math.Round(globalGuardPremium, 2),
+                        product_guid = "ba3e544b-bcfe-4833-9fda-885897e1fa5d"
                     });
                 }
 
                 // 3️⃣ Administrator Fee
-                if (adminFee > 0)
+                if (adminFeeQty > 0)
                 {
                     lines.Add(new
                     {
                         name = "Administrator Fee",
-                        qty = 1,
-                        unit_price = Math.Round(adminFee, 2),
-                        product_guid = "f221694f"
+                        qty = adminFeeQty,
+                        product_guid = "fd67c5c1-9793-4d40-854a-b817a30303e1"
                     });
                 }
-                decimal totalAmount = materialDamagePremium
-                    + globalGuardPremium
-                    + adminFee;
+
+                //decimal totalAmount = materialDamagePremium
+                //    + globalGuardPremium
+                //    + adminFee;
 
                 var payload = new
                 {
@@ -5591,8 +5607,7 @@ namespace DealEngine.WebUI.Controllers
                     customer = new
                     {
                         name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
-                        email = sheet.Owner?.Email,
-                        phone = sheet.Owner?.Phone ?? ""
+                        email = sheet.Owner?.Email
                     },
 
                     currency = "NZD",
@@ -5608,7 +5623,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         type_name = programme?.BaseProgramme?.Name ?? "Policy",
                         name = programme?.BaseProgramme?.Name ?? "Policy",
-                        amount = Math.Round(totalAmount, 2),
+                        amount = 0,
                         policy_number = long.Parse("1" + new Random().Next(0, 999_999_999).ToString("D9")),
                         policy_duration = 12,
                         payment_type = "fixed",

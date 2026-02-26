@@ -192,7 +192,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 adminFee = 1750;
             }
 
-            agreement.BrokerFee = 37.5m * 1.15m; 
+            agreement.BrokerFee = 37.5m; 
 
             //Referral points per agreement
             //Operates Outside of NZ
