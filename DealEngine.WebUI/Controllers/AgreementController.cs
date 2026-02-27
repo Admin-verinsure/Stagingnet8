@@ -36,6 +36,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -4497,13 +4498,23 @@ namespace DealEngine.WebUI.Controllers
             }).ToList();
             _logger.LogError(" before sendemail via template doc count "+systemDocs.Count);
             
-            await _emailService.SendEmailViaEmailTemplate(
-                ownerEmail,
-                emailTemplate,
-                systemDocs,
-                informationSheet,
-                null
-            );
+            try{
+
+
+                await _emailService.SendEmailViaEmailTemplate(
+                    ownerEmail,
+                    emailTemplate,
+                    systemDocs,
+                    informationSheet,
+                    null
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("error while sending email  for client" + informationSheet.Owner.Name );
+            }
+            
+            
         }
 
        

@@ -174,65 +174,68 @@ namespace DealEngine.Services.Impl
             var user = await _userService.GetUserByEmail(recipent);
             List<KeyValuePair<string, string>> mergeFields;
             Programme baseProgramme = null;
-
-            if (clientInformationSheet != null)
+            try
             {
-                if (clientAgreement != null)
+                if (clientInformationSheet != null)
                 {
-                    mergeFields = MergeFieldLibrary(null, null, clientInformationSheet.Programme.BaseProgramme, clientInformationSheet, clientAgreement);
+                    if (clientAgreement != null)
+                    {
+                        mergeFields = MergeFieldLibrary(null, null, clientInformationSheet.Programme.BaseProgramme, clientInformationSheet, clientAgreement);
+                    }
+                    else
+                    {
+                        mergeFields = MergeFieldLibrary(null, null, clientInformationSheet.Programme.BaseProgramme, clientInformationSheet, null);
+                    }
+
                 }
                 else
                 {
-                    mergeFields = MergeFieldLibrary(null, null, clientInformationSheet.Programme.BaseProgramme, clientInformationSheet, null);
+                    mergeFields = MergeFieldLibrary(null, null, null, clientInformationSheet, null);
                 }
 
-            } 
-            else
-            {
-                mergeFields = MergeFieldLibrary(null, null, null, clientInformationSheet, null);
+                var insuredUser = _userService.GetApplicationUserByEmail(recipent);
+                if (insuredUser != null)
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[First Name]]", insuredUser.Result.FirstName));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[Last Name]]", insuredUser.Result.LastName));
+                }
+
+                string systememailsubject = emailTemplate.Subject;
+                string systememailbody = System.Net.WebUtility.HtmlDecode(emailTemplate.Body);
+                foreach (KeyValuePair<string, string> field in mergeFields)
+                {
+                    systememailsubject = systememailsubject.Replace(field.Key, field.Value);
+                    systememailbody = systememailbody.Replace(field.Key, field.Value);
+                }
+
+                EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
+                email.From(DefaultSender);
+                email.WithSubject(systememailsubject);
+                email.WithBody(systememailbody);
+                email.UseHtmlBody(true);
+                _logger.LogError("In email service :-  " + documents.Count);
+
+                if (documents != null)
+                {
+                    var documentsList = await ToAttachments(documents);
+
+                    email.Attachments(documentsList.ToArray());
+
+                    email.Send();
+                    _logger.LogError("In email service after email send:-  " + documents.Count);
+
+                }
+                else
+                {
+
+                    email.Send();
+                    _logger.LogError("In email service in else part after email send:-  " + documents.Count);
+
+                }
             }
-
-            var insuredUser = _userService.GetApplicationUserByEmail(recipent);
-            if (insuredUser != null)
+            catch (Exception ex)
             {
-                mergeFields.Add(new KeyValuePair<string, string>("[[First Name]]", insuredUser.Result.FirstName));
-                mergeFields.Add(new KeyValuePair<string, string>("[[Last Name]]", insuredUser.Result.LastName));
-            }
-
-            string systememailsubject = emailTemplate.Subject;
-            string systememailbody = System.Net.WebUtility.HtmlDecode(emailTemplate.Body);
-            foreach (KeyValuePair<string, string> field in mergeFields)
-            {
-                systememailsubject = systememailsubject.Replace(field.Key, field.Value);
-                systememailbody = systememailbody.Replace(field.Key, field.Value);
-            }            
-
-			EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
-			email.From (DefaultSender);
-            email.WithSubject (systememailsubject);
-			email.WithBody (systememailbody);
-			email.UseHtmlBody (true);
-            _logger.LogError("In email service :-  " + documents.Count);
-
-            if (documents != null)
-            {
-                var documentsList = await ToAttachments(documents);
-                _logger.LogError("In email service before attachments:-  " + documents.Count);
-
-                email.Attachments(documentsList.ToArray());
-                _logger.LogError("In email service after attachments:-  " + documents.Count);
-
-                email.Send();
-                _logger.LogError("In email service after email send:-  " + documents.Count);
-
-            }
-            else
-            {
-                _logger.LogError("In email service in else part before email send:-  " + documents.Count);
-
-                email.Send();
-                _logger.LogError("In email service in else part after email send:-  " + documents.Count);
-
+                _logger.LogError("error while sending email  for client" + user.FirstName + " " + user.LastName);
             }
         }
 
