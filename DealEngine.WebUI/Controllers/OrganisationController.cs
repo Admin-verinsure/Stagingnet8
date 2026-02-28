@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using DealEngine.Domain.Entities;
+using DealEngine.Infrastructure.AuthorizationRSA;
+using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Services.Interfaces;
 using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Organisation;
@@ -8,13 +10,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NHibernate.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using DealEngine.Infrastructure.FluentNHibernate;
 using System.Linq.Dynamic;
-using NHibernate.Linq;
+using System.Threading.Tasks;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -61,7 +62,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> ValidateOrganisationEmail(IFormCollection collection)
         {
-            var email = collection["OrganisationViewModel.User.Email"].ToString();
+            var email = collection["OrganisationViewModel.Organisation.Email"].ToString();
             bool ValidBackEndEmail;
             Guid.TryParse(collection["OrganisationViewModel.Organisation.Id"].ToString(), out Guid OrganisationId);
             Guid.TryParse(collection["ClientInformationSheet.Id"].ToString(), out Guid SheetId);
@@ -516,47 +517,53 @@ namespace DealEngine.WebUI.Controllers
                 {
                     User user = null;
                     Guid userid = Guid.Parse(collection["OrganisationViewModel.User.Id"].ToString());
+
                     if (userid != Guid.Empty)
                     {
                         user = await _userService.GetUserById(userid);
-
+                        
                     }
                     else
                     {
                         user = await _userService.GetUserByEmail(jsonUser.Email);
 
                     }
-
                     user = _mapper.Map(jsonUser, user);
+
+
+                    //else
+                    //{
+                    //    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    //    {
+                    //        //var UserName = FirstName + "_" + LastName;
+                    //        var UserName = "dsfsdf";
+                    //        var userdb = new User(user, Guid.NewGuid(), UserName);
+                    //        await _userService.Create(userdb);
+                    //        await uow.Commit();
+                    //    }
+                    //}
 
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
 
-                        // 1️⃣ Get ALL users who currently have this org as primary
-                        var existingPrimaryUsers =
-                            await _userService.GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
-
-                        foreach (var existingUser in existingPrimaryUsers)
+                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id))
                         {
-                            // Don't clear it for the same user
-                            if (existingUser.Id != user.Id)
-                            {
-                                Organisation existingorg = await _organisationService.GetOrganisationByEmail(existingUser.Email);
-                                existingUser.PrimaryOrganisation = existingorg;
-                                await _userService.Update(existingUser);
-                            }
+                            user.Organisations.Add(clientProgramme.Owner);
+                            // clientProgramme.Owner = user;
+                            //clientProgramme.Owner.Email = user.Email;
+                            user.PrimaryOrganisation = clientProgramme.Owner;
+                          // await _userService.Update(user);
+                            
+
                         }
-
-                        // 2️⃣ Now safely assign to new user
-                        user.PrimaryOrganisation = clientProgramme.Owner;
-                        await _userService.Update(user);
-                        organisation.Name = collection["OrganisationViewModel.User.FirstName"] + " " + collection["OrganisationViewModel.User.LastName"];
-                          //  OrganisationViewModel.User.FirstName + OrganisationViewModel.User.FirstName
                         await uow.Commit();
-
-
-                        var test = await _userService.GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
                     }
+
+                    if (!clientProgramme.BaseProgramme.ProgEnableEmail)
+                    {
+                        await _emailService.CreateUserAdministrator(user, clientProgramme.Owner);
+                    }
+
 
                     if (!clientProgramme.BaseProgramme.ProgEnableEmail)
                     {

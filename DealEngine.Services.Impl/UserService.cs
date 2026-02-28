@@ -258,14 +258,14 @@ namespace DealEngine.Services.Impl
 
 		public async Task ApplicationCreateUser(User user)
 		{
-			await CreateDefaultUserOrganisation(user);
+			//await CreateDefaultUserOrganisation(user);
 			await _userRepository.AddAsync(user);
 			//await Update(user);
 		}
 
 		public async Task Create(User user)
 		{
-			await CreateDefaultUserOrganisation(user);
+			//await CreateDefaultUserOrganisation(user);
 			await _userRepository.AddAsync(user);
 			try
 			{

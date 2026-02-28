@@ -332,7 +332,7 @@
                     type: "POST",
                     data: $("#" + Form.id).serialize(),
                     success: function (Data) {
-                        var element = document.getElementById("User.Email");
+                        var element = document.getElementById("Organisation.Email");
                         if (Data == true) {
                             element.classList.remove("is-valid");
                             element.classList.add("is-invalid");

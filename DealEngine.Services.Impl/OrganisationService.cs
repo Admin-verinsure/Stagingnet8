@@ -403,8 +403,9 @@ namespace DealEngine.Services.Impl
             User User = null;
             Boolean usercreation = true;
             Boolean nousercreationflag = false;
+            Guid userid = Guid.Parse(collection["OrganisationViewModel.User.Id"].ToString());
 
-            if (Type == "Administrator")
+            if (Type == "Administrator" && userid != Guid.Empty)
             {
                  foundOrg = await GetOrganisationByEmail(Email);
             }
@@ -447,6 +448,8 @@ namespace DealEngine.Services.Impl
                     {
                         if (!string.IsNullOrWhiteSpace(FirstName) || !string.IsNullOrWhiteSpace(LastName))
                             User = new User(Creator, Guid.NewGuid(), collection);
+                        await _userService.Create(User);
+
                     }
                 }
 
@@ -473,9 +476,7 @@ namespace DealEngine.Services.Impl
                         User.SetPrimaryOrganisation(foundOrg);
                     };
 
-                   
 
-                    await _userService.Create(User);
                 }
             }
             return foundOrg;
