@@ -831,15 +831,20 @@
 
     }
 
-
+        
     function NewOrganisationTypeupdate(Value) {
         debugger;
         // Hide all governance options first
+            // resets to empty
+        // OR use:
+        // orgType.selectedIndex = 0;  // resets to first option
+       // }
         for (let i = 1; i <= 7; i++) {
             var gg= "Governance_" + i;
             let el = document.getElementById("Governance_" + i);
             if (el) el.hidden = true;
         }
+
 
         // Get which governance types should show
         let allowed = governanceRuleMap[Value] || [];
