@@ -5617,8 +5617,9 @@ namespace DealEngine.WebUI.Controllers
 
                     customer = new
                     {
+
                         name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
-                        email = sheet.Owner?.Email
+                        email = sheet.Owner?.Email ?? sheet.Owner?.Email ?? "admin@verinsure.online"
                     },
 
                     currency = "NZD",

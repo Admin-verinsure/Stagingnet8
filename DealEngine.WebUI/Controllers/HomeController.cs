@@ -2396,10 +2396,13 @@ namespace DealEngine.WebUI.Controllers
                 List<ClientProgramme> mainClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
                 List<ClientProgramme> subClientProgrammes = await _programmeService.GetSubClientProgrammesForProgramme(programme.Id);
 
-                foreach (var client in mainClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                foreach (ClientProgramme client in mainClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
                 {
                     if (client.DateDeleted == null && client.InformationSheet.Status != "Bound")
                     {
+                        var users = await _userService.GetUsersByPrimaryOrganisationId(client.Owner.Id);
+                        var firstUser = users?.FirstOrDefault();
+                        client.AdminEmail = firstUser?.Email;
                         clientProgrammes.Add(client);
                     }
                 }

@@ -2085,9 +2085,9 @@ namespace DealEngine.WebUI.Controllers
                         //AuditLog auditLog = new AuditLog(user, sheet, agreement, auditLogDetail);
                         //sheet.ClientInformationSheetAuditLogs.Add(auditLog);
                         //agreement.ClientAgreementAuditLogs.Add(auditLog);
-                        await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
+                       // await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out information sheet submission notification email
-                        await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
+                       // await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                     }
                     //send out agreement refer notification email
                     foreach (ClientAgreement agreement in clientProgramme.Agreements)

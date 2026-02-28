@@ -56,7 +56,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsClub { get; set; }
         public virtual bool IsDistrict { get; set; }
         public virtual bool IsIndependentEntity { get; set; }
-
+        public virtual string AdminEmail { get; set; }/// how to get request id
 
         public ClientProgramme (User createdBy, Organisation createdFor, Programme baseProgramme)
 			: base(createdBy)
