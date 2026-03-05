@@ -417,7 +417,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     int extraMembers = countedMembers - 15;
                     total += basePremium + (extraMembers * 14.5m);
                 }
-                BrokerFee += 37.50m;
+                agreement.BrokerFee += 37.50m;
             }
 
             // =============================================
@@ -435,7 +435,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 {
                     total += 1350m + ((clubCount - 40) * 30m);
                 }
-                BrokerFee += 37.50m;
+                agreement.BrokerFee += 37.50m;
 
             }
 
@@ -449,7 +449,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 {
                     total +=  250m;
                 }
-                BrokerFee += 37.50m;
+                agreement.BrokerFee += 37.50m;
 
             }
 
@@ -479,7 +479,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
 
                 total += basePremium;
-                BrokerFee += 37.50m;
+                agreement.BrokerFee += 37.50m;
 
             }
 
@@ -490,7 +490,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 decimal basePremium = 50m;
                 total += basePremium;
-                BrokerFee += 37.50m;
+                agreement.BrokerFee += 37.50m;
 
             }
 
@@ -503,7 +503,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             // APPLY GST LAST
             // =============================================
             total += total * GST;
-            agreement.BrokerFee = BrokerFee;
+            agreement.BrokerFee = agreement.BrokerFee;
 
             return total;
         }
