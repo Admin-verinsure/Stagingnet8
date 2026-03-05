@@ -5527,7 +5527,7 @@ namespace DealEngine.WebUI.Controllers
      [HttpPost]
        // SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamageQty, globalGuardPremium, adminFeeQty);
 
-        public async Task<IActionResult> SendInvoicePayloadPOC(ClientInformationSheet sheet, ClientProgramme programme, decimal materialDamageQty,
+        public async Task<IActionResult> SendInvoicePayloadPOCold01(ClientInformationSheet sheet, ClientProgramme programme, decimal materialDamageQty,
     decimal globalGuardPremium , decimal adminFeeQty)
     {
         if (sheet is null || programme is null) return BadRequest("Invalid input.");
@@ -5686,6 +5686,191 @@ namespace DealEngine.WebUI.Controllers
     }
 
 
+
+        public async Task<IActionResult> SendInvoicePayloadPOC(
+    ClientInformationSheet sheet,
+    ClientProgramme programme,
+    decimal materialDamageQty,
+    decimal globalGuardPremium,
+    decimal adminFeeQty)
+        {
+            if (sheet is null || programme is null)
+                return BadRequest("Invalid input.");
+
+            if ((materialDamageQty + globalGuardPremium + adminFeeQty) <= 0)
+                return BadRequest("Invoice amount must be > 0.");
+
+            try
+            {
+                var api = _appSettingService.OdooServerworkingendpoint.TrimEnd('/');
+                var db = _appSettingService.OdooServerDB;
+                var login = _appSettingService.LoginID;
+                var key = _appSettingService.LoginKey;
+
+                const int COMPANY_ID = 82;
+                const string MATERIAL_DAMAGE = "Rotary Material Damage";
+                const string GLOBAL_GUARD = "Rotary Multinational Liability (Global Guard GL)";
+
+                using var http = new HttpClient
+                {
+                    Timeout = TimeSpan.FromMinutes(5) // avoid 100 sec timeout
+                };
+
+                // 1️⃣ LOGIN
+                var uid = await RpcAsync<int>(http, api, new
+                {
+                    jsonrpc = "2.0",
+                    method = "call",
+                    id = 1,
+                    @params = new
+                    {
+                        service = "common",
+                        method = "login",
+                        args = new object[] { db, login, key }
+                    }
+                });
+
+                if (uid <= 0)
+                    throw new UnauthorizedAccessException("Odoo login failed.");
+
+                // 2️⃣ BUILD LINES
+                var lines = new List<object>();
+
+                if (materialDamageQty > 0)
+                {
+                    lines.Add(new
+                    {
+                        name = MATERIAL_DAMAGE,
+                        qty = materialDamageQty,
+                        product_guid = "bbfc4377-af90-41ae-a69b-e7d23caf1284"
+                    });
+                }
+
+                if (globalGuardPremium > 0)
+                {
+                    lines.Add(new
+                    {
+                        name = GLOBAL_GUARD,
+                        qty = globalGuardPremium,
+                        product_guid = "ba3e544b-bcfe-4833-9fda-885897e1fa5d"
+                    });
+                }
+
+                if (adminFeeQty > 0)
+                {
+                    lines.Add(new
+                    {
+                        name = "Administrator Fee",
+                        qty = adminFeeQty,
+                        product_guid = "fd67c5c1-9793-4d40-854a-b817a30303e1"
+                    });
+                }
+
+                var totalAmount = materialDamageQty + globalGuardPremium + adminFeeQty;
+
+                var extRef = $"EXT-POLICY-{DateTime.UtcNow:yyyyMMddHHmmss}";
+                var rnd = new Random();
+                var policyNum = long.Parse("1" + rnd.Next(0, 999_999_999).ToString("D9"));
+
+                // 3️⃣ PAYLOAD
+                var payload = new
+                {
+                    ext_ref = extRef,
+
+                    customer = new
+                    {
+                        name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
+                        email = sheet.Owner?.Email ?? "admin@verinsure.online"
+                    },
+
+                    currency = "NZD",
+                    invoice_date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
+                    due_date = DateTime.UtcNow.AddDays(14).ToString("yyyy-MM-dd"),
+
+                    salesperson = new
+                    {
+                        login = login
+                    },
+
+                    policy = new
+                    {
+                        type_name = programme?.BaseProgramme?.Name ?? "Policy",
+                        name = programme?.BaseProgramme?.Name ?? "Policy",
+                        amount = totalAmount,
+                        policy_number = policyNum,
+                        policy_duration = 12,
+                        payment_type = "fixed",
+
+                        agent = new
+                        {
+                            name = "Craig Horrocks",
+                            email = "craigehorrocksnz@gmail.com",
+                            phone = "6421683800"
+                        }
+                    },
+
+                    lines = lines.ToArray()
+                };
+
+                var payloadJson = JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None);
+
+                // 4️⃣ CREATE PAYLOAD RECORD (Company Context Applied)
+                var createPayloadRec = ExecKwEnvelope(
+                    db,
+                    uid,
+                    key,
+                    "invoice.poc.payload",
+                    "create",
+                    new object[]
+                    {
+                new object[]
+                {
+                    new Dictionary<string, object?>
+                    {
+                        ["ext_id"] = extRef,
+                        ["payload_json"] = payloadJson
+                    }
+                }
+                    },
+                    new Dictionary<string, object>
+                    {
+                        ["context"] = new Dictionary<string, object>
+                        {
+                            ["allowed_company_ids"] = new int[] { COMPANY_ID },
+                            ["force_company"] = COMPANY_ID
+                        }
+                    }
+                );
+
+                var recId = await RpcAsync<int>(http, api, createPayloadRec);
+
+                // 5️⃣ EXECUTE POLICY + INVOICE CREATION IN COMPANY 82
+                var runFlow = ExecKwEnvelope(
+                    db,
+                    uid,
+                    key,
+                    "invoice.poc.payload",
+                    "action_create_policy_and_invoice",
+                    new object[] { new object[] { recId } },
+                    new Dictionary<string, object>
+                    {
+                        ["context"] = new Dictionary<string, object>
+                        {
+                            ["allowed_company_ids"] = new int[] { COMPANY_ID },
+                            ["force_company"] = COMPANY_ID
+                        }
+                    }
+                );
+
+                await RpcAsync<object>(http, api, runFlow);
+
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         // --------- tiny JSON-RPC helpers ---------
         private static async Task<T> RpcAsync<T>(HttpClient http, string api, object body)
         {
@@ -5725,273 +5910,68 @@ namespace DealEngine.WebUI.Controllers
             return result.ToObject<T>()!;
         }
 
-    //    private static async Task<T> RpcAsync2<T>(HttpClient http, string api, object body)
-    //{
-    //    var json = JsonConvert.SerializeObject(body);
-    //    using var res = await http.PostAsync(api, new StringContent(json, Encoding.UTF8, "application/json"));
-    //    var raw = await res.Content.ReadAsStringAsync();
-    //    res.EnsureSuccessStatusCode();
+        //    private static async Task<T> RpcAsync2<T>(HttpClient http, string api, object body)
+        //{
+        //    var json = JsonConvert.SerializeObject(body);
+        //    using var res = await http.PostAsync(api, new StringContent(json, Encoding.UTF8, "application/json"));
+        //    var raw = await res.Content.ReadAsStringAsync();
+        //    res.EnsureSuccessStatusCode();
 
-    //    var jo = JObject.Parse(raw);
-    //    if (jo["error"] != null) throw new InvalidOperationException(jo["error"]!.ToString());
-    //    return jo["result"]!.ToObject<T>()!;
-    //}
+        //    var jo = JObject.Parse(raw);
+        //    if (jo["error"] != null) throw new InvalidOperationException(jo["error"]!.ToString());
+        //    return jo["result"]!.ToObject<T>()!;
+        //}
 
-    private static object ExecKwEnvelope(string db, int uid, string key,
-                                         string model, string method,
-                                         object[] args, object? kwargs = null)
-        => new
+        //private static object ExecKwEnvelope(string db, int uid, string key,
+        //                                     string model, string method,
+        //                                     object[] args, object? kwargs = null)
+        //    => new
+        //    {
+        //        jsonrpc = "2.0",
+        //        method = "call",
+        //        id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+        //        @params = new
+        //        {
+        //            service = "object",
+        //            method = "execute_kw",
+        //            args = new object[] { db, uid, key, model, method, args, kwargs ?? new { } }
+        //        }
+        //    };
+        private object ExecKwEnvelope(
+        string db,
+        int uid,
+        string key,
+        string model,
+        string method,
+        object[] args,
+        Dictionary<string, object>? kwargs = null)
         {
-            jsonrpc = "2.0",
-            method = "call",
-            id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-            @params = new
+            return new
             {
-                service = "object",
-                method = "execute_kw",
-                args = new object[] { db, uid, key, model, method, args, kwargs ?? new { } }
-            }
-        };
+                jsonrpc = "2.0",
+                method = "call",
+                id = 1,
+                @params = new
+                {
+                    service = "object",
+                    method = "execute_kw",
+                    args = new object[]
+                    {
+                db,
+                uid,
+                key,
+                model,
+                method,
+                args,
+                kwargs ?? new Dictionary<string, object>()
+                    }
+                }
+            };
+        }
 
 
 
-
-
-    //[HttpPost]
-    //public async Task<IActionResult> SendInvoiceToOdoo2(ClientInformationSheet informationSheet)
-    //{
-    //    User user = null;
-
-    //    try
-    //    {
-    //       // var sheet = await _customerInformationService.GetInformation(informationSheetId);
-    //        if (informationSheet == null)
-    //            return BadRequest("Invalid information sheet");
-
-    //        var programme = informationSheet.Programme;
-    //        user = await CurrentUser();
-
-    //        decimal totalPremium = 0m;
-    //        decimal brokerFee = 0m;
-    //        decimal gstMultiplier = 1.15m; // ideally from config / BaseProgramme
-
-    //        var agreements = programme.Agreements
-    //            .Where(a => a.DateDeleted == null)
-    //            .ToList();
-
-    //        brokerFee = agreements.Sum(a => a.BrokerFee);
-
-    //        // ✅ SINGLE DB CALL
-    //        foreach (var agreement in programme.Agreements.Where(a => a.DateDeleted == null))
-    //        {
-    //            brokerFee += agreement.BrokerFee;
-
-    //            var terms = await _clientAgreementTermService
-    //                .GetAllAgreementTermFor(agreement);
-
-    //            foreach (var term in terms.Where(t => t.Bound && t.DateDeleted == null))
-    //            {
-    //                totalPremium += programme.InformationSheet.IsChange &&
-    //                                programme.InformationSheet.PreviousInformationSheet != null
-    //                                ? term.PremiumDiffer
-    //                                : term.Premium;
-
-
-    //            }
-    //        }
-
-    //        var invoiceAmount = Math.Round((totalPremium + brokerFee) * gstMultiplier, 2);
-
-    //        // ❗ Optional idempotency check
-    //        if (programme.InvoiceSentToOdoo)
-    //        {
-    //            return Ok(new { success = true, message = "Invoice already sent to Odoo" });
-    //        }
-
-    //        //var odooResponse = await _odooTaskGateway.SendInvoiceAsync(
-    //        //    informationSheetId,
-    //        //    programme,
-    //        //    invoiceAmount);
-
-    //        programme.InvoiceSentToOdoo = true;
-
-
-    //        if (invoiceAmount <= 0) throw new ArgumentOutOfRangeException(nameof(invoiceAmount));
-
-    //        if (informationSheet.Owner.OdooProjectId <= 0)
-    //            throw new InvalidOperationException("Odoo PartnerId is missing.");
-
-
-
-    //        // 1️⃣ Build invoice values
-    //        var invoiceVals = new Dictionary<string, object>
-    //        {
-    //            ["move_type"] = "out_invoice",
-    //            ["partner_id"] = informationSheet.Owner.OdooProjectId,
-    //            ["invoice_date"] = DateTime.UtcNow.ToString("yyyy-MM-dd"),
-    //            ["ref"] = informationSheet.ReferenceId,
-
-    //            ["invoice_line_ids"] = new object[]
-    //            {
-    //    new object[]
-    //    {
-    //        0, 0, new Dictionary<string, object>
-    //        {
-    //            ["name"] = programme.BaseProgramme.Name ?? "Programme Invoice",
-    //            ["quantity"] = 1,
-    //            ["price_unit"] = invoiceAmount,
-    //            ["account_id"] = 123
-    //        }
-    //    }
-    //            }
-    //        };
-
-
-
-    //        return Ok(new
-    //        {
-    //            success = true,
-    //            invoiceAmount,
-    //            odooResponse
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-    //        return RedirectToAction("Error500", "Error");
-    //    }
-    //}
-
-    //[HttpPost]
-    //public async Task<IActionResult> SendInvoiceToOdoo(IFormCollection collection)
-    //{
-    //    Guid sheetId;
-    //    ClientInformationSheet sheet = null;
-    //    User user = null;
-
-    //    try
-    //    {
-    //        if (!Guid.TryParse(collection["AnswerSheetId"], out sheetId))
-    //            return BadRequest("Invalid AnswerSheetId");
-
-    //        sheet = await _customerInformationService.GetInformation(sheetId);
-    //        var programme = sheet.Programme;
-
-    //        decimal totalPremium = 0;
-    //        decimal brokerFee = 0;
-    //        decimal GST = 1.15m;
-
-    //        foreach (var agreement in programme.Agreements)
-    //        {
-    //            brokerFee += agreement.BrokerFee;
-
-    //            var terms = await _clientAgreementTermService
-    //                .GetAllAgreementTermFor(agreement);
-
-    //            foreach (var term in terms.Where(t => t.Bound && t.DateDeleted == null))
-    //            {
-    //                totalPremium += programme.InformationSheet.IsChange &&
-    //                                programme.InformationSheet.PreviousInformationSheet != null
-    //                                ? term.PremiumDiffer
-    //                                : term.Premium;
-
-    //                foreach (var ext in term.ClientAgreement
-    //                    .ClientAgreementTermExtensions
-    //                    .Where(e => e.Bound))
-    //                {
-    //                    totalPremium += ext.Premium;
-    //                }
-    //            }
-    //        }
-
-    //        var invoiceAmount = Math.Round((totalPremium + brokerFee) * GST, 2);
-
-    //        var rpcPayload = OdooInvoicePayloadBuilder.Build(
-    //            sheet,
-    //            programme,
-    //            invoiceAmount
-    //        );
-
-    //        var response = await _odooTaskGateway.SendInvoiceAsync(rpcPayload);
-
-    //        return Ok(new
-    //        {
-    //            success = true,
-    //            odooResponse = response
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-    //        return RedirectToAction("Error500", "Error");
-    //    }
-    //}
-
-
-    //    private object BuildOdooRpcPayload(
-    //ClientInformationSheet sheet,
-    //ClientProgramme programme,
-    //decimal amount)
-    //    {
-    //        return new
-    //        {
-    //            jsonrpc = "2.0",
-    //            method = "call",
-    //            id = $"ext-req-{Guid.NewGuid()}",
-    //            @params = new
-    //            {
-    //                @ref = programme.Id.ToString(),
-
-    //                customer = new
-    //                {
-    //                    name = sheet.Organisation?.Name,
-    //                    email = sheet.CreatedBy?.Email,
-    //                    phone = sheet.Organisation?.Phone
-    //                },
-
-    //                currency = "NZD",
-    //                invoice_date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
-    //                due_date = DateTime.UtcNow.AddDays(14).ToString("yyyy-MM-dd"),
-    //                payment_reference = programme.Id.ToString(),
-
-    //                salesperson = new
-    //                {
-    //                    login = "admin@verinsure.online"
-    //                },
-
-    //                policy = new
-    //                {
-    //                    type_name = programme.BaseProgramme?.Name,
-    //                    name = programme.Name,
-    //                    amount = amount,
-    //                    policy_number = programme.PolicyNumber,
-    //                    policy_duration = 12,
-    //                    payment_type = "fixed",
-
-    //                    agent = new
-    //                    {
-    //                        name = sheet.CreatedBy?.FullName,
-    //                        email = sheet.CreatedBy?.Email,
-    //                        phone = sheet.CreatedBy?.Phone
-    //                    }
-    //                },
-
-    //                lines = new[]
-    //                {
-    //            new
-    //            {
-    //                name = $"Annual Premium - {programme.Name}",
-    //                qty = 1,
-    //                unit_price = amount,
-    //                tax_names = Array.Empty<string>()
-    //            }
-    //        }
-    //            }
-    //        };
-    //    }
-
-
-    public async Task<string> SendAsync(object payload)
+        public async Task<string> SendAsync(object payload)
         {
             using var client = new HttpClient();
 

@@ -546,14 +546,14 @@ namespace DealEngine.WebUI.Controllers
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
 
-                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id))
+                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id) )
                         {
                             user.Organisations.Add(clientProgramme.Owner);
-                            // clientProgramme.Owner = user;
-                            //clientProgramme.Owner.Email = user.Email;
+                           
+                        }
+                        if (user.PrimaryOrganisation != clientProgramme.Owner)
+                        {                            
                             user.PrimaryOrganisation = clientProgramme.Owner;
-                          // await _userService.Update(user);
-                            
 
                         }
                         await uow.Commit();

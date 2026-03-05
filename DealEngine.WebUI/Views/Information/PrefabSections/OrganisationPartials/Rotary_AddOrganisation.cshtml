@@ -216,7 +216,7 @@
             </tr>
 
             <tr>
-                <td>Number of Companies</td>
+                <td>Number of Additional Companies Wholly Owned by This Entity (Do Not Include This Entity in the Count)</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.SPT_Companies,
                                         new { @id = "SPT_Companies", @type = "number", @min = "0", @step = "1", @class = "form-control spt-count" })
@@ -224,7 +224,7 @@
             </tr>
 
             <tr>
-                <td>Number of Trading Trusts</td>
+                <td>Number of Additional Trusts Operated by This Entity (Excluding the Club’s Primary Trust)</td>
                 <td>
                     @Html.TextBoxFor(m => m.OrganisationViewModel.OrganisationAttribute.SPT_TradingTrusts,
                                         new { @id = "SPT_TradingTrusts", @type = "number", @min = "0", @step = "1", @class = "form-control spt-count" })
