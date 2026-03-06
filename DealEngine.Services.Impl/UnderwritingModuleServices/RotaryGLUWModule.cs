@@ -502,7 +502,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             // =============================================
             // APPLY GST LAST
             // =============================================
-            total += total * GST;
+            total += total;
             agreement.BrokerFee = agreement.BrokerFee;
 
             return total;
