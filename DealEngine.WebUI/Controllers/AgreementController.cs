@@ -4302,15 +4302,27 @@ namespace DealEngine.WebUI.Controllers
                 //         .Where(t => t.DateDeleted == null && t.Bound)
                 //         .Sum(t => t.Premium));
 
-                decimal materialDamageQty = programme.Agreements
-    .Where(a => a.DateDeleted == null
-             && a.Product?.Name == MATERIAL_DAMAGE)
-    .Sum(a =>
-        (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
-        .Where(t => t.DateDeleted == null && t.Bound)
-        .Count()   // OR .Sum(t => t.Quantity)
-    );
+                //            decimal materialDamageQty = programme.Agreements
+                //.Where(a => a.DateDeleted == null
+                //         && a.Product?.Name == MATERIAL_DAMAGE)
+                //.Sum(a =>
+                //    (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                //    .Where(t => t.DateDeleted == null && t.Bound)
+                //    .Count()   // OR .Sum(t => t.Quantity)
+                //);
 
+
+                int materialDamageQty = 0;
+                IList<Organisation> organisations = sheet.Organisation;
+
+                foreach (var org in organisations)
+                {
+                    if (org.Removed) continue;
+                    if (org.OrganisationType?.Name == "Private") continue;
+
+                    materialDamageQty += org.OrganisationalUnits?
+                        .Count(u => u.DateDeleted == null) ?? 0;
+                }
 
 
 
@@ -4327,11 +4339,11 @@ namespace DealEngine.WebUI.Controllers
                 //decimal adminFee = programme.Agreements
                 //    .Where(a => a.DateDeleted == null)
                 //    .Sum(a => a.BrokerFee > 0 ? a.BrokerFee : 0);
-
-                decimal adminFeeQty = programme.Agreements
-    .Where(a => a.DateDeleted == null)
-    .SelectMany(a => a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
-    .Count(t => t.DateDeleted == null && t.Bound && t.Premium>0);
+                decimal adminFeeQty = materialDamageQty;
+    //            decimal adminFeeQty = programme.Agreements
+    //.Where(a => a.DateDeleted == null)
+    //.SelectMany(a => a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+    //.Count(t => t.DateDeleted == null && t.Bound && t.Premium>0);
 
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
