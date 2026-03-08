@@ -4312,17 +4312,29 @@ namespace DealEngine.WebUI.Controllers
                 //);
 
 
-                int materialDamageQty = 0;
-                IList<Organisation> organisations = sheet.Organisation;
+                int quantity = 0;
+                int clubtrust1onlyCount = 0;
 
-                foreach (var org in organisations)
+                foreach (var organisation in sheet.Organisation
+                    .Where(org => !org.Removed && org.OrganisationType?.Name != "Private"))
                 {
-                    if (org.Removed) continue;
-                    if (org.OrganisationType?.Name == "Private") continue;
+                    var validUnits = organisation.OrganisationalUnits
+                        .Where(u => u.DateDeleted == null)
+                        .ToList();
 
-                    materialDamageQty += org.OrganisationalUnits?
-                        .Count(u => u.DateDeleted == null) ?? 0;
+                    // Count how many special units exist
+                    clubtrust1onlyCount += validUnits.Count(u => u.Name == "RotaryClubTrustOneOnly");
+
+                    // Add all normal units immediately
+                    quantity += validUnits.Count(u => u.Name != "RotaryClubTrustOneOnly");
                 }
+
+                // Now handle the special units
+                if (clubtrust1onlyCount > 1)
+                {
+                    quantity += clubtrust1onlyCount;
+                }
+                // if == 1 → do nothing (exclude it)
 
 
 
@@ -4335,21 +4347,13 @@ namespace DealEngine.WebUI.Controllers
                         .Sum(t => t.Premium)
                     );
 
-                // ADMIN FEE = Sum of all BrokerFee across agreements
-                //decimal adminFee = programme.Agreements
-                //    .Where(a => a.DateDeleted == null)
-                //    .Sum(a => a.BrokerFee > 0 ? a.BrokerFee : 0);
-                decimal adminFeeQty = materialDamageQty;
-    //            decimal adminFeeQty = programme.Agreements
-    //.Where(a => a.DateDeleted == null)
-    //.SelectMany(a => a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
-    //.Count(t => t.DateDeleted == null && t.Bound && t.Premium>0);
-
+                decimal adminFeeQty = quantity + 1; //(add 1 For material damage);
+    //           
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
                     
                     //  SendInvoiceToOdoo(programme.InformationSheet);
-                     SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamageQty, globalGuardPremium, adminFeeQty);
+                     SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
                 }
 
 

@@ -94,7 +94,7 @@ namespace DealEngine.Services.Impl
                // if (sheet.Organisation.Any(o => !o.Removed && o.DateDeleted == null))
             {
                 var additional = sheet.Organisation
-                    .Where(o => !o.Removed && o.DateDeleted == null)
+                    .Where(o => !o.Removed && o.DateDeleted == null && o.OrganisationType.Name != "Private")
                     .Select(o => o.Name);
 
                 namedParties = string.Join(", ",
