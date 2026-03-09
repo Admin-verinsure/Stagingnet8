@@ -5663,7 +5663,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         name = GLOBAL_GUARD,
                         qty = globalGuardPremium,
-                        product_guid = "ba3e544b-bcfe-4833-9fda-885897e1fa5d"
+                        product_guid = "fe4852f3-de8f-442f-8fd9-60defb9a9d3e"
                     });
                 }
 
@@ -5673,7 +5673,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         name = "Administrator Fee",
                         qty = adminFeeQty,
-                        product_guid = "fd67c5c1-9793-4d40-854a-b817a30303e1"
+                        product_guid = "4224b6d2-18e9-4067-8024-a79c623f1cbf"
                     });
                 }
 
@@ -5689,7 +5689,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
                         email = sheet.Owner?.Email ?? "admin@verinsure.online",
-                        external_guid = sheet.Owner?.external_guid
+                        sheet.Owner?.external_guid
 
                     },
 
