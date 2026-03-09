@@ -97,8 +97,7 @@ namespace DealEngine.Services.Impl
                     .Where(o => !o.Removed && o.DateDeleted == null && o.OrganisationType.Name != "Private")
                     .Select(o => o.Name);
 
-                namedParties = string.Join(", ",
-                    additional.Append(sheet.Owner.Name));
+                namedParties = string.Join(", ", additional);
             }
 
             model.NamedParties = namedParties;

@@ -4319,7 +4319,8 @@ namespace DealEngine.WebUI.Controllers
                     .Where(org => !org.Removed && org.OrganisationType?.Name != "Private"))
                 {
                     var validUnits = organisation.OrganisationalUnits
-                        .Where(u => u.DateDeleted == null)
+                        .Where(u => u.DateDeleted == null && u.Name != "Corporation – Limited liability" &&
+                        u.Name != "Administrator")
                         .ToList();
 
                     // Count how many special units exist
@@ -5538,182 +5539,20 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
-        
-
-     [HttpPost]
-       // SendInvoicePayloadPOC(programme.InformationSheet, programme, materialDamageQty, globalGuardPremium, adminFeeQty);
-
-        public async Task<IActionResult> SendInvoicePayloadPOCold01(ClientInformationSheet sheet, ClientProgramme programme, decimal materialDamageQty,
-    decimal globalGuardPremium , decimal adminFeeQty)
-    {
-        if (sheet is null || programme is null) return BadRequest("Invalid input.");
-        if ((materialDamageQty + globalGuardPremium) <= 0) return BadRequest("Invoice amount must be > 0.");
-
-            // --- Odoo settings (from your appsettings-bound object) ---
-            //var api = _odoo.ServerWorkingEndpoint.TrimEnd('/'); // MUST end with /jsonrpc
-            //var db = _odoo.ServerDB;
-            //var login = _odoo.LoginID;
-            //var key = _odoo.LoginKey;
-            try
-            {
-
-                var api = _appSettingService.OdooServerworkingendpoint.TrimEnd('/');
-                var db = _appSettingService.OdooServerDB;
-                var login = _appSettingService.LoginID;
-                var key = _appSettingService.LoginKey;
-                const string MATERIAL_DAMAGE = "Rotary Material Damage";
-                const string GLOBAL_GUARD = "Rotary Multinational Liability (Global Guard GL)";
-
-                if (!api.EndsWith("/jsonrpc", StringComparison.OrdinalIgnoreCase))
-                    throw new InvalidOperationException($"Endpoint must be .../jsonrpc. Got: {api}");
-
-                using var http = new HttpClient();
-
-                // 1) login -> uid
-                var uid = await RpcAsync<int>(http, api, new
-                {
-                    jsonrpc = "2.0",
-                    method = "call",
-                    id = 1,
-                    @params = new { service = "common", method = "login", args = new object[] { db, login, key } }
-                });
-                if (uid <= 0) throw new UnauthorizedAccessException("Odoo login failed.");
-
-                // 2) Build the SAME policy-first payload as your Python POC (fill from your objects)
-                var nowTag = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
-                var extRef = $"EXT-POLICY-{nowTag}";
-
-                var rnd = new Random();
-                var policyNum = long.Parse("1" + rnd.Next(0, 999_999_999).ToString("D9"));
-
-                var lines = new List<object>();
-
-
-                // 1️⃣ Rotary Material Damage
-                if (materialDamageQty  > 0)
-                {
-                    lines.Add(new
-                    {
-                        name = MATERIAL_DAMAGE,
-                        qty = materialDamageQty,
-                        product_guid = "bbfc4377-af90-41ae-a69b-e7d23caf1284"
-                    });
-                }
-
-                // 2️⃣ Rotary Multinational Liability (Global Guard GL)
-                if (globalGuardPremium > 0)
-                {
-                    lines.Add(new
-                    {
-                        name = GLOBAL_GUARD,
-                        qty = Math.Round(globalGuardPremium, 2),
-                       // unit_price = Math.Round(globalGuardPremium, 2),
-                        product_guid = "ba3e544b-bcfe-4833-9fda-885897e1fa5d"
-                    });
-                }
-
-                // 3️⃣ Administrator Fee
-                if (adminFeeQty > 0)
-                {
-                    lines.Add(new
-                    {
-                        name = "Administrator Fee",
-                        qty = adminFeeQty,
-                        product_guid = "fd67c5c1-9793-4d40-854a-b817a30303e1"
-                    });
-                }
-
-                //decimal totalAmount = materialDamagePremium
-                //    + globalGuardPremium
-                //    + adminFee;
-
-                var payload = new
-                {
-                    ext_ref = $"EXT-POLICY-{DateTime.UtcNow:yyyyMMddHHmmss}",
-
-                    customer = new
-                    {
-
-                        name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
-                        email = sheet.Owner?.Email ?? sheet.Owner?.Email ?? "admin@verinsure.online"
-                    },
-
-                    currency = "NZD",
-                    invoice_date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
-                    due_date = DateTime.UtcNow.AddDays(14).ToString("yyyy-MM-dd"),
-
-                    salesperson = new
-                    {
-                        login = _appSettingService.LoginID
-                    },
-
-                    policy = new
-                    {
-                        type_name = programme?.BaseProgramme?.Name ?? "Policy",
-                        name = programme?.BaseProgramme?.Name ?? "Policy",
-                        amount = 0,
-                        policy_number = long.Parse("1" + new Random().Next(0, 999_999_999).ToString("D9")),
-                        policy_duration = 12,
-                        payment_type = "fixed",
-
-                        // ✅ MUST BE INSIDE policy
-                        agent = new
-                        {
-                            name = "Craig Horrocks",
-                            email = "craigehorrocksnz@gmail.com",
-                            phone = "6421683800"
-                        }
-                    },
-
-                    lines = lines.ToArray()
-                };
-                var payloadJson = JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None);
-
-                // 3) Create invoice.poc.payload record
-                var createPayloadRec = ExecKwEnvelope(db, uid, key,
-                    "invoice.poc.payload", "create",
-                    new object[]
-                    {
-            new object[] {
-                new Dictionary<string, object?>
-                {
-                    ["ext_id"]       = extRef,
-                    ["payload_json"] = payloadJson
-                }
-            }
-                    });
-
-                var recId = await RpcAsync<int>(http, api, createPayloadRec);
-
-                // 4) Run policy-first flow (creates links + posts invoice)
-                var runFlow = ExecKwEnvelope(db, uid, key,
-                    "invoice.poc.payload", "action_create_policy_and_invoice",
-                    new object[] { new object[] { recId } });
-
-                await RpcAsync<object>(http, api, runFlow);
-
-            }
-            catch (Exception ex)
-            {
-
-            }
-        // ✅ Done. No reads. No storing extra info.
-        return Ok(new { success = true });
-    }
-
-
 
         public async Task<IActionResult> SendInvoicePayloadPOC(
-    ClientInformationSheet sheet,
-    ClientProgramme programme,
-    decimal materialDamageQty,
-    decimal globalGuardPremium,
-    decimal adminFeeQty)
+            ClientInformationSheet sheet,
+            ClientProgramme programme,
+            decimal materialDamageQty,
+            decimal globalGuardPremium,
+            decimal adminFeeQty)
         {
             if (sheet is null || programme is null)
                 return BadRequest("Invalid input.");
 
-            if ((materialDamageQty + globalGuardPremium + adminFeeQty) <= 0)
+            var totalAmount = materialDamageQty + globalGuardPremium + adminFeeQty;
+
+            if (totalAmount <= 0)
                 return BadRequest("Invoice amount must be > 0.");
 
             try
@@ -5729,10 +5568,10 @@ namespace DealEngine.WebUI.Controllers
 
                 using var http = new HttpClient
                 {
-                    Timeout = TimeSpan.FromMinutes(5) // avoid 100 sec timeout
+                    Timeout = TimeSpan.FromMinutes(5)
                 };
 
-                // 1️⃣ LOGIN
+                // 🔐 LOGIN
                 var uid = await RpcAsync<int>(http, api, new
                 {
                     jsonrpc = "2.0",
@@ -5749,7 +5588,63 @@ namespace DealEngine.WebUI.Controllers
                 if (uid <= 0)
                     throw new UnauthorizedAccessException("Odoo login failed.");
 
-                // 2️⃣ BUILD LINES
+                // ============================================================
+                // 🔎 STEP 1: SEARCH PARTNER BY EMAIL
+                // ============================================================
+
+                int? partnerId = null;
+
+                if (!string.IsNullOrWhiteSpace(sheet.Owner?.Email))
+                {
+                    var searchPartner = ExecKwEnvelope(
+                        db,
+                        uid,
+                        key,
+                        "res.partner",
+                        "search_read",
+                        new object[]
+                        {
+                    new object[]
+                    {
+                        new object[]
+                        {
+                            new object[] { "email", "=", sheet.Owner.Email }
+                        }
+                    }
+                        }
+                    );
+
+                    var partners = await RpcAsync<List<dynamic>>(http, api, searchPartner);
+
+                    if (partners != null && partners.Count > 0)
+                    {
+                        partnerId = partners[0].id;
+
+                        // 🔁 Move partner to Company 82
+                        var updatePartner = ExecKwEnvelope(
+                            db,
+                            uid,
+                            key,
+                            "res.partner",
+                            "write",
+                            new object[]
+                            {
+                        new object[] { partnerId },
+                        new Dictionary<string, object>
+                        {
+                            ["company_id"] = COMPANY_ID
+                        }
+                            }
+                        );
+
+                        await RpcAsync<object>(http, api, updatePartner);
+                    }
+                }
+
+                // ============================================================
+                // 🧾 BUILD LINES
+                // ============================================================
+
                 var lines = new List<object>();
 
                 if (materialDamageQty > 0)
@@ -5782,13 +5677,10 @@ namespace DealEngine.WebUI.Controllers
                     });
                 }
 
-                var totalAmount = materialDamageQty + globalGuardPremium + adminFeeQty;
-
                 var extRef = $"EXT-POLICY-{DateTime.UtcNow:yyyyMMddHHmmss}";
                 var rnd = new Random();
                 var policyNum = long.Parse("1" + rnd.Next(0, 999_999_999).ToString("D9"));
 
-                // 3️⃣ PAYLOAD
                 var payload = new
                 {
                     ext_ref = extRef,
@@ -5796,7 +5688,9 @@ namespace DealEngine.WebUI.Controllers
                     customer = new
                     {
                         name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
-                        email = sheet.Owner?.Email ?? "admin@verinsure.online"
+                        email = sheet.Owner?.Email ?? "admin@verinsure.online",
+                        external_guid = "26fc2369-14e6-433e-9d5a-4ff67647aa90"
+
                     },
 
                     currency = "NZD",
@@ -5830,7 +5724,10 @@ namespace DealEngine.WebUI.Controllers
 
                 var payloadJson = JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None);
 
-                // 4️⃣ CREATE PAYLOAD RECORD (Company Context Applied)
+                // ============================================================
+                // 📝 CREATE invoice.poc.payload IN COMPANY 82
+                // ============================================================
+
                 var createPayloadRec = ExecKwEnvelope(
                     db,
                     uid,
@@ -5860,7 +5757,10 @@ namespace DealEngine.WebUI.Controllers
 
                 var recId = await RpcAsync<int>(http, api, createPayloadRec);
 
-                // 5️⃣ EXECUTE POLICY + INVOICE CREATION IN COMPANY 82
+                // ============================================================
+                // 🚀 EXECUTE POLICY + INVOICE CREATION
+                // ============================================================
+
                 var runFlow = ExecKwEnvelope(
                     db,
                     uid,
