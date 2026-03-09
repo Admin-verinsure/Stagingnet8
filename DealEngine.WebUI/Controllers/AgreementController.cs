@@ -1536,7 +1536,7 @@ namespace DealEngine.WebUI.Controllers
                 ClientAgreementTerm term = agreement.ClientAgreementTerms.FirstOrDefault(t => t.SubTermType == "BV" && t.DateDeleted == null);
                 model.ClientAgreementId = id;
                 model.ClientProgrammeId = agreement.ClientInformationSheet.Programme.Id;
-               
+
                 var subtypeterms = new List<EditTermsViewModel>();
 
 
@@ -1557,7 +1557,7 @@ namespace DealEngine.WebUI.Controllers
 
                 model.SubtypeTerms = subtypeterms.OrderBy(acat => acat.TermLimit).ToList();
                 model.ProductName = productname;
-              
+
                 ViewBag.Title = "Edit Quote Terms ";
                 return View("EditQuoteTerms", model);
                 //return View("EditQuoteTerms", model);
@@ -1818,7 +1818,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         decimal brokeragerate = agreement.Product.DefaultBrokerage;
                         decimal Brokerage = clientAgreementSubTerm.Premium * agreement.Product.DefaultBrokerage / 100;
-                        _clientAgreementTermService.AddAgreementTerm(user, clientAgreementSubTerm.TermLimit,clientAgreementSubTerm.AggregateLimit, clientAgreementSubTerm.Excess, clientAgreementSubTerm.Premium, 0.0m, brokeragerate, Brokerage, agreement, clientAgreementSubTerm.TermType);
+                        _clientAgreementTermService.AddAgreementTerm(user, clientAgreementSubTerm.TermLimit, clientAgreementSubTerm.AggregateLimit, clientAgreementSubTerm.Excess, clientAgreementSubTerm.Premium, 0.0m, brokeragerate, Brokerage, agreement, clientAgreementSubTerm.TermType);
                         await uow.Commit();
                     }
                 }
@@ -1843,20 +1843,20 @@ namespace DealEngine.WebUI.Controllers
             {
                 user = await CurrentUser();
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(Guid.Parse(TermId));
-                
 
-                    if (agreement != null)
+
+                if (agreement != null)
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
-                        using (var uow = _unitOfWork.BeginUnitOfWork())
-                        {
                         agreement.InceptionDate = agreementViewModel.InceptionDate;
                         agreement.ExpiryDate = agreementViewModel.ExpiryDate;
 
-                            await uow.Commit();
-                        }
+                        await uow.Commit();
                     }
+                }
 
-                
+
 
                 return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
                 // return Json("true");
@@ -1888,10 +1888,10 @@ namespace DealEngine.WebUI.Controllers
                 ClientAgreement agreement = await _clientAgreementService.GetAgreement(clientAgreementId);
                 if (clientAgreementSubTerm.TermId != Guid.Empty)
                 {
-                    ClientAgreementTerm term = await _clientAgreementTermService.GetAgreementById(""+clientAgreementSubTerm.TermId);
+                    ClientAgreementTerm term = await _clientAgreementTermService.GetAgreementById("" + clientAgreementSubTerm.TermId);
                     //ClientAgreementTerm term = agreement.ClientAgreementTerms.FirstOrDefault(t => t.Id == clientAgreementSubTerm.TermId && t.SubTermType == clientAgreementSubTerm.TermType && t.DateDeleted == null);
-                  
-                    if(term != null)
+
+                    if (term != null)
                     {
                         using (var uow = _unitOfWork.BeginUnitOfWork())
                         {
@@ -1903,13 +1903,13 @@ namespace DealEngine.WebUI.Controllers
                             await uow.Commit();
                         }
                     }
-                   
+
                 }
-               
+
                 return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
-               // return Json("true");
+                // return Json("true");
                 //return Json(new { redirectUrl = "/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id });
-               // return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
+                // return Content("/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id);
 
                 //var url = "/Agreement/ViewAgreement/" + agreement.ClientInformationSheet.Programme.Id;
                 //return Json(new { url });
@@ -2360,128 +2360,128 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-// using DealEngine.Services.Interfaces;                 // IOdooTaskGateway
-// using DealEngine.Integrations.Odoo.Models;           // OdooTaskSpec (wherever you put it)
+        // using DealEngine.Services.Interfaces;                 // IOdooTaskGateway
+        // using DealEngine.Integrations.Odoo.Models;           // OdooTaskSpec (wherever you put it)
 
-//public async Task<IActionResult> OdooTaskExtension()
-//    {
-//            User user = await CurrentUser();
+        //public async Task<IActionResult> OdooTaskExtension()
+        //    {
+        //            User user = await CurrentUser();
 
-//             await _odooTaskGateway.OdooGatewayconnection(
-//            _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
-//            _appSettingService.OdooServerDB,              // e.g. not4profitodoo18
-//            _appSettingService.LoginID,                   // e.g. ashuchauhan@verinsure.online
-//            _appSettingService.LoginKey                   // API key
-//        );
+        //             await _odooTaskGateway.OdooGatewayconnection(
+        //            _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
+        //            _appSettingService.OdooServerDB,              // e.g. not4profitodoo18
+        //            _appSettingService.LoginID,                   // e.g. ashuchauhan@verinsure.online
+        //            _appSettingService.LoginKey                   // API key
+        //        );
 
-//        // 1) single create
-//        var singleId = await _odooTaskGateway.CreateTaskAsync(
-//            title: $"Test from button {DateTime.UtcNow:HH:mm:ss}",
-//            projectId: 34,
-//            notes: $"UTC {DateTime.UtcNow:O}"
-//        );
+        //        // 1) single create
+        //        var singleId = await _odooTaskGateway.CreateTaskAsync(
+        //            title: $"Test from button {DateTime.UtcNow:HH:mm:ss}",
+        //            projectId: 34,
+        //            notes: $"UTC {DateTime.UtcNow:O}"
+        //        );
 
-//        // 2) bulk create (one JSON-RPC call)
-//        var now = DateTime.UtcNow;
-//            //    var bulkIds = await _odooTaskGateway.CreateTasksAsync(new[]
-//            //    {
-//            //    new OdooTaskSpec(user,$"POC A {now:HH:mm:ss}", 43, notes: "bulk #1"),
-//            //    new OdooTaskSpec(user,$"POC B {now:HH:mm:ss}", 43, notes: "bulk #2"),
-//            //    new OdooTaskSpec(user,$"POC C {now:HH:mm:ss}", 43, notes: "bulk #3"),
-//            //});
+        //        // 2) bulk create (one JSON-RPC call)
+        //        var now = DateTime.UtcNow;
+        //            //    var bulkIds = await _odooTaskGateway.CreateTasksAsync(new[]
+        //            //    {
+        //            //    new OdooTaskSpec(user,$"POC A {now:HH:mm:ss}", 43, notes: "bulk #1"),
+        //            //    new OdooTaskSpec(user,$"POC B {now:HH:mm:ss}", 43, notes: "bulk #2"),
+        //            //    new OdooTaskSpec(user,$"POC C {now:HH:mm:ss}", 43, notes: "bulk #3"),
+        //            //});
 
-//            //return Ok(new
-//            //{
-//            //    singleCreatedId = singleId,
-//            //    bulkCreatedIds = bulkIds,
-//            //    bulkCount = bulkIds.Length
-//            //});
-//            return Ok();
-//    }
-
-
-
-
-    //[HttpPost]
-    //public async Task<IActionResult> OdooTaskExtension()
-    //{
-    //    // ⚠️ Keep the API key on the server (env var/appsettings), never in the browser.
-    //    //  var key = Environment.GetEnvironmentVariable("ODOO_KEY") ?? "<<<PUT_KEY_HERE_FOR_LOCAL_TESTS>>>";
-
-    //    using var odoo = new OdooTaskExtension(
-    //       api: _appSettingService.OdooServerworkingendpoint,   // your working endpoint
-    //       db : _appSettingService.OdooServerDB,
-    //       login : _appSettingService.LoginID,
-    //       key:  _appSettingService.LoginKey
-    //    );
-    //    //          using var odoo = new OdooTaskExtension(
-    //    //    api: "https://not4profit.online/jsonrpc",   // your working endpoint
-    //    //    db: "not4profitodoo18",
-    //    //    login: "ashuchauhan@verinsure.online",
-    //    //    key: key
-    //    //);
-
-    //    await odoo.LoginAsync();
-
-    //    var taskId = await odoo.CreateTaskAsync(
-    //        title: "Test from button",
-    //        projectId: 34,                                // from your URL
-    //        notes: $"Created at {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC"
-    //    );
-
-    //    return Ok(new { odooTaskId = taskId });
-    //}
-
-    //    public async Task<IActionResult> OdooTaskExtension()
-    //    {
-    //        await _odooTaskGateway.OdooGatewayconnection(
-    //            _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
-    //            _appSettingService.OdooServerDB,              // e.g. not4profitodoo18
-    //            _appSettingService.LoginID,                   // e.g. ashuchauhan@verinsure.online
-    //            _appSettingService.LoginKey                   // API key
-    //        );
-
-    //        var taskId = await _odooTaskGateway.CreateTaskAsync(
-    //            "Test from button", 34, $"UTC {DateTime.UtcNow:O}"
-    //        );
-    //        await _odooTaskGateway.CreateTasksAsync(new[]
-    //{
-    //    new OdooTaskSpec($"POC A {DateTime.UtcNow:HH:mm:ss}", 34, Notes: "bulk #1"),
-    //    new OdooTaskSpec($"POC B {DateTime.UtcNow:HH:mm:ss}", 34, Notes: "bulk #2", Deadline: DateTime.UtcNow.AddDays(2)),
-    //    new OdooTaskSpec($"POC C {DateTime.UtcNow:HH:mm:ss}", 34, Notes: "bulk #3")
-    //});
+        //            //return Ok(new
+        //            //{
+        //            //    singleCreatedId = singleId,
+        //            //    bulkCreatedIds = bulkIds,
+        //            //    bulkCount = bulkIds.Length
+        //            //});
+        //            return Ok();
+        //    }
 
 
 
 
+        //[HttpPost]
+        //public async Task<IActionResult> OdooTaskExtension()
+        //{
+        //    // ⚠️ Keep the API key on the server (env var/appsettings), never in the browser.
+        //    //  var key = Environment.GetEnvironmentVariable("ODOO_KEY") ?? "<<<PUT_KEY_HERE_FOR_LOCAL_TESTS>>>";
 
-    //    return Ok(new { odooTaskId = taskId });
-    //}
+        //    using var odoo = new OdooTaskExtension(
+        //       api: _appSettingService.OdooServerworkingendpoint,   // your working endpoint
+        //       db : _appSettingService.OdooServerDB,
+        //       login : _appSettingService.LoginID,
+        //       key:  _appSettingService.LoginKey
+        //    );
+        //    //          using var odoo = new OdooTaskExtension(
+        //    //    api: "https://not4profit.online/jsonrpc",   // your working endpoint
+        //    //    db: "not4profitodoo18",
+        //    //    login: "ashuchauhan@verinsure.online",
+        //    //    key: key
+        //    //);
+
+        //    await odoo.LoginAsync();
+
+        //    var taskId = await odoo.CreateTaskAsync(
+        //        title: "Test from button",
+        //        projectId: 34,                                // from your URL
+        //        notes: $"Created at {DateTime.UtcNow:yyyy-MM-dd HH:mm:ss} UTC"
+        //    );
+
+        //    return Ok(new { odooTaskId = taskId });
+        //}
+
+        //    public async Task<IActionResult> OdooTaskExtension()
+        //    {
+        //        await _odooTaskGateway.OdooGatewayconnection(
+        //            _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
+        //            _appSettingService.OdooServerDB,              // e.g. not4profitodoo18
+        //            _appSettingService.LoginID,                   // e.g. ashuchauhan@verinsure.online
+        //            _appSettingService.LoginKey                   // API key
+        //        );
+
+        //        var taskId = await _odooTaskGateway.CreateTaskAsync(
+        //            "Test from button", 34, $"UTC {DateTime.UtcNow:O}"
+        //        );
+        //        await _odooTaskGateway.CreateTasksAsync(new[]
+        //{
+        //    new OdooTaskSpec($"POC A {DateTime.UtcNow:HH:mm:ss}", 34, Notes: "bulk #1"),
+        //    new OdooTaskSpec($"POC B {DateTime.UtcNow:HH:mm:ss}", 34, Notes: "bulk #2", Deadline: DateTime.UtcNow.AddDays(2)),
+        //    new OdooTaskSpec($"POC C {DateTime.UtcNow:HH:mm:ss}", 34, Notes: "bulk #3")
+        //});
 
 
-    //public async Task<IActionResult> OdooTaskExtension()
-    //{
-    //    using var odoo = new OdooTaskExtension(
-    //        api: _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
-    //        db: _appSettingService.OdooServerDB,
-    //        login: _appSettingService.LoginID,
-    //        key: _appSettingService.LoginKey
-    //    );
-
-    //    await odoo.LoginAsync();
-
-    //    var now = DateTime.UtcNow;
-
-    //    var id = await odoo.CreateTaskAsync("Test from button", projectId: 34, notes: "hello");
-    //    var ids = await odoo.CreateTasksAsync(new[] {
-    //    new OdooTaskSpec("Bulk A", 34),
-    //    new OdooTaskSpec("Bulk B", 34, Notes: "with deadline", Deadline: DateTime.UtcNow.AddDays(2))});
-    //    return Ok(new { created = ids });
-
-    //}
 
 
-    [HttpGet]
+
+        //    return Ok(new { odooTaskId = taskId });
+        //}
+
+
+        //public async Task<IActionResult> OdooTaskExtension()
+        //{
+        //    using var odoo = new OdooTaskExtension(
+        //        api: _appSettingService.OdooServerworkingendpoint, // e.g. https://not4profit.online/jsonrpc
+        //        db: _appSettingService.OdooServerDB,
+        //        login: _appSettingService.LoginID,
+        //        key: _appSettingService.LoginKey
+        //    );
+
+        //    await odoo.LoginAsync();
+
+        //    var now = DateTime.UtcNow;
+
+        //    var id = await odoo.CreateTaskAsync("Test from button", projectId: 34, notes: "hello");
+        //    var ids = await odoo.CreateTasksAsync(new[] {
+        //    new OdooTaskSpec("Bulk A", 34),
+        //    new OdooTaskSpec("Bulk B", 34, Notes: "with deadline", Deadline: DateTime.UtcNow.AddDays(2))});
+        //    return Ok(new { created = ids });
+
+        //}
+
+
+        [HttpGet]
         public async Task<IActionResult> ViewAgreementDeclarationReport(String id)
         {
             var models = new BaseListViewModel<ViewAgreementViewModel>();
@@ -2648,7 +2648,7 @@ namespace DealEngine.WebUI.Controllers
 
                         }
 
-                      
+
 
                         bool isActive = true;
 
@@ -2794,7 +2794,7 @@ namespace DealEngine.WebUI.Controllers
                     agreement.TerritoryLimit = model.TerritoryLimit;
                     agreement.ProfessionalBusiness = model.ProfessionalBusiness;
                     agreement.InsuredName = model.InsuredName;
-                  
+
                     string auditLogDetail = "Agreement details have been modified by " + user.FullName;
                     AuditLog auditLog = new AuditLog(user, answerSheet, agreement, auditLogDetail);
                     agreement.ClientAgreementAuditLogs.Add(auditLog);
@@ -2803,8 +2803,8 @@ namespace DealEngine.WebUI.Controllers
                 }
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 {
-                   // var updatedAgreement = await _clientAgreementService.GetAgreement(model.ClientAgreementId);
-                   // var updatedModel = new ViewAgreementViewModel(updatedAgreement, model.ClientInformationSheet, agreement.ClientInformationSheet.Programme, CultureInfo.CurrentCulture);
+                    // var updatedAgreement = await _clientAgreementService.GetAgreement(model.ClientAgreementId);
+                    // var updatedModel = new ViewAgreementViewModel(updatedAgreement, model.ClientInformationSheet, agreement.ClientInformationSheet.Programme, CultureInfo.CurrentCulture);
                     // var updatedModel = new ViewAgreementViewModel(updatedAgreement, model.ClientInformationSheet, UserCulture);
                     //updatedModel.InsuranceRoles = insuranceRoles;
                     //return Json("True");
@@ -3678,7 +3678,7 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
-        public async Task<SystemDocument> RerenderTemplate(SystemDocument template, ClientAgreement agreement, ClientProgramme programme )
+        public async Task<SystemDocument> RerenderTemplate(SystemDocument template, ClientAgreement agreement, ClientProgramme programme)
         {
             Document renderedDoc;
             var documents = new SystemDocument();
@@ -3743,7 +3743,7 @@ namespace DealEngine.WebUI.Controllers
                             }
                             else if (programme.BaseProgramme.IsPdfDoc)
                             {
-                               // SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
+                                // SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
                                 //  renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
                                 // -------------------------
                                 // Determine CertificateType
@@ -3975,7 +3975,8 @@ namespace DealEngine.WebUI.Controllers
 
                             }
 
-                        } else if (template.DocumentType == 4 && agreement.ClientInformationSheet.Programme.PaymentType == "Credit Card" && programme.BaseProgramme.IsPdfDoc)
+                        }
+                        else if (template.DocumentType == 4 && agreement.ClientInformationSheet.Programme.PaymentType == "Credit Card" && programme.BaseProgramme.IsPdfDoc)
                         {
                             SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
                             renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
@@ -3985,7 +3986,8 @@ namespace DealEngine.WebUI.Controllers
                             documents = renderedDoc;
                             await _fileService.UploadFile(renderedDoc);
 
-                        } else if (template.DocumentType == 12 && agreement.ClientInformationSheet.Programme.PaymentType == "Invoice" && programme.BaseProgramme.IsPdfDoc)
+                        }
+                        else if (template.DocumentType == 12 && agreement.ClientInformationSheet.Programme.PaymentType == "Invoice" && programme.BaseProgramme.IsPdfDoc)
                         {
                             SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, agreement, null, null);
                             renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
@@ -4114,17 +4116,17 @@ namespace DealEngine.WebUI.Controllers
                 clientagreements = ClientProgramme.Agreements.ToList(); ;
                 foreach (ClientAgreement agreement in clientagreements)
                 {
-                    
+
                     agreeTemplateList = agreement.Product.Documents.Where(doc => doc.Name == TemplateName && doc.DateDeleted == null).ToList();
 
 
-                        //var templatetype = agreement.Documents.Where(doc => doc.Name == TemplateName);
-                        foreach (SystemDocument templatetypes in agreeTemplateList)
-                        {
-                            documents.Add(await RerenderTemplate(templatetypes, agreement, ClientProgramme));
+                    //var templatetype = agreement.Documents.Where(doc => doc.Name == TemplateName);
+                    foreach (SystemDocument templatetypes in agreeTemplateList)
+                    {
+                        documents.Add(await RerenderTemplate(templatetypes, agreement, ClientProgramme));
 
-                        }
-                    
+                    }
+
                 }
             }
             catch (Exception ex)
@@ -4232,15 +4234,15 @@ namespace DealEngine.WebUI.Controllers
                         continue;
                     }
 
-                    
-                        agreement.Status = status;
-                        agreement.BoundDate = DateTime.Now;
 
-                        if (!string.IsNullOrEmpty(programme.BaseProgramme.PolicyNumberPrefixString))
-                            agreement.PolicyNumber = programme.BaseProgramme.PolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
+                    agreement.Status = status;
+                    agreement.BoundDate = DateTime.Now;
 
-                        if (!string.IsNullOrEmpty(agreement.Product.ProductPolicyNumberPrefixString))
-                            agreement.PolicyNumber = agreement.Product.ProductPolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
+                    if (!string.IsNullOrEmpty(programme.BaseProgramme.PolicyNumberPrefixString))
+                        agreement.PolicyNumber = programme.BaseProgramme.PolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
+
+                    if (!string.IsNullOrEmpty(agreement.Product.ProductPolicyNumberPrefixString))
+                        agreement.PolicyNumber = agreement.Product.ProductPolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
 
 
                     //foreach (var doc in agreement.GetDocuments())
@@ -4252,7 +4254,7 @@ namespace DealEngine.WebUI.Controllers
                     if (agreement.Product.IsOptionalCombinedProduct)
                         continue;
 
-                      //var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
+                    //var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
                     var path = agreement.Product.WordingDownloadURL;
                     if (!string.IsNullOrWhiteSpace(path))
                     {
@@ -4273,7 +4275,7 @@ namespace DealEngine.WebUI.Controllers
                     foreach (var template in agreement.Product.Documents
                         .Where(d => d.DateDeleted == null && d.DocumentType != 10 && d.DocumentType != 7))
                     {
-                       var doc = await RerenderTemplate(template, agreement, programme);                  
+                        var doc = await RerenderTemplate(template, agreement, programme);
                         allPolicyDocuments.Add(doc);
                     }
 
@@ -4349,21 +4351,21 @@ namespace DealEngine.WebUI.Controllers
                     );
 
                 decimal adminFeeQty = quantity + 1; //(add 1 For material damage);
-    //           
+                                                    //           
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
-                    
+
                     //  SendInvoiceToOdoo(programme.InformationSheet);
-                     SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
+                    SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
                 }
 
 
 
                 if (programme.InformationSheet.Status != status)
                 {
-                    
-                        programme.InformationSheet.Status = status;
-                       
+
+                    programme.InformationSheet.Status = status;
+
                 }
 
                 // ✅ SINGLE COMMIT AT END
@@ -4455,9 +4457,9 @@ namespace DealEngine.WebUI.Controllers
 
 
         [HttpGet]
-       public async Task<SystemDocument> GenerateCertificate(ClientAgreement agreement, ClientProgramme programme, CertificateType type)
+        public async Task<SystemDocument> GenerateCertificate(ClientAgreement agreement, ClientProgramme programme, CertificateType type)
 
-       // public async Task<SystemDocument> GenerateCertificate(ClientAgreement agreement, ClientProgramme programme)
+        // public async Task<SystemDocument> GenerateCertificate(ClientAgreement agreement, ClientProgramme programme)
         {
             var user = await CurrentUser();
 
@@ -4465,8 +4467,8 @@ namespace DealEngine.WebUI.Controllers
             //var programme = agreement.ClientInformationSheet.Programme;
 
             // 1️⃣ Build aggregate model
-            
-            var model = await _certificateBuilderService.BuildAsync(agreement, programme,type);
+
+            var model = await _certificateBuilderService.BuildAsync(agreement, programme, type);
             model.CertificateType = type;
             // 2️⃣ Generate PDF bytes via QuestPDF
             var pdfBytes = await _certificatePdfService.GenerateAsync(model);
@@ -4513,9 +4515,10 @@ namespace DealEngine.WebUI.Controllers
                 ContentType = d.ContentType ?? "application/pdf",
                 DocumentType = d.DocType
             }).ToList();
-            _logger.LogError(" before sendemail via template doc count "+systemDocs.Count);
-            
-            try{
+            _logger.LogError(" before sendemail via template doc count " + systemDocs.Count);
+
+            try
+            {
 
 
                 await _emailService.SendEmailViaEmailTemplate(
@@ -4528,14 +4531,14 @@ namespace DealEngine.WebUI.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError("error while sending email  for client" + informationSheet.Owner.Name );
+                _logger.LogError("error while sending email  for client" + informationSheet.Owner.Name);
             }
-            
-            
+
+
         }
 
-       
-        private async Task<List<SystemDocument>> BuildDocumentsAsync(ClientProgramme programme,ClientAgreement agreement, IEnumerable<Document> agreedocs)
+
+        private async Task<List<SystemDocument>> BuildDocumentsAsync(ClientProgramme programme, ClientAgreement agreement, IEnumerable<Document> agreedocs)
         {
             var documents = new List<SystemDocument>();
 
@@ -4610,12 +4613,12 @@ namespace DealEngine.WebUI.Controllers
                 if (template.DocumentType != 7)
                     allPolicyDocuments.Add(rendered);
             }
-            
-                if (!agreement.IsPolicyDocSend)
-                {
-                    agreement.IsPolicyDocSend = true;
-                    agreement.DocIssueDate = DateTime.Now;
-                }
+
+            if (!agreement.IsPolicyDocSend)
+            {
+                agreement.IsPolicyDocSend = true;
+                agreement.DocIssueDate = DateTime.Now;
+            }
 
             // 3. Add wording PDFs from folder
             if (!string.IsNullOrWhiteSpace(agreement.Product.WordingDownloadURL))
@@ -5178,93 +5181,93 @@ namespace DealEngine.WebUI.Controllers
 
 
         [HttpGet]
-    public async Task<Document> GetInvoicePDFolhgd(SystemDocument renderedDoc, string invoicename)
-    {
-        User user = null;
-
-        string html = _fileService.FromBytes(renderedDoc.Contents);
-
-        if (renderedDoc.DocumentType == 8)
+        public async Task<Document> GetInvoicePDFolhgd(SystemDocument renderedDoc, string invoicename)
         {
-            html = html.Insert(0,
-                "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /></head>");
-        }
-        else
-        {
-            html = html.Insert(0,
-                "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />" +
-                "<style>img { height:auto; max-width:300px }</style></head>");
-        }
+            User user = null;
 
-        // Clean characters
-        html = html.Replace("“", "&quot;");
-        html = html.Replace("”", "&quot;");
-        html = html.Replace(" – ", "--");
-        html = html.Replace("&nbsp;", " ");
-        html = html.Replace("’", "&#146;");
-        html = html.Replace("‘", "&#39;");
+            string html = _fileService.FromBytes(renderedDoc.Contents);
 
-        // Temp file paths
-        var tempHtmlPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".html");
-        var tempPdfPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".pdf");
-
-        IOFile.WriteAllText(tempHtmlPath, html, Encoding.UTF8);
-
-        // Detect environment
-        string wkhtmlPath;
-
-        if (_appSettingService.IsLinuxEnv == "True")
-            wkhtmlPath = "wkhtmltopdf";   // installed via apt
-        else
-            wkhtmlPath = @"C:\inetpub\wwwroot\dealengine\wkhtmltopdf\wkhtmltox\bin\wkhtmltopdf.exe";
-
-        var arguments =
-            $"--enable-local-file-access " +
-            $"--margin-top 10mm --margin-bottom 10mm " +
-            $"--margin-left 30mm --margin-right 10mm " +
-            $"--footer-center \"Page [page] of [toPage]\" " +
-            $"\"{tempHtmlPath}\" \"{tempPdfPath}\"";
-
-        var processInfo = new ProcessStartInfo
-        {
-            FileName = wkhtmlPath,
-            Arguments = arguments,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardError = true
-        };
-
-        using (var process = Process.Start(processInfo))
-        {
-            await process.WaitForExitAsync();
-
-            if (process.ExitCode != 0)
+            if (renderedDoc.DocumentType == 8)
             {
-                var error = await process.StandardError.ReadToEndAsync();
-                throw new Exception("wkhtmltopdf failed: " + error);
+                html = html.Insert(0,
+                    "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" /></head>");
             }
+            else
+            {
+                html = html.Insert(0,
+                    "<head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />" +
+                    "<style>img { height:auto; max-width:300px }</style></head>");
+            }
+
+            // Clean characters
+            html = html.Replace("“", "&quot;");
+            html = html.Replace("”", "&quot;");
+            html = html.Replace(" – ", "--");
+            html = html.Replace("&nbsp;", " ");
+            html = html.Replace("’", "&#146;");
+            html = html.Replace("‘", "&#39;");
+
+            // Temp file paths
+            var tempHtmlPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".html");
+            var tempPdfPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".pdf");
+
+            IOFile.WriteAllText(tempHtmlPath, html, Encoding.UTF8);
+
+            // Detect environment
+            string wkhtmlPath;
+
+            if (_appSettingService.IsLinuxEnv == "True")
+                wkhtmlPath = "wkhtmltopdf";   // installed via apt
+            else
+                wkhtmlPath = @"C:\inetpub\wwwroot\dealengine\wkhtmltopdf\wkhtmltox\bin\wkhtmltopdf.exe";
+
+            var arguments =
+                $"--enable-local-file-access " +
+                $"--margin-top 10mm --margin-bottom 10mm " +
+                $"--margin-left 30mm --margin-right 10mm " +
+                $"--footer-center \"Page [page] of [toPage]\" " +
+                $"\"{tempHtmlPath}\" \"{tempPdfPath}\"";
+
+            var processInfo = new ProcessStartInfo
+            {
+                FileName = wkhtmlPath,
+                Arguments = arguments,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                RedirectStandardError = true
+            };
+
+            using (var process = Process.Start(processInfo))
+            {
+                await process.WaitForExitAsync();
+
+                if (process.ExitCode != 0)
+                {
+                    var error = await process.StandardError.ReadToEndAsync();
+                    throw new Exception("wkhtmltopdf failed: " + error);
+                }
+            }
+
+            var pdfBytes = IOFile.ReadAllBytes(tempPdfPath);
+
+            // Cleanup
+            IOFile.Delete(tempHtmlPath);
+            IOFile.Delete(tempPdfPath);
+
+            Document document = new Document(
+                user,
+                invoicename + ".pdf",
+                "application/pdf",
+                renderedDoc.DocumentType
+            );
+
+            document.Contents = pdfBytes;
+
+            return document;
         }
 
-        var pdfBytes = IOFile.ReadAllBytes(tempPdfPath);
 
-        // Cleanup
-        IOFile.Delete(tempHtmlPath);
-        IOFile.Delete(tempPdfPath);
-
-        Document document = new Document(
-            user,
-            invoicename + ".pdf",
-            "application/pdf",
-            renderedDoc.DocumentType
-        );
-
-        document.Contents = pdfBytes;
-
-        return document;
-    }
-
-
-    [HttpGet]
+        [HttpGet]
         public async Task<Document> GetInvoicePDFold(SystemDocument renderedDoc, string invoicename)
         {
             User user = null;
@@ -5498,7 +5501,7 @@ namespace DealEngine.WebUI.Controllers
 
                 decimal totalPremium = 0;
                 decimal brokerFee = 0;
-              //  decimal GST = 1.15m;
+                //  decimal GST = 1.15m;
 
                 foreach (var agreement in programme.Agreements.Where(a => a.DateDeleted == null))
                 {
@@ -5514,11 +5517,11 @@ namespace DealEngine.WebUI.Controllers
                                         ? term.PremiumDiffer
                                         : term.Premium;
 
-                        
+
                     }
                 }
 
-                var invoiceAmount = Math.Round((totalPremium + brokerFee) , 2);
+                var invoiceAmount = Math.Round((totalPremium + brokerFee), 2);
 
                 var odooResponse = await _odooTaskGateway.SendInvoiceAsync(
                     clientInformationSheet,
@@ -5537,7 +5540,6 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
-
 
 
         public async Task<IActionResult> SendInvoicePayloadPOC(
@@ -5589,59 +5591,6 @@ namespace DealEngine.WebUI.Controllers
                     throw new UnauthorizedAccessException("Odoo login failed.");
 
                 // ============================================================
-                // 🔎 STEP 1: SEARCH PARTNER BY EMAIL
-                // ============================================================
-
-                int? partnerId = null;
-
-                if (!string.IsNullOrWhiteSpace(sheet.Owner?.Email))
-                {
-                    var searchPartner = ExecKwEnvelope(
-                        db,
-                        uid,
-                        key,
-                        "res.partner",
-                        "search_read",
-                        new object[]
-                        {
-                    new object[]
-                    {
-                        new object[]
-                        {
-                            new object[] { "email", "=", sheet.Owner.Email }
-                        }
-                    }
-                        }
-                    );
-
-                    var partners = await RpcAsync<List<dynamic>>(http, api, searchPartner);
-
-                    if (partners != null && partners.Count > 0)
-                    {
-                        partnerId = partners[0].id;
-
-                        // 🔁 Move partner to Company 82
-                        var updatePartner = ExecKwEnvelope(
-                            db,
-                            uid,
-                            key,
-                            "res.partner",
-                            "write",
-                            new object[]
-                            {
-                        new object[] { partnerId },
-                        new Dictionary<string, object>
-                        {
-                            ["company_id"] = COMPANY_ID
-                        }
-                            }
-                        );
-
-                        await RpcAsync<object>(http, api, updatePartner);
-                    }
-                }
-
-                // ============================================================
                 // 🧾 BUILD LINES
                 // ============================================================
 
@@ -5651,6 +5600,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     lines.Add(new
                     {
+                        name = MATERIAL_DAMAGE,
                         qty = materialDamageQty,
                         product_guid = "bbfc4377-af90-41ae-a69b-e7d23caf1284"
                     });
@@ -5660,6 +5610,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     lines.Add(new
                     {
+                        name = GLOBAL_GUARD,
                         qty = globalGuardPremium,
                         product_guid = "fe4852f3-de8f-442f-8fd9-60defb9a9d3e"
                     });
@@ -5669,14 +5620,18 @@ namespace DealEngine.WebUI.Controllers
                 {
                     lines.Add(new
                     {
+                        name = "Administrator Fee",
                         qty = adminFeeQty,
-                        product_guid = "4224b6d2-18e9-4067-8024-a79c623f1cbf"
+                        product_guid = "0592a35a-4e8c-4139-804f-de4686e691e0"
                     });
                 }
 
                 var extRef = $"EXT-POLICY-{DateTime.UtcNow:yyyyMMddHHmmss}";
-                var rnd = new Random();
-                var policyNum = long.Parse("1" + rnd.Next(0, 999_999_999).ToString("D9"));
+                var policyNum = long.Parse("1" + new Random().Next(0, 999_999_999).ToString("D9"));
+
+                // ============================================================
+                // 📦 BUILD PAYLOAD
+                // ============================================================
 
                 var payload = new
                 {
@@ -5687,7 +5642,7 @@ namespace DealEngine.WebUI.Controllers
                         name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
                         email = sheet.Owner?.Email ?? "admin@verinsure.online",
                         external_guid = sheet.Owner?.external_guid
-
+                                         
                     },
 
                     currency = "NZD",
@@ -5722,7 +5677,7 @@ namespace DealEngine.WebUI.Controllers
                 var payloadJson = JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None);
 
                 // ============================================================
-                // 📝 CREATE invoice.poc.payload IN COMPANY 82
+                // 📝 CREATE invoice.poc.payload
                 // ============================================================
 
                 var createPayloadRec = ExecKwEnvelope(
@@ -5755,7 +5710,7 @@ namespace DealEngine.WebUI.Controllers
                 var recId = await RpcAsync<int>(http, api, createPayloadRec);
 
                 // ============================================================
-                // 🚀 EXECUTE POLICY + INVOICE CREATION
+                // 🚀 RUN FLOW
                 // ============================================================
 
                 var runFlow = ExecKwEnvelope(
@@ -6024,7 +5979,7 @@ namespace DealEngine.WebUI.Controllers
                     var byteResponse = await _httpClientService.CreateEGlobalInvoice(xmlPayload);
 
                     //used for eglobal request and response log
-                  await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
+                    await _emailService.EGlobalLogEmail("marshevents@proposalonline.com", transactionreferenceid.ToString(), xmlPayload, byteResponse);
 
                     EGlobalSubmission eglobalsubmission = await _eGlobalSubmissionService.GetEGlobalSubmissionByTransaction(transactionreferenceid);
 
@@ -6581,10 +6536,10 @@ namespace DealEngine.WebUI.Controllers
                     model.HasInvoicePayment = programme.BaseProgramme.HasInvoicePayment;
                     ViewBag.Ispdfenable = "" + programme.BaseProgramme.EnableFullProposalReport;
                     model.ClientProgrammeId = id;
-                    foreach (ClientAgreement agreement in programme.Agreements.Where(a => a.DateDeleted == null && a.InsurerDeclined !=true))
+                    foreach (ClientAgreement agreement in programme.Agreements.Where(a => a.DateDeleted == null && a.InsurerDeclined != true))
                     {
                         //agreeDocList = (List<Document>)agreement.Documents;
-                        foreach (Document doc in agreement.Documents.Where(doc => doc.DateDeleted== null))
+                        foreach (Document doc in agreement.Documents.Where(doc => doc.DateDeleted == null))
                         {
                             if ((!doc.Name.EqualsIgnoreCase("Information Sheet Report") && doc.DocumentType != 8) && !programme.BaseProgramme.IsPdfDoc)
                             {
@@ -6636,7 +6591,7 @@ namespace DealEngine.WebUI.Controllers
                                     {
                                         DisplayName = doc.Name,
                                         Url = $"/File/GenerateCertificate?agreementid={agreement.Id}&programmeid={programme.Id}&type={certificateType}"
-                                      //  Url = $"/File/GenerateCertificate?agreementid={agreement.Id}&programmeid={programme.Id}&type={certificateType}"
+                                        //  Url = $"/File/GenerateCertificate?agreementid={agreement.Id}&programmeid={programme.Id}&type={certificateType}"
                                     });
 
                                 }
@@ -6654,7 +6609,7 @@ namespace DealEngine.WebUI.Controllers
                 ViewBag.Sheetstatus = programme1.InformationSheet.Status;
                 //if (programme1.IsDocsApproved && programme1.BaseProgramme.ProgEnableHidedoctoClient)
                 //{
-                    ViewBag.showDocs = true;
+                ViewBag.showDocs = true;
                 //}
                 //else
                 //{
@@ -6875,7 +6830,7 @@ namespace DealEngine.WebUI.Controllers
                 user = await CurrentUser();
                 var agreeDocList = new List<Document>();
                 Document renderedDoc;
-                foreach (ClientAgreement agreement 
+                foreach (ClientAgreement agreement
                     in clientProgramme.Agreements)
                 {
                     agreeDocList = agreement.GetDocuments();
@@ -6925,7 +6880,8 @@ namespace DealEngine.WebUI.Controllers
                                             await _fileService.UploadFile(renderedDoc);
                                         }
                                     }
-                                } else if (template.DocumentType == 4 && agreement.ClientInformationSheet.Programme.PaymentType == "Credit Card")
+                                }
+                                else if (template.DocumentType == 4 && agreement.ClientInformationSheet.Programme.PaymentType == "Credit Card")
                                 {
                                     renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
                                     renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
@@ -6940,7 +6896,8 @@ namespace DealEngine.WebUI.Controllers
                                     }
                                     agreement.Documents.Add(renderedDoc);
                                     await _fileService.UploadFile(renderedDoc);
-                                } else if (template.DocumentType == 12 && agreement.ClientInformationSheet.Programme.PaymentType == "Invoice")
+                                }
+                                else if (template.DocumentType == 12 && agreement.ClientInformationSheet.Programme.PaymentType == "Invoice")
                                 {
                                     renderedDoc = await _fileService.RenderDocument(user, template, agreement, null, null);
                                     renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
