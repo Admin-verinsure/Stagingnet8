@@ -5651,7 +5651,6 @@ namespace DealEngine.WebUI.Controllers
                 {
                     lines.Add(new
                     {
-                        name = MATERIAL_DAMAGE,
                         qty = materialDamageQty,
                         product_guid = "bbfc4377-af90-41ae-a69b-e7d23caf1284"
                     });
@@ -5661,7 +5660,6 @@ namespace DealEngine.WebUI.Controllers
                 {
                     lines.Add(new
                     {
-                        name = GLOBAL_GUARD,
                         qty = globalGuardPremium,
                         product_guid = "fe4852f3-de8f-442f-8fd9-60defb9a9d3e"
                     });
@@ -5671,7 +5669,6 @@ namespace DealEngine.WebUI.Controllers
                 {
                     lines.Add(new
                     {
-                        name = "Administrator Fee",
                         qty = adminFeeQty,
                         product_guid = "4224b6d2-18e9-4067-8024-a79c623f1cbf"
                     });
