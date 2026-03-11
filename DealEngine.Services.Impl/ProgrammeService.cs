@@ -175,7 +175,7 @@ namespace DealEngine.Services.Impl
             var clientList = new List<ClientProgramme>();
             if (programme == null)
                 return null;
-            foreach (var client in programme.ClientProgrammes)
+            foreach (var client in programme.ClientProgrammes.Where(prog => prog.BaseProgramme.Id == programmeId))
             {
                 //clientList.Add(client);
                 var isBaseClass = await IsBaseClass(client);

@@ -5641,7 +5641,7 @@ namespace DealEngine.WebUI.Controllers
                     {
                         name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
                         email = sheet.Owner?.Email ?? "admin@verinsure.online",
-                        external_guid = sheet.Owner?.external_guid
+                        external_guid = sheet.Owner?.External_guid
                                          
                     },
 

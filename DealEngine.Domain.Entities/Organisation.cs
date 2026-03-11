@@ -137,7 +137,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool OrganisaionClientOwner { get; set; }
         public virtual bool OrganisationClientAdmin { get; set; }
         public virtual int OdooProjectId { get; set; }
-        public virtual Guid external_guid { get; set; }
+        public virtual Guid External_guid { get; set; }
 
         
         public virtual IList<OrganisationAttribute> OrganisationAttributes { get; set; }

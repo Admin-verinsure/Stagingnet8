@@ -1232,7 +1232,7 @@ namespace DealEngine.WebUI.Controllers
             //        }
             //    }
             //}
-            if (programme.RenewFromProgramme != null && !programme.IsProgrammerenewed)
+            if (programme.RenewFromProgramme != null && !programme.IsProgrammerenewed || true)
             {
 
                 int count = 0;
@@ -1817,6 +1817,8 @@ namespace DealEngine.WebUI.Controllers
             {
                 Programme programme = await _programmeService.GetProgrammeById(id);
                 ViewBag.programmedrenewed = programme.Id;
+                IList<Programme> programmeList = new List<Programme>();
+
                 //if (programme.IsProgrammerenewed)
                 //{
                 //    ViewBag.programmedrenewed = programme.Id;
@@ -1843,6 +1845,7 @@ namespace DealEngine.WebUI.Controllers
                 {
 
                     model = await GetBrokerRenewedDashboard(user, programme.RenewFromProgramme);
+                   // programmeList = await _programmeService.GetAllProgrammes();
 
                     //if(clientList.Count > 0)
                     //{
@@ -1856,11 +1859,11 @@ namespace DealEngine.WebUI.Controllers
                     //}
                 }
                 else
-                if (programme.ProgMultBrokerMode)
+                if (programme.ProgMultBrokerMode )
                 {
                     model = await GetRenewedOwner(user, clientList, programme);
                 }
-                else if(programme.IsProgrammerenewed)
+                else if(programme.IsProgrammerenewed )
                 {
                     model = await GetBrokerRenewedListModel(user, clientList, programme);
                 }
@@ -2345,28 +2348,33 @@ namespace DealEngine.WebUI.Controllers
             try
             {
                 user = await CurrentUser();
-                if (user.IsLoggedout)
+
+                if (user == null || user.IsLoggedout)
                     return PageNotFound();
 
-                if (user == null)
-                    return PageNotFound();
                 IssueUISViewModel model = new IssueUISViewModel();
-                var clientProgrammes = new List<ClientProgramme>();
-                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
-                List<ClientProgramme> mainClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
 
-                foreach (var client in mainClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                var clientProgrammes = new List<ClientProgramme>();
+
+                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+
+                List<ClientProgramme> mainClientProgrammes =
+                    await _programmeService.GetClientProgrammesForProgramme(programme.Id);
+
+                foreach (var client in mainClientProgrammes
+                            .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker"
+                                      && cp.DateDeleted == null
+                                      && cp.InformationSheet.Status != "Bound")
+                            .OrderBy(cp => cp.Owner.Name)
+                            .ThenBy(cp => cp.DateCreated))
                 {
-                    if (client.DateDeleted == null && client.InformationSheet.Status != "Bound")
-                    {
-                        clientProgrammes.Add(client);
-                    }
+                    clientProgrammes.Add(client);
                 }
+
                 model.ClientProgrammes = clientProgrammes;
                 model.ProgrammeId = ProgrammeId;
-               
-                    return View("EditUIS", model);
-                
+
+                return View("EditUIS", model);
             }
             catch (Exception ex)
             {
@@ -2374,7 +2382,6 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
-
 
 
         [HttpGet]
@@ -4303,6 +4310,7 @@ namespace DealEngine.WebUI.Controllers
         {
             var form = Request.Form;
             var ids = new HashSet<string>();
+
             foreach (var key in form.Keys)
             {
                 if (key.StartsWith("IsClub_"))
@@ -4321,9 +4329,21 @@ namespace DealEngine.WebUI.Controllers
 
                 bool isClub = form[$"IsClub_{id}"] == "on";
                 bool isDistrict = form[$"IsDistrict_{id}"] == "on";
-                bool isIndependent = form.ContainsKey($"IsIndependentEntity_{id}") &&
-                     form[$"IsIndependentEntity_{id}"] == "on";
-                string email = form[$"Email_{id}"];
+                bool isIndependent =
+                    form.ContainsKey($"IsIndependentEntity_{id}") &&
+                    form[$"IsIndependentEntity_{id}"] == "on";
+
+                int odooProjectId = 0;
+                if (!string.IsNullOrEmpty(form[$"OdooProjectId_{id}"]))
+                {
+                    int.TryParse(form[$"OdooProjectId_{id}"], out odooProjectId);
+                }
+
+                Guid externalGuid = Guid.Empty;
+                if (!string.IsNullOrEmpty(form[$"ExternalGuid_{id}"]))
+                {
+                    Guid.TryParse(form[$"ExternalGuid_{id}"], out externalGuid);
+                }
 
                 var entity = await _programmeService.GetClientProgrammebyId(clientProgrammeId);
 
@@ -4333,14 +4353,21 @@ namespace DealEngine.WebUI.Controllers
                     entity.IsDistrict = isDistrict;
                     entity.IsIndependentEntity = isIndependent;
 
+                    // Update Organisation fields
+                    if (entity.Owner != null)
+                    {
+                        entity.Owner.OdooProjectId = odooProjectId;
+
+                        if (externalGuid != Guid.Empty)
+                            entity.Owner.External_guid = externalGuid;
+                    }
+
                     await _programmeService.Update(entity);
                 }
             }
 
             return await RedirectToLocal();
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> EditUIS1(IFormCollection formCollection)

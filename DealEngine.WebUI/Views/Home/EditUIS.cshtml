@@ -14,6 +14,7 @@
             </div>
 
             <div class="card-body">
+
                 <div class="d-flex justify-content-end mb-3 position-relative">
                     <input type="text"
                            id="InfoSearch"
@@ -23,6 +24,7 @@
                 </div>
 
                 <table class="table table-bordered table-striped align-middle">
+
                     <thead class="table-light">
                         <tr>
                             <th style="width:5%">
@@ -30,17 +32,22 @@
                             </th>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Odoo ProjectId</th>
+                            <th>External Guid</th>
                             <th class="text-center">IsClub</th>
                             <th class="text-center">IsDistrict</th>
-                            <th class="text-center">IsIndependentEntity</th>
+                            <th class="text-center">IsIndependent Entity</th>
+                            
                         </tr>
                     </thead>
 
                     <tbody>
+
                         @foreach (var clientProg in Model.ClientProgrammes)
                         {
                             <tr>
-                                <!-- Select client -->
+
+                                <!-- Select Client -->
                                 <td class="text-center">
                                     <input type="checkbox"
                                            class="client-checkbox"
@@ -54,12 +61,27 @@
                                 </td>
 
                                 <!-- Email -->
-                                
                                 <td>
                                     @clientProg.Owner.Email
-                                   
                                 </td>
-                                
+
+                                <!-- OdooProjectId -->
+                                <td>
+                                    <input type="number"
+                                           class="form-control form-control-sm"
+                                           name="OdooProjectId_@clientProg.Id"
+                                           value="@clientProg.Owner.OdooProjectId" />
+                                </td>
+
+                                <!-- External Guid -->
+                                <td>
+                                    <input type="text"
+                                           class="form-control form-control-sm"
+                                           name="ExternalGuid_@clientProg.Id"
+                                           value="@clientProg.Owner.External_guid" />
+                                </td>
+
+
                                 <!-- IsClub -->
                                 <td class="text-center">
                                     <input type="checkbox"
@@ -82,9 +104,13 @@
                                            name="IsIndependentEntity_@clientProg.Id"
                                            @(clientProg.IsIndependentEntity ? "checked" : "") />
                                 </td>
+
+                                
                             </tr>
                         }
+
                     </tbody>
+
                 </table>
 
             </div>
@@ -96,19 +122,26 @@
             </div>
 
         </div>
+
     </form>
 </div>
 
+
 @section pagespecific {
+
     <script>
+
         // Select All clients
         document.getElementById("select-all")
             .addEventListener("change", function () {
+
                 let checkboxes = document.querySelectorAll(".client-checkbox");
                 checkboxes.forEach(cb => cb.checked = this.checked);
+
             });
 
-        // 🔥 Live Search Filter
+
+        // 🔍 Live Search Filter
         document.getElementById("InfoSearch")
             .addEventListener("keyup", function () {
 
@@ -125,7 +158,11 @@
                     } else {
                         row.style.display = "none";
                     }
+
                 });
+
             });
+
     </script>
+
 }
