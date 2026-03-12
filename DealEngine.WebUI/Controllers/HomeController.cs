@@ -1232,7 +1232,7 @@ namespace DealEngine.WebUI.Controllers
             //        }
             //    }
             //}
-            if (programme.RenewFromProgramme != null && !programme.IsProgrammerenewed || true)
+            if (programme.RenewFromProgramme != null && !programme.IsProgrammerenewed)
             {
 
                 int count = 0;
