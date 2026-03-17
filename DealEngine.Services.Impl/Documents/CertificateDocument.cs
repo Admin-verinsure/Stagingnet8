@@ -213,7 +213,7 @@ namespace DealEngine.Services.Impl.Documents
 
                 Row("Interest Insured", "The Insured’s Management Legal Liability covering:\r\n\r\nPart 1 Cover A) Directors’ and Officers’ Liability Coverage Section B) Employment Practices Liability Coverage Section C) Miscellaneous Professional Liability Coverage Section D) Crime Coverage Section E) Kidnap, Ransom and Extortion Coverage Section F) Cyber Coverage Section Part 2 Cover A) Statutory Liability Coverage Section B) Employers’ Liability Coverage Section C) Public and Products Liability Coverage Section Part 3 Cover A) Umbrella Defence Costs Coverage Section\r\n\r\nduring the Policy Period as a result of an Occurrence happening in connection with the Business of the Insured, excluding the United States of America, Canada or their respective protectorates and territories.");
 
-                Row("Limits of Liability", "Limits vary but are for any one Occurrence and in the aggregate and otherwise are as detailed on the Material Damage Reserve Fund Rules");
+                Row("Limits of Liability", "Limits vary but are for any one Occurrence and in the aggregate and otherwise are as detailed on the Schedule.");
 
                 Row("Deductible", "Varies for each type of cover");
 
@@ -263,9 +263,9 @@ namespace DealEngine.Services.Impl.Documents
 
                 Row("Business Description", "Charitable organisation including fundraising and events");
 
-                Row("Insurer", "Chubb Group Of Insurance Companies");
+                Row("Insurer", "Not Applicable - This is a self managed reserve fund. See the Material Damage Reserve Fund Rules provided in email to you.");
 
-                Row("Policy Number(s)", "NZDAOA09893");
+                Row("Policy Number(s)", "This certificate is issued to Named Parties.");
 
                 table.Cell().BorderBottom(1).Padding(8).Background("#F3F3F3")
                 .Text("Period of Cover by Reserve Fund").Bold();
