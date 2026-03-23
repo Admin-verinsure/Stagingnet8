@@ -579,7 +579,7 @@ namespace DealEngine.WebUI.Controllers
                             NextInfoSheet = nextInfoSheet,
                             LocalDateCreated = localDateCreated,
                             LocalDateSubmitted = localDateSubmitted,
-                            Status = status,
+                            Status = status == "Started" ? "In Progress" : status,
                             IsChange = client.InformationSheet.IsChange,
                             ReferenceId = referenceId,// Move into ClientProgramme?
                             SubClientProgrammes = client.SubClientProgrammes,
@@ -2399,6 +2399,7 @@ namespace DealEngine.WebUI.Controllers
                     return PageNotFound();
                 IssueUISViewModel model = new IssueUISViewModel();
                 var clientProgrammes = new List<ClientProgramme>();
+                model.ProgrammeId = ProgrammeId;
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
                 List<ClientProgramme> mainClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
                 List<ClientProgramme> subClientProgrammes = await _programmeService.GetSubClientProgrammesForProgramme(programme.Id);
@@ -4236,6 +4237,7 @@ namespace DealEngine.WebUI.Controllers
                             {
                                 var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(formCollection[key]));
                                 clientProgramme.IssueDate = DateTime.Now;
+                                clientProgramme.IsIssued = true;
                                 await _programmeService.Update(clientProgramme);
 
                                 //get UIS instruction email attachement

@@ -157,7 +157,7 @@
                                 }
 
                             }
-                            else if (item.Status == "Started")
+                            else if (item.Status == "Started" || item.Status == "In Progress")
                             {
                                 <a class="btn btn-primary btn-sm" href="/Information/EditInformation/@item.Id"><i class="fa fa-arrow-right"></i> Go</a>
                                 if (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True")

@@ -11,6 +11,13 @@
                     This page lists the clients from this programme. Please select the client and click on Send to issue the information sheet instruction, this will send out the login instruction email and information sheet instruction email. If you cannot find the client in the list, use Create UIS from the previous page to add them.
                 </h5>
             </div>
+
+            <div>
+                <a href="/Home/ViewProgramme/@Model.ProgrammeId" class="btn btn-primary">
+                    Return to Programme
+                </a>
+
+            </div>
             <div class="card-body">
                 <div class="d-flex justify-content-end mb-3 position-relative">
                     <input type="text"
@@ -55,9 +62,13 @@
                                 <td>
                                     <input type="text" class="dateInput form-control" value="@clientProg.IssueDate" readonly>
                                 </td>
+                                
                                 <td>
-                                    <input type="text" class="dateInput form-control" value="@Model.IsSubUIS" name="IsSubUIS" readonly>
-                                </td>
+                                    <input type="text"
+                                           class="form-control @(clientProg.IsIssued ? "bg-success text-white" : "bg-danger text-white")"
+                                           value="@(clientProg.IsIssued ? "Issued" : "Not Released")"
+                                           readonly>
+                                </td>                                
                             </tr>
                         }
 

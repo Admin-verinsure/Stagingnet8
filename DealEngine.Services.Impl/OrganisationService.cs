@@ -403,9 +403,13 @@ namespace DealEngine.Services.Impl
             User User = null;
             Boolean usercreation = true;
             Boolean nousercreationflag = false;
-            Guid userid = Guid.Parse(collection["OrganisationViewModel.User.Id"].ToString());
+            Guid userId = Guid.Empty;
 
-            if (Type == "Administrator" && userid != Guid.Empty)
+            if (!string.IsNullOrEmpty(collection["OrganisationViewModel.User.Id"]))
+            {
+                Guid.TryParse(collection["OrganisationViewModel.User.Id"], out userId);
+            }
+            if (Type == "Administrator" && userId != Guid.Empty)
             {
                  foundOrg = await GetOrganisationByEmail(Email);
             }
