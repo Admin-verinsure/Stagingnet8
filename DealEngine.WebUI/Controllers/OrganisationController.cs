@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NHibernate.Linq;
+using ServiceStack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -546,6 +547,26 @@ namespace DealEngine.WebUI.Controllers
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
 
+                        // 1. Get all users with this PrimaryOrganisation
+                        var allUsers = await  _userService
+                            .GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
+
+                        // 2. Remove PrimaryOrganisation from all EXCEPT current user
+                        foreach (var u in allUsers)
+                        {
+                            if (u.Id != user.Id)
+                            {
+                                // 🔥 FORCE replace list
+                                u.Organisations = u.Organisations
+                                    .Where(o => o.Id != clientProgramme.Owner.Id)
+                                    .ToList();
+
+                                // Set new primary
+                                u.PrimaryOrganisation = u.Organisations.FirstOrDefault();
+                            }
+                        }
+
+
                         if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id) )
                         {
                             user.Organisations.Add(clientProgramme.Owner);
@@ -556,7 +577,12 @@ namespace DealEngine.WebUI.Controllers
                             user.PrimaryOrganisation = clientProgramme.Owner;
 
                         }
+
                         await uow.Commit();
+
+
+                        var allUsersnext = await _userService
+                           .GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
                     }
 
                     if (!clientProgramme.BaseProgramme.ProgEnableEmail)

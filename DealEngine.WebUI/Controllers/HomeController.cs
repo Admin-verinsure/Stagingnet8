@@ -2403,10 +2403,11 @@ namespace DealEngine.WebUI.Controllers
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
                 List<ClientProgramme> mainClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
                 List<ClientProgramme> subClientProgrammes = await _programmeService.GetSubClientProgrammesForProgramme(programme.Id);
+                
                 foreach (var client in mainClientProgrammes
-     .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker")
-     .OrderBy(cp => cp.DateCreated)
-     .ThenBy(cp => cp.Owner.Name))
+                     .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker" )
+                     .OrderBy(cp => cp.DateCreated)
+                     .ThenBy(cp => cp.Owner.Name))
                 {
                     if (client.DateDeleted == null && client.InformationSheet.Status != "Bound")
                     {
