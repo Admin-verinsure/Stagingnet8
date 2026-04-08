@@ -46,7 +46,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdpremium",);
 
-            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdstandardadminfee");
+            IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium");
             //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdextensionpremiumover", "mdadditionaladminfeeover", "mdadditionaladminfeeover", "mdstandardadminfee");
 
             //Create default referral points based on the clientagreementrules
@@ -144,7 +144,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             TermLimit = Convert.ToInt32(rates["mdlimit"]);
             decimal TermPremium = 0M;
             decimal TermBrokerage = 0M;
-            TermPremium = rates["mdpremium"];
+            //TermPremium = rates["mdpremium"];
 
 
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
