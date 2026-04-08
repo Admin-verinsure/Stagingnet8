@@ -43,6 +43,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     mdterm.Delete(underwritingUser);
                 }
             }
+
+            //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdpremium",);
+
             IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdstandardadminfee");
             //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "mdexcess", "mdlimit", "mdpremium", "mdextensionpremiumover", "mdadditionaladminfeeover", "mdadditionaladminfeeover", "mdstandardadminfee");
 
@@ -415,7 +418,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
                     {
                         // Skip "Administrator" units
-                        if (unit.Name == "Administrator" || unit.Name == "Person - Individual" || unit.Name  == "Corporation – Limited liability")
+                        if (unit.Name == "Administrator" || unit.Name == "Person - Individual" || unit.Name  == "Corporation – Limited liability"
+                        || unit.Name == "Head Office")
                             continue;
 
                         // Add entity charge ($195 per active entity)
