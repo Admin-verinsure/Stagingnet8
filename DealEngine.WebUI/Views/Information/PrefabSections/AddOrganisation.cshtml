@@ -44,7 +44,7 @@
                     <tr>
                         <th data-field="editButton" data-sortable="false"></th>
                         <th data-field="OrganisationName" data-sortable="true">Organisation Name</th>
-                        <th data-field="Governance" ></th>
+                        <th data-field="Governance" class="d-none"></th>
                         <th data-field="OrganisationType" data-sortable="true">Organisation type</th>
                         <th data-field="Owner" data-sortable="true">IsOwner</th>
 
@@ -104,7 +104,7 @@
                             <td>
                                 @organisation.Name
                             </td>
-                            <td>
+                            <td class="d-none">
                                 @if (organisation.InsuranceAttributes.Any())
                                 {
                                     @organisation.InsuranceAttributes.FirstOrDefault().Name
