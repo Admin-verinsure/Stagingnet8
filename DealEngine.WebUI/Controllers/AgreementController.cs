@@ -4382,60 +4382,37 @@ namespace DealEngine.WebUI.Controllers
                 }).ToList();
                 var programmeId = programme.Id;
                 var informationSheetId = programme.InformationSheet.Id;
-                var ownerEmail = programme.Owner.Email;
+
+                var primaryusers = await _userService.GetUsersByPrimaryOrganisationId(programme.Owner.Id);
+                var firstUser = primaryusers?.FirstOrDefault();
+                string ownerEmail = null;
+                var emails = new List<string>();
+
+                if (firstUser != null)
+                {
+                     ownerEmail = firstUser.Email;
+                }
+                if (ownerEmail != null)
+                {
+                    emails.Add(ownerEmail);
+
+                } else {
+                   emails = await _userService.GetAllUserforOrganisation(programme.Owner);
+
+                }
 
 
-                await SendPolicyEmailInBackgroundAsync(
-                           programmeId,
-                           informationSheetId,
-                           ownerEmail,
-                           payload
-                       );
+                if (emails.Count() < 0)
+                {
+                    emails.Add(programme.Owner.Email); // fallback
+                }
 
-                // 🔥 FIRE AND FORGET (no NHibernate entities)
-                //_ = Task.Run(async () =>
-                //{
-                //    try
-                //    {
-                //        await SendPolicyEmailInBackgroundAsync(
-                //            programmeId,
-                //            informationSheetId,
-                //            ownerEmail,
-                //            payload
-                //        );
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        _logger.LogError(ex, "Background email send failed");
-                //    }
-                //});
-
-
-
-                // 👉 totalPremium is now ready to send to Odoo
-                // await _odooService.SendInvoice(programme, totalPremium);
-
-                // =======================
-                // ✉️ SEND ONE POLICY EMAIL
-                // =======================
-                //if (programme.BaseProgramme.ProgEnableEmail &&
-                //    !programme.BaseProgramme.ProgStopPolicyDocAutoRelease &&
-                //    allPolicyDocuments.Any())
-                //{
-                //    var emailTemplate = programme.BaseProgramme.EmailTemplates
-                //        .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
-
-                //    if (emailTemplate != null)
-                //    {
-                //        await _emailService.SendEmailViaEmailTemplate(
-                //            programme.Owner.Email,
-                //            emailTemplate,
-                //            allPolicyDocuments,
-                //            programme.InformationSheet,
-                //            null
-                //        );
-                //    }
-                //}
+                await SendPolicyEmailsToOrganisationUsersAsync(
+                               programmeId,
+                               informationSheetId,
+                               emails,
+                               payload
+                           );
 
 
                 return Json(new
@@ -4537,6 +4514,70 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+
+        private async Task SendPolicyEmailsToOrganisationUsersAsync(
+Guid programmeId,
+Guid informationSheetId,
+List<string> emails,
+List<AgreementDocumentViewModel> documents)
+        {
+            // ⚠️ No NHibernate entities passed in
+            // Only simple data
+
+            var programme = await _programmeService.GetClientProgrammebyId(programmeId);
+            var informationSheet = await _customerInformationService.GetInformation(informationSheetId);
+
+            var emailTemplate = programme.BaseProgramme.EmailTemplates
+                .FirstOrDefault(et => et.Type == "SendPolicyDocuments");
+
+            if (emailTemplate == null || !documents.Any())
+                return;
+
+            var systemDocs = new List<SystemDocument>();
+
+            using (var httpClient = new HttpClient())
+            {
+                foreach (var d in documents)
+                {
+                    try
+                    {
+                        var fileBytes = await httpClient.GetByteArrayAsync(d.Url);
+
+                        systemDocs.Add(new SystemDocument
+                        {
+                            Name = d.DisplayName ?? Path.GetFileName(d.Url),
+                            ContentType = d.ContentType ?? "application/pdf",
+                            DocumentType = d.DocType,
+                            Contents = fileBytes // 🔥 critical
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, $"Failed to download document from {d.Url}");
+                    }
+                }
+            }
+            _logger.LogError(" before sendemail via template doc count " + systemDocs.Count);
+
+            try
+            {
+
+
+                await _emailService.SendTemplateEmailsToUsersAsync(
+                    emails,
+                    emailTemplate,
+                    systemDocs,
+                    informationSheet,
+                    null
+                );
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("error while sending email  for client" + informationSheet.Owner.Name);
+            }
+
+
+        }
 
         private async Task<List<SystemDocument>> BuildDocumentsAsync(ClientProgramme programme, ClientAgreement agreement, IEnumerable<Document> agreedocs)
         {

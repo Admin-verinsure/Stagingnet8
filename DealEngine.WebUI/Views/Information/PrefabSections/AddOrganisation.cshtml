@@ -44,30 +44,10 @@
                     <tr>
                         <th data-field="editButton" data-sortable="false"></th>
                         <th data-field="OrganisationName" data-sortable="true">Organisation Name</th>
-                        <th data-field="OrganisationType" data-sortable="true">Governance</th>
-                        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
-                      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
-                      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
-                      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme" ||
-                      Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme"
-                       )
-                        {
-                            <th data-field="IsPrincipal" data-sortable="true">Is Principal</th>
-                        }
+                        <th data-field="Governance" ></th>
+                        <th data-field="OrganisationType" data-sortable="true">Organisation type</th>
+                        <th data-field="Owner" data-sortable="true">IsOwner</th>
 
-                        @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
-                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
-                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
-                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                     Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
-                      )
-                        {
-                            <th data-field="IsFap" data-sortable="true">Is Fap</th>
-                        }
-                        <th data-field="IsPrincipal" data-sortable="true" class="d-none">Organisation Type</th>
                         <th data-field="deleteButton" data-sortable="false"></th>
                     </tr>
                 </thead>
@@ -81,25 +61,21 @@
                             <td>
                                 @organisation.Name
                             </td>
-                            <td>
-                                Insured_PolicyOwner
-                            </td>
-                            @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
-                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
-                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme" ||
-                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                         Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme" 
-                              )
-                            {
-                                <td>
-                                </td>
-                            }
 
                             <td class="d-none">
                                 @organisation.OrganisationType.Name
 
                             </td>
+                            <td>
+                                @if (organisation.InsuranceAttributes.Any())
+                                {
+                                    @organisation.InsuranceAttributes.FirstOrDefault().Name
+                                }
+                            </td>
+                            <td>
+                                Insured_PolicyOwner
+                            </td>
+
                         </tr>
                     }
                     @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.Id != Model.ClientInformationSheet.Owner.Id && o.Removed != true).ToList())
@@ -134,68 +110,14 @@
                                     @organisation.InsuranceAttributes.FirstOrDefault().Name
                                 }
                             </td>
-
-
-
-                            @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZFSG Programme" ||
-                  Model.OrganisationViewModel.Programme.NamedPartyUnitName == "TripleA Programme" ||
-                  Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Apollo Programme" ||
-                  Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Abbott Financial Advisor Liability Programme" ||
-                  Model.OrganisationViewModel.Programme.NamedPartyUnitName == "Financial Advice NZ Financial Advice Provider Liability Programme"
-                  )
-                            {
-                                <td>
-                                    @{
-                                        var gghg = organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor");
-                                        var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor");
-
-                                        //var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor" || o.Name == "Administration");
-                                    }
-                                    @if (unit != null)
-                                    {
-                                        @unit.IsPrincipalAdvisor
-                                        <input id="IsPrincipal" data-IsPrincipal="@unit.IsPrincipalAdvisor" value="" type="hidden">
-
-                                    }
-
-                                </td>
-                            }
-                            @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
-                            {
-                                <td>
-                                    @{
-                                        var BarristerUnit = (BarristerUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Barrister");
-
-                                        //var unit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Advisor" || o.Name == "Administration");
-                                    }
-                                    @if (BarristerUnit != null)
-                                    {
-                                        @BarristerUnit.IsPrincipalBarrister
-                                        <input id="IsPrincipal" data-IsPrincipal="@BarristerUnit.IsPrincipalBarrister" value="@BarristerUnit.IsPrincipalBarrister" type="hidden">
-
-                                    }
-
-                                </td>
-                            }
-                            @if (Model.OrganisationViewModel.Programme.NamedPartyUnitName == "NZPI Programme")
-                            {
-                                <td>
-                                    @{
-                                        var unit = (PlannerUnit)organisation.OrganisationalUnits.FirstOrDefault(o => o.Name == "Planner");
-                                    }
-                                    @if (unit != null)
-                                    {
-                                        @unit.IsPrincipalPlanner
-                                        <input id="IsPrincipal" data-IsPrincipal="@unit.IsPrincipalPlanner" value="" type="hidden">
-                                    }
-
-                                </td>
-                            }
-                            <td class="d-none">
+                           
+                            <td >
                                 @organisation.OrganisationType.Name
 
                             </td>
-
+                            <td>
+                                False
+                            </td>
                             <td>
                                 <button onclick="RemoveOrganisation('@organisation.Id', 'Insured Details / Named Parties')" type="button" class=" btn btn-danger btn-sm" id="trash"><span class="fa fa-trash"></span></button>
                             </td>

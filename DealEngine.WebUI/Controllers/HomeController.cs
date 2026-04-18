@@ -2412,9 +2412,19 @@ namespace DealEngine.WebUI.Controllers
                     if (client.DateDeleted == null && client.InformationSheet.Status != "Bound")
                     {
                         var users = await _userService.GetUsersByPrimaryOrganisationId(client.Owner.Id);
-                        var firstUser = users?.FirstOrDefault();
-                        client.AdminEmail = firstUser?.Email;
-                        clientProgrammes.Add(client);
+
+                        if (users.Count > 0)
+                        {
+                            client.AdminEmail = users?.FirstOrDefault().Email;
+                        }
+                        else
+                        {
+                            client.AdminEmail = (await _userService
+                                .GetAllUserforOrganisation(programme.Owner))
+                                .FirstOrDefault();
+                        }
+
+                            clientProgrammes.Add(client);
                     }
                 }
                 model.ClientProgrammes = clientProgrammes;

@@ -572,11 +572,11 @@ namespace DealEngine.WebUI.Controllers
                             user.Organisations.Add(clientProgramme.Owner);
                            
                         }
-                        if (user.PrimaryOrganisation != clientProgramme.Owner)
-                        {                            
-                            user.PrimaryOrganisation = clientProgramme.Owner;
+                        //if (user.PrimaryOrganisation != clientProgramme.Owner)
+                        //{                            
+                         //   user.PrimaryOrganisation = clientProgramme.Owner;
 
-                        }
+                       // }
 
                         await uow.Commit();
 

@@ -549,5 +549,18 @@ namespace DealEngine.Services.Impl
                 CreateDefaultUserOrganisation(user);
             }
         }
+
+        public async Task<List<string>> GetAllUserforOrganisation(Organisation org)
+        {
+            return await _userRepository.FindAll()
+        .Where(u => u.Organisations.Any(o => o.Id == org.Id))
+        .Select(u => u.Email)
+        .Where(e => e != null && e != "")
+        .Distinct()
+        .ToListAsync();
+        }
+
+
+
     }
 }

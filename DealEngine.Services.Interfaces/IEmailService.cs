@@ -63,7 +63,8 @@ namespace DealEngine.Services.Interfaces
         Task<List<KeyValuePair<string, string>>> MergeEmailTemplate(string recipent, List<SystemDocument> documents, ClientInformationSheet clientInformationSheet, ClientAgreement clientAgreement);
 
         Task Sendalldocuments(string recipent, EmailTemplate emailTemplate, List<SystemDocument> documents, List<KeyValuePair<string, string>> mergeFields);
-
+        
+        Task SendTemplateEmailsToUsersAsync(List<string> recipent, EmailTemplate emailTemplate, List<SystemDocument> documents, ClientInformationSheet clientInformationSheet, ClientAgreement clientAgreement);
 
 
     }

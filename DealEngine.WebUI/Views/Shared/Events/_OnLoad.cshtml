@@ -266,11 +266,24 @@
                 }
                 if (Method == "Owner") {
                     debugger;
-                    // var dropdown = document.getElementById("Organisation.InsuranceAttribute");
+                     // var dropdown = document.getElementById("Organisation.InsuranceAttribute");
 
-                    // if (dropdown) {
-                    //      dropdown.selectedIndex = 0; // resets to first option
-                    // }
+                     // if (dropdown) {
+                     //      dropdown.value = "0";// resets to first option
+                     // }
+                     //     var dropdown = document.getElementById("Organisation.OrganisationType");
+
+                     // // 🔹 Remove "Private"
+                     // for (var i = 0; i < dropdown.options.length; i++) {
+                     //   if (dropdown.options[i].value === "Private") {
+                     //       dropdown.remove(i);
+                     //       break;
+                     //   }
+                     // }
+
+                     //   // 🔹 Select value = "0"
+                     // dropdown.value = "0";
+
                     if (document.getElementById("Else") != null) { 
                      document.getElementById("Else").hidden = false;
                     }
@@ -315,50 +328,7 @@
 
                 
             }
-
-
-                var dropdown = document.getElementById("Organisation.InsuranceAttribute");
-
-    if (false) {
-
-        if (Method == "Owner") {
-
-            // If Administrator is selected, reset selection
-            if (dropdown.value === "Administrator") {
-                dropdown.selectedIndex = 0;
-            }
-
-            // Remove Administrator if exists
-            for (var i = 0; i < dropdown.options.length; i++) {
-                if (dropdown.options[i].value === "Administrator") {
-                    dropdown.remove(i);
-                    break;
-                }
-            }
-
-        } else {
-
-            // Check if Administrator already exists
-            var exists = false;
-            for (var i = 0; i < dropdown.options.length; i++) {
-                if (dropdown.options[i].value === "Administrator") {
-                    exists = true;
-                    break;
-                }
-            }
-
-            // If not exists, add it back
-            if (!exists) {
-                var option = document.createElement("option");
-                option.text = "Administrator";
-                option.value = "Administrator";
-
-                // Insert after "-- Select --" (index 1)
-                dropdown.insertBefore(option, dropdown.options[1]);
-            }
-        }
-    }
-
+    
 
         } catch (ex) { debugger; }
     }

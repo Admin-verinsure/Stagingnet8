@@ -124,6 +124,8 @@
 
 
                      var IsRotaryNamedpartycount = 0;
+                     var IsOwnerEdit = 0;
+                     var IsAdminPresent = 0;
     debugger;
 
         var rotaryRoles = [
@@ -137,9 +139,45 @@
     ];
 
     $('#tblOrganisation tr').each(function () {
+        debugger;
         var $tds = $(this).find('td');
 
+        var isowner = $tds.eq(4).text()
+                .replace(/\r?\n|\r/g, " ")
+                .trim();
+         var isAdmin = $tds.eq(2).text()
+                .replace(/\r?\n|\r/g, " ")
+                .trim();
+         
+        if(isAdmin == 'Administrator'){
+             if ($tds.length > 3) {
+
+                var AdminType = $tds.eq(3).text()
+                    .replace(/\r?\n|\r/g, " ")
+                    .trim();
+
+                if (AdminType == 'Private') {
+                    IsAdminPresent++;
+
+                }
+             }
+        }
+
+        if(isowner =='Insured_PolicyOwner'){
+           if ($tds.length > 3) {
+
+            var Ownertype = $tds.eq(3).text()
+                .replace(/\r?\n|\r/g, " ")
+                .trim();
+
+            if (Ownertype == 'Administrator') {
+                IsOwnerEdit++;
+               
+            }
+           }
+        }
         if ($tds.length > 3) {
+
             var value = $tds.eq(3).text()
                 .replace(/\r?\n|\r/g, " ")
                 .trim();
@@ -155,11 +193,32 @@
 
                     if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "RotaryAssociationsProgramme" && IsRotaryNamedpartycount == 0) {
 
-    window.alert("Please add at least one Named Party (including the Insured / Policy Owner) in order for us to provide a quote. If you have not selected a Governance type for the Insured Policy Owner, please edit it and choose the appropriate Organisation Type and should not be Private Individual.");                           $("[id='Insured Details / Named Parties']").trigger("click");
+                       window.alert("Please add at least one Named Party (including the Insured / Policy Owner) in order for us to provide a quote. If you have not selected a Governance type for the Insured Policy Owner, please edit it and choose the appropriate Organisation Type and should not be Private Individual.");                           
+                       $("[id='Insured Details / Named Parties']").trigger("click");
                                return false;
 
 
                     }
+
+                     if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "RotaryAssociationsProgramme" && IsOwnerEdit > 0) {
+
+                       window.alert("Insured Policy Owner cannot be Administrator. Please edit Organisation Type and Governance for Owner ");
+                       $("[id='Insured Details / Named Parties']").trigger("click");
+                               return false;
+
+
+                    }
+
+                    if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "RotaryAssociationsProgramme" && IsAdminPresent <= 0) {
+
+                       window.alert("Please Add Atleast one Administrator");
+                       $("[id='Insured Details / Named Parties']").trigger("click");
+                               return false;
+
+
+                    }
+
+
 
 
 

@@ -2,18 +2,19 @@
 
         // ------------- GLOBAL RULE MAP -------------
         const governanceRuleMap = {
-        "RotaryClub": ["Governance_1", "Governance_3", "Governance_4", "Governance_6"],
-        "Rotaract": ["Governance_1", "Governance_3", "Governance_4", "Governance_6"],
-        "RotaryCommunityCorps": ["Governance_1", "Governance_3", "Governance_4"],
-        "RotaryClubTrustOneOnly": ["Governance_3", "Governance_4"],
-        "RotaryOtherExtraClubTrusts": ["Governance_3", "Governance_4"],
-        "RotaryDistrict": ["Governance_1"],
-        "RotarySpecialPurposeTrust": ["Governance_3", "Governance_4"],
-        "RotaryCompany": ["Governance_2", "Governance_5", "Governance_7"],
-        "RotaryMultiDistrictOrganisation": ["Governance_6"],
-        "RotaryRIActionGroup": ["Governance_6"],
-        "RotaryRIFellowshipGroup": ["Governance_6"],
-        "RotaryOther": ["Governance_4", "Governance_5", "Governance_7"]
+        "RotaryClub": ["0","Governance_1", "Governance_3", "Governance_4", "Governance_6"],
+        "Rotaract": ["0","Governance_1", "Governance_3", "Governance_4", "Governance_6"],
+        "RotaryCommunityCorps": ["0","Governance_1", "Governance_3", "Governance_4"],
+        "RotaryClubTrustOneOnly": ["0","Governance_3", "Governance_4"],
+        "RotaryOtherExtraClubTrusts": ["0","Governance_3", "Governance_4"],
+        "RotaryDistrict": ["0","Governance_1"],
+        "RotarySpecialPurposeTrust": ["0","Governance_3", "Governance_4"],
+        "RotaryCompany": ["0","Governance_2", "Governance_5", "Governance_7"],
+        "RotaryMultiDistrictOrganisation": ["0","Governance_6"],
+        "RotaryRIActionGroup": ["0","Governance_6"],
+        "RotaryRIFellowshipGroup": ["0","Governance_6"],
+        "RotaryOther": ["0","Governance_4", "Governance_5", "Governance_7"],
+        "Administrator": ["0","Private"],
     };
 
     $(function () {
@@ -837,6 +838,10 @@
         // OR use:
         // orgType.selectedIndex = 0;  // resets to first option
        // }
+
+       // 🔹 Get Governance dropdown
+
+  
         for (let i = 1; i <= 7; i++) {
             var gg= "Governance_" + i;
             let el = document.getElementById("Governance_" + i);
@@ -853,7 +858,7 @@
             if (el) el.hidden = false;
         });
 
-        // Special handling for items requiring extra textboxes
+      
        // handleGovernanceExtraFields(allowed);
 
         // Update required status for visible/hidden fields
@@ -878,7 +883,7 @@
         }
     }
 
-        function updateGovernanceRequired(allowed) {
+    function updateGovernanceRequired(allowed) {
 
         document.querySelectorAll(".governance-item").forEach(el => {
             if (allowed.includes(parseInt(el.dataset.gov))) {

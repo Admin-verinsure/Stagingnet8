@@ -240,6 +240,86 @@ namespace DealEngine.Services.Impl
         }
 
 
+        public async Task SendTemplateEmailsToUsersAsync(
+     List<string> recipients,
+     EmailTemplate emailTemplate,
+     List<SystemDocument> documents,
+     ClientInformationSheet clientInformationSheet,
+     ClientAgreement clientAgreement)
+        {
+            try
+            {
+                // Build merge fields once (common data)
+                List<KeyValuePair<string, string>> baseMergeFields;
+
+                if (clientInformationSheet != null)
+                {
+                    baseMergeFields = MergeFieldLibrary(
+                        null,
+                        null,
+                        clientInformationSheet.Programme.BaseProgramme,
+                        clientInformationSheet,
+                        clientAgreement);
+                }
+                else
+                {
+                    baseMergeFields = MergeFieldLibrary(null, null, null, null, null);
+                }
+
+                var attachments = documents != null
+                    ? (await ToAttachments(documents)).ToArray()
+                    : null;
+
+                foreach (var recipient in recipients.Distinct())
+                {
+                    try
+                    {
+                        var mergeFields = new List<KeyValuePair<string, string>>(baseMergeFields);
+
+                        var user = await _userService.GetUserByEmail(recipient);
+
+                        if (user != null)
+                        {
+                            mergeFields.Add(new KeyValuePair<string, string>("[[First Name]]", user.FirstName));
+                            mergeFields.Add(new KeyValuePair<string, string>("[[Last Name]]", user.LastName));
+                        }
+
+                        string subject = emailTemplate.Subject;
+                        string body = System.Net.WebUtility.HtmlDecode(emailTemplate.Body);
+
+                        foreach (var field in mergeFields)
+                        {
+                            subject = subject.Replace(field.Key, field.Value);
+                            body = body.Replace(field.Key, field.Value);
+                        }
+
+                        var email = await GetLocalizedEmailBuilder(DefaultSender, recipient);
+
+                        email.From(DefaultSender);
+                        email.WithSubject(subject);
+                        email.WithBody(body);
+                        email.UseHtmlBody(true);
+
+                        if (attachments != null)
+                        {
+                            email.Attachments(attachments);
+                        }
+
+                        email.Send();
+
+                        _logger.LogInformation($"Email sent to {recipient}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error sending email to {recipient}: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in bulk email sending: {ex.Message}");
+            }
+        }
 
 
         public async Task Sendalldocuments(string recipent, EmailTemplate emailTemplate, List<SystemDocument> documents, List<KeyValuePair<string, string>> mergeFields)
