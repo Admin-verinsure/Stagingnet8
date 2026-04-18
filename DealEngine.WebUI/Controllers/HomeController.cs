@@ -2403,28 +2403,18 @@ namespace DealEngine.WebUI.Controllers
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
                 List<ClientProgramme> mainClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
                 List<ClientProgramme> subClientProgrammes = await _programmeService.GetSubClientProgrammesForProgramme(programme.Id);
-                
+
                 foreach (var client in mainClientProgrammes
-                     .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker" )
+                     .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker")
                      .OrderBy(cp => cp.DateCreated)
                      .ThenBy(cp => cp.Owner.Name))
                 {
                     if (client.DateDeleted == null && client.InformationSheet.Status != "Bound")
                     {
                         var users = await _userService.GetUsersByPrimaryOrganisationId(client.Owner.Id);
-
-                        if (users.Count > 0)
-                        {
-                            client.AdminEmail = users?.FirstOrDefault().Email;
-                        }
-                        else
-                        {
-                            client.AdminEmail = (await _userService
-                                .GetAllUserforOrganisation(client.Owner))
-                                .FirstOrDefault();
-                        }
-
-                            clientProgrammes.Add(client);
+                        var firstUser = users?.FirstOrDefault();
+                        client.AdminEmail = firstUser?.Email;
+                        clientProgrammes.Add(client);
                     }
                 }
                 model.ClientProgrammes = clientProgrammes;
