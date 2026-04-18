@@ -2420,7 +2420,7 @@ namespace DealEngine.WebUI.Controllers
                         else
                         {
                             client.AdminEmail = (await _userService
-                                .GetAllUserforOrganisation(programme.Owner))
+                                .GetAllUserforOrganisation(client.Owner))
                                 .FirstOrDefault();
                         }
 
