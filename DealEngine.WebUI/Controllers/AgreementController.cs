@@ -4298,21 +4298,6 @@ namespace DealEngine.WebUI.Controllers
                 const string MATERIAL_DAMAGE = "Rotary Material Damage";
                 const string GLOBAL_GUARD = " Rotary Association-Multinational Liability (Global Guard GL)";
 
-                //decimal materialDamagePremium = programme.Agreements
-                //         .Where(a => a.DateDeleted == null
-                //         && a.Product?.Name == MATERIAL_DAMAGE).Sum(a =>
-                //         (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
-                //         .Where(t => t.DateDeleted == null && t.Bound)
-                //         .Sum(t => t.Premium));
-
-                //            decimal materialDamageQty = programme.Agreements
-                //.Where(a => a.DateDeleted == null
-                //         && a.Product?.Name == MATERIAL_DAMAGE)
-                //.Sum(a =>
-                //    (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
-                //    .Where(t => t.DateDeleted == null && t.Bound)
-                //    .Count()   // OR .Sum(t => t.Quantity)
-                //);
 
 
                 int quantity = 0;
@@ -4359,7 +4344,6 @@ namespace DealEngine.WebUI.Controllers
                     //  SendInvoiceToOdoo(programme.InformationSheet);
                     SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
                 }
-
 
 
                 if (programme.InformationSheet.Status != status)
