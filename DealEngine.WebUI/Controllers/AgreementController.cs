@@ -3763,6 +3763,7 @@ namespace DealEngine.WebUI.Controllers
                                 // Generate Certificate PDF
                                 // -------------------------
                                 renderedDoc = await GenerateCertificate(agreement, programme, certificateType); renderedDoc.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+                                renderedDoc.RenderToPDF = true;
                                 agreement.Documents.Add(renderedDoc);
                                 documents = renderedDoc;
                                 await _fileService.UploadFile(renderedDoc);
@@ -4378,7 +4379,7 @@ namespace DealEngine.WebUI.Controllers
                     DisplayName = d.Name,
                     Url = d.Path,
                     DocType = d.DocumentType,
-                    RenderToPDF = d.RenderToPDF
+                    RenderToPDF = true
                 }).ToList();
                 var programmeId = programme.Id;
                 var informationSheetId = programme.InformationSheet.Id;
