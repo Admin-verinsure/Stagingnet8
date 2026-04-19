@@ -532,26 +532,15 @@ namespace DealEngine.WebUI.Controllers
                     user = _mapper.Map(jsonUser, user);
 
 
-                    //else
-                    //{
-                    //    using (var uow = _unitOfWork.BeginUnitOfWork())
-                    //    {
-                    //        //var UserName = FirstName + "_" + LastName;
-                    //        var UserName = "dsfsdf";
-                    //        var userdb = new User(user, Guid.NewGuid(), UserName);
-                    //        await _userService.Create(userdb);
-                    //        await uow.Commit();
-                    //    }
-                    //}
 
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
 
                         // 🔥 remove all existing mappings
-                        await _userService.RemoveAllUsersFromOrganisation(clientProgramme.Owner.Id);
+                        await _userService.RemoveOtherUsersFromOrganisation(clientProgramme.Owner.Id,user.Id);
 
                         // 🔥 add current user
-                       
+
 
                         var allUsersnext = await _userService
                            .GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
@@ -570,13 +559,13 @@ namespace DealEngine.WebUI.Controllers
                             }
                         }
 
-
-                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id))
+                        if (!user.Organisations.Any(o => o.Id == clientProgramme.Owner.Id))
                         {
                             user.Organisations.Add(clientProgramme.Owner);
-
                         }
-                        
+
+                        // 🔥 THIS LINE FIXES EVERYTHING
+                        await _userService.Update(user);
                         await uow.Commit();
 
                     }

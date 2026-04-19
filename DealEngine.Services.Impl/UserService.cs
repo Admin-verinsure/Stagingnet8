@@ -571,13 +571,30 @@ namespace DealEngine.Services.Impl
         }
 
 
-        public async Task RemoveAllUsersFromOrganisation(Guid organisationId)
+        public async Task RemoveOtherUsersFromOrganisation(Guid organisationId, Guid? userId)
         {
-            await _session.CreateSQLQuery(@"
-        DELETE FROM organisationtouser 
-        WHERE organisation_id = :orgId")
-                .SetParameter("orgId", organisationId)
-                .ExecuteUpdateAsync();
+            if (userId == null || userId == Guid.Empty)
+            {
+                // 🔥 fallback: delete ALL
+                await _session.CreateSQLQuery(@"
+            DELETE FROM organisationtouser 
+            WHERE organisation_id = :orgId")
+                    .SetParameter("orgId", organisationId)
+                    .ExecuteUpdateAsync();
+            }
+            else
+            {
+                // 🔥 delete all except this user
+                await _session.CreateSQLQuery(@"
+            DELETE FROM organisationtouser 
+            WHERE organisation_id = :orgId
+            AND user_id != :userId")
+                    .SetParameter("orgId", organisationId)
+                    .SetParameter("userId", userId)
+                    .ExecuteUpdateAsync();
+            }
+
+            
         }
     }
 }

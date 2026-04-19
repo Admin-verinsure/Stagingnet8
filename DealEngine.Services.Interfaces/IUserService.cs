@@ -30,6 +30,6 @@ namespace DealEngine.Services.Interfaces
         Task<IList<User>> GetUsersByPrimaryOrganisationId(Guid organisationId);
         Task<List<string>> GetAllUserforOrganisation(Organisation org);
         Task<List<User>> GetUsersByOrganisation(Organisation org);
-        Task RemoveAllUsersFromOrganisation(Guid organisationId);
+        Task RemoveOtherUsersFromOrganisation(Guid organisationId, Guid? userId);
     }
 }
