@@ -4362,8 +4362,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     DisplayName = d.Name,
                     Url = d.Path,
-                    DocType = d.DocumentType,
-                    RenderToPDF = true
+                    DocType = d.DocumentType
                 }).ToList();
                 var programmeId = programme.Id;
                 var informationSheetId = programme.InformationSheet.Id;
