@@ -4274,10 +4274,27 @@ namespace DealEngine.WebUI.Controllers
 
 
                     foreach (var template in agreement.Product.Documents
-                        .Where(d => d.DateDeleted == null && d.DocumentType != 10 && d.DocumentType != 7))
+    .Where(d => d.DateDeleted == null && d.DocumentType != 10 && d.DocumentType != 7))
                     {
-                        var doc = await RerenderTemplate(template, agreement, programme);
-                        allPolicyDocuments.Add(doc);
+                        // 🟠 CASE: Certificate (use your new method)
+                        if (template.DocumentType == 0) // adjust if needed
+                        {
+                            var certType = GetCertificateType(agreement.Product.Name);
+                            var bytes = await _fileService.GenerateCertificateBytesAsync(
+                                agreement.Id,
+                                programme.Id,
+                                certType
+                            );
+
+                            allPolicyDocuments.Add(new SystemDocument
+                            {
+                                Name = "Certificate.pdf",
+                                ContentType = "application/pdf",
+                                DocumentType = template.DocumentType,
+                                Contents = bytes // 🔥 IMPORTANT
+                            });
+                        }
+                        
                     }
 
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -4362,7 +4379,8 @@ namespace DealEngine.WebUI.Controllers
                 {
                     DisplayName = d.Name,
                     Url = d.Path,
-                    DocType = d.DocumentType
+                    DocType = d.DocumentType,
+                    Contents = d.Contents // 🔥 ADD THIS
                 }).ToList();
                 var programmeId = programme.Id;
                 var informationSheetId = programme.InformationSheet.Id;
@@ -4415,7 +4433,24 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        private CertificateType GetCertificateType(string productName)
+        {
+            if (string.IsNullOrWhiteSpace(productName))
+                throw new Exception("Product name is missing");
 
+            productName = productName.Trim();
+
+            if (productName.Contains("Material Damage", StringComparison.OrdinalIgnoreCase))
+                return CertificateType.MD;
+
+            if (productName.Contains("Global Guard", StringComparison.OrdinalIgnoreCase))
+                return CertificateType.MLGGL;
+
+            if (productName.Contains("Management Liability", StringComparison.OrdinalIgnoreCase))
+                return CertificateType.AS;
+
+            throw new Exception($"Unknown product type: {productName}");
+        }
 
         [HttpGet]
         public async Task<SystemDocument> GenerateCertificate(ClientAgreement agreement, ClientProgramme programme, CertificateType type)
@@ -4500,14 +4535,11 @@ namespace DealEngine.WebUI.Controllers
 
 
         private async Task SendPolicyEmailsToOrganisationUsersAsync(
-Guid programmeId,
-Guid informationSheetId,
-List<string> emails,
-List<AgreementDocumentViewModel> documents)
+    Guid programmeId,
+    Guid informationSheetId,
+    List<string> emails,
+    List<AgreementDocumentViewModel> documents)
         {
-            // ⚠️ No NHibernate entities passed in
-            // Only simple data
-
             var programme = await _programmeService.GetClientProgrammebyId(programmeId);
             var informationSheet = await _customerInformationService.GetInformation(informationSheetId);
 
@@ -4517,19 +4549,58 @@ List<AgreementDocumentViewModel> documents)
             if (emailTemplate == null || !documents.Any())
                 return;
 
-            var systemDocs = documents.Select(d => new SystemDocument
+            var systemDocs = new List<SystemDocument>();
+
+            const int maxTotalSize = 15 * 1024 * 1024; // 15MB limit
+            int totalSize = 0;
+
+            foreach (var d in documents)
             {
-                Path = d.Url,
-                Name = d.DisplayName ?? Path.GetFileName(d.Url), // 🔥 REQUIRED
-                ContentType = d.ContentType ?? "application/pdf",
-                DocumentType = d.DocType
-            }).ToList();
-            _logger.LogError(" before sendemail via template doc count " + systemDocs.Count);
+                try
+                {
+                    byte[] fileBytes = null;
+
+                    // 🟠 CASE 1: Preferred → already rendered (your new method output)
+                    if (d.Contents != null && d.Contents.Length > 0)
+                    {
+                        fileBytes = d.Contents;
+                    }
+                    // 🔵 CASE 2: Fallback → read from file path
+                    
+
+                    if (fileBytes == null)
+                    {
+                        _logger.LogWarning($"Skipping document {d.DisplayName} (no data)");
+                        continue;
+                    }
+
+                    // 🔴 Size protection
+                    if (totalSize + fileBytes.Length > maxTotalSize)
+                    {
+                        _logger.LogWarning($"Skipping {d.DisplayName} due to size limit");
+                        continue;
+                    }
+
+                    totalSize += fileBytes.Length;
+
+                    systemDocs.Add(new SystemDocument
+                    {
+                        Name = d.DisplayName ?? "Document.pdf",
+                        ContentType = "application/pdf",
+                        DocumentType = d.DocType,
+                        Contents = fileBytes
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"Error processing document {d.DisplayName}");
+                }
+            }
+
+            _logger.LogInformation($"Sending email with {systemDocs.Count} attachments, total size: {totalSize}");
 
             try
             {
-
-
                 await _emailService.SendTemplateEmailsToUsersAsync(
                     emails,
                     emailTemplate,
@@ -4540,12 +4611,9 @@ List<AgreementDocumentViewModel> documents)
             }
             catch (Exception ex)
             {
-                _logger.LogError("error while sending email  for client" + informationSheet.Owner.Name);
+                _logger.LogError(ex, $"Error while sending email for client {informationSheet.Owner.Name}");
             }
-
-
         }
-
         private async Task<List<SystemDocument>> BuildDocumentsAsync(ClientProgramme programme, ClientAgreement agreement, IEnumerable<Document> agreedocs)
         {
             var documents = new List<SystemDocument>();

@@ -256,8 +256,7 @@ namespace DealEngine.WebUI.Controllers
             //return document;
         }
 
-
-
+        
         [HttpGet]
         public async Task<IActionResult> GetPDF(Guid Id, Guid ClientProgrammeId)
         {

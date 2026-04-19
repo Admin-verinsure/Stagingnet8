@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using DealEngine.Domain.Entities;
+﻿using DealEngine.Domain.Entities;
+using DealEngine.Services.Interfaces.Enums;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DealEngine.Services.Interfaces
 {
@@ -38,6 +39,9 @@ namespace DealEngine.Services.Interfaces
 		Task DeleteDocument(Document doc);
 
 		//Task<IActionResult> GetPDF(Guid id);
-	}
+
+		Task<byte[]> GenerateCertificateBytesAsync(Guid agreementId, Guid programmeId, CertificateType type);
+
+    }
 }
 

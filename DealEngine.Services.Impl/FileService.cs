@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 using Document = DealEngine.Domain.Entities.Document;
 using SystemDocument = DealEngine.Domain.Entities.Document;
 using IOFile = System.IO.File;
+using DealEngine.Services.Interfaces.Enums;
 namespace DealEngine.Services.Impl
 {
 	public class FileService : IFileService
@@ -46,11 +47,14 @@ namespace DealEngine.Services.Impl
         IProgrammeService _programmeService;
         IProductService _productService;
         IAppSettingService _appSettingService;
-
-
-
+        private readonly ICertificateBuilderService _certificateBuilderService;
+        IClientAgreementService _agreementService;
+        private readonly ICertificatePdfService _certificatePdfService;
         public FileService(IMapperSession<Image> imageRepository, IMapperSession<Document> documentRepository,
-        IProgrammeService programmeService, IClientAgreementMVTermService clientAgreementMVTermService, IClientAgreementBVTermService clientAgreementBVTermService, IProductService productService, IAppSettingService appSettingService)
+        IProgrammeService programmeService, ICertificateBuilderService certificateBuilderService, 
+        IClientAgreementMVTermService clientAgreementMVTermService, IClientAgreementService clientAgreementService,
+        IClientAgreementBVTermService clientAgreementBVTermService, ICertificatePdfService certificatePdfService,
+        IProductService productService, IAppSettingService appSettingService)
 		{
 			_imageRepository = imageRepository;
 			_documentRepository = documentRepository;
@@ -58,7 +62,10 @@ namespace DealEngine.Services.Impl
             _clientAgreementBVTermService = clientAgreementBVTermService;
             _programmeService = programmeService;
             _productService = productService;
+            _certificateBuilderService = certificateBuilderService;
+            _agreementService = clientAgreementService;
             _appSettingService = appSettingService;
+            _certificatePdfService = certificatePdfService;
 
             FileDirectory = Path.Combine (
 				Directory.GetCurrentDirectory (),
@@ -2175,6 +2182,22 @@ namespace DealEngine.Services.Impl
         //}
 
         #endregion
+
+        public async Task<byte[]> GenerateCertificateBytesAsync(Guid agreementId, Guid programmeId, CertificateType type)
+        {
+            var agreement = await _agreementService.GetAgreement(agreementId);
+            var programme = agreement.ClientInformationSheet.Programme;
+
+            var model = await _certificateBuilderService.BuildAsync(agreement, programme, type);
+            model.CertificateType = type;
+
+            var pdfBytes = await _certificatePdfService.GenerateAsync(model);
+
+            return pdfBytes;
+        }
+
+
+
     }
 }
 

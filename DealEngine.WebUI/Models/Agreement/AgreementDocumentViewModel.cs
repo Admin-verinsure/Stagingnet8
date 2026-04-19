@@ -10,6 +10,7 @@ namespace DealEngine.WebUI.Models.Agreement
 		public int DocType { get; set; }
 		public bool RenderToPDF { get; set; }
         public string ContentType { get; set; }
+        public byte[] Contents { get; set; }
     }
 }
 

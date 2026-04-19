@@ -13,5 +13,6 @@ namespace DealEngine.Services.Interfaces
          ClientProgramme programme,
          CertificateType certificateType);
     }
+
 }
 
