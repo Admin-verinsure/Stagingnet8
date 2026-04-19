@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Novell.Directory.Ldap;
 using NHibernate;
 using DocumentFormat.OpenXml.Spreadsheet;
+using ISession = NHibernate.ISession;
 
 namespace DealEngine.Services.Impl
 {
@@ -27,15 +28,16 @@ namespace DealEngine.Services.Impl
 		ILogger<UserService> _logger;
 		IMapper _mapper;
 		private readonly IUnitOfWork _unitOfWork;
+        private readonly ISession _session;
 
-
-		public UserService(
+        public UserService(
 			IMapper mapper,
 			IMapperSession<User> userRepository,
 			ILdapService ldapService,
 			ILegacyLdapService legacyLdapService,
 			IMapperSession<Organisation> organisationRepository,
 			ILogger<UserService> logger,
+            ISession session,
             IUnitOfWork unitOfWork
             )
 		{
@@ -46,6 +48,7 @@ namespace DealEngine.Services.Impl
 			_organisationRepository = organisationRepository;
 			_logger = logger;
             _unitOfWork = unitOfWork;
+            _session = session;
         }
 
 		public async Task<User> GetUser(string username)
@@ -560,7 +563,21 @@ namespace DealEngine.Services.Impl
         .ToListAsync();
         }
 
+        public async Task<List<User>> GetUsersByOrganisation(Organisation org)
+        {
+            return await _userRepository.FindAll()
+                .Where(u => u.Organisations.Any(o => o.Id == org.Id))
+                .ToListAsync();
+        }
 
 
+        public async Task RemoveAllUsersFromOrganisation(Guid organisationId)
+        {
+            await _session.CreateSQLQuery(@"
+        DELETE FROM organisationtouser 
+        WHERE organisation_id = :orgId")
+                .SetParameter("orgId", organisationId)
+                .ExecuteUpdateAsync();
+        }
     }
 }

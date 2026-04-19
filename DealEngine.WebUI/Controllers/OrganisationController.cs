@@ -547,12 +547,16 @@ namespace DealEngine.WebUI.Controllers
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
 
-                        // 1. Get all users with this PrimaryOrganisation
-                        var allUsers = await  _userService
-                            .GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
+                        // 🔥 remove all existing mappings
+                        await _userService.RemoveAllUsersFromOrganisation(clientProgramme.Owner.Id);
 
-                        // 2. Remove PrimaryOrganisation from all EXCEPT current user
-                        foreach (var u in allUsers)
+                        // 🔥 add current user
+                       
+
+                        var allUsersnext = await _userService
+                           .GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
+
+                        foreach (var u in allUsersnext)
                         {
                             if (u.Id != user.Id)
                             {
@@ -567,22 +571,14 @@ namespace DealEngine.WebUI.Controllers
                         }
 
 
-                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id) )
+                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id))
                         {
                             user.Organisations.Add(clientProgramme.Owner);
-                           
+
                         }
-                        //if (user.PrimaryOrganisation != clientProgramme.Owner)
-                        //{                            
-                         //   user.PrimaryOrganisation = clientProgramme.Owner;
-
-                       // }
-
+                        
                         await uow.Commit();
 
-
-                        var allUsersnext = await _userService
-                           .GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
                     }
 
                     if (!clientProgramme.BaseProgramme.ProgEnableEmail)

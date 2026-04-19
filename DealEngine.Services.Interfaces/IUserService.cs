@@ -29,5 +29,7 @@ namespace DealEngine.Services.Interfaces
         Task<bool> CreateUserPrimaryOrgOrgTypeAndLDAP(User user, string userType);
         Task<IList<User>> GetUsersByPrimaryOrganisationId(Guid organisationId);
         Task<List<string>> GetAllUserforOrganisation(Organisation org);
+        Task<List<User>> GetUsersByOrganisation(Organisation org);
+        Task RemoveAllUsersFromOrganisation(Guid organisationId);
     }
 }

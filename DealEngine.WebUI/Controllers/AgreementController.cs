@@ -4402,7 +4402,7 @@ namespace DealEngine.WebUI.Controllers
                 }
 
 
-                if (emails.Count() < 0)
+                if (!emails.Any())
                 {
                     emails.Add(programme.Owner.Email); // fallback
                 }
@@ -4533,30 +4533,13 @@ List<AgreementDocumentViewModel> documents)
             if (emailTemplate == null || !documents.Any())
                 return;
 
-            var systemDocs = new List<SystemDocument>();
-
-            using (var httpClient = new HttpClient())
+            var systemDocs = documents.Select(d => new SystemDocument
             {
-                foreach (var d in documents)
-                {
-                    try
-                    {
-                        var fileBytes = await httpClient.GetByteArrayAsync(d.Url);
-
-                        systemDocs.Add(new SystemDocument
-                        {
-                            Name = d.DisplayName ?? Path.GetFileName(d.Url),
-                            ContentType = d.ContentType ?? "application/pdf",
-                            DocumentType = d.DocType,
-                            Contents = fileBytes // 🔥 critical
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, $"Failed to download document from {d.Url}");
-                    }
-                }
-            }
+                Path = d.Url,
+                Name = d.DisplayName ?? Path.GetFileName(d.Url), // 🔥 REQUIRED
+                ContentType = d.ContentType ?? "application/pdf",
+                DocumentType = d.DocType
+            }).ToList();
             _logger.LogError(" before sendemail via template doc count " + systemDocs.Count);
 
             try
