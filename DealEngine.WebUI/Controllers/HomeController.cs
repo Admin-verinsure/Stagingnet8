@@ -487,7 +487,7 @@ namespace DealEngine.WebUI.Controllers
 
         private async Task<ProgrammeItem> GetClientProgrammeListModel(User user, IList<ClientProgramme> clientList, Programme programme, bool isClient = false)
         {
-            var clientProgramme = clientList.FirstOrDefault();
+            var clientProgramme = clientList.Where(client => client.BaseProgramme.Id == programme.Id).FirstOrDefault();
             //ProgrammeItem model = new ProgrammeItem(clientProgramme.BaseProgramme);
             ProgrammeItem model = new ProgrammeItem(programme);
             if (clientProgramme != null)
@@ -1836,7 +1836,6 @@ namespace DealEngine.WebUI.Controllers
                         clientList = await _programmeService.GetClientProgrammesForProgramme(id);
                     }
                 }
-
                 //ProgrammeItem model = new ProgrammeItem(clientList.FirstOrDefault().BaseProgramme);
                 ProgrammeItem model = new ProgrammeItem(programme);
 
