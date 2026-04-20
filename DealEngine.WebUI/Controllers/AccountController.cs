@@ -411,10 +411,14 @@ namespace DealEngine.WebUI.Controllers
                     if (_ldapService.ChangePassword(user.UserName,  viewModel.Password))
                     {
                         var deUser = await _userManager.FindByNameAsync(user.UserName);
+                        _logger.LogError("inside Password setup" +deUser.UserName);
+
                         if (deUser != null)
                         {
                             var removePasswordResult = await _userManager.RemovePasswordAsync(deUser);
                             var addPasswordResult = await _userManager.AddPasswordAsync(deUser, viewModel.Password);
+                            _logger.LogError("inside Password succeeded = " + addPasswordResult.Succeeded);
+
                             if (addPasswordResult.Succeeded)
                             {
                                 _authenticationService.UseSingleUseToken(st.Id);
@@ -424,6 +428,8 @@ namespace DealEngine.WebUI.Controllers
                         else
                         {
                             //assume user hasnt logged in yet and wants to change password for first time
+                            _logger.LogError("else Password succeeded =");
+
                             _authenticationService.UseSingleUseToken(st.Id);
                             return RedirectToAction("PasswordChanged", "Account");
                         }
@@ -437,6 +443,8 @@ namespace DealEngine.WebUI.Controllers
                     else
                     {
                         ModelState.AddModelError("passwordConfirm", "The password change has failed. Is your new password complex enough?");
+                        _logger.LogError("The password change has failed");
+
                         return View();
                     }
 
@@ -446,12 +454,15 @@ namespace DealEngine.WebUI.Controllers
             catch (AuthenticationException ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                _logger.LogError("Your chosen password does not meet the ");
+
                 ModelState.AddModelError("passwordConfirm", "Your chosen password does not meet the requirements of our password policy. Please refer to the policy above to assist with creating an appropriate password.");
             }
             catch (Exception ex)
             {
 
                 _ldapService.ChangePassword(user.UserName, _appSettingService.IntermediatePassword);
+                _logger.LogError(" an error while trying to change your p " +ex.Message);
 
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
                 ModelState.AddModelError("passwordConfirm", "There was an error while trying to change your password. Please try again with a new password below.");
@@ -464,6 +475,8 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PasswordChanged()
         {
+            _logger.LogError(" inside password vbiew");
+
             //var currentUser = await CurrentUser();
             //if (currentUser.IsLoggedout)
             //    return PageNotFound();
