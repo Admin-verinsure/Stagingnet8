@@ -52,6 +52,9 @@ namespace DealEngine.Infrastructure.FluentNHibernate
             catch(Exception ex)
             {
                 //_logger.LogDebug(ex.Message);
+                Console.WriteLine("ERROR: " + ex.Message);
+                Console.WriteLine("INNER: " + ex.InnerException?.Message);
+                Console.WriteLine("STACK: " + ex.StackTrace);
                 await transaction.RollbackAsync();
                 throw new Exception(ex.Message);
             }

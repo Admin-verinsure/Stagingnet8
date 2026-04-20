@@ -464,9 +464,9 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PasswordChanged()
         {
-            var currentUser = await CurrentUser();
-            if (currentUser.IsLoggedout)
-                return PageNotFound();
+            //var currentUser = await CurrentUser();
+            //if (currentUser.IsLoggedout)
+            //    return PageNotFound();
             /////
             return View();
         }
