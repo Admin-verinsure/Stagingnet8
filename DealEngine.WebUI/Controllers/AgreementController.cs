@@ -4553,6 +4553,7 @@ namespace DealEngine.WebUI.Controllers
 
             const int maxTotalSize = 15 * 1024 * 1024; // 15MB limit
             int totalSize = 0;
+            using var httpClient = new HttpClient();
 
             foreach (var d in documents)
             {
@@ -4561,12 +4562,31 @@ namespace DealEngine.WebUI.Controllers
                     byte[] fileBytes = null;
 
                     // 🟠 CASE 1: Preferred → already rendered (your new method output)
+                    // 🟠 CASE 1: Preferred → already rendered (certificate etc.)
                     if (d.Contents != null && d.Contents.Length > 0)
                     {
                         fileBytes = d.Contents;
                     }
+                    // 🔵 CASE 2: Fallback → read from file path (WORDINGS FIX)
+                    else if (!string.IsNullOrEmpty(d.Url))
+                    {
+                        // 🌐 Remote file (URL)
+                        if (d.Url.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                        {
+                            fileBytes = await httpClient.GetByteArrayAsync(d.Url);
+                        }
+                        // 💾 Local file (WORDINGS)
+                        else if (System.IO.File.Exists(d.Url))
+                        {
+                            fileBytes = await System.IO.File.ReadAllBytesAsync(d.Url);
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"File not found: {d.Url}");
+                        }
+                    }
                     // 🔵 CASE 2: Fallback → read from file path
-                    
+
 
                     if (fileBytes == null)
                     {
