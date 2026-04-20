@@ -393,16 +393,13 @@ namespace DealEngine.WebUI.Controllers
                 if (id == Guid.Empty)
                     // if we get here - either invalid guid or invalid token - 404
                     return PageNotFound();
-                _logger.LogError("inside Password method post 2");
 
                 if (viewModel.Password != viewModel.PasswordConfirm)
                 {
-                    _logger.LogError("inside Password method post 3");
 
                     ModelState.AddModelError("passwordConfirm", "Passwords do not match");
                     return View();
                 }
-                _logger.LogError("inside Password method post 4" + user.FirstName);
 
                 if (user == null)
                     // in theory, we should never get here. Reason being is that a reset request should not be created without a valid user
@@ -411,22 +408,38 @@ namespace DealEngine.WebUI.Controllers
 
                 if (user != null)
                 {
-                    _logger.LogError("inside Password method post 5" + user.FirstName);
 
                     string username = user.UserName;
-                    _logger.LogError("inside Password method post 6" + user.FirstName);
 
                     //change the users password using admin
+                    _logger.LogError("LDAP START for user " + user.UserName);
+
+                    try
+                    {
+                        var result = _ldapService.ChangePassword(user.UserName, viewModel.Password);
+                        _logger.LogError("LDAP result = " + result);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "LDAP change password failed");
+                        throw;
+                    }
                     if (_ldapService.ChangePassword(user.UserName,  viewModel.Password))
                     {
                         _logger.LogError("inside Password method post 7" + user.FirstName);
 
                         var deUser = await _userManager.FindByNameAsync(user.UserName);
-                        _logger.LogError("inside Password setup" +deUser.UserName);
+                        _logger.LogError("inside Password setup");
 
                         if (deUser != null)
                         {
                             var removePasswordResult = await _userManager.RemovePasswordAsync(deUser);
+
+                            if (!removePasswordResult.Succeeded)
+                            {
+                                _logger.LogError("Failed to remove password for user {User}", deUser.UserName);
+                                return View();
+                            }
                             var addPasswordResult = await _userManager.AddPasswordAsync(deUser, viewModel.Password);
                             _logger.LogError("inside Password succeeded = " + addPasswordResult.Succeeded);
 
