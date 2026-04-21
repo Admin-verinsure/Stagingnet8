@@ -4293,6 +4293,22 @@ namespace DealEngine.WebUI.Controllers
                                 }
                                 //send out uis issue notification email
                                 //await _emailService.SendSystemEmailUISIssueNotify(programme.BrokerContactUser, programme, sheet, programme.Owner);
+
+                                if (clientProgramme != null) {
+                                    var sheet = clientProgramme.InformationSheet;
+
+                                    if (sheet != null && sheet.Status == "Started")
+                                    {
+                                        sheet.Status = "Not Started";
+                                        sheet.LastModifiedOn = DateTime.UtcNow;
+                                        sheet.LastModifiedBy = user;
+
+                                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                                        {
+                                            await uow.Commit();
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

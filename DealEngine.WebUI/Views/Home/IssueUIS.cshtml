@@ -43,7 +43,7 @@
                         </tr>
                     </thread>
                     <tbody>
-                        @foreach (var clientProg in Model.ClientProgrammes)
+                        @foreach (var clientProg in Model.ClientProgrammes.OrderBy(x => x.IsIssued))
                         {
                             <tr>
                                 <td>
