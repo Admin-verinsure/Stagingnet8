@@ -385,6 +385,148 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ChangePassword(Guid id, AccountChangePasswordModel viewModel)
         {
             SingleUseToken st = _authenticationService.GetToken(id);
+            DealEngine.Domain.Entities.User user = null;
+
+            try
+            {
+                _logger.LogInformation("ChangePassword START. TokenId: {TokenId}", id);
+
+                if (id == Guid.Empty)
+                {
+                    _logger.LogWarning("Invalid GUID received");
+                    return PageNotFound();
+                }
+
+                if (viewModel.Password != viewModel.PasswordConfirm)
+                {
+                    _logger.LogWarning("Password mismatch for TokenId: {TokenId}", id);
+                    ModelState.AddModelError("passwordConfirm", "Passwords do not match");
+                    return View();
+                }
+
+                user = await _userService.GetUserById(st.UserID);
+
+                if (user == null)
+                {
+                    _logger.LogError("User not found. UserId: {UserId}", st.UserID);
+                    throw new Exception($"Could not find user with ID {st.UserID}");
+                }
+
+                _logger.LogInformation("User found: {UserName}", user.UserName);
+
+                // 🔹 STEP 1: Change password in LDAP
+                _logger.LogInformation("LDAP change START for user {User}", user.UserName);
+
+                bool ldapResult = false;
+                try
+                {
+                    ldapResult = _ldapService.ChangePassword(user.UserName, viewModel.Password);
+                    _logger.LogInformation("LDAP result for {User}: {Result}", user.UserName, ldapResult);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "LDAP change password FAILED for user {User}", user.UserName);
+                    throw;
+                }
+
+                if (!ldapResult)
+                {
+                    _logger.LogWarning("LDAP password change failed for {User}", user.UserName);
+                    ModelState.AddModelError("passwordConfirm", "Password change failed. Check complexity requirements.");
+                    return View();
+                }
+
+                // 🔹 STEP 2: Update Identity (ASP.NET Core Identity)
+                _logger.LogInformation("Identity password update START for {User}", user.UserName);
+
+                var deUser = await _userManager.FindByNameAsync(user.UserName);
+
+                if (deUser != null)
+                {
+                    _logger.LogInformation("Identity user found: {User}", deUser.UserName);
+
+                    _logger.LogInformation("Removing existing password...");
+                    var removePasswordResult = await _userManager.RemovePasswordAsync(deUser);
+
+                    if (!removePasswordResult.Succeeded)
+                    {
+                        _logger.LogError("Failed to remove password for {User}. Errors: {Errors}",
+                            deUser.UserName,
+                            string.Join(",", removePasswordResult.Errors.Select(e => e.Description)));
+
+                        return View();
+                    }
+
+                    _logger.LogInformation("Adding new password...");
+                    var addPasswordResult = await _userManager.AddPasswordAsync(deUser, viewModel.Password);
+
+                    _logger.LogInformation("AddPassword result: {Result}", addPasswordResult.Succeeded);
+
+                    if (!addPasswordResult.Succeeded)
+                    {
+                        _logger.LogError("Failed to add password for {User}. Errors: {Errors}",
+                            deUser.UserName,
+                            string.Join(",", addPasswordResult.Errors.Select(e => e.Description)));
+
+                        return View();
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Identity user NOT found for {User} (first-time login case)", user.UserName);
+                }
+
+                // 🔹 STEP 3: Mark token as used
+                _authenticationService.UseSingleUseToken(st.Id);
+
+                _logger.LogInformation("Password change SUCCESS for {User}", user.UserName);
+
+                return RedirectToAction("PasswordChanged", "Account");
+            }
+            catch (AuthenticationException ex)
+            {
+                _logger.LogError(ex, "AuthenticationException while changing password for user {User}", user?.UserName);
+
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+
+                ModelState.AddModelError("passwordConfirm",
+                    "Your chosen password does not meet the requirements of our password policy.");
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GENERAL ERROR while changing password for user {User}", user?.UserName);
+
+                // 🔥 Attempt rollback in LDAP (safe)
+                try
+                {
+                    if (user != null)
+                    {
+                        _ldapService.ChangePassword(user.UserName, _appSettingService.IntermediatePassword);
+                        _logger.LogWarning("LDAP rollback applied for {User}", user.UserName);
+                    }
+                }
+                catch (Exception rollbackEx)
+                {
+                    _logger.LogError(rollbackEx, "LDAP rollback FAILED for user {User}", user?.UserName);
+                }
+
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+
+                ModelState.AddModelError("passwordConfirm",
+                    "There was an error while trying to change your password. Please try again.");
+
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePasswordold(Guid id, AccountChangePasswordModel viewModel)
+        {
+            SingleUseToken st = _authenticationService.GetToken(id);
             DealEngine.Domain.Entities.User user = await _userService.GetUserById(st.UserID);
             try
             {
