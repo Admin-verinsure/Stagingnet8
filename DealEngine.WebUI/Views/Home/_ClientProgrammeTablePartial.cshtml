@@ -106,9 +106,14 @@
                     }
 
                 }
-
-                <td>@(item.Status + "  (" + item.GetStatusDisplay(item.AgreementStatus) + item.DocSendDate + ") ")</td>
                 <td>
+                    <span class="badge @(item.IsIssued ? "bg-success" : "bg-danger")">
+                        @(item.IsIssued ? "Issued" : "Not Released")
+                    </span>
+                    (@item.Status - @item.GetStatusDisplay(item.AgreementStatus) @item.DocSendDate)
+                </td>
+@*                 <td>@(item.Status + "  (" + item.GetStatusDisplay(item.AgreementStatus) + item.DocSendDate + ") ")</td>
+ *@                <td>
                     <div class="btn-group btn-secondary" role="group" aria-label="Basic example">
 
                         @if (Model.CurrentUserIsProgrammeManager == "True") //Permissions for programme manager (view only)

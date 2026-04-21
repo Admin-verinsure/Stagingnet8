@@ -585,7 +585,8 @@ namespace DealEngine.WebUI.Controllers
                             SubClientProgrammes = client.SubClientProgrammes,
                             AgreementStatus = agreementSatus,
                             IsSubclientSubmitted = Issubclientsubmitted,
-                            DocSendDate = DocSendDate
+                            DocSendDate = DocSendDate,
+                            IsIssued = client.IsIssued
                         });
                     }
 
