@@ -570,16 +570,7 @@ namespace DealEngine.WebUI.Controllers
 
                     }
 
-                    if (!clientProgramme.BaseProgramme.ProgEnableEmail)
-                    {
-                        await _emailService.CreateUserAdministrator(user, clientProgramme.Owner);
-                    }
-
-
-                    if (!clientProgramme.BaseProgramme.ProgEnableEmail)
-                    {
-                        await _emailService.CreateUserAdministrator(user, clientProgramme.Owner);
-                    }
+                   
                 }
 
 

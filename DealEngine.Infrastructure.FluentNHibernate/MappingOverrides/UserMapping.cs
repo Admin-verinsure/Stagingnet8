@@ -18,7 +18,7 @@ namespace DealEngine.Infrastructure.FluentNHibernate.MappingOverrides
     .ParentKeyColumn("user_id")           // 🔥 column in join table
     .ChildKeyColumn("organisation_id")    // 🔥 column in join table
     .Cascade.SaveUpdate()
-    .Not.Inverse(); 
+    .Inverse(); 
             mapping.HasMany(p => p.UserTasks);
             mapping.References(p => p.PrimaryOrganisation).Not.LazyLoad();
         }
