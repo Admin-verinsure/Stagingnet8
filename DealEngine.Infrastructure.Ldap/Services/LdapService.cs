@@ -55,8 +55,10 @@ namespace DealEngine.Infrastructure.Ldap.Services
 				LdapEntry entry = SearchForSingle (client, "(mail=" + email + ")", "ou=users," + _ldapConfiguration.BaseDn);
 				if (entry != null) {
 					User user = _userMapping.FromLdap (entry);
-					//user.Organisations = GetOrganisationsForUser (client, user.UserName);
-					return user;
+                    user.Id = Guid.NewGuid();
+
+                    //user.Organisations = GetOrganisationsForUser (client, user.UserName);
+                    return user;
 				}
 			}
 			return null;
