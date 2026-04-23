@@ -522,7 +522,7 @@ namespace DealEngine.WebUI.Controllers
                     if (userid != Guid.Empty)
                     {
                         user = await _userService.GetUserById(userid);
-                        
+
                     }
                     else
                     {
@@ -537,7 +537,7 @@ namespace DealEngine.WebUI.Controllers
                     {
 
                         // 🔥 remove all existing mappings
-                        await _userService.RemoveOtherUsersFromOrganisation(clientProgramme.Owner.Id,user.Id);
+                        await _userService.RemoveOtherUsersFromOrganisation(clientProgramme.Owner.Id, user.Id);
 
                         // 🔥 add current user
 

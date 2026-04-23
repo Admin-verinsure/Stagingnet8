@@ -316,5 +316,12 @@ namespace DealEngine.Domain.Entities
                 IsAssociation = true
             };
         }
+
+
+        //public virtual IList<User> OrgUsers { get; set; }
+
+
+
+
     }
 }
