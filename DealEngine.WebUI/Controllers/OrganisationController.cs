@@ -513,6 +513,7 @@ namespace DealEngine.WebUI.Controllers
                 {
                     organisation = await _organisationService.CreateOrganisation(jsonUser.Email, TypeName, jsonOrganisation.Name, OrganisationTypeName, jsonUser.FirstName, jsonUser.LastName, currentUser, collection);
                 }
+                _logger.LogWarning($"Skiorganisationnot " + organisation.Name);
 
                 if (TypeName == "Administrator")
                 {
@@ -573,10 +574,12 @@ namespace DealEngine.WebUI.Controllers
                    
                 }
 
+                _logger.LogWarning($"before postorganisation " + organisation.Email);
 
                 await _organisationService.PostOrganisation(collection, organisation);
                 if (!Sheet.Organisation.Contains(organisation))
                     Sheet.Organisation.Add(organisation);
+                _logger.LogWarning($"after postorganisation " + organisation.Email);
 
                 // =======================================================
                 // ⭐ SAVE ORGANISATION ATTRIBUTE (CLUB / DISTRICT / SPT DATA)
@@ -590,6 +593,7 @@ namespace DealEngine.WebUI.Controllers
                         attr = new OrganisationAttribute(currentUser);
                         Sheet.OrganisationAttribute = attr;
                     }
+                    _logger.LogWarning($"before mapping values ");
 
                     // Map values from form collection
                     attr.ActiveFeePaying = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ActiveFeePaying"]);
@@ -621,8 +625,11 @@ namespace DealEngine.WebUI.Controllers
                     await uow.Commit();
                 }
 
+                _logger.LogWarning($"after mapping values ");
 
                 await _clientInformationService.UpdateInformation(Sheet);
+                _logger.LogWarning($"after updates ");
+
                 //return Ok();
                 return Redirect("../Information/EditInformation?Id=" + Sheet.Programme.Id.ToString());
             }
