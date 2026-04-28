@@ -2363,8 +2363,7 @@ namespace DealEngine.WebUI.Controllers
 
                 foreach (var client in mainClientProgrammes
                             .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker"
-                                      && cp.DateDeleted == null
-                                      && cp.InformationSheet.Status != "Bound")
+                                      && cp.DateDeleted == null)
                             .OrderBy(cp => cp.Owner.Name)
                             .ThenBy(cp => cp.DateCreated))
                 {
