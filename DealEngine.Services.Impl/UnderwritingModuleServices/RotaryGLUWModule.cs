@@ -43,7 +43,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     }
                 }
 
-                //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "aspremium");
+               // IDictionary<string, decimal> rates = BuildRulesTable(agreement, "aspremium");
 
                 //Create default referral points based on the clientagreementrules
                 if (agreement.ClientAgreementReferrals.Count == 0)
@@ -86,17 +86,47 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 IList<Organisation> organisations = informationSheet.Organisation;
                 foreach (Organisation organisation in organisations.Where(org => org.Removed == false && org.OrganisationType.Name != "Private"))
                 {
-
                     foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
                     {
-                        if(unit.Name == "RotaryClubTrustOneOnly")
+                        if (unit.Name == "RotaryClubTrustOneOnly")
                         {
-                             clubtrust1only += 1;
- 
+                            clubtrust1only += 1;
                         }
-                        premium += CalculatePremium(unit.Name, attr, orgtype, organisation.Id, informationSheet.Owner.Id, agreement, clubtrust1only);
+
+                        // =============================================
+                        // FULL ANNUAL PREMIUM
+                        // =============================================
+                        premium += CalculatePremium(
+                            unit.Name,
+                            attr,
+                            orgtype,
+                            organisation.Id,
+                            informationSheet.Owner.Id,
+                            agreement,
+                            clubtrust1only);
                     }
                 }
+
+
+                // =============================================
+                // PRORATA PREMIUM
+                // 31/12/2025 -> 31/07/2026
+                // =============================================
+
+                DateTime fullAnnualExpiry = agreement.InceptionDate.AddYears(1);
+
+                decimal fullAnnualDays =
+                    (decimal)(fullAnnualExpiry - agreement.InceptionDate).TotalDays;
+
+                decimal actualPolicyDays =
+                    (decimal)(agreement.ExpiryDate - agreement.InceptionDate).TotalDays;
+
+
+                // Apply prorata
+                premium = Math.Round(
+                    (premium / fullAnnualDays) * actualPolicyDays,
+                    2);
+
 
 
                 bool Doesvolunteerpolicechecked = true;
