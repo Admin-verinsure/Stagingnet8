@@ -141,8 +141,11 @@ namespace DealEngine.Services.Impl.Documents
 
                 table.Cell().BorderBottom(1).Padding(8).Column(col =>
                 {
-                    col.Item().Text($"From 4.00 pm 31/12/2025 Local Standard Time");
-                    col.Item().Text($"To 4.00 pm 31/12/2026 Local Standard Time");
+                    col.Item().Text(
+                        $"From 4.00 pm {_model.InceptionDate:dd/MM/yyyy} Local Standard Time");
+
+                    col.Item().Text(
+                        $"To 4.00 pm {_model.ExpiryDate:dd/MM/yyyy} Local Standard Time");
                 });
 
                 Row("Interest Insured", "The Insured’s Legal Liability to pay compensation in respect of:\r\n(a) Personal Injury\r\n(b) Property Damage\r\n(c) Advertising Injury \r\nOccurring within the Policy Territory during the Policy Period as a result of an Occurrence happening in connection with Business of the Insured.");
@@ -207,8 +210,11 @@ namespace DealEngine.Services.Impl.Documents
 
                 table.Cell().BorderBottom(1).Padding(8).Column(col =>
                 {
-                    col.Item().Text($"From 4.00 pm 31/12/2025 Local Standard Time");
-                    col.Item().Text($"To 4.00 pm 31/12/2026 Local Standard Time");
+                    col.Item().Text(
+                        $"From 4.00 pm {_model.InceptionDate:dd/MM/yyyy} Local Standard Time");
+
+                    col.Item().Text(
+                        $"To 4.00 pm {_model.ExpiryDate:dd/MM/yyyy} Local Standard Time");
                 });
 
                 Row("Interest Insured", "The Insured’s Management Legal Liability covering:\r\n\r\nPart 1 Cover A) Directors’ and Officers’ Liability Coverage Section B) Employment Practices Liability Coverage Section C) Miscellaneous Professional Liability Coverage Section D) Crime Coverage Section E) Kidnap, Ransom and Extortion Coverage Section F) Cyber Coverage Section Part 2 Cover A) Statutory Liability Coverage Section B) Employers’ Liability Coverage Section C) Public and Products Liability Coverage Section Part 3 Cover A) Umbrella Defence Costs Coverage Section\r\n\r\nduring the Policy Period as a result of an Occurrence happening in connection with the Business of the Insured, excluding the United States of America, Canada or their respective protectorates and territories.");
@@ -272,8 +278,11 @@ namespace DealEngine.Services.Impl.Documents
 
                 table.Cell().BorderBottom(1).Padding(8).Column(col =>
                 {
-                    col.Item().Text($"From 4.00 pm 31/12/2025 Local Standard Time");
-                    col.Item().Text($"To 4.00 pm 31/12/2026 Local Standard Time");
+                    col.Item().Text(
+                        $"From 4.00 pm {_model.InceptionDate:dd/MM/yyyy} Local Standard Time");
+
+                    col.Item().Text(
+                        $"To 4.00 pm {_model.ExpiryDate:dd/MM/yyyy} Local Standard Time");
                 });
 
                 Row("Interest Insured", "The Insured’s assets (excluding real estate) up to the value of NZD5000.00 as set out in the Material Damage Reserve Fund Rules during the Period of Cover and as a result of an Occurrence happening in connection with the assets (excluding real estate) of the Insured, excluding the United States of America, Canada or their respective protectorates and territories.");
