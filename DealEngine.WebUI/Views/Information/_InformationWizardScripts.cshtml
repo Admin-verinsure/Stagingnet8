@@ -126,6 +126,13 @@
                      var IsRotaryNamedpartycount = 0;
                      var IsOwnerEdit = 0;
                      var IsAdminPresent = 0;
+                     var IsClubpresent = 0;
+                     var IsDistrictPresent = 0;
+                     var IsCompanyPresent = 0;
+                     var IsactiveFeePaying = 0;
+                     var DistrictTotal = 0;
+                     var CompanyTotal = 0;
+
     debugger;
 
         var rotaryRoles = [
@@ -145,14 +152,14 @@
         var isowner = $tds.eq(4).text()
                 .replace(/\r?\n|\r/g, " ")
                 .trim();
-         var isAdmin = $tds.eq(2).text()
+         var isOrgType = $tds.eq(3).text()
                 .replace(/\r?\n|\r/g, " ")
                 .trim();
          
-        if(isAdmin == 'Administrator'){
+        if(isOrgType == 'Administrator'){
              if ($tds.length > 3) {
 
-                var AdminType = $tds.eq(3).text()
+                var AdminType = $tds.eq(2).text()
                     .replace(/\r?\n|\r/g, " ")
                     .trim();
 
@@ -162,6 +169,38 @@
                 }
              }
         }
+
+
+        if (['RotaryClub', 'Rotaract', 'RotaryCommunityCorps'].includes(isOrgType)) {
+            debugger;
+                IsClubpresent ++;
+                var activeFeePaying = parseInt($('#ActiveFeePaying').val()) || 0;
+
+                    if (activeFeePaying > 0) {
+                     IsactiveFeePaying++;
+                    }
+
+        }else if (['RotaryDistrict'].includes(isOrgType)) {
+             IsDistrictPresent ++;
+             var districtTotal = parseInt($('#DistrictTotalHidden').val()) || 0;
+
+                if (districtTotal >= 0) {
+
+                   DistrictTotal ++;
+                }
+        }
+
+        else if (['RotaryCompany'].includes(isOrgType)) {
+             IsCompanyPresent++;
+             var companyTotal = parseInt($('#SPT_TotalHidden').val()) || 0;
+
+                if (companyTotal >= 0) {
+
+                   CompanyTotal ++;
+                }
+        }
+
+
 
         if(isowner =='Insured_PolicyOwner'){
            if ($tds.length > 3) {
@@ -189,7 +228,12 @@
     });
 
     // If no rotary roles exist, value remains 0 automatically
-
+                    if((IsClubpresent >0 && IsactiveFeePaying == 0) || (IsDistrictPresent > 0 && CompanyTotal == 0) ||
+                        (IsCompanyPresent > 0 && DistrictTotal==0 )){
+                         window.alert("Please enter member details of named party. Total Active Members, Company Total, and District Total cannot be zero. Click 'Edit' for Club, Rotaract, or Community Corp.");
+                       $("[id='Insured Details / Named Parties']").trigger("click");
+                               return false;
+                    }
 
                     if ('@Model.ClientProgramme.BaseProgramme.NamedPartyUnitName' == "RotaryAssociationsProgramme" && IsRotaryNamedpartycount == 0) {
 

@@ -44,8 +44,8 @@
                     <tr>
                         <th data-field="editButton" data-sortable="false"></th>
                         <th data-field="OrganisationName" data-sortable="true">Organisation Name</th>
-                        <th data-field="Governance" class="d-none"></th>
-                        <th data-field="OrganisationType" data-sortable="true">Organisation type</th>
+                        <th data-field="Governance" class="d-none">Organisation type</th>
+                        <th data-field="OrganisationType" data-sortable="true">Governance</th>
                         <th data-field="Owner" data-sortable="true">IsOwner</th>
 
                         <th data-field="deleteButton" data-sortable="false"></th>
@@ -53,6 +53,7 @@
                 </thead>
                 <tbody>
                     @foreach (var organisation in Model.OrganisationViewModel.Organisations.Where(o => o.Id == Model.ClientInformationSheet.Owner.Id).ToList())
+
                     {
                         <tr id="@organisation.Id">
                             <td>
@@ -105,16 +106,17 @@
                                 @organisation.Name
                             </td>
                             <td class="d-none">
+                                @organisation.OrganisationType.Name
+
+                            </td>
+                            <td >
                                 @if (organisation.InsuranceAttributes.Any())
                                 {
                                     @organisation.InsuranceAttributes.FirstOrDefault().Name
                                 }
                             </td>
                            
-                            <td >
-                                @organisation.OrganisationType.Name
-
-                            </td>
+                            
                             <td>
                                 False
                             </td>
