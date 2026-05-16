@@ -4332,13 +4332,13 @@ namespace DealEngine.WebUI.Controllers
                     clubtrust1onlyCount += validUnits.Count(u => u.Name == "RotaryClubTrustOneOnly");
 
                     // Add all normal units immediately
-                    quantity += validUnits.Count(u => u.Name != "RotaryClubTrustOneOnly");
+                    quantity += validUnits.Count(u => u.Name != "RotaryClubTrustOneOnly"); 
                 }
 
                 // Now handle the special units
                 if (clubtrust1onlyCount > 1)
                 {
-                    quantity += clubtrust1onlyCount;
+                    quantity += (clubtrust1onlyCount - 1);
                 }
                 // if == 1 → do nothing (exclude it)
 

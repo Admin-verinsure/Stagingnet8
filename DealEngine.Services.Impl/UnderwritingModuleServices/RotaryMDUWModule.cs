@@ -410,22 +410,36 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             decimal entityChargeTotal = 0m;
             //const decimal GST = 0.15m;
             // decimal BrokerFee = 0m;
-
+            var clubtrust1only = 0;
 
             foreach (var organisation in  informationSheet.Organisation.Where(o => o.DateDeleted == null && !o.Removed && o.OrganisationType.Name != "Private"))
             {
                 
                     foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
                     {
-                        // Skip "Administrator" units
-                        if (unit.Name == "Administrator" || unit.Name == "Person - Individual" || unit.Name  == "Corporation – Limited liability"
+                    // Skip excluded units
+                    if (unit.Name == "Administrator"
+                        || unit.Name == "Person - Individual"
+                        || unit.Name == "Corporation – Limited liability"
                         || unit.Name == "Head Office")
-                            continue;
-
-                        // Add entity charge ($195 per active entity)
-                        entityChargeTotal += 195m;
+                    {
+                        continue;
                     }
-                
+
+                    // First RotaryClubTrustOneOnly is free
+                    if (unit.Name == "RotaryClubTrustOneOnly")
+                    {
+                        clubtrust1only++;
+
+                        if (clubtrust1only == 1)
+                        {
+                            continue; // first one free
+                        }
+                    }
+
+                    // Charge all normal entities + extra RotaryClubTrustOneOnly entities
+                        entityChargeTotal += 195m;
+                    }             
                    
             }
             // entityChargeTotal += entityChargeTotal ;

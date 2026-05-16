@@ -421,7 +421,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             {
                 countedMembers =
                     (attr.ActiveFeePaying ?? 0) +
-                    (attr.Honorary ?? 0) +
                     (attr.Family ?? 0) +
                     ((attr.Corporate ?? 0) * 3);
             }
@@ -477,7 +476,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
                 if (clubtrust1only > 1)
                 {
-                    total +=  250m;
+                    total += (clubtrust1only - 1) * 195m;
                 }
                 agreement.BrokerFee += 37.50m;
 
