@@ -2415,12 +2415,16 @@ namespace DealEngine.WebUI.Controllers
                         if (users.Count > 0)
                         {
                             client.AdminEmail = users?.FirstOrDefault().Email;
+                            client.AdminName = users?.FirstOrDefault().FirstName + " " + users?.FirstOrDefault().LastName;
                         }
                         else
                         {
                             client.AdminEmail = (await _userService
                                 .GetAllUserforOrganisation(client.Owner))
                                 .FirstOrDefault();
+                            User Adminuser = await _userService.GetApplicationUserByEmail(client.AdminEmail);
+                            client.AdminName = Adminuser.FirstName + " " + Adminuser.LastName;
+
                         }
 
                         clientProgrammes.Add(client);
@@ -2640,8 +2644,25 @@ namespace DealEngine.WebUI.Controllers
                 {
                     if (client.DateDeleted == null && (client.InformationSheet.Status == "Started" || client.InformationSheet.Status == "Not Started"))
                     {
+                        var users = await _userService.GetUsersByPrimaryOrganisationId(client.Owner.Id);
+
+                        if (users.Count > 0)
+                        {
+                            client.AdminEmail = users?.FirstOrDefault().Email;
+                            client.AdminName = users?.FirstOrDefault().FirstName + " " + users?.FirstOrDefault().LastName;
+                        }
+                        else
+                        {
+                            client.AdminEmail = (await _userService
+                                .GetAllUserforOrganisation(client.Owner))
+                                .FirstOrDefault();
+                            User Adminuser = await _userService.GetApplicationUserByEmail(client.AdminEmail);
+                            client.AdminName = Adminuser.FirstName + " " + Adminuser.LastName;
+
+                        }
                         clientProgrammes.Add(client);
                     }
+
                 }
 
                 model.ClientProgrammes = clientProgrammes;

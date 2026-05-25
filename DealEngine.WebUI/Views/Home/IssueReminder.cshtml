@@ -36,6 +36,9 @@
                             <th>
                                 <input type="checkbox" id="select-all" aria-label="Select all"> Name
                             </th>
+                            <th>
+                                Admin Name
+                            </th>
                             <th>Email</th>
                             <th>Reminder Date</th>
                         </tr>
@@ -49,7 +52,7 @@
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">
                                                 <input type="checkbox"
-                                                       name="@clientProg.Owner.Email"
+                                                       name="@@clientProg.AdminEmail"
                                                        value="@clientProg.Id" />
                                             </div>
                                         </div>
@@ -60,9 +63,12 @@
                                     </div>
                                 </td>
                                 <td>
+                                    <input type="text" class="form-control" value="@clientProg.AdminName" readonly>
+                                </td>
+                                <td>
                                     <input type="text"
                                            class="form-control"
-                                           value="@clientProg.Owner.Email"
+                                           value="@@clientProg.AdminEmail"
                                            readonly />
                                 </td>
                                 <td>
