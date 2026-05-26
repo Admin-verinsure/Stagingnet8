@@ -228,8 +228,8 @@
     });
 
     // If no rotary roles exist, value remains 0 automatically
-                    if((IsClubpresent >0 && IsactiveFeePaying == 0) || (IsDistrictPresent > 0 && CompanyTotal == 0) ||
-                        (IsCompanyPresent > 0 && DistrictTotal==0 )){
+                    if((IsClubpresent >0 && IsactiveFeePaying == 0) || (IsDistrictPresent > 0 && DistrictTotal == 0) ||
+                        (IsCompanyPresent > 0 && CompanyTotal ==0 )){
                          window.alert("Please enter member details of named party. Total Active Members, Company Total, and District Total cannot be zero. Click 'Edit' for Club, Rotaract, or Community Corp.");
                        $("[id='Insured Details / Named Parties']").trigger("click");
                                return false;

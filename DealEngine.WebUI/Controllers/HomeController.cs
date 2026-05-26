@@ -4861,7 +4861,7 @@ namespace DealEngine.WebUI.Controllers
                                 await _programmeService.Update(clientProgramme);
 
                                 //send out login instruction email
-                                await _emailService.SendSystemEmailLogin(email);
+                              //  await _emailService.SendSystemEmailLogin(email);
                                 //send out information sheet instruction email
                                 EmailTemplate emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == "SendInformationSheetReminder");
                                 if (emailTemplate != null)
