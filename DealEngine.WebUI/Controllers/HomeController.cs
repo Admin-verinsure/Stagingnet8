@@ -664,7 +664,8 @@ namespace DealEngine.WebUI.Controllers
                         Status = status,
                         ReferenceId = referenceId,// Move into ClientProgramme?
                         SubClientProgrammes = client.SubClientProgrammes,
-                        AgreementStatus = agreementSatus
+                        AgreementStatus = agreementSatus,
+                        IsIssued = client.IsIssued
                     }); ;
                 }
             }
