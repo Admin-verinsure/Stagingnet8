@@ -1640,6 +1640,9 @@ namespace DealEngine.WebUI.Models
                 },
                 new SelectListItem
                 { Text = "Not Sure", Value = "3" }
+                ,
+                new SelectListItem
+                { Text = "Internal Review", Value = "4" }
             };
         }
 
