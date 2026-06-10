@@ -1,6 +1,8 @@
 ﻿@model DealEngine.WebUI.Models.InformationViewModel
 
-@{ ViewData["Title"] = "Upload Documents"; }
+@{
+    ViewData["Title"] = "Upload Documents";
+}
 
 
 <div id="RotaryDocUpload" class="container">
@@ -30,7 +32,7 @@
                 <div class="col-sm-10">
                     <select asp-for="DocumentOrganisation" class="form-control" required>
                         <option onchange="refreshdoclist();" value="select">---Select---</option>
-                        @foreach (var option in Model.OrganisationViewModel.Organisations.Where(org => org.Removed==false))
+                        @foreach (var option in Model.OrganisationViewModel.Organisations.Where(org => org.Removed == false))
                         {
                             <option value="@option.Name">@option.Name</option>
                         }
@@ -104,11 +106,9 @@
                         <label><strong>Available Documents</strong></label>
                     </div>
                     <div class="col-sm-4 col-md-4">
-
                     </div>
 
                     <div class="col-sm-2 col-md-2">
-
                     </div>
 
                 </div>
@@ -127,7 +127,7 @@
                             @doc.Name
                         </a>*@
                         @*<button url="File/GetuploadedDoc">down load me</button>*@
-                    <a href="@Url.Action("GetuploadedDoc", "File", new { path = @doc.Path, ContentType = @doc.ContentType, filename = @doc.Name})" class="btn  btn-primary btn-sm"><i class="fa fa-edit"></i>  @doc.Name </a>
+                        <a href="@Url.Action("GetuploadedDoc", "File", new { path = @doc.Path, ContentType = @doc.ContentType, filename = @doc.Name })" class="btn  btn-primary btn-sm"><i class="fa fa-edit"></i>  @doc.Name </a>
 
                         @*<a class="btn btn-primary btn-xs" style="color:white; font-size:10pt; border:0;" href="/File/GetuploadedDoc/(@doc.path)?format=@doc.ContentType"><i class="fa fa-download"></i> Get PDF</a>*@
 
@@ -152,7 +152,7 @@
 @section pagespecific {
 
     <script type="text/javascript">
-       
+
         $(document).ready(function () {
             debugger;
 
@@ -167,13 +167,13 @@
                 return false;
             });
 
-            
+
             function refreshdoclist() {
                 location.reload();
                 $("[id='Document uploads']").trigger("click");
             }
 
-            
+
         });
     </script>
 }

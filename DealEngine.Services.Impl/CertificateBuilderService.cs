@@ -19,7 +19,7 @@ namespace DealEngine.Services.Impl
         public async Task<CertificateAggregateModel> BuildAsync(
             ClientAgreement agreement,
             ClientProgramme programme,
-            CertificateType certificateType
+            CertificateType? certificateType
             )
         {
 

@@ -85,6 +85,7 @@ namespace DealEngine.WebUI.Controllers
         IClientAgreementBVTermCanService _clientAgreementBVTermCanService;
         ISerializerationService _serializationService;
         IUpdateTypeService _updateTypeService;
+        IPolicyDocumentService _policyDocumentService;
 
         //convert to service?
         IMapperSession<Rule> _ruleRepository;
@@ -132,6 +133,7 @@ namespace DealEngine.WebUI.Controllers
             IUpdateTypeService updateTypeService,
             IOdooTaskGateway odooTaskGateway,
             ICertificateBuilderService certificateBuilderService,
+            IPolicyDocumentService policyDocumentService,
             ICertificatePdfService certificatePdfService
             )
             : base(userRepository)
@@ -173,6 +175,7 @@ namespace DealEngine.WebUI.Controllers
             _odooTaskGateway = odooTaskGateway;
             _certificateBuilderService = certificateBuilderService;
             _certificatePdfService = certificatePdfService;
+            _policyDocumentService = policyDocumentService;
 
             ViewBag.Title = "";
         }
@@ -4873,6 +4876,85 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SendAllPolicyDocuments(
+    Guid id,
+    bool sendUser = false)
+        {
+            var user = await CurrentUser();
+
+            var sheet = await _customerInformationService.GetInformation(id);
+
+            if (sheet == null)
+                return RedirectToAction("Error404", "Error");
+
+            var programme = sheet.Programme;
+
+            // Generate ALL docs
+            var documents =
+                await _policyDocumentService
+                    .GetAllPolicyDocumentsForProgrammeAsync(
+                        programme,
+                        user);
+
+            // Convert payload
+            var payload = documents
+                .Select(d => new AgreementDocumentViewModel
+                {
+                    DisplayName = d.Name,
+                    Url = d.Path,
+                    DocType = d.DocumentType,
+                    Contents = d.Contents
+                })
+                .ToList();
+
+            // Email recipients
+            var emails = new List<string>();
+
+            if (sendUser)
+            {
+                emails.Add(user.Email);
+            }
+            else
+            {
+                var primaryUsers =
+                    await _userService
+                        .GetUsersByPrimaryOrganisationId(
+                            programme.Owner.Id);
+
+                var firstUser = primaryUsers?.FirstOrDefault();
+
+                if (firstUser != null)
+                {
+                    emails.Add(firstUser.Email);
+                }
+                else
+                {
+                    emails = await _userService
+                        .GetAllUserforOrganisation(
+                            programme.Owner);
+                }
+
+                if (!emails.Any())
+                {
+                    emails.Add(programme.Owner.Email);
+                }
+            }
+
+            // Send email
+            await SendPolicyEmailsToOrganisationUsersAsync(
+                programme.Id,
+                programme.InformationSheet.Id,
+                emails,
+                payload);
+
+            TempData["Success"] =
+                "All policy documents sent successfully.";
+
+            return RedirectToAction(
+                "ViewAcceptedAgreement",
+                new { id = programme.Id });
+        }
 
         [HttpGet]
         public async Task<IActionResult> SendFullProposalReport(Guid id, bool sendUser)

@@ -4382,6 +4382,8 @@ namespace DealEngine.WebUI.Controllers
                 bool isIndependent =
                     form.ContainsKey($"IsIndependentEntity_{id}") &&
                     form[$"IsIndependentEntity_{id}"] == "on";
+                // ✅ NEW: District
+                string district = form[$"District_{id}"];
 
                 int odooProjectId = 0;
                 if (!string.IsNullOrEmpty(form[$"OdooProjectId_{id}"]))
@@ -4410,6 +4412,8 @@ namespace DealEngine.WebUI.Controllers
 
                         if (externalGuid != Guid.Empty)
                             entity.Owner.External_guid = externalGuid;
+                        // 🔥 THIS IS NEW FIELD
+                        entity.Owner.District = district;
                     }
 
                     await _programmeService.Update(entity);

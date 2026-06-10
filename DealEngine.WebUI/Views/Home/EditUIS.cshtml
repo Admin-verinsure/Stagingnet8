@@ -30,13 +30,21 @@
                             <th style="width:5%">
                                 <input type="checkbox" id="select-all" />
                             </th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Odoo ProjectId</th>
-                            <th>External Guid</th>
-                            <th class="text-center">IsClub</th>
-                            <th class="text-center">IsDistrict</th>
-                            <th class="text-center">IsIndependent Entity</th>
+                            <th style="width:15%">Name</th>
+
+                            <th style="width:20%">Email</th> <!-- reduced -->
+
+                            <th style="width:10%">Odoo ProjectId</th>
+
+                            <th style="width:15%">External Guid</th>
+
+                            <th class="text-center" style="width:8%">IsClub</th>
+
+                            <th class="text-center" style="width:8%">IsDistrict</th>
+
+                            <th class="text-center" style="width:10%">IsIndependent</th>
+
+                            <th class="text-center" style="width:14%">District</th>
                             
                         </tr>
                     </thead>
@@ -61,7 +69,7 @@
                                 </td>
 
                                 <!-- Email -->
-                                <td>
+                                <td style="max-width:200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                     @clientProg.Owner.Email
                                 </td>
 
@@ -104,8 +112,23 @@
                                            name="IsIndependentEntity_@clientProg.Id"
                                            @(clientProg.IsIndependentEntity ? "checked" : "") />
                                 </td>
+                                 <td>
+                                    <select class="form-control form-control-sm"
+                                            name="District_@clientProg.Id">
 
-                                
+                                        @foreach (var item in Model.DistrictList)
+                                        {
+                                            <option value="@item.Value"
+                                                    selected="@(item.Value == (clientProg.Owner?.District ?? ""))">
+                                                @item.Text
+                                            </option>
+                                        }
+
+                                    </select>
+    
+                                 </td>
+
+
                             </tr>
                         }
 

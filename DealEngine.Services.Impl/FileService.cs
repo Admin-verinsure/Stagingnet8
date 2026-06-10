@@ -2183,13 +2183,16 @@ namespace DealEngine.Services.Impl
 
         #endregion
 
-        public async Task<byte[]> GenerateCertificateBytesAsync(Guid agreementId, Guid programmeId, CertificateType type)
+        public async Task<byte[]> GenerateCertificateBytesAsync(Guid agreementId, Guid programmeId, CertificateType? type)
         {
+            if (type == null)
+                throw new Exception("Certificate type is required");
+
             var agreement = await _agreementService.GetAgreement(agreementId);
             var programme = agreement.ClientInformationSheet.Programme;
 
             var model = await _certificateBuilderService.BuildAsync(agreement, programme, type);
-            model.CertificateType = type;
+            model.CertificateType = type.Value; 
 
             var pdfBytes = await _certificatePdfService.GenerateAsync(model);
 

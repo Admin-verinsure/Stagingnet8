@@ -70,6 +70,8 @@
 
     }
 
+
+
     function UnhideEdit(tabId) {
                 debugger;
 
@@ -1466,7 +1468,7 @@
      }
 
 
-      function openEditAgreement(url) {
+     function openEditAgreement(url) {
             debugger;
             var childWindow = window.open(url, 'Edit Agreement', 'width=600,height=400');
             var clientprogrammeId = document.getElementById("ClientProgrammeId").value;
@@ -1501,4 +1503,37 @@
             }, 1000);
         }
 
+
+     function EditOrganisationForDocuments(orgType, orgName) {
+
+        debugger;
+
+        // set selected org
+        $("#DocumentOrganisation").val(orgName);
+
+        // show edit section
+        $("#editSection").show();
+
+        // update title
+        $("#editingTitle").text("Editing: " + orgName);
+
+        // hide all tables
+        $("#ClubMemberTable, #DistrictTable, #SpecialPurposeTrustTable").hide();
+
+        if (orgType === "RotaryClub" ||
+            orgType === "Rotaract" ||
+            orgType === "RotaryCommunityCorps") {
+
+            $("#ClubMemberTable").show();
+        }
+        else if (orgType.toLowerCase().includes("rotarydistrict")) {
+
+            $("#DistrictTable").show();
+        }
+        else if (orgType === "RotarySpecialPurposeTrust" ||
+                 orgType === "RotaryCompany") {
+
+            $("#SpecialPurposeTrustTable").show();
+        }
+    }
 </script>

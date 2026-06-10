@@ -593,8 +593,6 @@ namespace DealEngine.WebUI.Controllers
                         attr = new OrganisationAttribute(currentUser);
                         Sheet.OrganisationAttribute = attr;
                     }
-                    _logger.LogWarning($"before mapping values ");
-
                     // Map values from form collection
                     attr.ActiveFeePaying = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ActiveFeePaying"]);
                     attr.Honorary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Honorary"]);

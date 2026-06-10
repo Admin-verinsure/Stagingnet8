@@ -11,7 +11,7 @@ namespace DealEngine.Services.Interfaces
         Task<CertificateAggregateModel> BuildAsync(
          ClientAgreement agreement,
          ClientProgramme programme,
-         CertificateType certificateType);
+         CertificateType? certificateType);
     }
 
 }

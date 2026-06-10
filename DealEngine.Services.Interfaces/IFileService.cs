@@ -40,7 +40,7 @@ namespace DealEngine.Services.Interfaces
 
 		//Task<IActionResult> GetPDF(Guid id);
 
-		Task<byte[]> GenerateCertificateBytesAsync(Guid agreementId, Guid programmeId, CertificateType type);
+		Task<byte[]> GenerateCertificateBytesAsync(Guid agreementId, Guid programmeId, CertificateType? type);
 
     }
 }
