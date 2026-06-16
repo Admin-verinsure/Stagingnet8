@@ -121,6 +121,7 @@ namespace DealEngine.Domain.Entities
         public virtual bool SendInvoiceToOdoo { get; set; }
 
         public virtual bool SendWordingdocuments { get; set; }
+        public virtual bool EnableDistrictClubReport { get; set; }
 
         protected Programme() : this(null) { }
 

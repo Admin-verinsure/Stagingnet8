@@ -181,6 +181,8 @@ namespace DealEngine.Domain.Entities
         public virtual DateTime? DateofIncorportation { get; set; }
         public virtual IList<Programme> Programmes { get; set; }
         public virtual string District { get; set; }
+        public virtual bool IsOutsideNZ { get; set; }
+
         #endregion
 
         #region Opperations

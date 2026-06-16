@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NHibernate.Criterion;
 using NReco.PdfGenerator;
 using Quartz;
 //using ServiceStack;
@@ -3163,16 +3164,13 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
-        public async Task<DataTable> GetNZBarOnDemandPIReport(Guid programmeId, string reportName, DataTable dt)
+        public async Task<DataTable> GetOnDemanDistrictReport(Guid programmeId, string reportName, DataTable dt, string district)
         {
             Programme programme = await _programmeService.GetProgrammeById(programmeId);
             List<List<dynamic>> ListReportSet = new List<List<dynamic>>();
             List<dynamic> ListReport = new List<dynamic>();
-            reportName = "NZBar PI Report";
-            decimal PIFullPremiumTotal = 0M;
-            decimal PIGrossPremiumTotal = 0M;
-            decimal PINetPremiumToInsurerTotal = 0M;
-
+            reportName = "Rotary DistrictReport";
+            
             var ReportingDay = DateTime.Today;
             var ReportingMonth = new DateTime(ReportingDay.Year, ReportingDay.Month, 1);
             var ReportingFirstDay = ReportingMonth.AddMonths(-1);
@@ -3182,48 +3180,18 @@ namespace DealEngine.WebUI.Controllers
             DataColumn column2 = new DataColumn();
             DataColumn column3 = new DataColumn();
             DataColumn column4 = new DataColumn();
-            DataColumn column5 = new DataColumn();
-            DataColumn column6 = new DataColumn();
-            DataColumn column7 = new DataColumn();
-            DataColumn column8 = new DataColumn();
-            DataColumn column9 = new DataColumn();
-            DataColumn column10 = new DataColumn();
-            DataColumn column11 = new DataColumn();
-            DataColumn column12 = new DataColumn();
-            //DataColumn column13 = new DataColumn();
 
-            column1 = new DataColumn("First Name", typeof(string));
-            column2 = new DataColumn("Last Name", typeof(string));
-            column3 = new DataColumn("Marsh Reference", typeof(string));
-            column4 = new DataColumn("Invoice Number", typeof(string));
-            column5 = new DataColumn("Limit of Indemnity", typeof(decimal));
-            column6 = new DataColumn("Policy Excess", typeof(decimal));
-            column7 = new DataColumn("Anual PI Premium", typeof(decimal));
-            column8 = new DataColumn("Defence Costs Limit", typeof(decimal));
-            column9 = new DataColumn("Annual Cyber Premium", typeof(decimal));
-            column10 = new DataColumn("Number of Junior Barristers", typeof(string));
-            column11 = new DataColumn("Number of Employed Barristers", typeof(string));
-            //column12 = new DataColumn("Criminal Law Discount", typeof(string));
-            column12 = new DataColumn("Not Sole Barrister", typeof(string));
+            column1 = new DataColumn("Club Name", typeof(string));
+            column2 = new DataColumn("District", typeof(string));
+            column3 = new DataColumn("Status of Information Sheet", typeof(string));
+            column4 = new DataColumn("Outside NewZealand", typeof(string));
 
             dt.Columns.Add(column1);
             dt.Columns.Add(column2);
             dt.Columns.Add(column3);
             dt.Columns.Add(column4);
-            dt.Columns.Add(column5);
-            dt.Columns.Add(column6);
-            dt.Columns.Add(column7);
-            dt.Columns.Add(column8);
-            dt.Columns.Add(column9);
-            dt.Columns.Add(column10);
-            dt.Columns.Add(column11);
-            dt.Columns.Add(column12);
-            //dt.Columns.Add(column13);
-
-
             var clientProgrammes = programme.ClientProgrammes
-                               .Where(cp => cp.InformationSheet.DateDeleted == null &&
-                               cp.InformationSheet.Status == "Bound and invoiced")
+                               .Where(cp => cp.InformationSheet.DateDeleted == null && cp.Owner.District == district)
                                .ToList();
 
             foreach (ClientProgramme cp in clientProgrammes)
@@ -3236,180 +3204,20 @@ namespace DealEngine.WebUI.Controllers
                         clientInformationSheetID = cp.InformationSheet.Id;
                     }
                     List<dynamic> tempListReport = new List<dynamic>();
-                    decimal PIFullPremium = 0M;
-                    decimal PIGrossPremium = 0M;
-                    decimal PINetPremiumToInsurer = 0M;
-                    decimal PIFullPremiumtotal = 0M;
-                    decimal Brokerageperc = 0M;
-                    decimal Brokerage = 0M;
-                    decimal GST = 0M;
-                    decimal BrokerageGST = 0M;
-
                     Organisation organisation = cp.InformationSheet.Owner;
                     User user = await _userService.GetApplicationUserByEmail(organisation.Email);
-                    //if (cp.Agreements.Count > 0)
-                    //{
-                    //foreach (ClientAgreement agreement in cp.Agreements.Where(agree => agree.BoundDate >= ReportingFirstDay && agree.BoundDate <= ReportingLastDay && agree.InceptionDate < ReportingFirstDay
-                    //                                                                      || agree.InceptionDate >= ReportingFirstDay && agree.InceptionDate <= ReportingLastDay && agree.BoundDate <= ReportingLastDay))
-                    //{
-                    // var term = agreement.ClientAgreementTerms.FirstOrDefault(ter => ter.SubTermType == reportName && ter.Bound == true);
-                    // if (term != null)
-                    //{
+                   
                     DataRow newRow = dt.NewRow();
 
                     tempListReport = new List<dynamic>();
-                    newRow[0] = user.FirstName;
-                    newRow[1] = user.LastName; //Add((cp.EGlobalClientNumber).ToString());
-                    EGlobalResponse eGlobalResponse = cp.ClientAgreementEGlobalResponses.Where(er => er.DateDeleted == null && er.ResponseType == "update").OrderByDescending(er => er.VersionNumber).FirstOrDefault();
-                    newRow[2] = eGlobalResponse.ClientNumber;
+                    newRow[0] = organisation.Name;
+                    newRow[1] = organisation.District; //Add((cp.EGlobalClientNumber).ToString());
+                    ClientInformationSheet clientInformationSheet  = await _clientInformationService.GetClientInformationSheetFromOrganisation(organisation);
 
-                    if (eGlobalResponse != null)
-                    {
-                        newRow[3] = "I" + eGlobalResponse.InvoiceNumber.ToString();
-                    };
-                    //newRow[3] = term.TermLimit;
-                    Product product = programme.Products.Where(prod => prod.Name == "Professional Indemnity").FirstOrDefault();
-                    if (product != null)
-                    {
-                        ClientAgreement clientagreement = cp.Agreements.Where(agree => agree.Product == product).FirstOrDefault();
-                        ClientAgreementTerm clienaAgreementTerm = clientagreement.ClientAgreementTerms.Where(Term => Term.Bound == true).FirstOrDefault();
-                        newRow[4] = clienaAgreementTerm.TermLimit;
-                        newRow[5] = clienaAgreementTerm.Excess;
-                        newRow[6] = clienaAgreementTerm.Premium;
-                    }
-                    else
-                    {
-                        newRow[4] = 0.0;
-                        newRow[5] = 0.0;
-                        newRow[6] = 0.0;
-                    }
-
-
-                    //newRow[4] = term.Excess;
-                    //int ceextensionlimit = 0;
-                    //decimal ceextensionexcess = 0M;
-                    //decimal ceextensionpremium = 0M;
-                    //if (agreement.ClientAgreementTermExtensions.Count > 0)
-                    //{
-                    //    foreach (var termExtension in agreement.ClientAgreementTermExtensions.Where(ae => ae.DateDeleted == null))
-                    //    {
-                    //        if (termExtension.Bound && termExtension.ExtentionName == "Professional Indemnity – Costs & Expenses")
-                    //        {
-                    //            ceextensionlimit = termExtension.TermLimit;
-                    //            ceextensionexcess = termExtension.Excess;
-                    //            if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
-                    //            {
-                    //                ceextensionpremium += termExtension.PremiumDiffer;
-                    //            }
-                    //            else
-                    //            {
-                    //                ceextensionpremium += termExtension.Premium;
-                    //            }
-                    //        }
-
-                    //    }
-                    //}
-
-                    //PIFullPremiumTotal += (term.Premium + ceextensionpremium);
-                    Product defenceproduct = programme.Products.Where(prod => prod.Name == "Legal Prosecution defence costs").FirstOrDefault();
-                    if (defenceproduct != null)
-                    {
-                        ClientAgreement defenceagreement = cp.Agreements.Where(agree => agree.Product == defenceproduct).FirstOrDefault();
-                        ClientAgreementTerm clienaAgreementTerm = defenceagreement.ClientAgreementTerms.Where(Term => Term.Bound == true).FirstOrDefault();
-                        newRow[7] = clienaAgreementTerm.TermLimit;
-                    }
-                    else
-                    {
-                        newRow[7] = 0.0;
-                    }
-
-
-                    Product Cyberproduct = programme.Products.Where(prod => prod.Name == "Cyber Liability").FirstOrDefault();
-                    if (Cyberproduct != null)
-                    {
-                        ClientAgreement clientagreement = cp.Agreements.Where(agree => agree.Product == product).FirstOrDefault();
-                        ClientAgreementTerm clienaAgreementTerm = clientagreement.ClientAgreementTerms.Where(Term => Term.Bound == true).FirstOrDefault();
-                        newRow[8] = clienaAgreementTerm.Premium;
-                    }
-                    else
-                    {
-                        newRow[8] = 0.0;
-                    }
-
-                    String isjuniorbaristor = cp.InformationSheet.Answers.Where(ans => ans.ItemName == "PIViewModel.IsJuniorBarrister").FirstOrDefault().Value;
-                    if (isjuniorbaristor == "1")
-                    {
-                        newRow[9] = "1";
-                    }
-                    else
-                    {
-                        newRow[9] = "0";
-
-                    }
-
-                    //String isEmployedbaristor = cp.InformationSheet.Answers.Where(ans => ans.ItemName == "PIViewModel.IsJuniorBarrister").FirstOrDefault().Value;
-                    //if (isEmployedbaristor == "1")
-                    //{
-                    //    newRow[10] = "1";
-                    //}
-                    //else
-                    //{
-                    //    newRow[10] = "0";
-
-                    //}
-
-                    //String isNZBarmember = cp.InformationSheet.Answers.Where(ans => ans.ItemName == "PIViewModel.hasNzbar").FirstOrDefault().Value;
-                    //if (isNZBarmember == "1")
-                    //{
-                    //    newRow[11] = "yes";
-                    //}
-                    //else
-                    //{
-                    //    newRow[11] = "No";
-
-                    //}
-
-                    List<Organisation> orgnisation = cp.InformationSheet.Organisation.Where(org => org.InsuranceAttributes.Count > 0).ToList();
-                    int orgcount = 0;
-                    int EBarrister = 0;
-                    if (orgnisation.Count > 0)
-                    {
-                        foreach (Organisation org in orgnisation)
-                        {
-                            orgcount = 0;
-                            EBarrister = 0;
-                            foreach (InsuranceAttribute inattr in org.InsuranceAttributes)
-                            {
-                                if (inattr.InsuranceAttributeName == "Barrister")
-                                {
-                                    orgcount++;
-
-                                }
-                                if (inattr.InsuranceAttributeName == "EBarrister")
-                                {
-                                    EBarrister++;
-
-                                }
-
-
-                            }
-
-                        }
-
-                        if (orgcount > 1)
-                        {
-                            newRow[11] = "Yes";
-
-                        }
-                        else
-                        {
-                            newRow[11] = "No";
-
-                        }
-
-
-                        newRow[10] = EBarrister;
-                    }
+                    newRow[2] = clientInformationSheet?.Status == "Not Taken Up By Broker"
+                     ? "Not Started"
+                     : clientInformationSheet?.Status;
+                    newRow[3] = organisation.IsOutsideNZ;
 
                     dt.Rows.Add(newRow);
                     //if (tempListReport.Count > 0)
@@ -4113,10 +3921,10 @@ namespace DealEngine.WebUI.Controllers
                     {
                         Lreportset = await GetRevenueReportSet(ProgrammeId, queryselect);
                     }
-                    else if (queryselect == "ONDemandNZBarPI")
+                    else if (queryselect == "DistrictReport")
                     {
-
-                        table = await GetNZBarOnDemandPIReport(ProgrammeId, queryselect, table);
+                            var district = formCollection["district"];
+                        table = await GetOnDemanDistrictReport(ProgrammeId, queryselect, table, district);
 
                     }
                     else if (programme.NamedPartyUnitName == "Marsh Real Estate Programme" && (queryselect.Contains("lumely") || queryselect.Contains("AIG")))
@@ -4353,10 +4161,53 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> EditUIS()
+        {
+            var form = Request.Form;
+
+            var selectedIds = form["SelectedClientIds"];
+
+            foreach (var id in selectedIds)
+            {
+                Guid clientProgrammeId = Guid.Parse(id);
+
+                var entity = await _programmeService.GetClientProgrammebyId(clientProgrammeId);
+
+                if (entity != null)
+                {
+                    entity.IsClub = form[$"IsClub_{id}"] == "on";
+                    entity.IsDistrict = form[$"IsDistrict_{id}"] == "on";
+                    entity.IsIndependentEntity =
+                        form.ContainsKey($"IsIndependentEntity_{id}");
+
+                    if (entity.Owner != null)
+                    {
+                        // Odoo
+                        if (int.TryParse(form[$"OdooProjectId_{id}"], out int odoo))
+                            entity.Owner.OdooProjectId = odoo;
+
+                        // Guid
+                        if (Guid.TryParse(form[$"ExternalGuid_{id}"], out Guid guid))
+                            entity.Owner.External_guid = guid;
+
+                        // District
+                        entity.Owner.District = form[$"District_{id}"];
+
+                        // Outside NZ
+                        entity.Owner.IsOutsideNZ =
+                        bool.TryParse(form[$"IsOutsideNZ_{id}"], out bool result) && result;
+                    }
+
+                    await _programmeService.Update(entity);
+                }
+            }
+
+            return await RedirectToLocal();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUISold2()
         {
             var form = Request.Form;
             var ids = new HashSet<string>();
@@ -4371,6 +4222,9 @@ namespace DealEngine.WebUI.Controllers
 
                 if (key.StartsWith("IsIndependentEntity_"))
                     ids.Add(key.Replace("IsIndependentEntity_", ""));
+
+                if (key.StartsWith("IsOutsideNZ_"))
+                    ids.Add(key.Replace("IsOutsideNZ_", ""));
             }
 
             foreach (var id in ids)
@@ -4384,7 +4238,7 @@ namespace DealEngine.WebUI.Controllers
                     form[$"IsIndependentEntity_{id}"] == "on";
                 // ✅ NEW: District
                 string district = form[$"District_{id}"];
-
+                bool isOutsideNZ = form[$"IsOutsideNZ_{id}"] == "true";
                 int odooProjectId = 0;
                 if (!string.IsNullOrEmpty(form[$"OdooProjectId_{id}"]))
                 {
@@ -4414,6 +4268,7 @@ namespace DealEngine.WebUI.Controllers
                             entity.Owner.External_guid = externalGuid;
                         // 🔥 THIS IS NEW FIELD
                         entity.Owner.District = district;
+                        entity.Owner.IsOutsideNZ = isOutsideNZ;
                     }
 
                     await _programmeService.Update(entity);

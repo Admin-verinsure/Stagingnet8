@@ -3,7 +3,7 @@
 <div class="container mt-4">
     <form method="post" action="~/Home/EditUIS" novalidate>
 
-        <input type="hidden" name="ProgrammeId" value="@Model.ProgrammeId" />
+        <input  type="hidden" name="ProgrammeId" value="@Model.ProgrammeId"  />
 
         <div class="card shadow-sm">
 
@@ -30,21 +30,23 @@
                             <th style="width:5%">
                                 <input type="checkbox" id="select-all" />
                             </th>
-                            <th style="width:15%">Name</th>
+                            <th style="width:13%">Name</th>
 
-                            <th style="width:20%">Email</th> <!-- reduced -->
+                            <th style="width:19%">Email</th> <!-- reduced -->
 
-                            <th style="width:10%">Odoo ProjectId</th>
+                            <th style="width:8%">Odoo ProjectId</th>
 
-                            <th style="width:15%">External Guid</th>
+                            <th style="width:10%">External Guid</th>
 
                             <th class="text-center" style="width:8%">IsClub</th>
 
-                            <th class="text-center" style="width:8%">IsDistrict</th>
+                            <th class="text-center" style="width:7%">IsDistrict</th>
 
                             <th class="text-center" style="width:10%">IsIndependent</th>
 
-                            <th class="text-center" style="width:14%">District</th>
+                            <th class="text-center" style="width:16%">District</th>
+                            <th class="text-center" style="width:10%">Outside NZ</th>
+
                             
                         </tr>
                     </thead>
@@ -58,7 +60,7 @@
                                 <!-- Select Client -->
                                 <td class="text-center">
                                     <input type="checkbox"
-                                           class="client-checkbox"
+                                           class="client-checkbox row-input"
                                            name="SelectedClientIds"
                                            value="@clientProg.Id" />
                                 </td>
@@ -76,7 +78,7 @@
                                 <!-- OdooProjectId -->
                                 <td>
                                     <input type="number"
-                                           class="form-control form-control-sm"
+                                           class="form-control form-control-sm row-input"
                                            name="OdooProjectId_@clientProg.Id"
                                            value="@clientProg.Owner.OdooProjectId" />
                                 </td>
@@ -84,7 +86,7 @@
                                 <!-- External Guid -->
                                 <td>
                                     <input type="text"
-                                           class="form-control form-control-sm"
+                                           class="form-control form-control-sm row-input"
                                            name="ExternalGuid_@clientProg.Id"
                                            value="@clientProg.Owner.External_guid" />
                                 </td>
@@ -93,7 +95,7 @@
                                 <!-- IsClub -->
                                 <td class="text-center">
                                     <input type="checkbox"
-                                           class="club-checkbox"
+                                           class="club-checkbox row-input"
                                            name="IsClub_@clientProg.Id"
                                            @(clientProg.IsClub ? "checked" : "") />
                                 </td>
@@ -101,7 +103,7 @@
                                 <!-- IsDistrict -->
                                 <td class="text-center">
                                     <input type="checkbox"
-                                           class="district-checkbox"
+                                           class="district-checkbox row-input"
                                            name="IsDistrict_@clientProg.Id"
                                            @(clientProg.IsDistrict ? "checked" : "") />
                                 </td>
@@ -109,11 +111,12 @@
                                 <!-- IsIndependentEntity -->
                                 <td class="text-center">
                                     <input type="checkbox"
+                                           class="row-input"
                                            name="IsIndependentEntity_@clientProg.Id"
                                            @(clientProg.IsIndependentEntity ? "checked" : "") />
                                 </td>
-                                 <td>
-                                    <select class="form-control form-control-sm"
+                                <td class="text-center">
+                                    <select class="form-control form-control-sm row-input"
                                             name="District_@clientProg.Id">
 
                                         @foreach (var item in Model.DistrictList)
@@ -128,6 +131,23 @@
     
                                  </td>
 
+                                <td class="text-center">
+                                    <select class="form-control form-control-sm"
+                                            name="IsOutsideNZ_@clientProg.Id">
+
+                                        @if (clientProg.Owner.IsOutsideNZ)
+                                        {
+                                            <option value="true" selected>Yes</option>
+                                            <option value="false">No</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="true">Yes</option>
+                                            <option value="false" selected>No</option>
+                                        }
+
+                                    </select>
+                                </td>
 
                             </tr>
                         }
@@ -185,6 +205,53 @@
                 });
 
             });
+
+
+                $(function () {
+
+            // Select All clients
+            $("#select-all").on("change", function () {
+                $(".client-checkbox").prop("checked", this.checked);
+            });
+
+            // 🔍 Live Search
+            $("#InfoSearch").on("keyup", function () {
+                let searchValue = this.value.toLowerCase();
+
+                $("tbody tr").each(function () {
+                    let name = this.cells[1].innerText.toLowerCase();
+                    let email = this.cells[2].innerText.toLowerCase();
+
+                    this.style.display =
+                        (name.includes(searchValue) || email.includes(searchValue))
+                            ? ""
+                            : "none";
+                });
+            });
+
+            // 🔥 Only submit selected rows
+            $("form").on("submit", function () {
+
+                $("tbody tr").each(function () {
+
+                    let isChecked = $(this).find(".client-checkbox").is(":checked");
+
+                    if (!isChecked) {
+                        $(this)
+                            .find("input, select")
+                            .not("[type='hidden']")
+                            .prop("disabled", true);
+                    }
+                });
+
+            });
+
+            // 🔥 Auto-select row when user edits
+            $(".row-input").on("change", function () {
+                $(this).closest("tr").find(".client-checkbox").prop("checked", true);
+            });
+
+        });
 
     </script>
 

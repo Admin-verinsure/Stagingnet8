@@ -13,14 +13,14 @@
             </div>
             <div class="card-body">
                 <table class="container">
-                    <thread>
+                    <thead>
                         <tr>
                             <th>
                                 Name
                             </th>
 
                         </tr>
-                    </thread>
+                    </thead>
                     <tbody>
                         <tr>
 
@@ -55,31 +55,34 @@
                                         }
 
                                     }
-
                                     @{
-                                        if (Model.programme.NamedPartyUnitName == "Marsh Real Estate Programme")
+                                        if (Model.programme.EnableDistrictClubReport)
                                         {
-                                            <option value="PI/lumely" >Marsh Real Estate PI Policies Lumley Report</option>
-                                            <option value="ML/lumely">Marsh Real Estate ML Policies Lumley Report</option>
-                                            <option value="PI/AIG" >Marsh Real Estate PI Policies AIG Report</option>
-                                            <option value="ML/AIG">Marsh Real Estate ML Policies AIG Report</option>
-                                            <option value="CL/AIG" data-city="Washington">Marsh Real Estate CL Policies AIG Report</option>
+                                            <option value="DistrictReport">District Club Status Report</option>
+
                                         }
                                     }
-
-                                    @{
-                                        if (Model.programme.NamedPartyUnitName == "New Zealand Bar Association Liability Programme")
-                                        {
-                                            <option value="ONDemandNZBarPI">NZBar PI On Demand </option>
-                                           
-                                        }
-                                    }
-
-
 
 
 
                                 </select>
+
+                                @{
+                                    if (Model.programme.EnableDistrictClubReport)
+                                    {
+                                        <!-- ✅ District Filter (separate) -->
+                                        <div class="mt-2" id="districtContainer" style="display:none;">
+                                            <select class="form-control" id="DistrictFilter" name="district">
+                                                <option value="">-- Select District --</option>
+                                                <option value="9910">District 9910</option>
+                                                <option value="9920">District 9920</option>
+                                                <option value="9930">District 9930</option>
+                                                <option value="9940">District 9940</option>
+                                            </select>
+                                        </div>
+
+                                    }
+                                }
 
                             </td>
 
@@ -116,13 +119,14 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        $("#submit").click(function () {
-                    debugger;
-            var selectedreport = $("#ClientProg option:selected").text();
+      $(function () {
 
-            if (selectedreport == "RevenueActivity Report") {
-               $("#RevenueReportModal").show();
+        $("#submit").click(function () {
+
+            var selectedreport = $("#ClientProg").val();
+
+            if (selectedreport === "RevenueActivity") {
+                $("#RevenueReportModal").show();
             } else {
                 $("#AddReportModal").show();
             }
@@ -130,15 +134,22 @@
             $('#ReportForm').submit();
 
             setTimeout(function () {
-
                 $('#RevenueReportModal').hide();
             }, 40000);
         });
 
-       
-      
-    })
+        $("#ClientProg").change(function () {
+            if ($(this).val() === "DistrictReport") {
+                $("#districtContainer").show();
+            } else {
+                $("#districtContainer").hide();
+            }
+        });
 
+        // handle reload case
+        if ($("#ClientProg").val() === "DistrictReport") {
+            $("#districtContainer").show();
+        }
 
-
+    });
 </script>
