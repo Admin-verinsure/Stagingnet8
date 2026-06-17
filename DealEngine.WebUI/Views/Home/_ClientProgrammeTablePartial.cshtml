@@ -212,17 +212,24 @@
                                 }
                             }
                         }
-                       @*  @if (item.Status != "Bound" && (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True"))
+                       @if (item.Status != "Bound" && (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True"))
                         {
-                            <a class="btn btn-primary btn-sm" href="~/Home/IssueUIS?ProgrammeId=@Model.Programme.Id&actionname=IssueUIS"><i class="fa fa-paper-plane"></i> Issue UIS</a>
-                        } *@
+                            <button type="button" class="btn btn-primary btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#sendSingleUISModal"
+                                    data-client-id="@item.Id"
+                                    data-client-name="@item.Name"
+                                    data-programme-id="@Model.Programme.Id">
+                                <i class="fa fa-paper-plane"></i> Issue UIS
+                            </button>
+                        }
                     </div>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
+        
 <div id="myChangeModal" class="modal" aria-hidden="true">
     <form id="ProdForm" class="" action="~/Information/UpdateInformation" method="post">
         <div class="modal-dialog" role="document">
@@ -566,7 +573,42 @@
                 </div>
             </div>
         </div>*@
+<!-- Send Single UIS Confirmation Modal -->
+<div id="sendSingleUISModal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" style="color:blue; font-size:22px">Issue Infosheet</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to send the Information Sheet to <strong id="sendUISClientName"></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                <form id="sendSingleUISForm" method="post" action="/Home/SendSingleUIS">
+                    <input type="hidden" id="sendUISClientProgrammeId" name="clientProgrammeId" value="" />
+                    <input type="hidden" id="sendUISProgrammeId" name="programmeId" value="" />
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-paper-plane"></i> Confirm Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('sendSingleUISModal');
+        if (modal) {
+            modal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                document.getElementById('sendUISClientName').textContent = button.getAttribute('data-client-name');
+                document.getElementById('sendUISClientProgrammeId').value = button.getAttribute('data-client-id');
+                document.getElementById('sendUISProgrammeId').value = button.getAttribute('data-programme-id');
+            });
+        }
+    });
+</script>
 
 
 

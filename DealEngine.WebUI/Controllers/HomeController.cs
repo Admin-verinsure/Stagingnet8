@@ -576,6 +576,7 @@ namespace DealEngine.WebUI.Controllers
                         model.Deals.Add(new DealItem
                         {
                             Id = client.Id.ToString(),
+                            OwnerEmail = client.Owner.Email,
                             Name = client.BaseProgramme.Name + " for " + client.Owner.Name,
                             NextInfoSheet = nextInfoSheet,
                             LocalDateCreated = localDateCreated,
@@ -1632,7 +1633,8 @@ namespace DealEngine.WebUI.Controllers
                             SubClientProgrammes = client.SubClientProgrammes,
                             AgreementStatus = agreementSatus,
                             IsSubclientSubmitted = Issubclientsubmitted,
-                            DocSendDate = DocSendDate
+                            DocSendDate = DocSendDate,
+                            OwnerEmail = client.Owner.Email
                         });
                     }
 
@@ -4160,7 +4162,73 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+        [HttpPost]
+public async Task<IActionResult> SendSingleUIS(string clientProgrammeId, string programmeId)
+{
+    User user = null;
+    Programme programme = null;
+    string email = null;
 
+    try
+    {
+        user = await CurrentUser();
+        programme = await _programmeService.GetProgramme(Guid.Parse(programmeId));
+
+        var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(clientProgrammeId));
+        email = clientProgramme.Owner.Email;
+
+        var correctEmail = await _userService.GetUserByEmail(email);
+        if (correctEmail != null && programme.ProgEnableEmail)
+        {
+            clientProgramme.IssueDate = DateTime.Now;
+            await _programmeService.Update(clientProgramme);
+
+            // get UIS instruction email attachment
+            Product masterUISProduct = clientProgramme.BaseProgramme.Products
+                .Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
+            var UISAttachmentDocuments = new List<SystemDocument>();
+            if (masterUISProduct != null)
+            {
+                var UISAttachmentTemplateList = masterUISProduct.Documents
+                    .Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
+
+                foreach (SystemDocument template in UISAttachmentTemplateList)
+                {
+                    SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, clientProgramme.InformationSheet, null);
+                    SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                    renderedDoc.OwnerOrganisation = clientProgramme.Owner;
+                    UISAttachmentDocuments.Add(renderedDoc);
+                    await _fileService.UploadFile(renderedDoc);
+                }
+            }
+
+            // send login instruction email
+            await _emailService.SendSystemEmailLogin(email);
+
+            // send infosheet instruction email
+            EmailTemplate emailTemplate = programme.EmailTemplates
+                .FirstOrDefault(et => et.Type == "SendInformationSheetInstruction");
+            if (emailTemplate != null)
+            {
+                if (programme.ProgEnableProgEmailCC && !string.IsNullOrEmpty(programme.ProgEmailCCRecipent))
+                {
+                    await _emailService.SendEmailViaEmailTemplateWithCC(email, emailTemplate, UISAttachmentDocuments, null, null, programme.ProgEmailCCRecipent);
+                }
+                else
+                {
+                    await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
+                }
+            }
+        }
+
+        return await RedirectToLocal();
+    }
+    catch (Exception ex)
+    {
+        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        return RedirectToAction("Error500", "Error");
+    }
+}
         [HttpPost]
         public async Task<IActionResult> EditUIS()
         {
