@@ -212,6 +212,10 @@
                                 }
                             }
                         }
+                        @if (item.Status != "Bound" && (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True"))
+                        {
+                            <a class="btn btn-primary btn-sm" href="~/Home/IssueUIS?ProgrammeId=@Model.Programme.Id&actionname=IssueUIS"><i class="fa fa-paper-plane"></i> Issue UIS</a>
+                        }
                     </div>
                 </td>
             </tr>
