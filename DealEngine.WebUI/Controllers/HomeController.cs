@@ -3217,7 +3217,7 @@ namespace DealEngine.WebUI.Controllers
                     newRow[2] = clientInformationSheet?.Status == "Not Taken Up By Broker"
                      ? "Not Started"
                      : clientInformationSheet?.Status;
-                    newRow[3] = organisation.IsOutsideNZ;
+                    newRow[3] = organisation.IsOutsideNZ ? "Yes" : "No";
 
                     dt.Rows.Add(newRow);
                     //if (tempListReport.Count > 0)
