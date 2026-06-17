@@ -9,7 +9,7 @@
         <form action="ImpersonateUser" method="post">
             <div class="form-group">
                 <select class="form-select chosen-select" name="username"
-                        data-placeholder="Search by first name, last name or username...">
+                        data-placeholder="Search by first name, last name, Email or username ...">
                     <option value=""></option>
                     @foreach (var user in Model.DomainUsers.OrderBy(u => u.FirstName).ThenBy(u => u.LastName))
                     {
