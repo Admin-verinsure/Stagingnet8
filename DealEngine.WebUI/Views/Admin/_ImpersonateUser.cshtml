@@ -8,10 +8,17 @@
     <div class="card-body">
         <form action="ImpersonateUser" method="post">
             <div class="form-group">
-                <select class="form-select" name="username">
-                    @foreach (var user in Model.Users.OrderBy(muser => muser.UserName))
+                <select class="form-select chosen-select" name="username"
+                        data-placeholder="Search by first name, last name or username...">
+                    <option value=""></option>
+                    @foreach (var user in Model.DomainUsers.OrderBy(u => u.FirstName).ThenBy(u => u.LastName))
                     {
-                        <option value="@user.UserName">@user.UserName - @user.Email</option>
+                        var displayName = $"{user.FirstName} {user.LastName}".Trim();
+                        if (string.IsNullOrWhiteSpace(displayName))
+                        {
+                            displayName = user.UserName;
+                        }
+                        <option value="@user.UserName">@displayName — @user.UserName</option>
                     }
                 </select>
             </div>

@@ -18,6 +18,6 @@ namespace DealEngine.WebUI.Models
         public IList<MerchantViewModel> Merchants { get; set; }
         public IList<SelectListItem> LockedUsers { get; set; }
         public List<IdentityUser> Users { get; internal set; }
-       
+        public List<User> DomainUsers { get; set; }   // ← added
     }
 }
