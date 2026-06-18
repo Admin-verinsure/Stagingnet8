@@ -484,6 +484,63 @@ namespace DealEngine.WebUI.Controllers
         //    }
         //}
 
+
+        //[HttpPost]
+        //public async Task<IActionResult> ValidateOrganisations(Guid sheetId)
+        //{
+        //    var sheet = await _clientInformationService.GetInformation(sheetId);
+
+        //    var results = new List<object>();
+
+        //    foreach (var org in sheet.Organisation)
+        //    {
+        //        var attr = org.OrganisationAttribute;
+
+        //        bool isValid = true;
+        //        string message = "";
+
+        //        if (org.OrganisationType.Name == "RotaryClub" ||
+        //            org.OrganisationType.Name == "Rotaract" ||
+        //            org.OrganisationType.Name == "RotaryCommunityCorps")
+        //        {
+        //            if (attr == null || attr.ActiveFeePaying <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "Active Fee Paying must be > 0";
+        //            }
+        //        }
+        //        else if (org.OrganisationType.Name.Contains("RotaryDistrict"))
+        //        {
+        //            if (attr == null || attr.DistrictTotal <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "District Total must be > 0";
+        //            }
+        //        }
+        //        else if (org.OrganisationType.Name == "RotaryCompany")
+        //        {
+        //            if (attr == null || attr.SPT_Total <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "Company Total must be > 0";
+        //            }
+        //        }
+
+        //        results.Add(new
+        //        {
+        //            orgId = org.Id,
+        //            orgName = org.Name,
+        //            isValid,
+        //            message
+        //        });
+        //    }
+
+        //    return Json(results);
+        //}
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> AddOrganisation(IFormCollection collection)
         {

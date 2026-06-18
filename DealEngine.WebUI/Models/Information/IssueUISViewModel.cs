@@ -33,6 +33,8 @@ namespace DealEngine.WebUI.Models
            new SelectListItem { Value = "9920", Text = "District 9920" },
            new SelectListItem { Value = "9930", Text = "District 9930" },
            new SelectListItem { Value = "9940", Text = "District 9940" },
+           new SelectListItem { Value = "9999", Text = "District 9999" },
+
         };
 
         public List<SelectListItem> IsOutsideNZ => new List<SelectListItem>
