@@ -14,7 +14,10 @@ namespace DealEngine.Services.Impl
 {
      public class InvoiceService : IInvoiceService
      {
-        private const string GLOBAL_GUARD = "Global Guard";
+        private const string MATERIAL_DAMAGE = "Rotary Material Damage";
+        private const string GLOBAL_GUARD = " Rotary Association-Multinational Liability (Global Guard GL)";
+
+
         IAppSettingService _appSettingService;
         public InvoiceService(IAppSettingService appSettingService)
         {
