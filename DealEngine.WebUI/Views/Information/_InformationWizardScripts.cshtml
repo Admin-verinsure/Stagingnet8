@@ -133,7 +133,6 @@
                      var DistrictTotal = 0;
                      var CompanyTotal = 0;
 
-    debugger;
 
         var rotaryRoles = [
         "Governance_1",
@@ -225,6 +224,51 @@
                 IsRotaryNamedpartycount++;
             }
         }
+    });
+
+         // 🔥 clear previous highlights
+    validateOrganisationsBeforeSubmit().then(function (response) {
+
+        let hasError = false;
+
+        response.forEach(function (org) {
+
+            // 🔥 target your card using data-id
+            var card = $(".named-party-card[data-id='" + org.orgId + "']");
+
+            if (org.isValid) {
+
+                // ✅ COMPLETE
+                card.find(".status-badge")
+                    .removeClass("bg-warning bg-danger")
+                    .addClass("bg-success")
+                    .text("Complete");
+
+                card.find(".fix-org").hide();
+
+            } else {
+
+                hasError = true;
+
+                // ❌ INCOMPLETE
+                card.find(".status-badge")
+                    .removeClass("bg-warning bg-success")
+                    .addClass("bg-danger")
+                    .text("Incomplete");
+
+                card.find(".fix-org").show();
+
+                // optional: attach message
+                card.find(".fix-org").attr("title", org.message);
+            }
+        });
+
+        if (hasError) {
+            alert("Some Named Parties are incomplete.");
+            return false;
+        }
+
+        // proceed upload...
     });
 
     // If no rotary roles exist, value remains 0 automatically

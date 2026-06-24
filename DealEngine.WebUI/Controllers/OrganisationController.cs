@@ -60,6 +60,60 @@ namespace DealEngine.WebUI.Controllers
             _unitOfWork = unitOfWork;
         }
 
+
+        //[HttpPost]
+        //public async Task<IActionResult> ValidateNamedParties(Guid sheetId)
+        //{
+        //    var sheet = await _clientInformationService.GetInformation(sheetId);
+
+        //    var results = new List<object>();
+
+        //    foreach (var org in sheet.Organisation.Where(o => !o.Removed))
+        //    {
+        //        var attr = org.OrganisationAttribute;
+
+        //        bool isValid = true;
+        //        string message = "";
+
+        //        var type = org.OrganisationType.Name;
+
+        //        if (type == "RotaryClub" || type == "Rotaract" || type == "RotaryCommunityCorps")
+        //        {
+        //            if (attr == null || attr.ActiveFeePaying <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "Active Fee Paying must be greater than 0";
+        //            }
+        //        }
+        //        else if (type.Contains("RotaryDistrict"))
+        //        {
+        //            if (attr == null || attr.DistrictTotal <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "District Total must be greater than 0";
+        //            }
+        //        }
+        //        else if (type == "RotaryCompany")
+        //        {
+        //            if (attr == null || attr.SPT_Total <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "Company Total must be greater than 0";
+        //            }
+        //        }
+
+        //        results.Add(new
+        //        {
+        //            orgId = org.Id,
+        //            orgName = org.Name,
+        //            isValid,
+        //            message
+        //        });
+        //    }
+
+        //    return Json(results);
+        //}
+
         [HttpPost]
         public async Task<IActionResult> ValidateOrganisationEmail(IFormCollection collection)
         {

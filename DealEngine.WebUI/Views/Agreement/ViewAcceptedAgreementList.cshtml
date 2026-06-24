@@ -85,6 +85,15 @@
                                                 <a href="~/Agreement/ReRunUWM/@item.ClientAgreementId" class="dropdown-item"> Re-run All Underwriting Rules </a>
                                     </li>
                                 }
+                                @if (User.IsInRole("TCUser"))
+                                {
+                                    <li class="nav-item">
+                                       <a href="~/Agreement/GenerateInvoice/@item.ClientProgrammeId"
+                                                   class="dropdown-item">
+                                                    Generate Invoice
+                                       </a>
+                                    </li>
+                                }
                                 @if (item.CurrentUser.PrimaryOrganisation.IsTC || item.ProgrammeNamedPartyName == "First Mate Cover")
                                 {
                                     <li class="nav-item">

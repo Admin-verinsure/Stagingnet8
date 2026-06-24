@@ -5,7 +5,6 @@ using DealEngine.Infrastructure.Payment.PxpayAPI;
 using DealEngine.Services.Impl;
 using DealEngine.Services.Interfaces;
 using DealEngine.Services.Interfaces.Enums;
-using DealEngine.Services.Interfaces.Enums;
 using DealEngine.WebUI.Helpers;
 using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Agreement;
@@ -86,7 +85,7 @@ namespace DealEngine.WebUI.Controllers
         ISerializerationService _serializationService;
         IUpdateTypeService _updateTypeService;
         IPolicyDocumentService _policyDocumentService;
-
+        IInvoiceService _invoiceService;
         //convert to service?
         IMapperSession<Rule> _ruleRepository;
         IMapperSession<SystemDocument> _documentRepository;
@@ -134,7 +133,8 @@ namespace DealEngine.WebUI.Controllers
             IOdooTaskGateway odooTaskGateway,
             ICertificateBuilderService certificateBuilderService,
             IPolicyDocumentService policyDocumentService,
-            ICertificatePdfService certificatePdfService
+            ICertificatePdfService certificatePdfService,
+            IInvoiceService invoiceService
             )
             : base(userRepository)
         {
@@ -176,6 +176,7 @@ namespace DealEngine.WebUI.Controllers
             _certificateBuilderService = certificateBuilderService;
             _certificatePdfService = certificatePdfService;
             _policyDocumentService = policyDocumentService;
+            _invoiceService = invoiceService;
 
             ViewBag.Title = "";
         }
@@ -4451,6 +4452,44 @@ namespace DealEngine.WebUI.Controllers
                 return StatusCode(500, ex.ToString());
             }
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateInvoice(Guid id)
+        {
+            try
+            {
+                var programme = await _programmeService.GetClientProgrammebyId(id);
+
+                if (programme == null)
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Programme not found."
+                    });
+
+                await _invoiceService.GenerateInvoiceAsync(
+                    programme.InformationSheet,
+                    programme);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Invoice generated successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GenerateInvoice failed");
+
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
+            }
+        }
+
 
         private CertificateType GetCertificateType(string productName)
         {
