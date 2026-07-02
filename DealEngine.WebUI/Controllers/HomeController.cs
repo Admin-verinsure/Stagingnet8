@@ -136,7 +136,32 @@ namespace DealEngine.WebUI.Controllers
         }
 
         public async Task<IActionResult> Index()
+{
+    ViewBag.Title = "DealEngine Dashboard";
+
+    DashboardViewModel model = new DashboardViewModel();
+    model.ProductItems = new List<ProductItemV2>();
+    model.DealItems = new List<ProductItem>();
+    model.ProgrammeItems = new List<ProgrammeItem>();
+
+    User user = null;
+
+    try
+    {
+        // ---------- 1. CurrentUser ----------
+        user = await CurrentUser();
+        _nlogger.LogInformation("Visited the Home Index with user   " + user.UserName);
+
+        model.UserTasks = user.UserTasks.Where(t => t.Completed == false && t.Removed == false).ToList();
+        model.DisplayDeals = true;
+        model.DisplayProducts = false;
+
+        // ---------- 2. Determine Role ----------
+        model.CurrentUserType = DetermineUserType(user);
+
+        if (model.CurrentUserType == "Client" && (user.Organisations == null || !user.Organisations.Any()))
         {
+<<<<<<< HEAD
             ViewBag.Title = "DealEngine Dashboard";
 
             DashboardViewModel model = new DashboardViewModel();
@@ -228,7 +253,155 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
 
+=======
+            _nlogger.LogError("Visited the Home Index but with No Organistaion for  user   " + user.UserName);
+            return RedirectToAction("UserWithNoOrganisation", "Error");
+>>>>>>> 31c9ff18 (Refactor dashboard pending task generation)
         }
+
+        // ---------- 3. programmeList ----------
+        // Fetched once per role. Where the same raw data also drives Pending Tasks,
+        // we keep it around instead of re-querying in step 4.
+        IList<Programme> programmeList;
+        IList<ClientProgramme> clientProgrammesForTasks = null; // reused in step 4 for Client role only
+
+        switch (model.CurrentUserType)
+        {
+            case "Broker":
+            case "TC":
+                programmeList = await _programmeService.GetAllProgrammes();
+                break;
+
+            case "Client":
+                var flattened = new List<ClientProgramme>();
+                foreach (var clientorg in user.Organisations)
+                {
+                    var clientProgList = await _programmeService.GetClientProgrammesByOwner(clientorg.Id);
+                    if (clientProgList != null)
+                        flattened.AddRange(clientProgList);
+                }
+                clientProgrammesForTasks = flattened;
+
+                var programmeNames = new HashSet<string>();
+                programmeList = flattened
+                    .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker")
+                    .Select(cp => cp.BaseProgramme)
+                    .Where(p => programmeNames.Add(p.Name)) // dedup, first-seen wins
+                    .ToList();
+                break;
+
+            default: // Insurer, ProgrammeManager
+                programmeList = await _programmeService.GetAllProgrammes();
+                break;
+        }
+
+        // ---------- 4. Pending Tasks ----------
+        switch (model.CurrentUserType)
+        {
+            case "Broker":
+                model.UserTasks = await BuildPendingTasksFromProgrammes(
+                    user, programmeList,
+                    cp => cp.Owner.Name + " - " + cp.BaseProgramme.Name + " subscription is still pending");
+                break;
+
+            case "TC":
+                model.UserTasks = await BuildPendingTasksFromProgrammes(
+                    user, programmeList,
+                    cp => cp.Owner.Name + " - " + cp.BaseProgramme.Name + " subscription is still pending");
+                break;
+
+            case "ProgrammeManager":
+                var pmTasks = new List<UserTask>();
+                foreach (var org in user.Organisations)
+                {
+                    var clientProgList = await _programmeService.GetClientProgrammesByOwner(org.Id);
+                    if (clientProgList == null) continue;
+
+                    pmTasks.AddRange(clientProgList
+                        .Where(IsPendingSubscriptionEligible)
+                        .Select(cp => new UserTask(user, "PendingSubscription", null)
+                        {
+                            URL = "/Information/EditInformation/" + cp.Id.ToString(),
+                            Body = cp.BaseProgramme.Name + " subscription is still pending — Click here to complete it",
+                            IsActive = true,
+                            DueDate = DateTime.Now.AddDays(30)
+                        }));
+                }
+                model.UserTasks = pmTasks;
+                break;
+
+            case "Client":
+                model.UserTasks = clientProgrammesForTasks
+                    .Where(IsPendingSubscriptionEligible)
+                    .Select(cp => new UserTask(user, "PendingSubscription", null)
+                    {
+                        URL = "/Information/EditInformation/" + cp.Id,
+                        Body = cp.BaseProgramme.Name + " subscription is still pending",
+                        IsActive = true,
+                        DueDate = DateTime.Now.AddDays(30)
+                    })
+                    .ToList();
+                break;
+
+            // Insurer: no override — keep model.UserTasks as set from user.UserTasks above (matches original)
+        }
+
+        // ---------- 5. ProgrammeItems ----------
+        IList<string> languages = new List<string> { "nz" };
+        foreach (Programme programme in programmeList.OrderByDescending(p => p.DateCreated))
+        {
+            model.ProgrammeItems.Add(new ProgrammeItem(programme) { Languages = languages });
+        }
+
+        return View("IndexNew", model);
+    }
+    catch (Exception ex)
+    {
+        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        return RedirectToAction("Error500", "Error");
+    }
+}
+
+private static string DetermineUserType(User user)
+{
+    if (user.PrimaryOrganisation.IsBroker) return "Broker";
+    if (user.PrimaryOrganisation.IsInsurer) return "Insurer";
+    if (user.PrimaryOrganisation.IsTC) return "TC";
+    if (user.PrimaryOrganisation.IsProgrammeManager) return "ProgrammeManager";
+    return "Client";
+}
+
+private static bool IsPendingSubscriptionEligible(ClientProgramme cp)
+{
+    return cp.InformationSheet != null &&
+           !cp.InformationSheet.Status.StartsWith("Bound") &&
+           cp.InformationSheet.Status != "Not Taken Up By Broker" &&
+           cp.DateDeleted == null &&
+           cp.InformationSheet.Status != "Closed" &&
+           !cp.BaseProgramme.Name.Contains("CLOSED");
+}
+
+private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
+    User user, IEnumerable<Programme> programmes, Func<ClientProgramme, string> bodyBuilder)
+{
+    var pendingTasks = new List<UserTask>();
+    foreach (var programme in programmes)
+    {
+        var clientProgList = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
+        if (clientProgList == null) continue;
+
+        pendingTasks.AddRange(clientProgList
+            .Where(IsPendingSubscriptionEligible)
+            .Select(cp => new UserTask(user, "PendingSubscription", null)
+            {
+                URL = "/Information/EditInformation/" + cp.Id.ToString(),
+                Body = bodyBuilder(cp),
+                IsActive = true,
+                DueDate = DateTime.Now.AddDays(30)
+            }));
+    }
+    return pendingTasks;
+}
 
         #region Search
         [HttpGet]

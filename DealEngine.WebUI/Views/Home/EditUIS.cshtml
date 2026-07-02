@@ -3,6 +3,15 @@
 <div class="container mt-4">
     <form method="post" action="~/Home/EditUIS" novalidate>
 
+    <input type="hidden" name="ProgrammeId" value="@Model.ProgrammeId" />
+
+    <!-- Sticky Save Button -->
+    <div style="position:fixed; bottom:80px; right:20px; z-index:9999;">
+        <button type="submit" class="btn btn-success shadow">
+            <i class="fa fa-save"></i> Save
+        </button>
+    </div>
+
         <input  type="hidden" name="ProgrammeId" value="@Model.ProgrammeId"  />
 
         <div class="card shadow-sm">

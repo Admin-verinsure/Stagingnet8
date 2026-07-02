@@ -2,6 +2,13 @@
 
 
 <div id="content" style="background-color: #A6E2EF">
+
+    <!-- Sticky Save Button -->
+    <div id="stickySaveBtn" style="position:fixed; bottom:80px; right:20px; z-index:9999;">
+        <button onclick="saveInformationManual()" class="btn btn-success shadow">
+            <i class="fa fa-save"></i> Save
+        </button>
+    </div>
     <!-- widget grid -->
     <section id="widget-grid" class="">
         <!-- row -->
@@ -1032,7 +1039,7 @@
             background-color: #f3f0f0;
             direction: ltr;
         }
-
+        
         #header {
             display: block;
             /* height: 49px;*/
@@ -1073,6 +1080,33 @@
     @await Html.PartialAsync("_InformationWizardScripts")
     @await Html.PartialAsync("_DataTableScripts")
 <script>
+    // Sticky Save Button logic
+    $(document).ready(function () {
+        $('#stickySaveBtn').show();
+        $('#smartwizard').on('showStep', function (e, anchorObject, stepNumber) {
+            if (stepNumber === 0) {
+                $('#stickySaveBtn').show();
+            } else {
+                $('#stickySaveBtn').hide();
+            }
+        });
+    });
+
+    function saveInformationManual() {
+        $.ajax({
+            url: '@Url.Action("SaveInformation", "Information")',
+            type: "POST",
+            data: $("#tab_1 :input")
+        })
+        .done(function () {
+            document.getElementById("toastbody").innerHTML = "Information saved successfully";
+            $('.toast').toast('show');
+        })
+        .fail(function () {
+            alert("Unable to save. Please try again.");
+        });
+    }
+
     $(document).ready(function () {
             debugger;
             var accordianPanel = sessionStorage.getItem("accordianTrigger");

@@ -367,6 +367,29 @@ namespace DealEngine.Services.Impl
 
             }
         }
+        public async Task CreatePendingSubscriptionTask(User user, ClientProgramme clientProgramme)
+        {
+            string URL = "/Information/EditInformation/" + clientProgramme.Id.ToString();
+            string programmeName = clientProgramme.BaseProgramme.Name;
+
+            // Check if task already exists to avoid duplicates on every login
+            UserTask existingTask = user.UserTasks.FirstOrDefault(t => t.URL == URL && t.IsActive == true && t.Removed == false && t.Completed == false);
+
+            if (existingTask == null)
+            {
+                UserTask pendingTask = new UserTask(user, "PendingSubscription", null)
+                {
+                    URL = URL,
+                    Body = "Your " + programmeName + " subscription is still pending — Click here to complete it",
+                    IsActive = true,
+                    DueDate = DateTime.Now.AddDays(30)
+                };
+
+                await _taskingService.CreateTask(pendingTask);
+                user.UserTasks.Add(pendingTask);
+                await _userService.Update(user);
+            }
+        }
 
         public async Task RemoveTask(User user, IFormCollection collection)
         {
