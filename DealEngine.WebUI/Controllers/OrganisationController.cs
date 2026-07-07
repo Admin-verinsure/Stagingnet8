@@ -704,31 +704,31 @@ namespace DealEngine.WebUI.Controllers
                         attr = new OrganisationAttribute(currentUser);
                         Sheet.OrganisationAttribute = attr;
                     }
-                    // Map values from form collection
-                    attr.ActiveFeePaying = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ActiveFeePaying"]);
-                    attr.Honorary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Honorary"]);
-                    attr.Associate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Associate"]);
-                    attr.Family = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Family"]);
-                    attr.Community = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Community"]);
-                    attr.Volunteer = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Volunteer"]);
-                    attr.Corporate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Corporate"]);
-                    attr.Alumni = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Alumni"]);
-                    attr.Trustees = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Trustees"]);
-                    attr.OtherMembers = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.OtherMembers"]);
-                    attr.ClubTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ClubTotal"]);
+                    //// Map values from form collection
+                    //attr.ActiveFeePaying = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ActiveFeePaying"]);
+                    //attr.Honorary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Honorary"]);
+                    //attr.Associate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Associate"]);
+                    //attr.Family = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Family"]);
+                    //attr.Community = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Community"]);
+                    //attr.Volunteer = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Volunteer"]);
+                    //attr.Corporate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Corporate"]);
+                    //attr.Alumni = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Alumni"]);
+                    //attr.Trustees = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Trustees"]);
+                    //attr.OtherMembers = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.OtherMembers"]);
+                    //attr.ClubTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ClubTotal"]);
 
-                    attr.Dist_Rotary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotary"]);
-                    attr.Dist_Rotaract = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotaract"]);
-                    attr.Dist_Interact = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Interact"]);
-                    attr.Dist_RotaKids = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_RotaKids"]);
-                    attr.Dist_CommunityCore = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_CommunityCore"]);
-                    attr.DistrictTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.DistrictTotal"]);
+                    //attr.Dist_Rotary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotary"]);
+                    //attr.Dist_Rotaract = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotaract"]);
+                    //attr.Dist_Interact = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Interact"]);
+                    //attr.Dist_RotaKids = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_RotaKids"]);
+                    //attr.Dist_CommunityCore = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_CommunityCore"]);
+                    //attr.DistrictTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.DistrictTotal"]);
 
-                    attr.SPT_Companies = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Companies"]);
-                    attr.SPT_TradingTrusts = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_TradingTrusts"]);
-                    attr.SPT_RevenueOver1m = collection["OrganisationViewModel.OrganisationAttribute.SPT_RevenueOver1m"];
-                    attr.SPT_Revenue = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Revenue"]);
-                    attr.SPT_Total = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Total"]);
+                    //attr.SPT_Companies = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Companies"]);
+                    //attr.SPT_TradingTrusts = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_TradingTrusts"]);
+                    //attr.SPT_RevenueOver1m = collection["OrganisationViewModel.OrganisationAttribute.SPT_RevenueOver1m"];
+                    //attr.SPT_Revenue = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Revenue"]);
+                    //attr.SPT_Total = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Total"]);
 
                     // Commit attribute save
                     await uow.Commit();

@@ -132,7 +132,7 @@
                      var IsactiveFeePaying = 0;
                      var DistrictTotal = 0;
                      var CompanyTotal = 0;
-
+                     var hasNamedPartyError = false;
 
         var rotaryRoles = [
         "Governance_1",
@@ -170,36 +170,6 @@
         }
 
 
-        if (['RotaryClub', 'Rotaract', 'RotaryCommunityCorps'].includes(isOrgType)) {
-            debugger;
-                IsClubpresent ++;
-                var activeFeePaying = parseInt($('#ActiveFeePaying').val()) || 0;
-
-                    if (activeFeePaying > 0) {
-                     IsactiveFeePaying++;
-                    }
-
-        }else if (['RotaryDistrict'].includes(isOrgType)) {
-             IsDistrictPresent ++;
-             var districtTotal = parseInt($('#DistrictTotalHidden').val()) || 0;
-
-                if (districtTotal >= 0) {
-
-                   DistrictTotal ++;
-                }
-        }
-
-        else if (['RotaryCompany'].includes(isOrgType)) {
-             IsCompanyPresent++;
-             var companyTotal = parseInt($('#SPT_TotalHidden').val()) || 0;
-
-                if (companyTotal >= 0) {
-
-                   CompanyTotal ++;
-                }
-        }
-
-
 
         if(isowner =='Insured_PolicyOwner'){
            if ($tds.length > 3) {
@@ -225,56 +195,22 @@
             }
         }
     });
+                  
+                    $(".named-party-card").each(function () {
 
-         // 🔥 clear previous highlights
-    validateOrganisationsBeforeSubmit().then(function (response) {
+                       var badge = $(this).find(".badge");
 
-        let hasError = false;
+                       if (badge.hasClass("bg-danger")) {
+                       hasNamedPartyError = true;
+                       }
 
-        response.forEach(function (org) {
+                    });
 
-            // 🔥 target your card using data-id
-            var card = $(".named-party-card[data-id='" + org.orgId + "']");
-
-            if (org.isValid) {
-
-                // ✅ COMPLETE
-                card.find(".status-badge")
-                    .removeClass("bg-warning bg-danger")
-                    .addClass("bg-success")
-                    .text("Complete");
-
-                card.find(".fix-org").hide();
-
-            } else {
-
-                hasError = true;
-
-                // ❌ INCOMPLETE
-                card.find(".status-badge")
-                    .removeClass("bg-warning bg-success")
-                    .addClass("bg-danger")
-                    .text("Incomplete");
-
-                card.find(".fix-org").show();
-
-                // optional: attach message
-                card.find(".fix-org").attr("title", org.message);
-            }
-        });
-
-        if (hasError) {
-            alert("Some Named Parties are incomplete.");
-            return false;
-        }
-
-        // proceed upload...
-    });
-
+                     
+                     
     // If no rotary roles exist, value remains 0 automatically
-                    if((IsClubpresent >0 && IsactiveFeePaying == 0) || (IsDistrictPresent > 0 && DistrictTotal == 0) ||
-                        (IsCompanyPresent > 0 && CompanyTotal ==0 )){
-                         window.alert("Please enter member details of named party. Total Active Members, Company Total, and District Total cannot be zero. Click 'Edit' for Club, Rotaract, or Community Corp.");
+                    if(hasNamedPartyError){
+                       window.alert("Please enter member details of named party. Total Active Members, Company Total, and District Total cannot be zero. Click 'Edit' for Club, Rotaract, or Community Corp.");
                        $("[id='Insured Details / Named Parties']").trigger("click");
                                return false;
                     }

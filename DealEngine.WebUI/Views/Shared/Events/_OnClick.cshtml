@@ -1256,7 +1256,7 @@
     };
 
 
-      function deleteEvent(eventid) {
+    function deleteEvent(eventid) {
          debugger;
           if (eventid != "") {
 
@@ -1277,6 +1277,63 @@
          }
      };
 
+
+
+    //     function validateAllOrganisations() {
+
+    //     var orgIds = [];
+
+    //     $(".named-party-card").each(function () {
+    //         orgIds.push($(this).data("id"));
+    //     });
+
+    //     $.ajax({
+    //         url: '/Information/ValidateNamedParties',
+    //         type: 'POST',
+    //         contentType: 'application/json',
+    //         data: JSON.stringify({
+    //             organisationIds: orgIds
+    //         }),
+    //         success: function (response) {
+
+    //             let hasError = false;
+
+    //             response.forEach(function (org) {
+
+    //                 var card = $(".named-party-card[data-id='" + org.orgId + "']");
+
+    //                 if (!org.isValid) {
+    //                     hasError = true;
+    //                     card.find(".fix-org").show();
+    //                 } else {
+    //                     card.find(".fix-org").hide();
+    //                 }
+    //             });
+
+    //             if (hasError) {
+    //                 alert("Please complete all Named Parties before submitting.");
+    //                 return;
+    //             }
+
+    //             // ============================
+    //             // STEP 3 — FINAL FORM SUBMIT (FILE + DATA)
+    //             // ============================
+    //             var formData = new FormData($("#FullSubmissionForm")[0]);
+
+    //             $.ajax({
+    //                 url: $("#FullSubmissionForm").attr("action"),
+    //                 type: "POST",
+    //                 data: formData,
+    //                 processData: false,
+    //                 contentType: false,
+    //                 success: function () {
+    //                     alert("Submitted successfully");
+    //                     location.reload();
+    //                 }
+    //             });
+    //         }
+    //     });
+    // }
 
    function deletedoc(docid,docname) {
         debugger;
@@ -1536,4 +1593,147 @@
             $("#SpecialPurposeTrustTable").show();
         }
     }
+
+
+
+        // ===============================
+    // Validate Named PArty Details
+    // ===============================
+    $(document).on("click", ".fix-org", function () {
+
+
+     debugger;
+
+     var orgId = $(this).data("id");
+     var orgType = $(this).data("type");
+
+     $("#SelectedOrganisationId").val(orgId);
+
+     $("#OrganisationTablesSection").show();
+
+     // 🔥 CLEAR EVERYTHING FIRST
+     $("#ClubMemberTable input").val("");
+     $("#DistrictTable input").val("");
+     $("#SpecialPurposeTrustTable input").val("");
+
+     $("#SpecialPurposeTrustTable select").val("");
+
+     $("#TotalMembers, #DistrictTotal, #SPT_Total").text("0");
+
+     $("#ClubTotal, #DistrictTotalHidden, #SPT_TotalHidden").val("");
+
+     // hide all tables
+     $("#ClubMemberTable, #DistrictTable, #SpecialPurposeTrustTable").hide();
+
+        // show correct table
+        if (orgType === "RotaryClub" ||
+            orgType === "Rotaract" ||
+            orgType === "RotaryCommunityCorps") {
+
+              $("#ClubMemberTable").removeClass("d-none").show();
+        }
+        else if (orgType && orgType.toLowerCase().includes("district")) {
+
+              $("#DistrictTable").removeClass("d-none").show();
+        }
+        else if (orgType === "RotaryCompany" ||
+                 orgType === "RotarySpecialPurposeTrust") {
+
+              $("#SpecialPurposeTrustTable").removeClass("d-none").show();
+        }
+
+        // highlight selected card
+        $(".named-party-card").removeClass("border-primary");
+
+        $(".named-party-card[data-id='" + orgId + "']")
+            .addClass("border border-primary");
+
+        // scroll to section
+        $('html, body').animate({
+            scrollTop: $("#OrganisationTablesSection").offset().top - 80
+        }, 300);
+    });
+
+    
+      $(document).on("click", "#namedpartydetailssubmit", function () {
+
+             console.log("Button clicked");
+             debugger;
+              var btn = $("#namedpartydetailssubmit");
+              btn.prop("disabled", true).text("Saving...");
+             var form = document.getElementById("FullSubmissionForm");
+             var formData = new FormData(form);
+
+             $.ajax({
+                 url: '/Information/UploadAndValidate',
+                 type: 'POST',
+                 data: formData,
+                 processData: false,
+                 contentType: false,
+
+                 success: function (response) {
+
+                     console.log("Saved + validated");
+
+                     updateOrganisationStatus(response);
+                     btn.prop("disabled", false).text("Save details");
+
+                  },
+                 error: function (err) {
+                     console.error(err);
+                     btn.prop("disabled", false).text("Save details");
+                     alert("Error submitting form");
+                 }
+             });
+
+         });
+
+         function updateOrganisationStatus(response) {
+
+                 debugger;
+             response.forEach(function (org) {
+
+                 // find correct card
+                   var card = $(".named-party-card[data-id='" + org.orgId + "']");
+                   var badge = card.find(".status-badge"); // 🔥 FIX
+
+                   if (badge.hasClass("no-edit")) {
+                        return;
+                   }
+                   // ✅ THIS LINE GOES HERE
+                 var totalLabel = card.find(".org-total");
+
+
+                 if (org.isValid) {
+
+                     // ✅ COMPLETE (GREEN)
+                     badge
+                         .removeClass("bg-warning bg-danger")
+                         .addClass("bg-success")
+                         .text("Complete");
+
+                 } else {
+
+                     // ❌ INCOMPLETE (RED)
+                     badge
+                          .removeClass("bg-warning bg-success")
+                          .addClass("bg-danger")
+                           .text(org.message);
+                          // 🔥 FROM CONTROLLER
+                 } 
+                  
+                  // ===== TOTAL LABEL =====
+                 if (org.totalType === "Club") {
+                    totalLabel.text("Club Total: " + (org.totalValue || 0));
+                 }
+                 else if (org.totalType === "District") {
+                    totalLabel.text("District Total: " + (org.totalValue || 0));
+                 } else if (org.totalType === "Company") {
+                 totalLabel.text("Company Total: " + (org.totalValue || 0));
+                 }
+
+
+             });
+         }
+
 </script>

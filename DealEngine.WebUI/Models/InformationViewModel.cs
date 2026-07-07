@@ -123,6 +123,7 @@ namespace DealEngine.WebUI.Models
         public bool IsDistrict { get; set; }
         public bool IsIndependentEntity { get; set; }
         public Guid Owner { get; set; }
+        public Guid SelectedOrganisationId { get; set; }
 
     }
 
@@ -1603,8 +1604,7 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> MLViewModelStorage { get; set; }
         public IList<SelectListItem> MLViewModelCompanyFinancial { get; set; }
         public IList<SelectListItem> HasRunoutOptions { get; set; }
-
-
+        public string TotalFundsUnderManagement { get; set; }
 
 
 

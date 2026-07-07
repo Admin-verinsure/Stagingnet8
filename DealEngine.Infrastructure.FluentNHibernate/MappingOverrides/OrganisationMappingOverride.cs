@@ -13,6 +13,9 @@ namespace DealEngine.Infrastructure.FluentNHibernate.MappingOverrides
         {
             mapping.Id(p => p.Id).GeneratedBy.Assigned();
             mapping.References(n => n.OrganisationType).Not.LazyLoad();
+            mapping.HasOne(x => x.OrganisationAttribute)
+             .Cascade.All()
+             .PropertyRef(x => x.Organisation);
         }
     }
 

@@ -7,7 +7,7 @@ namespace DealEngine.Domain.Entities
 {
     public class OrganisationAttribute : EntityBase, IAggregateRoot
     {
-        protected OrganisationAttribute() : base(null) { }
+        public OrganisationAttribute() : base(null) { }
 
         public OrganisationAttribute(User createdBy)
             : base(createdBy)
@@ -17,6 +17,7 @@ namespace DealEngine.Domain.Entities
         // -------------------------------
         // CLUB MEMBER FIELDS
         // -------------------------------
+        public virtual Organisation Organisation { get; set; }
         public virtual int? ActiveFeePaying { get; set; }
         public virtual int? Honorary { get; set; }
         public virtual int? Associate { get; set; }

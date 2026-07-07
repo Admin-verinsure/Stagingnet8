@@ -136,14 +136,20 @@ namespace DealEngine.WebUI.Controllers
                     var privateServers = await _privateServerService.GetAllPrivateServers();
                     var paymentGateways = await _paymentGatewayService.GetAllPaymentGateways();
                     var merchants = await _merchantService.GetAllMerchants();
-                    var users = _userManager.Users.ToList();
+                    var users = _userManager.Users
+                    .Select(u => new UserViewModel
+                    {
+                        UserName = u.UserName,
+                        Email = u.Email
+                    }).ToList();
+
                     var domainUsers = await _userService.GetAllUsers();   // ← added
 
                     model.PrivateServers = _mapper.Map<IList<PrivateServer>, IList<PrivateServerViewModel>>(privateServers);
                     model.PaymentGateways = _mapper.Map<IList<PaymentGateway>, IList<PaymentGatewayViewModel>>(paymentGateways);
                     model.Merchants = _mapper.Map<IList<Merchant>, IList<MerchantViewModel>>(merchants);
-                    model.Users = users;
-                    model.DomainUsers = domainUsers;   // ← added
+                    //model.Users = users;
+                    model.DomainUsers = users;   // ← added
                     return View(model);
                 }
                 catch (Exception ex)
