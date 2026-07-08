@@ -1035,26 +1035,57 @@ namespace DealEngine.WebUI.Controllers
 
             user = await CurrentUser();
 
+            if (user == null)
+            {
+                _logger.LogInformation("EditInformation but User is null");
+
+                return PageNotFound();
+            }
+
             if (user.IsLoggedout)
             {
                 _logger.LogInformation("EditInformation but User  " + user.UserName + " is Loggedout");
 
                 return PageNotFound();
             }
-                
-
-            if (user == null)
-            {
-                _logger.LogInformation("EditInformation but User  " + user.UserName + " is null");
-
-                return PageNotFound();
-            }
-               
 
             try
             {
 
                 var clientProgramme = await _programmeService.GetClientProgramme(id);
+
+                // Fetch every other subscription belonging to this same client (owner),
+                // so we can check whether an older one is still incomplete
+                var siblingProgrammes = await _programmeService.GetClientProgrammesByOwner(clientProgramme.Owner.Id);
+                // Determine if an older subscription for this client is still pending;
+                // if one is found, the user must complete it before starting this one.
+                var earlierPending = FindBlockingPendingSubscription(clientProgramme, siblingProgrammes);
+               // Log the outcome of the pending-subscription check for troubleshooting.
+                _logger.LogInformation(
+                    "Pending subscription gate evaluated. CurrentProgrammeId={CurrentProgrammeId}, SiblingCount={SiblingCount}, BlockingProgrammeId={BlockingProgrammeId}",
+                    clientProgramme.Id,
+                    siblingProgrammes?.Count ?? 0,
+                    earlierPending?.Id);
+
+                if (earlierPending != null)
+                {
+                    // Build a user-facing message naming the specific older subscription
+                    // (year + programme name) that needs to be completed first.
+                    var pendingSortDate = GetProgrammeSortDate(earlierPending);
+                    var pendingYear = pendingSortDate == DateTime.MinValue ? "older" : pendingSortDate.Year.ToString();
+                    var pendingProgrammeName = earlierPending.BaseProgramme?.Name ?? "subscription";
+                    var blockedMessage = "Please complete your " + pendingYear +
+                        " subscription (" + pendingProgrammeName + ") before starting a new one.";
+                    // Pass the blocking message and the older subscription's details to the view.
+                    ViewBag.Title = "Action Required";
+                    ViewBag.BlockedMessage = blockedMessage;
+                    ViewBag.PendingProgrammeId = earlierPending.Id;
+                    ViewBag.PendingProgrammeName = pendingProgrammeName;
+                    // Show the blocked page instead of opening the new subscription.
+                    return View("SubscriptionBlocked");
+                }
+
+                
                 var sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
 
@@ -1227,6 +1258,85 @@ namespace DealEngine.WebUI.Controllers
                       .Select(s => s.Trim())
                       .Where(s => s.Length > 0)
                       .ToList();
+        }
+       // Defines the rules for what counts as a "still pending" subscription:
+       // it must have been started, not yet bound/closed/declined, and not deleted.
+         private static bool IsPendingSubscriptionEligible(ClientProgramme cp)
+         {
+             return cp.InformationSheet != null &&
+                 !cp.InformationSheet.Status.StartsWith("Bound") &&
+                cp.InformationSheet.Status != "Not Taken Up By Broker" &&
+                cp.DateDeleted == null &&
+                cp.InformationSheet.Status != "Closed" &&
+                 !cp.BaseProgramme.Name.Contains("CLOSED");
+         }
+         
+          // Picks the date used to compare subscriptions as "older" vs "newer" —
+         // prefers the subscription's inception date, falling back to its creation date.
+        private static DateTime GetProgrammeSortDate(ClientProgramme cp)
+        {
+            if (cp == null)
+            {
+                return DateTime.MinValue;
+            }
+
+            if (cp.ClientProgrammeInceptionDate > DateTime.MinValue)
+            {
+                return cp.ClientProgrammeInceptionDate;
+            }
+
+            return cp.DateCreated ?? DateTime.MinValue;
+        }
+        
+        // Finds the older pending subscription (if any) that should block this one.
+        // First follows the actual renewal chain (this subscription's history of
+        // what it renewed from); if that finds nothing, falls back to comparing
+        // dates across all of the client's other subscriptions.
+        private static ClientProgramme FindBlockingPendingSubscription(ClientProgramme currentProgramme, IEnumerable<ClientProgramme> siblingProgrammes)
+        {
+            if (currentProgramme == null || siblingProgrammes == null)
+            {
+                return null;
+            }
+
+            var siblings = siblingProgrammes
+                .Where(cp => cp != null && cp.Id != currentProgramme.Id)
+                .ToList();
+
+            // Prefer explicit renewal lineage when available; this is more reliable than date-only ordering.
+            var byId = siblings.ToDictionary(cp => cp.Id, cp => cp);
+            var visited = new HashSet<Guid>();
+            var previous = currentProgramme.RenewFromClientProgramme;
+
+            while (previous != null && visited.Add(previous.Id))
+            {
+                if (byId.TryGetValue(previous.Id, out var siblingPrevious))
+                {
+                    previous = siblingPrevious;
+                }
+
+                if (IsPendingSubscriptionEligible(previous))
+                {
+                    return previous;
+                }
+
+                previous = previous.RenewFromClientProgramme;
+            }
+
+            var currentSortDate = GetProgrammeSortDate(currentProgramme);
+            if (currentSortDate == DateTime.MinValue)
+            {
+                return siblings
+                    .Where(IsPendingSubscriptionEligible)
+                    .OrderBy(cp => GetProgrammeSortDate(cp))
+                    .FirstOrDefault();
+            }
+
+            return siblings
+                .Where(IsPendingSubscriptionEligible)
+                .Where(cp => GetProgrammeSortDate(cp) <= currentSortDate)
+                .OrderBy(cp => GetProgrammeSortDate(cp))
+                .FirstOrDefault();
         }
 
         private async Task BuildModelFromAnswer(InformationViewModel model, IEnumerable<ClientInformationAnswer> answers)

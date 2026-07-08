@@ -9,16 +9,11 @@
         <form action="ImpersonateUser" method="post">
             <div class="form-group">
                 <select class="form-select chosen-select" name="username"
-                        data-placeholder="Search by first name, last name, Email or username ...">
+                        data-placeholder="Search by username or email ...">
                     <option value=""></option>
-                    @foreach (var user in Model.DomainUsers.OrderBy(u => u.FirstName).ThenBy(u => u.LastName))
+                    @foreach (var user in Model.Users.OrderBy(muser => muser.UserName))
                     {
-                        var displayName = $"{user.FirstName} {user.LastName}".Trim();
-                        if (string.IsNullOrWhiteSpace(displayName))
-                        {
-                            displayName = user.UserName;
-                        }
-                        <option value="@user.UserName">@displayName — @user.UserName</option>
+                        <option value="@user.UserName">@user.UserName - @user.Email</option>
                     }
                 </select>
             </div>

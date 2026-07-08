@@ -161,109 +161,13 @@ namespace DealEngine.WebUI.Controllers
 
         if (model.CurrentUserType == "Client" && (user.Organisations == null || !user.Organisations.Any()))
         {
-<<<<<<< HEAD
-            ViewBag.Title = "DealEngine Dashboard";
-
-            DashboardViewModel model = new DashboardViewModel();
-            model.ProductItems = new List<ProductItemV2>();
-            model.DealItems = new List<ProductItem>();
-
-            User user = null;
-            try
-            {
-                user = await CurrentUser();
-
-                _nlogger.LogInformation("Visited the Home Index with user   " + user.UserName);
-                model.UserTasks = user.UserTasks.Where(t => t.Completed == false && t.Removed == false).ToList();
-                model.DisplayDeals = true;
-                model.DisplayProducts = false;
-                model.CurrentUserType = "Client";
-                if (user.PrimaryOrganisation.IsBroker)
-                {
-                    model.CurrentUserType = "Broker";
-                }
-                if (user.PrimaryOrganisation.IsInsurer)
-                {
-                    model.CurrentUserType = "Insurer";
-                }
-                if (user.PrimaryOrganisation.IsTC)
-                {
-                    model.CurrentUserType = "TC";
-                }
-                if (user.PrimaryOrganisation.IsProgrammeManager)
-                {
-                    model.CurrentUserType = "ProgrammeManager";
-                }
-
-                IList<string> languages = new List<string>();
-                languages.Add("nz");
-                IList<Programme> programmeList = new List<Programme>();
-                HashSet<string> programmeNames = new HashSet<string>();
-
-                model.ProgrammeItems = new List<ProgrammeItem>();
-                if (model.CurrentUserType == "Client")
-                {
-
-                    //var OrganisationsCheck = user.Organisations.Any();
-                    if (user.Organisations == null || user.Organisations.Any() == false)
-                    {
-                        _nlogger.LogError("Visited the Home Index but with No Organistaion for  user   " + user.UserName);
-                        return RedirectToAction("UserWithNoOrganisation", "Error");
-                    }
-                    foreach (var clientorg in user.Organisations)
-                    {
-                        var clientProgList = _programmeService.GetClientProgrammesByOwner(clientorg.Id).Result.GroupBy(bp => bp.BaseProgramme.Name).Select(bp => bp.FirstOrDefault());
-                        if (clientProgList.Any())
-                        {
-                            foreach (var clientProgramme in clientProgList)
-                            {
-                                if (clientProgramme.InformationSheet.Status != "Not Taken Up By Broker")
-                                {
-                                    var prog = clientProgramme.BaseProgramme;
-
-                                    if (programmeNames.Add(prog.Name)) // Add returns false if already exists
-                                    {
-                                        programmeList.Add(prog);
-                                    }
-
-                                    //programmeList.Add(clientProgramme.BaseProgramme);
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    programmeList = await _programmeService.GetAllProgrammes();
-                }
-
-                foreach (Programme programme in programmeList.OrderByDescending(proglist => proglist.DateCreated))
-                {
-                    model.ProgrammeItems.Add(new ProgrammeItem(programme)
-                    {
-                        Languages = languages
-                    });
-                }
-
-                return View("IndexNew", model);
-            }
-            catch (Exception ex)
-            {
-                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-                return RedirectToAction("Error500", "Error");
-            }
-
-=======
             _nlogger.LogError("Visited the Home Index but with No Organistaion for  user   " + user.UserName);
             return RedirectToAction("UserWithNoOrganisation", "Error");
->>>>>>> 31c9ff18 (Refactor dashboard pending task generation)
         }
 
         // ---------- 3. programmeList ----------
-        // Fetched once per role. Where the same raw data also drives Pending Tasks,
-        // we keep it around instead of re-querying in step 4.
         IList<Programme> programmeList;
-        IList<ClientProgramme> clientProgrammesForTasks = null; // reused in step 4 for Client role only
+        IList<ClientProgramme> clientProgrammesForTasks = null; 
 
         switch (model.CurrentUserType)
         {
@@ -286,7 +190,7 @@ namespace DealEngine.WebUI.Controllers
                 programmeList = flattened
                     .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker")
                     .Select(cp => cp.BaseProgramme)
-                    .Where(p => programmeNames.Add(p.Name)) // dedup, first-seen wins
+                    .Where(p => programmeNames.Add(p.Name)) 
                     .ToList();
                 break;
 
@@ -304,6 +208,12 @@ namespace DealEngine.WebUI.Controllers
                     cp => cp.Owner.Name + " - " + cp.BaseProgramme.Name + " subscription is still pending");
                 break;
 
+            case "Insurer":
+                model.UserTasks = await BuildPendingTasksFromProgrammes(
+                    user, programmeList,
+                    cp => cp.Owner.Name + " - " + cp.BaseProgramme.Name + " subscription is still pending");
+                break;
+
             case "TC":
                 model.UserTasks = await BuildPendingTasksFromProgrammes(
                     user, programmeList,
@@ -311,23 +221,9 @@ namespace DealEngine.WebUI.Controllers
                 break;
 
             case "ProgrammeManager":
-                var pmTasks = new List<UserTask>();
-                foreach (var org in user.Organisations)
-                {
-                    var clientProgList = await _programmeService.GetClientProgrammesByOwner(org.Id);
-                    if (clientProgList == null) continue;
-
-                    pmTasks.AddRange(clientProgList
-                        .Where(IsPendingSubscriptionEligible)
-                        .Select(cp => new UserTask(user, "PendingSubscription", null)
-                        {
-                            URL = "/Information/EditInformation/" + cp.Id.ToString(),
-                            Body = cp.BaseProgramme.Name + " subscription is still pending — Click here to complete it",
-                            IsActive = true,
-                            DueDate = DateTime.Now.AddDays(30)
-                        }));
-                }
-                model.UserTasks = pmTasks;
+                model.UserTasks = await BuildPendingTasksFromProgrammes(
+                    user, programmeList,
+                    cp => cp.Owner.Name + " - " + cp.BaseProgramme.Name + " subscription is still pending");
                 break;
 
             case "Client":
@@ -343,7 +239,7 @@ namespace DealEngine.WebUI.Controllers
                     .ToList();
                 break;
 
-            // Insurer: no override — keep model.UserTasks as set from user.UserTasks above (matches original)
+            
         }
 
         // ---------- 5. ProgrammeItems ----------
@@ -376,7 +272,7 @@ private static bool IsPendingSubscriptionEligible(ClientProgramme cp)
     return cp.InformationSheet != null &&
            !cp.InformationSheet.Status.StartsWith("Bound") &&
            cp.InformationSheet.Status != "Not Taken Up By Broker" &&
-           cp.DateDeleted == null &&
+          cp.DateDeleted == null &&
            cp.InformationSheet.Status != "Closed" &&
            !cp.BaseProgramme.Name.Contains("CLOSED");
 }

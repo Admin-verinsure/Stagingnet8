@@ -54,6 +54,7 @@ namespace DealEngine.WebUI.Controllers
         UserManager<IdentityUser> _userManager;
         IMapperSession<User> _userRepository;
         IUpdateTypeService _updateTypeServices;
+        
         IEmailService _emailService;
         public AdminController(
             IUpdateTypeService updateTypeService,
@@ -83,6 +84,7 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<User> userRepository2,
             IReferenceService referenceService,
             IEmailService emailService
+            
             )
 			: base (userRepository)
 		{
@@ -111,6 +113,7 @@ namespace DealEngine.WebUI.Controllers
             _userRepository = userRepository2;
             _objectRepository = objectRepository;
             _updateTypeServices = updateTypeService;
+            
             _emailService = emailService;
 
         }
@@ -137,13 +140,11 @@ namespace DealEngine.WebUI.Controllers
                     var paymentGateways = await _paymentGatewayService.GetAllPaymentGateways();
                     var merchants = await _merchantService.GetAllMerchants();
                     var users = _userManager.Users.ToList();
-                    var domainUsers = await _userService.GetAllUsers();   // ← added
 
                     model.PrivateServers = _mapper.Map<IList<PrivateServer>, IList<PrivateServerViewModel>>(privateServers);
                     model.PaymentGateways = _mapper.Map<IList<PaymentGateway>, IList<PaymentGatewayViewModel>>(paymentGateways);
                     model.Merchants = _mapper.Map<IList<Merchant>, IList<MerchantViewModel>>(merchants);
                     model.Users = users;
-                    model.DomainUsers = domainUsers;   // ← added
                     return View(model);
                 }
                 catch (Exception ex)
@@ -1551,7 +1552,8 @@ namespace DealEngine.WebUI.Controllers
             await _signInManager.SignOutAsync();
             var deUser = await _userManager.FindByNameAsync(form["username"].ToString());
             await _signInManager.SignInAsync(deUser, true);
-            var currentUser = await _userService.GetApplicationUserByEmail(deUser.Email);
+            var currentUser = await _userService.GetUser(deUser.UserName);  // <--- change to username
+            
             using (var uow = _unitOfWork.BeginUnitOfWork())
 
             {
