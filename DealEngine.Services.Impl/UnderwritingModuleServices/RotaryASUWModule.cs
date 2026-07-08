@@ -73,7 +73,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             int TermExcess = 0;
             TermExcess = 5000;
 
-            int TermLimit1mil = 1000000;
+            int TermLimit1mil = 250000;
             decimal TermPremium1mil = 0M;
             decimal TermBrokerage1mil = 0M;
 

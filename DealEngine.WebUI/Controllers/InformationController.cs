@@ -2021,6 +2021,172 @@ namespace DealEngine.WebUI.Controllers
             return eventsInfo;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UploadAndValidate(InformationViewModel model)
+        {
+            Organisation selectedorg = await _organisationService.GetOrganisation(model.SelectedOrganisationId);
+
+            if (model.OrganisationViewModel.OrganisationAttribute == null)
+            {
+                model.OrganisationViewModel.OrganisationAttribute = new OrganisationAttribute(await CurrentUser());
+            }
+            else
+            {
+                selectedorg.OrganisationAttribute =  model.OrganisationViewModel.OrganisationAttribute;
+            }
+
+            var results = new List<object>();
+
+                var type = selectedorg.InsuranceAttributes.FirstOrDefault().Name;
+
+                bool isValid = true;
+
+                if (type != null && type == "RotaryClub")
+                {
+                if ((selectedorg.OrganisationAttribute.ClubTotal ?? 0) <= 0)
+                {
+                    isValid = false;
+                    selectedorg.IsValid = false;
+                    selectedorg.ValidationMessage = "Club Total must be > 0,Please Complete Named Party";
+                }
+                else
+                {
+                    selectedorg.IsValid = true;
+                    selectedorg.ValidationMessage = "Named Party Completed";
+                }
+                    
+                }
+                else if (type != null && type.Contains("District"))
+                {
+                    if ((selectedorg.OrganisationAttribute.DistrictTotal ?? 0) <= 0)
+                {
+                        isValid = false;
+                        selectedorg.IsValid = false;
+                        selectedorg.ValidationMessage = "District Total must be > 0,Please Complete Named Party";
+                    } else {
+                    selectedorg.IsValid = true;
+                    selectedorg.ValidationMessage = "Named Party Completed";
+                    }
+                }
+                else if (type != null && type == "RotaryCompany")
+                {
+                    if ((selectedorg.OrganisationAttribute.SPT_Total ?? 0) <= 0)
+                {
+                        isValid = false;
+
+                        selectedorg.IsValid = false;
+                        selectedorg.ValidationMessage = "Company Total must be > 0,Please Complete Named Party";
+                    }
+                    else
+                    {
+                        selectedorg.IsValid = true;
+                        selectedorg.ValidationMessage = "Named Party Completed";
+                    }
+                }
+                else
+                {
+                   selectedorg.IsValid = true;
+                   selectedorg.ValidationMessage = "Named Party Completed";
+                }
+
+            // SAVE HERE
+            //var dbOrg = await _organisationService.GetOrganisation(org.Id);
+            //dbOrg.OrganisationAttribute = attr;
+
+            await _organisationService.Update(selectedorg);
+
+                results.Add(new
+                {
+                    orgId = selectedorg.Id,
+                    isValid,
+                    message= selectedorg.ValidationMessage,
+                    totalType = type.Contains("District") ? "District"
+                    : type == "RotaryCompany" ? "Company"
+                    : "Club",
+
+                    totalValue =
+                    type.Contains("District") ? model.OrganisationViewModel.OrganisationAttribute.DistrictTotal :
+                    type == "RotaryCompany" ? model.OrganisationViewModel.OrganisationAttribute.SPT_Total :
+                    model.OrganisationViewModel.OrganisationAttribute.ClubTotal
+                });
+            
+            return Json(results); 
+
+        }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ValidateNamedParties([FromBody] ValidateRequest request)
+        {
+            var results = new List<object>();
+
+            foreach (var orgId in request.OrganisationIds)
+            {
+                var org = await _organisationService.GetOrganisation(orgId);
+
+                List<OrganisationAttribute> attr = org.OrganisationAttribute != null ? new List<OrganisationAttribute> { org.OrganisationAttribute } : new List<OrganisationAttribute>();
+
+                bool isValid = true;
+                string message = "";
+
+                var type = org.OrganisationType.Name;
+
+                if (type == "RotaryClub" || type == "Rotaract" || type == "RotaryCommunityCorps")
+                {  
+                    foreach(var attribute in attr)
+                    {
+                        if (attribute.ActiveFeePaying <= 0)
+                        {
+                            isValid = false;
+                            message = "Active Fee Paying must be greater than 0";
+                            break;
+                        }
+                    }
+                    
+                }
+                else if (type.Contains("RotaryDistrict"))
+                {
+                   foreach(var attribute in attr)
+                    {
+                        if (attribute.DistrictTotal <= 0)
+                        {
+                            isValid = false;
+                            message = "District Total must be greater than 0";
+                            break;
+                        }
+                    }
+                    
+                }
+                else if (type == "RotaryCompany")
+                {
+                    foreach(var attribute in attr)
+                    {
+                        if (attribute.SPT_Total <= 0)
+                        {
+                            isValid = false;
+                            message = "Company Total must be greater than 0";
+                            break;
+                        }
+                    }
+                    
+                }
+
+                results.Add(new
+                {
+                    orgId = org.Id,
+                    orgName = org.Name,
+                    isValid,
+                    message
+                });
+            }
+
+            return Json(results);
+        }
+
+
+
+
         //string jsonString = JsonSerializer.Serialize(weatherForecast);
         [HttpPost]
         public async Task<IActionResult> SubmitInformation(IFormCollection collection)
@@ -2812,105 +2978,21 @@ namespace DealEngine.WebUI.Controllers
 
 
 
-        [HttpPost]
-        public async Task<IActionResult> Upload(InformationViewModel model)
-        {
-            //string UploadedDocumentPath = _appSettingService.CKImagePath;
-            ClientInformationSheet answersheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
-            ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
-            var user = await CurrentUser();
-            var path = "";
-            if (model != null)
-            {
-                if (model.File != null)
-                {
+        //[HttpPost]
+        //public async Task<IActionResult> SaveOrganisationAttributes([FromBody] SaveOrganisationRequest request)
+        //{
+        //    //string UploadedDocumentPath = _appSettingService.CKImagePath;
+        //    ClientInformationSheet answersheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+        //    ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
+        //    var user = await CurrentUser();
+        //    var path = "";
+            
+        //    return Redirect(url);
 
-                    var contentType = model.File.ContentType;
-                    var extension = "";
-                    var filename = "";
-                    
-                    if (contentType == "application/pdf")
-                    {
-                        extension = ".pdf";
-                    }else if (contentType == "application/vnd.oasis.opendocument.graphics")
-                    {
-                        extension = ".odg";
-                    }else if (contentType == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                    {
-                        extension = ".docx";//.gdoc
-                    }
-                    else
-                    {
-                        throw new FileFormatException("Invalid File Type");
-                    }
-                    if(model.DocumentName != null)
-                    {
-                        filename = model.DocumentName+ extension;
-                    }else if (model.File.FileName != null)
-                    {
-                        filename = model.File.FileName;
-                    }
+        //}
 
-                    //path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
 
-                    if (_appSettingService.IsLinuxEnv == "True")
-                    {
-                        path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation + "";
-                    }
-                    else
-                    {
-                        path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
-
-                    }
-                    //var path = Path.Combine(_hostingEnv.WebRootPath, "files", model.Name, "attachmentfiles");
-                    // var path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation +"";
-                    System.IO.Directory.CreateDirectory(path);
-                    path = Path.Combine(path, filename);
-
-                    try
-                    {
-                        
-                        using (var fileStream = new FileStream(path, FileMode.Create))
-                        {
-                             model.File.CopyTo(fileStream);
-                        }
-
-                        DealEngine.Domain.Entities.Document newFile = new DealEngine.Domain.Entities.Document
-                        {
-                            Name = filename,
-                            Description = "File for " + model.DocumentOrganisation,
-                            DocumentType = 0,
-                            IsTemplate = true,
-                            ContentType = model.File.ContentType,
-                            FileRendered = false,
-                            Path = path,
-                            ClientInformationSheet = clientProgramme.InformationSheet,
-                            OwnerOrganisationName = model.DocumentOrganisation,
-                            DocEffectiveDate = model.DocEffectiveDate,
-                            Extension = extension
-                        };
-
-                        await _fileService.UploadFile(newFile);
-
-                        //Guid productID = Guid.Parse(model.Product);
-                        //Product myProduct = await _iproductService.GetProductById(productID);
-                        //myProduct.Documents.Add(newFile);
-                        //await _iproductService.UpdateProduct(myProduct);
-                    }
-
-                    catch (Exception Ex)
-                    {
-                        Console.WriteLine(Ex.ToString());
-                    }
-
-                }
-            }
-            var url = "/Information/EditInformation/" + model.ClientProgrammeId;
-            return Redirect(url);
-
-        }
-
-        
+       
      
 
         [HttpPost]

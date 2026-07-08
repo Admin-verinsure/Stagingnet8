@@ -9,6 +9,7 @@ namespace DealEngine.Domain.Entities
         public virtual string Name { get; protected set; }
         public virtual string InsuranceAttributeName { get; protected set; }
         public virtual IList<AuditHistory> AuditHistory { get; set; }
+        
         protected InsuranceAttribute() : base(null) { }
 
         public InsuranceAttribute(User createdBy, string name)

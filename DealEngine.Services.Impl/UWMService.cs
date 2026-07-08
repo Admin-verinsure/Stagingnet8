@@ -43,7 +43,7 @@ namespace DealEngine.Services.Impl
             string referenceId = reference;
             try
             {
-                foreach (Product product in sheet.Programme.BaseProgramme.Products.OrderBy(t => t.OrderNumber))
+                foreach (Product product in sheet.Programme.BaseProgramme.Products)
                 {
                     if (!product.UnderwritingEnabled)
                         continue;
