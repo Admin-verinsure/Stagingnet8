@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using Microsoft.Playwright;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1053,33 +1054,40 @@ namespace DealEngine.WebUI.Controllers
             {
 
                 var clientProgramme = await _programmeService.GetClientProgramme(id);
-
+                Guid previousprogrammeId = Guid.Empty;
                 // Fetch every other subscription belonging to this same client (owner),
                 // so we can check whether an older one is still incomplete
-                var siblingProgrammes = await _programmeService.GetClientProgrammesByOwner(clientProgramme.Owner.Id);
+                //var siblingProgrammes = await _programmeService.GetClientProgrammesByOwner(clientProgramme.Owner.Id);
+                Programme curentprogramme = await _programmeService.GetProgramme(clientProgramme.BaseProgramme.Id);
+                if(curentprogramme.RenewFromProgramme != null)
+                {
+                     previousprogrammeId = curentprogramme.RenewFromProgramme.Id;
+                }
+
+                ClientProgramme previouspendingclientprogramme = await _programmeService.GetPendingClientProgrammeByOwnerByProgramme(clientProgramme.Owner.Id, previousprogrammeId);
                 // Determine if an older subscription for this client is still pending;
                 // if one is found, the user must complete it before starting this one.
-                var earlierPending = FindBlockingPendingSubscription(clientProgramme, siblingProgrammes);
-               // Log the outcome of the pending-subscription check for troubleshooting.
-                _logger.LogInformation(
-                    "Pending subscription gate evaluated. CurrentProgrammeId={CurrentProgrammeId}, SiblingCount={SiblingCount}, BlockingProgrammeId={BlockingProgrammeId}",
-                    clientProgramme.Id,
-                    siblingProgrammes?.Count ?? 0,
-                    earlierPending?.Id);
+               // var earlierPending = FindBlockingPendingSubscription(clientProgramme, previousclientprogramme);
+               //// Log the outcome of the pending-subscription check for troubleshooting.
+               // _logger.LogInformation(
+               //     "Pending subscription gate evaluated. CurrentProgrammeId={CurrentProgrammeId}, SiblingCount={SiblingCount}, BlockingProgrammeId={BlockingProgrammeId}",
+               //     clientProgramme.Id,
+               //     previousclientprogramme?.Count ?? 0,
+               //     earlierPending?.Id);
 
-                if (earlierPending != null)
+                if (previouspendingclientprogramme != null)
                 {
                     // Build a user-facing message naming the specific older subscription
                     // (year + programme name) that needs to be completed first.
-                    var pendingSortDate = GetProgrammeSortDate(earlierPending);
-                    var pendingYear = pendingSortDate == DateTime.MinValue ? "older" : pendingSortDate.Year.ToString();
-                    var pendingProgrammeName = earlierPending.BaseProgramme?.Name ?? "subscription";
-                    var blockedMessage = "Please complete your " + pendingYear +
-                        " subscription (" + pendingProgrammeName + ") before starting a new one.";
+                   // var pendingSortDate = GetProgrammeSortDate(earlierPending);
+                   // var pendingYear = pendingSortDate == DateTime.MinValue ? "older" : pendingSortDate.Year.ToString();
+                    var pendingProgrammeName = previouspendingclientprogramme.BaseProgramme?.Name ?? "subscription";
+                    var blockedMessage = "Please complete your " + pendingProgrammeName +
+                        " insurance before starting a new insurance application for the current year.\r\n\r\nOnce your previous year's insurance has been submitted, your information will be automatically copied to the current year's application, so you won't need to enter the same details again.";
                     // Pass the blocking message and the older subscription's details to the view.
                     ViewBag.Title = "Action Required";
                     ViewBag.BlockedMessage = blockedMessage;
-                    ViewBag.PendingProgrammeId = earlierPending.Id;
+                    ViewBag.PendingProgrammeId = previouspendingclientprogramme.Id;
                     ViewBag.PendingProgrammeName = pendingProgrammeName;
                     // Show the blocked page instead of opening the new subscription.
                     return View("SubscriptionBlocked");
@@ -1100,40 +1108,40 @@ namespace DealEngine.WebUI.Controllers
 
                 // ===============================================================
                 // ⭐ LOAD OrganisationAttribute VALUES FROM DATABASE INTO VIEWMODEL
-                // ===============================================================
-                if (sheet.OrganisationAttribute != null)
-                {
-                    var attr = sheet.OrganisationAttribute;
-                    var vm = model.OrganisationViewModel.OrganisationAttribute;
+                //// ===============================================================
+                //if (sheet.OrganisationAttribute != null)
+                //{
+                //    var attr = sheet.OrganisationAttribute;
+                //    var vm = model.OrganisationViewModel.OrganisationAttribute;
 
-                    // CLUB FIELDS
-                    vm.ActiveFeePaying = attr.ActiveFeePaying;
-                    vm.Honorary = attr.Honorary;
-                    vm.Associate = attr.Associate;
-                    vm.Family = attr.Family;
-                    vm.Community = attr.Community;
-                    vm.Volunteer = attr.Volunteer;
-                    vm.Corporate = attr.Corporate;
-                    vm.Alumni = attr.Alumni;
-                    vm.Trustees = attr.Trustees;
-                    vm.OtherMembers = attr.OtherMembers;
-                    vm.ClubTotal = attr.ClubTotal;
+                //    // CLUB FIELDS
+                //    vm.ActiveFeePaying = attr.ActiveFeePaying;
+                //    vm.Honorary = attr.Honorary;
+                //    vm.Associate = attr.Associate;
+                //    vm.Family = attr.Family;
+                //    vm.Community = attr.Community;
+                //    vm.Volunteer = attr.Volunteer;
+                //    vm.Corporate = attr.Corporate;
+                //    vm.Alumni = attr.Alumni;
+                //    vm.Trustees = attr.Trustees;
+                //    vm.OtherMembers = attr.OtherMembers;
+                //    vm.ClubTotal = attr.ClubTotal;
 
-                    // DISTRICT FIELDS
-                    vm.Dist_Rotary = attr.Dist_Rotary;
-                    vm.Dist_Rotaract = attr.Dist_Rotaract;
-                    vm.Dist_Interact = attr.Dist_Interact;
-                    vm.Dist_RotaKids = attr.Dist_RotaKids;
-                    vm.Dist_CommunityCore = attr.Dist_CommunityCore;
-                    vm.DistrictTotal = attr.DistrictTotal;
+                //    // DISTRICT FIELDS
+                //    vm.Dist_Rotary = attr.Dist_Rotary;
+                //    vm.Dist_Rotaract = attr.Dist_Rotaract;
+                //    vm.Dist_Interact = attr.Dist_Interact;
+                //    vm.Dist_RotaKids = attr.Dist_RotaKids;
+                //    vm.Dist_CommunityCore = attr.Dist_CommunityCore;
+                //    vm.DistrictTotal = attr.DistrictTotal;
 
-                    // SPECIAL PURPOSE TRUST FIELDS
-                    vm.SPT_Companies = attr.SPT_Companies;
-                    vm.SPT_TradingTrusts = attr.SPT_TradingTrusts;
-                    vm.SPT_RevenueOver1m = attr.SPT_RevenueOver1m;
-                    vm.SPT_Revenue = attr.SPT_Revenue;
-                    vm.SPT_Total = attr.SPT_Total;
-                }
+                //    // SPECIAL PURPOSE TRUST FIELDS
+                //    vm.SPT_Companies = attr.SPT_Companies;
+                //    vm.SPT_TradingTrusts = attr.SPT_TradingTrusts;
+                //    vm.SPT_RevenueOver1m = attr.SPT_RevenueOver1m;
+                //    vm.SPT_Revenue = attr.SPT_Revenue;
+                //    vm.SPT_Total = attr.SPT_Total;
+                //}
 
 
 
@@ -1200,8 +1208,6 @@ namespace DealEngine.WebUI.Controllers
                 {
                     claims.Add(ClaimViewModel.FromEntity(sheet.ClaimNotifications.ElementAtOrDefault(i)));
                 }
-
-
                 model.Claims = claims;
 
                 //if(updateType == "")
@@ -1210,10 +1216,6 @@ namespace DealEngine.WebUI.Controllers
                     updateType = "common_you";
                 }
                 await GetEventsDataModel(model, sheet);
-
-
-
-
                 model.selectedUpdateType = new List<string>();
                 model.IsHardRefferalEnable = clientProgramme.BaseProgramme.EnableHardRefer;
                 using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())

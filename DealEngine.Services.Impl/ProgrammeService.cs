@@ -820,6 +820,11 @@ namespace DealEngine.Services.Impl
                 newClientProgramme.Tier = oldClientProgramme.Tier;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalExternalContactNumber))
                 newClientProgramme.EGlobalExternalContactNumber = oldClientProgramme.EGlobalExternalContactNumber;
+            
+                newClientProgramme.IsClub = oldClientProgramme.IsClub;
+                newClientProgramme.IsClub = oldClientProgramme.IsDistrict;
+                newClientProgramme.IsClub = oldClientProgramme.IsIndependentEntity;
+
 
             if (oldClientProgramme.InformationSheet.Vehicles != null)
             {
@@ -1592,6 +1597,14 @@ namespace DealEngine.Services.Impl
             return await _programmeRepository.FindAll().FirstOrDefaultAsync(p => p.RenewFromProgramme.Id== programmeid);
         }
 
+
+        public async Task<ClientProgramme> GetPendingClientProgrammeByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId)
+        {
+            ClientProgramme pendingClientProgramme = _clientProgrammeRepository.FindAll().Where(cp => cp.BaseProgramme.Id == programmeId && cp.Owner.Id == ownerOrganisationId 
+                                                                                           && cp.InformationSheet.Status != "Bound" 
+                                                                                           && cp.DateDeleted == null ).FirstOrDefault();
+            return pendingClientProgramme;
+        }
     }
 }
 

@@ -27,7 +27,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
         {
             ClientAgreement agreement = GetClientAgreement(underwritingUser, informationSheet, informationSheet.Programme, product, reference);
             Guid id = agreement.Id;
-
+            bool isOutsideNZ = informationSheet.Owner != null
+                   && informationSheet.Owner.IsOutsideNZ;
             if (agreement.ClientAgreementRules.Count == 0)
                 foreach (var rule in product.Rules.Where(r => !string.IsNullOrWhiteSpace(r.Name)))
                     agreement.ClientAgreementRules.Add(new ClientAgreementRule(underwritingUser, rule, agreement));
@@ -144,17 +145,30 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             TermLimit = Convert.ToInt32(rates["mdlimit"]);
             decimal TermPremium = 0M;
             decimal TermBrokerage = 0M;
-            //TermPremium = rates["mdpremium"];
-
 
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium = TermPremium / coverperiodindays * agreementperiodindays;
             TermBrokerage = TermPremium * agreement.Brokerage / 100;
             var attr = informationSheet?.OrganisationAttribute;
-            decimal premium = 0;
+          //  decimal premium = 0;
 
-            TermPremium += CalculatePremium(informationSheet, attr);
+            if (isOutsideNZ)
+            {
+                // 🔥 SPECIAL RULE
+                decimal monthlyPremium = 5m;
 
+                // yearly base
+                decimal yearlyPremium = monthlyPremium * 12;
+
+                // prorate based on agreement period
+                TermPremium = yearlyPremium / coverperiodindays * agreementperiodindays;
+            }
+            else {
+                // ✅ NORMAL LOGIC
+                TermPremium += CalculatePremium(informationSheet, attr);
+            }
+
+           // TermPremium += CalculatePremium(informationSheet, attr);
 
             ClientAgreementTerm termoption = GetAgreementTerm(underwritingUser, agreement, "MD", TermLimit, TermExcess);
             termoption.TermLimit = TermLimit;

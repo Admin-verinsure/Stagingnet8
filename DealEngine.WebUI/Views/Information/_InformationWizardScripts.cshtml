@@ -197,21 +197,23 @@
     });
                   
                     $(".named-party-card").each(function () {
+                        debugger;
+                      var badge = $(this).find(".status-badge");
 
-                       var badge = $(this).find(".badge");
+                      // skip "Nothing to complete"
+                     if (!badge.length) return;
 
-                       if (badge.hasClass("bg-danger")) {
+                     if (badge.hasClass("bg-danger") || badge.hasClass("bg-warning")) {
                        hasNamedPartyError = true;
-                       }
-
+                     }
                     });
 
                      
                      
     // If no rotary roles exist, value remains 0 automatically
                     if(hasNamedPartyError){
-                       window.alert("Please enter member details of named party. Total Active Members, Company Total, and District Total cannot be zero. Click 'Edit' for Club, Rotaract, or Community Corp.");
-                       $("[id='Insured Details / Named Parties']").trigger("click");
+                       window.alert("Please enter member details for named party marked with red color. Total Active Members, Company Total, and District Total cannot be zero. Click 'Edit' for Club, Rotaract, or Community Corp.");
+                       $("[id='Named Party Details']").trigger("click");
                                return false;
                     }
 

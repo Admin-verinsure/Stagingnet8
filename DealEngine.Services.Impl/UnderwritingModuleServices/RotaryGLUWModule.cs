@@ -84,49 +84,65 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 agreement.BrokerFee = 0;
                 var clubtrust1only = 0;
                 IList<Organisation> organisations = informationSheet.Organisation;
-                foreach (Organisation organisation in organisations.Where(org => org.Removed == false && org.OrganisationType.Name != "Private"))
+                bool isOutsideNZ = informationSheet.Owner != null
+                   && informationSheet.Owner.IsOutsideNZ;
+
+                if (isOutsideNZ)
                 {
-                    foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
-                    {
-                        if (unit.Name == "RotaryClubTrustOneOnly")
-                        {
-                            clubtrust1only += 1;
-                        }
+                    // 🔥 SPECIAL RULE
+                    // $2.50 per month → convert to yearly or prorated
 
-                        // =============================================
-                        // FULL ANNUAL PREMIUM
-                        // =============================================
-                        premium += CalculatePremium(
-                            unit.Name,
-                            attr,
-                            orgtype,
-                            organisation.Id,
-                            informationSheet.Owner.Id,
-                            agreement,
-                            clubtrust1only);
-                    }
+                    decimal monthlyPremium = 2.50m;
+
+                    // yearly base
+                    decimal yearlyPremium = monthlyPremium * 12;
+
+                    // prorate based on agreement period
+                    premium = yearlyPremium / coverperiodindays * agreementperiodindays;
                 }
+                else
+                {
+                    // ✅ NORMAL LOGIC
+                    foreach (Organisation organisation in organisations.Where(org => org.Removed == false && org.OrganisationType.Name != "Private"))
+                    {
+                        foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
+                        {
+                            if (unit.Name == "RotaryClubTrustOneOnly")
+                            {
+                                clubtrust1only += 1;
+                            }
 
+                            // =============================================
+                            // FULL ANNUAL PREMIUM
+                            // =============================================
+                            premium += CalculatePremium(
+                                unit.Name,
+                                attr,
+                                orgtype,
+                                organisation.Id,
+                                informationSheet.Owner.Id,
+                                agreement,
+                                clubtrust1only);
+                        }
+                    }
 
-                // =============================================
-                // PRORATA PREMIUM
-                // 31/12/2025 -> 31/07/2026
-                // =============================================
+                    // =============================================
+                    // PRORATA PREMIUM
+                    // =============================================
 
-                DateTime fullAnnualExpiry = agreement.InceptionDate.AddYears(1);
+                    DateTime fullAnnualExpiry = agreement.InceptionDate.AddYears(1);
 
-                decimal fullAnnualDays =
-                    (decimal)(fullAnnualExpiry - agreement.InceptionDate).TotalDays;
+                    decimal fullAnnualDays =
+                        (decimal)(fullAnnualExpiry - agreement.InceptionDate).TotalDays;
 
-                decimal actualPolicyDays =
-                    (decimal)(agreement.ExpiryDate - agreement.InceptionDate).TotalDays;
+                    decimal actualPolicyDays =
+                        (decimal)(agreement.ExpiryDate - agreement.InceptionDate).TotalDays;
+                    // Apply prorata
+                    premium = Math.Round(
+                        (premium / fullAnnualDays) * actualPolicyDays,
+                        2);
 
-
-                // Apply prorata
-                premium = Math.Round(
-                    (premium / fullAnnualDays) * actualPolicyDays,
-                    2);
-
+                }
 
 
                 bool Doesvolunteerpolicechecked = true;
