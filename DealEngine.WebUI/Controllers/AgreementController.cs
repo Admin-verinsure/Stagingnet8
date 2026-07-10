@@ -4361,8 +4361,7 @@ namespace DealEngine.WebUI.Controllers
                     quantity += (clubtrust1onlyCount - 1);
                 }
                 // if == 1 → do nothing (exclude it)
-
-
+                
 
                 decimal globalGuardPremium = programme.Agreements
                     .Where(a => a.DateDeleted == null
@@ -4374,10 +4373,17 @@ namespace DealEngine.WebUI.Controllers
                     );
 
                 decimal adminFeeQty = quantity + 1; //(add 1 For material damage);
-                                                    //           
+                bool isOutsideNZ = sheet.Owner != null
+                   && sheet.Owner.IsOutsideNZ;
+
+                if (isOutsideNZ)
+                {
+                    adminFeeQty = quantity + 1; //(add 1 For ML Reserve Fund);
+                }
+
+                //           
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
-
                     //  SendInvoiceToOdoo(programme.InformationSheet);
                     SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
                 }
@@ -4385,9 +4391,7 @@ namespace DealEngine.WebUI.Controllers
 
                 if (programme.InformationSheet.Status != status)
                 {
-
                     programme.InformationSheet.Status = status;
-
                 }
 
                 // ✅ SINGLE COMMIT AT END

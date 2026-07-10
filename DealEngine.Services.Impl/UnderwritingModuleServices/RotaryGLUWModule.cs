@@ -87,22 +87,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 bool isOutsideNZ = informationSheet.Owner != null
                    && informationSheet.Owner.IsOutsideNZ;
 
-                if (isOutsideNZ)
-                {
-                    // 🔥 SPECIAL RULE
-                    // $2.50 per month → convert to yearly or prorated
-
-                    decimal monthlyPremium = 2.50m;
-
-                    // yearly base
-                    decimal yearlyPremium = monthlyPremium * 12;
-
-                    // prorate based on agreement period
-                    premium = yearlyPremium / coverperiodindays * agreementperiodindays;
-                }
-                else
-                {
-                    // ✅ NORMAL LOGIC
+                 // ✅ NORMAL LOGIC
                     foreach (Organisation organisation in organisations.Where(org => org.Removed == false && org.OrganisationType.Name != "Private"))
                     {
                         foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
@@ -126,11 +111,26 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         }
                     }
 
-                    // =============================================
-                    // PRORATA PREMIUM
-                    // =============================================
 
-                    DateTime fullAnnualExpiry = agreement.InceptionDate.AddYears(1);
+
+                if (isOutsideNZ)
+                {
+                    // 🔥 SPECIAL RULE
+                    // $2.50 per month → convert to yearly or prorated
+
+                    decimal monthlyPremium = 2.50m;
+
+                    // yearly base
+                    decimal yearlyPremium = monthlyPremium * 12;
+
+                    // prorate based on agreement period
+                    premium = yearlyPremium / coverperiodindays * agreementperiodindays;
+                }
+                // =============================================
+                // PRORATA PREMIUM
+                // =============================================
+
+                DateTime fullAnnualExpiry = agreement.InceptionDate.AddYears(1);
 
                     decimal fullAnnualDays =
                         (decimal)(fullAnnualExpiry - agreement.InceptionDate).TotalDays;
@@ -142,7 +142,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         (premium / fullAnnualDays) * actualPolicyDays,
                         2);
 
-                }
+                
 
 
                 bool Doesvolunteerpolicechecked = true;
@@ -493,9 +493,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 if (clubtrust1only > 1)
                 {
                     total += (clubtrust1only - 1) * 195m;
+                    agreement.BrokerFee += 37.50m;
                 }
-                agreement.BrokerFee += 37.50m;
-
             }
 
             // =============================================
