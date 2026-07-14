@@ -4371,12 +4371,12 @@ namespace DealEngine.WebUI.Controllers
                     adminFeeQty = quantity + 1; //(add 1 For ML Reserve Fund);
                 }
 
-                //           
-                //if (programme.BaseProgramme.SendInvoiceToOdoo)
-                //{
-                //    //  SendInvoiceToOdoo(programme.InformationSheet);
-                //    SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
-                //}
+
+                if (programme.BaseProgramme.SendInvoiceToOdoo)
+                {
+                    //  SendInvoiceToOdoo(programme.InformationSheet);
+                    SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
+                }
 
 
                 if (programme.InformationSheet.Status != status)
@@ -4423,12 +4423,12 @@ namespace DealEngine.WebUI.Controllers
                     emails.Add(programme.Owner.Email); // fallback
                 }
 
-                //await SendPolicyEmailsToOrganisationUsersAsync(
-                //               programmeId,
-                //               informationSheetId,
-                //               emails,
-                //               payload
-                //);
+                await SendPolicyEmailsToOrganisationUsersAsync(
+                               programmeId,
+                               informationSheetId,
+                               emails,
+                               payload
+                );
 
                 Programme renewedprogramme = await _programmeService.GetProgrammeByRenewalprogramme(programme.BaseProgramme.Id);
                 ClientProgramme renewedclientProgramme = await _programmeService.GetOriginalClientProgrammeByOwnerByProgramme(programme.Owner.Id, renewedprogramme.Id);
