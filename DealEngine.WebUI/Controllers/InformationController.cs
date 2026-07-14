@@ -2772,6 +2772,7 @@ namespace DealEngine.WebUI.Controllers
             return document;
         }
 
+
         [HttpPost]
         //public async Task<IActionResult> RenewInformation(Guid id)
          public async Task<IActionResult> RenewInformation(IFormCollection formCollection)

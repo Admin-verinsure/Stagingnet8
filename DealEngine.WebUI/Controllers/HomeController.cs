@@ -2028,7 +2028,7 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
             }
             if (programme.RenewFromProgramme != null)
             {
-                List<ClientProgramme> renewClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
+                List<ClientProgramme> renewClientProgrammes = await _programmeService.GetBoundClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
                 try
                 {
                     foreach (var client in renewClientProgrammes)

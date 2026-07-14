@@ -43,7 +43,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     }
                 }
 
-               // IDictionary<string, decimal> rates = BuildRulesTable(agreement, "aspremium");
+              //  IDictionary<string, decimal> rates = BuildRulesTable(agreement, "aspremium");
 
                 //Create default referral points based on the clientagreementrules
                 if (agreement.ClientAgreementReferrals.Count == 0)

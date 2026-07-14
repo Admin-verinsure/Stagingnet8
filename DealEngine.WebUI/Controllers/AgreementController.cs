@@ -8,8 +8,9 @@ using DealEngine.Services.Interfaces.Enums;
 using DealEngine.WebUI.Helpers;
 using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Agreement;
+using DealEngine.WebUI.Models.Milestone;
 using DealEngine.WebUI.Models.Programme;
-using DealEngine.WebUI.ServiceReference;
+using DealEngine.WebUI.ServiceReference; 
 using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -4265,17 +4266,9 @@ namespace DealEngine.WebUI.Controllers
                     if (!string.IsNullOrEmpty(agreement.Product.ProductPolicyNumberPrefixString))
                         agreement.PolicyNumber = agreement.Product.ProductPolicyNumberPrefixString + agreement.ClientInformationSheet.ReferenceId;
 
-
-                    //foreach (var doc in agreement.GetDocuments())
-                    //{
-                    //    if (!(doc.Path != null && doc.ContentType == "application/pdf" && doc.DocumentType == 0))
-                    //        doc.Delete(user);
-                    //}
-
                     if (agreement.Product.IsOptionalCombinedProduct)
                         continue;
 
-                    //var path = "C:\\Users\\LENOVO\\Desktop\\Verinsure\\Rotary\\wordings\\MD Reserve Fund 2026.pdf";
                     var path = agreement.Product.WordingDownloadURL;
                     if (!string.IsNullOrWhiteSpace(path))
                     {
@@ -4355,13 +4348,10 @@ namespace DealEngine.WebUI.Controllers
                     quantity += validUnits.Count(u => u.Name != "RotaryClubTrustOneOnly"); 
                 }
 
-                // Now handle the special units
                 if (clubtrust1onlyCount > 1)
                 {
                     quantity += (clubtrust1onlyCount - 1);
                 }
-                // if == 1 → do nothing (exclude it)
-                
 
                 decimal globalGuardPremium = programme.Agreements
                     .Where(a => a.DateDeleted == null
@@ -4382,11 +4372,11 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 //           
-                if (programme.BaseProgramme.SendInvoiceToOdoo)
-                {
-                    //  SendInvoiceToOdoo(programme.InformationSheet);
-                    SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
-                }
+                //if (programme.BaseProgramme.SendInvoiceToOdoo)
+                //{
+                //    //  SendInvoiceToOdoo(programme.InformationSheet);
+                //    SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
+                //}
 
 
                 if (programme.InformationSheet.Status != status)
@@ -4433,13 +4423,31 @@ namespace DealEngine.WebUI.Controllers
                     emails.Add(programme.Owner.Email); // fallback
                 }
 
-                await SendPolicyEmailsToOrganisationUsersAsync(
-                               programmeId,
-                               informationSheetId,
-                               emails,
-                               payload
-                           );
+                //await SendPolicyEmailsToOrganisationUsersAsync(
+                //               programmeId,
+                //               informationSheetId,
+                //               emails,
+                //               payload
+                //);
 
+                Programme renewedprogramme = await _programmeService.GetProgrammeByRenewalprogramme(programme.BaseProgramme.Id);
+                ClientProgramme renewedclientProgramme = await _programmeService.GetOriginalClientProgrammeByOwnerByProgramme(programme.Owner.Id, renewedprogramme.Id);
+                if (renewedprogramme != null && renewedclientProgramme == null)
+                {
+                   bool result = await RenewClientProgramme(programme.Id, renewedprogramme.Id);
+                    if (result)
+                    {
+                        await SendEmailforRenewedprogramme(
+                                programmeId,
+                                informationSheetId,
+                                emails);
+                    }
+                    else
+                    {
+                        _logger.LogError( "ProgrammeCloning failed. ");
+                    }
+                   
+                }
 
                 return Json(new
                 {
@@ -4456,6 +4464,35 @@ namespace DealEngine.WebUI.Controllers
                 return StatusCode(500, ex.ToString());
             }
         }
+ 
+        public async  Task<bool>  RenewClientProgramme(Guid ClientProgId, Guid ProgrammeId)
+        {
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return false;
+
+                if (user == null)
+                    return false;
+
+                if (ClientProgId == null)
+                    throw new Exception("ClientProgramme (" + ProgrammeId + ") doesn't belong to User " + user.UserName);
+                ClientProgramme ClonedClientProgramme = await _programmeService.CloneForRenew(user, ClientProgId, ProgrammeId);
+                await _programmeService.Update(ClonedClientProgramme);
+                return true;
+
+
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return false;
+            }
+        }
+
 
 
         [HttpGet]
@@ -4595,7 +4632,28 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+        
+        private async Task SendEmailforRenewedprogramme(
+            Guid programmeId,
+            Guid informationSheetId,
+            List<string> emails)
+        {
+            var programme = await _programmeService.GetClientProgrammebyId(programmeId);
+            var informationSheet = await _customerInformationService.GetInformation(informationSheetId);
 
+            var emailTemplate = programme.BaseProgramme.EmailTemplates
+                .FirstOrDefault(et => et.Type == "SendInformationSheetInstructionRenew");
+           
+            if (emailTemplate != null)
+            {
+                await _emailService.SendTemplateEmailsToUsersAsync(emails, emailTemplate,
+                  new List<SystemDocument>(),
+                  informationSheet,
+                  null
+                         );
+            }
+
+        }
         private async Task SendPolicyEmailsToOrganisationUsersAsync(
     Guid programmeId,
     Guid informationSheetId,
