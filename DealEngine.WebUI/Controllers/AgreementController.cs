@@ -4526,7 +4526,7 @@ namespace DealEngine.WebUI.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = ex.Message
+                    message = "Unable to generate the invoice. Please contact support if this continues."
                 });
             }
         }

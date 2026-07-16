@@ -516,10 +516,45 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                   $("#7").hide();
               }
 
+                        $(document).on("click", ".generate-invoice-link", function (e) {
+            e.preventDefault();
+            var programmeId = $(this).data("programme-id");
+            var $link = $(this);
 
+            $link.addClass("disabled").text("Generating...");
+
+            $.ajax({
+                url: '@Url.Action("GenerateInvoice", "Agreement")/' + programmeId,
+                type: "GET"
+            })
+            .done(function (response) {
+                if (response.success) {
+                    $("#invoiceToastHeader").removeClass("bg-danger text-white").addClass("bg-success text-white");
+                    $("#invoiceToastIcon").removeClass("fa-times-circle").addClass("fa-check-circle");
+                    $("#invoiceToastTitle").text("Success");
+                } else {
+                    $("#invoiceToastHeader").removeClass("bg-success text-white").addClass("bg-danger text-white");
+                    $("#invoiceToastIcon").removeClass("fa-check-circle").addClass("fa-times-circle");
+                    $("#invoiceToastTitle").text("Error");
+                }
+                $("#invoiceToastBody").text(response.message);
+                $("#invoiceToast").toast("show");
+            })
+            .fail(function () {
+                $("#invoiceToastHeader").removeClass("bg-success text-white").addClass("bg-danger text-white");
+                $("#invoiceToastIcon").removeClass("fa-check-circle").addClass("fa-times-circle");
+                $("#invoiceToastTitle").text("Error");
+                $("#invoiceToastBody").text("Something went wrong while generating the invoice.");
+                $("#invoiceToast").toast("show");
+            })
+            .always(function () {
+                $link.removeClass("disabled").text("Generate Invoice");
+            });
         });
 
-       
+                });
+
+
     </script>
 
 }

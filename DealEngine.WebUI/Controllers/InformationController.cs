@@ -1769,6 +1769,112 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+
+        [HttpPost]
+        public async Task<IActionResult> Upload(InformationViewModel model)
+        {
+            //string UploadedDocumentPath = _appSettingService.CKImagePath;
+            ClientInformationSheet answersheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+            ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
+            var user = await CurrentUser();
+            var path = "";
+            if (model != null)
+            {
+                if (model.File != null)
+                {
+
+                    var contentType = model.File.ContentType;
+                    var extension = "";
+                    var filename = "";
+
+                    if (contentType == "application/pdf")
+                    {
+                        extension = ".pdf";
+                    }
+                    else if (contentType == "application/vnd.oasis.opendocument.graphics")
+                    {
+                        extension = ".odg";
+                    }
+                    else if (contentType == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                    {
+                        extension = ".docx";//.gdoc
+                    }
+                    else
+                    {
+                        throw new FileFormatException("Invalid File Type");
+                    }
+                    if (model.DocumentName != null)
+                    {
+                        filename = model.DocumentName + extension;
+                    }
+                    else if (model.File.FileName != null)
+                    {
+                        filename = model.File.FileName;
+                    }
+
+                    //path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+
+                    if (_appSettingService.IsLinuxEnv == "True")
+                    {
+                        path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation + "";
+                    }
+                    else
+                    {
+                        path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
+
+                    }
+                    //var path = Path.Combine(_hostingEnv.WebRootPath, "files", model.Name, "attachmentfiles");
+                    // var path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation +"";
+                    System.IO.Directory.CreateDirectory(path);
+                    path = Path.Combine(path, filename);
+
+                    try
+                    {
+
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                            model.File.CopyTo(fileStream);
+                        }
+
+                        DealEngine.Domain.Entities.Document newFile = new DealEngine.Domain.Entities.Document
+                        {
+                            Name = filename,
+                            Description = "File for " + model.DocumentOrganisation,
+                            DocumentType = 0,
+                            IsTemplate = true,
+                            ContentType = model.File.ContentType,
+                            FileRendered = false,
+                            Path = path,
+                            ClientInformationSheet = clientProgramme.InformationSheet,
+                            OwnerOrganisationName = model.DocumentOrganisation,
+                            DocEffectiveDate = model.DocEffectiveDate,
+                            Extension = extension
+                        };
+
+                        await _fileService.UploadFile(newFile);
+
+                        //Guid productID = Guid.Parse(model.Product);
+                        //Product myProduct = await _iproductService.GetProductById(productID);
+                        //myProduct.Documents.Add(newFile);
+                        //await _iproductService.UpdateProduct(myProduct);
+                    }
+
+                    catch (Exception Ex)
+                    {
+                        Console.WriteLine(Ex.ToString());
+                    }
+
+                }
+            }
+            var url = "/Information/EditInformation/" + model.ClientProgrammeId;
+            return Redirect(url);
+
+        }
+
+
+
+
         [HttpGet]
         public async Task<IActionResult> ResetStatus(Guid id)
         {
