@@ -49,7 +49,11 @@
                                 <!-- 20% - STATUS -->
 
                                 <div class="col-4 text-center">
-                                    @if (org.InsuranceAttributes.FirstOrDefault()?.Name == "RotaryClubTrustOneOnly")
+                                    @if (org.InsuranceAttributes.FirstOrDefault()?.Name == "RotaryClubTrustOneOnly"
+                                         || org.InsuranceAttributes.FirstOrDefault()?.Name == "Incorporated Society"
+                                         || org.InsuranceAttributes.FirstOrDefault()?.Name == "RotaryRIFellowshipGroup"
+                                         || org.InsuranceAttributes.FirstOrDefault()?.Name == "RotaryRIActionGroup"
+                                                                    )
                                     {
                                         <!-- 🔵 HARD CODED -->
                                         <span class="badge bg-primary">
@@ -72,7 +76,11 @@
 
                                 <!-- 20% - BUTTON -->
                                 <div class="col-4 text-end">
-                                    @if (org.InsuranceAttributes.FirstOrDefault()?.Name == "RotaryClubTrustOneOnly")
+                                    @if (org.InsuranceAttributes.FirstOrDefault()?.Name == "RotaryClubTrustOneOnly"
+                                                                    || org.InsuranceAttributes.FirstOrDefault()?.Name == "Incorporated Society"
+                                                                    || org.InsuranceAttributes.FirstOrDefault()?.Name == "RotaryRIFellowshipGroup"
+                                                                    || org.InsuranceAttributes.FirstOrDefault()?.Name == "RotaryRIActionGroup"
+                                                                    )
                                     {
                                         <!-- 🔵 SHOW LABEL INSTEAD -->
                                         <span class="btn btn-sm btn-success"

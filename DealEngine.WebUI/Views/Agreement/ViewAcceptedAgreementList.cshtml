@@ -407,6 +407,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                 }
 
             </form>
+
         </div>
 
     </div>
@@ -516,7 +517,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                   $("#7").hide();
               }
 
-                        $(document).on("click", ".generate-invoice-link", function (e) {
+             $(document).on("click", ".generate-invoice-link", function (e) {
             e.preventDefault();
             var programmeId = $(this).data("programme-id");
             var $link = $(this);
@@ -552,7 +553,7 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
             });
         });
 
-                });
+         });
 
 
     </script>

@@ -165,7 +165,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
             else {
                 // ✅ NORMAL LOGIC
-                TermPremium += CalculatePremium(informationSheet, attr);
+                TermPremium += CalculatePremium(informationSheet, attr, rates);
             }
 
            // TermPremium += CalculatePremium(informationSheet, attr);
@@ -419,7 +419,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
 
 
-        private decimal CalculatePremium(ClientInformationSheet informationSheet, OrganisationAttribute attr)
+        private decimal CalculatePremium(ClientInformationSheet informationSheet, OrganisationAttribute attr, IDictionary<string, decimal> rates)
         {
             decimal entityChargeTotal = 0m;
             //const decimal GST = 0.15m;
@@ -452,7 +452,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     }
 
                     // Charge all normal entities + extra RotaryClubTrustOneOnly entities
-                        entityChargeTotal += 195m;
+                        entityChargeTotal += rates["mdpremium"];
                     }             
                    
             }

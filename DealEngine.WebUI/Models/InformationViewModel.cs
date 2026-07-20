@@ -1604,7 +1604,7 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> MLViewModelStorage { get; set; }
         public IList<SelectListItem> MLViewModelCompanyFinancial { get; set; }
         public IList<SelectListItem> HasRunoutOptions { get; set; }
-        public string TotalFundsUnderManagement { get; set; }
+        public decimal? TotalFundsUnderManagement { get; set; }
 
 
 

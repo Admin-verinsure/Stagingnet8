@@ -43,7 +43,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     }
                 }
 
-              //  IDictionary<string, decimal> rates = BuildRulesTable(agreement, "aspremium");
+                IDictionary<string, decimal> rates = BuildRulesTable(agreement, "plpremium_rotary_upto15_members", "plpremium_district_over15_permember",
+                                                                                 "plpremium_district_upto40_members", "plpremium_district_over40_permember",
+                                                                                 "plpremium_club_nontrading_trust", "plpremium_special_trading_trust_company",
+                                                                                 "plpremium_special_trading_over1m", "plpremium_local_chapter_fellowship");
 
                 //Create default referral points based on the clientagreementrules
                 if (agreement.ClientAgreementReferrals.Count == 0)
@@ -107,7 +110,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                                 organisation.Id,
                                 informationSheet.Owner.Id,
                                 agreement,
-                                clubtrust1only);
+                                clubtrust1only, rates);
                         }
                     }
 
@@ -415,7 +418,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
 
 
-        private decimal CalculatePremium(string orgType, OrganisationAttribute attr,bool orgtype, Guid  orgid,Guid ownerid,ClientAgreement agreement,int clubtrust1only)
+        private decimal CalculatePremium(string orgType, OrganisationAttribute attr,bool orgtype, Guid  orgid,Guid ownerid,ClientAgreement agreement,int clubtrust1only,IDictionary<string, decimal> rates)
         {
             decimal total = 0m;
 
@@ -452,7 +455,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 orgType == "Rotaract" ||
                 orgType == "RotaryCommunityCorp")
             {
-                decimal basePremium = 295m; // includes admin fee
+                decimal basePremium = rates["plpremium_rotary_upto15_members"]; // includes admin fee
                 if (countedMembers < 15)
                 {
                     total += basePremium;
@@ -460,7 +463,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 else
                 {
                     int extraMembers = countedMembers - 15;
-                    total += basePremium + (extraMembers * 14.5m);
+                    total += basePremium + (extraMembers * rates["plpremium_district_over15_permember"]);
                 }
                 agreement.BrokerFee += 37.50m;
             }
@@ -474,11 +477,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
                 if (clubCount <= 40)
                 {
-                    total += 1350m;
+                    total += rates["plpremium_district_upto40_members"];
                 }
                 else
                 {
-                    total += 1350m + ((clubCount - 40) * 30m);
+                    total += rates["plpremium_district_upto40_members"] + ((clubCount - 40) * rates["plpremium_district_over40_permember"]);
                 }
                 agreement.BrokerFee += 37.50m;
 
@@ -504,7 +507,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                      orgType == "RotaryCompany")
             {
 
-                decimal basePremium = 750m;
+                decimal basePremium = rates["plpremium_special_trading_trust_company"];
                 bool over1m = false;
                 if (attr != null)
                 {
@@ -519,7 +522,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     decimal increments = Math.Ceiling((revenue - 1_000_000m) / 1_000_000m);
 
                     if (increments > 0)
-                        basePremium += increments * 500m;
+                        basePremium += increments * rates["plpremium_special_trading_over1m"];
                 }
 
                 total += basePremium;
@@ -532,7 +535,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                      orgType == "RotaryRIFellowshipGroup" ||
                      orgType == "RotaryOther")
             {
-                decimal basePremium = 50m;
+                decimal basePremium = rates["plpremium_local_chapter_fellowship"];
                 total += basePremium;
                 agreement.BrokerFee += 37.50m;
 

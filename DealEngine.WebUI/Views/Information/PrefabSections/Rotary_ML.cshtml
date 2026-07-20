@@ -106,7 +106,15 @@
                     </label>
                 </div>
                 <div class="col-3">
-                    @Html.TextAreaFor(m => m.MLViewModel.TotalFundsUnderManagement, new { @class = "form-control", @id = "TotalFundsUnderManagement", @type = "text", onchange = "OnChange(this.id, this.name)", @required = "", @maxlength = "250", @placeholder = "Max characters is 250. Over 250 will not be stored." })
+                    @Html.TextBoxFor(m => m.MLViewModel.TotalFundsUnderManagement, new { @class = "form-control",
+                    @id = "TotalFundsUnderManagement", 
+                                        @type = "number",
+                                        @inputmode = "numeric",
+                                        @oninput = "this.value = this.value.replace(/[^0-9]/g, '')",
+                                        @onchange = "OnChange(this.id, this.name)",
+                                        @required = ""
+                    })
+
                 </div>
             </div>
         </div>
