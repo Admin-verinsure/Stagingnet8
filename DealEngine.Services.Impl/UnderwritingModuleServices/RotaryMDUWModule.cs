@@ -161,7 +161,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 decimal yearlyPremium = monthlyPremium * 12;
 
                 // prorate based on agreement period
-                TermPremium = yearlyPremium / coverperiodindays * agreementperiodindays;
+                TermPremium = yearlyPremium;
             }
             else {
                 // ✅ NORMAL LOGIC

@@ -4371,11 +4371,12 @@ namespace DealEngine.WebUI.Controllers
                     adminFeeQty = quantity + 1; //(add 1 For ML Reserve Fund);
                 }
 
-
+                ////send units and invoice to ODOO 
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
                     //  SendInvoiceToOdoo(programme.InformationSheet);
-                    SendInvoicePayloadPOC(programme.InformationSheet, programme, quantity, globalGuardPremium, adminFeeQty);
+                    SendInvoicePayloadPOC(programme.InformationSheet, programme,
+                                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ);
                 }
 
 
@@ -5842,12 +5843,23 @@ namespace DealEngine.WebUI.Controllers
             ClientProgramme programme,
             decimal materialDamageQty,
             decimal globalGuardPremium,
-            decimal adminFeeQty)
+            decimal adminFeeQty,
+             bool isOutsideNZ)
         {
             if (sheet is null || programme is null)
                 return BadRequest("Invalid input.");
 
             var totalAmount = materialDamageQty + globalGuardPremium + adminFeeQty;
+            var MdReserve2025 = "3c9389ba-a8f0-466f-8bb2-a53e0a0f39d1";
+            var PlMl2025 = "fe4852f3-de8f-442f-8fd9-60defb9a9d3e";
+
+            var MdReserve2026 = "7efe0e17-0069-4d78-81ad-10cb84c11137";
+
+            var PacificaPl = "cadc69c9-d664-471e-b1df-6ded0cfc4299";
+            var PacificaMlReserve2026 = "d0ef7146-8c44-4f48-a3a1-07c06e98123d";
+
+            string materialDamageProductGuid = MdReserve2026;
+            string globalGuardProductGuid;
 
             if (totalAmount <= 0)
                 return BadRequest("Invoice amount must be > 0.");
@@ -5893,21 +5905,34 @@ namespace DealEngine.WebUI.Controllers
 
                 if (materialDamageQty > 0)
                 {
+                     materialDamageProductGuid = isOutsideNZ ? PacificaMlReserve2026
+                     : programme.BaseProgramme.Name.Contains("(2025)", StringComparison.OrdinalIgnoreCase)
+                     ? MdReserve2025 : MdReserve2026;
+
                     lines.Add(new
                     {
                         name = MATERIAL_DAMAGE,
                         qty = materialDamageQty,
-                        product_guid = "bbfc4377-af90-41ae-a69b-e7d23caf1284"
+                        product_guid = Guid.Parse(materialDamageProductGuid)
                     });
                 }
 
                 if (globalGuardPremium > 0)
                 {
+                    if (isOutsideNZ)
+                    {
+                        globalGuardProductGuid = PacificaPl;
+                    }
+                    else
+                    {
+                        globalGuardProductGuid = PlMl2025; // Same GUID for NZ regardless of year
+                    }
+
                     lines.Add(new
                     {
                         name = GLOBAL_GUARD,
                         qty = globalGuardPremium,
-                        product_guid = "fe4852f3-de8f-442f-8fd9-60defb9a9d3e"
+                        product_guid = globalGuardProductGuid
                     });
                 }
 
