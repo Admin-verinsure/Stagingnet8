@@ -4327,8 +4327,8 @@ namespace DealEngine.WebUI.Controllers
                 decimal totalPremium = 0m;
                 const string MATERIAL_DAMAGE = "Rotary Material Damage";
                 const string GLOBAL_GUARD = " Rotary Association-Multinational Liability (Global Guard GL)";
-
-
+                const string GLOBAL_PL_GUARD = "Rotary Associations - Management Liability(Forefront)";
+                decimal globalGuardPLPremium = 0m;
 
                 int quantity = 0;
                 int clubtrust1onlyCount = 0;
@@ -4362,6 +4362,7 @@ namespace DealEngine.WebUI.Controllers
                         .Sum(t => t.Premium)
                     );
 
+
                 decimal adminFeeQty = quantity + 1; //(add 1 For material damage);
                 bool isOutsideNZ = sheet.Owner != null
                    && sheet.Owner.IsOutsideNZ;
@@ -4369,14 +4370,24 @@ namespace DealEngine.WebUI.Controllers
                 if (isOutsideNZ)
                 {
                     adminFeeQty = quantity + 1; //(add 1 For ML Reserve Fund);
+                    
+                    globalGuardPLPremium = programme.Agreements
+                    .Where(a => a.DateDeleted == null
+                             && a.Product?.Name == GLOBAL_PL_GUARD)
+                    .Sum(a =>
+                        (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                        .Where(t => t.DateDeleted == null && t.Bound)
+                        .Sum(t => t.Premium)
+                    );
+
+
                 }
 
                 ////send units and invoice to ODOO 
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
-                    //  SendInvoiceToOdoo(programme.InformationSheet);
                     SendInvoicePayloadPOC(programme.InformationSheet, programme,
-                                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ);
+                                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium);
                 }
 
 
@@ -5844,16 +5855,17 @@ namespace DealEngine.WebUI.Controllers
             decimal materialDamageQty,
             decimal globalGuardPremium,
             decimal adminFeeQty,
-             bool isOutsideNZ)
+            bool isOutsideNZ,
+            decimal globalGuardPLPremium)
         {
             if (sheet is null || programme is null)
                 return BadRequest("Invalid input.");
 
             var totalAmount = materialDamageQty + globalGuardPremium + adminFeeQty;
-            var MdReserve2025 = "3c9389ba-a8f0-466f-8bb2-a53e0a0f39d1";
+            var MdReserve2026 = "3c9389ba-a8f0-466f-8bb2-a53e0a0f39d1";
             var PlMl2025 = "fe4852f3-de8f-442f-8fd9-60defb9a9d3e";
 
-            var MdReserve2026 = "7efe0e17-0069-4d78-81ad-10cb84c11137";
+            var MdReserve2027 = "7efe0e17-0069-4d78-81ad-10cb84c11137";
 
             var PacificaPl = "cadc69c9-d664-471e-b1df-6ded0cfc4299";
             var PacificaMlReserve2026 = "d0ef7146-8c44-4f48-a3a1-07c06e98123d";
@@ -5905,9 +5917,8 @@ namespace DealEngine.WebUI.Controllers
 
                 if (materialDamageQty > 0)
                 {
-                     materialDamageProductGuid = isOutsideNZ ? PacificaMlReserve2026
-                     : programme.BaseProgramme.Name.Contains("(2025)", StringComparison.OrdinalIgnoreCase)
-                     ? MdReserve2025 : MdReserve2026;
+                     materialDamageProductGuid = programme.BaseProgramme.Name.Contains("(2026)", StringComparison.OrdinalIgnoreCase)
+                     ? MdReserve2026 : MdReserve2027;
 
                     lines.Add(new
                     {
@@ -5935,6 +5946,18 @@ namespace DealEngine.WebUI.Controllers
                         product_guid = globalGuardProductGuid
                     });
                 }
+
+                if (isOutsideNZ && globalGuardPLPremium > 0)
+                {
+                    lines.Add(new
+                        {
+                            name = GLOBAL_GUARD,
+                            qty = globalGuardPLPremium,
+                            product_guid = PacificaMlReserve2026
+                        });
+                    
+                }
+
 
                 if (adminFeeQty > 0)
                 {

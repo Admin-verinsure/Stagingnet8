@@ -41,7 +41,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 }
             }
 
-            //IDictionary<string, decimal> rates = BuildRulesTable(agreement, "aspremium");
+           // IDictionary<string, decimal> rates = BuildRulesTable(agreement, "aspremium");
 
             //Create default referral points based on the clientagreementrules
             if (agreement.ClientAgreementReferrals.Count == 0)
@@ -80,6 +80,17 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
             TermPremium1mil = TermPremium1mil / coverperiodindays * agreementperiodindays;
             TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
+            bool isOutsideNZ = informationSheet.Owner != null
+                   && informationSheet.Owner.IsOutsideNZ;
+
+            if (isOutsideNZ)
+            {
+                // 🔥 SPECIAL RULE
+                decimal monthlyPremium = 2.50m;
+                // yearly base
+                decimal yearlyPremium = monthlyPremium * 12;
+                TermPremium1mil = yearlyPremium;
+            }
 
             ClientAgreementTerm term1millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "AS", TermLimit1mil, TermExcess);
             term1millimitpremiumoption.TermLimit = TermLimit1mil;
@@ -90,7 +101,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             term1millimitpremiumoption.Brokerage = TermBrokerage1mil;
             term1millimitpremiumoption.DateDeleted = null;
             term1millimitpremiumoption.DeletedBy = null;
-
 
             //Referral points per agreement
             uwrasreferral(underwritingUser, agreement);

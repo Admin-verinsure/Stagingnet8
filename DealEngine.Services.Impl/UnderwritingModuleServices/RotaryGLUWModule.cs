@@ -133,17 +133,17 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 // PRORATA PREMIUM
                 // =============================================
 
-                DateTime fullAnnualExpiry = agreement.InceptionDate.AddYears(1);
+                //DateTime fullAnnualExpiry = agreement.InceptionDate.AddYears(1);
 
-                    decimal fullAnnualDays =
-                        (decimal)(fullAnnualExpiry - agreement.InceptionDate).TotalDays;
+                //    decimal fullAnnualDays =
+                //        (decimal)(fullAnnualExpiry - agreement.InceptionDate).TotalDays;
 
-                    decimal actualPolicyDays =
-                        (decimal)(agreement.ExpiryDate - agreement.InceptionDate).TotalDays;
-                    // Apply prorata
-                    premium = Math.Round(
-                        (premium / fullAnnualDays) * actualPolicyDays,
-                        2);
+                //    decimal actualPolicyDays =
+                //        (decimal)(agreement.ExpiryDate - agreement.InceptionDate).TotalDays;
+                //    // Apply prorata
+                //    premium = Math.Round(
+                //        (premium / fullAnnualDays) * actualPolicyDays,
+                //        2);
 
                 
 
