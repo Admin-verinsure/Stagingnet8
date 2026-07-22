@@ -830,6 +830,7 @@ namespace DealEngine.Services.Impl
             newClientProgramme.ClientProgrammeExpiryDate = oldClientProgramme.ClientProgrammeExpiryDate;
             newClientProgramme.BaseProgramme = currentProgramme;
             newClientProgramme.PaymentType = oldClientProgramme.PaymentType;
+            newClientProgramme.IsIssued = true;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalBranchCode))
                 newClientProgramme.EGlobalBranchCode = oldClientProgramme.EGlobalBranchCode;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalClientNumber))
