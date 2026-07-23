@@ -5864,7 +5864,7 @@ namespace DealEngine.WebUI.Controllers
             var totalAmount = materialDamageQty + globalGuardPremium + adminFeeQty;
             var MdReserve2026 = "3c9389ba-a8f0-466f-8bb2-a53e0a0f39d1";
             var PlMl2025 = "fe4852f3-de8f-442f-8fd9-60defb9a9d3e";
-
+            int pacificaclubquantity = 1;
             var MdReserve2027 = "7efe0e17-0069-4d78-81ad-10cb84c11137";
 
             var PacificaPl = "cadc69c9-d664-471e-b1df-6ded0cfc4299";
@@ -5933,18 +5933,25 @@ namespace DealEngine.WebUI.Controllers
                     if (isOutsideNZ)
                     {
                         globalGuardProductGuid = PacificaPl;
+                        lines.Add(new
+                        {
+                            name = GLOBAL_GUARD,
+                            qty = pacificaclubquantity,
+                            product_guid = globalGuardProductGuid
+                        });
                     }
                     else
                     {
-                        globalGuardProductGuid = PlMl2025; // Same GUID for NZ regardless of year
+                        globalGuardProductGuid = PlMl2025;
+                        lines.Add(new
+                        {
+                            name = GLOBAL_GUARD,
+                            qty = globalGuardPremium,
+                            product_guid = globalGuardProductGuid
+                        });// Same GUID for NZ regardless of year
                     }
 
-                    lines.Add(new
-                    {
-                        name = GLOBAL_GUARD,
-                        qty = globalGuardPremium,
-                        product_guid = globalGuardProductGuid
-                    });
+                    
                 }
 
                 if (isOutsideNZ && globalGuardPLPremium > 0)
@@ -5952,7 +5959,7 @@ namespace DealEngine.WebUI.Controllers
                     lines.Add(new
                         {
                             name = GLOBAL_GUARD,
-                            qty = globalGuardPLPremium,
+                            qty = pacificaclubquantity,
                             product_guid = PacificaMlReserve2026
                         });
                     
