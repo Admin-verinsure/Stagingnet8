@@ -3245,16 +3245,25 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
             DataColumn column2 = new DataColumn();
             DataColumn column3 = new DataColumn();
             DataColumn column4 = new DataColumn();
+            DataColumn column5 = new DataColumn();
+            DataColumn column6 = new DataColumn();
+            DataColumn column7 = new DataColumn();
 
             column1 = new DataColumn("Club Name", typeof(string));
             column2 = new DataColumn("District", typeof(string));
             column3 = new DataColumn("Status of Information Sheet", typeof(string));
             column4 = new DataColumn("Outside NewZealand", typeof(string));
+            column5 = new DataColumn("Administrator", typeof(string));
+            column6 = new DataColumn("Mobile", typeof(string));
+            column7 = new DataColumn("Email", typeof(string));
 
             dt.Columns.Add(column1);
             dt.Columns.Add(column2);
             dt.Columns.Add(column3);
             dt.Columns.Add(column4);
+            dt.Columns.Add(column5);
+            dt.Columns.Add(column6);
+            dt.Columns.Add(column7);
             var clientProgrammes = programme.ClientProgrammes
                                .Where(cp => cp.InformationSheet.DateDeleted == null && cp.Owner.District == district)
                                .ToList();
@@ -3269,20 +3278,51 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
                         clientInformationSheetID = cp.InformationSheet.Id;
                     }
                     List<dynamic> tempListReport = new List<dynamic>();
-                    Organisation organisation = cp.InformationSheet.Owner;
-                    User user = await _userService.GetApplicationUserByEmail(organisation.Email);
+                    Organisation organisation = cp.InformationSheet?.Owner;
+
+                    // Resolve admin by preferred single-primary-org lookup first.
+                    User adminUser = null;
+                    if (organisation != null)
+                    {
+                        var primaryOrgUsers = await _userService.GetUsersByPrimaryOrganisationId(organisation.Id);
+                        adminUser = primaryOrgUsers?.FirstOrDefault();
+
+                        // Fallback: if no primary-org user exists, use the broader organisation user list.
+                        if (adminUser == null)
+                        {
+                            var fallbackAdminEmail = (await _userService.GetAllUserforOrganisation(organisation)).FirstOrDefault();
+                            if (!string.IsNullOrWhiteSpace(fallbackAdminEmail))
+                            {
+                                adminUser = await _userService.GetApplicationUserByEmail(fallbackAdminEmail);
+                            }
+                        }
+                    }
+
+                    var adminName = adminUser == null
+                        ? string.Empty
+                        : string.Join(" ", new[] { adminUser.FirstName, adminUser.LastName }
+                            .Where(s => !string.IsNullOrWhiteSpace(s)));
+
+                    // Phone/email can be empty in some records, so always null-safe.
+                    var adminMobile = adminUser?.MobilePhone ?? adminUser?.Phone ?? string.Empty;
+                    var adminEmail = adminUser?.Email ?? string.Empty;
                    
                     DataRow newRow = dt.NewRow();
 
                     tempListReport = new List<dynamic>();
-                    newRow[0] = organisation.Name;
-                    newRow[1] = organisation.District; //Add((cp.EGlobalClientNumber).ToString());
-                    ClientInformationSheet clientInformationSheet  = await _clientInformationService.GetClientInformationSheetFromOrganisation(organisation);
+                    newRow[0] = organisation?.Name ?? string.Empty;
+                    newRow[1] = organisation?.District ?? string.Empty; //Add((cp.EGlobalClientNumber).ToString());
+                    ClientInformationSheet clientInformationSheet  = organisation == null
+                        ? null
+                        : await _clientInformationService.GetClientInformationSheetFromOrganisation(organisation);
 
                     newRow[2] = clientInformationSheet?.Status == "Not Taken Up By Broker"
                      ? "Not Started"
-                     : clientInformationSheet?.Status;
-                    newRow[3] = organisation.IsOutsideNZ ? "Yes" : "No";
+                     : clientInformationSheet?.Status ?? string.Empty;
+                    newRow[3] = organisation != null && organisation.IsOutsideNZ ? "Yes" : "No";
+                    newRow[4] = adminName;
+                    newRow[5] = adminMobile;
+                    newRow[6] = adminEmail;
 
                     dt.Rows.Add(newRow);
                     //if (tempListReport.Count > 0)
