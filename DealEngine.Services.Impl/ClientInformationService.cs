@@ -395,6 +395,12 @@ namespace DealEngine.Services.Impl
             var clientsheet = list.LastOrDefault();
             return clientsheet;
         }
+        public async Task<ClientInformationSheet> GetSheetFromOrganisationbyprogramme(Organisation organisation , Guid ClientprogrammeID)
+        {
+            var list = await _customerInformationRepository.FindAll().Where(s => s.Owner.Id == organisation.Id && s.Programme.Id == ClientprogrammeID).ToListAsync();
+            var clientsheet = list.LastOrDefault();
+            return clientsheet;
+        }
     }
 
 
