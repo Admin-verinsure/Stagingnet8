@@ -23,6 +23,7 @@ namespace DealEngine.Services.Interfaces
         Task<SubClientInformationSheet> GetSubInformationSheetFor(Organisation principal);
         Task DetachOrganisation(IFormCollection collection);
         Task<ClientInformationSheet> GetClientInformationSheetFromOrganisation(Organisation organisation);
+        Task<ClientInformationSheet> GetSheetFromOrganisationbyprogramme(Organisation organisation,Guid ClientProgrammeID);
     }
 }
 

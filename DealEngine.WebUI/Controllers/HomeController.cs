@@ -3314,7 +3314,7 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
                     newRow[1] = organisation?.District ?? string.Empty; //Add((cp.EGlobalClientNumber).ToString());
                     ClientInformationSheet clientInformationSheet  = organisation == null
                         ? null
-                        : await _clientInformationService.GetClientInformationSheetFromOrganisation(organisation);
+                        : await _clientInformationService.GetSheetFromOrganisationbyprogramme(organisation,cp.Id);
 
                     newRow[2] = clientInformationSheet?.Status == "Not Taken Up By Broker"
                      ? "Not Started"
@@ -4029,6 +4029,7 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
                     else if (queryselect == "DistrictReport")
                     {
                             var district = formCollection["district"];
+                        ViewBag.district = district;
                         table = await GetOnDemanDistrictReport(ProgrammeId, queryselect, table, district);
 
                     }
