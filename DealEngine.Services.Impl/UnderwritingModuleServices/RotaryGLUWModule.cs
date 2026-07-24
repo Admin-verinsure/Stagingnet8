@@ -107,7 +107,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                                 unit.Name,
                                 attr,
                                 orgtype,
-                                organisation.Id,
+                                organisation,
                                 informationSheet.Owner.Id,
                                 agreement,
                                 clubtrust1only, rates);
@@ -418,13 +418,11 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
 
 
-        private decimal CalculatePremium(string orgType, OrganisationAttribute attr,bool orgtype, Guid  orgid,Guid ownerid,ClientAgreement agreement,int clubtrust1only,IDictionary<string, decimal> rates)
+        private decimal CalculatePremium(string orgType, OrganisationAttribute attr,bool orgtype, Organisation organisation,Guid ownerid,ClientAgreement agreement,int clubtrust1only,IDictionary<string, decimal> rates)
         {
             decimal total = 0m;
 
-
             decimal BrokerFee = 0m;
- 
             // =============================================
             // COUNTED MEMBERS (different for each org type)
             // =============================================
@@ -439,9 +437,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             if (orgType == "RotaryClub")
             {
                 countedMembers =
-                    (attr.ActiveFeePaying ?? 0) +
-                    (attr.Family ?? 0) +
-                    ((attr.Corporate ?? 0) * 3);
+                    (organisation.OrganisationAttribute.ActiveFeePaying ?? 0) +
+                    (organisation.OrganisationAttribute.Family ?? 0) +
+                    ((organisation.OrganisationAttribute.Corporate ?? 0) * 3);
             }
             else if (orgType == "Rotaract" || orgType == "RotaryCommunityCorp")
             {
@@ -473,7 +471,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             // =============================================
             else if (orgType == "RotaryDistrict")
             {
-                int clubCount = attr.DistrictTotal ?? 0;
+                int clubCount = organisation.OrganisationAttribute.DistrictTotal ?? 0;
 
                 if (clubCount <= 40)
                 {
@@ -511,12 +509,12 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 bool over1m = false;
                 if (attr != null)
                 {
-                    over1m = attr.SPT_RevenueOver1m?.ToLower() == "yes";
+                    over1m = organisation.OrganisationAttribute.SPT_RevenueOver1m?.ToLower() == "yes";
                 }
 
                 if (over1m)
                 {
-                    decimal revenue = attr.SPT_Revenue ?? 0;
+                    decimal revenue = organisation.OrganisationAttribute.SPT_Revenue ?? 0;
 
                     // Count number of extra $1 million blocks
                     decimal increments = Math.Ceiling((revenue - 1_000_000m) / 1_000_000m);
