@@ -1656,39 +1656,42 @@
 
     
       $(document).on("click", "#namedpartydetailssubmit", function () {
+            console.log("Button clicked");
 
-             console.log("Button clicked");
-             debugger;
-              var btn = $("#namedpartydetailssubmit");
-              btn.prop("disabled", true).text("Saving...");
-             var form = document.getElementById("FullSubmissionForm");
-             var formData = new FormData(form);
+            var btn = $("#namedpartydetailssubmit");
+            btn.prop("disabled", true).text("Saving...");
 
-             $.ajax({
-                 url: '/Information/UploadAndValidate',
-                 type: 'POST',
-                 data: formData,
-                 processData: false,
-                 contentType: false,
+            submitAndValidate();
 
-                 success: function (response) {
+            btn.prop("disabled", false).text("Save details");
 
-                     console.log("Saved + validated");
+      });
 
-                     updateOrganisationStatus(response);
-                     btn.prop("disabled", false).text("Save details");
 
-                  },
-                 error: function (err) {
-                     console.error(err);
-                     btn.prop("disabled", false).text("Save details");
-                     alert("Error submitting form");
-                 }
-             });
+    function submitAndValidate() {
 
-         });
+        var form = document.getElementById("FullSubmissionForm");
+        var formData = new FormData(form);
 
-         function updateOrganisationStatus(response) {
+        $.ajax({
+            url: '/Information/UploadAndValidate',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function (response) {
+
+                console.log("Auto validated");
+
+                updateOrganisationStatus(response);
+            },
+            error: function (err) {
+                console.error(err);
+            }
+        });
+    }
+      function updateOrganisationStatus(response) {
 
                  debugger;
              response.forEach(function (org) {

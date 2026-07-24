@@ -63,13 +63,13 @@
                                     else
                                     {
                                         <!-- 🔁 NORMAL LOGIC -->
-                                        <span class="badge status-badge
-                                            @(org.IsValid == true ? "bg-success" :
-                                              org.IsValid == false ? "bg-danger" : "bg-warning")">
+                                       <span class="badge status-badge
+                                           @(org.IsValid == true ? "bg-success" :
+                                           org.IsValid == false ? "bg-danger" : "bg-warning")">
 
-                                            @org.ValidationMessage
-
-                                        </span>
+                                           @(org.IsValid == false ? "Please Complete Named Party"
+                                                    : org.ValidationMessage)
+                                       </span>
                                     }
 
                                 </div>
@@ -373,7 +373,15 @@
 </div>
 @section pagespecific {
     <script>
+        $(document).ready(function () {
 
+            console.log("Page loaded → auto validating");
+
+            submitAndValidate();
+
+        });
+
+          
        
     </script>
 }

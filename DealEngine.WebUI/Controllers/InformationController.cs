@@ -2130,15 +2130,12 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadAndValidate(InformationViewModel model)
+        public async Task<IActionResult> UploadAndValidateold(InformationViewModel model)
         {
             Organisation selectedorg = await _organisationService.GetOrganisation(model.SelectedOrganisationId);
+            selectedorg.OrganisationAttribute = new OrganisationAttribute(await CurrentUser());
 
-            if (model.OrganisationViewModel.OrganisationAttribute == null)
-            {
-                model.OrganisationViewModel.OrganisationAttribute = new OrganisationAttribute(await CurrentUser());
-            }
-            else
+            if (model.OrganisationViewModel.OrganisationAttribute != null)
             {
                 selectedorg.OrganisationAttribute =  model.OrganisationViewModel.OrganisationAttribute;
             }
@@ -2200,7 +2197,7 @@ namespace DealEngine.WebUI.Controllers
             // SAVE HERE
             //var dbOrg = await _organisationService.GetOrganisation(org.Id);
             //dbOrg.OrganisationAttribute = attr;
-
+            
             await _organisationService.Update(selectedorg);
 
                 results.Add(new
@@ -2222,7 +2219,138 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UploadAndValidate(InformationViewModel model)
+        {
+            var selectedorg = await _organisationService.GetOrganisation(model.SelectedOrganisationId);
 
+            if (selectedorg == null)
+                return Json(new { error = "Organisation not found" });
+
+            // 🔥 GET EXISTING OR CREATE NEW
+            var attr = selectedorg.OrganisationAttribute
+                       ?? new OrganisationAttribute(await CurrentUser());
+
+            var modelAttr = model.OrganisationViewModel?.OrganisationAttribute;
+
+            // 🔥 UPDATE VALUES (DO NOT REPLACE OBJECT)
+            if (modelAttr != null)
+            {
+                attr.ActiveFeePaying = modelAttr.ActiveFeePaying;
+                attr.Honorary = modelAttr.Honorary;
+                attr.Associate = modelAttr.Associate;
+                attr.Family = modelAttr.Family;
+                attr.Community = modelAttr.Community;
+                attr.Volunteer = modelAttr.Volunteer;
+                attr.Corporate = modelAttr.Corporate;
+                attr.Alumni = modelAttr.Alumni;
+                attr.Trustees = modelAttr.Trustees;
+                attr.OtherMembers = modelAttr.OtherMembers;
+                attr.ClubTotal = modelAttr.ClubTotal;
+
+                attr.Dist_Rotary = modelAttr.Dist_Rotary;
+                attr.Dist_Rotaract = modelAttr.Dist_Rotaract;
+                attr.Dist_Interact = modelAttr.Dist_Interact;
+                attr.Dist_RotaKids = modelAttr.Dist_RotaKids;
+                attr.Dist_CommunityCore = modelAttr.Dist_CommunityCore;
+                attr.DistrictTotal = modelAttr.DistrictTotal;
+
+                attr.SPT_Companies = modelAttr.SPT_Companies;
+                attr.SPT_TradingTrusts = modelAttr.SPT_TradingTrusts;
+                attr.SPT_RevenueOver1m = modelAttr.SPT_RevenueOver1m;
+                attr.SPT_Revenue = modelAttr.SPT_Revenue;
+                attr.SPT_Total = modelAttr.SPT_Total;
+                attr.Organisation = selectedorg;
+            }
+
+            // 🔥 ASSIGN BACK (IMPORTANT)
+            selectedorg.OrganisationAttribute = attr;
+
+
+            // =============================
+            // VALIDATION
+            // =============================
+            var type = selectedorg.InsuranceAttributes.FirstOrDefault()?.Name;
+
+            bool isValid = true;
+
+            if (type == "RotaryClub")
+            {
+                if ((attr.ClubTotal ?? 0) <= 0)
+                {
+                    isValid = false;
+                    selectedorg.IsValid = false;
+                    selectedorg.ValidationMessage = "Club Total must be > 0, Please Complete Named Party";
+                }
+                else
+                {
+                    selectedorg.IsValid = true;
+                    selectedorg.ValidationMessage = "Named Party Completed";
+                }
+            }
+            else if (!string.IsNullOrEmpty(type) && type.Contains("District"))
+            {
+                if ((attr.DistrictTotal ?? 0) <= 0)
+                {
+                    isValid = false;
+                    selectedorg.IsValid = false;
+                    selectedorg.ValidationMessage = "District Total must be > 0, Please Complete Named Party";
+                }
+                else
+                {
+                    selectedorg.IsValid = true;
+                    selectedorg.ValidationMessage = "Named Party Completed";
+                }
+            }
+            else if (type == "RotaryCompany")
+            {
+                if ((attr.SPT_Total ?? 0) <= 0)
+                {
+                    isValid = false;
+                    selectedorg.IsValid = false;
+                    selectedorg.ValidationMessage = "Company Total must be > 0, Please Complete Named Party";
+                }
+                else
+                {
+                    selectedorg.IsValid = true;
+                    selectedorg.ValidationMessage = "Named Party Completed";
+                }
+            }
+            else
+            {
+                selectedorg.IsValid = true;
+                selectedorg.ValidationMessage = "Named Party Completed";
+            }
+
+            // =============================
+            // SAVE
+            // =============================
+            await _organisationService.Update(selectedorg);
+
+            // =============================
+            // RESPONSE
+            // =============================
+            var result = new List<object>
+    {
+        new
+        {
+            orgId = selectedorg.Id,
+            isValid,
+            message = selectedorg.ValidationMessage,
+
+            totalType = type != null && type.Contains("District") ? "District"
+                        : type == "RotaryCompany" ? "Company"
+                        : "Club",
+
+            totalValue =
+                type != null && type.Contains("District") ? attr.DistrictTotal :
+                type == "RotaryCompany" ? attr.SPT_Total :
+                attr.ClubTotal
+        }
+    };
+
+            return Json(result);
+        }
 
         [HttpPost]
         public async Task<IActionResult> ValidateNamedParties([FromBody] ValidateRequest request)
