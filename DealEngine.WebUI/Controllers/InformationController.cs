@@ -18,7 +18,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using Microsoft.Playwright;
 using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -1054,40 +1053,33 @@ namespace DealEngine.WebUI.Controllers
             {
 
                 var clientProgramme = await _programmeService.GetClientProgramme(id);
-                Guid previousprogrammeId = Guid.Empty;
+
                 // Fetch every other subscription belonging to this same client (owner),
                 // so we can check whether an older one is still incomplete
-                //var siblingProgrammes = await _programmeService.GetClientProgrammesByOwner(clientProgramme.Owner.Id);
-                Programme curentprogramme = await _programmeService.GetProgramme(clientProgramme.BaseProgramme.Id);
-                if(curentprogramme.RenewFromProgramme != null)
-                {
-                     previousprogrammeId = curentprogramme.RenewFromProgramme.Id;
-                }
-
-                ClientProgramme previouspendingclientprogramme = await _programmeService.GetPendingClientProgrammeByOwnerByProgramme(clientProgramme.Owner.Id, previousprogrammeId);
+                var siblingProgrammes = await _programmeService.GetClientProgrammesByOwner(clientProgramme.Owner.Id);
                 // Determine if an older subscription for this client is still pending;
                 // if one is found, the user must complete it before starting this one.
-               // var earlierPending = FindBlockingPendingSubscription(clientProgramme, previousclientprogramme);
-               //// Log the outcome of the pending-subscription check for troubleshooting.
-               // _logger.LogInformation(
-               //     "Pending subscription gate evaluated. CurrentProgrammeId={CurrentProgrammeId}, SiblingCount={SiblingCount}, BlockingProgrammeId={BlockingProgrammeId}",
-               //     clientProgramme.Id,
-               //     previousclientprogramme?.Count ?? 0,
-               //     earlierPending?.Id);
+                var earlierPending = FindBlockingPendingSubscription(clientProgramme, siblingProgrammes);
+               // Log the outcome of the pending-subscription check for troubleshooting.
+                _logger.LogInformation(
+                    "Pending subscription gate evaluated. CurrentProgrammeId={CurrentProgrammeId}, SiblingCount={SiblingCount}, BlockingProgrammeId={BlockingProgrammeId}",
+                    clientProgramme.Id,
+                    siblingProgrammes?.Count ?? 0,
+                    earlierPending?.Id);
 
-                if (previouspendingclientprogramme != null)
+                if (earlierPending != null)
                 {
                     // Build a user-facing message naming the specific older subscription
                     // (year + programme name) that needs to be completed first.
-                   // var pendingSortDate = GetProgrammeSortDate(earlierPending);
-                   // var pendingYear = pendingSortDate == DateTime.MinValue ? "older" : pendingSortDate.Year.ToString();
-                    var pendingProgrammeName = previouspendingclientprogramme.BaseProgramme?.Name ?? "subscription";
-                    var blockedMessage = "Please complete your " + pendingProgrammeName +
-                        " insurance before starting a new insurance application for the current year.\r\n\r\nOnce your previous year's insurance has been submitted, your information will be automatically copied to the current year's application, so you won't need to enter the same details again.";
+                    var pendingSortDate = GetProgrammeSortDate(earlierPending);
+                    var pendingYear = pendingSortDate == DateTime.MinValue ? "older" : pendingSortDate.Year.ToString();
+                    var pendingProgrammeName = earlierPending.BaseProgramme?.Name ?? "subscription";
+                    var blockedMessage = "Please complete your " + pendingYear +
+                        " subscription (" + pendingProgrammeName + ") before starting a new one.";
                     // Pass the blocking message and the older subscription's details to the view.
                     ViewBag.Title = "Action Required";
                     ViewBag.BlockedMessage = blockedMessage;
-                    ViewBag.PendingProgrammeId = previouspendingclientprogramme.Id;
+                    ViewBag.PendingProgrammeId = earlierPending.Id;
                     ViewBag.PendingProgrammeName = pendingProgrammeName;
                     // Show the blocked page instead of opening the new subscription.
                     return View("SubscriptionBlocked");
@@ -1108,40 +1100,40 @@ namespace DealEngine.WebUI.Controllers
 
                 // ===============================================================
                 // ⭐ LOAD OrganisationAttribute VALUES FROM DATABASE INTO VIEWMODEL
-                //// ===============================================================
-                //if (sheet.OrganisationAttribute != null)
-                //{
-                //    var attr = sheet.OrganisationAttribute;
-                //    var vm = model.OrganisationViewModel.OrganisationAttribute;
+                // ===============================================================
+                if (sheet.OrganisationAttribute != null)
+                {
+                    var attr = sheet.OrganisationAttribute;
+                    var vm = model.OrganisationViewModel.OrganisationAttribute;
 
-                //    // CLUB FIELDS
-                //    vm.ActiveFeePaying = attr.ActiveFeePaying;
-                //    vm.Honorary = attr.Honorary;
-                //    vm.Associate = attr.Associate;
-                //    vm.Family = attr.Family;
-                //    vm.Community = attr.Community;
-                //    vm.Volunteer = attr.Volunteer;
-                //    vm.Corporate = attr.Corporate;
-                //    vm.Alumni = attr.Alumni;
-                //    vm.Trustees = attr.Trustees;
-                //    vm.OtherMembers = attr.OtherMembers;
-                //    vm.ClubTotal = attr.ClubTotal;
+                    // CLUB FIELDS
+                    vm.ActiveFeePaying = attr.ActiveFeePaying;
+                    vm.Honorary = attr.Honorary;
+                    vm.Associate = attr.Associate;
+                    vm.Family = attr.Family;
+                    vm.Community = attr.Community;
+                    vm.Volunteer = attr.Volunteer;
+                    vm.Corporate = attr.Corporate;
+                    vm.Alumni = attr.Alumni;
+                    vm.Trustees = attr.Trustees;
+                    vm.OtherMembers = attr.OtherMembers;
+                    vm.ClubTotal = attr.ClubTotal;
 
-                //    // DISTRICT FIELDS
-                //    vm.Dist_Rotary = attr.Dist_Rotary;
-                //    vm.Dist_Rotaract = attr.Dist_Rotaract;
-                //    vm.Dist_Interact = attr.Dist_Interact;
-                //    vm.Dist_RotaKids = attr.Dist_RotaKids;
-                //    vm.Dist_CommunityCore = attr.Dist_CommunityCore;
-                //    vm.DistrictTotal = attr.DistrictTotal;
+                    // DISTRICT FIELDS
+                    vm.Dist_Rotary = attr.Dist_Rotary;
+                    vm.Dist_Rotaract = attr.Dist_Rotaract;
+                    vm.Dist_Interact = attr.Dist_Interact;
+                    vm.Dist_RotaKids = attr.Dist_RotaKids;
+                    vm.Dist_CommunityCore = attr.Dist_CommunityCore;
+                    vm.DistrictTotal = attr.DistrictTotal;
 
-                //    // SPECIAL PURPOSE TRUST FIELDS
-                //    vm.SPT_Companies = attr.SPT_Companies;
-                //    vm.SPT_TradingTrusts = attr.SPT_TradingTrusts;
-                //    vm.SPT_RevenueOver1m = attr.SPT_RevenueOver1m;
-                //    vm.SPT_Revenue = attr.SPT_Revenue;
-                //    vm.SPT_Total = attr.SPT_Total;
-                //}
+                    // SPECIAL PURPOSE TRUST FIELDS
+                    vm.SPT_Companies = attr.SPT_Companies;
+                    vm.SPT_TradingTrusts = attr.SPT_TradingTrusts;
+                    vm.SPT_RevenueOver1m = attr.SPT_RevenueOver1m;
+                    vm.SPT_Revenue = attr.SPT_Revenue;
+                    vm.SPT_Total = attr.SPT_Total;
+                }
 
 
 
@@ -1208,6 +1200,8 @@ namespace DealEngine.WebUI.Controllers
                 {
                     claims.Add(ClaimViewModel.FromEntity(sheet.ClaimNotifications.ElementAtOrDefault(i)));
                 }
+
+
                 model.Claims = claims;
 
                 //if(updateType == "")
@@ -1216,6 +1210,10 @@ namespace DealEngine.WebUI.Controllers
                     updateType = "common_you";
                 }
                 await GetEventsDataModel(model, sheet);
+
+
+
+
                 model.selectedUpdateType = new List<string>();
                 model.IsHardRefferalEnable = clientProgramme.BaseProgramme.EnableHardRefer;
                 using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
@@ -1769,111 +1767,168 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> Upload(InformationViewModel model)
         {
-            //string UploadedDocumentPath = _appSettingService.CKImagePath;
-            ClientInformationSheet answersheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
-            ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
-            var user = await CurrentUser();
-            var path = "";
-            if (model != null)
+            User user = null;
+            try
             {
-                if (model.File != null)
+                // Detect AJAX uploads so we can return JSON for the script-based submit handler.
+                bool isAjaxRequest = string.Equals(
+                    Request.Headers["X-Requested-With"],
+                    "XMLHttpRequest",
+                    StringComparison.OrdinalIgnoreCase);
+
+                // Shared error path: JSON for AJAX, redirect back to the edit screen for normal posts.
+                IActionResult ErrorResult(string message)
                 {
-
-                    var contentType = model.File.ContentType;
-                    var extension = "";
-                    var filename = "";
-
-                    if (contentType == "application/pdf")
+                    if (isAjaxRequest)
                     {
-                        extension = ".pdf";
-                    }
-                    else if (contentType == "application/vnd.oasis.opendocument.graphics")
-                    {
-                        extension = ".odg";
-                    }
-                    else if (contentType == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                    {
-                        extension = ".docx";//.gdoc
-                    }
-                    else
-                    {
-                        throw new FileFormatException("Invalid File Type");
-                    }
-                    if (model.DocumentName != null)
-                    {
-                        filename = model.DocumentName + extension;
-                    }
-                    else if (model.File.FileName != null)
-                    {
-                        filename = model.File.FileName;
+                        return Json(new { success = false, message });
                     }
 
-                    //path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
-
-                    if (_appSettingService.IsLinuxEnv == "True")
+                    TempData["UploadError"] = message;
+                    if (model.ClientProgrammeId != Guid.Empty)
                     {
-                        path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation + "";
-                    }
-                    else
-                    {
-                        path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
-
-                    }
-                    //var path = Path.Combine(_hostingEnv.WebRootPath, "files", model.Name, "attachmentfiles");
-                    // var path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation +"";
-                    System.IO.Directory.CreateDirectory(path);
-                    path = Path.Combine(path, filename);
-
-                    try
-                    {
-
-                        using (var fileStream = new FileStream(path, FileMode.Create))
-                        {
-                            model.File.CopyTo(fileStream);
-                        }
-
-                        DealEngine.Domain.Entities.Document newFile = new DealEngine.Domain.Entities.Document
-                        {
-                            Name = filename,
-                            Description = "File for " + model.DocumentOrganisation,
-                            DocumentType = 0,
-                            IsTemplate = true,
-                            ContentType = model.File.ContentType,
-                            FileRendered = false,
-                            Path = path,
-                            ClientInformationSheet = clientProgramme.InformationSheet,
-                            OwnerOrganisationName = model.DocumentOrganisation,
-                            DocEffectiveDate = model.DocEffectiveDate,
-                            Extension = extension
-                        };
-
-                        await _fileService.UploadFile(newFile);
-
-                        //Guid productID = Guid.Parse(model.Product);
-                        //Product myProduct = await _iproductService.GetProductById(productID);
-                        //myProduct.Documents.Add(newFile);
-                        //await _iproductService.UpdateProduct(myProduct);
+                        return Redirect("/Information/EditInformation/" + model.ClientProgrammeId);
                     }
 
-                    catch (Exception Ex)
-                    {
-                        Console.WriteLine(Ex.ToString());
-                    }
-
+                    return RedirectToAction("Index", "Home");
                 }
+
+                // Shared success path: JSON for AJAX, redirect back after a standard form post.
+                IActionResult SuccessResult(string message)
+                {
+                    if (isAjaxRequest)
+                    {
+                        return Json(new { success = true, message });
+                    }
+
+                    TempData["UploadSuccess"] = message;
+                    return Redirect("/Information/EditInformation/" + model.ClientProgrammeId);
+                }
+
+                user = await CurrentUser();
+                if (user == null || user.IsLoggedout)
+                {
+                    return ErrorResult("Your session has expired. Please log in again.");
+                }
+
+                // Validate the minimum data required before trying to save the document.
+                if (model.ClientProgrammeId == Guid.Empty)
+                {
+                    return ErrorResult("Missing programme id.");
+                }
+
+                if (model.File == null || model.File.Length == 0)
+                {
+                    return ErrorResult("Please choose a file to upload.");
+                }
+
+                if (string.IsNullOrWhiteSpace(model.DocumentOrganisation) || model.DocumentOrganisation == "select")
+                {
+                    return ErrorResult("Please select a named party.");
+                }
+
+                if (string.IsNullOrWhiteSpace(model.DocumentName))
+                {
+                    return ErrorResult("Please enter a document name.");
+                }
+
+                // Only allow the document formats that the upload flow supports.
+                var extension = Path.GetExtension(model.File.FileName)?.ToLowerInvariant();
+                var allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ".pdf", ".doc", ".docx", ".odt", ".gdoc"
+                };
+
+                if (string.IsNullOrWhiteSpace(extension) || !allowedExtensions.Contains(extension))
+                {
+                    return ErrorResult("Invalid file type. Allowed: .pdf, .doc, .docx, .odt, .gdoc");
+                }
+
+                ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
+                if (clientProgramme == null || clientProgramme.InformationSheet == null)
+                {
+                    return ErrorResult("Unable to find information sheet for this programme.");
+                }
+
+                // Use the current information sheet as the parent record for the uploaded file.
+                ClientInformationSheet sheet = clientProgramme.InformationSheet;
+
+                // Prefer the bound model value, otherwise parse the raw form field.
+                DateTime effectiveDate;
+                if (model.DocEffectiveDate != default(DateTime))
+                {
+                    effectiveDate = model.DocEffectiveDate;
+                }
+                else
+                {
+                    var dateRaw = Request.Form["DocEffectiveDate"].ToString();
+                    if (!DateTime.TryParse(dateRaw, CultureInfo.GetCultureInfo("en-NZ"), DateTimeStyles.None, out effectiveDate)
+                        && !DateTime.TryParse(dateRaw, out effectiveDate))
+                    {
+                        return ErrorResult("Please enter a valid document effective date.");
+                    }
+                }
+
+                // Persist the file to disk under the programme-specific upload folder.
+                var uploadDirectory = Path.Combine(_hostingEnv.WebRootPath, "files", model.ClientProgrammeId.ToString(), "documents");
+                Directory.CreateDirectory(uploadDirectory);
+
+                var physicalFileName = Guid.NewGuid().ToString("N") + extension;
+                var physicalPath = Path.Combine(uploadDirectory, physicalFileName);
+                await using (var stream = new FileStream(physicalPath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(stream);
+                }
+
+                // Create the document entity and link it back to the current information sheet.
+                var document = new Document(user, model.DocumentName.Trim(), model.File.ContentType, 11)
+                {
+                    OwnerOrganisationName = model.DocumentOrganisation,
+                    Extension = extension.TrimStart('.'),
+                    DocEffectiveDate = effectiveDate,
+                    FileRendered = false,
+                    Path = physicalPath,
+                    ClientInformationSheet = sheet
+                };
+
+                await _fileService.UploadFile(document);
+
+                if (sheet.documents != null)
+                {
+                    sheet.documents.Add(document);
+                }
+
+                // Save the updated information sheet so the new document appears in the UI.
+                await _clientInformationService.UpdateInformation(sheet);
+
+                return SuccessResult("File uploaded successfully.");
             }
-            var url = "/Information/EditInformation/" + model.ClientProgrammeId;
-            return Redirect(url);
+            catch (Exception ex)
+            {
+                // Log the failure and return the same JSON/redirect shape as the normal flow.
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                bool isAjaxRequest = string.Equals(
+                    Request.Headers["X-Requested-With"],
+                    "XMLHttpRequest",
+                    StringComparison.OrdinalIgnoreCase);
 
+                if (isAjaxRequest)
+                {
+                    return Json(new { success = false, message = "Unable to upload the selected document." });
+                }
+
+                TempData["UploadError"] = "Unable to upload the selected document.";
+                if (model.ClientProgrammeId != Guid.Empty)
+                {
+                    return Redirect("/Information/EditInformation/" + model.ClientProgrammeId);
+                }
+
+                return RedirectToAction("Index", "Home");
+            }
         }
-
-
-
 
         [HttpGet]
         public async Task<IActionResult> ResetStatus(Guid id)
@@ -2132,6 +2187,8 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadAndValidate(InformationViewModel model)
         {
+            // The UI posts the currently edited named party id in SelectedOrganisationId.
+            // We load that organisation first, then validate and persist its OrganisationAttribute values.
             Organisation selectedorg = await _organisationService.GetOrganisation(model.SelectedOrganisationId);
 
             if (model.OrganisationViewModel.OrganisationAttribute == null)
@@ -2145,7 +2202,10 @@ namespace DealEngine.WebUI.Controllers
 
             var results = new List<object>();
 
-                var type = selectedorg.InsuranceAttributes.FirstOrDefault().Name;
+                // Some organisations may not have insurance attributes populated yet.
+                // Keep type resolution null-safe to avoid runtime errors when Name is missing.
+                var firstAttr = selectedorg.InsuranceAttributes?.FirstOrDefault();
+                var type = firstAttr?.Name ?? string.Empty;
 
                 bool isValid = true;
 
@@ -2197,9 +2257,7 @@ namespace DealEngine.WebUI.Controllers
                    selectedorg.ValidationMessage = "Named Party Completed";
                 }
 
-            // SAVE HERE
-            //var dbOrg = await _organisationService.GetOrganisation(org.Id);
-            //dbOrg.OrganisationAttribute = attr;
+            // Persist the calculated validity/message and the posted organisation totals.
 
             await _organisationService.Update(selectedorg);
 
