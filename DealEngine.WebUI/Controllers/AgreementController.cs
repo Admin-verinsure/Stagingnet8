@@ -4307,7 +4307,7 @@ namespace DealEngine.WebUI.Controllers
                                 Contents = bytes // 🔥 IMPORTANT
                             });
                         }
-                        
+
                     }
 
                     using (var uow = _unitOfWork.BeginUnitOfWork())
@@ -4345,7 +4345,7 @@ namespace DealEngine.WebUI.Controllers
                     clubtrust1onlyCount += validUnits.Count(u => u.Name == "RotaryClubTrustOneOnly");
 
                     // Add all normal units immediately
-                    quantity += validUnits.Count(u => u.Name != "RotaryClubTrustOneOnly"); 
+                    quantity += validUnits.Count(u => u.Name != "RotaryClubTrustOneOnly");
                 }
 
                 if (clubtrust1onlyCount > 1)
@@ -4370,7 +4370,7 @@ namespace DealEngine.WebUI.Controllers
                 if (isOutsideNZ)
                 {
                     adminFeeQty = quantity + 1; //(add 1 For ML Reserve Fund);
-                    
+
                     globalGuardPLPremium = programme.Agreements
                     .Where(a => a.DateDeleted == null
                              && a.Product?.Name == GLOBAL_PL_GUARD)
@@ -4418,14 +4418,16 @@ namespace DealEngine.WebUI.Controllers
 
                 if (firstUser != null)
                 {
-                     ownerEmail = firstUser.Email;
+                    ownerEmail = firstUser.Email;
                 }
                 if (ownerEmail != null)
                 {
                     emails.Add(ownerEmail);
 
-                } else {
-                   emails = await _userService.GetAllUserforOrganisation(programme.Owner);
+                }
+                else
+                {
+                    emails = await _userService.GetAllUserforOrganisation(programme.Owner);
 
                 }
 
@@ -4443,10 +4445,11 @@ namespace DealEngine.WebUI.Controllers
                 );
 
                 Programme renewedprogramme = await _programmeService.GetProgrammeByRenewalprogramme(programme.BaseProgramme.Id);
-                ClientProgramme renewedclientProgramme = await _programmeService.GetOriginalClientProgrammeByOwnerByProgramme(programme.Owner.Id, renewedprogramme.Id);
-                if (renewedprogramme != null && renewedclientProgramme == null)
+                if (renewedprogramme != null) { 
+                    ClientProgramme renewedclientProgramme = await _programmeService.GetOriginalClientProgrammeByOwnerByProgramme(programme.Owner.Id, renewedprogramme.Id);
+                if ( renewedclientProgramme == null)
                 {
-                   bool result = await RenewClientProgramme(programme.Id, renewedprogramme.Id);
+                    bool result = await RenewClientProgramme(programme.Id, renewedprogramme.Id);
                     if (result)
                     {
                         await SendEmailforRenewedprogramme(
@@ -4456,11 +4459,11 @@ namespace DealEngine.WebUI.Controllers
                     }
                     else
                     {
-                        _logger.LogError( "ProgrammeCloning failed. ");
+                        _logger.LogError("ProgrammeCloning failed. ");
                     }
-                   
-                }
 
+                }
+                 }
                 return Json(new
                 {
                     redirectUrl = action == "BindAgreement"
