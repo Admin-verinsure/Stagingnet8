@@ -152,6 +152,24 @@ namespace DealEngine.Services.Impl
 
                 var extRef = $"EXT-POLICY-{DateTime.UtcNow:yyyyMMddHHmmss}";
                 var policyNum = long.Parse("1" + new Random().Next(0, 999_999_999).ToString("D9"));
+                ClientAgreement selectedAgreement = null;
+
+                if (programme.Agreements != null)
+                {
+                    selectedAgreement = programme.Agreements
+                        .FirstOrDefault(a => a != null && a.DateDeleted == null && a.MasterAgreement)
+                        ?? programme.Agreements.FirstOrDefault(a => a != null && a.DateDeleted == null);
+                }
+
+                var hasStartDate = selectedAgreement != null && selectedAgreement.InceptionDate > DateTime.MinValue;
+                var hasEndDate = selectedAgreement != null && selectedAgreement.ExpiryDate > DateTime.MinValue;
+                var startDateText = hasStartDate ? selectedAgreement.InceptionDate.ToString("yyyy-MM-dd") : null;
+                var endDateText = hasEndDate ? selectedAgreement.ExpiryDate.ToString("yyyy-MM-dd") : null;
+                var dates = new
+                {
+                    start_date = startDateText,
+                    end_date = endDateText
+                };
 
                 // ============================================================
                 // 📦 BUILD PAYLOAD
@@ -186,6 +204,9 @@ namespace DealEngine.Services.Impl
                         policy_number = policyNum,
                         policy_duration = 12,
                         payment_type = "fixed",
+                        start_date = startDateText,
+                        end_date = endDateText,
+                        dates,
 
                         agent = new
                         {

@@ -1027,7 +1027,7 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet, HttpPost]
         // public async Task<IActionResult> EditInformation(Guid id)
         public async Task<IActionResult> EditInformation(Guid id, string updateType = null)
         {
@@ -2187,92 +2187,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadAndValidateold(InformationViewModel model)
         {
-            // The UI posts the currently edited named party id in SelectedOrganisationId.
-            // We load that organisation first, then validate and persist its OrganisationAttribute values.
-            Organisation selectedorg = await _organisationService.GetOrganisation(model.SelectedOrganisationId);
-            selectedorg.OrganisationAttribute = new OrganisationAttribute(await CurrentUser());
-
-            if (model.OrganisationViewModel.OrganisationAttribute != null)
-            {
-                selectedorg.OrganisationAttribute =  model.OrganisationViewModel.OrganisationAttribute;
-            }
-
-            var results = new List<object>();
-
-                // Some organisations may not have insurance attributes populated yet.
-                // Keep type resolution null-safe to avoid runtime errors when Name is missing.
-                var firstAttr = selectedorg.InsuranceAttributes?.FirstOrDefault();
-                var type = firstAttr?.Name ?? string.Empty;
-
-                bool isValid = true;
-
-                if (type != null && type == "RotaryClub")
-                {
-                if ((selectedorg.OrganisationAttribute.ClubTotal ?? 0) <= 0)
-                {
-                    isValid = false;
-                    selectedorg.IsValid = false;
-                    selectedorg.ValidationMessage = "Club Total must be > 0,Please Complete Named Party";
-                }
-                else
-                {
-                    selectedorg.IsValid = true;
-                    selectedorg.ValidationMessage = "Named Party Completed";
-                }
-                    
-                }
-                else if (type != null && type.Contains("District"))
-                {
-                    if ((selectedorg.OrganisationAttribute.DistrictTotal ?? 0) <= 0)
-                {
-                        isValid = false;
-                        selectedorg.IsValid = false;
-                        selectedorg.ValidationMessage = "District Total must be > 0,Please Complete Named Party";
-                    } else {
-                    selectedorg.IsValid = true;
-                    selectedorg.ValidationMessage = "Named Party Completed";
-                    }
-                }
-                else if (type != null && type == "RotaryCompany")
-                {
-                    if ((selectedorg.OrganisationAttribute.SPT_Total ?? 0) <= 0)
-                {
-                        isValid = false;
-
-                        selectedorg.IsValid = false;
-                        selectedorg.ValidationMessage = "Company Total must be > 0,Please Complete Named Party";
-                    }
-                    else
-                    {
-                        selectedorg.IsValid = true;
-                        selectedorg.ValidationMessage = "Named Party Completed";
-                    }
-                }
-                else
-                {
-                   selectedorg.IsValid = true;
-                   selectedorg.ValidationMessage = "Named Party Completed";
-                }
-
-            await _organisationService.Update(selectedorg);
-
-                results.Add(new
-                {
-                    orgId = selectedorg.Id,
-                    isValid,
-                    message= selectedorg.ValidationMessage,
-                    totalType = type.Contains("District") ? "District"
-                    : type == "RotaryCompany" ? "Company"
-                    : "Club",
-
-                    totalValue =
-                    type.Contains("District") ? model.OrganisationViewModel.OrganisationAttribute.DistrictTotal :
-                    type == "RotaryCompany" ? model.OrganisationViewModel.OrganisationAttribute.SPT_Total :
-                    model.OrganisationViewModel.OrganisationAttribute.ClubTotal
-                });
-            
-            return Json(results); 
-
+            return await UploadAndValidate(model);
         }
 
         [HttpPost]

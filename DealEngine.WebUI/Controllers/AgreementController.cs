@@ -4216,6 +4216,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ByPassPayment(IFormCollection collection)
         {
             Guid sheetId = Guid.Empty;
+            Guid selectedAgreementId = Guid.Empty;
             ClientInformationSheet sheet = null;
             User user = null;
             var action = HttpContext.Request.Form["BindAgreement"];
@@ -4224,6 +4225,8 @@ namespace DealEngine.WebUI.Controllers
             {
                 if (!Guid.TryParse(HttpContext.Request.Form["AnswerSheetId"], out sheetId))
                     return RedirectToAction("Error500", "Error");
+
+                Guid.TryParse(HttpContext.Request.Form["ClientAgreementId"], out selectedAgreementId);
 
                 sheet = await _customerInformationService.GetInformation(sheetId);
                 var programme = sheet.Programme;
@@ -4387,7 +4390,7 @@ namespace DealEngine.WebUI.Controllers
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
                     SendInvoicePayloadPOC(programme.InformationSheet, programme,
-                                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium);
+                                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium, selectedAgreementId);
                 }
 
 
@@ -5859,7 +5862,8 @@ namespace DealEngine.WebUI.Controllers
             decimal globalGuardPremium,
             decimal adminFeeQty,
             bool isOutsideNZ,
-            decimal globalGuardPLPremium)
+            decimal globalGuardPLPremium,
+            Guid selectedAgreementId)
         {
             if (sheet is null || programme is null)
                 return BadRequest("Invalid input.");
@@ -5981,6 +5985,90 @@ namespace DealEngine.WebUI.Controllers
 
                 var extRef = $"EXT-POLICY-{DateTime.UtcNow:yyyyMMddHHmmss}";
                 var policyNum = long.Parse("1" + new Random().Next(0, 999_999_999).ToString("D9"));
+                ClientAgreement selectedAgreement = null;
+                if (programme.Agreements != null)
+                {
+                    if (selectedAgreementId != Guid.Empty)
+                    {
+                        foreach (var item in programme.Agreements)
+                        {
+                            if (item != null && item.DateDeleted == null && item.Id == selectedAgreementId)
+                            {
+                                selectedAgreement = item;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (selectedAgreement == null)
+                    {
+                        foreach (var item in programme.Agreements)
+                        {
+                            if (item != null
+                                && item.DateDeleted == null
+                                && item.MasterAgreement
+                                && item.InceptionDate > DateTime.MinValue
+                                && item.ExpiryDate > DateTime.MinValue)
+                            {
+                                selectedAgreement = item;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (selectedAgreement == null)
+                    {
+                        foreach (var item in programme.Agreements)
+                        {
+                            if (item != null && item.DateDeleted == null && item.MasterAgreement)
+                            {
+                                selectedAgreement = item;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (selectedAgreement == null)
+                    {
+                        foreach (var item in programme.Agreements)
+                        {
+                            if (item != null
+                                && item.DateDeleted == null
+                                && item.InceptionDate > DateTime.MinValue
+                                && item.ExpiryDate > DateTime.MinValue)
+                            {
+                                selectedAgreement = item;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (selectedAgreement == null)
+                    {
+                        foreach (var item in programme.Agreements)
+                        {
+                            if (item != null && item.DateDeleted == null)
+                            {
+                                selectedAgreement = item;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                var startDate = selectedAgreement?.InceptionDate;
+                var endDate = selectedAgreement?.ExpiryDate;
+
+                var hasStartDate = startDate.HasValue && startDate.Value > DateTime.MinValue;
+                var hasEndDate = endDate.HasValue && endDate.Value > DateTime.MinValue;
+
+                var startDateText = hasStartDate ? startDate.Value.ToString("yyyy-MM-dd") : null;
+                var endDateText = hasEndDate ? endDate.Value.ToString("yyyy-MM-dd") : null;
+                var dates = new
+                {
+                    start_date = startDateText,
+                    end_date = endDateText
+                };
 
                 // ============================================================
                 // 📦 BUILD PAYLOAD
@@ -6015,6 +6103,9 @@ namespace DealEngine.WebUI.Controllers
                         policy_number = policyNum,
                         policy_duration = 12,
                         payment_type = "fixed",
+                        start_date = startDateText,
+                        end_date = endDateText,
+                        dates,
 
                         agent = new
                         {

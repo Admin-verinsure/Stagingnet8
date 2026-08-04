@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using Org.BouncyCastle.Crypto.Agreement;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace DealEngine.Services.Impl.UnderwritingModuleServices
@@ -20,9 +21,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
         public bool Underwrite(User underwritingUser, ClientInformationSheet informationSheet, Product product, string reference)
         {
             ClientAgreement agreement = GetClientAgreement(underwritingUser, informationSheet, informationSheet.Programme, product, reference);
-            Guid id = agreement.Id;
             bool orgtype = false;
-            var clubtrust1onlycount = 0;
 
             try
             {
@@ -60,16 +59,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                         clientagreementreferral.Status = "";
                 }
 
-                int agreementperiodindays = 0;
-                agreementperiodindays = (agreement.ExpiryDate - agreement.InceptionDate).Days;
-
                 agreement.QuoteDate = DateTime.UtcNow;
-
-                int coverperiodindays = 0;
-                coverperiodindays = (agreement.ExpiryDate - agreement.ExpiryDate.AddYears(-1)).Days;
-
-                int coverperiodindaysforchange = 0;
-                coverperiodindaysforchange = (agreement.ExpiryDate - DateTime.UtcNow).Days;
 
                 string strProfessionalBusiness = "Community Services, fundraising activities and public events.";
 
@@ -79,21 +69,23 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 TermExcess = 5000;
 
                 int TermLimit1mil = 10000000;
-                decimal TermPremium1mil = 0M;
-                decimal TermBrokerage1mil = 0M;
                 // var organisation = informationSheet.Organisation.FirstOrDefault();
                 var attr = informationSheet?.OrganisationAttribute;
                 decimal premium = 0;
                 agreement.BrokerFee = 0;
                 var clubtrust1only = 0;
-                IList<Organisation> organisations = informationSheet.Organisation;
+                IList<Organisation> organisations = informationSheet.Organisation ?? new List<Organisation>();
                 bool isOutsideNZ = informationSheet.Owner != null
                    && informationSheet.Owner.IsOutsideNZ;
 
-                 // ✅ NORMAL LOGIC
-                    foreach (Organisation organisation in organisations.Where(org => org.Removed == false && org.OrganisationType.Name != "Private"))
+                     // Normal rating flow.
+                    foreach (Organisation organisation in organisations.Where(org => org.Removed == false && org.OrganisationType?.Name != "Private"))
                     {
-                        foreach (var unit in organisation.OrganisationalUnits.Where(u => u.DateDeleted == null))
+                        var orgAttr = organisation?.OrganisationAttribute;
+                        var effectiveAttr = HasAnyRotaryRatingInput(orgAttr) ? orgAttr : attr;
+                        decimal orgPremium = 0m;
+
+                        foreach (var unit in (organisation.OrganisationalUnits ?? new List<OrganisationalUnit>()).Where(u => u.DateDeleted == null))
                         {
                             if (unit.Name == "RotaryClubTrustOneOnly")
                             {
@@ -103,15 +95,25 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                             // =============================================
                             // FULL ANNUAL PREMIUM
                             // =============================================
-                            premium += CalculatePremium(
+                            orgPremium += CalculatePremium(
                                 unit.Name,
-                                attr,
-                                orgtype,
-                                organisation,
-                                informationSheet.Owner.Id,
+                                effectiveAttr,
                                 agreement,
                                 clubtrust1only, rates);
                         }
+
+                        // Fallback for clients that have no unit rows or non-rating unit names.
+                        if (orgPremium <= 0 && !string.IsNullOrWhiteSpace(organisation.OrganisationType?.Name))
+                        {
+                            orgPremium += CalculatePremium(
+                                organisation.OrganisationType.Name,
+                                effectiveAttr,
+                                agreement,
+                                clubtrust1only,
+                                rates);
+                        }
+
+                        premium += orgPremium;
                     }
 
 
@@ -126,7 +128,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     // yearly base
                     decimal yearlyPremium = monthlyPremium * 12;
 
-                    // prorate based on agreement period
                     premium = yearlyPremium;
                 }
                 else
@@ -146,8 +147,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                     premium = Math.Round(
                         (premium / fullAnnualDays) * actualPolicyDays,
                         2);
-
-
 
                 }
 
@@ -188,17 +187,13 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
                 }
 
-                //Enable pre-rate premium (turned on after implementing change, any remaining policy and new policy will use be pre-rated)
-                TermPremium1mil = TermPremium1mil / coverperiodindays * agreementperiodindays;
-                TermBrokerage1mil = TermPremium1mil * agreement.Brokerage / 100;
-
                 ClientAgreementTerm term1millimitpremiumoption = GetAgreementTerm(underwritingUser, agreement, "GL", TermLimit1mil, TermExcess);
                 term1millimitpremiumoption.TermLimit = TermLimit1mil;
                 term1millimitpremiumoption.Premium = premium;
                 term1millimitpremiumoption.BasePremium = premium;
                 term1millimitpremiumoption.Excess = TermExcess;
                 term1millimitpremiumoption.BrokerageRate = agreement.Brokerage;
-                term1millimitpremiumoption.Brokerage = TermBrokerage1mil;
+                term1millimitpremiumoption.Brokerage = 0m;
                 term1millimitpremiumoption.DateDeleted = null;
                 term1millimitpremiumoption.DeletedBy = null;
                 decimal targetPremium = 50m * 1.15m; // 50 + 15%
@@ -207,10 +202,6 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 if (premium == targetPremium)
                 {
                     agreement.BrokerFee = 0;
-                }
-                else
-                {
-                    agreement.BrokerFee = agreement.BrokerFee;
                 }
 
 
@@ -239,9 +230,9 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
                
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
+                agreement.Status = "Referred";
             }
             return true;
 
@@ -387,9 +378,47 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             var dict = new Dictionary<string, decimal>();
 
             foreach (string name in names)
-                dict[name] = Convert.ToDecimal(agreement.ClientAgreementRules.FirstOrDefault(r => r.Name == name).Value);
+            {
+                var agreementRule = agreement.ClientAgreementRules
+                    .FirstOrDefault(r => r.DateDeleted == null && string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase));
+
+                var raw = agreementRule?.Value;
+                if (string.IsNullOrWhiteSpace(raw))
+                {
+                    var productRule = agreement.Product?.Rules
+                        .FirstOrDefault(r => string.Equals(r.Name, name, StringComparison.OrdinalIgnoreCase));
+                    raw = productRule?.Value;
+                }
+
+                if (string.IsNullOrWhiteSpace(raw))
+                {
+                    throw new InvalidOperationException("Missing required GL rating rule: " + name);
+                }
+
+                if (!decimal.TryParse(raw, NumberStyles.Any, CultureInfo.InvariantCulture, out var parsedValue))
+                {
+                    throw new InvalidOperationException("Invalid numeric value for GL rating rule: " + name + " (value='" + raw + "')");
+                }
+
+                dict[name] = parsedValue;
+            }
 
             return dict;
+        }
+
+        bool HasAnyRotaryRatingInput(OrganisationAttribute attr)
+        {
+            if (attr == null)
+            {
+                return false;
+            }
+
+            return (attr.ActiveFeePaying ?? 0) > 0
+                   || (attr.Family ?? 0) > 0
+                   || (attr.Corporate ?? 0) > 0
+                   || (attr.DistrictTotal ?? 0) > 0
+                   || (attr.SPT_Total ?? 0) > 0
+                   || (attr.SPT_Revenue ?? 0) > 0;
         }
 
         void uwrasreferral(User underwritingUser, ClientAgreement agreement)
@@ -420,32 +449,23 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             }
         }
 
-
-
-        private decimal CalculatePremium(string orgType, OrganisationAttribute attr,bool orgtype, Organisation organisation,Guid ownerid,ClientAgreement agreement,int clubtrust1only,IDictionary<string, decimal> rates)
+        private decimal CalculatePremium(string orgType, OrganisationAttribute attr, ClientAgreement agreement, int clubtrust1only, IDictionary<string, decimal> rates)
         {
             decimal total = 0m;
 
-            decimal BrokerFee = 0m;
             // =============================================
             // COUNTED MEMBERS (different for each org type)
             // =============================================
             int countedMembers = 0;
 
-            //if(orgType == "RotaryClubTrustOneOnly" || orgType == "RotarySpecialPurposeTrust")
-            //{
-            //     orgtype = true;
-
-            //}
-
             if (orgType == "RotaryClub")
             {
                 countedMembers =
-                    (organisation.OrganisationAttribute.ActiveFeePaying ?? 0) +
-                    (organisation.OrganisationAttribute.Family ?? 0) +
-                    ((organisation.OrganisationAttribute.Corporate ?? 0) * 3);
+                    (attr?.ActiveFeePaying ?? 0) +
+                    (attr?.Family ?? 0) +
+                    ((attr?.Corporate ?? 0) * 3);
             }
-            else if (orgType == "Rotaract" || orgType == "RotaryCommunityCorp")
+            else if (orgType == "Rotaract" || orgType == "RotaryCommunityCorp" || orgType == "RotaryCommunityCorps")
             {
                 countedMembers += 1;   // Each counts as 1 club/member equivalent
             }
@@ -455,7 +475,8 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             // =============================================
             if (orgType == "RotaryClub" ||
                 orgType == "Rotaract" ||
-                orgType == "RotaryCommunityCorp")
+                orgType == "RotaryCommunityCorp" ||
+                orgType == "RotaryCommunityCorps")
             {
                 decimal basePremium = rates["plpremium_rotary_upto15_members"]; // includes admin fee
                 if (countedMembers < 15)
@@ -475,7 +496,7 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
             // =============================================
             else if (orgType == "RotaryDistrict")
             {
-                int clubCount = organisation.OrganisationAttribute.DistrictTotal ?? 0;
+                int clubCount = attr?.DistrictTotal ?? 0;
 
                 if (clubCount <= 40)
                 {
@@ -513,12 +534,12 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
                 bool over1m = false;
                 if (attr != null)
                 {
-                    over1m = organisation.OrganisationAttribute.SPT_RevenueOver1m?.ToLower() == "yes";
+                    over1m = attr.SPT_RevenueOver1m?.ToLower() == "yes";
                 }
 
                 if (over1m)
                 {
-                    decimal revenue = organisation.OrganisationAttribute.SPT_Revenue ?? 0;
+                    decimal revenue = attr.SPT_Revenue ?? 0;
 
                     // Count number of extra $1 million blocks
                     decimal increments = Math.Ceiling((revenue - 1_000_000m) / 1_000_000m);
@@ -543,16 +564,10 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             }
 
-            //else if(orgid == ownerid)
-            //    {
-            //       total += 50m;
-            //    }
-
             // =============================================
             // APPLY GST LAST
             // =============================================
-           // total += total * GST;
-            agreement.BrokerFee = agreement.BrokerFee;
+            // total += total * GST;
 
             return total;
         }
