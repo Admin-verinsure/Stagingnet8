@@ -1625,6 +1625,68 @@
       // hide all tables
       $("#ClubMemberTable, #DistrictTable, #SpecialPurposeTrustTable").hide();
 
+      // Helper: avoid showing literal nulls in number inputs.
+      function setNumericValue(selector, value) {
+          $(selector).val(value == null ? "" : value);
+      }
+
+      // Populate the edit form with persisted values for the selected organisation.
+      function setSavedValues(data) {
+          setNumericValue("#ActiveFeePaying", data.activeFeePaying);
+          setNumericValue("#Honorary", data.honorary);
+          setNumericValue("#Associate", data.associate);
+          setNumericValue("#Family", data.family);
+          setNumericValue("#Community", data.community);
+          setNumericValue("#Volunteer", data.volunteer);
+          setNumericValue("#Corporate", data.corporate);
+          setNumericValue("#Alumni", data.alumni);
+          setNumericValue("#Trustees", data.trustees);
+          setNumericValue("#OtherMembers", data.otherMembers);
+
+          setNumericValue("#Dist_Rotary", data.dist_Rotary);
+          setNumericValue("#Dist_Rotaract", data.dist_Rotaract);
+          setNumericValue("#Dist_Interact", data.dist_Interact);
+          setNumericValue("#Dist_RotaKids", data.dist_RotaKids);
+          setNumericValue("#Dist_CommunityCore", data.dist_CommunityCore);
+
+          setNumericValue("#SPT_Companies", data.spt_Companies);
+          setNumericValue("#SPT_TradingTrusts", data.spt_TradingTrusts);
+          $("#SPT_RevenueOver1m").val(data.spt_RevenueOver1m || "");
+          setNumericValue("#SPT_Revenue", data.spt_Revenue);
+
+          var clubTotal = data.clubTotal == null ? 0 : data.clubTotal;
+          var districtTotal = data.districtTotal == null ? 0 : data.districtTotal;
+          var sptTotal = data.spt_Total == null ? 0 : data.spt_Total;
+
+          $("#TotalMembers").text(clubTotal);
+          $("#ClubTotal").val(clubTotal);
+
+          $("#DistrictTotal").text(districtTotal);
+          $("#DistrictTotalHidden").val(districtTotal);
+
+          $("#SPT_Total").text(sptTotal);
+          $("#SPT_TotalHidden").val(sptTotal);
+
+          var over1m = (data.spt_RevenueOver1m || "").toString().toUpperCase() === "YES";
+          $("#SPT_RevenueRow").prop("hidden", !over1m);
+      }
+
+      // Reload saved values on each Edit click so users see the latest persisted state.
+      $.ajax({
+          url: '/Information/GetNamedPartyValues',
+          type: 'GET',
+          data: { organisationId: orgId },
+          success: function (data) {
+              if (!data || data.error) {
+                  return;
+              }
+              setSavedValues(data);
+          },
+          error: function () {
+              console.error('Could not load saved named party values.');
+          }
+      });
+
          // show correct table
          if (orgType === "RotaryClub" ||
              orgType === "Rotaract" ||

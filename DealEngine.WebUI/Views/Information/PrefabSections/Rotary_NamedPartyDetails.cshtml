@@ -32,6 +32,24 @@
                 @foreach (var org in Model.OrganisationViewModel.Organisations.Where(o => !o.Removed
                                 && o.InsuranceAttributes.FirstOrDefault().Name != "Administrator"))
                 {
+                    // Render a persisted summary total on first page load so users can see what was saved
+                    // without opening the edit table for each named party.
+                    var orgType = org.InsuranceAttributes.FirstOrDefault()?.Name ?? string.Empty;
+                    var totalLabelText = string.Empty;
+
+                    if (orgType == "RotaryClub" || orgType == "Rotaract" || orgType == "RotaryCommunityCorps" || orgType == "RotaryCommunityCorp")
+                    {
+                        totalLabelText = "Club Total: " + (org.OrganisationAttribute?.ClubTotal ?? 0);
+                    }
+                    else if (orgType.Contains("District"))
+                    {
+                        totalLabelText = "District Total: " + (org.OrganisationAttribute?.DistrictTotal ?? 0);
+                    }
+                    else if (orgType == "RotaryCompany" || orgType == "RotarySpecialPurposeTrust")
+                    {
+                        totalLabelText = "Company Total: " + (org.OrganisationAttribute?.SPT_Total ?? 0);
+                    }
+
                     <div class="card mb-2 named-party-card" data-id="@org.Id">
 
                         <div class="card-body">
@@ -43,7 +61,7 @@
                                     <strong>@org.Name</strong><br />
                                     <small>@org.InsuranceAttributes.FirstOrDefault()?.Name</small>
                                     <!-- 🔵 TOTAL LABEL -->
-                                    <div class="org-total text-primary mt-1"></div>
+                                    <div class="org-total text-primary mt-1">@totalLabelText</div>
                                 </div>
 
                                 <!-- 20% - STATUS -->

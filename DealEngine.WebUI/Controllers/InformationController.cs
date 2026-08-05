@@ -2187,7 +2187,55 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadAndValidateold(InformationViewModel model)
         {
+            // Legacy route kept for compatibility with older UI calls.
             return await UploadAndValidate(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetNamedPartyValues(Guid organisationId)
+        {
+            // Used by the Named Party edit button to repopulate saved values for the selected organisation.
+            if (organisationId == Guid.Empty)
+            {
+                return Json(new { error = "Organisation id is required" });
+            }
+
+            var org = await _organisationService.GetOrganisation(organisationId);
+            if (org == null)
+            {
+                return Json(new { error = "Organisation not found" });
+            }
+
+            var attr = org.OrganisationAttribute;
+
+            // Keep JSON keys aligned with client-side mapping in _OnClick.cshtml.
+            return Json(new
+            {
+                activeFeePaying = attr?.ActiveFeePaying,
+                honorary = attr?.Honorary,
+                associate = attr?.Associate,
+                family = attr?.Family,
+                community = attr?.Community,
+                volunteer = attr?.Volunteer,
+                corporate = attr?.Corporate,
+                alumni = attr?.Alumni,
+                trustees = attr?.Trustees,
+                otherMembers = attr?.OtherMembers,
+                clubTotal = attr?.ClubTotal,
+
+                dist_Rotary = attr?.Dist_Rotary,
+                dist_Rotaract = attr?.Dist_Rotaract,
+                dist_Interact = attr?.Dist_Interact,
+                dist_RotaKids = attr?.Dist_RotaKids,
+                dist_CommunityCore = attr?.Dist_CommunityCore,
+                districtTotal = attr?.DistrictTotal,
+
+                spt_Companies = attr?.SPT_Companies,
+                spt_TradingTrusts = attr?.SPT_TradingTrusts,
+                spt_RevenueOver1m = attr?.SPT_RevenueOver1m,
+                spt_Revenue = attr?.SPT_Revenue,
+                spt_Total = attr?.SPT_Total
+            });
         }
 
         [HttpPost]
@@ -2195,16 +2243,17 @@ namespace DealEngine.WebUI.Controllers
         {
             var selectedorg = await _organisationService.GetOrganisation(model.SelectedOrganisationId);
 
+            // Prevent null-reference and give a deterministic client error for stale ids.
             if (selectedorg == null)
                 return Json(new { error = "Organisation not found" });
 
-            // 🔥 GET EXISTING OR CREATE NEW
+            // Update the existing tracked attribute where possible to avoid replacing object identity.
             var attr = selectedorg.OrganisationAttribute
                        ?? new OrganisationAttribute(await CurrentUser());
 
             var modelAttr = model.OrganisationViewModel?.OrganisationAttribute;
 
-            // 🔥 UPDATE VALUES (DO NOT REPLACE OBJECT)
+            // Copy posted values field-by-field so persistence updates the same entity instance.
             if (modelAttr != null)
             {
                 attr.ActiveFeePaying = modelAttr.ActiveFeePaying;
@@ -2234,8 +2283,50 @@ namespace DealEngine.WebUI.Controllers
                 attr.Organisation = selectedorg;
             }
 
-            // 🔥 ASSIGN BACK (IMPORTANT)
+            // Ensure the relationship stays attached before save/update.
             selectedorg.OrganisationAttribute = attr;
+
+            // EditInformation repopulates from sheet.OrganisationAttribute on page load,
+            // so mirror the saved Named Party values there to keep reopen/edit behavior consistent.
+            if (model.ClientProgrammeId != Guid.Empty)
+            {
+                var clientProgramme = await _programmeService.GetClientProgramme(model.ClientProgrammeId);
+                var sheet = clientProgramme?.InformationSheet;
+                if (sheet != null)
+                {
+                    if (sheet.OrganisationAttribute == null)
+                    {
+                        sheet.OrganisationAttribute = new OrganisationAttribute(await CurrentUser());
+                    }
+
+                    sheet.OrganisationAttribute.ActiveFeePaying = attr.ActiveFeePaying;
+                    sheet.OrganisationAttribute.Honorary = attr.Honorary;
+                    sheet.OrganisationAttribute.Associate = attr.Associate;
+                    sheet.OrganisationAttribute.Family = attr.Family;
+                    sheet.OrganisationAttribute.Community = attr.Community;
+                    sheet.OrganisationAttribute.Volunteer = attr.Volunteer;
+                    sheet.OrganisationAttribute.Corporate = attr.Corporate;
+                    sheet.OrganisationAttribute.Alumni = attr.Alumni;
+                    sheet.OrganisationAttribute.Trustees = attr.Trustees;
+                    sheet.OrganisationAttribute.OtherMembers = attr.OtherMembers;
+                    sheet.OrganisationAttribute.ClubTotal = attr.ClubTotal;
+
+                    sheet.OrganisationAttribute.Dist_Rotary = attr.Dist_Rotary;
+                    sheet.OrganisationAttribute.Dist_Rotaract = attr.Dist_Rotaract;
+                    sheet.OrganisationAttribute.Dist_Interact = attr.Dist_Interact;
+                    sheet.OrganisationAttribute.Dist_RotaKids = attr.Dist_RotaKids;
+                    sheet.OrganisationAttribute.Dist_CommunityCore = attr.Dist_CommunityCore;
+                    sheet.OrganisationAttribute.DistrictTotal = attr.DistrictTotal;
+
+                    sheet.OrganisationAttribute.SPT_Companies = attr.SPT_Companies;
+                    sheet.OrganisationAttribute.SPT_TradingTrusts = attr.SPT_TradingTrusts;
+                    sheet.OrganisationAttribute.SPT_RevenueOver1m = attr.SPT_RevenueOver1m;
+                    sheet.OrganisationAttribute.SPT_Revenue = attr.SPT_Revenue;
+                    sheet.OrganisationAttribute.SPT_Total = attr.SPT_Total;
+
+                    await _clientInformationService.UpdateInformation(sheet);
+                }
+            }
 
 
             // =============================
