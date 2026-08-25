@@ -72,6 +72,15 @@ namespace DealEngine.Services.Impl
                 };
             }
 
+            if (sheet.Owner?.External_guid == null || sheet.Owner.External_guid == Guid.Empty)
+            {
+                return new InvoiceGenerationResult
+                {
+                    Success = false,
+                    Message = "Invoice cannot be generated because external GUID is missing."
+                };
+            }
+
 
             var totalAmount = materialDamageQty + globalGuardPremium + adminFeeQty;
 
@@ -183,7 +192,7 @@ namespace DealEngine.Services.Impl
                     {
                         name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
                         email = sheet.Owner?.Email ?? "admin@verinsure.online",
-                        external_guid = sheet.Owner?.External_guid
+                        external_guid = sheet.Owner.External_guid
 
                     },
 

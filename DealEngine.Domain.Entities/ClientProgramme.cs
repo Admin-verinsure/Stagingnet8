@@ -52,7 +52,7 @@ namespace DealEngine.Domain.Entities
         public virtual string requestID { get; set; }/// how to get request id
         //public virtual List<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
         public virtual bool IsHardRefferal { get; set; }
-        public virtual bool InvoiceSentToOdoo { get; set; }
+        public virtual bool InvoiceGenerationFailed { get; set; }
         public virtual bool IsClub { get; set; }
         public virtual bool IsDistrict { get; set; }
         public virtual bool IsIndependentEntity { get; set; }
@@ -67,6 +67,7 @@ namespace DealEngine.Domain.Entities
             //BrokerContactUser = baseProgramme.BrokerContactUser;
 			Owner = createdFor;
 			BaseProgramme = baseProgramme;
+            InvoiceGenerationFailed = false;
 			Agreements = new List<ClientAgreement> ();
             ClientAgreementEGlobalSubmissions = new List<EGlobalSubmission>();
             ClientAgreementEGlobalResponses = new List<EGlobalResponse>();

@@ -4516,36 +4516,68 @@ namespace DealEngine.WebUI.Controllers
         [HttpGet]
         public async Task<IActionResult> GenerateInvoice(Guid id)
         {
+            var isAjaxRequest = string.Equals(
+                Request.Headers["X-Requested-With"],
+                "XMLHttpRequest",
+                StringComparison.OrdinalIgnoreCase);
+
+            IActionResult BuildInvoiceResponse(bool success, string message)
+            {
+                if (isAjaxRequest)
+                {
+                    return Json(new
+                    {
+                        success,
+                        message
+                    });
+                }
+
+                var safeMessage = (message ?? string.Empty)
+                    .Replace("\\", "\\\\")
+                    .Replace("'", "\\'")
+                    .Replace("\r", " ")
+                    .Replace("\n", " ");
+
+                return Content($"<script>alert('{safeMessage}');window.history.back();</script>", "text/html");
+            }
+
             try
             {
                 var programme = await _programmeService.GetClientProgrammebyId(id);
 
                 if (programme == null)
-                    return Json(new
-                    {
-                        success = false,
-                        message = "Programme not found."
-                    });
+                    return BuildInvoiceResponse(false, "Programme not found.");
 
-                await _invoiceService.GenerateInvoiceAsync(
+                var invoiceResult = await _invoiceService.GenerateInvoiceAsync(
                     programme.InformationSheet,
                     programme);
 
-                return Json(new
+                programme.InvoiceGenerationFailed = !invoiceResult.Success;
+                await _programmeService.Update(programme);
+
+                if (!invoiceResult.Success)
                 {
-                    success = true,
-                    message = "Invoice generated successfully."
-                });
+                    return BuildInvoiceResponse(
+                        false,
+                        string.IsNullOrWhiteSpace(invoiceResult.Message)
+                            ? "Unable to generate invoice."
+                            : invoiceResult.Message);
+                }
+
+                return BuildInvoiceResponse(true, "Invoice generated successfully.");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "GenerateInvoice failed");
 
-                return Json(new
+                var failedProgramme = await _programmeService.GetClientProgrammebyId(id);
+                if (failedProgramme != null)
                 {
-                    success = false,
-                    message = "Unable to generate the invoice. Please contact support if this continues."
-                });
+                    failedProgramme.InvoiceGenerationFailed = true;
+                    await _programmeService.Update(failedProgramme);
+                }
+
+                return BuildInvoiceResponse(false, "Unable to generate the invoice. Please contact support if this continues.");
             }
         }
 

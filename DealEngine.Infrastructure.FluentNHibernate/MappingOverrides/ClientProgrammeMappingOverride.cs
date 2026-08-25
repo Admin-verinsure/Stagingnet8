@@ -13,6 +13,7 @@ namespace DealEngine.Infrastructure.FluentNHibernate.MappingOverrides
         {
             mapping.References(p => p.InformationSheet).Not.LazyLoad();
             mapping.References(n => n.BaseProgramme).Not.LazyLoad();
+            mapping.Map(p => p.InvoiceGenerationFailed).Column("InvoiceSentToOdoo");
         }
     }
 

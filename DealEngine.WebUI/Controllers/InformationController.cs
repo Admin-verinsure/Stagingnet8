@@ -2333,10 +2333,17 @@ namespace DealEngine.WebUI.Controllers
             // VALIDATION
             // =============================
             var type = selectedorg.InsuranceAttributes.FirstOrDefault()?.Name;
+            var isClubType = type == "RotaryClub"
+                             || type == "Rotaract"
+                             || type == "RotaryCommunityCorp"
+                             || type == "RotaryCommunityCorps";
+            var isDistrictType = !string.IsNullOrEmpty(type)
+                                 && type.IndexOf("District", StringComparison.OrdinalIgnoreCase) >= 0;
+            var isCompanyType = type == "RotaryCompany" || type == "RotarySpecialPurposeTrust";
 
             bool isValid = true;
 
-            if (type == "RotaryClub")
+            if (isClubType)
             {
                 if ((attr.ClubTotal ?? 0) <= 0)
                 {
@@ -2350,7 +2357,7 @@ namespace DealEngine.WebUI.Controllers
                     selectedorg.ValidationMessage = "Named Party Completed";
                 }
             }
-            else if (!string.IsNullOrEmpty(type) && type.Contains("District"))
+            else if (isDistrictType)
             {
                 if ((attr.DistrictTotal ?? 0) <= 0)
                 {
@@ -2364,7 +2371,7 @@ namespace DealEngine.WebUI.Controllers
                     selectedorg.ValidationMessage = "Named Party Completed";
                 }
             }
-            else if (type == "RotaryCompany")
+            else if (isCompanyType)
             {
                 if ((attr.SPT_Total ?? 0) <= 0)
                 {
@@ -2400,13 +2407,13 @@ namespace DealEngine.WebUI.Controllers
             isValid,
             message = selectedorg.ValidationMessage,
 
-            totalType = type != null && type.Contains("District") ? "District"
-                        : type == "RotaryCompany" ? "Company"
+            totalType = isDistrictType ? "District"
+                        : isCompanyType ? "Company"
                         : "Club",
 
             totalValue =
-                type != null && type.Contains("District") ? attr.DistrictTotal :
-                type == "RotaryCompany" ? attr.SPT_Total :
+                isDistrictType ? attr.DistrictTotal :
+                isCompanyType ? attr.SPT_Total :
                 attr.ClubTotal
         }
     };
