@@ -54,7 +54,7 @@ namespace DealEngine.WebUI.Controllers
         UserManager<IdentityUser> _userManager;
         IMapperSession<User> _userRepository;
         IUpdateTypeService _updateTypeServices;
-        IPolicyCenterService _policyCenterService;
+        
         IEmailService _emailService;
         public AdminController(
             IUpdateTypeService updateTypeService,
@@ -83,8 +83,8 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<Boat> boatRepository,
             IMapperSession<User> userRepository2,
             IReferenceService referenceService,
-            IEmailService emailService,
-            IPolicyCenterService policyCenterService
+            IEmailService emailService
+            
             )
 			: base (userRepository)
 		{
@@ -113,7 +113,7 @@ namespace DealEngine.WebUI.Controllers
             _userRepository = userRepository2;
             _objectRepository = objectRepository;
             _updateTypeServices = updateTypeService;
-            _policyCenterService = policyCenterService;
+            
             _emailService = emailService;
 
         }
@@ -1552,7 +1552,8 @@ namespace DealEngine.WebUI.Controllers
             await _signInManager.SignOutAsync();
             var deUser = await _userManager.FindByNameAsync(form["username"].ToString());
             await _signInManager.SignInAsync(deUser, true);
-            var currentUser = await _userService.GetApplicationUserByEmail(deUser.Email);
+            var currentUser = await _userService.GetUser(deUser.UserName);  // <--- change to username
+            
             using (var uow = _unitOfWork.BeginUnitOfWork())
 
             {

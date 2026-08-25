@@ -1,0 +1,267 @@
+﻿@model IssueUISViewModel
+
+<div class="container mt-4">
+    <form method="post" action="~/Home/EditUIS" novalidate>
+
+    <input type="hidden" name="ProgrammeId" value="@Model.ProgrammeId" />
+
+    <!-- Sticky Save Button -->
+    <div style="position:fixed; bottom:80px; right:20px; z-index:9999;">
+        <button type="submit" class="btn btn-success shadow">
+            <i class="fa fa-save"></i> Save
+        </button>
+    </div>
+
+        <input  type="hidden" name="ProgrammeId" value="@Model.ProgrammeId"  />
+
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    Select clients and choose Club / District flags.
+                </h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-end mb-3 position-relative">
+                    <input type="text"
+                           id="InfoSearch"
+                           class="form-control w-50 shadow-sm"
+                           placeholder="🔍 Search by Name or Email..."
+                           style="max-width: 350px;" />
+                </div>
+
+                <table class="table table-bordered table-striped align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:5%">
+                                <input type="checkbox" id="select-all" />
+                            </th>
+                            <th style="width:13%">Name</th>
+
+                            <th style="width:19%">Email</th> <!-- reduced -->
+
+                            <th style="width:8%">Odoo ProjectId</th>
+
+                            <th style="width:10%">External Guid</th>
+
+                            <th class="text-center" style="width:8%">IsClub</th>
+
+                            <th class="text-center" style="width:7%">IsDistrict</th>
+
+                            <th class="text-center" style="width:10%">IsIndependent</th>
+
+                            <th class="text-center" style="width:16%">District</th>
+                            <th class="text-center" style="width:10%">Outside NZ</th>
+
+                            
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var clientProg in Model.ClientProgrammes)
+                        {
+                            <tr>
+
+                                <!-- Select Client -->
+                                <td class="text-center">
+                                    <input type="checkbox"
+                                           class="client-checkbox row-input"
+                                           name="SelectedClientIds"
+                                           value="@clientProg.Id" />
+                                </td>
+
+                                <!-- Name -->
+                                <td>
+                                    @clientProg.Owner.Name
+                                </td>
+
+                                <!-- Email -->
+                                <td style="max-width:200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    @clientProg.Owner.Email
+                                </td>
+
+                                <!-- OdooProjectId -->
+                                <td>
+                                    <input type="number"
+                                           class="form-control form-control-sm row-input"
+                                           name="OdooProjectId_@clientProg.Id"
+                                           value="@clientProg.Owner.OdooProjectId" />
+                                </td>
+
+                                <!-- External Guid -->
+                                <td>
+                                    <input type="text"
+                                           class="form-control form-control-sm row-input"
+                                           name="ExternalGuid_@clientProg.Id"
+                                           value="@clientProg.Owner.External_guid" />
+                                </td>
+
+
+                                <!-- IsClub -->
+                                <td class="text-center">
+                                    <input type="checkbox"
+                                           class="club-checkbox row-input"
+                                           name="IsClub_@clientProg.Id"
+                                           @(clientProg.IsClub ? "checked" : "") />
+                                </td>
+
+                                <!-- IsDistrict -->
+                                <td class="text-center">
+                                    <input type="checkbox"
+                                           class="district-checkbox row-input"
+                                           name="IsDistrict_@clientProg.Id"
+                                           @(clientProg.IsDistrict ? "checked" : "") />
+                                </td>
+
+                                <!-- IsIndependentEntity -->
+                                <td class="text-center">
+                                    <input type="checkbox"
+                                           class="row-input"
+                                           name="IsIndependentEntity_@clientProg.Id"
+                                           @(clientProg.IsIndependentEntity ? "checked" : "") />
+                                </td>
+                                <td class="text-center">
+                                    <select class="form-control form-control-sm row-input"
+                                            name="District_@clientProg.Id">
+
+                                        @foreach (var item in Model.DistrictList)
+                                        {
+                                            <option value="@item.Value"
+                                                    selected="@(item.Value == (clientProg.Owner?.District ?? ""))">
+                                                @item.Text
+                                            </option>
+                                        }
+
+                                    </select>
+    
+                                 </td>
+
+                                <td class="text-center">
+                                    <select class="form-control form-control-sm"
+                                            name="IsOutsideNZ_@clientProg.Id">
+
+                                        @if (clientProg.Owner.IsOutsideNZ)
+                                        {
+                                            <option value="true" selected>Yes</option>
+                                            <option value="false">No</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="true">Yes</option>
+                                            <option value="false" selected>No</option>
+                                        }
+
+                                    </select>
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="card-footer text-end">
+                <button type="submit" class="btn btn-success">
+                    Save
+                </button>
+            </div>
+
+        </div>
+
+    </form>
+</div>
+
+
+@section pagespecific {
+
+    <script>
+
+        // Select All clients
+        document.getElementById("select-all")
+            .addEventListener("change", function () {
+
+                let checkboxes = document.querySelectorAll(".client-checkbox");
+                checkboxes.forEach(cb => cb.checked = this.checked);
+
+            });
+
+
+        // 🔍 Live Search Filter
+        document.getElementById("InfoSearch")
+            .addEventListener("keyup", function () {
+
+                let searchValue = this.value.toLowerCase();
+                let rows = document.querySelectorAll("tbody tr");
+
+                rows.forEach(function (row) {
+
+                    let name = row.cells[1].innerText.toLowerCase();
+                    let email = row.cells[2].innerText.toLowerCase();
+
+                    if (name.includes(searchValue) || email.includes(searchValue)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+
+                });
+
+            });
+
+
+                $(function () {
+
+            // Select All clients
+            $("#select-all").on("change", function () {
+                $(".client-checkbox").prop("checked", this.checked);
+            });
+
+            // 🔍 Live Search
+            $("#InfoSearch").on("keyup", function () {
+                let searchValue = this.value.toLowerCase();
+
+                $("tbody tr").each(function () {
+                    let name = this.cells[1].innerText.toLowerCase();
+                    let email = this.cells[2].innerText.toLowerCase();
+
+                    this.style.display =
+                        (name.includes(searchValue) || email.includes(searchValue))
+                            ? ""
+                            : "none";
+                });
+            });
+
+            // 🔥 Only submit selected rows
+            $("form").on("submit", function () {
+
+                $("tbody tr").each(function () {
+
+                    let isChecked = $(this).find(".client-checkbox").is(":checked");
+
+                    if (!isChecked) {
+                        $(this)
+                            .find("input, select")
+                            .not("[type='hidden']")
+                            .prop("disabled", true);
+                    }
+                });
+
+            });
+
+            // 🔥 Auto-select row when user edits
+            $(".row-input").on("change", function () {
+                $(this).closest("tr").find(".client-checkbox").prop("checked", true);
+            });
+
+        });
+
+    </script>
+
+}

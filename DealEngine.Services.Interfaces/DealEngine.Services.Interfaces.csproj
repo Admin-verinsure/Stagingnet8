@@ -2,7 +2,7 @@
   <PropertyGroup>
 	  <LangVersion>preview</LangVersion>
     <TargetFramework>net8.0</TargetFramework>
-    <FileUpgradeFlags>40</FileUpgradeFlags>
+	  <FileUpgradeFlags>40</FileUpgradeFlags>
     <UpgradeBackupLocation>C:\inetpub\wwwroot\DealEngine2019core\Backup\DealEngine.Services.Interfaces\</UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
@@ -17,13 +17,16 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Playwright" Version="1.58.0" />
     <PackageReference Include="NHibernate" Version="5.5.2" />
+    <PackageReference Include="NHibernate.Extensions.Logging" Version="4.0.0" />
     <PackageReference Include="NLog" Version="4.6.8" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.6.1" />
+    <PackageReference Include="OpenHtmlToPdf" Version="1.12.0" />
     <PackageReference Include="Quartz" Version="3.3.3" />
     <PackageReference Include="Quartz.Extensions.Hosting" Version="3.3.3" />
     <PackageReference Include="Quartz.NetCore.DependencyInjection" Version="5.0.0" />
-    <PackageReference Include="QuestPDF" Version="2024.12.0" />
+    <PackageReference Include="QuestPDF" Version="2025.12.4" />
     <PackageReference Include="Unity" Version="5.11.10" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.1.0" />
   </ItemGroup>

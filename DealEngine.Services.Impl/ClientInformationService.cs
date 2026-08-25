@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 using NHibernate.Linq;
 using AutoMapper;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace DealEngine.Services.Impl
 {
@@ -104,11 +105,19 @@ namespace DealEngine.Services.Impl
 
         public async Task UpdateInformation(ClientInformationSheet sheet)
         {
-            await _customerInformationRepository.UpdateAsync(sheet);
+            try
+            {
+                await _customerInformationRepository.UpdateAsync(sheet);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         public async Task SaveAnswersFor(ClientInformationSheet sheet, IFormCollection collection, User user)
         {
+            try { 
             if (sheet == null)
                 throw new ArgumentNullException(nameof(sheet));
             if (collection == null)
@@ -117,6 +126,11 @@ namespace DealEngine.Services.Impl
             BuildAnswerFromModel(sheet, collection, user);
             await UpdateInformation(sheet);
             await _userService.Update(user);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
         private async void BuildAnswerFromModel(ClientInformationSheet sheet, IFormCollection collection, User user)
@@ -142,9 +156,13 @@ namespace DealEngine.Services.Impl
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
             SaveAnswer( sheet, collection, collection.Keys.Where(s => s.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
             SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("CPViewModel", StringComparison.CurrentCulture)));
-            }
+            SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("CTViewModel", StringComparison.CurrentCulture)));
+            SaveAnswer(sheet, collection, collection.Keys.Where(s => s.StartsWith("EventsViewModel", StringComparison.CurrentCulture)));
 
-    
+
+        }
+
+
         //public ClubTrustAssetsInfo updateclubassetEntity(ClubTrustAssetsInfo clubTrustAssetsInfo, IFormCollection collection)
 
         //{
@@ -229,6 +247,7 @@ namespace DealEngine.Services.Impl
 
         private void SaveAnswer(ClientInformationSheet sheet, IFormCollection collection, IEnumerable<string> enumerable)
         {
+
             foreach (var key in enumerable)
             {
                 sheet.AddAnswer(key, collection[key]);          
@@ -373,6 +392,12 @@ namespace DealEngine.Services.Impl
         public async Task<ClientInformationSheet> GetClientInformationSheetFromOrganisation(Organisation organisation)
         {
             var list = await _customerInformationRepository.FindAll().Where(s => s.Owner.Id == organisation.Id).ToListAsync();
+            var clientsheet = list.LastOrDefault();
+            return clientsheet;
+        }
+        public async Task<ClientInformationSheet> GetSheetFromOrganisationbyprogramme(Organisation organisation , Guid ClientprogrammeID)
+        {
+            var list = await _customerInformationRepository.FindAll().Where(s => s.Owner.Id == organisation.Id && s.Programme.Id == ClientprogrammeID).ToListAsync();
             var clientsheet = list.LastOrDefault();
             return clientsheet;
         }

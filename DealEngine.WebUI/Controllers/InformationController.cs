@@ -1,39 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using DealEngine.Domain.Entities;
-using DealEngine.Services.Interfaces;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using DealEngine.WebUI.Models;
-using DealEngine.WebUI.Models.Programme;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http;
 using DealEngine.Infrastructure.FluentNHibernate;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
-using System.Linq.Dynamic;
-using DocumentFormat.OpenXml.Bibliography;
-using DealEngine.WebUI.Models.Information;
-using NHibernate.Linq;
-using SystemDocument = DealEngine.Domain.Entities.Document;
-using Document = DealEngine.Domain.Entities.Document;
-using System.Net.Mime;
-using NReco.PdfGenerator;
-using System.IO;
-using Microsoft.AspNetCore.Hosting;
-using System.Text;
 using DealEngine.Services.Impl;
-using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
+using DealEngine.Services.Interfaces;
+using DealEngine.WebUI.Models;
+using DealEngine.WebUI.Models.Information;
+using DealEngine.WebUI.Models.Programme;
+using DocumentFormat.OpenXml.Bibliography;
+using EServices.AccountProxy;
+using FluentNHibernate.Testing.Values;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using FluentNHibernate.Testing.Values;
-using Microsoft.AspNetCore.Cors.Infrastructure;
-using EServices.AccountProxy;
-using Microsoft.VisualStudio.Web.CodeGeneration.Design;
+using NHibernate.Linq;
+using NReco.PdfGenerator;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Linq.Dynamic;
+using System.Net.Mime;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using Document = DealEngine.Domain.Entities.Document;
+using IdentityUser = NHibernate.AspNetCore.Identity.IdentityUser;
+using SystemDocument = DealEngine.Domain.Entities.Document;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -83,6 +85,8 @@ namespace DealEngine.WebUI.Controllers
         IClientAgreementExtensionTermService _clientAgreementExtensionTermService;
         ISerializerationService _serializerationService;
         UserManager<IdentityUser> _userManager;
+        IEventsInfoService _eventsInfoService;
+        IOdooTaskGateway _odooTaskGateway;
 
         //IAssetData _assetData;
         IMapperSession<ClubTrustAssetsInfo> _clubTrustAssetsInfoRepository;
@@ -138,6 +142,9 @@ namespace DealEngine.WebUI.Controllers
             UserManager<IdentityUser> userManager,
 
             IWebHostEnvironment hostingEnv,
+            IEventsInfoService eventsInfoService,
+            IOdooTaskGateway odooTaskGateway,
+
 
         //IGeneratePdf generatePdf,
         IClientAgreementExtensionTermService clientAgreementExtensionTermService,
@@ -192,6 +199,9 @@ namespace DealEngine.WebUI.Controllers
             _hostingEnv = hostingEnv;
             _userManager = userManager;
             _serializerationService = serializerationService;
+            _eventsInfoService = eventsInfoService;
+            _odooTaskGateway = odooTaskGateway;
+
 
             //_generatePdf = generatePdf;
         }
@@ -542,6 +552,16 @@ namespace DealEngine.WebUI.Controllers
                             count++;
                         }
                     }
+                }
+
+
+                foreach (var Clubactivities in clientProgramme.BaseProgramme.ClubActivities)
+                {
+
+
+
+
+
                 }
                 model.LimitsSelected = OptionItems;
                 // model.DeclarationMessage = sheet.Programme.BaseProgramme.Declaration;
@@ -1007,7 +1027,7 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet, HttpPost]
         // public async Task<IActionResult> EditInformation(Guid id)
         public async Task<IActionResult> EditInformation(Guid id, string updateType = null)
         {
@@ -1015,28 +1035,108 @@ namespace DealEngine.WebUI.Controllers
 
             user = await CurrentUser();
 
+            if (user == null)
+            {
+                _logger.LogInformation("EditInformation but User is null");
+
+                return PageNotFound();
+            }
+
             if (user.IsLoggedout)
             {
                 _logger.LogInformation("EditInformation but User  " + user.UserName + " is Loggedout");
 
                 return PageNotFound();
             }
-                
-
-            if (user == null)
-            {
-                _logger.LogInformation("EditInformation but User  " + user.UserName + " is null");
-
-                return PageNotFound();
-            }
-               
 
             try
             {
 
                 var clientProgramme = await _programmeService.GetClientProgramme(id);
+
+                // Fetch every other subscription belonging to this same client (owner),
+                // so we can check whether an older one is still incomplete
+                var siblingProgrammes = await _programmeService.GetClientProgrammesByOwner(clientProgramme.Owner.Id);
+                // Determine if an older subscription for this client is still pending;
+                // if one is found, the user must complete it before starting this one.
+                var earlierPending = FindBlockingPendingSubscription(clientProgramme, siblingProgrammes);
+               // Log the outcome of the pending-subscription check for troubleshooting.
+                _logger.LogInformation(
+                    "Pending subscription gate evaluated. CurrentProgrammeId={CurrentProgrammeId}, SiblingCount={SiblingCount}, BlockingProgrammeId={BlockingProgrammeId}",
+                    clientProgramme.Id,
+                    siblingProgrammes?.Count ?? 0,
+                    earlierPending?.Id);
+
+                if (earlierPending != null)
+                {
+                    // Build a user-facing message naming the specific older subscription
+                    // (year + programme name) that needs to be completed first.
+                    var pendingSortDate = GetProgrammeSortDate(earlierPending);
+                    var pendingYear = pendingSortDate == DateTime.MinValue ? "older" : pendingSortDate.Year.ToString();
+                    var pendingProgrammeName = earlierPending.BaseProgramme?.Name ?? "subscription";
+                    var blockedMessage = "Please complete your " + pendingYear +
+                        " subscription (" + pendingProgrammeName + ") before starting a new one.";
+                    // Pass the blocking message and the older subscription's details to the view.
+                    ViewBag.Title = "Action Required";
+                    ViewBag.BlockedMessage = blockedMessage;
+                    ViewBag.PendingProgrammeId = earlierPending.Id;
+                    ViewBag.PendingProgrammeName = pendingProgrammeName;
+                    // Show the blocked page instead of opening the new subscription.
+                    return View("SubscriptionBlocked");
+                }
+
+                
                 var sheet = clientProgramme.InformationSheet;
                 InformationViewModel model = await GetInformationViewModel(clientProgramme);
+
+                model.IsClub = clientProgramme.IsClub;
+                model.IsDistrict = clientProgramme.IsDistrict;
+                model.IsIndependentEntity = clientProgramme.IsIndependentEntity;
+
+                if (model.OrganisationViewModel.OrganisationAttribute == null)
+                {
+                    model.OrganisationViewModel.OrganisationAttribute = new OrganisationAttribute(null);
+                }
+
+                // ===============================================================
+                // ⭐ LOAD OrganisationAttribute VALUES FROM DATABASE INTO VIEWMODEL
+                // ===============================================================
+                if (sheet.OrganisationAttribute != null)
+                {
+                    var attr = sheet.OrganisationAttribute;
+                    var vm = model.OrganisationViewModel.OrganisationAttribute;
+
+                    // CLUB FIELDS
+                    vm.ActiveFeePaying = attr.ActiveFeePaying;
+                    vm.Honorary = attr.Honorary;
+                    vm.Associate = attr.Associate;
+                    vm.Family = attr.Family;
+                    vm.Community = attr.Community;
+                    vm.Volunteer = attr.Volunteer;
+                    vm.Corporate = attr.Corporate;
+                    vm.Alumni = attr.Alumni;
+                    vm.Trustees = attr.Trustees;
+                    vm.OtherMembers = attr.OtherMembers;
+                    vm.ClubTotal = attr.ClubTotal;
+
+                    // DISTRICT FIELDS
+                    vm.Dist_Rotary = attr.Dist_Rotary;
+                    vm.Dist_Rotaract = attr.Dist_Rotaract;
+                    vm.Dist_Interact = attr.Dist_Interact;
+                    vm.Dist_RotaKids = attr.Dist_RotaKids;
+                    vm.Dist_CommunityCore = attr.Dist_CommunityCore;
+                    vm.DistrictTotal = attr.DistrictTotal;
+
+                    // SPECIAL PURPOSE TRUST FIELDS
+                    vm.SPT_Companies = attr.SPT_Companies;
+                    vm.SPT_TradingTrusts = attr.SPT_TradingTrusts;
+                    vm.SPT_RevenueOver1m = attr.SPT_RevenueOver1m;
+                    vm.SPT_Revenue = attr.SPT_Revenue;
+                    vm.SPT_Total = attr.SPT_Total;
+                }
+
+
+
                 model.Advisory = await _milestoneService.SetMilestoneFor("Agreement Status - Not Started", user, sheet);
                 model.ClientProgrammeId = clientProgramme.Id;
                 //build custom models
@@ -1063,7 +1163,30 @@ namespace DealEngine.WebUI.Controllers
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("BIViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("TAViewModel", StringComparison.CurrentCulture)));
                 await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("CPViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("CTViewModel", StringComparison.CurrentCulture)));
+                await BuildModelFromAnswer(model, sheet.Answers.Where(s => s.ItemName.StartsWith("EventsViewModel", StringComparison.CurrentCulture)));
 
+                var activities = clientProgramme?.BaseProgramme?.ClubActivities ?? Enumerable.Empty<DealEngine.Domain.Entities.ClubActivities>();
+
+                // previously saved selections (may be GUIDs or Names from older saves)
+                var selected = new HashSet<string>(model.GLViewModel.DoesProtectChildren ?? new List<string>(),
+                                                   StringComparer.OrdinalIgnoreCase);
+
+                var options = new List<SelectListItem>();
+                foreach (var act in activities.Where(a => a != null))
+                {
+                    var idStr = act.Id.ToString();
+                    var name = act.Name ?? "(unnamed)";
+
+                    options.Add(new SelectListItem
+                    {
+                        Value = idStr,                 // store/post the GUID
+                        Text = name,                  // show the name
+                        Selected = selected.Contains(idStr) || selected.Contains(name)
+                    });
+                }
+
+               // model.GLViewModel.DoesProtectChildrenOptions = options;
 
                 if (sheet.Status == "Not Started")
                 {
@@ -1086,6 +1209,10 @@ namespace DealEngine.WebUI.Controllers
                 {
                     updateType = "common_you";
                 }
+                await GetEventsDataModel(model, sheet);
+
+
+
 
                 model.selectedUpdateType = new List<string>();
                 model.IsHardRefferalEnable = clientProgramme.BaseProgramme.EnableHardRefer;
@@ -1109,75 +1236,332 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
-        private async Task BuildModelFromAnswer(InformationViewModel model, IEnumerable<ClientInformationAnswer> Model)
+
+        private static List<string> SplitMulti(string? raw)
         {
-            //build models from answers
-            foreach (var answer in Model)
+            if (string.IsNullOrWhiteSpace(raw)) return new List<string>();
+            raw = raw.Trim();
+
+            // JSON array support: ["1","2","3"]
+            if (raw.StartsWith("[") && raw.EndsWith("]"))
             {
                 try
                 {
-                    var modelName = "";
-                    var split = answer.ItemName.Split('.').ToList();
-                    if (split.FirstOrDefault() == "PMINZEPLViewModel")
-                    {
-                        modelName = "EPLViewModel";
-                    }
-                    else if (split.FirstOrDefault() == "PMINZPIViewModel")
-                    {
-                        modelName = "PIViewModel";
-                    }
-                    else
-                    {
-                        modelName = split.FirstOrDefault();
-                    }
-                    if (split.Count > 1)
-                    {
-                        var modeltype = typeof(InformationViewModel).GetProperty(modelName);
-                        var reflectModel = modeltype.GetValue(model);
-
-                        var property = reflectModel.GetType().GetProperty(split.LastOrDefault());
-                        if (typeof(string) == property.PropertyType)
-                        {
-                            property.SetValue(reflectModel, answer.Value);
-                        }
-                        if (typeof(int) == property.PropertyType)
-                        {
-                            int.TryParse(answer.Value, out int intvalue);
-                            property.SetValue(reflectModel, intvalue);
-                        }
-                        if (typeof(decimal) == property.PropertyType)
-                        {
-                            decimal.TryParse(answer.Value, out decimal decvalue);
-                            property.SetValue(reflectModel, decvalue);
-                        }
-                        if (typeof(IList<SelectListItem>) == property.PropertyType)
-                        {
-                            var propertylist = (IList<SelectListItem>)property.GetValue(reflectModel);
-                            var options = answer.Value.Split(',').ToList();
-                            foreach (var option in options)
-                            {
-                                propertylist.FirstOrDefault(i => i.Value == option).Selected = true;
-                            }
-                            property.SetValue(reflectModel, propertylist);
-                        }
-                        if (typeof(DateTime) == property.PropertyType)
-                        {
-                            var date = DateTime.Parse(answer.Value);
-                            property.SetValue(reflectModel, date);
-                        }
-                        if (typeof(DateTime?) == property.PropertyType)
-                        {
-                            var date = DateTime.Parse(answer.Value);
-                            property.SetValue(reflectModel, date.ToString("dd/MM/yyyy"));
-                        }
-                    }
+                    var arr = System.Text.Json.JsonSerializer.Deserialize<List<string>>(raw);
+                    if (arr != null) return arr.Where(s => !string.IsNullOrWhiteSpace(s)).Select(s => s.Trim()).ToList();
                 }
-                catch (Exception ex)
+                catch { /* fall through to CSV */ }
+            }
+
+            // CSV: 1,2,3
+            return raw.Split(',')
+                      .Select(s => s.Trim())
+                      .Where(s => s.Length > 0)
+                      .ToList();
+        }
+       // Defines the rules for what counts as a "still pending" subscription:
+       // it must have been started, not yet bound/closed/declined, and not deleted.
+         private static bool IsPendingSubscriptionEligible(ClientProgramme cp)
+         {
+             return cp.InformationSheet != null &&
+                 !cp.InformationSheet.Status.StartsWith("Bound") &&
+                cp.InformationSheet.Status != "Not Taken Up By Broker" &&
+                cp.DateDeleted == null &&
+                cp.InformationSheet.Status != "Closed" &&
+                 !cp.BaseProgramme.Name.Contains("CLOSED");
+         }
+         
+          // Picks the date used to compare subscriptions as "older" vs "newer" —
+         // prefers the subscription's inception date, falling back to its creation date.
+        private static DateTime GetProgrammeSortDate(ClientProgramme cp)
+        {
+            if (cp == null)
+            {
+                return DateTime.MinValue;
+            }
+
+            if (cp.ClientProgrammeInceptionDate > DateTime.MinValue)
+            {
+                return cp.ClientProgrammeInceptionDate;
+            }
+
+            return cp.DateCreated ?? DateTime.MinValue;
+        }
+        
+        // Finds the older pending subscription (if any) that should block this one.
+        // First follows the actual renewal chain (this subscription's history of
+        // what it renewed from); if that finds nothing, falls back to comparing
+        // dates across all of the client's other subscriptions.
+        private static ClientProgramme FindBlockingPendingSubscription(ClientProgramme currentProgramme, IEnumerable<ClientProgramme> siblingProgrammes)
+        {
+            if (currentProgramme == null || siblingProgrammes == null)
+            {
+                return null;
+            }
+
+            var siblings = siblingProgrammes
+                .Where(cp => cp != null && cp.Id != currentProgramme.Id)
+                .ToList();
+
+            // Prefer explicit renewal lineage when available; this is more reliable than date-only ordering.
+            var byId = siblings.ToDictionary(cp => cp.Id, cp => cp);
+            var visited = new HashSet<Guid>();
+            var previous = currentProgramme.RenewFromClientProgramme;
+
+            while (previous != null && visited.Add(previous.Id))
+            {
+                if (byId.TryGetValue(previous.Id, out var siblingPrevious))
                 {
-                    Console.WriteLine("");
+                    previous = siblingPrevious;
+                }
+
+                if (IsPendingSubscriptionEligible(previous))
+                {
+                    return previous;
+                }
+
+                previous = previous.RenewFromClientProgramme;
+            }
+
+            var currentSortDate = GetProgrammeSortDate(currentProgramme);
+            if (currentSortDate == DateTime.MinValue)
+            {
+                return siblings
+                    .Where(IsPendingSubscriptionEligible)
+                    .OrderBy(cp => GetProgrammeSortDate(cp))
+                    .FirstOrDefault();
+            }
+
+            return siblings
+                .Where(IsPendingSubscriptionEligible)
+                .Where(cp => GetProgrammeSortDate(cp) <= currentSortDate)
+                .OrderBy(cp => GetProgrammeSortDate(cp))
+                .FirstOrDefault();
+        }
+
+        private async Task BuildModelFromAnswer(InformationViewModel model, IEnumerable<ClientInformationAnswer> answers)
+        {
+            foreach (var answer in answers)
+            {
+                try
+                {
+                    var split = (answer.ItemName ?? "").Split('.').ToList();
+                    if (split.Count == 0) continue;
+
+                    var modelName = split.First();
+                    if (modelName == "PMINZEPLViewModel") modelName = "EPLViewModel";
+                    else if (modelName == "PMINZPIViewModel") modelName = "PIViewModel";
+
+                    if (split.Count <= 1) continue;
+                    var propName = split.Last();
+
+                    var modelProp = typeof(InformationViewModel).GetProperty(modelName);
+                    if (modelProp == null) continue;
+
+                    var reflectModel = modelProp.GetValue(model);
+                    if (reflectModel == null) continue;
+
+                    var prop = reflectModel.GetType().GetProperty(propName);
+                    if (prop == null) continue;
+
+                    var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+
+                    // --- scalars ---
+                    if (targetType == typeof(string))
+                    {
+                        prop.SetValue(reflectModel, answer.Value);
+                        continue;
+                    }
+
+                    if (targetType == typeof(int))
+                    {
+                        if (int.TryParse(answer.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var i))
+                            prop.SetValue(reflectModel, i);
+                        continue;
+                    }
+
+                    if (targetType == typeof(decimal))
+                    {
+                        if (decimal.TryParse(answer.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d))
+                            prop.SetValue(reflectModel, d);
+                        continue;
+                    }
+
+                    if (targetType == typeof(bool))
+                    {
+                        if (bool.TryParse(answer.Value, out var b)) prop.SetValue(reflectModel, b);
+                        else if (int.TryParse(answer.Value, out var bi)) prop.SetValue(reflectModel, bi != 0);
+                        continue;
+                    }
+
+                    if (targetType == typeof(DateTime))
+                    {
+                        if (DateTime.TryParse(answer.Value, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out var dt))
+                            prop.SetValue(reflectModel, dt);
+                        continue;
+                    }
+
+                    if (prop.PropertyType == typeof(DateTime?))
+                    {
+                        if (DateTime.TryParse(answer.Value, CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal, out var dt))
+                            prop.SetValue(reflectModel, (DateTime?)dt);
+                        else
+                            prop.SetValue(reflectModel, (DateTime?)null);
+                        continue;
+                    }
+
+                    // --- collections: string/int lists & arrays ---
+                    if (prop.PropertyType == typeof(List<string>) || prop.PropertyType == typeof(IList<string>) || prop.PropertyType == typeof(string[]))
+                    {
+                        var list = SplitMulti(answer.Value);
+                        if (prop.PropertyType == typeof(string[]))
+                            prop.SetValue(reflectModel, list.ToArray());
+                        else
+                            prop.SetValue(reflectModel, list);
+
+                        // Also mark sibling "...Options" (IList<SelectListItem>) as selected if present
+                        var optionsProp = reflectModel.GetType().GetProperty(propName + "Options");
+                        if (optionsProp != null && typeof(IList<SelectListItem>).IsAssignableFrom(optionsProp.PropertyType))
+                        {
+                            var opts = (IList<SelectListItem>)(optionsProp.GetValue(reflectModel) ?? new List<SelectListItem>());
+                            var set = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
+                            foreach (var o in opts) o.Selected = set.Contains(o.Value?.Trim() ?? "");
+                            optionsProp.SetValue(reflectModel, opts);
+                        }
+                        continue;
+                    }
+
+                    if (prop.PropertyType == typeof(List<int>) || prop.PropertyType == typeof(int[]))
+                    {
+                        var list = SplitMulti(answer.Value)
+                                   .Select(s => int.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var v) ? (int?)v : null)
+                                   .Where(v => v.HasValue).Select(v => v!.Value).ToList();
+
+                        if (prop.PropertyType == typeof(int[]))
+                            prop.SetValue(reflectModel, list.ToArray());
+                        else
+                            prop.SetValue(reflectModel, list);
+                        continue;
+                    }
+
+                    // --- select option lists (mark selected) ---
+                    if (typeof(IList<SelectListItem>).IsAssignableFrom(prop.PropertyType))
+                    {
+                        var list = (IList<SelectListItem>)(prop.GetValue(reflectModel) ?? new List<SelectListItem>());
+                        var selected = SplitMulti(answer.Value);
+                        var set = new HashSet<string>(selected, StringComparer.OrdinalIgnoreCase);
+                        foreach (var o in list) o.Selected = set.Contains(o.Value?.Trim() ?? "");
+                        prop.SetValue(reflectModel, list);
+                        continue;
+                    }
+
+                    // --- enums (optional) ---
+                    if (targetType.IsEnum)
+                    {
+                        try
+                        {
+                            // Allows either name or numeric value
+                            var enumVal = Enum.Parse(targetType, answer.Value, ignoreCase: true);
+                            prop.SetValue(reflectModel, enumVal);
+                        }
+                        catch { /* ignore parse errors */ }
+                        continue;
+                    }
+
+                    // Add more type handlers here as needed...
+                }
+                catch
+                {
+                    // log if you want; keeping silent like your original
                 }
             }
         }
+        //private async Task BuildModelFromAnswer(InformationViewModel model, IEnumerable<ClientInformationAnswer> Model)
+        //{
+        //    //build models from answers
+        //    foreach (var answer in Model)
+        //    {
+        //        try
+        //        {
+        //            var split = answer.ItemName.Split('.').ToList();
+        //            if (split.Count == 0) continue;
+
+        //            var modelName = split.First();
+        //            if (modelName == "PMINZEPLViewModel") modelName = "EPLViewModel";
+        //            else if (modelName == "PMINZPIViewModel") modelName = "PIViewModel";
+        //            else{
+        //                modelName = split.FirstOrDefault();
+        //            }
+        //            if (split.Count > 1)
+        //            {
+        //                var modeltype = typeof(InformationViewModel).GetProperty(modelName);
+        //                var reflectModel = modeltype.GetValue(model);
+
+        //                var property = reflectModel.GetType().GetProperty(split.LastOrDefault());
+        //                if (typeof(string) == property.PropertyType)
+        //                {
+        //                    property.SetValue(reflectModel, answer.Value);
+        //                }
+        //                if (typeof(int) == property.PropertyType)
+        //                {
+        //                    int.TryParse(answer.Value, out int intvalue);
+        //                    property.SetValue(reflectModel, intvalue);
+        //                }
+        //                if (typeof(decimal) == property.PropertyType)
+        //                {
+        //                    decimal.TryParse(answer.Value, out decimal decvalue);
+        //                    property.SetValue(reflectModel, decvalue);
+        //                }
+        //                if (typeof(IList<SelectListItem>) == property.PropertyType)
+        //                {
+        //                    var propertylist = (IList<SelectListItem>)property.GetValue(reflectModel);
+        //                    var options = answer.Value.Split(',').ToList();
+        //                    foreach (var option in options)
+        //                    {
+        //                        propertylist.FirstOrDefault(i => i.Value == option).Selected = true;
+        //                    }
+        //                    property.SetValue(reflectModel, propertylist);
+        //                }
+        //                if (typeof(DateTime) == property.PropertyType)
+        //                {
+        //                    var date = DateTime.Parse(answer.Value);
+        //                    property.SetValue(reflectModel, date);
+        //                }
+        //                if (typeof(DateTime?) == property.PropertyType)
+        //                {
+        //                    var date = DateTime.Parse(answer.Value);
+        //                    property.SetValue(reflectModel, date.ToString("dd/MM/yyyy"));
+        //                }
+        //                // --- collections: string/int lists & arrays ---
+        //                if (property.PropertyType == typeof(List<string>) || property.PropertyType == typeof(IList<string>) || property.PropertyType == typeof(string[]))
+        //                {
+        //                    var list = SplitMulti(answer.Value);
+        //                    if (property.PropertyType == typeof(string[]))
+        //                        property.SetValue(reflectModel, list.ToArray());
+        //                    else
+        //                        property.SetValue(reflectModel, list);
+
+        //                    // Also mark sibling "...Options" (IList<SelectListItem>) as selected if present
+        //                    var optionsProp = reflectModel.GetType().GetProperty(propName + "Options");
+        //                    if (optionsProp != null && typeof(IList<SelectListItem>).IsAssignableFrom(optionsProp.PropertyType))
+        //                    {
+        //                        var opts = (IList<SelectListItem>)(optionsProp.GetValue(reflectModel) ?? new List<SelectListItem>());
+        //                        var set = new HashSet<string>(list, StringComparer.OrdinalIgnoreCase);
+        //                        foreach (var o in opts) o.Selected = set.Contains(o.Value?.Trim() ?? "");
+        //                        optionsProp.SetValue(reflectModel, opts);
+        //                    }
+        //                    continue;
+        //                }
+
+
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Console.WriteLine("");
+        //        }
+        //    }
+        //}
 
         private async Task GetTrustDataModel(InformationViewModel model, ClientInformationSheet sheet)
         {
@@ -1197,22 +1581,27 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        private async Task GetEventsDataModel(InformationViewModel model, ClientInformationSheet sheet)
+        {
+            try
+            {
+                if (sheet != null)
+                {
+                    var gj = model.EventsViewModel.HasClubTrustEvent;
+                    IList<EventsInfo> eventsInfo = await _eventsInfoService.GetEvents(sheet.Id);
+                    //AssetData asset = await _assetData.GetAssetDataBySheetId(sheet.Id);
+                    if (eventsInfo.Count > 0)
+                    {
+                        model.EventsViewModel.EventsInfo = eventsInfo;  
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
 
-        //private async Task GetDocumentUploadModel(InformationViewModel model, File file)
-        //{
-        //    try
-        //    {
-        //        if (file..Any())
-        //        {
-        //            model.RoleDataViewModel = _mapper.Map<RoleDataViewModel>(roleData);
-        //            model.RoleDataViewModel.AdditionalRoleInformationViewModel = _mapper.Map<AdditionalRoleInformationViewModel>(roleData.AdditionalRoleInformation);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine(ex.Message);
-        //    }
-        //}
 
         private async Task GetRoleViewModel(InformationViewModel model, RoleData roleData)
         {
@@ -1337,6 +1726,23 @@ namespace DealEngine.WebUI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> DeleteEvents(Guid Eventid)
+        {
+            User user = null;
+            try
+            {
+                EventsInfo eventsInfo = await _eventsInfoService.GetEventsById(Eventid);
+                user = await CurrentUser();
+                await _eventsInfoService.DeleteEventsById(user, eventsInfo);
+                return new JsonResult(true);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+        [HttpPost]
         public async Task<IActionResult> DeleteDoc(Guid DocId)
         {
             User user = null;
@@ -1358,6 +1764,169 @@ namespace DealEngine.WebUI.Controllers
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Upload(InformationViewModel model)
+        {
+            User user = null;
+            try
+            {
+                // Detect AJAX uploads so we can return JSON for the script-based submit handler.
+                bool isAjaxRequest = string.Equals(
+                    Request.Headers["X-Requested-With"],
+                    "XMLHttpRequest",
+                    StringComparison.OrdinalIgnoreCase);
+
+                // Shared error path: JSON for AJAX, redirect back to the edit screen for normal posts.
+                IActionResult ErrorResult(string message)
+                {
+                    if (isAjaxRequest)
+                    {
+                        return Json(new { success = false, message });
+                    }
+
+                    TempData["UploadError"] = message;
+                    if (model.ClientProgrammeId != Guid.Empty)
+                    {
+                        return Redirect("/Information/EditInformation/" + model.ClientProgrammeId);
+                    }
+
+                    return RedirectToAction("Index", "Home");
+                }
+
+                // Shared success path: JSON for AJAX, redirect back after a standard form post.
+                IActionResult SuccessResult(string message)
+                {
+                    if (isAjaxRequest)
+                    {
+                        return Json(new { success = true, message });
+                    }
+
+                    TempData["UploadSuccess"] = message;
+                    return Redirect("/Information/EditInformation/" + model.ClientProgrammeId);
+                }
+
+                user = await CurrentUser();
+                if (user == null || user.IsLoggedout)
+                {
+                    return ErrorResult("Your session has expired. Please log in again.");
+                }
+
+                // Validate the minimum data required before trying to save the document.
+                if (model.ClientProgrammeId == Guid.Empty)
+                {
+                    return ErrorResult("Missing programme id.");
+                }
+
+                if (model.File == null || model.File.Length == 0)
+                {
+                    return ErrorResult("Please choose a file to upload.");
+                }
+
+                if (string.IsNullOrWhiteSpace(model.DocumentOrganisation) || model.DocumentOrganisation == "select")
+                {
+                    return ErrorResult("Please select a named party.");
+                }
+
+                if (string.IsNullOrWhiteSpace(model.DocumentName))
+                {
+                    return ErrorResult("Please enter a document name.");
+                }
+
+                // Only allow the document formats that the upload flow supports.
+                var extension = Path.GetExtension(model.File.FileName)?.ToLowerInvariant();
+                var allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ".pdf", ".doc", ".docx", ".odt", ".gdoc"
+                };
+
+                if (string.IsNullOrWhiteSpace(extension) || !allowedExtensions.Contains(extension))
+                {
+                    return ErrorResult("Invalid file type. Allowed: .pdf, .doc, .docx, .odt, .gdoc");
+                }
+
+                ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
+                if (clientProgramme == null || clientProgramme.InformationSheet == null)
+                {
+                    return ErrorResult("Unable to find information sheet for this programme.");
+                }
+
+                // Use the current information sheet as the parent record for the uploaded file.
+                ClientInformationSheet sheet = clientProgramme.InformationSheet;
+
+                // Prefer the bound model value, otherwise parse the raw form field.
+                DateTime effectiveDate;
+                if (model.DocEffectiveDate != default(DateTime))
+                {
+                    effectiveDate = model.DocEffectiveDate;
+                }
+                else
+                {
+                    var dateRaw = Request.Form["DocEffectiveDate"].ToString();
+                    if (!DateTime.TryParse(dateRaw, CultureInfo.GetCultureInfo("en-NZ"), DateTimeStyles.None, out effectiveDate)
+                        && !DateTime.TryParse(dateRaw, out effectiveDate))
+                    {
+                        return ErrorResult("Please enter a valid document effective date.");
+                    }
+                }
+
+                // Persist the file to disk under the programme-specific upload folder.
+                var uploadDirectory = Path.Combine(_hostingEnv.WebRootPath, "files", model.ClientProgrammeId.ToString(), "documents");
+                Directory.CreateDirectory(uploadDirectory);
+
+                var physicalFileName = Guid.NewGuid().ToString("N") + extension;
+                var physicalPath = Path.Combine(uploadDirectory, physicalFileName);
+                await using (var stream = new FileStream(physicalPath, FileMode.Create))
+                {
+                    await model.File.CopyToAsync(stream);
+                }
+
+                // Create the document entity and link it back to the current information sheet.
+                var document = new Document(user, model.DocumentName.Trim(), model.File.ContentType, 11)
+                {
+                    OwnerOrganisationName = model.DocumentOrganisation,
+                    Extension = extension.TrimStart('.'),
+                    DocEffectiveDate = effectiveDate,
+                    FileRendered = false,
+                    Path = physicalPath,
+                    ClientInformationSheet = sheet
+                };
+
+                await _fileService.UploadFile(document);
+
+                if (sheet.documents != null)
+                {
+                    sheet.documents.Add(document);
+                }
+
+                // Save the updated information sheet so the new document appears in the UI.
+                await _clientInformationService.UpdateInformation(sheet);
+
+                return SuccessResult("File uploaded successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Log the failure and return the same JSON/redirect shape as the normal flow.
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                bool isAjaxRequest = string.Equals(
+                    Request.Headers["X-Requested-With"],
+                    "XMLHttpRequest",
+                    StringComparison.OrdinalIgnoreCase);
+
+                if (isAjaxRequest)
+                {
+                    return Json(new { success = false, message = "Unable to upload the selected document." });
+                }
+
+                TempData["UploadError"] = "Unable to upload the selected document.";
+                if (model.ClientProgrammeId != Guid.Empty)
+                {
+                    return Redirect("/Information/EditInformation/" + model.ClientProgrammeId);
+                }
+
+                return RedirectToAction("Index", "Home");
             }
         }
 
@@ -1447,11 +2016,14 @@ namespace DealEngine.WebUI.Controllers
         {
             Guid sheetId = Guid.Empty;
             User user = null;
+            var eventval = 0;
+
             try
             {
                 user = await CurrentUser();
                 sheetId = Guid.Parse(collection["AnswerSheetId"]);
                 ClientInformationSheet sheet = await _clientInformationService.GetInformation(sheetId);
+                eventval = int.Parse(collection["EventsViewModel.HasClubTrustEvent"]);
                 if (sheet == null)
                     return Json("Failure");
 
@@ -1464,6 +2036,12 @@ namespace DealEngine.WebUI.Controllers
                     SaveTrustAssetAnswer(user, sheet, collection);
 
                 }
+
+                if (eventval == 1)
+                {
+                    SaveEventsAnswer(user, sheet, collection);
+
+                }
                 return Json("Success");
             }
             catch (Exception ex)
@@ -1472,6 +2050,8 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
 
         [HttpPost]
         private async Task SaveTrustAssetAnswer(User user, ClientInformationSheet sheet, IFormCollection collection)
@@ -1485,6 +2065,7 @@ namespace DealEngine.WebUI.Controllers
                 Guid ownerid = Guid.Parse(collection["CTAViewModelOwner " + i]);
                 Organisation ownerorg = await _organisationService.GetOrganisation(ownerid);
                 //ClubTrustAssetsInfo clubTrustAssetsInfo = null;
+                //collection["CTAViewModelDescriptionorName 1"].Count() > 0;
                 while (collection["CTAViewModelDescriptionorName " + i].Count() > 0) // condition
                 {
                     Boolean exists = false;
@@ -1496,28 +2077,28 @@ namespace DealEngine.WebUI.Controllers
                         using (var uow = _unitOfWork.BeginUnitOfWork())
                         {
                             //ClubTrustAssetsInfo clubTrustAssetsInfo = await _clubAssetInfoService.GetClubAssetById(sheet.Id);
-                            foreach(var asset in ClubTrustAssetsInfo)
+                            foreach (var asset in ClubTrustAssetsInfo)
                             {
-                                if(asset.Name == collection["CTAViewModelDescriptionorName " + i])
+                                if (asset.Name == collection["CTAViewModelDescriptionorName " + i])
                                 {
                                     exists = true;
                                 }
                             }
-                            
 
-                        if (!exists)
-                        {
-                           ClubTrustAssetsInfo clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["CTAViewModelDescriptionorName " + i],
-                                                                            int.Parse(collection["CTAViewModelCurrentValue " + i]),
-                                                                            int.Parse(collection["CTAViewModelReplacementValue " + i]),
-                                                                            ownerorg, sheet, user);
 
-                            await _clubAssetInfoService.UpdateClubAsset(clubTrustAssetsInfo);
-                        }
+                            if (!exists)
+                            {
+                                ClubTrustAssetsInfo clubTrustAssetsInfo = new ClubTrustAssetsInfo(collection["CTAViewModelDescriptionorName " + i],
+                                                                                 int.Parse(collection["CTAViewModelCurrentValue " + i]),
+                                                                                 int.Parse(collection["CTAViewModelReplacementValue " + i]),
+                                                                                 ownerorg, sheet, user);
+
+                                await _clubAssetInfoService.UpdateClubAsset(clubTrustAssetsInfo);
+                            }
 
                             await uow.Commit();
                         }
-                        
+
 
                     }
                     catch (Exception ex)
@@ -1533,6 +2114,383 @@ namespace DealEngine.WebUI.Controllers
 
             }
         }
+
+
+        [HttpPost]
+        private async Task<EventsInfo> SaveEventsAnswer(User user, ClientInformationSheet sheet, IFormCollection collection)
+        {
+          //  List<ClubTrustAssetsInfo> ClubTrustAssetsInfolist = new List<ClubTrustAssetsInfo>();
+            IList<EventsInfo> EventsInfo = await _eventsInfoService.GetEvents(sheet.Id);
+            EventsInfo eventsInfo = null;
+            try
+            {
+                int i = 1; // initialization
+                           // Guid ownerid = Guid.Parse(collection["CTAViewModelOwner " + i]);
+                           // Organisation ownerorg = await _organisationService.GetOrganisation(ownerid);
+                           //ClubTrustAssetsInfo clubTrustAssetsInfo = null;
+                var gjghj = "EventName " + i;
+                var eventsvar = collection["EventName " + i];
+                var eventsvawerer = collection["EventName 1"];
+
+
+
+                while (collection["EventName " + i].Count() > 0) // condition
+                {
+                    Boolean exists = false;
+
+
+                    //var assetname = collection["CTAViewModelDescriptionorName " + i];
+                    try
+                    {
+                        //using (var uow = _unitOfWork.BeginUnitOfWork())
+                        //{
+                            //ClubTrustAssetsInfo clubTrustAssetsInfo = await _clubAssetInfoService.GetClubAssetById(sheet.Id);
+                            foreach(var events in EventsInfo)
+                            {
+                                if(events.EventName == collection["EventName " + i])
+                                {
+                                    exists = true;
+                                }
+                            }
+
+
+                            if (!exists)
+                            {
+
+                                eventsInfo = new EventsInfo(collection["MonthPlanned " + i], collection["EventName " + i], collection["Location " + i], collection["HealthSafetyPlan " + i], collection["EventType " + i],sheet, user);
+                                await _eventsInfoService.UpdateEvents(eventsInfo);
+                               // await uow.Commit();  // ✔ REQUIRED
+
+                            }
+
+                            //await uow.Commit();
+                        //}
+                        
+
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    i++;
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return eventsInfo;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadAndValidateold(InformationViewModel model)
+        {
+            // Legacy route kept for compatibility with older UI calls.
+            return await UploadAndValidate(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetNamedPartyValues(Guid organisationId)
+        {
+            // Used by the Named Party edit button to repopulate saved values for the selected organisation.
+            if (organisationId == Guid.Empty)
+            {
+                return Json(new { error = "Organisation id is required" });
+            }
+
+            var org = await _organisationService.GetOrganisation(organisationId);
+            if (org == null)
+            {
+                return Json(new { error = "Organisation not found" });
+            }
+
+            var attr = org.OrganisationAttribute;
+
+            // Keep JSON keys aligned with client-side mapping in _OnClick.cshtml.
+            return Json(new
+            {
+                activeFeePaying = attr?.ActiveFeePaying,
+                honorary = attr?.Honorary,
+                associate = attr?.Associate,
+                family = attr?.Family,
+                community = attr?.Community,
+                volunteer = attr?.Volunteer,
+                corporate = attr?.Corporate,
+                alumni = attr?.Alumni,
+                trustees = attr?.Trustees,
+                otherMembers = attr?.OtherMembers,
+                clubTotal = attr?.ClubTotal,
+
+                dist_Rotary = attr?.Dist_Rotary,
+                dist_Rotaract = attr?.Dist_Rotaract,
+                dist_Interact = attr?.Dist_Interact,
+                dist_RotaKids = attr?.Dist_RotaKids,
+                dist_CommunityCore = attr?.Dist_CommunityCore,
+                districtTotal = attr?.DistrictTotal,
+
+                spt_Companies = attr?.SPT_Companies,
+                spt_TradingTrusts = attr?.SPT_TradingTrusts,
+                spt_RevenueOver1m = attr?.SPT_RevenueOver1m,
+                spt_Revenue = attr?.SPT_Revenue,
+                spt_Total = attr?.SPT_Total
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadAndValidate(InformationViewModel model)
+        {
+            var selectedorg = await _organisationService.GetOrganisation(model.SelectedOrganisationId);
+
+            // Prevent null-reference and give a deterministic client error for stale ids.
+            if (selectedorg == null)
+                return Json(new { error = "Organisation not found" });
+
+            // Update the existing tracked attribute where possible to avoid replacing object identity.
+            var attr = selectedorg.OrganisationAttribute
+                       ?? new OrganisationAttribute(await CurrentUser());
+
+            var modelAttr = model.OrganisationViewModel?.OrganisationAttribute;
+
+            // Copy posted values field-by-field so persistence updates the same entity instance.
+            if (modelAttr != null)
+            {
+                attr.ActiveFeePaying = modelAttr.ActiveFeePaying;
+                attr.Honorary = modelAttr.Honorary;
+                attr.Associate = modelAttr.Associate;
+                attr.Family = modelAttr.Family;
+                attr.Community = modelAttr.Community;
+                attr.Volunteer = modelAttr.Volunteer;
+                attr.Corporate = modelAttr.Corporate;
+                attr.Alumni = modelAttr.Alumni;
+                attr.Trustees = modelAttr.Trustees;
+                attr.OtherMembers = modelAttr.OtherMembers;
+                attr.ClubTotal = modelAttr.ClubTotal;
+
+                attr.Dist_Rotary = modelAttr.Dist_Rotary;
+                attr.Dist_Rotaract = modelAttr.Dist_Rotaract;
+                attr.Dist_Interact = modelAttr.Dist_Interact;
+                attr.Dist_RotaKids = modelAttr.Dist_RotaKids;
+                attr.Dist_CommunityCore = modelAttr.Dist_CommunityCore;
+                attr.DistrictTotal = modelAttr.DistrictTotal;
+
+                attr.SPT_Companies = modelAttr.SPT_Companies;
+                attr.SPT_TradingTrusts = modelAttr.SPT_TradingTrusts;
+                attr.SPT_RevenueOver1m = modelAttr.SPT_RevenueOver1m;
+                attr.SPT_Revenue = modelAttr.SPT_Revenue;
+                attr.SPT_Total = modelAttr.SPT_Total;
+                attr.Organisation = selectedorg;
+            }
+
+            // Ensure the relationship stays attached before save/update.
+            selectedorg.OrganisationAttribute = attr;
+
+            // EditInformation repopulates from sheet.OrganisationAttribute on page load,
+            // so mirror the saved Named Party values there to keep reopen/edit behavior consistent.
+            if (model.ClientProgrammeId != Guid.Empty)
+            {
+                var clientProgramme = await _programmeService.GetClientProgramme(model.ClientProgrammeId);
+                var sheet = clientProgramme?.InformationSheet;
+                if (sheet != null)
+                {
+                    if (sheet.OrganisationAttribute == null)
+                    {
+                        sheet.OrganisationAttribute = new OrganisationAttribute(await CurrentUser());
+                    }
+
+                    sheet.OrganisationAttribute.ActiveFeePaying = attr.ActiveFeePaying;
+                    sheet.OrganisationAttribute.Honorary = attr.Honorary;
+                    sheet.OrganisationAttribute.Associate = attr.Associate;
+                    sheet.OrganisationAttribute.Family = attr.Family;
+                    sheet.OrganisationAttribute.Community = attr.Community;
+                    sheet.OrganisationAttribute.Volunteer = attr.Volunteer;
+                    sheet.OrganisationAttribute.Corporate = attr.Corporate;
+                    sheet.OrganisationAttribute.Alumni = attr.Alumni;
+                    sheet.OrganisationAttribute.Trustees = attr.Trustees;
+                    sheet.OrganisationAttribute.OtherMembers = attr.OtherMembers;
+                    sheet.OrganisationAttribute.ClubTotal = attr.ClubTotal;
+
+                    sheet.OrganisationAttribute.Dist_Rotary = attr.Dist_Rotary;
+                    sheet.OrganisationAttribute.Dist_Rotaract = attr.Dist_Rotaract;
+                    sheet.OrganisationAttribute.Dist_Interact = attr.Dist_Interact;
+                    sheet.OrganisationAttribute.Dist_RotaKids = attr.Dist_RotaKids;
+                    sheet.OrganisationAttribute.Dist_CommunityCore = attr.Dist_CommunityCore;
+                    sheet.OrganisationAttribute.DistrictTotal = attr.DistrictTotal;
+
+                    sheet.OrganisationAttribute.SPT_Companies = attr.SPT_Companies;
+                    sheet.OrganisationAttribute.SPT_TradingTrusts = attr.SPT_TradingTrusts;
+                    sheet.OrganisationAttribute.SPT_RevenueOver1m = attr.SPT_RevenueOver1m;
+                    sheet.OrganisationAttribute.SPT_Revenue = attr.SPT_Revenue;
+                    sheet.OrganisationAttribute.SPT_Total = attr.SPT_Total;
+
+                    await _clientInformationService.UpdateInformation(sheet);
+                }
+            }
+
+
+            // =============================
+            // VALIDATION
+            // =============================
+            var type = selectedorg.InsuranceAttributes.FirstOrDefault()?.Name;
+            var isClubType = type == "RotaryClub"
+                             || type == "Rotaract"
+                             || type == "RotaryCommunityCorp"
+                             || type == "RotaryCommunityCorps";
+            var isDistrictType = !string.IsNullOrEmpty(type)
+                                 && type.IndexOf("District", StringComparison.OrdinalIgnoreCase) >= 0;
+            var isCompanyType = type == "RotaryCompany" || type == "RotarySpecialPurposeTrust";
+
+            bool isValid = true;
+
+            if (isClubType)
+            {
+                if ((attr.ClubTotal ?? 0) <= 0)
+                {
+                    isValid = false;
+                    selectedorg.IsValid = false;
+                    selectedorg.ValidationMessage = "Club Total must be > 0, Please Complete Named Party";
+                }
+                else
+                {
+                    selectedorg.IsValid = true;
+                    selectedorg.ValidationMessage = "Named Party Completed";
+                }
+            }
+            else if (isDistrictType)
+            {
+                if ((attr.DistrictTotal ?? 0) <= 0)
+                {
+                    isValid = false;
+                    selectedorg.IsValid = false;
+                    selectedorg.ValidationMessage = "District Total must be > 0, Please Complete Named Party";
+                }
+                else
+                {
+                    selectedorg.IsValid = true;
+                    selectedorg.ValidationMessage = "Named Party Completed";
+                }
+            }
+            else if (isCompanyType)
+            {
+                if ((attr.SPT_Total ?? 0) <= 0)
+                {
+                    isValid = false;
+                    selectedorg.IsValid = false;
+                    selectedorg.ValidationMessage = "Company Total must be > 0, Please Complete Named Party";
+                }
+                else
+                {
+                    selectedorg.IsValid = true;
+                    selectedorg.ValidationMessage = "Named Party Completed";
+                }
+            }
+            else
+            {
+                selectedorg.IsValid = true;
+                selectedorg.ValidationMessage = "Named Party Completed";
+            }
+
+            // =============================
+            // SAVE
+            // =============================
+            await _organisationService.Update(selectedorg);
+
+            // =============================
+            // RESPONSE
+            // =============================
+            var result = new List<object>
+    {
+        new
+        {
+            orgId = selectedorg.Id,
+            isValid,
+            message = selectedorg.ValidationMessage,
+
+            totalType = isDistrictType ? "District"
+                        : isCompanyType ? "Company"
+                        : "Club",
+
+            totalValue =
+                isDistrictType ? attr.DistrictTotal :
+                isCompanyType ? attr.SPT_Total :
+                attr.ClubTotal
+        }
+    };
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ValidateNamedParties([FromBody] ValidateRequest request)
+        {
+            var results = new List<object>();
+
+            foreach (var orgId in request.OrganisationIds)
+            {
+                var org = await _organisationService.GetOrganisation(orgId);
+
+                List<OrganisationAttribute> attr = org.OrganisationAttribute != null ? new List<OrganisationAttribute> { org.OrganisationAttribute } : new List<OrganisationAttribute>();
+
+                bool isValid = true;
+                string message = "";
+
+                var type = org.OrganisationType.Name;
+
+                if (type == "RotaryClub" || type == "Rotaract" || type == "RotaryCommunityCorps")
+                {  
+                    foreach(var attribute in attr)
+                    {
+                        if (attribute.ActiveFeePaying <= 0)
+                        {
+                            isValid = false;
+                            message = "Active Fee Paying must be greater than 0";
+                            break;
+                        }
+                    }
+                    
+                }
+                else if (type.Contains("RotaryDistrict"))
+                {
+                   foreach(var attribute in attr)
+                    {
+                        if (attribute.DistrictTotal <= 0)
+                        {
+                            isValid = false;
+                            message = "District Total must be greater than 0";
+                            break;
+                        }
+                    }
+                    
+                }
+                else if (type == "RotaryCompany")
+                {
+                    foreach(var attribute in attr)
+                    {
+                        if (attribute.SPT_Total <= 0)
+                        {
+                            isValid = false;
+                            message = "Company Total must be greater than 0";
+                            break;
+                        }
+                    }
+                    
+                }
+
+                results.Add(new
+                {
+                    orgId = org.Id,
+                    orgName = org.Name,
+                    isValid,
+                    message
+                });
+            }
+
+            return Json(results);
+        }
+
+
+
 
         //string jsonString = JsonSerializer.Serialize(weatherForecast);
         [HttpPost]
@@ -1622,6 +2580,10 @@ namespace DealEngine.WebUI.Controllers
             Guid sheetId = Guid.Empty;
             User user = null;
 
+            //var claims = new OdooTaskSpecDtoViewModel;
+
+            //OdooTaskSpecDtoViewModel model = new OdooTaskSpecDtoViewModel();
+
             try
             {
                 user = await CurrentUser();
@@ -1656,11 +2618,47 @@ namespace DealEngine.WebUI.Controllers
                             await GenerateUWM(user, sheet, sheet.ReferenceId);
                             if (sheet.Programme.BaseProgramme.ProgEnableEmail)
                             {
-                           await _emailService.SendSystemEmailAllSubUISComplete(sheet.Owner, sheet.Programme.BaseProgramme, sheet);
+                       //    await _emailService.SendSystemEmailAllSubUISComplete(sheet.Owner, sheet.Programme.BaseProgramme, sheet);
                             }
                             //sheet = baseSheet;
                         }
                     }
+
+                    await _odooTaskGateway.OdooGatewayconnection(
+                        _appSettingService.OdooServerworkingendpoint, 
+                        _appSettingService.OdooServerDB,              
+                        _appSettingService.LoginID,                   
+                        _appSettingService.LoginKey                  
+                     );
+
+                    // List<OdooTaskSpec> Odootasks = new List<OdooTaskSpec>();
+
+                    // foreach (var agreement in clientProgramme.Agreements)
+                    // {
+                    //     foreach(var Odootask in agreement.Product.OdooTaskSpecs)
+                    //     { Odootasks.Add(Odootask); }
+
+                    // }
+                    //await _odooTaskGateway.CreateTasksAsync(Odootasks);
+
+
+                    var specs = clientProgramme.Agreements
+     .SelectMany(a => a.Product.OdooTaskSpecs) // domain entities with CreatedBy
+     .Select(t => new OdooTaskSpec(
+         title: t.Title,
+         projectId: t.ProjectId,
+         product: t.Product,
+         notes: t.Notes
+         ))
+     .ToList();
+
+                    if (specs.Count == 0)
+                        return Ok(new { created = Array.Empty<int>(), count = 0 });
+
+                    // 2) ONE RPC: bulk create all tasks at once
+                    var createdIds = await _odooTaskGateway.CreateTasksAsync(specs);
+
+
 
                     if (sheet.Programme.BaseProgramme.ProgEnableEmail)
                     {
@@ -1668,17 +2666,17 @@ namespace DealEngine.WebUI.Controllers
                         //AuditLog auditLog = new AuditLog(user, sheet, agreement, auditLogDetail);
                         //sheet.ClientInformationSheetAuditLogs.Add(auditLog);
                         //agreement.ClientAgreementAuditLogs.Add(auditLog);
-                        await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
+                       // await _emailService.SendSystemEmailUISSubmissionConfirmationNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                         //send out information sheet submission notification email
-                        await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
+                       // await _emailService.SendSystemEmailUISSubmissionNotify(user, sheet.Programme.BaseProgramme, sheet, sheet.Owner);
                     }
                     //send out agreement refer notification email
                     foreach (ClientAgreement agreement in clientProgramme.Agreements)
                     {
                         if (agreement.Status == "Referred")
                         {
-                            await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
-                            await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
+                         //   await _milestoneService.SetMilestoneFor("Agreement Status – Referred", user, sheet);
+                           // await _emailService.SendSystemEmailAgreementReferNotify(user, sheet.Programme.BaseProgramme, agreement, sheet.Owner);
                         }
                     }
                 }
@@ -2077,6 +3075,7 @@ namespace DealEngine.WebUI.Controllers
             return document;
         }
 
+
         [HttpPost]
         //public async Task<IActionResult> RenewInformation(Guid id)
          public async Task<IActionResult> RenewInformation(IFormCollection formCollection)
@@ -2285,105 +3284,21 @@ namespace DealEngine.WebUI.Controllers
 
 
 
-        [HttpPost]
-        public async Task<IActionResult> Upload(InformationViewModel model)
-        {
-            //string UploadedDocumentPath = _appSettingService.CKImagePath;
-            ClientInformationSheet answersheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
-            ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
-            var user = await CurrentUser();
-            var path = "";
-            if (model != null)
-            {
-                if (model.File != null)
-                {
+        //[HttpPost]
+        //public async Task<IActionResult> SaveOrganisationAttributes([FromBody] SaveOrganisationRequest request)
+        //{
+        //    //string UploadedDocumentPath = _appSettingService.CKImagePath;
+        //    ClientInformationSheet answersheet = await _clientInformationService.GetInformation(model.AnswerSheetId);
+        //    ClientProgramme clientProgramme = await _programmeService.GetClientProgrammebyId(model.ClientProgrammeId);
+        //    var user = await CurrentUser();
+        //    var path = "";
+            
+        //    return Redirect(url);
 
-                    var contentType = model.File.ContentType;
-                    var extension = "";
-                    var filename = "";
-                    
-                    if (contentType == "application/pdf")
-                    {
-                        extension = ".pdf";
-                    }else if (contentType == "application/vnd.oasis.opendocument.graphics")
-                    {
-                        extension = ".odg";
-                    }else if (contentType == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                    {
-                        extension = ".docx";//.gdoc
-                    }
-                    else
-                    {
-                        throw new FileFormatException("Invalid File Type");
-                    }
-                    if(model.DocumentName != null)
-                    {
-                        filename = model.DocumentName+ extension;
-                    }else if (model.File.FileName != null)
-                    {
-                        filename = model.File.FileName;
-                    }
+        //}
 
-                    //path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
 
-                    if (_appSettingService.IsLinuxEnv == "True")
-                    {
-                        path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation + "";
-                    }
-                    else
-                    {
-                        path = "C:\\Users\\Public\\" + model.DocumentOrganisation + "\\";
-
-                    }
-                    //var path = Path.Combine(_hostingEnv.WebRootPath, "files", model.Name, "attachmentfiles");
-                    // var path = "/home/ubuntu/projects/dealengine/publish/wwwroot/Documents/" + model.DocumentOrganisation +"";
-                    System.IO.Directory.CreateDirectory(path);
-                    path = Path.Combine(path, filename);
-
-                    try
-                    {
-                        
-                        using (var fileStream = new FileStream(path, FileMode.Create))
-                        {
-                             model.File.CopyTo(fileStream);
-                        }
-
-                        DealEngine.Domain.Entities.Document newFile = new DealEngine.Domain.Entities.Document
-                        {
-                            Name = filename,
-                            Description = "File for " + model.DocumentOrganisation,
-                            DocumentType = 0,
-                            IsTemplate = true,
-                            ContentType = model.File.ContentType,
-                            FileRendered = false,
-                            Path = path,
-                            ClientInformationSheet = clientProgramme.InformationSheet,
-                            OwnerOrganisationName = model.DocumentOrganisation,
-                            DocEffectiveDate = model.DocEffectiveDate,
-                            Extension = extension
-                        };
-
-                        await _fileService.UploadFile(newFile);
-
-                        //Guid productID = Guid.Parse(model.Product);
-                        //Product myProduct = await _iproductService.GetProductById(productID);
-                        //myProduct.Documents.Add(newFile);
-                        //await _iproductService.UpdateProduct(myProduct);
-                    }
-
-                    catch (Exception Ex)
-                    {
-                        Console.WriteLine(Ex.ToString());
-                    }
-
-                }
-            }
-            var url = "/Information/EditInformation/" + model.ClientProgrammeId;
-            return Redirect(url);
-
-        }
-
-        
+       
      
 
         [HttpPost]

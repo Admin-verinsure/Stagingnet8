@@ -2,6 +2,7 @@
 
 
 <div id="content" style="background-color: #A6E2EF">
+
     <!-- widget grid -->
     <section id="widget-grid" class="">
         <!-- row -->
@@ -67,7 +68,7 @@
                                     <div>
                                         <div id="tab_1" class="tab-pane step-content" style="display: block;">
                                             <h3>
-                                                <strong> @Model.Wizardsteps.ElementAt(0) </strong> - Complete Information
+                                                <strong> @Model.Wizardsteps.ElementAt(0) </strong> - Complete Information ( @Model.Programme.Name )
                                                 @*<button type="button" class="btn btn-sm pull-right text-white" data-toggle="modal" data-target="#advisoryModal" style="background-color: #00A8C8">
                                                         <i class="bi bi-node-plus"></i>Advisory
                                                     </button>*@
@@ -851,9 +852,11 @@
                                         </div>
                                         <div id="tab_2" class="tab-pane step-content" style="display:none">
                                             <h3><strong> @Model.Wizardsteps.ElementAt(1) </strong></h3>
-                                            <div class="modal-footer">
-                                                <label> Total Limit Selected:</label>
-                                                <button type="button" id="Limittotal" class="btn btn-primary">0</button>
+                                            <div class="text-center my-3">
+                                                <span class="text-success" style="font-weight: 550; font-size: 1rem;">
+                                                    The premium and admin fee for Management Liability is INCLUDED in the premium for the Public/General Liability.
+                                                    All premiums are exclusive of GST– see below.
+                                                </span>
                                             </div>
                                            
                                             <div id="agreementView" class="row test">
@@ -1030,7 +1033,7 @@
             background-color: #f3f0f0;
             direction: ltr;
         }
-
+        
         #header {
             display: block;
             /* height: 49px;*/
@@ -1055,10 +1058,23 @@
             background-color: #f3f0f0;
             position: relative;
         }
+
+        .btn-brick {
+            background-color: #B22222; /* Firebrick */
+            border-color: #B22222;
+            color: white;
+        }
+
+        .btn-brick:hover {
+                background-color: #8B1A1A;
+                border-color: #8B1A1A;
+                color: white;
+        }
     </style>
     @await Html.PartialAsync("_InformationWizardScripts")
     @await Html.PartialAsync("_DataTableScripts")
 <script>
+
     $(document).ready(function () {
             debugger;
             var accordianPanel = sessionStorage.getItem("accordianTrigger");

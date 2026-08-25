@@ -16,7 +16,10 @@ namespace DealEngine.WebUI.Models
 		}
 		public Guid ID { get; set; }
 		public string FullName { get; set; }
-		public User User { get; set; }
+        public string UserName { get; set; }
+        public string Email { get; set; }
+
+        public User User { get; set; }
 		public IList<SelectListItem> BooleanOptions { get; set; }
 		public Domain.Entities.Organisation Organisation { get; set; }
         public IList<Domain.Entities.Organisation> Organisations { get; set; }

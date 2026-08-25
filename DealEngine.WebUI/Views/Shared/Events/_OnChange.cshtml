@@ -1,4 +1,22 @@
-<script type="text/javascript">
+﻿<script type="text/javascript">
+
+        // ------------- GLOBAL RULE MAP -------------
+        const governanceRuleMap = {
+        "RotaryClub": ["0","Governance_1", "Governance_3", "Governance_4", "Governance_6"],
+        "Rotaract": ["0","Governance_1", "Governance_3", "Governance_4", "Governance_6"],
+        "RotaryCommunityCorps": ["0","Governance_1", "Governance_3", "Governance_4"],
+        "RotaryClubTrustOneOnly": ["0","Governance_3", "Governance_4"],
+        "RotaryOtherExtraClubTrusts": ["0","Governance_3", "Governance_4"],
+        "RotaryDistrict": ["0","Governance_1"],
+        "RotarySpecialPurposeTrust": ["0","Governance_3", "Governance_4"],
+        "RotaryCompany": ["0","Governance_2", "Governance_5", "Governance_7"],
+        "RotaryMultiDistrictOrganisation": ["0","Governance_6"],
+        "RotaryRIActionGroup": ["0","Governance_6"],
+        "RotaryRIFellowshipGroup": ["0","Governance_6"],
+        "RotaryOther": ["0","Governance_4", "Governance_5", "Governance_7"],
+        "Administrator": ["0","Private"],
+    };
+
     $(function () {
         //get all forms on load
         var forms = document.getElementsByClassName('is-valid');
@@ -145,7 +163,7 @@
 
              // document.querySelectorAll("[class =" + Name).forEach(function(el) {
                   //el.setAttribute("required");
-                 document.getElementById("AdministratorUnit.isAdministratorTheFAP").required = true; 
+                 document.getElementById("AdministratorUnit.isAdministratorTheFAP").required = true;
               //});
 
         }
@@ -266,6 +284,10 @@
                     obj.removeAttribute('data-onsubmititem');
                     Value = "1";
                 }
+                if (tempVal == "3") {
+                    obj.removeAttribute('data-onsubmititem');
+                    Value = "1";
+                }
                 DefaultRule(Value, Name);
             }
             if (Rule === "ValidateSharedTable") {
@@ -302,7 +324,7 @@
                         NewOrganisationTypeOnChange(Value);
                     }
                 }
-                
+
             }
             if (Rule === "OrganisationEmail") {
                 var Form = document.getElementById("organisationViewModel");
@@ -311,7 +333,7 @@
                     type: "POST",
                     data: $("#" + Form.id).serialize(),
                     success: function (Data) {
-                        var element = document.getElementById("User.Email");
+                        var element = document.getElementById("Organisation.Email");
                         if (Data == true) {
                             element.classList.remove("is-valid");
                             element.classList.add("is-invalid");
@@ -498,7 +520,9 @@
     }
     function OrganisationTypeOnChange(Value) {
         //reset views to default
-        ResetOrganisationUnitView();
+
+        debuu
+        resetOrganisationUnitView();
         var List = document.getElementById("Organisation.OrganisationType");
         List.disabled = false;
         if (Value == "Advisor" ||
@@ -539,43 +563,17 @@
                 BaristerUnitOnChange();
             }
 
-           
+
             if (Value == "Nominated Representative") {
                 AdvisorOnChange();
             }
 
 
-          
+
             if (Value == "Contractor") {
                 ContractorOnChange();
             }
 
-            //if (Value == "Run Off") {
-            //    debugger;
-            //    var RunOffUnit = document.getElementById("RunOffUnit");
-            //    if (RunOffUnit != null) {
-            //        document.getElementById("RunOffUnit").hidden = false;
-            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
-            //        //TradingName.addAttribute("required");
-            //    }
-            //    var Email = document.getElementById("EmailDiv");
-            //    if (Email != null) {
-            //        document.getElementById("EmailDiv").hidden = true;
-            //        Email.removeAttribute("required");
-            //    }
-            //} else {
-            //    var RunOffUnit = document.getElementById("RunOffUnit");
-            //    if (RunOffUnit != null) {
-            //        document.getElementById("RunOffUnit").hidden = true;
-            //        var TradingName = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
-            //        TradingName.removeAttribute("required");
-            //    }
-            //    var Email = document.getElementById("EmailDiv");
-            //    if (Email != null) {
-            //        document.getElementById("EmailDiv").hidden = false;
-            //    //    Email.addAttribute("required");
-            //    }
-            //}
 
 
             for (var i = 0; i < List.options.length; i++) {
@@ -624,7 +622,7 @@
             if (Value == "ABusiness") {
                 ABusinessOnChange();
             }
-            
+
             List.disabled = true;
         } else {
             document.getElementById("Else").hidden = false;
@@ -682,7 +680,7 @@
 
             }
 
-           
+
 
 
             if (Value == "Run Off") {
@@ -713,7 +711,7 @@
                     var effectivedate = document.getElementById("RealEstateRunOffUnit.EffectiveDate");
                     effectivedate.removeAttribute("required");
                 }
-               
+
             }
             var NoTradingNameValidation = document.getElementById("NoTradingNameValidation");
                     var TradingName = document.getElementById("Organisation.TradingName");
@@ -753,31 +751,13 @@
         ResetOrganisationUnitView();
         //var Role = document.getElementById("Organisation.InsuranceAttribute");
         var OrgTypeList = document.getElementById("Organisation.OrganisationType");
+         var privateDiv = document.getElementById("RotaryAdminPrivate");
         if (Value == "Administrator" ||
-            Value == "Trustee" ||
-            Value == "Incorporated Society Officer" ||
-            Value == "Director" ||
+
             Value == "Other") {
             //readonly Organisation Type personal
             //document.getElementById("OwnerFap").hidden = true;
 
-            if (Value == "Administrator"){
-
-              for (var i = 0; i < OrgTypeList.options.length; i++) {
-                //if (List.options[i].text == "Private" && Value != "MREDirector") {
-                 if (OrgTypeList.options[i].value == "Private") {
-
-                        OrgTypeList.options[i].selected = true;
-                    document.getElementById("Private").hidden = false;
-
-
-                    var Email = document.getElementById("EmailDiv");
-                    if (Email != null) {
-                        document.getElementById("EmailDiv").hidden = false;
-                    }
-                  }
-              }
-            }
             if (Value == "Administrator") {
                 for (var i = 0; i < OrgTypeList.options.length; i++) {
                     if (OrgTypeList.options[i].text == "Private Individual") {
@@ -798,130 +778,164 @@
                     } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
                         OrgTypeList.options[i].hidden = true;
                     }
+
+                     var Email = document.getElementById("EmailDiv");
+                    if (Email != null) {
+                        document.getElementById("EmailDiv").hidden = false;
+                    }
+                    // Unhide Private section
+                   
+                    if (privateDiv) {
+                       privateDiv.removeAttribute("hidden");
+                    }
+                    
+
                 }
 
                 $("#NoUserCreation").val(false);
             }
 
+            document.getElementById("Else").hidden = true;
 
-            if (Value == "Trustee") {
-                for (var i = 0; i < OrgTypeList.options.length; i++) {
-                    if (OrgTypeList.options[i].text == "Private Individual") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Trading Trust") {
-                        OrgTypeList.options[i].hidden = false;
-                    }
-                    if (OrgTypeList.options[i].text == "Holding Trust") {
-                        OrgTypeList.options[i].hidden = false;
-                    }
-                    if (OrgTypeList.options[i].text == "Incorporated Society") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Company") {
-                        OrgTypeList.options[i].hidden = true;
-                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                }
-                $("#NoUserCreation").val(true);
-
-            }
-            if (Value == "Incorporated Society Officer") {
-                for (var i = 0; i < OrgTypeList.options.length; i++) {
-                    if (OrgTypeList.options[i].text == "Private Individual") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Trading Trust") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Holding Trust") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Incorporated Society") {
-                        OrgTypeList.options[i].hidden = false;
-                    }
-                    if (OrgTypeList.options[i].text == "Company") {
-                        OrgTypeList.options[i].hidden = true;
-                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                }
-                $("#NoUserCreation").val(true);
-            }
-            if (Value == "Director") {
-                for (var i = 0; i < OrgTypeList.options.length; i++) {
-                    if (OrgTypeList.options[i].text == "Private") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Trading Trust") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Holding Trust") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Incorporated Society") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Company") {
-                        OrgTypeList.options[i].hidden = false;
-                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                }
-                $("#NoUserCreation").val(true);
-            }
-
-
-            if (Value == "Other") {
-                for (var i = 0; i < OrgTypeList.options.length; i++) {
-                    if (OrgTypeList.options[i].text == "Private Individual") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Trading Trust") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Holding Trust") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Incorporated Society") {
-                        OrgTypeList.options[i].hidden = true;
-                    }
-                    if (OrgTypeList.options[i].text == "Company") {
-                        OrgTypeList.options[i].hidden = true;
-                    } if (OrgTypeList.options[i].text == "other- NOT incorporated") {
-                        OrgTypeList.options[i].hidden = false;
-                    }
-                }
-                $("#NoUserCreation").val(true);
-
-            }
-
-
-
-            document.getElementById("Else").hidden = false;
-
-            
-        } else { document.getElementById("Else").hidden = false;}
+        } 
+        else { document.getElementById("Else").hidden = false;
+             if (privateDiv) {
+        privateDiv.hidden = true;
+        }
+        }
         DefaultRule("1", Value);
+        NewOrganisationTypeupdate(Value);
+    let orgTypeValue = $("#Organisation\\.InsuranceAttribute").val();
+
+    // If org type contains "Club", keep table open
+        document.getElementById("ClubMemberTable").hidden = true;
+        document.getElementById("DistrictTable").hidden = true;
+        document.getElementById("SpecialPurposeTrustTable").hidden = true;
+
+    // Show Club table for Club types
+    if (orgTypeValue=="RotaryClub" || orgTypeValue=="Rotaract" ||orgTypeValue=="RotaryCommunityCorps") {
+        document.getElementById("ClubMemberTable").hidden = false;
+    }else
+
+    // Show District table
+    if (orgTypeValue.toLowerCase().includes("rotarydistrict")) {
+        document.getElementById("DistrictTable").hidden = false;
+    }else
+    if (orgTypeValue=="RotarySpecialPurposeTrust" ||
+    orgTypeValue=="RotaryCompany") {
+        document.getElementById("SpecialPurposeTrustTable").hidden = false;
+    }else if ( orgTypeValue=="RotaryClubTrustOneOnly" )
+        document.getElementById("SpecialPurposeTrustTable").hidden = true;
 
 
     }
-    function AdministratorOnChange() {
-         var IsHideAdministrator = document.getElementById("HideAdministrator");
-        if (IsHideAdministrator != null) {
 
-             document.querySelectorAll('.HideAdministrator').forEach(function(el) {
-                 el.style.display = 'unset';
-             });
+        
+    function NewOrganisationTypeupdate(Value) {
+        debugger;
+        // Hide all governance options first
+            // resets to empty
+        // OR use:
+        // orgType.selectedIndex = 0;  // resets to first option
+       // }
+
+       // 🔹 Get Governance dropdown
+
+  
+        for (let i = 1; i <= 7; i++) {
+            var gg= "Governance_" + i;
+            let el = document.getElementById("Governance_" + i);
+            if (el) el.hidden = true;
         }
 
-        document.querySelectorAll('.AdvisorUnit').forEach(function(el) {
-                 el.style.display = 'none';
+
+        // Get which governance types should show
+        let allowed = governanceRuleMap[Value] || [];
+
+        // Show only allowed governance types
+        allowed.forEach(id => {
+            let el = document.getElementById(id);
+            if (el) el.hidden = false;
         });
 
+      
+       // handleGovernanceExtraFields(allowed);
+
+        // Update required status for visible/hidden fields
+        updateGovernanceRequired(allowed);
+    }
+
+
+    function handleGovernanceExtraFields(allowed) {
+
+        // Governance #5 requires country textbox
+        if (allowed.includes(5)) {
+            document.getElementById("Governance5_Extra").hidden = false;
+        } else {
+            document.getElementById("Governance5_Extra").hidden = true;
+        }
+
+        // Governance #7 requires operational details textbox
+        if (allowed.includes(7)) {
+            document.getElementById("Governance7_Extra").hidden = false;
+        } else {
+            document.getElementById("Governance7_Extra").hidden = true;
+        }
+    }
+
+    function updateGovernanceRequired(allowed) {
+
+        document.querySelectorAll(".governance-item").forEach(el => {
+            if (allowed.includes(parseInt(el.dataset.gov))) {
+                el.setAttribute("required", "required");
+            } else {
+                el.removeAttribute("required");
+            }
+        });
 
     }
+
+
+        function AdministratorOnChange() {
+
+        // Unhide Private section
+        var privateDiv = document.getElementById("Private");
+        if (privateDiv) {
+            privateDiv.removeAttribute("hidden");
+        }
+
+        var IsHideAdministrator = document.getElementById("HideAdministrator");
+        if (IsHideAdministrator != null) {
+            document.querySelectorAll('.HideAdministrator').forEach(function (el) {
+                el.style.display = 'unset';
+            });
+        }
+
+        document.querySelectorAll('.AdvisorUnit').forEach(function (el) {
+            el.style.display = 'none';
+        });
+    }
+
+
+
+
+    // function AdministratorOnChange() {
+    //      var IsHideAdministrator = document.getElementById("HideAdministrator");
+    //     if (IsHideAdministrator != null) {
+
+    //          document.querySelectorAll('.HideAdministrator').forEach(function(el) {
+    //              el.style.display = 'unset';
+    //          });
+    //     }
+
+    //     document.querySelectorAll('.AdvisorUnit').forEach(function(el) {
+    //              el.style.display = 'none';
+    //     });
+
+
+
+
+    // }
 
     function BarristerOnChange() {
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
@@ -929,7 +943,7 @@
         var IsEBarristerUnit = document.getElementsByClassName("EBaristerUnit");
         var IsEmployeeUnit = document.getElementsByClassName("Employee");
 
-        
+
 
         if (IsBarristerUnit != null) {
 
@@ -955,14 +969,14 @@
         }
 
 
-       
-        
+
+
 
     }
 
     function MEDirectorOnChange() {
         var IsDirectorUnit = document.getElementsByClassName("RealEstateDirectorUnit");
-      
+
 
         if (IsDirectorUnit != null) {
             document.querySelectorAll('.RealEstateDirectorUnit').forEach(function (el) {
@@ -1050,7 +1064,7 @@
 
     }
 
-    
+
 
      function JBarristerOnChange() {
         var IsBarristerUnit = document.getElementsByClassName("BarristerUnit");
@@ -1081,7 +1095,7 @@
              });
          }
 
-          
+
     }
 
     function EBarristerOnChange() {
@@ -1236,7 +1250,7 @@
         for (var i = 0; i < activities.options.length; i++) {
             var additionalactivityId = activities.options[i].value;
             if (additionalactivityId == "CUS0029" || additionalactivityId == "CUS0039" || additionalactivityId == "CUS0044" || additionalactivityId == "CUS0061" ||
-                additionalactivityId == "CUS0076" || additionalactivityId == "customict010" || additionalactivityId == "CUS0081" || additionalactivityId == "CUSFANZ11" || 
+                additionalactivityId == "CUS0076" || additionalactivityId == "customict010" || additionalactivityId == "CUS0081" || additionalactivityId == "CUSFANZ11" ||
                 additionalactivityId == "CUSFANZ21" || additionalactivityId == "CUSNZBar20" || additionalactivityId == "CUSMRE20" || additionalactivityId == "CUSRotaryAss20") {
                 additionalactivityId = "CUS0018";
             }
@@ -1383,10 +1397,23 @@
         return label;
     }
 
+    function AttachLabel(id, conditional) {
+        var label = document.createElement('label');
+        label.setAttribute("id", id);
+        label.innerHTML = conditional;
+        return label;
+    }
+
     function HideElement(id) {
         var element = document.getElementById(id);
         if (element != null) {
             element.hidden = true;
+            // Apply logic to children as well
+        element.querySelectorAll("[required]").forEach(function (child) {
+            child.removeAttribute("required");
+        });
+
+        UpdateRequiredFields();
         }
     }
 
@@ -1394,8 +1421,34 @@
         var element = document.getElementById(id);
         if (element != null) {
             element.hidden = false;
+             // Restore required to children that originally had it
+        element.querySelectorAll("[data-original-required]").forEach(function (child) {
+            child.setAttribute("required", true);
+        });
+
+        UpdateRequiredFields();
         }
     }
+
+
+    function UpdateRequiredFields() {
+        document.querySelectorAll("[data-original-required]").forEach(function (el) {
+
+            // Hidden → remove required
+            if (el.hidden === true || el.offsetParent === null) {
+                el.removeAttribute("required");
+            }
+            else {
+                // Visible → restore required
+                el.setAttribute("required", true);
+            }
+
+        });
+    }
+
+
+
+
 
     function ClearObject(Id) {
         var obj = document.getElementById(Id);
@@ -1446,7 +1499,7 @@
          debugger;
          if(ExtensionCoverCount > 0)
          $('input[name=\'' + productname + ' Extensiontable\']').prop('checked', false);
-          
+
     };
 
 
@@ -1467,20 +1520,76 @@
                                debugger;
 
                    $('#CalculateModal').hide();
-                   var element = document.getElementById(data.subTermType + " premiumamount"); 
-                   var rowelement = document.getElementById(data.subTermType + " row"); 
+                   var element = document.getElementById(data.subTermType + " premiumamount");
+                   var rowelement = document.getElementById(data.subTermType + " row");
                    rowelement.hidden = false;
                    var totalprem = parseFloat("400") + parseFloat(data.premium); ;
                    element.innerHTML="$"+  totalprem.toFixed(2);
-                   var element = document.getElementById(data.subTermType + " totalprem"); 
+                   var element = document.getElementById(data.subTermType + " totalprem");
                    element.hidden = false;
                }).fail(function (jqXHR, textStatus, errorThrown) {
                  $('#CalculateModal').hide();
                 alert("There was an error while trying to get the Cover Options.");
                 });
 
-           
+
     };
+
+
+        function updateChildrenActivitiesLabel() {
+        const selected = [];
+
+        document
+            .querySelectorAll('#ChildrenActivitiesDropdown .activity-check:checked')
+            .forEach(cb => {
+                const label = cb.parentElement.querySelector('label');
+                if (label) selected.push(label.innerText.trim());
+            });
+
+        const btn = document.getElementById('ChildrenActivitiesToggle');
+        if (!btn) return;
+
+        if (selected.length === 0) {
+            btn.innerText = "Select activities";
+        } else if (selected.length === 1) {
+            btn.innerText = selected[0];
+        } else {
+            btn.innerText = selected.length + " activities selected";
+        }
+    }
+
+    // Ensure text shows on page load
+    document.addEventListener("DOMContentLoaded", updateChildrenActivitiesLabel);
+
+    // function updateChildrenActivitiesLabel() {
+    //     const selected = [];
+
+    //     document.querySelectorAll('#ChildrenActivitiesDropdown .activity-check:checked')
+    //         .forEach(cb => {
+    //             const label = cb.parentElement.querySelector('label');
+    //             if (label) {
+    //                 selected.push(label.innerText.trim());
+    //             }
+    //         });
+
+    //     const btn = document.getElementById('ChildrenActivitiesToggle');
+
+    //     if (!btn) return;
+
+    //     if (selected.length === 0) {
+    //         btn.innerText = "Select activities";
+    //     } else if (selected.length === 1) {
+    //         btn.innerText = selected[0];
+    //     } else {
+    //         btn.innerText = selected.length + " activities selected";
+    //     }
+    // }
+
+    // // Run once on page load so previously saved values show correctly
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     updateChildrenActivitiesLabel();
+    // });
+
 
 
 </script>

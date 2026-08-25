@@ -34,6 +34,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DealEngine.Infrastructure.Payment", "DealEngine.Infrastructure.Payment\DealEngine.Infrastructure.Payment.csproj", "{00448825-FC66-49E7-9DF9-7421751BC8BF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DealEngine.Services.Impl", "DealEngine.Services.Impl\DealEngine.Services.Impl.csproj", "{45C6A0C9-18E6-41A4-B246-51EA80820945}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F94C40D8-1833-4AFE-932D-E318949B4F65} = {F94C40D8-1833-4AFE-932D-E318949B4F65}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DealEngine.Services.Interfaces", "DealEngine.Services.Interfaces\DealEngine.Services.Interfaces.csproj", "{B6B8A69E-3AA0-4D75-81BD-77AA1157D31A}"
 EndProject

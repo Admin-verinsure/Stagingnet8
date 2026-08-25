@@ -98,7 +98,17 @@
                                         <div class="page-body">
                                             <div class="head">
                                                 <h3 style="align-content:center">Document Has Been Saved</h3>
-                                                <a class="btn btn-success btn-sm" href="@Url.Action("ManageDocuments", "File")"><i class="fa fa-arrow-circle-left"></i>Back </a>
+
+                                                <a class="btn btn-success btn-sm"
+                                                   href="@Url.Action("ManageDocuments", "File", new { productId = Model.ProductId })">
+                                                    <i class="fa fa-arrow-circle-left"></i> Back
+                                                </a>
+
+                                            @*   //  <a href="~/File/ManageDocuments?productId=@Model.ProductId"> My Documents</a>
+
+                                                <a class="btn btn-success btn-sm" href="@Url.Action("ProductIndex", "File")"><i class="fa fa-arrow-circle-left"></i>Back </a>
+                                            *@ 
+                                        
                                             </div>
                                         </div>
                                     </div>

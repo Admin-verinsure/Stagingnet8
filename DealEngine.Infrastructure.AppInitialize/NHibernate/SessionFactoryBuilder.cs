@@ -1,20 +1,25 @@
-﻿using System;
-using Npgsql;
-using System.Text.RegularExpressions;
-using NHibernate.Tool.hbm2ddl;
-using NHibernate;
-using NHibernate.Cfg;
-using NHibernate.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using FluentNHibernate.Cfg;
-using FluentNHibernate.Cfg.Db;
-using NHibernate.Dialect;
-using FluentNHibernate.Automapping;
-using DealEngine.Domain.Entities;
+﻿using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate.MappingConventions;
 using DealEngine.Infrastructure.FluentNHibernate.MappingOverrides;
+using FluentNHibernate.Automapping;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NHibernate;
+using NHibernate.AspNetCore.Identity;
+using NHibernate.Cfg;
+using NHibernate.Dialect;
+using NHibernate.Extensions.Logging;
 using NHibernate.Extensions.NpgSql;
+using NHibernate.Tool.hbm2ddl;
+using Npgsql;
+using System;
 using System.Reflection;
+using System.Text.RegularExpressions;
+
+using NHibernate.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace DealEngine.Infrastructure.AppInitialize.Nhibernate
 {
@@ -24,7 +29,8 @@ namespace DealEngine.Infrastructure.AppInitialize.Nhibernate
         private static string NpgsqlConnectionString;
         public static ISessionFactory BuildSessionFactory(string connectionStringName)
         {
-
+            // 1. Create a Microsoft logger factory
+           
             var configuration = new ConfigurationBuilder()
                                         .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                                         .AddJsonFile("appsettings.json")
@@ -37,8 +43,9 @@ namespace DealEngine.Infrastructure.AppInitialize.Nhibernate
                     .Dialect<PostgreSQL82Dialect>()
                     .AdoNetBatchSize(10)
                     .Driver<NpgSqlDriver>()
+                    .ShowSql()
                     .FormatSql()
-                    .ShowSql()                    
+                    .MaxFetchDepth(5)
                  )
                 .CurrentSessionContext("web")                               
                 .ExposeConfiguration(cfg => BuildSchema(cfg, NpgsqlConnectionString))

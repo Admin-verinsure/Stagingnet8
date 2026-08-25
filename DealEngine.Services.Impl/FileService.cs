@@ -1,26 +1,30 @@
-using System;
-using System.Linq;
-using System.Net.Mime;
-using System.IO;
-using DealEngine.Services.Interfaces;
-using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Domain.Entities;
+using DealEngine.Infrastructure.FluentNHibernate;
+using DealEngine.Services.Interfaces;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using HtmlToOpenXml;
+using Microsoft.Extensions.Logging;
+using NHibernate.Linq;
+using NReco.PdfGenerator;
+using OpenHtmlToPdf;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Globalization;
-using System.Threading.Tasks;
-using NHibernate.Linq;
-using SystemDocument = DealEngine.Domain.Entities.Document;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml;
-using HtmlToOpenXml;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.Extensions.Logging;
-using Document = DealEngine.Domain.Entities.Document;
-using System.Text.RegularExpressions;
-using NReco.PdfGenerator;
+using System.IO;
+using System.Linq;
+using System.Net.Mime;
 using System.Net.Sockets;
-
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Document = DealEngine.Domain.Entities.Document;
+using SystemDocument = DealEngine.Domain.Entities.Document;
+using IOFile = System.IO.File;
+using DealEngine.Services.Interfaces.Enums;
 namespace DealEngine.Services.Impl
 {
 	public class FileService : IFileService
@@ -43,11 +47,14 @@ namespace DealEngine.Services.Impl
         IProgrammeService _programmeService;
         IProductService _productService;
         IAppSettingService _appSettingService;
-
-
-
+        private readonly ICertificateBuilderService _certificateBuilderService;
+        IClientAgreementService _agreementService;
+        private readonly ICertificatePdfService _certificatePdfService;
         public FileService(IMapperSession<Image> imageRepository, IMapperSession<Document> documentRepository,
-        IProgrammeService programmeService, IClientAgreementMVTermService clientAgreementMVTermService, IClientAgreementBVTermService clientAgreementBVTermService, IProductService productService, IAppSettingService appSettingService)
+        IProgrammeService programmeService, ICertificateBuilderService certificateBuilderService, 
+        IClientAgreementMVTermService clientAgreementMVTermService, IClientAgreementService clientAgreementService,
+        IClientAgreementBVTermService clientAgreementBVTermService, ICertificatePdfService certificatePdfService,
+        IProductService productService, IAppSettingService appSettingService)
 		{
 			_imageRepository = imageRepository;
 			_documentRepository = documentRepository;
@@ -55,7 +62,10 @@ namespace DealEngine.Services.Impl
             _clientAgreementBVTermService = clientAgreementBVTermService;
             _programmeService = programmeService;
             _productService = productService;
+            _certificateBuilderService = certificateBuilderService;
+            _agreementService = clientAgreementService;
             _appSettingService = appSettingService;
+            _certificatePdfService = certificatePdfService;
 
             FileDirectory = Path.Combine (
 				Directory.GetCurrentDirectory (),
@@ -862,7 +872,7 @@ namespace DealEngine.Services.Impl
 
                 string strallrotarynamedparties = "";
 
-                if (agreement.ClientInformationSheet.Organisation.Count > 0)
+                if (agreement.ClientInformationSheet.Organisation.Count > 0 || agreement.ClientInformationSheet.Owner.Name != null)
                 {
 
                     foreach (var uisorg in agreement.ClientInformationSheet.Organisation)
@@ -1048,43 +1058,47 @@ namespace DealEngine.Services.Impl
                                     }
                                 }
                             }
-
-                            var rotarydirector = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Director");
-                            if (rotarydirector != null)
+                            ///RotaryAssociationsProgramme Rotary Oceania Associations
+                            if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("RotaryAssociationsProgramme"))
                             {
-                                if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                var rotaryparty = uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name != "Administartor");
+                                if (rotaryparty != null)
                                 {
-                                    strallrotarynamedparties = uisorg.Name;
-                                }
-                                else
-                                {
-                                    strallrotarynamedparties += ", " + uisorg.Name;
+                                    if (string.IsNullOrEmpty(strallrotarynamedparties))
+                                    {
+                                        strallrotarynamedparties = uisorg.Name;
+                                    }
+                                    else
+                                    {
+                                        strallrotarynamedparties += ", " + uisorg.Name;
+                                    }
                                 }
                             }
-                            var rotarytrustee = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Trustee");
-                            if (rotarytrustee != null)
-                            {
-                                if (string.IsNullOrEmpty(strallrotarynamedparties))
-                                {
-                                    strallrotarynamedparties = uisorg.Name;
-                                }
-                                else
-                                {
-                                    strallrotarynamedparties += ", " + uisorg.Name;
-                                }
-                            }
-                            var rotaryincorporatedsocietyofficer = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Incorporated Society Officer");
-                            if (rotaryincorporatedsocietyofficer != null)
-                            {
-                                if (string.IsNullOrEmpty(strallrotarynamedparties))
-                                {
-                                    strallrotarynamedparties = uisorg.Name;
-                                }
-                                else
-                                {
-                                    strallrotarynamedparties += ", " + uisorg.Name;
-                                }
-                            }
+                               
+                            //var rotarytrustee = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Trustee");
+                            //if (rotarytrustee != null)
+                            //{
+                            //    if (string.IsNullOrEmpty(strallrotarynamedparties))
+                            //    {
+                            //        strallrotarynamedparties = uisorg.Name;
+                            //    }
+                            //    else
+                            //    {
+                            //        strallrotarynamedparties += ", " + uisorg.Name;
+                            //    }
+                            //}
+                            //var rotaryincorporatedsocietyofficer = (AdvisorUnit)uisorg.OrganisationalUnits.FirstOrDefault(u => u.Name == "Incorporated Society Officer");
+                            //if (rotaryincorporatedsocietyofficer != null)
+                            //{
+                            //    if (string.IsNullOrEmpty(strallrotarynamedparties))
+                            //    {
+                            //        strallrotarynamedparties = uisorg.Name;
+                            //    }
+                            //    else
+                            //    {
+                            //        strallrotarynamedparties += ", " + uisorg.Name;
+                            //    }
+                            //}
 
 
                         }
@@ -1119,8 +1133,19 @@ namespace DealEngine.Services.Impl
                     {
                         strabusiness = "No Associated Business Insureds.";
                     }
+                    if (agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("RotaryAssociationsProgramme"))
+                    {
+                        if (string.IsNullOrEmpty(strallrotarynamedparties))
+                        {
+                            strallrotarynamedparties = agreement.ClientInformationSheet.Owner.Name;
+                        }
+                        else
+                        {
+                            strallrotarynamedparties += ", " + agreement.ClientInformationSheet.Owner.Name;
+                        }
 
-                    if (string.IsNullOrEmpty(strallrotarynamedparties) && agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("Rotary Oceania Associations"))
+                    }
+                    if (string.IsNullOrEmpty(strallrotarynamedparties) && agreement.ClientInformationSheet.Programme.BaseProgramme.NamedPartyUnitName.Contains("RotaryAssociationsProgramme"))
                     {
 
                         strabusiness = "No Additional Insureds.";
@@ -1876,7 +1901,60 @@ namespace DealEngine.Services.Impl
         {
             return await _documentRepository.FindAll().Where(d => d.OwnerOrganisation == Owner && d.DateDeleted == null).ToListAsync();
         }
+
+
+
+        //public byte[] ConvertHtmlToPdf(string html)
+        //{
+        //    var tempHtml = Path.GetTempFileName() + ".html";
+        //    var tempPdf = Path.GetTempFileName() + ".pdf";
+
+        //    IOFile.WriteAllText(tempHtml, html);
+
+        //    var psi = new ProcessStartInfo
+        //    {
+        //        FileName = @"C:\wkhtmltopdf\bin\wkhtmltopdf.exe",
+        //        Arguments = $"\"{tempHtml}\" \"{tempPdf}\"",
+        //        UseShellExecute = false,
+        //        CreateNoWindow = true,
+        //        RedirectStandardOutput = true,
+        //        RedirectStandardError = true
+        //    };
+
+        //    using (var process = Process.Start(psi))
+        //    {
+        //        process.WaitForExit();
+        //    }
+
+        //    var pdfBytes = IOFile.ReadAllBytes(tempPdf);
+
+        //    IOFile.Delete(tempHtml);
+        //    IOFile.Delete(tempPdf);
+
+        //    return pdfBytes;
+        //}
+
+
         public async Task<Document> ConvertHTMLToPDF(Document doc)
+        {
+            string html = FromBytes(doc.Contents);
+
+            html = html.Replace("“", "&quot;");
+            html = html.Replace("”", "&quot;");
+            html = html.Replace(" – ", "--");
+            html = html.Replace("&nbsp;", " ");
+            html = html.Replace("'", "&#39;");
+
+            var pdfService = new PdfService();
+            var pdfBytes = await pdfService.GeneratePdfAsync(html);
+
+            User user = null;
+            Document document = new Document(user, doc.Name + ".pdf", "application/pdf", doc.DocumentType);
+            document.Contents = pdfBytes;
+
+            return document;
+        }
+        public async Task<Document> ConvertHTMLToPDFold1(Document doc)
         {
 
             string html = FromBytes(doc.Contents);
@@ -2104,6 +2182,25 @@ namespace DealEngine.Services.Impl
         //}
 
         #endregion
+
+        public async Task<byte[]> GenerateCertificateBytesAsync(Guid agreementId, Guid programmeId, CertificateType? type)
+        {
+            if (type == null)
+                throw new Exception("Certificate type is required");
+
+            var agreement = await _agreementService.GetAgreement(agreementId);
+            var programme = agreement.ClientInformationSheet.Programme;
+
+            var model = await _certificateBuilderService.BuildAsync(agreement, programme, type);
+            model.CertificateType = type.Value; 
+
+            var pdfBytes = await _certificatePdfService.GenerateAsync(model);
+
+            return pdfBytes;
+        }
+
+
+
     }
 }
 

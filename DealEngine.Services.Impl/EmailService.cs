@@ -36,6 +36,7 @@ namespace DealEngine.Services.Impl
         IApplicationLoggingService _applicationLoggingService;
         //ILogger<> _logger;
         IUpdateTypeService _updateTypeService;
+        ILogger<EmailService> _logger;
 
         private IConfiguration _configuration { get; set; }
 
@@ -47,6 +48,7 @@ namespace DealEngine.Services.Impl
             IMapperSession<ClientInformationSheet> clientInformationSheetmapperSession, 
             IAppSettingService appSettingService, 
             IApplicationLoggingService applicationLoggingService,
+            ILogger<EmailService> logger,
             IUpdateTypeService updateTypeService)
 		{
             _clientInformationSheetmapperSession = clientInformationSheetmapperSession;
@@ -58,6 +60,7 @@ namespace DealEngine.Services.Impl
             _appSettingService = appSettingService;
             _applicationLoggingService = applicationLoggingService;
             _updateTypeService = updateTypeService;
+            _logger = logger;
         }
 
         #region IEmailService implementation
@@ -135,7 +138,7 @@ namespace DealEngine.Services.Impl
 			body += string.Format("<p>Your username is <em>{0}</em></p>", user.UserName);
 			body += "<p>Thanks<br/>- The DealEngine Team</p>";
 			body += "<p>DealEngine is technology of DealEngine Group Limited who provide technical support.</p>";
-			body += string.Format("<p>DealEngine login: {0}<br/>For any technical issue please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.</p>", originDomain);
+			body += string.Format("<p>DealEngine login: {0}<br/>For any technical issue please go to https://verinsure.online/helpdesk_ticket and file a Helpdesk ticket.</p>", originDomain);
 
 			EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
 			email.From (DefaultSender);
@@ -171,6 +174,219 @@ namespace DealEngine.Services.Impl
             var user = await _userService.GetUserByEmail(recipent);
             List<KeyValuePair<string, string>> mergeFields;
             Programme baseProgramme = null;
+            try
+            {
+                if (clientInformationSheet != null)
+                {
+                    if (clientAgreement != null)
+                    {
+                        mergeFields = MergeFieldLibrary(null, null, clientInformationSheet.Programme.BaseProgramme, clientInformationSheet, clientAgreement);
+                    }
+                    else
+                    {
+                        mergeFields = MergeFieldLibrary(null, null, clientInformationSheet.Programme.BaseProgramme, clientInformationSheet, null);
+                    }
+
+                }
+                else
+                {
+                    mergeFields = MergeFieldLibrary(null, null, null, clientInformationSheet, null);
+                }
+
+                var insuredUser = _userService.GetApplicationUserByEmail(recipent);
+                if (insuredUser != null)
+                {
+                    mergeFields.Add(new KeyValuePair<string, string>("[[First Name]]", insuredUser.Result.FirstName));
+                    mergeFields.Add(new KeyValuePair<string, string>("[[Last Name]]", insuredUser.Result.LastName));
+                }
+
+                string systememailsubject = emailTemplate.Subject;
+                string systememailbody = System.Net.WebUtility.HtmlDecode(emailTemplate.Body);
+                foreach (KeyValuePair<string, string> field in mergeFields)
+                {
+                    systememailsubject = systememailsubject.Replace(field.Key, field.Value);
+                    systememailbody = systememailbody.Replace(field.Key, field.Value);
+                }
+
+                EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
+                email.From(DefaultSender);
+                email.WithSubject(systememailsubject);
+                email.WithBody(systememailbody);
+                email.UseHtmlBody(true);
+                _logger.LogError("In email service :-  " + documents.Count);
+
+                if (documents != null)
+                {
+                    var documentsList = await ToAttachments(documents);
+
+                    email.Attachments(documentsList.ToArray());
+
+                    email.Send();
+                    _logger.LogError("In email service after email send:-  " + documents.Count);
+
+                }
+                else
+                {
+
+                    email.Send();
+                    _logger.LogError("In email service in else part after email send:-  " + documents.Count);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("error while sending email  for client" + user.FirstName + " " + user.LastName);
+            }
+        }
+
+
+        public async Task SendTemplateEmailsToUsersAsync(
+     List<string> recipients,
+     EmailTemplate emailTemplate,
+     List<SystemDocument> documents,
+     ClientInformationSheet clientInformationSheet,
+     ClientAgreement clientAgreement)
+        {
+            try
+            {
+                // Build merge fields once (common data)
+                List<KeyValuePair<string, string>> baseMergeFields;
+
+                if (clientInformationSheet != null)
+                {
+                    baseMergeFields = MergeFieldLibrary(
+                        null,
+                        null,
+                        clientInformationSheet.Programme.BaseProgramme,
+                        clientInformationSheet,
+                        clientAgreement);
+                }
+                else
+                {
+                    baseMergeFields = MergeFieldLibrary(null, null, null, null, null);
+                }
+
+                var attachments = documents != null
+                    ? (await ToAttachments(documents)).ToArray()
+                    : null;
+
+                foreach (var recipient in recipients.Distinct())
+                {
+                    try
+                    {
+                        var mergeFields = new List<KeyValuePair<string, string>>(baseMergeFields);
+
+                        var user = await _userService.GetUserByEmail(recipient);
+
+                        if (user != null)
+                        {
+                            mergeFields.Add(new KeyValuePair<string, string>("[[First Name]]", user.FirstName));
+                            mergeFields.Add(new KeyValuePair<string, string>("[[Last Name]]", user.LastName));
+                        }
+
+                        string subject = emailTemplate.Subject;
+                        string body = System.Net.WebUtility.HtmlDecode(emailTemplate.Body);
+
+                        foreach (var field in mergeFields)
+                        {
+                            subject = subject.Replace(field.Key, field.Value);
+                            body = body.Replace(field.Key, field.Value);
+                        }
+
+                        var email = await GetLocalizedEmailBuilder(DefaultSender, recipient);
+
+                        email.From(DefaultSender);
+                        email.WithSubject(subject);
+                        email.WithBody(body);
+                        email.UseHtmlBody(true);
+
+                        if (attachments != null)
+                        {
+                            email.Attachments(attachments);
+                        }
+
+                        email.Send();
+
+                        _logger.LogInformation($"Email sent to {recipient}");
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error sending email to {recipient}: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in bulk email sending: {ex.Message}");
+            }
+        }
+
+
+        public async Task Sendalldocuments(string recipent, EmailTemplate emailTemplate, List<SystemDocument> documents, List<KeyValuePair<string, string>> mergeFields)
+        {
+            Console.WriteLine($"Email Template in sendall documents");
+
+            var user = await _userService.GetUserByEmail(recipent);
+            //List<KeyValuePair<string, string>> mergeFields;
+            Programme baseProgramme = null;
+            Console.WriteLine($"Email Template get user.");
+
+
+            string systememailsubject = emailTemplate.Subject;
+            Console.WriteLine($"Email Subject.");
+
+            string systememailbody = System.Net.WebUtility.HtmlDecode(emailTemplate.Body);
+            Console.WriteLine($"Email Template systememailbody.");
+
+            foreach (KeyValuePair<string, string> field in mergeFields)
+            {
+                systememailsubject = systememailsubject.Replace(field.Key, field.Value);
+                systememailbody = systememailbody.Replace(field.Key, field.Value);
+            }
+            Console.WriteLine($"Email Template after merge field.");
+
+
+            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
+            Console.WriteLine($"Email Template after GetLocalizedEmailBuilder.");
+
+            email.From(DefaultSender);
+            email.WithSubject(systememailsubject);
+            Console.WriteLine($"Email Template after subject.");
+
+            email.WithBody(systememailbody);
+            Console.WriteLine($"Email Template after body.");
+
+            email.UseHtmlBody(true);
+            Console.WriteLine($"Email Template after html.");
+
+            if (documents != null)
+            {
+                Console.WriteLine($"Email Template after documents check.");
+
+                var documentsList = await ToAttachments(documents);
+                Console.WriteLine($"Email Template befoireattched.");
+
+                email.Attachments(documentsList.ToArray());
+                Console.WriteLine($"Email Template attched.");
+
+                email.Send();
+                Console.WriteLine($"Email Template attched send.");
+
+            }
+            else
+            {
+                Console.WriteLine($"?? Email Template null");
+
+                email.Send();
+            }
+        }
+
+
+        public async Task<List<KeyValuePair<string, string>>> MergeEmailTemplate(string recipent, List<SystemDocument> documents, ClientInformationSheet clientInformationSheet, ClientAgreement clientAgreement)
+        {
+            var user = await _userService.GetUserByEmail(recipent);
+            List<KeyValuePair<string, string>> mergeFields;
+            Programme baseProgramme = null;
 
             if (clientInformationSheet != null)
             {
@@ -183,7 +399,7 @@ namespace DealEngine.Services.Impl
                     mergeFields = MergeFieldLibrary(null, null, clientInformationSheet.Programme.BaseProgramme, clientInformationSheet, null);
                 }
 
-            } 
+            }
             else
             {
                 mergeFields = MergeFieldLibrary(null, null, null, clientInformationSheet, null);
@@ -194,32 +410,21 @@ namespace DealEngine.Services.Impl
             {
                 mergeFields.Add(new KeyValuePair<string, string>("[[First Name]]", insuredUser.Result.FirstName));
                 mergeFields.Add(new KeyValuePair<string, string>("[[Last Name]]", insuredUser.Result.LastName));
+
+            }
+            if (user != null)
+            {
+                mergeFields.Add(new KeyValuePair<string, string>("[[UserName]]", user.UserName));
+            }
+            if (user != null)
+            {
+                mergeFields.Add(new KeyValuePair<string, string>("[[UserName]]", user.UserName));
             }
 
-            string systememailsubject = emailTemplate.Subject;
-            string systememailbody = System.Net.WebUtility.HtmlDecode(emailTemplate.Body);
-            foreach (KeyValuePair<string, string> field in mergeFields)
-            {
-                systememailsubject = systememailsubject.Replace(field.Key, field.Value);
-                systememailbody = systememailbody.Replace(field.Key, field.Value);
-            }            
-
-			EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, recipent);
-			email.From (DefaultSender);
-            email.WithSubject (systememailsubject);
-			email.WithBody (systememailbody);
-			email.UseHtmlBody (true);
-            if (documents != null)
-            {
-                var documentsList = await ToAttachments(documents);
-                email.Attachments(documentsList.ToArray());
-                email.Send();
-            }
-            else
-            {
-                email.Send();
-            }
+            return mergeFields;
         }
+
+
 
         public async Task SendEmailViaEmailTemplateWithCC(string recipent, EmailTemplate emailTemplate, List<SystemDocument> documents, ClientInformationSheet clientInformationSheet, ClientAgreement clientAgreement, string cCRecipent)
         {
@@ -427,7 +632,7 @@ namespace DealEngine.Services.Impl
 		{
 			string subjectPrefix = "Support Request: ";
 
-			EmailBuilder email = await GetLocalizedEmailBuilder(sender, "support@techcertain.com");
+			EmailBuilder email = await GetLocalizedEmailBuilder(sender, "admin@verinsure.online");
 			email.From (sender);
             email.WithSubject (subjectPrefix + subject);
             email.WithBody (body);
@@ -539,8 +744,8 @@ namespace DealEngine.Services.Impl
 
             List<KeyValuePair<string, string>> mergeFields = new List<KeyValuePair<string, string>>();
             mergeFields.Add(new KeyValuePair<string, string>("[[UserName]]", user.UserName));
-            mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "Please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details"));
-            mergeFields.Add(new KeyValuePair<string, string>("[[SupportEmail]]", "Please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details"));
+            mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "Please go to https://verinsure.online/helpdesk_ticket and file a Helpdesk ticket with your contact details"));
+            mergeFields.Add(new KeyValuePair<string, string>("[[SupportEmail]]", "Please go to https://verinsure.online/helpdesk_ticket and file a Helpdesk ticket with your contact details"));
 
             SystemEmail systemEmailTemplate = await _systemEmailRepository.GetSystemEmailByType("LoginEmail");
             if (systemEmailTemplate == null)
@@ -1094,7 +1299,7 @@ namespace DealEngine.Services.Impl
 
                 List<KeyValuePair<string, string>> mergeFields = MergeFieldLibrary(binder, insuredOrg, programme, agreement.ClientInformationSheet, null);
 
-                mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "Please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details"));
+                mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "Please go to https://verinsure.online/helpdesk_ticket and file a Helpdesk ticket with your contact details"));
 
                 SystemEmail systemEmailTemplate = await _systemEmailRepository.GetSystemEmailByType("AgreementBoundNotificationEmail");
                 if (systemEmailTemplate == null)
@@ -1130,7 +1335,7 @@ namespace DealEngine.Services.Impl
 
             if (uISIssued != null)
             {
-                recipent.Add("support@techcertain.com");
+                recipent.Add("admin@verinsure.online");
 
                 List<KeyValuePair<string, string>> mergeFields = MergeFieldLibrary(null, insuredOrg, programme, sheet, null);
 
@@ -1278,7 +1483,64 @@ namespace DealEngine.Services.Impl
             return null;
 		}
 
-		public async Task<List<Attachment>> ToAttachments(IEnumerable<SystemDocument> documents)
+        public async Task<List<Attachment>> ToAttachments(IEnumerable<SystemDocument> documents)
+        {
+            var attachments = new List<Attachment>();
+            try
+            {
+                foreach (var document in documents)
+                {
+                    if (document.ContentType == null)
+                        continue;
+
+                    // ? FILE SYSTEM PDF (your case)
+                   
+                    
+                    if (document.ContentType == "application/pdf")
+                    {
+                            if (!string.IsNullOrEmpty(document.Path) && File.Exists(document.Path))
+                            {
+                                byte[] fileBytes = File.ReadAllBytes(document.Path);
+                                var stream = new MemoryStream(fileBytes);
+
+                                attachments.Add(
+                                    new Attachment(
+                                        stream,
+                                        document.Name ?? Path.GetFileName(document.Path),
+                                        MediaTypeNames.Application.Pdf
+                                    )
+                                );
+                            }
+                            else if (document.Contents != null && document.Contents.Length > 0)
+                            {
+                                var stream = new MemoryStream(document.Contents);
+
+                                attachments.Add(
+                                    new Attachment(
+                                        stream,
+                                        document.Name,
+                                        MediaTypeNames.Application.Pdf
+                                    )
+                                );
+                            }
+                    }
+
+                    // ? OTHER FILE TYPES
+                    else
+                    {
+                        attachments.Add(await ToAttachment(document));
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return attachments;
+        }
+
+        public async Task<List<Attachment>> ToAttachmentsold(IEnumerable<SystemDocument> documents)
 		{
 			List<Attachment> attachments = new List<Attachment> ();
 			foreach (SystemDocument document in documents)
@@ -1484,6 +1746,25 @@ namespace DealEngine.Services.Impl
             await _clientInformationSheetmapperSession.UpdateAsync(sheet);
 
         }
+        public async Task CreateUserAdministrator(User createdUser, Organisation organisation)
+        {
+            EmailBuilder email = await GetLocalizedEmailBuilder(DefaultSender, createdUser.Email);
+            string subject = organisation.Name + " - Administrator Assignment & Insurance Information";
+            string body = "Dear " + createdUser.FirstName + ", you have been assigned as the administrator for " + organisation.Name + "." +
+                " Please visit the following URL to log in and complete the necessary information sheet for the insurance of this club: " +
+                "<br><a href='https://insure.rotarypacificaclubs.online/'>https://insure.rotarypacificaclubs.online/</a><br>" +
+                "Your username is: " + createdUser.UserName + "<br>" +
+                "If you need to reset your password, please click on the \"Reset Password\" button on the login page.<br>" +
+                "Thank you for your attention to this matter.";
+
+            email.From(DefaultSender);
+            email.WithSubject(subject);
+            email.UseHtmlBody(true);
+            email.WithBody(body);
+            email.Send();
+        }
+
+
 
         #region Merge Field Library
         public List<KeyValuePair<string, string>> MergeFieldLibrary(User uISIssuer, Organisation insuredOrg, Programme programme, ClientInformationSheet clientInformationSheet, ClientAgreement clientAgreement)
@@ -1545,7 +1826,7 @@ namespace DealEngine.Services.Impl
                 mergeFields.Add(new KeyValuePair<string, string>("[[ProductName]]", clientAgreement.Product.Name));
             }
                         
-            mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "Please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details"));
+            mergeFields.Add(new KeyValuePair<string, string>("[[SupportPhone]]", "Please go to https://verinsure.online/helpdesk_ticket and file a Helpdesk ticket with your contact details"));
 
             return mergeFields;
         }

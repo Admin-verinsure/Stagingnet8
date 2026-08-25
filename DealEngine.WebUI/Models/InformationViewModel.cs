@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using DealEngine.Domain.Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
-using DealEngine.Domain.Entities;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Http;
 
 namespace DealEngine.WebUI.Models
 {
@@ -45,7 +47,8 @@ namespace DealEngine.WebUI.Models
             BuildingViewModel = new BuildingViewModel();
             TAViewModel = new TAViewModel();
             CPViewModel = new CPViewModel();
-
+            CTViewModel = new CTViewModel();
+            EventsViewModel = new EventsViewModel();
         }
         public User User { get; set; }
         public OrganisationViewModel OrganisationViewModel { get; set; }
@@ -103,6 +106,8 @@ namespace DealEngine.WebUI.Models
         public CPViewModel CPViewModel { get; set; }
         public AssetData AssetData { get; set; }
         public TAViewModel TAViewModel { get; set; }
+        public EventsViewModel EventsViewModel { get; set; }
+
         public IList<Document> DocumentList { get; set; }
         //public File File{ get; set; }
         public IFormFile File { get; set; }
@@ -113,6 +118,13 @@ namespace DealEngine.WebUI.Models
 
         public Guid ClientProgrammeId { get; set; }
         public bool IsHardRefferalEnable { get; set; }
+        public CTViewModel CTViewModel { get; set; }
+        public bool IsClub { get; set; }
+        public bool IsDistrict { get; set; }
+        public bool IsIndependentEntity { get; set; }
+        public Guid Owner { get; set; }
+        public Guid SelectedOrganisationId { get; set; }
+
     }
 
 
@@ -1562,6 +1574,12 @@ namespace DealEngine.WebUI.Models
             HasAnyClaimMadeOptions = GetSelectListOptions();
             HasMLOptions = GetSelectListOptions();
             HasInsolvencyOptions = GetSelectListOptions();
+            MLViewModelWebsite = GetSelectListOptionsWebsite();
+            MLViewModelAccounting = GetSelectListOptionsAccounting();
+            MLViewModelStorage = GetSelectListOptionsStorage();
+            MLViewModelCompanyFinancial = GetSelectListOptionsCompanyFinancial();
+            HasRunoutOptions = GetSelectListOptions();
+
         }
 
         public int AssetTotal { get; set; }
@@ -1581,8 +1599,12 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasAnyClaimMadeOptions { get; set; }
         public IList<SelectListItem> HasMLOptions { get; set; }
         public IList<SelectListItem> HasInsolvencyOptions { get; set; }
-
-        
+        public IList<SelectListItem> MLViewModelWebsite { get; set; }
+        public IList<SelectListItem> MLViewModelAccounting { get; set; }
+        public IList<SelectListItem> MLViewModelStorage { get; set; }
+        public IList<SelectListItem> MLViewModelCompanyFinancial { get; set; }
+        public IList<SelectListItem> HasRunoutOptions { get; set; }
+        public decimal? TotalFundsUnderManagement { get; set; }
 
 
 
@@ -1603,6 +1625,81 @@ namespace DealEngine.WebUI.Models
             };
         }
 
+        private IList<SelectListItem> GetSelectListOptionsCompanyFinancial()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem { Text = "-- Select --", Value = "0" },
+                new SelectListItem
+                {
+                    Text = "Audited", Value = "1"
+                },
+                new SelectListItem
+                {
+                    Text = "Formally Reviewed", Value = "2"
+                },
+                new SelectListItem
+                { Text = "Not Sure", Value = "3" }
+                ,
+                new SelectListItem
+                { Text = "Internal Review", Value = "4" }
+            };
+        }
+
+
+        private IList<SelectListItem> GetSelectListOptionsWebsite()
+        {
+            return new List<SelectListItem>()
+            {
+        new SelectListItem { Text = "-- Select --", Value = "0" },
+        new SelectListItem { Text = "Clubrunner", Value = "1" },
+        new SelectListItem { Text = "Dacdb", Value = "2" },
+        new SelectListItem { Text = "Facebook", Value = "3" },
+        new SelectListItem { Text = "Flectra", Value = "4" },
+        new SelectListItem { Text = "Odoo", Value = "5" },
+        new SelectListItem { Text = "Squarespace", Value = "6" },
+        new SelectListItem { Text = "Wix", Value = "7" },
+        new SelectListItem { Text = "Other service", Value = "8" },
+        new SelectListItem { Text = "No web presence", Value = "9" }
+            };
+        }
+
+        private IList<SelectListItem> GetSelectListOptionsAccounting()
+        {
+            return new List<SelectListItem>()
+            {
+
+        new SelectListItem { Text = "-- Select --", Value = "0" },
+        new SelectListItem { Text = "Flectra", Value = "1" },
+        new SelectListItem { Text = "MYOB", Value = "2" },
+        new SelectListItem { Text = "Odoo", Value = "3" },
+        new SelectListItem { Text = "Quickbooks", Value = "4" },
+        new SelectListItem { Text = "Spreadsheet", Value = "5" },
+        new SelectListItem { Text = "Paper records", Value = "6" },
+        new SelectListItem { Text = "Xero", Value = "7" },
+        new SelectListItem { Text = "Other service", Value = "8" },
+        new SelectListItem { Text = "No accounts", Value = "9" }
+             };
+        }
+
+        private IList<SelectListItem> GetSelectListOptionsStorage()
+        {
+            return new List<SelectListItem>()
+             {
+        new SelectListItem { Text = "-- Select --", Value = "0" },
+        new SelectListItem { Text = "Dropbox", Value = "1" },
+        new SelectListItem { Text = "Office 365", Value = "2" },
+        new SelectListItem { Text = "Flectra", Value = "3" },
+        new SelectListItem { Text = "Members PCs", Value = "4" },
+        new SelectListItem { Text = "Odoo", Value = "5" },
+        new SelectListItem { Text = "Paper records", Value = "6" },
+        new SelectListItem { Text = "Other service", Value = "7" },
+        new SelectListItem { Text = "A combination of the above", Value = "8" },
+        new SelectListItem { Text = "No accounts", Value = "9" }
+             };
+        }
+
+
 
     }
     public class GLViewModel
@@ -1614,6 +1711,99 @@ namespace DealEngine.WebUI.Models
             HasExistingPolicyOptions = GetSelectListOptions();
             HasAssumeLiabilityOptions = GetSelectListOptions();
             HasClientFundsOptions = GetSelectListOptions();
+            DoesProtectChildrenOption = GetSelectListOptions();
+            DoesProtectChildrenOptionValue = "0"; // default
+            // single-select (Yes/No/Not Sure)
+            Doesvolunteerpolicechecked = GetDoesvolunteerpolicecheckedOptions();
+            DoesvolunteerpolicecheckedValue = "0"; // default
+            // multi-select (activities)
+            //DoesProtectChildrenOptions = new List<SelectListItem>();
+            DoesProtectChildrenOptions = GetSelectListOptionsforProtectionOptions();
+            DoesProtectChildren = new List<string>();
+
+        }
+
+
+
+        private IList<SelectListItem> GetDoesvolunteerpolicecheckedOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No/Not Sure", Value = "2" }
+                
+            };
+        }
+
+
+        private IList<SelectListItem> GetSelectListOptionsforProtectionOptions()
+        {
+            return new List<SelectListItem>
+    {
+        new SelectListItem { Text = "Rotary Youth Exchange (RYE)", Value = "RYE" },
+        new SelectListItem { Text = "Rotary Youth Programme of Enrichment (RYPEN)", Value = "RYPEN" },
+        new SelectListItem { Text = "Interact Club Sponsor Club", Value = "INTERACT_SPONSOR" },
+        new SelectListItem { Text = "Rota-Kids Sponsor Club", Value = "ROTAKIDS_SPONSOR" },
+        new SelectListItem { Text = "Rotary Australia New Zealand Student Exchange (RANZSE)", Value = "RANZSE" },
+        new SelectListItem { Text = "Road Safety Education (RYDA)", Value = "RYDA" },
+        new SelectListItem { Text = "Rotary National Science & Technology Forum", Value = "SCIENCE_FORUM" },
+        new SelectListItem { Text = "Rotary Eureka Science Awards", Value = "EUREKA" },
+        new SelectListItem { Text = "Model United Nations Assembly (MUNA)", Value = "MUNA" },
+        new SelectListItem { Text = "Interact", Value = "INTERACT" },
+        new SelectListItem { Text = "Innovative Young Minds (IYM)", Value = "IYM" },
+        new SelectListItem { Text = "ROTA Pacific", Value = "ROTA_PACIFIC" },
+        new SelectListItem { Text = "Trees for Survival", Value = "TREES_SURVIVAL" },
+        new SelectListItem { Text = "The Walsh Memorial Scout Flying School – sponsor", Value = "WALSH_SCOUT" },
+        new SelectListItem { Text = "The Spirit of Adventure – sponsor", Value = "SPIRIT_ADVENTURE" },
+        new SelectListItem { Text = "Outward Bound – sponsor", Value = "OUTWARD_BOUND" },
+        new SelectListItem { Text = "Turn Your Life Around (TYLA)", Value = "TYLA" },
+        new SelectListItem { Text = "Storytime Foundation", Value = "STORYTIME" },
+        new SelectListItem { Text = "ROMAC – inbound hosting", Value = "ROMAC" },
+        new SelectListItem { Text = "Other", Value = "OTHER" }
+    };
+        }
+
+
+
+        //public IList<SelectListItem> DoesProtectChildrenOptions { get; set; }
+
+        //private IList<SelectListItem> GetSelectListOptionsforProtectionOptions(){
+        //    return new List<SelectListItem>()
+        //    {
+        //        new SelectListItem
+        //        {
+        //            Text = "-- Select --", Value = "0"
+        //        },
+        //        new SelectListItem
+        //        {
+        //            Text = "Yes test1", Value = "1"
+        //        },
+        //        new SelectListItem
+        //        { Text = "No test12", Value = "2" },
+        //        new SelectListItem
+        //        { Text = "Not Sure test13", Value = "3" }
+        //    };
+        //}
+        private IList<SelectListItem> GetSelectListOptionsforProtection()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
         }
 
         private IList<SelectListItem> GetSelectListOptions()
@@ -1637,6 +1827,17 @@ namespace DealEngine.WebUI.Models
         public IList<SelectListItem> HasExistingPolicyOptions { get; set; }
         public IList<SelectListItem> HasAssumeLiabilityOptions { get; set; }
         public IList<SelectListItem> HasClientFundsOptions { get; set; }
+        //public IList<SelectListItem> DoesProtectChildren { get; set; }
+        public IList<SelectListItem> DoesProtectChildrenOption { get; set; }
+        public string DoesProtectChildrenOptionValue { get; set; } // <-- selected value
+
+        // single-select (Yes/No/Not Sure)
+        public IList<SelectListItem> Doesvolunteerpolicechecked { get; set; }
+        public string DoesvolunteerpolicecheckedValue { get; set; } // <-- selected value
+
+        // multi-select (activities)
+        public IList<SelectListItem> DoesProtectChildrenOptions { get; }
+        public List<string> DoesProtectChildren { get; set; }
         public int CoverAmount { get; set; }
         public string VehicleDetails { get; set; }
         public string AssumeLiabilityDetails { get; set; }
@@ -2108,6 +2309,42 @@ namespace DealEngine.WebUI.Models
 
     }
 
+
+    public class CTViewModel : BaseViewModel
+    {
+        public CTViewModel()
+        {
+            HasClubTrustDeedReviewed = GetSelectListOptions();
+
+        }
+        //  public Guid Id { get; set; }
+        public IList<SelectListItem> HasClubTrustDeedReviewed { get; set; }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { 
+                    Text = "No", Value = "2" 
+                },
+                new SelectListItem
+                { 
+                    Text = "Not Sure", Value = "3" 
+                }
+            };
+        }
+
+    }
+
     public class TAViewModel : BaseViewModel
     {
         public TAViewModel()
@@ -2155,33 +2392,58 @@ namespace DealEngine.WebUI.Models
 
     }
 
-    //public class ClubTrustAssetsInfoViewModel
-    //{
-    //    public ClubTrustAssetsInfoViewModel() { }
-    //    public ClubTrustAssetsInfoViewModel(Domain.Entities.ClientProgramme clientprogramme)
-    //    {
-    //        ClubTrustAssetsInfolist = GetClubTrustAssets(clientprogramme);
-    //    }
 
-    //    private IList<ClubTrustAssetsInfo> GetClubTrustAssets(Domain.Entities.ClientProgramme clientprogramme)
-    //    {
-    //        ClubTrustAssetsInfolist = new List<ClubTrustAssetsInfo>();
-    //        foreach (var asset in clientprogramme.ClubTrustAssetsInfo)
-    //        {
-    //            ClubTrustAssetsInfolist.Add(new ClubTrustAssetsInfo(null)
-    //            {
-    //                Name = asset.Name,
-    //                CurrentVal = asset.CurrentVal,
-    //                ReplacementVal = asset.ReplacementVal,
-    //                Owner = asset.Owner
-    //            });
-    //        }
-    //        return ClubTrustAssetsInfolist;
-    //    }
+    public class EventsViewModel : BaseViewModel
+    {
+        public EventsViewModel()
+        {
+            HasClubTrustAssets = GetSelectListOptions();
+            HasClubTrustEvent = GetSelectListOptions();
+            ExtraCoverOptions = GetSelectListOptions();
+        }
+        public EventsViewModel(ClientInformationSheet clientInformationSheet)
+        {
+            HasClubTrustAssets = GetSelectListOptions();
+            HasClubTrustEvent = GetSelectListOptions();
+            ExtraCoverOptions = GetSelectListOptions();
 
-    //    public IList<ClubTrustAssetsInfo> ClubTrustAssetsInfolist { get; set; }
+            EventsInfo = GetClubTrustAssets(clientInformationSheet);
+        }
 
 
-    //}
+        private IList<EventsInfo> GetClubTrustAssets(ClientInformationSheet clientInformationSheet)
+        {
+            EventsInfo = new List<EventsInfo>();
+            //foreach (var ClubTrustAsset in clientInformationSheet.EventsInfo)
+            //{
+            //    EventsInfo.Add(ClubTrustAsset);
+            //}
+            return EventsInfo;
+        }
+        public IList<SelectListItem> HasClubTrustAssets { get; set; }
+        public IList<SelectListItem> HasClubTrustEvent { get; set; }
+        public IList<SelectListItem> ExtraCoverOptions { get; set; }
 
+        public IList<EventsInfo> EventsInfo { get; set; }
+
+        private IList<SelectListItem> GetSelectListOptions()
+        {
+            return new List<SelectListItem>()
+            {
+                new SelectListItem
+                {
+                    Text = "-- Select --", Value = "0"
+                },
+                new SelectListItem
+                {
+                    Text = "Yes", Value = "1"
+                },
+                new SelectListItem
+                { Text = "No", Value = "2" }
+            };
+        }
+
+    }
+
+   
 }

@@ -10,8 +10,17 @@
                 </h5>
             </div>
             <div class="card-body">
+
+                <div class="d-flex justify-content-end mb-3 position-relative">
+                    <input type="text"
+                           id="NTUClientSearch"
+                           class="form-control w-50 shadow-sm"
+                           placeholder="🔍 Search by Name or Email..."
+                           style="max-width: 350px;" />
+                </div>
+
                 <table class="container">
-                    <thread>
+                    <thead>
                         <tr>
                             <th>
                                 <input type="checkbox" id="select-all" aria-label="checkbox button for following text input">
@@ -21,7 +30,7 @@
                                 Status
                             </th>
                         </tr>
-                    </thread>
+                    </thead>
                     <tbody>
                         @foreach (var client in Model.ClientProgrammes)
                         @*@foreach (var clientInformationSheet in Model.ClientInformationSheets.Where(t => t.Status == "Started"))*@
@@ -67,6 +76,30 @@
 
 
      });
+
+
+          // 🔍 Live Search Filter
+                 document.getElementById("NTUClientSearch")
+               .addEventListener("keyup", function () {
+
+                   let searchValue = this.value.toLowerCase();
+                   let rows = document.querySelectorAll("tbody tr");
+
+                   rows.forEach(function (row) {
+
+                       let name = row.cells[0].innerText.toLowerCase();
+                       let email = row.cells[1].innerText.toLowerCase();
+
+                       if (name.includes(searchValue) || email.includes(searchValue)) {
+                           row.style.display = "";
+                       } else {
+                           row.style.display = "none";
+                       }
+
+                   });
+
+               });
+
 
     </script>
 

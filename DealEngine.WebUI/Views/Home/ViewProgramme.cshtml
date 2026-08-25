@@ -41,7 +41,9 @@
                                 <li class="nav-item">
                                 <a onclick="location.href='@Url.Action("IssueUIS", "Home",new { ProgrammeId=@programmeId ,actionname="IssueUIS"})'" class="dropdown-item"> Issue Infosheet </a>
                                 </li>
-
+                            <li class="nav-item">
+                                <a onclick="location.href='@Url.Action("EditUIS", "Home", new { ProgrammeId = @programmeId, actionname = "EditUIS" })'" class="dropdown-item"> Edit Infosheet </a>
+                            </li>
                                 @*if (Model.IsSubclientEnabled)
                             {
                             <li class="nav-item">

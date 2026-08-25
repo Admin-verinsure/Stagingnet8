@@ -1,0 +1,123 @@
+﻿@model DealEngine.WebUI.Models.InformationViewModel
+
+<form id="MLViewModel" class="is-valid" data-accordianId="Insurance covers for other risks advisory">
+
+    <!-- Panel Header -->
+    <div class="mb-3">
+        <h5><strong>Insurance covers for other risks</strong></h5>
+    </div>
+
+    <!-- Button under label -->
+    <div class="mt-2 mb-3">
+        <button class="btn btn-brick" type="button" data-bs-toggle="collapse" data-bs-target="#trustAdvisoryPanel4" aria-expanded="true" aria-controls="trustAdvisoryPanel4">
+            <h5><strong>Insurance covers for other risks advisory</strong></h5>
+        </button>
+    </div>
+
+    <!-- Collapsible panel -->
+    <div class="collapse show" id="trustAdvisoryPanel4">
+        <div class="card card-body">
+            Management liability combines covers for risks not included in the public liability policy.
+            Examples are privacy or health and safety breaches, cyber risks, loss of money, officers’ mistakes and more.
+            The questions below are asked to ensure that those risks can be managed going forward.
+            Funds under management can approximate to the nearest $5000.  The purpose of this question is to ensure that limit for claims is properly estimated.
+        </div>
+    </div>
+
+    <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Our District, Club or Company website is on:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="MLViewModelWebsite" name="MLViewModel.MLViewModelWebsite" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.MLViewModelWebsite)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+     <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Financial details are kept using:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="MLViewModelAccounting" name="MLViewModel.MLViewModelAccounting" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.MLViewModelAccounting)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Other records are kept on:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="MLViewModelStorage" name="MLViewModel.MLViewModelStorage" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.MLViewModelStorage)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mt-3">
+        <div class="row">
+            <div class="col-9">
+                <label class="label required">
+                    Our District, Club or Company financials are:
+                </label>
+            </div>
+            <div class="col-3">
+                <select id="MLViewModelCompanyFinancial" name="MLViewModel.MLViewModelCompanyFinancial" class="form-select" onchange="OnChange(this.id, this.name)" required>
+                    @foreach (var option in Model.MLViewModel.MLViewModelCompanyFinancial)
+                    {
+                        <option selected="@option.Selected" value="@option.Value">@option.Text</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group mt-3">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-9">
+                    <label class="label required">
+                        Please provide the total funds under management held:
+                    </label>
+                </div>
+                <div class="col-3">
+                    @Html.TextBoxFor(m => m.MLViewModel.TotalFundsUnderManagement, new { @class = "form-control",
+                    @id = "TotalFundsUnderManagement", 
+                                        @type = "number",
+                                        @inputmode = "numeric",
+                                        @oninput = "this.value = this.value.replace(/[^0-9]/g, '')",
+                                        @onchange = "OnChange(this.id, this.name)",
+                                        @required = ""
+                    })
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>

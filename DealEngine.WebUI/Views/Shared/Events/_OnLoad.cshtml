@@ -266,13 +266,24 @@
                 }
                 if (Method == "Owner") {
                     debugger;
-                    if (document.getElementById("HideOrganisationType") != null) { 
-                    document.getElementById("HideOrganisationType").hidden = true;
-                    document.getElementById("HideInsuranceAttribute").hidden = true;
-                    document.getElementById("Organisation.OrganisationType").disabled = true;
-                    document.getElementById("Organisation.InsuranceAttribute").disabled = true;
+                     // var dropdown = document.getElementById("Organisation.InsuranceAttribute");
 
-                    }
+                     // if (dropdown) {
+                     //      dropdown.value = "0";// resets to first option
+                     // }
+                     //     var dropdown = document.getElementById("Organisation.OrganisationType");
+
+                     // // 🔹 Remove "Private"
+                     // for (var i = 0; i < dropdown.options.length; i++) {
+                     //   if (dropdown.options[i].value === "Private") {
+                     //       dropdown.remove(i);
+                     //       break;
+                     //   }
+                     // }
+
+                     //   // 🔹 Select value = "0"
+                     // dropdown.value = "0";
+
                     if (document.getElementById("Else") != null) { 
                      document.getElementById("Else").hidden = false;
                     }
@@ -317,6 +328,8 @@
 
                 
             }
+    
+
         } catch (ex) { debugger; }
     }
 
@@ -425,7 +438,76 @@
     }
 
 
-    function PopulateVehicleView(Method, OutPut) {
+     function applyClientProgrammeRestrictions() {
+         debugger;
+           let isClub = document.getElementById("IsClubFlag")?.value;
+        let isDistrict = document.getElementById("IsDistrictFlag")?.value;
+        let isIndependent = document.getElementById("IsIndependentFlag")?.value;
+
+
+
+        let dropdown = document.getElementById("Organisation.InsuranceAttribute");
+
+        if (!dropdown) return;
+
+        // Enable everything first
+        for (let i = 0; i < dropdown.options.length; i++) {
+            dropdown.options[i].disabled = false;
+        }
+
+        function disable(values) {
+            for (let i = 0; i < dropdown.options.length; i++) {
+                if (values.includes(dropdown.options[i].value)) {
+                    dropdown.options[i].disabled = true;
+                }
+            }
+        }
+
+        if (isClub === "true") {
+            disable([
+                "RotaryDistrict",
+                "RotarySpecialPurposeTrust",
+                "RotaryMultiDistrictOrganisation",
+                "RotaryRIActionGroup",
+                "RotaryRIFellowshipGroup"
+            ]);
+        }
+
+        if (isDistrict === "true") {
+            disable([
+                "RotaryClub",
+                "Rotaract",
+                "RotaryCommunityCorps",
+                "RotaryClubTrustOneOnly",
+                "RotaryMultiDistrictOrganisation",
+                "RotarySpecialPurposeTrust",
+                "RotaryRIActionGroup",
+                "RotaryRIFellowshipGroup"
+            ]);
+        }
+
+        if (isIndependent === "true") {
+            disable([
+                "RotaryClub",
+                "RotaryDistrict",
+                "Rotaract",
+                "RotaryCommunityCorps",
+                "RotaryClubTrustOneOnly",
+                "RotaryRIActionGroup",
+                "RotaryRIFellowshipGroup"
+            ]);
+        }
+
+         // Reset invalid selection
+         let selected = dropdown.options[dropdown.selectedIndex];
+         if (selected && selected.disabled) {
+          dropdown.value = "0";
+         }
+     }
+
+
+
+        function PopulateVehicleView(Method, OutPut) {
         debugger;
         try {
             for (obj in OutPut) {
@@ -474,9 +556,20 @@
         } catch (ex) { debugger; }
     }
 
+     
+
 
     $("#DocEffectiveDate").datepicker({
       
         dateFormat: "dd/mm/yy"
     });
+
+    $(function () {
+        applyClientProgrammeRestrictions();
+    });
+
+
+
+
 </script>
+

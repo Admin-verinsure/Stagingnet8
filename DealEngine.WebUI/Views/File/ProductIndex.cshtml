@@ -41,8 +41,11 @@
                                             {
 @*                                            <a onclick="location.href='@Url.Action("ManageDocuments", "File",new { productId = @product.Id,ProgrammeId=@ViewBag.ProgrammeId})" class="btn btn-primary btn-sm" style="color:white">Rerender Selected document </a>
 *@
-                                                <a class="btn btn-primary btn-xs"  onclick="location.href='@Url.Action("ManageDocuments", "File",new { productId = @product.Id,ProgrammeId=@ViewBag.ProgrammeId})'" >Manage</a>
-                                            }
+                                            <a class="btn btn-primary btn-xs" href="https://not4profit.online/helpdesk_ticket">
+                                                File HelpDesk Ticket
+                                            </a>
+@* <a class="btn btn-primary btn-xs"  onclick="location.href='@Url.Action("ManageDocuments", "File",new { productId = @product.Id,ProgrammeId=@ViewBag.ProgrammeId})'" >File HelpDesk Ticket</a>
+ *@                                            }
                                         </td>
                                     </tr>
                                 }

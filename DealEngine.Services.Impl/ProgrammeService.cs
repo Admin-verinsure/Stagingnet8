@@ -175,7 +175,7 @@ namespace DealEngine.Services.Impl
             var clientList = new List<ClientProgramme>();
             if (programme == null)
                 return null;
-            foreach (var client in programme.ClientProgrammes)
+            foreach (var client in programme.ClientProgrammes.Where(prog => prog.BaseProgramme.Id == programmeId))
             {
                 //clientList.Add(client);
                 var isBaseClass = await IsBaseClass(client);
@@ -190,6 +190,31 @@ namespace DealEngine.Services.Impl
 
             return clientList;
         }
+
+
+        public async Task<List<ClientProgramme>> GetBoundClientProgrammesForProgramme(Guid programmeId)
+        {
+            Programme programme = await GetProgramme(programmeId);
+            var clientList = new List<ClientProgramme>();
+            if (programme == null)
+                return null;
+            foreach (var client in programme.ClientProgrammes.Where(prog => prog.BaseProgramme.Id == programmeId 
+                                                                     && prog.InformationSheet.Status == "Bound"))
+            {
+                //clientList.Add(client);
+                var isBaseClass = await IsBaseClass(client);
+                if (isBaseClass)
+                {
+                    if (client.DateDeleted == null)
+                    {
+                        clientList.Add(client);
+                    }
+                }
+            }
+
+            return clientList;
+        }
+
 
         public async Task<List<ClientProgramme>> GetRenewBaseClientProgrammesForProgramme(Guid programmeId)
         {
@@ -805,6 +830,7 @@ namespace DealEngine.Services.Impl
             newClientProgramme.ClientProgrammeExpiryDate = oldClientProgramme.ClientProgrammeExpiryDate;
             newClientProgramme.BaseProgramme = currentProgramme;
             newClientProgramme.PaymentType = oldClientProgramme.PaymentType;
+            newClientProgramme.IsIssued = true;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalBranchCode))
                 newClientProgramme.EGlobalBranchCode = oldClientProgramme.EGlobalBranchCode;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalClientNumber))
@@ -820,6 +846,11 @@ namespace DealEngine.Services.Impl
                 newClientProgramme.Tier = oldClientProgramme.Tier;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalExternalContactNumber))
                 newClientProgramme.EGlobalExternalContactNumber = oldClientProgramme.EGlobalExternalContactNumber;
+            
+                newClientProgramme.IsClub = oldClientProgramme.IsClub;
+                newClientProgramme.IsClub = oldClientProgramme.IsDistrict;
+                newClientProgramme.IsClub = oldClientProgramme.IsIndependentEntity;
+
 
             if (oldClientProgramme.InformationSheet.Vehicles != null)
             {
@@ -962,21 +993,7 @@ namespace DealEngine.Services.Impl
 
             await Update(newClientProgramme);
 
-            // try
-            //{
-            //    if (oldClientProgramme.Agreements != null)
-            //    {
-            //        newClientProgramme.Agreements.Clear();
-
-            //            await CloneAgreementsForRenewal(createdBy, oldClientProgramme.Id, newClientProgramme.Id);
-
-            //    }
-
-            //}
-            //catch (Exception ex)
-            //{
-
-            //}
+           
 
           
             return newClientProgramme;
@@ -1592,6 +1609,14 @@ namespace DealEngine.Services.Impl
             return await _programmeRepository.FindAll().FirstOrDefaultAsync(p => p.RenewFromProgramme.Id== programmeid);
         }
 
+
+        public async Task<ClientProgramme> GetPendingClientProgrammeByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId)
+        {
+            ClientProgramme pendingClientProgramme = _clientProgrammeRepository.FindAll().Where(cp => cp.BaseProgramme.Id == programmeId && cp.Owner.Id == ownerOrganisationId 
+                                                                                           && cp.InformationSheet.Status != "Bound" 
+                                                                                           && cp.DateDeleted == null ).FirstOrDefault();
+            return pendingClientProgramme;
+        }
     }
 }
 

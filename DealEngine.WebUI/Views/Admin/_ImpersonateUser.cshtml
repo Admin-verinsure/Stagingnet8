@@ -8,7 +8,9 @@
     <div class="card-body">
         <form action="ImpersonateUser" method="post">
             <div class="form-group">
-                <select class="form-select" name="username">
+                <select class="form-select chosen-select" name="username"
+                        data-placeholder="Search by username or email ...">
+                    <option value=""></option>
                     @foreach (var user in Model.Users.OrderBy(muser => muser.UserName))
                     {
                         <option value="@user.UserName">@user.UserName - @user.Email</option>

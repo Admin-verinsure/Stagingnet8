@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using DealEngine.Domain.Entities;
+using DealEngine.Infrastructure.AuthorizationRSA;
+using DealEngine.Infrastructure.FluentNHibernate;
 using DealEngine.Services.Interfaces;
 using DealEngine.WebUI.Models;
 using DealEngine.WebUI.Models.Organisation;
@@ -8,13 +10,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NHibernate.Linq;
+using ServiceStack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using DealEngine.Infrastructure.FluentNHibernate;
 using System.Linq.Dynamic;
-using NHibernate.Linq;
+using System.Threading.Tasks;
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -25,7 +27,7 @@ namespace DealEngine.WebUI.Controllers
         IOrganisationService _organisationService;
         IClientInformationService _clientInformationService;
         IApplicationLoggingService _applicationLoggingService;
-        ILogger<OrganisationController> _logger;        
+        ILogger<OrganisationController> _logger;
         IMilestoneService _milestoneService;
         IProgrammeService _programmeService;
         IMapper _mapper;
@@ -44,7 +46,7 @@ namespace DealEngine.WebUI.Controllers
             IUnitOfWork unitOfWork,
             IMapper mapper
             )
-            : base (userRepository)
+            : base(userRepository)
         {
             _mapper = mapper;
             _programmeService = programmeService;
@@ -58,16 +60,70 @@ namespace DealEngine.WebUI.Controllers
             _unitOfWork = unitOfWork;
         }
 
+
+        //[HttpPost]
+        //public async Task<IActionResult> ValidateNamedParties(Guid sheetId)
+        //{
+        //    var sheet = await _clientInformationService.GetInformation(sheetId);
+
+        //    var results = new List<object>();
+
+        //    foreach (var org in sheet.Organisation.Where(o => !o.Removed))
+        //    {
+        //        var attr = org.OrganisationAttribute;
+
+        //        bool isValid = true;
+        //        string message = "";
+
+        //        var type = org.OrganisationType.Name;
+
+        //        if (type == "RotaryClub" || type == "Rotaract" || type == "RotaryCommunityCorps")
+        //        {
+        //            if (attr == null || attr.ActiveFeePaying <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "Active Fee Paying must be greater than 0";
+        //            }
+        //        }
+        //        else if (type.Contains("RotaryDistrict"))
+        //        {
+        //            if (attr == null || attr.DistrictTotal <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "District Total must be greater than 0";
+        //            }
+        //        }
+        //        else if (type == "RotaryCompany")
+        //        {
+        //            if (attr == null || attr.SPT_Total <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "Company Total must be greater than 0";
+        //            }
+        //        }
+
+        //        results.Add(new
+        //        {
+        //            orgId = org.Id,
+        //            orgName = org.Name,
+        //            isValid,
+        //            message
+        //        });
+        //    }
+
+        //    return Json(results);
+        //}
+
         [HttpPost]
         public async Task<IActionResult> ValidateOrganisationEmail(IFormCollection collection)
         {
-            var email = collection["OrganisationViewModel.User.Email"].ToString();
+            var email = collection["OrganisationViewModel.Organisation.Email"].ToString();
             bool ValidBackEndEmail;
             Guid.TryParse(collection["OrganisationViewModel.Organisation.Id"].ToString(), out Guid OrganisationId);
             Guid.TryParse(collection["ClientInformationSheet.Id"].ToString(), out Guid SheetId);
             ClientInformationSheet sheet = await _clientInformationService.GetInformation(SheetId);
             Organisation organisation = await _organisationService.GetOrganisationByEmail(email);
-            
+
             try
             {
                 var addr = new System.Net.Mail.MailAddress(email.Trim());
@@ -108,7 +164,7 @@ namespace DealEngine.WebUI.Controllers
             {
                 var addr = new System.Net.Mail.MailAddress(email);
                 ValidBackEndEmail = addr.Address == email;
-                
+
                 // Checks if you can create an email from the string (only works if it's a valid email)
                 if (ValidBackEndEmail == true)
                 {
@@ -133,7 +189,7 @@ namespace DealEngine.WebUI.Controllers
                 else
                 {
                     return Json(true); // Not Valid
-                }                                             
+                }
             }
             catch
             {
@@ -169,7 +225,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> GetFAPOrgsByClientProgrammeId(Guid clientProgrammeId)
         {
             User currentUser = await CurrentUser();
-            ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(clientProgrammeId);           
+            ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(clientProgrammeId);
             ClientInformationSheet lastInformationSheet = clientProgramme.InformationSheet;
 
             while (lastInformationSheet.NextInformationSheet != null)
@@ -227,7 +283,7 @@ namespace DealEngine.WebUI.Controllers
                     //var isTheFAP = org.OrganisationalUnits.FirstOrDefault(u => (u.isTheFAP == true) && (u.DateDeleted == null));
 
                 }
-               
+
                 var jsonObj = await _serialiserService.GetSerializedObject(JsonObjects);
                 return Json(jsonObj);
             }
@@ -244,7 +300,7 @@ namespace DealEngine.WebUI.Controllers
         //    User currentUser = await CurrentUser();
         //    ClientProgramme clientProgramme = await _programmeService.GetClientProgramme(clientProgrammeId);
 
-            
+
         //    Dictionary<string, object> JsonObjects = new Dictionary<string, object>();
 
         //    IList<OrganisationalUnit> allisTheFAPOUs = await _organisationalUnitRepository.FindAll().Where(ou => ou.isTheFAP == true).ToListAsync();
@@ -288,7 +344,7 @@ namespace DealEngine.WebUI.Controllers
 
                     //foreach (var Advisorunit in ListAdvisorunit)
                     //{
-                    if (ListAdvisorunit!= null && ListAdvisorunit.isTheFAP)
+                    if (ListAdvisorunit != null && ListAdvisorunit.isTheFAP)
                     {
                         if (ListAdvisorunit.FAPLicenseNumber == null)
                         {
@@ -304,13 +360,13 @@ namespace DealEngine.WebUI.Controllers
                         continue;
                     }
 
-                   // }
+                    // }
 
 
                     //var Advisorunit = (AdvisorUnit)org.OrganisationalUnits.FirstOrDefault(u => u.Name == "Advisor");
 
                     //var orgHasFAPLicenseNumber = org.OrganisationalUnits.FirstOrDefault(ou => ou.FAPLicenseNumber != null);
-                   
+
                 }
 
                 var jsonObj = await _serialiserService.GetSerializedObject(JsonObjects);
@@ -323,15 +379,238 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> AddOrganisation(IFormCollection collection)
+        //{
+        //    User currentUser = await CurrentUser();
+
+        //    Guid.TryParse(collection["OrganisationViewModel.Organisation.Id"], out Guid organisationId);
+        //    Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid sheetId);
+
+        //    ClientInformationSheet sheet = await _clientInformationService.GetInformation(sheetId);
+
+        //    var jsonOrganisation = (Organisation)await _serialiserService
+        //        .GetDeserializedObject(typeof(Organisation), collection);
+
+        //    var jsonUser = (User)await _serialiserService
+        //        .GetDeserializedObject(typeof(User), collection);
+
+        //    string typeName = collection["OrganisationViewModel.InsuranceAttribute"];
+        //    string organisationTypeName = collection["OrganisationViewModel.OrganisationType"];
+
+        //    Organisation organisation = await _organisationService.GetOrganisation(organisationId);
+
+        //    ClientProgramme clientProgramme = await _programmeService
+        //        .GetClientProgrammebyId(Guid.Parse(collection["ClientProgrammeId"]));
+
+        //    try
+        //    {
+        //        // --------------------------------------------------
+        //        // 1️⃣ Create Organisation if new
+        //        // --------------------------------------------------
+        //        if (organisation == null)
+        //        {
+        //            organisation = await _organisationService.CreateOrganisation(
+        //                jsonUser.Email,
+        //                typeName,
+        //                jsonOrganisation.Name,
+        //                organisationTypeName,
+        //                jsonUser.FirstName,
+        //                jsonUser.LastName,
+        //                currentUser,
+        //                collection);
+        //        }
+
+        //        // --------------------------------------------------
+        //        // 2️⃣ Handle Administrator User
+        //        // --------------------------------------------------
+        //        if (typeName == "Administrator")
+        //        {
+        //            User user = null;
+
+        //            // Try by Id first
+        //            if (Guid.TryParse(collection["OrganisationViewModel.User.Id"], out Guid userId)
+        //                && userId != Guid.Empty)
+        //            {
+        //                user = await _userService.GetUserById(userId);
+        //            }
+
+        //            // Fallback by Email
+        //            if (user == null && !string.IsNullOrWhiteSpace(jsonUser.Email))
+        //            {
+        //                user = await _userService.GetUserByEmail(jsonUser.Email);
+        //            }
+
+        //            // If still null → create user
+        //            //if (user == null)
+        //            //{
+        //            //    user = await _userService.Create((User)jsonUser);
+        //            //        jsonUser.Email,
+        //            //        jsonUser.FirstName,
+        //            //        jsonUser.LastName,
+        //            //        currentUser
+        //            //    );
+        //            //}
+
+        //            using (var uow = _unitOfWork.BeginUnitOfWork())
+        //            {
+        //                // Attach organisation if not already attached
+        //                if (!user.Organisations.Any(o => o.Id == organisation.Id))
+        //                {
+        //                    user.Organisations.Add(organisation);
+        //                }
+
+        //                // Only set primary if none exists
+        //                if (user.PrimaryOrganisation == null)
+        //                {
+        //                    user.PrimaryOrganisation = organisation;
+        //                }
+
+        //                await uow.Commit();
+        //            }
+
+        //            // Send email if enabled
+        //            if (clientProgramme.BaseProgramme.ProgEnableEmail)
+        //            {
+        //                await _emailService.CreateUserAdministrator(user, organisation);
+        //            }
+        //        }
+
+        //        // --------------------------------------------------
+        //        // 3️⃣ Post Organisation Updates
+        //        // --------------------------------------------------
+        //        await _organisationService.PostOrganisation(collection, organisation);
+
+        //        if (!sheet.Organisation.Contains(organisation))
+        //            sheet.Organisation.Add(organisation);
+
+        //        // --------------------------------------------------
+        //        // 4️⃣ Save Organisation Attribute
+        //        // --------------------------------------------------
+        //        using (var uow = _unitOfWork.BeginUnitOfWork())
+        //        {
+        //            OrganisationAttribute attr = sheet.OrganisationAttribute;
+
+        //            if (attr == null)
+        //            {
+        //                attr = new OrganisationAttribute(currentUser);
+        //                sheet.OrganisationAttribute = attr;
+        //            }
+
+        //            attr.ActiveFeePaying = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ActiveFeePaying"]);
+        //            attr.Honorary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Honorary"]);
+        //            attr.Associate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Associate"]);
+        //            attr.Family = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Family"]);
+        //            attr.Community = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Community"]);
+        //            attr.Volunteer = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Volunteer"]);
+        //            attr.Corporate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Corporate"]);
+        //            attr.Alumni = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Alumni"]);
+        //            attr.Trustees = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Trustees"]);
+        //            attr.OtherMembers = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.OtherMembers"]);
+        //            attr.ClubTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ClubTotal"]);
+
+        //            attr.Dist_Rotary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotary"]);
+        //            attr.Dist_Rotaract = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotaract"]);
+        //            attr.Dist_Interact = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Interact"]);
+        //            attr.Dist_RotaKids = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_RotaKids"]);
+        //            attr.Dist_CommunityCore = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_CommunityCore"]);
+        //            attr.DistrictTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.DistrictTotal"]);
+
+        //            attr.SPT_Companies = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Companies"]);
+        //            attr.SPT_TradingTrusts = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_TradingTrusts"]);
+        //            attr.SPT_RevenueOver1m = collection["OrganisationViewModel.OrganisationAttribute.SPT_RevenueOver1m"];
+        //            attr.SPT_Revenue = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Revenue"]);
+        //            attr.SPT_Total = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Total"]);
+
+        //            await uow.Commit();
+        //        }
+
+        //        await _clientInformationService.UpdateInformation(sheet);
+
+        //        return Redirect("../Information/EditInformation?Id=" + sheet.Programme.Id);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await _applicationLoggingService.LogWarning(_logger, ex, currentUser, HttpContext);
+        //        return RedirectToAction("Error500", "Error");
+        //    }
+        //}
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> ValidateOrganisations(Guid sheetId)
+        //{
+        //    var sheet = await _clientInformationService.GetInformation(sheetId);
+
+        //    var results = new List<object>();
+
+        //    foreach (var org in sheet.Organisation)
+        //    {
+        //        var attr = org.OrganisationAttribute;
+
+        //        bool isValid = true;
+        //        string message = "";
+
+        //        if (org.OrganisationType.Name == "RotaryClub" ||
+        //            org.OrganisationType.Name == "Rotaract" ||
+        //            org.OrganisationType.Name == "RotaryCommunityCorps")
+        //        {
+        //            if (attr == null || attr.ActiveFeePaying <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "Active Fee Paying must be > 0";
+        //            }
+        //        }
+        //        else if (org.OrganisationType.Name.Contains("RotaryDistrict"))
+        //        {
+        //            if (attr == null || attr.DistrictTotal <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "District Total must be > 0";
+        //            }
+        //        }
+        //        else if (org.OrganisationType.Name == "RotaryCompany")
+        //        {
+        //            if (attr == null || attr.SPT_Total <= 0)
+        //            {
+        //                isValid = false;
+        //                message = "Company Total must be > 0";
+        //            }
+        //        }
+
+        //        results.Add(new
+        //        {
+        //            orgId = org.Id,
+        //            orgName = org.Name,
+        //            isValid,
+        //            message
+        //        });
+        //    }
+
+        //    return Json(results);
+        //}
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> AddOrganisation(IFormCollection collection)
         {
             User currentUser = await CurrentUser();
-            Guid.TryParse(collection["OrganisationViewModel.Organisation.Id"], out Guid OrganisationId);
+            Guid OrganisationId = Guid.Empty;
+            var rawId = collection["OrganisationViewModel.Organisation.Id"].ToString();
+
+            if (!string.IsNullOrWhiteSpace(rawId))
+            {
+                Guid.TryParse(rawId, out OrganisationId);
+            }
+
             Guid.TryParse(collection["ClientInformationSheet.Id"], out Guid Id);
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
 
-            var jsonOrganisation = (Organisation)await _serialiserService.GetDeserializedObject(typeof(Organisation), collection); 
+            var jsonOrganisation = (Organisation)await _serialiserService.GetDeserializedObject(typeof(Organisation), collection);
             var jsonUser = (User)await _serialiserService.GetDeserializedObject(typeof(User), collection);
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
             string OrganisationTypeName = collection["OrganisationViewModel.OrganisationType"].ToString();
@@ -345,26 +624,121 @@ namespace DealEngine.WebUI.Controllers
                 {
                     organisation = await _organisationService.CreateOrganisation(jsonUser.Email, TypeName, jsonOrganisation.Name, OrganisationTypeName, jsonUser.FirstName, jsonUser.LastName, currentUser, collection);
                 }
+                _logger.LogWarning($"Skiorganisationnot " + organisation.Name);
 
                 if (TypeName == "Administrator")
                 {
+                    User user = null;
+                    Guid userid = Guid.Parse(collection["OrganisationViewModel.User.Id"].ToString());
+
+                    if (userid != Guid.Empty)
+                    {
+                        user = await _userService.GetUserById(userid);
+
+                    }
+                    else
+                    {
+                        user = await _userService.GetUserByEmail(jsonUser.Email);
+
+                    }
+                    user = _mapper.Map(jsonUser, user);
+
+
+
                     using (var uow = _unitOfWork.BeginUnitOfWork())
                     {
 
-                        User user = await _userService.GetUserByEmail(jsonUser.Email);
-                        if (!user.Organisations.Any(org => org.Id == clientProgramme.Owner.Id)) { 
-                        user.Organisations.Add(clientProgramme.Owner);
+                        // 🔥 remove all existing mappings
+                        await _userService.RemoveOtherUsersFromOrganisation(clientProgramme.Owner.Id, user.Id);
+
+                        // 🔥 add current user
+
+
+                        var allUsersnext = await _userService
+                           .GetUsersByPrimaryOrganisationId(clientProgramme.Owner.Id);
+
+                        foreach (var u in allUsersnext)
+                        {
+                            if (u.Id != user.Id)
+                            {
+                                // 🔥 FORCE replace list
+                                u.Organisations = u.Organisations
+                                    .Where(o => o.Id != clientProgramme.Owner.Id)
+                                    .ToList();
+
+                                // Set new primary
+                                u.PrimaryOrganisation = u.Organisations.FirstOrDefault();
+                            }
                         }
+
+                        if (!user.Organisations.Any(o => o.Id == clientProgramme.Owner.Id))
+                        {
+                            user.Organisations.Add(clientProgramme.Owner);
+                        }
+
+                        // 🔥 THIS LINE FIXES EVERYTHING
+                        await _userService.Update(user);
                         await uow.Commit();
+
                     }
+
+                   
                 }
 
+                _logger.LogWarning($"before postorganisation " + organisation.Email);
 
                 await _organisationService.PostOrganisation(collection, organisation);
                 if (!Sheet.Organisation.Contains(organisation))
                     Sheet.Organisation.Add(organisation);
+                _logger.LogWarning($"after postorganisation " + organisation.Email);
+
+                // =======================================================
+                // ⭐ SAVE ORGANISATION ATTRIBUTE (CLUB / DISTRICT / SPT DATA)
+                // =======================================================
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    // Load existing OrganisationAttribute or create new
+                    OrganisationAttribute attr = Sheet.OrganisationAttribute;
+                    if (attr == null)
+                    {
+                        attr = new OrganisationAttribute(currentUser);
+                        Sheet.OrganisationAttribute = attr;
+                    }
+                    //// Map values from form collection
+                    //attr.ActiveFeePaying = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ActiveFeePaying"]);
+                    //attr.Honorary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Honorary"]);
+                    //attr.Associate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Associate"]);
+                    //attr.Family = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Family"]);
+                    //attr.Community = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Community"]);
+                    //attr.Volunteer = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Volunteer"]);
+                    //attr.Corporate = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Corporate"]);
+                    //attr.Alumni = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Alumni"]);
+                    //attr.Trustees = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Trustees"]);
+                    //attr.OtherMembers = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.OtherMembers"]);
+                    //attr.ClubTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.ClubTotal"]);
+
+                    //attr.Dist_Rotary = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotary"]);
+                    //attr.Dist_Rotaract = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Rotaract"]);
+                    //attr.Dist_Interact = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_Interact"]);
+                    //attr.Dist_RotaKids = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_RotaKids"]);
+                    //attr.Dist_CommunityCore = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.Dist_CommunityCore"]);
+                    //attr.DistrictTotal = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.DistrictTotal"]);
+
+                    //attr.SPT_Companies = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Companies"]);
+                    //attr.SPT_TradingTrusts = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_TradingTrusts"]);
+                    //attr.SPT_RevenueOver1m = collection["OrganisationViewModel.OrganisationAttribute.SPT_RevenueOver1m"];
+                    //attr.SPT_Revenue = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Revenue"]);
+                    //attr.SPT_Total = TryParseInt(collection["OrganisationViewModel.OrganisationAttribute.SPT_Total"]);
+
+                    // Commit attribute save
+                    await uow.Commit();
+                }
+
+                _logger.LogWarning($"after mapping values ");
 
                 await _clientInformationService.UpdateInformation(Sheet);
+                _logger.LogWarning($"after updates ");
+
                 //return Ok();
                 return Redirect("../Information/EditInformation?Id=" + Sheet.Programme.Id.ToString());
             }
@@ -375,6 +749,13 @@ namespace DealEngine.WebUI.Controllers
             }
 
             //condition for organisation exists
+        }
+
+        private int? TryParseInt(string value)
+        {
+            if (int.TryParse(value, out int result))
+                return result;
+            return null;
         }
 
 
@@ -391,11 +772,11 @@ namespace DealEngine.WebUI.Controllers
             Programme programme = await _programmeService.GetProgrammeById(Id);
             OrganisationViewModel model = new OrganisationViewModel(null, null);
             var marinas = await _organisationService.GetAllMarinas();
-            foreach(var mar in marinas)
+            foreach (var mar in marinas)
             {
                 model.Organisations.Add(mar);
             }
-            
+
             var institutes = await _organisationService.GetFinancialInstitutes();
             foreach (var inst in institutes)
             {
@@ -419,7 +800,7 @@ namespace DealEngine.WebUI.Controllers
             }
             return NoContent();
         }
-        
+
 
         [HttpPost]
         public async Task<IActionResult> PostMarina(IFormCollection model)
@@ -447,7 +828,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> PostInstitute(IFormCollection model)
         {
-            await _organisationService.PostInstitute(model); 
+            await _organisationService.PostInstitute(model);
             return NoContent();
         }
 
@@ -576,7 +957,7 @@ namespace DealEngine.WebUI.Controllers
             // We want to prepare which clientprogrammes we want to give to our ViewModel, 
             // which is Non deleted and Latest versions of a Programme (ie. Change and Original ones (if original and no change then won't have a nextInformationSheet) 
             var selectedClientProgrammes = new List<ClientProgramme>();
-            
+
             // Add Change ClientProgrammes
             foreach (var clientProgramme in allClientProgrammes.Where(p => p.DateDeleted == null && p.InformationSheet.Status != "Not Taken Up By Broker").Where(p => p.InformationSheet.IsChange == true).ToList())
             {
@@ -616,7 +997,7 @@ namespace DealEngine.WebUI.Controllers
                 changeDefaults.Add("Reason", "Change in cover requirements");
                 changeDefaults.Add("ReasonDesc", "Reattach Advisor");
                 changeDefaults.Add("ClientProgrammeID", Guid.Parse(collection["ClientProgrammeId"]).ToString());
-                clientProgramme = await _programmeService.CloneForUpdate(currentUser, null, changeDefaults);                
+                clientProgramme = await _programmeService.CloneForUpdate(currentUser, null, changeDefaults);
             }
 
             await _clientInformationService.DetachOrganisation(collection);
@@ -656,10 +1037,10 @@ namespace DealEngine.WebUI.Controllers
             Guid Id = Guid.Parse(collection["ClientInformationSheet.Id"]);
             string Name = "Advisor";
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
-            foreach(var organisation in Sheet.Organisation)
+            foreach (var organisation in Sheet.Organisation)
             {
                 var advisorUnit = (AdvisorUnit)organisation.OrganisationalUnits.FirstOrDefault(i => i.Name == Name);
-                if(advisorUnit != null)
+                if (advisorUnit != null)
                 {
                     advisorUnit.IsPrincipalAdvisor = false;
                 }
@@ -690,7 +1071,8 @@ namespace DealEngine.WebUI.Controllers
                     IfFapExistflag = true;
                 }
 
-                if (organisation.isOrganisationTheFAP) {
+                if (organisation.isOrganisationTheFAP)
+                {
                     IfFapExistflag = true;
                 }
 
@@ -735,7 +1117,7 @@ namespace DealEngine.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> RemoveIsTheBarrister(IFormCollection collection)
         {
-            User currentUser = await CurrentUser(); 
+            User currentUser = await CurrentUser();
             Guid Id = Guid.Parse(collection["ClientInformationSheet.Id"]);
             ClientInformationSheet Sheet = await _clientInformationService.GetInformation(Id);
             foreach (var organisation in Sheet.Organisation)
@@ -786,11 +1168,11 @@ namespace DealEngine.WebUI.Controllers
             organisation.Removed = true;
             await _organisationService.Update(organisation);
             ClientInformationSheet clientInformationSheet = await _clientInformationService.GetInformation(Guid.Parse(collection["ClientInformationId"]));
-           
-            if(clientInformationSheet != null)
+
+            if (clientInformationSheet != null)
             {
                 if (clientInformationSheet.IsChange)
-                {                    
+                {
                     var organisationUser = await _userService.GetUserPrimaryOrganisationOrEmail(organisation);
 
                     if (organisationUser != null)
@@ -812,7 +1194,7 @@ namespace DealEngine.WebUI.Controllers
                         throw new ArgumentException("organisationUser cannot be null");
                     }
                 }
-                
+
             }
 
             return Ok();

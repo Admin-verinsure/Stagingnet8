@@ -1,10 +1,10 @@
-﻿using System;
+﻿//using System;
 
-namespace DealEngine.Services.Interfaces
-{
-	public interface IBrokerService
-	{
+//namespace DealEngine.Services.Interfaces
+//{
+//	public interface IBrokerService
+//	{
 
-	}
-}
+//	}
+//}
 

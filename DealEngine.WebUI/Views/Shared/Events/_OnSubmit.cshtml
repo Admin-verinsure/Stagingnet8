@@ -86,6 +86,39 @@
         }
     }
 
+      function getOrganisationIdsFromTable() {
+
+        var ids = [];
+
+        $("#tblOrganisation tbody tr").each(function () {
+
+            var id = $(this).attr("id");
+
+            if (id) {
+                ids.push(id);
+            }
+        });
+
+        return ids;
+    }
+
+    function validateOrganisationsBeforeSubmit() {
+
+        var orgIds = getOrganisationIdsFromTable();
+
+        console.log("Sending org IDs:", orgIds);
+
+        return $.ajax({
+            url: '/Information/ValidateNamedParties',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                organisationIds: orgIds
+            })
+        });
+    }
+
+
     function InformationSheetSubmit(Programme, Status, Forms) {
         debugger;
         //if (Status === "Started" || Status === "Submitted") {
@@ -164,6 +197,8 @@
         }
     }
 
+
+  
     function LocationValidationOnSubmit() {
         var location = document.getElementById("tblLocation");
         if (location != null) {
@@ -291,7 +326,8 @@
             }
         }
 
-        if (Programme == "Apollo Programme" || Programme != "Abbott Financial Advisor Liability Programme" || Programme == "Financial Advice NZ Financial Advice Provider Liability Programme") {
+        if (Programme == "Apollo Programme" || Programme != "Abbott Financial Advisor Liability Programme" || Programme == "Financial Advice NZ Financial Advice Provider Liability Programme" 
+        || Programme != "RotaryAssociationsProgramme") {
             debugger;
             var clientInformationSheet = document.getElementById("AnswerSheetId").value;
            $.ajax({
@@ -320,6 +356,8 @@
     }
 
     function OnOrganisationSubmit(FormId, AccordionId) {
+
+        debugger;
         var PostAjax = true;
         var RemoveAdvisors = false;
         var RemoveIsTheFAPS = false;
@@ -511,16 +549,6 @@
                     msg.className = "alert alert-danger";
                    let errorMessage = "Something went wrong. Please try again.";
 
-                     if (xhr.responseJSON && xhr.responseJSON.message) {
-                     // If server returns JSON with a 'message' property
-                      errorMessage = xhr.responseJSON.message;
-                     } else if (xhr.responseText) {
-                      // Otherwise use raw response text (like an HTML error page or message)
-                      errorMessage = xhr.responseText;
-                     } else if (error) {
-                       // Fallback to XHR error object
-                     errorMessage = error;
-                     }
                       msg.innerText = errorMessage;
                       msg.style.display = "block";
 
@@ -567,13 +595,38 @@
 
 
      ///////////////////////// to disable validation for empty input fields
-       // disable validation on hidden required inputs
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('#myForm input[required]').forEach(function(inp) {
-        if (window.getComputedStyle(inp).display === 'none') {
-          inp.disabled = true;
-        }
-      });
-    });
+  
 
 </script>
+
+<!-- 1️⃣ After jquery.validate + unobtrusive -->
+@* <script>
+    $.validator.setDefaults({
+        ignore: ":hidden"
+    });
+</script> *@
+
+<!-- 2️⃣ Your submit handler -->
+<script>
+    document.addEventListener("submit", function (e) {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement)) return;
+
+        form.querySelectorAll("input, select, textarea").forEach(function (field) {
+
+            const isHidden =
+                field.type === "hidden" ||
+                field.disabled ||
+                field.offsetParent === null;
+
+            if (isHidden) {
+                field.removeAttribute("required");
+
+                if (typeof $ !== "undefined") {
+                    $(field).rules("remove");
+                }
+            }
+        });
+    }, true);
+</script>
+

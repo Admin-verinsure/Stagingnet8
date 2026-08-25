@@ -1,32 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Mime;
-using SystemDocument = DealEngine.Domain.Entities.Document;
-using DealEngine.Domain.Entities;
+﻿using DealEngine.Domain.Entities;
 using DealEngine.Infrastructure.FluentNHibernate;
+using DealEngine.Services.Impl;
 using DealEngine.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Hosting;
+using DealEngine.Services.Interfaces.Enums;
 using DealEngine.WebUI.Models;
-using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml;
-using HtmlToOpenXml;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
-using ServiceStack;
-using System.Diagnostics.CodeAnalysis;
+using HtmlToOpenXml;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Net;
+using Microsoft.Extensions.Logging;
+using Microsoft.Playwright;
+using Microsoft.VisualStudio.Web.CodeGeneration.Design;
 //using FastReport.Export.PdfSimple.PdfObjects;
 using NReco.PdfGenerator;
-using Microsoft.VisualStudio.Web.CodeGeneration.Design;
-using Microsoft.CodeAnalysis;
-using DocumentFormat.OpenXml.Office2010.Excel;
+using OpenHtmlToPdf;
+using Org.BouncyCastle.Crypto.Agreement;
+using PdfSharpCore;
+using PdfSharpCore.Pdf;
+using ServiceStack;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Mime;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using static DealEngine.Services.Interfaces.IAssetData;
+using ICertificatePdfService = DealEngine.Services.Interfaces.ICertificatePdfService;
+using SystemDocument = DealEngine.Domain.Entities.Document;
+
+
 
 namespace DealEngine.WebUI.Controllers
 {
@@ -42,6 +54,10 @@ namespace DealEngine.WebUI.Controllers
         IApplicationLoggingService _applicationLoggingService;
         ILogger<FileController> _logger;
         IAppSettingService _appSettingService;
+        private readonly ICertificateBuilderService _certificateBuilderService;
+        private readonly ICertificatePdfService _certificatePdfService;
+        IClientAgreementService _agreementService ;
+
         //      string _appData = "~/App_Data/";
         //string _uploadFolder = "uploads";
 
@@ -55,7 +71,10 @@ namespace DealEngine.WebUI.Controllers
             IMapperSession<SystemDocument> documentRepository,
             IMapperSession<Image> imageRepository,
             IMapperSession<Product> productRepository,
-            IAppSettingService appSettingService
+            IAppSettingService appSettingService,
+             ICertificateBuilderService certificateBuilderService,
+            ICertificatePdfService certificatePdfService,
+            IClientAgreementService clientAgreementService
             )
             : base(userRepository)
         {
@@ -68,10 +87,13 @@ namespace DealEngine.WebUI.Controllers
             _imageRepository = imageRepository;
             _productRepository = productRepository;
             _appSettingService = appSettingService;
+            _certificateBuilderService = certificateBuilderService;
+            _certificatePdfService = certificatePdfService;
+            _agreementService = clientAgreementService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetInvoicePDF(Guid Id, Guid ClientProgrammeId, string invoicename)
+        public async Task<IActionResult> GetInvoicePDF1(Guid Id, Guid ClientProgrammeId, string invoicename)
         {
             ClientProgramme clientprogramme = await _programmeService.GetClientProgrammebyId(ClientProgrammeId);
             ClientInformationSheet clientInformationSheet = clientprogramme.InformationSheet;
@@ -130,6 +152,111 @@ namespace DealEngine.WebUI.Controllers
 
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetInvoicePDF(
+    Guid Id,
+    Guid ClientProgrammeId,
+    string invoicename)
+        {
+            ClientProgramme clientprogramme =
+                await _programmeService.GetClientProgrammebyId(ClientProgrammeId);
+
+            ClientInformationSheet clientInformationSheet =
+                clientprogramme.InformationSheet;
+
+            SystemDocument doc =
+                await _documentRepository.GetByIdAsync(Id);
+
+            // Convert document bytes to HTML
+            string html = _fileService.FromBytes(doc.Contents);
+
+            // Inject head + styles
+            if (doc.DocumentType == 8) // Apollo Invoice
+            {
+                html = html.Insert(0,
+                    "<head><meta charset='utf-8'></head>");
+            }
+            else
+            {
+                html = html.Insert(0,
+                    @"<head>
+                <meta charset='utf-8'>
+                <style>
+                    img { height:auto; max-width:300px; }
+                    body { font-family: Arial, Helvetica, sans-serif; }
+                </style>
+              </head>");
+            }
+
+            // Character fixes (keep as-is from legacy)
+            html = html.Replace("“", "&quot;")
+                       .Replace("”", "&quot;")
+                       .Replace(" – ", "--")
+                       .Replace("&nbsp;", " ")
+                       .Replace("’", "&#146;")
+                       .Replace("‘", "&#39;")
+                       .Replace("ä", "&#228;")
+                       .Replace("ë", "&#235;")
+                       .Replace("ö", "&#246;")
+                       .Replace("ü", "&#252;");
+
+            // Fix legacy image paths
+            string badURL = "../../../images/";
+            string newURL = "https://" + _appSettingService.domainQueryString + "/Image/";
+            html = html.Replace(badURL, newURL);
+
+            // Convert HTML → PDF
+            byte[] pdfBytes = Pdf
+                .From(html)
+                .WithGlobalSetting("orientation", "Portrait")
+                .WithGlobalSetting("margin.top", "10mm")
+                .WithGlobalSetting("margin.bottom", "10mm")
+                .WithGlobalSetting("margin.left", "30mm")
+                .WithGlobalSetting("margin.right", "10mm")
+                .WithObjectSetting("footer.center", "Page [page] of [toPage]")
+                .Content();
+
+            return File(
+                pdfBytes,
+                "application/pdf",
+                invoicename + ".pdf"
+            );
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateCertificate(Guid agreementid, Guid programmeid, CertificateType type)
+        {
+            var user = await CurrentUser();
+
+            var agreement = await _agreementService.GetAgreement(agreementid);
+            var programme = agreement.ClientInformationSheet.Programme;
+
+            // 1️⃣ Build aggregate model
+            var model = await _certificateBuilderService.BuildAsync(agreement, programme, type);
+            model.CertificateType = type;
+            // 2️⃣ Generate PDF bytes via QuestPDF
+            var pdfBytes = await _certificatePdfService.GenerateAsync(model);
+
+            // 3️⃣ Create SystemDocument
+            var document = new SystemDocument(
+                user,
+                "Certificate of Currency",
+                "application/pdf",
+                8 // your DocumentType
+            );
+
+            document.Contents = pdfBytes;
+            document.OwnerOrganisation = agreement.ClientInformationSheet.Owner;
+
+
+            return File(pdfBytes, "application/pdf", "Certificate.pdf");
+
+            //return document;
+        }
+
+        
         [HttpGet]
         public async Task<IActionResult> GetPDF(Guid Id, Guid ClientProgrammeId)
         {
@@ -385,39 +512,56 @@ namespace DealEngine.WebUI.Controllers
                     // DOCX
                     else if (format == "docx")
                     {
+                        // Prepare HTML only once
                         doc = await _fileService.FormatCKHTMLforConversion(doc);
                         html = _fileService.FromBytes(doc.Contents);
 
-                        using (MemoryStream virtualFile = new MemoryStream())
-                        {
-                            using (WordprocessingDocument wordDocument = WordprocessingDocument.Create(virtualFile, WordprocessingDocumentType.Document))
-                            {
-                                MainDocumentPart mainPart = wordDocument.AddMainDocumentPart();
-                                new DocumentFormat.OpenXml.Wordprocessing.Document(new Body()).Save(mainPart);
-                                HtmlConverter converter = new HtmlConverter(mainPart); // refer to this: https://github.com/onizet/html2openxml/wiki/Tags-Supported
-                                converter.ImageProcessing = ImageProcessing.ManualProvisioning;
-                                Body body = mainPart.Document.Body;
-                                converter.ParseHtml(html);
+                        using var memoryStream = new MemoryStream();
 
-                                #region CSStesting code
-                                // Need to figure out how to add classes to style the document... (adding to the top of HTML document doesn't work, also lots of the table styling css doesn't actually work. Just the old way works where style isn't specified e.g <table width=\"100%\" border=\"0\"><tr style=\"font-weight: bold\"><td>Studio</td><td colspan=\"2\")
-                                // converter.HtmlStyles.DefaultStyle = converter.HtmlStyles.GetStyle("testClass");
-                                // converter.RefreshStyles();
-                                #endregion 
-                            }
-                            // RETURN DOCX
-                            return File(virtualFile.ToArray(), MediaTypeNames.Application.Octet, doc.Name + ".docx");
+                        using (var wordDocument = WordprocessingDocument.Create(
+                            memoryStream,
+                            WordprocessingDocumentType.Document,
+                            autoSave: true))
+                        {
+                            // Create main document part
+                            var mainPart = wordDocument.AddMainDocumentPart();
+
+                            mainPart.Document = new DocumentFormat.OpenXml.Wordprocessing.Document(
+                                  new Body()
+                            );
+
+                            // HTML → OpenXML conversion
+                            var converter = new HtmlConverter(mainPart)
+                            {
+                                ImageProcessing = ImageProcessing.ManualProvisioning
+                            };
+
+                            converter.ParseHtml(html);
+
+                            // Explicit save (important for reliability)
+                            mainPart.Document.Save();
                         }
-                    }
-                    else if (format == "pdf")
+
+                        // Reset stream before returning
+                        memoryStream.Position = 0;
+
+                        return File(
+                            memoryStream.ToArray(),
+                            MediaTypeNames.Application.Octet,
+                            $"{doc.Name}.docx"
+                        );
+                    } else if (format == "pdf")
                     {
                         // This is for ManageDocuments where we haven't hit ProcessRequestConfiguration which Formats and Converts the document
-                        if (doc.IsTemplate == true)
-                        {
+                       // if (doc.IsTemplate == true)
+                        //{
                             //doc = await _fileService.FormatCKHTMLforConversion(doc);
-                            doc = await _fileService.ConvertHTMLToPDF(doc);
-                        }
-                        return File(doc.Contents, "application/pdf", doc.Name + ".pdf");
+                          //  doc = await _fileService.ConvertHTMLToPDF(doc);
+                       // }
+
+
+
+                       // return File(doc.Contents, "application/pdf", doc.Name + ".pdf");
                     }
                 }
                 // PDF - When is this hit?
@@ -617,6 +761,8 @@ namespace DealEngine.WebUI.Controllers
                        
                     }
                     document.Description = model.Description;
+                    document.Name = model.Name;
+                    document.DocumentType = model.DocumentType;
                     document.Contents = _fileService.ToBytes(System.Net.WebUtility.HtmlDecode(model.Content));
                     document.OwnerOrganisation = user.PrimaryOrganisation;
                     document.IsTemplate = true;

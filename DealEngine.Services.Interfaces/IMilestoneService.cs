@@ -20,5 +20,7 @@ namespace DealEngine.Services.Interfaces
 
         Task CreateRenewNotificationTask(User user, ClientProgramme renewFromProgrammeBase, Organisation renewClientOrg, Programme currentProgramm);
         Task CreateRenewTask(User user, ClientProgramme renewFromProgrammeBase, Organisation renewClientOrg, Programme currentProgramm);
+        Task CreatePendingSubscriptionTask(User user, ClientProgramme clientProgramme);
     }   
+
 }

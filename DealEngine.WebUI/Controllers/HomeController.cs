@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NHibernate.Criterion;
 using NReco.PdfGenerator;
 using Quartz;
 //using ServiceStack;
@@ -135,95 +136,168 @@ namespace DealEngine.WebUI.Controllers
         }
 
         public async Task<IActionResult> Index()
+{
+    ViewBag.Title = "DealEngine Dashboard";
+
+    DashboardViewModel model = new DashboardViewModel();
+    model.ProductItems = new List<ProductItemV2>();
+    model.DealItems = new List<ProductItem>();
+    model.ProgrammeItems = new List<ProgrammeItem>();
+
+    User user = null;
+
+    try
+    {
+        // ---------- 1. CurrentUser ----------
+        user = await CurrentUser();
+        _nlogger.LogInformation("Visited the Home Index with user   " + user.UserName);
+
+        model.UserTasks = user.UserTasks.Where(t => t.Completed == false && t.Removed == false).ToList();
+        model.DisplayDeals = true;
+        model.DisplayProducts = false;
+
+        // ---------- 2. Determine Role ----------
+        model.CurrentUserType = DetermineUserType(user);
+
+        if (model.CurrentUserType == "Client" && (user.Organisations == null || !user.Organisations.Any()))
         {
-            ViewBag.Title = "DealEngine Dashboard";
-
-            DashboardViewModel model = new DashboardViewModel();
-            model.ProductItems = new List<ProductItemV2>();
-            model.DealItems = new List<ProductItem>();
-
-            User user = null;
-            try
-            {
-                user = await CurrentUser();
-
-                _nlogger.LogInformation("Visited the Home Index with user   " + user.UserName);
-                model.UserTasks = user.UserTasks.Where(t => t.Completed == false && t.Removed == false).ToList();
-                model.DisplayDeals = true;
-                model.DisplayProducts = false;
-                model.CurrentUserType = "Client";
-                if (user.PrimaryOrganisation.IsBroker)
-                {
-                    model.CurrentUserType = "Broker";
-                }
-                if (user.PrimaryOrganisation.IsInsurer)
-                {
-                    model.CurrentUserType = "Insurer";
-                }
-                if (user.PrimaryOrganisation.IsTC)
-                {
-                    model.CurrentUserType = "TC";
-                }
-                if (user.PrimaryOrganisation.IsProgrammeManager)
-                {
-                    model.CurrentUserType = "ProgrammeManager";
-                }
-
-                IList<string> languages = new List<string>();
-                languages.Add("nz");
-                IList<Programme> programmeList = new List<Programme>();
-                model.ProgrammeItems = new List<ProgrammeItem>();
-                if (model.CurrentUserType == "Client")
-                {
-
-                    //var OrganisationsCheck = user.Organisations.Any();
-                    if (user.Organisations == null || user.Organisations.Any() == false)
-                    {
-                        _nlogger.LogError("Visited the Home Index but with No Organistaion for  user   " + user.UserName);
-                        return RedirectToAction("UserWithNoOrganisation", "Error");
-                    }
-                    foreach (var clientorg in user.Organisations)
-                    {
-                        var clientProgList = _programmeService.GetClientProgrammesByOwner(clientorg.Id).Result.GroupBy(bp => bp.BaseProgramme.Name).Select(bp => bp.FirstOrDefault());
-                        if (clientProgList.Any())
-                        {
-                            foreach (var clientProgramme in clientProgList)
-                            {
-                                if (clientProgramme.InformationSheet.Status != "Not Taken Up By Broker")
-                                {
-                                    programmeList.Add(clientProgramme.BaseProgramme);
-                                }
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    _nlogger.LogInformation("Visited the Homecontroller Index method but user is not client for  " + user.UserName);
-                    programmeList = await _programmeService.GetAllProgrammes();
-                    _nlogger.LogInformation("Visited the Homecontroller Index method with programme list for user " + user.UserName + " programmeList:- " + programmeList.Count);
-
-                }
-
-                foreach (Programme programme in programmeList.Distinct().OrderByDescending(proglist => proglist.DateCreated))
-                {
-                    model.ProgrammeItems.Add(new ProgrammeItem(programme)
-                    {
-                        Languages = languages
-                    });
-                }
-
-
-
-                return View("IndexNew", model);
-            }
-            catch (Exception ex)
-            {
-                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
-                return RedirectToAction("Error500", "Error");
-            }
-
+            _nlogger.LogError("Visited the Home Index but with No Organistaion for  user   " + user.UserName);
+            return RedirectToAction("UserWithNoOrganisation", "Error");
         }
+
+        // ---------- 3. programmeList ----------
+        IList<Programme> programmeList;
+        IList<ClientProgramme> clientProgrammesForTasks = null; 
+
+        switch (model.CurrentUserType)
+        {
+            case "Broker":
+            case "TC":
+                programmeList = await _programmeService.GetAllProgrammes();
+                break;
+
+            case "Client":
+                var flattened = new List<ClientProgramme>();
+                foreach (var clientorg in user.Organisations)
+                {
+                    var clientProgList = await _programmeService.GetClientProgrammesByOwner(clientorg.Id);
+                    if (clientProgList != null)
+                        flattened.AddRange(clientProgList);
+                }
+                clientProgrammesForTasks = flattened;
+
+                var programmeNames = new HashSet<string>();
+                programmeList = flattened
+                    .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker")
+                    .Select(cp => cp.BaseProgramme)
+                    .Where(p => programmeNames.Add(p.Name)) 
+                    .ToList();
+                break;
+
+            default: // Insurer, ProgrammeManager
+                programmeList = await _programmeService.GetAllProgrammes();
+                break;
+        }
+
+        // ---------- 4. Pending Tasks ----------
+        switch (model.CurrentUserType)
+        {
+            case "Broker":
+                model.UserTasks = await BuildPendingTasksFromProgrammes(
+                    user, programmeList,
+                    cp => cp.Owner.Name + " - " + cp.BaseProgramme.Name + " subscription is still pending");
+                break;
+
+            case "Insurer":
+                model.UserTasks = await BuildPendingTasksFromProgrammes(
+                    user, programmeList,
+                    cp => cp.Owner.Name + " - " + cp.BaseProgramme.Name + " subscription is still pending");
+                break;
+
+            case "TC":
+                model.UserTasks = await BuildPendingTasksFromProgrammes(
+                    user, programmeList,
+                    cp => cp.Owner.Name + " - " + cp.BaseProgramme.Name + " subscription is still pending");
+                break;
+
+            case "ProgrammeManager":
+                model.UserTasks = await BuildPendingTasksFromProgrammes(
+                    user, programmeList,
+                    cp => cp.Owner.Name + " - " + cp.BaseProgramme.Name + " subscription is still pending");
+                break;
+
+            case "Client":
+                model.UserTasks = clientProgrammesForTasks
+                    .Where(IsPendingSubscriptionEligible)
+                    .Select(cp => new UserTask(user, "PendingSubscription", null)
+                    {
+                        URL = "/Information/EditInformation/" + cp.Id,
+                        Body = cp.BaseProgramme.Name + " subscription is still pending",
+                        IsActive = true,
+                        DueDate = DateTime.Now.AddDays(30)
+                    })
+                    .ToList();
+                break;
+
+            
+        }
+
+        // ---------- 5. ProgrammeItems ----------
+        IList<string> languages = new List<string> { "nz" };
+        foreach (Programme programme in programmeList.OrderByDescending(p => p.DateCreated))
+        {
+            model.ProgrammeItems.Add(new ProgrammeItem(programme) { Languages = languages });
+        }
+
+        return View("IndexNew", model);
+    }
+    catch (Exception ex)
+    {
+        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        return RedirectToAction("Error500", "Error");
+    }
+}
+
+private static string DetermineUserType(User user)
+{
+    if (user.PrimaryOrganisation.IsBroker) return "Broker";
+    if (user.PrimaryOrganisation.IsInsurer) return "Insurer";
+    if (user.PrimaryOrganisation.IsTC) return "TC";
+    if (user.PrimaryOrganisation.IsProgrammeManager) return "ProgrammeManager";
+    return "Client";
+}
+
+private static bool IsPendingSubscriptionEligible(ClientProgramme cp)
+{
+    return cp.InformationSheet != null &&
+           !cp.InformationSheet.Status.StartsWith("Bound") &&
+           cp.InformationSheet.Status != "Not Taken Up By Broker" &&
+          cp.DateDeleted == null &&
+           cp.InformationSheet.Status != "Closed" &&
+           !cp.BaseProgramme.Name.Contains("CLOSED");
+}
+
+private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
+    User user, IEnumerable<Programme> programmes, Func<ClientProgramme, string> bodyBuilder)
+{
+    var pendingTasks = new List<UserTask>();
+    foreach (var programme in programmes)
+    {
+        var clientProgList = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
+        if (clientProgList == null) continue;
+
+        pendingTasks.AddRange(clientProgList
+            .Where(IsPendingSubscriptionEligible)
+            .Select(cp => new UserTask(user, "PendingSubscription", null)
+            {
+                URL = "/Information/EditInformation/" + cp.Id.ToString(),
+                Body = bodyBuilder(cp),
+                IsActive = true,
+                DueDate = DateTime.Now.AddDays(30)
+            }));
+    }
+    return pendingTasks;
+}
 
         #region Search
         [HttpGet]
@@ -477,7 +551,7 @@ namespace DealEngine.WebUI.Controllers
 
         private async Task<ProgrammeItem> GetClientProgrammeListModel(User user, IList<ClientProgramme> clientList, Programme programme, bool isClient = false)
         {
-            var clientProgramme = clientList.FirstOrDefault();
+            var clientProgramme = clientList.Where(client => client.BaseProgramme.Id == programme.Id).FirstOrDefault();
             //ProgrammeItem model = new ProgrammeItem(clientProgramme.BaseProgramme);
             ProgrammeItem model = new ProgrammeItem(programme);
             if (clientProgramme != null)
@@ -565,17 +639,19 @@ namespace DealEngine.WebUI.Controllers
                         model.Deals.Add(new DealItem
                         {
                             Id = client.Id.ToString(),
+                            OwnerEmail = client.Owner.Email,
                             Name = client.BaseProgramme.Name + " for " + client.Owner.Name,
                             NextInfoSheet = nextInfoSheet,
                             LocalDateCreated = localDateCreated,
                             LocalDateSubmitted = localDateSubmitted,
-                            Status = status,
+                            Status = status == "Started" ? "In Progress" : status,
                             IsChange = client.InformationSheet.IsChange,
                             ReferenceId = referenceId,// Move into ClientProgramme?
                             SubClientProgrammes = client.SubClientProgrammes,
                             AgreementStatus = agreementSatus,
                             IsSubclientSubmitted = Issubclientsubmitted,
-                            DocSendDate = DocSendDate
+                            DocSendDate = DocSendDate,
+                            IsIssued = client.IsIssued
                         });
                     }
 
@@ -588,7 +664,7 @@ namespace DealEngine.WebUI.Controllers
                     var clientProgList = await _programmeService.GetClientProgrammesByOwnerByProgramme(clientorg.Id, programme.Id);
                     if (clientProgList.Any())
                     {
-                        clientList = clientProgList;
+                       clientList = clientProgList;
                         //foreach (var clientpro in clientProgList)
                         //{
                         //    clientList.Add(clientpro);
@@ -653,7 +729,8 @@ namespace DealEngine.WebUI.Controllers
                         Status = status,
                         ReferenceId = referenceId,// Move into ClientProgramme?
                         SubClientProgrammes = client.SubClientProgrammes,
-                        AgreementStatus = agreementSatus
+                        AgreementStatus = agreementSatus,
+                        IsIssued = client.IsIssued
                     }); ;
                 }
             }
@@ -1619,7 +1696,8 @@ namespace DealEngine.WebUI.Controllers
                             SubClientProgrammes = client.SubClientProgrammes,
                             AgreementStatus = agreementSatus,
                             IsSubclientSubmitted = Issubclientsubmitted,
-                            DocSendDate = DocSendDate
+                            DocSendDate = DocSendDate,
+                            OwnerEmail = client.Owner.Email
                         });
                     }
 
@@ -1807,6 +1885,8 @@ namespace DealEngine.WebUI.Controllers
             {
                 Programme programme = await _programmeService.GetProgrammeById(id);
                 ViewBag.programmedrenewed = programme.Id;
+                IList<Programme> programmeList = new List<Programme>();
+
                 //if (programme.IsProgrammerenewed)
                 //{
                 //    ViewBag.programmedrenewed = programme.Id;
@@ -1824,7 +1904,6 @@ namespace DealEngine.WebUI.Controllers
                         clientList = await _programmeService.GetClientProgrammesForProgramme(id);
                     }
                 }
-
                 //ProgrammeItem model = new ProgrammeItem(clientList.FirstOrDefault().BaseProgramme);
                 ProgrammeItem model = new ProgrammeItem(programme);
 
@@ -1833,6 +1912,7 @@ namespace DealEngine.WebUI.Controllers
                 {
 
                     model = await GetBrokerRenewedDashboard(user, programme.RenewFromProgramme);
+                   // programmeList = await _programmeService.GetAllProgrammes();
 
                     //if(clientList.Count > 0)
                     //{
@@ -1846,13 +1926,13 @@ namespace DealEngine.WebUI.Controllers
                     //}
                 }
                 else
-                if (programme.ProgMultBrokerMode)
+                if (programme.ProgMultBrokerMode )
                 {
                     model = await GetRenewedOwner(user, clientList, programme);
                 }
-                else if(programme.IsProgrammerenewed)
+                else if(programme.IsProgrammerenewed )
                 {
-                    model = await GetBrokerDashboard(user, clientList, programme);
+                    model = await GetBrokerRenewedListModel(user, clientList, programme);
                 }
                 else
                 {
@@ -1927,6 +2007,157 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
         }
+
+
+        [HttpPost]
+        private async Task<ProgrammeItem> GetBrokerRenewedListModel(User user, IList<ClientProgramme> clientList, Programme programme, bool isClient = false)
+        {
+            var clientProgramme = clientList.FirstOrDefault();
+            IList<Organisation> ownerList = new List<Organisation>();
+            ProgrammeItem model = new ProgrammeItem(programme);
+            if (clientProgramme != null)
+            {
+                if (!isClient)
+                {
+                    var isBaseClientProg = await _programmeService.IsBaseClass(clientProgramme);
+                    if (isBaseClientProg)
+                    {
+                        ownerList = await _programmeService.GetOwnerForProgramme(clientProgramme.BaseProgramme.Id);
+                    }
+                }
+            }
+            if (programme.RenewFromProgramme != null)
+            {
+                List<ClientProgramme> renewClientProgrammes = await _programmeService.GetBoundClientProgrammesForProgramme(programme.RenewFromProgramme.Id);
+                try
+                {
+                    foreach (var client in renewClientProgrammes)
+                    {
+                        if (client.DateDeleted == null && client.InformationSheet != null)
+                        {
+                            //filter out the renewal clientprogramme already created
+                            List<ClientProgramme> currentClientProgrammes = await _programmeService.GetClientProgrammesByOwnerByProgramme(client.Owner.Id, programme.Id);
+                            if (currentClientProgrammes.Count == 0)
+                            {
+                                client.RenewNotificationDate = DateTime.UtcNow;
+                                await _programmeService.Update(client);
+
+                                ClientProgramme CloneProgramme = await _programmeService.CloneForRenew(user, client.Id, programme.Id);
+
+                                Product masterUISProduct = programme.Products.Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
+                                var UISAttachmentDocuments = new List<SystemDocument>();
+                                if (masterUISProduct != null)
+                                {
+                                    var UISAttachmentTemplateList = masterUISProduct.Documents.Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
+
+                                    foreach (SystemDocument template in UISAttachmentTemplateList)
+                                    {
+                                        SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, client.InformationSheet, null);
+                                        SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                                        renderedDoc.OwnerOrganisation = client.Owner;
+                                        UISAttachmentDocuments.Add(renderedDoc);
+                                        await _fileService.UploadFile(renderedDoc);
+                                    }
+                                }
+                                using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                                {
+                                    await uow.Commit();
+                                }
+                            }
+                        }
+                    }
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+
+            if (user.PrimaryOrganisation.IsBroker || user.PrimaryOrganisation.IsInsurer || user.PrimaryOrganisation.IsTC || user.PrimaryOrganisation.IsProgrammeManager)
+            {
+                foreach (Organisation owner in ownerList.Where(o => o.DateDeleted == null).OrderBy(o => o.Name).Distinct())
+                {
+                    ClientProgramme ownerclientProgramme = await _programmeService.GetClientProgrammeByOwnerByProgramme(owner.Id, programme.Id);
+                    //if (ownerclientProgramme.ClientProgrammeExpiryDate < DateTime.Now.AddMonths(2))
+                    //{
+                    //    model.UpcomingDeals.Add(new OwnerItem
+                    //    {
+                    //        OwnerId = owner.Id.ToString(),
+                    //        OwnerName = owner.Name,
+                    //        ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
+                    //    });
+                    //}
+                    model.OwnerDeals.Add(new OwnerItem
+                    {
+                        OwnerId = owner.Id.ToString(),
+                        OwnerName = owner.Name,
+                        ProgrammeId = ownerclientProgramme.BaseProgramme.Id.ToString()
+                    });
+                }
+            }
+            else
+            {
+                foreach (var clientorg in user.Organisations)
+                {
+                    var clientProgList = await _programmeService.GetClientProgrammesByOwnerByProgramme(clientorg.Id, programme.Id);
+                    if (clientProgList.Any())
+                    {
+                        model.OwnerDeals.Add(new OwnerItem
+                        {
+                            OwnerId = clientorg.Id.ToString(),
+                            OwnerName = clientorg.Name,
+                            ProgrammeId = clientProgramme.BaseProgramme.Id.ToString()
+                        });
+                    }
+                }
+
+            }
+
+            model.CurrentUserIsClient = "True";
+            if (user.PrimaryOrganisation.IsBroker)
+            {
+                model.CurrentUserIsBroker = "True";
+                model.CurrentUserIsClient = "False";
+            }
+            else
+            {
+                model.CurrentUserIsBroker = "False";
+            }
+            if (user.PrimaryOrganisation.IsInsurer)
+            {
+                model.CurrentUserIsInsurer = "True";
+                model.CurrentUserIsClient = "False";
+            }
+            else
+            {
+                model.CurrentUserIsInsurer = "False";
+            }
+            if (user.PrimaryOrganisation.IsTC)
+            {
+                model.CurrentUserIsTC = "True";
+                model.CurrentUserIsClient = "False";
+            }
+            else
+            {
+                model.CurrentUserIsTC = "False";
+            }
+            if (user.PrimaryOrganisation.IsProgrammeManager)
+            {
+                model.CurrentUserIsProgrammeManager = "True";
+                model.CurrentUserIsClient = "False";
+            }
+            else
+            {
+                model.CurrentUserIsProgrammeManager = "False";
+            }
+
+            return model;
+        }
+
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> ViewClientProgramme(Guid ownerId, Guid programmeId)
@@ -2176,7 +2407,47 @@ namespace DealEngine.WebUI.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> EditUIS(string ProgrammeId, string actionname)
+        {
+            User user = null;
 
+            try
+            {
+                user = await CurrentUser();
+
+                if (user == null || user.IsLoggedout)
+                    return PageNotFound();
+
+                IssueUISViewModel model = new IssueUISViewModel();
+
+                var clientProgrammes = new List<ClientProgramme>();
+
+                Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
+
+                List<ClientProgramme> mainClientProgrammes =
+                    await _programmeService.GetClientProgrammesForProgramme(programme.Id);
+
+                foreach (var client in mainClientProgrammes
+                            .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker"
+                                      && cp.DateDeleted == null)
+                            .OrderBy(cp => cp.Owner.Name)
+                            .ThenBy(cp => cp.DateCreated))
+                {
+                    clientProgrammes.Add(client);
+                }
+
+                model.ClientProgrammes = clientProgrammes;
+                model.ProgrammeId = ProgrammeId;
+
+                return View("EditUIS", model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
 
 
         [HttpGet]
@@ -2194,14 +2465,35 @@ namespace DealEngine.WebUI.Controllers
                     return PageNotFound();
                 IssueUISViewModel model = new IssueUISViewModel();
                 var clientProgrammes = new List<ClientProgramme>();
+                model.ProgrammeId = ProgrammeId;
                 Programme programme = await _programmeService.GetProgrammeById(Guid.Parse(ProgrammeId));
                 List<ClientProgramme> mainClientProgrammes = await _programmeService.GetClientProgrammesForProgramme(programme.Id);
                 List<ClientProgramme> subClientProgrammes = await _programmeService.GetSubClientProgrammesForProgramme(programme.Id);
 
-                foreach (var client in mainClientProgrammes.Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker").OrderBy(cp => cp.DateCreated).OrderBy(cp => cp.Owner.Name))
+                foreach (var client in mainClientProgrammes
+                     .Where(cp => cp.InformationSheet.Status != "Not Taken Up By Broker")
+                     .OrderBy(cp => cp.DateCreated)
+                     .ThenBy(cp => cp.Owner.Name))
                 {
                     if (client.DateDeleted == null && client.InformationSheet.Status != "Bound")
                     {
+                        var users = await _userService.GetUsersByPrimaryOrganisationId(client.Owner.Id);
+
+                        if (users.Count > 0)
+                        {
+                            client.AdminEmail = users?.FirstOrDefault().Email;
+                            client.AdminName = users?.FirstOrDefault().FirstName + " " + users?.FirstOrDefault().LastName;
+                        }
+                        else
+                        {
+                            client.AdminEmail = (await _userService
+                                .GetAllUserforOrganisation(client.Owner))
+                                .FirstOrDefault();
+                            User Adminuser = await _userService.GetApplicationUserByEmail(client.AdminEmail);
+                            client.AdminName = Adminuser.FirstName + " " + Adminuser.LastName;
+
+                        }
+
                         clientProgrammes.Add(client);
                     }
                 }
@@ -2419,8 +2711,25 @@ namespace DealEngine.WebUI.Controllers
                 {
                     if (client.DateDeleted == null && (client.InformationSheet.Status == "Started" || client.InformationSheet.Status == "Not Started"))
                     {
+                        var users = await _userService.GetUsersByPrimaryOrganisationId(client.Owner.Id);
+
+                        if (users.Count > 0)
+                        {
+                            client.AdminEmail = users?.FirstOrDefault().Email;
+                            client.AdminName = users?.FirstOrDefault().FirstName + " " + users?.FirstOrDefault().LastName;
+                        }
+                        else
+                        {
+                            client.AdminEmail = (await _userService
+                                .GetAllUserforOrganisation(client.Owner))
+                                .FirstOrDefault();
+                            User Adminuser = await _userService.GetApplicationUserByEmail(client.AdminEmail);
+                            client.AdminName = Adminuser.FirstName + " " + Adminuser.LastName;
+
+                        }
                         clientProgrammes.Add(client);
                     }
+
                 }
 
                 model.ClientProgrammes = clientProgrammes;
@@ -2920,16 +3229,13 @@ namespace DealEngine.WebUI.Controllers
         }
 
 
-        public async Task<DataTable> GetNZBarOnDemandPIReport(Guid programmeId, string reportName, DataTable dt)
+        public async Task<DataTable> GetOnDemanDistrictReport(Guid programmeId, string reportName, DataTable dt, string district)
         {
             Programme programme = await _programmeService.GetProgrammeById(programmeId);
             List<List<dynamic>> ListReportSet = new List<List<dynamic>>();
             List<dynamic> ListReport = new List<dynamic>();
-            reportName = "NZBar PI Report";
-            decimal PIFullPremiumTotal = 0M;
-            decimal PIGrossPremiumTotal = 0M;
-            decimal PINetPremiumToInsurerTotal = 0M;
-
+            reportName = "Rotary DistrictReport";
+            
             var ReportingDay = DateTime.Today;
             var ReportingMonth = new DateTime(ReportingDay.Year, ReportingDay.Month, 1);
             var ReportingFirstDay = ReportingMonth.AddMonths(-1);
@@ -2942,26 +3248,14 @@ namespace DealEngine.WebUI.Controllers
             DataColumn column5 = new DataColumn();
             DataColumn column6 = new DataColumn();
             DataColumn column7 = new DataColumn();
-            DataColumn column8 = new DataColumn();
-            DataColumn column9 = new DataColumn();
-            DataColumn column10 = new DataColumn();
-            DataColumn column11 = new DataColumn();
-            DataColumn column12 = new DataColumn();
-            //DataColumn column13 = new DataColumn();
 
-            column1 = new DataColumn("First Name", typeof(string));
-            column2 = new DataColumn("Last Name", typeof(string));
-            column3 = new DataColumn("Marsh Reference", typeof(string));
-            column4 = new DataColumn("Invoice Number", typeof(string));
-            column5 = new DataColumn("Limit of Indemnity", typeof(decimal));
-            column6 = new DataColumn("Policy Excess", typeof(decimal));
-            column7 = new DataColumn("Anual PI Premium", typeof(decimal));
-            column8 = new DataColumn("Defence Costs Limit", typeof(decimal));
-            column9 = new DataColumn("Annual Cyber Premium", typeof(decimal));
-            column10 = new DataColumn("Number of Junior Barristers", typeof(string));
-            column11 = new DataColumn("Number of Employed Barristers", typeof(string));
-            //column12 = new DataColumn("Criminal Law Discount", typeof(string));
-            column12 = new DataColumn("Not Sole Barrister", typeof(string));
+            column1 = new DataColumn("Club Name", typeof(string));
+            column2 = new DataColumn("District", typeof(string));
+            column3 = new DataColumn("Status of Information Sheet", typeof(string));
+            column4 = new DataColumn("Outside NewZealand", typeof(string));
+            column5 = new DataColumn("Administrator", typeof(string));
+            column6 = new DataColumn("Mobile", typeof(string));
+            column7 = new DataColumn("Email", typeof(string));
 
             dt.Columns.Add(column1);
             dt.Columns.Add(column2);
@@ -2970,17 +3264,8 @@ namespace DealEngine.WebUI.Controllers
             dt.Columns.Add(column5);
             dt.Columns.Add(column6);
             dt.Columns.Add(column7);
-            dt.Columns.Add(column8);
-            dt.Columns.Add(column9);
-            dt.Columns.Add(column10);
-            dt.Columns.Add(column11);
-            dt.Columns.Add(column12);
-            //dt.Columns.Add(column13);
-
-
             var clientProgrammes = programme.ClientProgrammes
-                               .Where(cp => cp.InformationSheet.DateDeleted == null &&
-                               cp.InformationSheet.Status == "Bound and invoiced")
+                               .Where(cp => cp.InformationSheet.DateDeleted == null && cp.Owner.District == district)
                                .ToList();
 
             foreach (ClientProgramme cp in clientProgrammes)
@@ -2993,180 +3278,51 @@ namespace DealEngine.WebUI.Controllers
                         clientInformationSheetID = cp.InformationSheet.Id;
                     }
                     List<dynamic> tempListReport = new List<dynamic>();
-                    decimal PIFullPremium = 0M;
-                    decimal PIGrossPremium = 0M;
-                    decimal PINetPremiumToInsurer = 0M;
-                    decimal PIFullPremiumtotal = 0M;
-                    decimal Brokerageperc = 0M;
-                    decimal Brokerage = 0M;
-                    decimal GST = 0M;
-                    decimal BrokerageGST = 0M;
+                    Organisation organisation = cp.InformationSheet?.Owner;
 
-                    Organisation organisation = cp.InformationSheet.Owner;
-                    User user = await _userService.GetApplicationUserByEmail(organisation.Email);
-                    //if (cp.Agreements.Count > 0)
-                    //{
-                    //foreach (ClientAgreement agreement in cp.Agreements.Where(agree => agree.BoundDate >= ReportingFirstDay && agree.BoundDate <= ReportingLastDay && agree.InceptionDate < ReportingFirstDay
-                    //                                                                      || agree.InceptionDate >= ReportingFirstDay && agree.InceptionDate <= ReportingLastDay && agree.BoundDate <= ReportingLastDay))
-                    //{
-                    // var term = agreement.ClientAgreementTerms.FirstOrDefault(ter => ter.SubTermType == reportName && ter.Bound == true);
-                    // if (term != null)
-                    //{
+                    // Resolve admin by preferred single-primary-org lookup first.
+                    User adminUser = null;
+                    if (organisation != null)
+                    {
+                        var primaryOrgUsers = await _userService.GetUsersByPrimaryOrganisationId(organisation.Id);
+                        adminUser = primaryOrgUsers?.FirstOrDefault();
+
+                        // Fallback: if no primary-org user exists, use the broader organisation user list.
+                        if (adminUser == null)
+                        {
+                            var fallbackAdminEmail = (await _userService.GetAllUserforOrganisation(organisation)).FirstOrDefault();
+                            if (!string.IsNullOrWhiteSpace(fallbackAdminEmail))
+                            {
+                                adminUser = await _userService.GetApplicationUserByEmail(fallbackAdminEmail);
+                            }
+                        }
+                    }
+
+                    var adminName = adminUser == null
+                        ? string.Empty
+                        : string.Join(" ", new[] { adminUser.FirstName, adminUser.LastName }
+                            .Where(s => !string.IsNullOrWhiteSpace(s)));
+
+                    // Phone/email can be empty in some records, so always null-safe.
+                    var adminMobile = adminUser?.MobilePhone ?? adminUser?.Phone ?? string.Empty;
+                    var adminEmail = adminUser?.Email ?? string.Empty;
+                   
                     DataRow newRow = dt.NewRow();
 
                     tempListReport = new List<dynamic>();
-                    newRow[0] = user.FirstName;
-                    newRow[1] = user.LastName; //Add((cp.EGlobalClientNumber).ToString());
-                    EGlobalResponse eGlobalResponse = cp.ClientAgreementEGlobalResponses.Where(er => er.DateDeleted == null && er.ResponseType == "update").OrderByDescending(er => er.VersionNumber).FirstOrDefault();
-                    newRow[2] = eGlobalResponse.ClientNumber;
+                    newRow[0] = organisation?.Name ?? string.Empty;
+                    newRow[1] = organisation?.District ?? string.Empty; //Add((cp.EGlobalClientNumber).ToString());
+                    ClientInformationSheet clientInformationSheet  = organisation == null
+                        ? null
+                        : await _clientInformationService.GetSheetFromOrganisationbyprogramme(organisation,cp.Id);
 
-                    if (eGlobalResponse != null)
-                    {
-                        newRow[3] = "I" + eGlobalResponse.InvoiceNumber.ToString();
-                    };
-                    //newRow[3] = term.TermLimit;
-                    Product product = programme.Products.Where(prod => prod.Name == "Professional Indemnity").FirstOrDefault();
-                    if (product != null)
-                    {
-                        ClientAgreement clientagreement = cp.Agreements.Where(agree => agree.Product == product).FirstOrDefault();
-                        ClientAgreementTerm clienaAgreementTerm = clientagreement.ClientAgreementTerms.Where(Term => Term.Bound == true).FirstOrDefault();
-                        newRow[4] = clienaAgreementTerm.TermLimit;
-                        newRow[5] = clienaAgreementTerm.Excess;
-                        newRow[6] = clienaAgreementTerm.Premium;
-                    }
-                    else
-                    {
-                        newRow[4] = 0.0;
-                        newRow[5] = 0.0;
-                        newRow[6] = 0.0;
-                    }
-
-
-                    //newRow[4] = term.Excess;
-                    //int ceextensionlimit = 0;
-                    //decimal ceextensionexcess = 0M;
-                    //decimal ceextensionpremium = 0M;
-                    //if (agreement.ClientAgreementTermExtensions.Count > 0)
-                    //{
-                    //    foreach (var termExtension in agreement.ClientAgreementTermExtensions.Where(ae => ae.DateDeleted == null))
-                    //    {
-                    //        if (termExtension.Bound && termExtension.ExtentionName == "Professional Indemnity – Costs & Expenses")
-                    //        {
-                    //            ceextensionlimit = termExtension.TermLimit;
-                    //            ceextensionexcess = termExtension.Excess;
-                    //            if (agreement.ClientInformationSheet.IsChange && agreement.ClientInformationSheet.PreviousInformationSheet != null)
-                    //            {
-                    //                ceextensionpremium += termExtension.PremiumDiffer;
-                    //            }
-                    //            else
-                    //            {
-                    //                ceextensionpremium += termExtension.Premium;
-                    //            }
-                    //        }
-
-                    //    }
-                    //}
-
-                    //PIFullPremiumTotal += (term.Premium + ceextensionpremium);
-                    Product defenceproduct = programme.Products.Where(prod => prod.Name == "Legal Prosecution defence costs").FirstOrDefault();
-                    if (defenceproduct != null)
-                    {
-                        ClientAgreement defenceagreement = cp.Agreements.Where(agree => agree.Product == defenceproduct).FirstOrDefault();
-                        ClientAgreementTerm clienaAgreementTerm = defenceagreement.ClientAgreementTerms.Where(Term => Term.Bound == true).FirstOrDefault();
-                        newRow[7] = clienaAgreementTerm.TermLimit;
-                    }
-                    else
-                    {
-                        newRow[7] = 0.0;
-                    }
-
-
-                    Product Cyberproduct = programme.Products.Where(prod => prod.Name == "Cyber Liability").FirstOrDefault();
-                    if (Cyberproduct != null)
-                    {
-                        ClientAgreement clientagreement = cp.Agreements.Where(agree => agree.Product == product).FirstOrDefault();
-                        ClientAgreementTerm clienaAgreementTerm = clientagreement.ClientAgreementTerms.Where(Term => Term.Bound == true).FirstOrDefault();
-                        newRow[8] = clienaAgreementTerm.Premium;
-                    }
-                    else
-                    {
-                        newRow[8] = 0.0;
-                    }
-
-                    String isjuniorbaristor = cp.InformationSheet.Answers.Where(ans => ans.ItemName == "PIViewModel.IsJuniorBarrister").FirstOrDefault().Value;
-                    if (isjuniorbaristor == "1")
-                    {
-                        newRow[9] = "1";
-                    }
-                    else
-                    {
-                        newRow[9] = "0";
-
-                    }
-
-                    //String isEmployedbaristor = cp.InformationSheet.Answers.Where(ans => ans.ItemName == "PIViewModel.IsJuniorBarrister").FirstOrDefault().Value;
-                    //if (isEmployedbaristor == "1")
-                    //{
-                    //    newRow[10] = "1";
-                    //}
-                    //else
-                    //{
-                    //    newRow[10] = "0";
-
-                    //}
-
-                    //String isNZBarmember = cp.InformationSheet.Answers.Where(ans => ans.ItemName == "PIViewModel.hasNzbar").FirstOrDefault().Value;
-                    //if (isNZBarmember == "1")
-                    //{
-                    //    newRow[11] = "yes";
-                    //}
-                    //else
-                    //{
-                    //    newRow[11] = "No";
-
-                    //}
-
-                    List<Organisation> orgnisation = cp.InformationSheet.Organisation.Where(org => org.InsuranceAttributes.Count > 0).ToList();
-                    int orgcount = 0;
-                    int EBarrister = 0;
-                    if (orgnisation.Count > 0)
-                    {
-                        foreach (Organisation org in orgnisation)
-                        {
-                            orgcount = 0;
-                            EBarrister = 0;
-                            foreach (InsuranceAttribute inattr in org.InsuranceAttributes)
-                            {
-                                if (inattr.InsuranceAttributeName == "Barrister")
-                                {
-                                    orgcount++;
-
-                                }
-                                if (inattr.InsuranceAttributeName == "EBarrister")
-                                {
-                                    EBarrister++;
-
-                                }
-
-
-                            }
-
-                        }
-
-                        if (orgcount > 1)
-                        {
-                            newRow[11] = "Yes";
-
-                        }
-                        else
-                        {
-                            newRow[11] = "No";
-
-                        }
-
-
-                        newRow[10] = EBarrister;
-                    }
+                    newRow[2] = clientInformationSheet?.Status == "Not Taken Up By Broker"
+                     ? "Not Started"
+                     : clientInformationSheet?.Status ?? string.Empty;
+                    newRow[3] = organisation != null && organisation.IsOutsideNZ ? "Yes" : "No";
+                    newRow[4] = adminName;
+                    newRow[5] = adminMobile;
+                    newRow[6] = adminEmail;
 
                     dt.Rows.Add(newRow);
                     //if (tempListReport.Count > 0)
@@ -3870,10 +4026,11 @@ namespace DealEngine.WebUI.Controllers
                     {
                         Lreportset = await GetRevenueReportSet(ProgrammeId, queryselect);
                     }
-                    else if (queryselect == "ONDemandNZBarPI")
+                    else if (queryselect == "DistrictReport")
                     {
-
-                        table = await GetNZBarOnDemandPIReport(ProgrammeId, queryselect, table);
+                            var district = formCollection["district"];
+                        ViewBag.district = district;
+                        table = await GetOnDemanDistrictReport(ProgrammeId, queryselect, table, district);
 
                     }
                     else if (programme.NamedPartyUnitName == "Marsh Real Estate Programme" && (queryselect.Contains("lumely") || queryselect.Contains("AIG")))
@@ -4004,6 +4161,297 @@ namespace DealEngine.WebUI.Controllers
 
         [HttpPost]
         public async Task<IActionResult> IssueUIS(IFormCollection formCollection)
+        {
+            User user = null;
+            Programme programme = null;
+            string email = null;
+
+            try
+            {
+                user = await CurrentUser();
+                programme = await _programmeService.GetProgramme(Guid.Parse(formCollection["ProgrammeId"]));
+                var isSubUis = formCollection["IsSubUIS"];
+                foreach (var key in formCollection.Keys)
+                {
+                    try
+                    {
+                        email = key;
+                        var correctEmail = await _userService.GetUserByEmail(email);
+                        if (correctEmail != null)
+                        {
+                            if (programme.ProgEnableEmail)
+                            {
+                                var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(formCollection[key]));
+                                clientProgramme.IssueDate = DateTime.Now;
+                                clientProgramme.IsIssued = true;
+                                await _programmeService.Update(clientProgramme);
+
+                                //get UIS instruction email attachement
+                                Product masterUISProduct = clientProgramme.BaseProgramme.Products.Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
+                                var UISAttachmentDocuments = new List<SystemDocument>();
+                                if (masterUISProduct != null)
+                                {
+                                    var UISAttachmentTemplateList = masterUISProduct.Documents.Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
+
+                                    foreach (SystemDocument template in UISAttachmentTemplateList)
+                                    {
+                                        SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, clientProgramme.InformationSheet, null);
+                                        SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                                        renderedDoc.OwnerOrganisation = clientProgramme.Owner;
+                                        UISAttachmentDocuments.Add(renderedDoc);
+                                        await _fileService.UploadFile(renderedDoc);
+                                    }
+                                }
+
+                                //send out login instruction email
+                                await _emailService.SendSystemEmailLogin(email);
+                                //send out information sheet instruction email
+                                EmailTemplate emailTemplate = null;
+
+                                if (isSubUis.Contains("true"))
+                                {
+                                    emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == "SendSubInformationSheetInstruction");
+                                }
+                                else
+                                {
+                                    emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == "SendInformationSheetInstruction");
+                                }
+                                if (emailTemplate != null)
+                                {
+                                    if (programme.ProgEnableProgEmailCC && !string.IsNullOrEmpty(programme.ProgEmailCCRecipent))
+                                    {
+                                        await _emailService.SendEmailViaEmailTemplateWithCC(email, emailTemplate, UISAttachmentDocuments, null, null, programme.ProgEmailCCRecipent);
+                                    }
+                                    else
+                                    {
+                                        await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
+                                    }
+                                }
+                                //send out uis issue notification email
+                                //await _emailService.SendSystemEmailUISIssueNotify(programme.BrokerContactUser, programme, sheet, programme.Owner);
+
+                                if (clientProgramme != null) {
+                                    var sheet = clientProgramme.InformationSheet;
+
+                                    if (sheet != null && sheet.Status == "Started")
+                                    {
+                                        sheet.Status = "Not Started";
+                                        sheet.LastModifiedOn = DateTime.UtcNow;
+                                        sheet.LastModifiedBy = user;
+
+                                        using (var uow = _unitOfWork.BeginUnitOfWork())
+                                        {
+                                            await uow.Commit();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                        continue;
+                        /// return RedirectToAction("Error500", "Error");
+                    }
+                }
+
+                return await RedirectToLocal();
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                // return await RedirectToLocal();
+
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+        [HttpPost]
+public async Task<IActionResult> SendSingleUIS(string clientProgrammeId, string programmeId)
+{
+    User user = null;
+    Programme programme = null;
+    string email = null;
+
+    try
+    {
+        user = await CurrentUser();
+        programme = await _programmeService.GetProgramme(Guid.Parse(programmeId));
+
+        var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(clientProgrammeId));
+        email = clientProgramme.Owner.Email;
+
+        var correctEmail = await _userService.GetUserByEmail(email);
+        if (correctEmail != null && programme.ProgEnableEmail)
+        {
+            clientProgramme.IssueDate = DateTime.Now;
+            await _programmeService.Update(clientProgramme);
+
+            // get UIS instruction email attachment
+            Product masterUISProduct = clientProgramme.BaseProgramme.Products
+                .Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
+            var UISAttachmentDocuments = new List<SystemDocument>();
+            if (masterUISProduct != null)
+            {
+                var UISAttachmentTemplateList = masterUISProduct.Documents
+                    .Where(pd => pd.DateDeleted == null && pd.IsTemplate && pd.DocumentType == 10);
+
+                foreach (SystemDocument template in UISAttachmentTemplateList)
+                {
+                    SystemDocument renderedDoc1 = await _fileService.RenderDocument(user, template, null, clientProgramme.InformationSheet, null);
+                    SystemDocument renderedDoc = await GetInvoicePDF(renderedDoc1, template.Name);
+                    renderedDoc.OwnerOrganisation = clientProgramme.Owner;
+                    UISAttachmentDocuments.Add(renderedDoc);
+                    await _fileService.UploadFile(renderedDoc);
+                }
+            }
+
+            // send login instruction email
+            await _emailService.SendSystemEmailLogin(email);
+
+            // send infosheet instruction email
+            EmailTemplate emailTemplate = programme.EmailTemplates
+                .FirstOrDefault(et => et.Type == "SendInformationSheetInstruction");
+            if (emailTemplate != null)
+            {
+                if (programme.ProgEnableProgEmailCC && !string.IsNullOrEmpty(programme.ProgEmailCCRecipent))
+                {
+                    await _emailService.SendEmailViaEmailTemplateWithCC(email, emailTemplate, UISAttachmentDocuments, null, null, programme.ProgEmailCCRecipent);
+                }
+                else
+                {
+                    await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
+                }
+            }
+        }
+
+        return await RedirectToLocal();
+    }
+    catch (Exception ex)
+    {
+        await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+        return RedirectToAction("Error500", "Error");
+    }
+}
+        [HttpPost]
+        public async Task<IActionResult> EditUIS()
+        {
+            var form = Request.Form;
+
+            var selectedIds = form["SelectedClientIds"];
+
+            foreach (var id in selectedIds)
+            {
+                Guid clientProgrammeId = Guid.Parse(id);
+
+                var entity = await _programmeService.GetClientProgrammebyId(clientProgrammeId);
+
+                if (entity != null)
+                {
+                    entity.IsClub = form[$"IsClub_{id}"] == "on";
+                    entity.IsDistrict = form[$"IsDistrict_{id}"] == "on";
+                    entity.IsIndependentEntity =
+                        form.ContainsKey($"IsIndependentEntity_{id}");
+
+                    if (entity.Owner != null)
+                    {
+                        // Odoo
+                        if (int.TryParse(form[$"OdooProjectId_{id}"], out int odoo))
+                            entity.Owner.OdooProjectId = odoo;
+
+                        // Guid
+                        if (Guid.TryParse(form[$"ExternalGuid_{id}"], out Guid guid))
+                            entity.Owner.External_guid = guid;
+
+                        // District
+                        entity.Owner.District = form[$"District_{id}"];
+
+                        // Outside NZ
+                        entity.Owner.IsOutsideNZ =
+                        bool.TryParse(form[$"IsOutsideNZ_{id}"], out bool result) && result;
+                    }
+
+                    await _programmeService.Update(entity);
+                }
+            }
+
+            return await RedirectToLocal();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUISold2()
+        {
+            var form = Request.Form;
+            var ids = new HashSet<string>();
+
+            foreach (var key in form.Keys)
+            {
+                if (key.StartsWith("IsClub_"))
+                    ids.Add(key.Replace("IsClub_", ""));
+
+                if (key.StartsWith("IsDistrict_"))
+                    ids.Add(key.Replace("IsDistrict_", ""));
+
+                if (key.StartsWith("IsIndependentEntity_"))
+                    ids.Add(key.Replace("IsIndependentEntity_", ""));
+
+                if (key.StartsWith("IsOutsideNZ_"))
+                    ids.Add(key.Replace("IsOutsideNZ_", ""));
+            }
+
+            foreach (var id in ids)
+            {
+                Guid clientProgrammeId = Guid.Parse(id);
+
+                bool isClub = form[$"IsClub_{id}"] == "on";
+                bool isDistrict = form[$"IsDistrict_{id}"] == "on";
+                bool isIndependent =
+                    form.ContainsKey($"IsIndependentEntity_{id}") &&
+                    form[$"IsIndependentEntity_{id}"] == "on";
+                // ✅ NEW: District
+                string district = form[$"District_{id}"];
+                bool isOutsideNZ = form[$"IsOutsideNZ_{id}"] == "true";
+                int odooProjectId = 0;
+                if (!string.IsNullOrEmpty(form[$"OdooProjectId_{id}"]))
+                {
+                    int.TryParse(form[$"OdooProjectId_{id}"], out odooProjectId);
+                }
+
+                Guid externalGuid = Guid.Empty;
+                if (!string.IsNullOrEmpty(form[$"ExternalGuid_{id}"]))
+                {
+                    Guid.TryParse(form[$"ExternalGuid_{id}"], out externalGuid);
+                }
+
+                var entity = await _programmeService.GetClientProgrammebyId(clientProgrammeId);
+
+                if (entity != null)
+                {
+                    entity.IsClub = isClub;
+                    entity.IsDistrict = isDistrict;
+                    entity.IsIndependentEntity = isIndependent;
+
+                    // Update Organisation fields
+                    if (entity.Owner != null)
+                    {
+                        entity.Owner.OdooProjectId = odooProjectId;
+
+                        if (externalGuid != Guid.Empty)
+                            entity.Owner.External_guid = externalGuid;
+                        // 🔥 THIS IS NEW FIELD
+                        entity.Owner.District = district;
+                        entity.Owner.IsOutsideNZ = isOutsideNZ;
+                    }
+
+                    await _programmeService.Update(entity);
+                }
+            }
+
+            return await RedirectToLocal();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUIS1(IFormCollection formCollection)
         {
             User user = null;
             Programme programme = null;
@@ -4445,7 +4893,7 @@ namespace DealEngine.WebUI.Controllers
                                 await _programmeService.Update(clientProgramme);
 
                                 //send out login instruction email
-                                await _emailService.SendSystemEmailLogin(email);
+                              //  await _emailService.SendSystemEmailLogin(email);
                                 //send out information sheet instruction email
                                 EmailTemplate emailTemplate = programme.EmailTemplates.FirstOrDefault(et => et.Type == "SendInformationSheetReminder");
                                 if (emailTemplate != null)

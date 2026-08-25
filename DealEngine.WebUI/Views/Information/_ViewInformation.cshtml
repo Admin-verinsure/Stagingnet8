@@ -167,9 +167,35 @@
        
     </div>
 
-    <a onclick=" $('#later').removeClass('hidden');$('#less').removeClass('hidden'); $('#more').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken" id="more">More</a>
-    <a onclick=" $('#later').addClass('hidden'); $('#more').removeClass('hidden');$('#less').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken hidden" id="less">Less</a>
+    <a id="more"
+       class="btn btn-success btn-lg action-btn"
+       onclick="
+     document.getElementById('later').classList.remove('hidden');
+     document.getElementById('later').classList.add('fade-in');
+     document.getElementById('more').classList.add('hidden');
+     document.getElementById('less').classList.remove('hidden');
+   ">
+        <i class="fa fa-chevron-down me-2"></i> More
+    </a>
 
+    <a id="less"
+       class="btn btn-danger btn-lg action-btn hidden"
+       onclick="
+     document.getElementById('later').classList.add('hidden');
+     document.getElementById('later').classList.remove('fade-in');
+     document.getElementById('less').classList.add('hidden');
+     document.getElementById('more').classList.remove('hidden');
+   ">
+        <i class="fa fa-chevron-up me-2"></i> Less
+    </a>
+
+
+
+
+
+    @* <a onclick=" $('#later').removeClass('hidden');$('#less').removeClass('hidden'); $('#more').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken" id="more">More</a>
+    <a onclick=" $('#later').addClass('hidden'); $('#more').removeClass('hidden');$('#less').addClass('hidden');" cursor:"pointer" class="btn btn-lg txt-color-darken hidden" id="less">Less</a>
+ *@
 </div>
 
 
@@ -305,3 +331,27 @@
         </script>
 
     }*@
+
+
+
+<style>
+    .action-btn {
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 18px; /* smaller curve */
+        padding: 6px 16px; /* reduced size */
+        font-weight: 600;
+        font-size: 14px; /* smaller text */
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+
+        .action-btn:hover {
+            transform: translateY(-1px); /* subtle hover */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+
+    .hidden {
+        display: none !important;
+    }
+</style>
+

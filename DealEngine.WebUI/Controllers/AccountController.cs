@@ -103,6 +103,146 @@ namespace DealEngine.WebUI.Controllers
             //_nlogger = nlogger;
         }
 
+
+        // GET: /account/resetpassword
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword()
+        {
+            // If user is logged in, redirect them away
+            if (User?.Identity?.IsAuthenticated == true)
+                return await RedirectToLocal();
+
+            // Ensure no existing identity/session is used
+            EnsureLoggedOut();
+
+            return View();
+        }
+
+
+
+        // POST: /account/resetpassword
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(AccountResetPasswordModel viewModel)
+        {
+            DealEngine.Domain.Entities.User user = null;
+
+            const string genericErrorMessage =
+                "We were unable to generate a password reset email. " +
+                "Please ensure the email address is correct or contact support.";
+
+            if (!ModelState.IsValid)
+                return View(viewModel);
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(viewModel.Email))
+                {
+                    ModelState.AddModelError("Email", "Email address is required.");
+                    return View(viewModel);
+                }
+
+                // Generate single-use token
+                SingleUseToken token =
+                    await _authenticationService.GenerateSingleUseToken(viewModel.Email);
+
+                user = await _userService.GetUserById(token.UserID);
+
+                if (user == null)
+                {
+                    // Do not reveal user existence
+                    ViewBag.EmailSent = true;
+                    return View();
+                }
+
+                // Reset LDAP password to intermediate
+                try
+                {
+                    _ldapService.ChangePassword(
+                        user.UserName,
+                        _appSettingService.IntermediatePassword
+                    );
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
+                // Reset ASP.NET Identity password
+                var deUser = await _userManager.FindByNameAsync(user.UserName);
+                if (deUser != null)
+                {
+                    await _userManager.RemovePasswordAsync(deUser);
+                    await _userManager.AddPasswordAsync(
+                        deUser,
+                        _appSettingService.IntermediatePassword
+                    );
+                }
+
+                // Build domain dynamically
+                string domain = "https://" + _appSettingService.domainQueryString;
+
+                // Send reset email
+                await _emailService.SendPasswordResetEmail(
+                    viewModel.Email,
+                    token.Id,
+                    domain
+                );
+
+                ViewBag.EmailSent = true;
+                return View();
+            }
+            catch (System.Net.Mail.SmtpFailedRecipientsException ex)
+            {
+                await _applicationLoggingService.LogWarning(
+                    _logger, ex, user, HttpContext
+                );
+
+                ModelState.AddModelError("FailureMessage", genericErrorMessage);
+                return View(viewModel);
+            }
+            catch (MailKit.Net.Smtp.SmtpCommandException ex)
+            {
+                await _applicationLoggingService.LogWarning(
+                    _logger, ex, user, HttpContext
+                );
+
+                ModelState.AddModelError(
+                    "FailureMessage",
+                    "Email services are temporarily unavailable. Please try again later."
+                );
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(
+                    _logger, ex, user, HttpContext
+                );
+
+                Exception root = ex;
+                while (root.InnerException != null)
+                    root = root.InnerException;
+
+                await _emailService.ContactSupport(
+                    _emailService.DefaultSender,
+                    $"{root.GetType().Name}: {root.Message}",
+                    ""
+                );
+
+                ModelState.AddModelError("FailureMessage", genericErrorMessage);
+                return View(viewModel);
+            }
+        }
+
+
+
+
+
+
+
+
         // GET: /account/forgotpassword
         [HttpGet]
         [AllowAnonymous]
@@ -148,7 +288,7 @@ namespace DealEngine.WebUI.Controllers
     //        DealEngine.Domain.Entities.User user = null;
     //        string errorMessage = @"We have sent you an email to the email address we have recorded in the system, that email address is different from the one you supplied. 
 				//Please check the other email addresses you may have used. If you cannot locate our email, 
-				//please go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket with your contact details, we can re-establish your account with your broker.";
+				//please go to https://not4profit.online/helpdesk_ticket and file a Helpdesk ticket with your contact details, we can re-establish your account with your broker.";
     //        try
     //        {
     //            if (!string.IsNullOrWhiteSpace(viewModel.Email))
@@ -245,15 +385,160 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ChangePassword(Guid id, AccountChangePasswordModel viewModel)
         {
             SingleUseToken st = _authenticationService.GetToken(id);
+            DealEngine.Domain.Entities.User user = null;
+
+            try
+            {
+                _logger.LogInformation("ChangePassword START. TokenId: {TokenId}", id);
+
+                if (id == Guid.Empty)
+                {
+                    _logger.LogWarning("Invalid GUID received");
+                    return PageNotFound();
+                }
+
+                if (viewModel.Password != viewModel.PasswordConfirm)
+                {
+                    _logger.LogWarning("Password mismatch for TokenId: {TokenId}", id);
+                    ModelState.AddModelError("passwordConfirm", "Passwords do not match");
+                    return View();
+                }
+
+                user = await _userService.GetUserById(st.UserID);
+
+                if (user == null)
+                {
+                    _logger.LogError("User not found. UserId: {UserId}", st.UserID);
+                    throw new Exception($"Could not find user with ID {st.UserID}");
+                }
+
+                _logger.LogInformation("User found: {UserName}", user.UserName);
+
+                // 🔹 STEP 1: Change password in LDAP
+                _logger.LogInformation("LDAP change START for user {User}", user.UserName);
+
+                bool ldapResult = false;
+                try
+                {
+                    ldapResult = _ldapService.ChangePassword(user.UserName, viewModel.Password);
+                    _logger.LogInformation("LDAP result for {User}: {Result}", user.UserName, ldapResult);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "LDAP change password FAILED for user {User}", user.UserName);
+                    throw;
+                }
+
+                if (!ldapResult)
+                {
+                    _logger.LogWarning("LDAP password change failed for {User}", user.UserName);
+                    ModelState.AddModelError("passwordConfirm", "Password change failed. Check complexity requirements.");
+                    return View();
+                }
+
+                // 🔹 STEP 2: Update Identity (ASP.NET Core Identity)
+                _logger.LogInformation("Identity password update START for {User}", user.UserName);
+
+                var deUser = await _userManager.FindByNameAsync(user.UserName);
+
+                if (deUser != null)
+                {
+                    _logger.LogInformation("Identity user found: {User}", deUser.UserName);
+
+                    _logger.LogInformation("Removing existing password...");
+                    var removePasswordResult = await _userManager.RemovePasswordAsync(deUser);
+
+                    if (!removePasswordResult.Succeeded)
+                    {
+                        _logger.LogError("Failed to remove password for {User}. Errors: {Errors}",
+                            deUser.UserName,
+                            string.Join(",", removePasswordResult.Errors.Select(e => e.Description)));
+
+                        return View();
+                    }
+
+                    _logger.LogInformation("Adding new password...");
+                    var addPasswordResult = await _userManager.AddPasswordAsync(deUser, viewModel.Password);
+
+                    _logger.LogInformation("AddPassword result: {Result}", addPasswordResult.Succeeded);
+
+                    if (!addPasswordResult.Succeeded)
+                    {
+                        _logger.LogError("Failed to add password for {User}. Errors: {Errors}",
+                            deUser.UserName,
+                            string.Join(",", addPasswordResult.Errors.Select(e => e.Description)));
+
+                        return View();
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("Identity user NOT found for {User} (first-time login case)", user.UserName);
+                }
+
+                // 🔹 STEP 3: Mark token as used
+                _authenticationService.UseSingleUseToken(st.Id);
+
+                _logger.LogInformation("Password change SUCCESS for {User}", user.UserName);
+
+                return RedirectToAction("PasswordChanged", "Account");
+            }
+            catch (AuthenticationException ex)
+            {
+                _logger.LogError(ex, "AuthenticationException while changing password for user {User}", user?.UserName);
+
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+
+                ModelState.AddModelError("passwordConfirm",
+                    "Your chosen password does not meet the requirements of our password policy.");
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GENERAL ERROR while changing password for user {User}", user?.UserName);
+
+                // 🔥 Attempt rollback in LDAP (safe)
+                try
+                {
+                    if (user != null)
+                    {
+                        _ldapService.ChangePassword(user.UserName, _appSettingService.IntermediatePassword);
+                        _logger.LogWarning("LDAP rollback applied for {User}", user.UserName);
+                    }
+                }
+                catch (Exception rollbackEx)
+                {
+                    _logger.LogError(rollbackEx, "LDAP rollback FAILED for user {User}", user?.UserName);
+                }
+
+                await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+
+                ModelState.AddModelError("passwordConfirm",
+                    "There was an error while trying to change your password. Please try again.");
+
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePasswordold(Guid id, AccountChangePasswordModel viewModel)
+        {
+            SingleUseToken st = _authenticationService.GetToken(id);
             DealEngine.Domain.Entities.User user = await _userService.GetUserById(st.UserID);
             try
             {
+                _logger.LogError("inside Password method post");
+
                 if (id == Guid.Empty)
                     // if we get here - either invalid guid or invalid token - 404
                     return PageNotFound();
 
                 if (viewModel.Password != viewModel.PasswordConfirm)
                 {
+
                     ModelState.AddModelError("passwordConfirm", "Passwords do not match");
                     return View();
                 }
@@ -265,16 +550,41 @@ namespace DealEngine.WebUI.Controllers
 
                 if (user != null)
                 {
+
                     string username = user.UserName;
 
                     //change the users password using admin
-                    if (_ldapService.ChangePassword(user.UserName, _appSettingService.IntermediatePassword, viewModel.Password))
+                    _logger.LogError("LDAP START for user " + user.UserName);
+
+                    try
                     {
+                        var result = _ldapService.ChangePassword(user.UserName, viewModel.Password);
+                        _logger.LogError("LDAP result = " + result);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "LDAP change password failed");
+                        throw;
+                    }
+                    if (_ldapService.ChangePassword(user.UserName,  viewModel.Password))
+                    {
+                        _logger.LogError("inside Password method post 7" + user.FirstName);
+
                         var deUser = await _userManager.FindByNameAsync(user.UserName);
+                        _logger.LogError("inside Password setup");
+
                         if (deUser != null)
                         {
                             var removePasswordResult = await _userManager.RemovePasswordAsync(deUser);
+
+                            if (!removePasswordResult.Succeeded)
+                            {
+                                _logger.LogError("Failed to remove password for user {User}", deUser.UserName);
+                                return View();
+                            }
                             var addPasswordResult = await _userManager.AddPasswordAsync(deUser, viewModel.Password);
+                            _logger.LogError("inside Password succeeded = " + addPasswordResult.Succeeded);
+
                             if (addPasswordResult.Succeeded)
                             {
                                 _authenticationService.UseSingleUseToken(st.Id);
@@ -284,6 +594,8 @@ namespace DealEngine.WebUI.Controllers
                         else
                         {
                             //assume user hasnt logged in yet and wants to change password for first time
+                            _logger.LogError("else Password succeeded =");
+
                             _authenticationService.UseSingleUseToken(st.Id);
                             return RedirectToAction("PasswordChanged", "Account");
                         }
@@ -297,6 +609,8 @@ namespace DealEngine.WebUI.Controllers
                     else
                     {
                         ModelState.AddModelError("passwordConfirm", "The password change has failed. Is your new password complex enough?");
+                        _logger.LogError("The password change has failed");
+
                         return View();
                     }
 
@@ -306,12 +620,15 @@ namespace DealEngine.WebUI.Controllers
             catch (AuthenticationException ex)
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
+                _logger.LogError("Your chosen password does not meet the ");
+
                 ModelState.AddModelError("passwordConfirm", "Your chosen password does not meet the requirements of our password policy. Please refer to the policy above to assist with creating an appropriate password.");
             }
             catch (Exception ex)
             {
 
-                _ldapService.ChangePassword(user.UserName, "", _appSettingService.IntermediatePassword);
+                _ldapService.ChangePassword(user.UserName, _appSettingService.IntermediatePassword);
+                _logger.LogError(" an error while trying to change your p " +ex.Message);
 
                 await _applicationLoggingService.LogWarning(_logger, ex, null, HttpContext);
                 ModelState.AddModelError("passwordConfirm", "There was an error while trying to change your password. Please try again with a new password below.");
@@ -324,9 +641,11 @@ namespace DealEngine.WebUI.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PasswordChanged()
         {
-            var currentUser = await CurrentUser();
-            if (currentUser.IsLoggedout)
-                return PageNotFound();
+            _logger.LogError(" inside password vbiew");
+
+            //var currentUser = await CurrentUser();
+            //if (currentUser.IsLoggedout)
+            //    return PageNotFound();
             /////
             return View();
         }
@@ -443,7 +762,7 @@ namespace DealEngine.WebUI.Controllers
                 */
                 else // ANY OTHER LDAP CODE https://ldapwiki.com/wiki/LDAP%20Result%20Codes 
                 {
-                    ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.");
+                    ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://not4profit.online/helpdesk_ticket and file a Helpdesk ticket.");
                     return View(viewModel);
                 }
             }
@@ -743,7 +1062,7 @@ namespace DealEngine.WebUI.Controllers
 
                 else // ANY OTHER LDAP CODE https://ldapwiki.com/wiki/LDAP%20Result%20Codes 
                 {
-                    ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.");
+                    ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://not4profit.online/helpdesk_ticket and file a Helpdesk ticket.");
                     return View(viewModel);
                 }
                 //else
@@ -758,7 +1077,7 @@ namespace DealEngine.WebUI.Controllers
 
                 //    errorViewModel.message1 = "We are unable to access your account with the username or password provided.";
                 //    errorViewModel.message2 = "You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity.";
-                //    errorViewModel.message3 = "Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.";
+                //    errorViewModel.message3 = "Please try entering your username or password again, or go to https://not4profit.online/helpdesk_ticket and file a Helpdesk ticket.";
 
                 //    return View("ErrorDynamic", errorViewModel);
                 //}
@@ -1186,7 +1505,7 @@ namespace DealEngine.WebUI.Controllers
                         await Logout();
                     }
                 }
-                ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://techcertain.com/helpdesk-form and file a Helpdesk ticket.");
+                ModelState.AddModelError(string.Empty, "We are unable to access your account with the username or password provided. You may have entered an incorrect password, or your account may be locked due to an extended period of inactivity. Please try entering your username or password again, or go to https://not4profit.online/helpdesk_ticket and file a Helpdesk ticket.");
                 return View(viewModel);
             }
             catch (Exception ex)

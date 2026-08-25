@@ -25,6 +25,28 @@ namespace DealEngine.WebUI.Models
 		public IPagedList<ClientProgramme> clientProgrammespagedlist { get; set; }
 		public string IsLinuxEnv { get; set; }
         public bool IsHardRefferal { get; set; }
+		public string AdminEmail { get; set; }
+		public string district { get; set; }
+        public List<SelectListItem> DistrictList => new List<SelectListItem>
+        {
+           new SelectListItem { Value = "", Text = "-- Select --" },
+           new SelectListItem { Value = "9910", Text = "District 9910" },
+           new SelectListItem { Value = "9920", Text = "District 9920" },
+           new SelectListItem { Value = "9930", Text = "District 9930" },
+           new SelectListItem { Value = "9940", Text = "District 9940" },
+           new SelectListItem { Value = "9999", Text = "District 9999" },
+
+        };
+
+        public List<SelectListItem> IsOutsideNZ => new List<SelectListItem>
+        {
+           new SelectListItem { Value = "", Text = "-- Select --" },
+           new SelectListItem { Value = "Yes", Text = "Yes" },
+           new SelectListItem { Value = "No", Text = "No" },
+          
+        };
+
+
     }
 }
 

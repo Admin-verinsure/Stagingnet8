@@ -54,6 +54,8 @@ namespace DealEngine.Domain.Entities
         public virtual IList<AuditLog> ClientInformationSheetAuditLogs { get; set; }
         public virtual User DeclaredBy { get; set; }
         public virtual DateTime DeclaredDate { get; set; }
+        public virtual EventsInfo eventsInfo { get; set; }
+
 
         public virtual void declared(User user)
         {
@@ -74,6 +76,7 @@ namespace DealEngine.Domain.Entities
         public virtual IList<ResearchHouse> ResearchHouses { get; set; }
         public virtual IList<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
 
+         public virtual OrganisationAttribute OrganisationAttribute { get; set; }
         protected ClientInformationSheet (User createdBy)
 			: base (createdBy)
 		{

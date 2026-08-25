@@ -116,8 +116,12 @@ namespace DealEngine.Domain.Entities
         public virtual bool IsProgrammerenewed { get; set; }
         public virtual bool IsProgrammebypassrefferal { get; set; }
         public virtual string ProgrammeRenewalDateon { get; set; }
-        //public virtual List<string> ProgrammeRenewalFrom { get; set; }
+        public virtual IList<ClubActivities> ClubActivities { get; protected set; }
 
+        public virtual bool SendInvoiceToOdoo { get; set; }
+
+        public virtual bool SendWordingdocuments { get; set; }
+        public virtual bool EnableDistrictClubReport { get; set; }
 
         protected Programme() : this(null) { }
 
