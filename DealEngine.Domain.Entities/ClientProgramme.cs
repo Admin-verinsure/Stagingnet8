@@ -52,6 +52,7 @@ namespace DealEngine.Domain.Entities
         public virtual string requestID { get; set; }/// how to get request id
         //public virtual List<ClubTrustAssetsInfo> ClubTrustAssetsInfo { get; set; }
         public virtual bool IsHardRefferal { get; set; }
+        // True when the most recent invoice attempt failed; cleared on success.
         public virtual bool InvoiceGenerationFailed { get; set; }
         public virtual bool IsClub { get; set; }
         public virtual bool IsDistrict { get; set; }
@@ -67,6 +68,7 @@ namespace DealEngine.Domain.Entities
             //BrokerContactUser = baseProgramme.BrokerContactUser;
 			Owner = createdFor;
 			BaseProgramme = baseProgramme;
+            // New programmes start in a healthy state with no invoice failure recorded.
             InvoiceGenerationFailed = false;
 			Agreements = new List<ClientAgreement> ();
             ClientAgreementEGlobalSubmissions = new List<EGlobalSubmission>();
