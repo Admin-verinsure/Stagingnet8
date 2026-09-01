@@ -13,6 +13,7 @@ namespace DealEngine.Infrastructure.FluentNHibernate.MappingOverrides
         {
             mapping.References(p => p.InformationSheet).Not.LazyLoad();
             mapping.References(n => n.BaseProgramme).Not.LazyLoad();
+            // Preserve the existing database column so the renamed property stays backward compatible.
             mapping.Map(p => p.InvoiceGenerationFailed).Column("InvoiceSentToOdoo");
         }
     }

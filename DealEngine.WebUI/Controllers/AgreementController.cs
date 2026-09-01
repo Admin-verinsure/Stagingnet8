@@ -4389,7 +4389,7 @@ namespace DealEngine.WebUI.Controllers
                 ////send units and invoice to ODOO 
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
-                    SendInvoicePayloadPOC(programme.InformationSheet, programme,
+                    await SendInvoicePayloadPOC(programme.InformationSheet, programme,
                                           quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium, selectedAgreementId);
                 }
 
@@ -4552,8 +4552,7 @@ namespace DealEngine.WebUI.Controllers
                     programme.InformationSheet,
                     programme);
 
-                programme.InvoiceGenerationFailed = !invoiceResult.Success;
-                await _programmeService.Update(programme);
+                await UpdateInvoiceGenerationState(programme, !invoiceResult.Success);
 
                 if (!invoiceResult.Success)
                 {
@@ -4573,12 +4572,36 @@ namespace DealEngine.WebUI.Controllers
                 var failedProgramme = await _programmeService.GetClientProgrammebyId(id);
                 if (failedProgramme != null)
                 {
-                    failedProgramme.InvoiceGenerationFailed = true;
-                    await _programmeService.Update(failedProgramme);
+                    await UpdateInvoiceGenerationState(failedProgramme, true);
                 }
 
                 return BuildInvoiceResponse(false, "Unable to generate the invoice. Please contact support if this continues.");
             }
+        }
+
+        private async Task UpdateInvoiceGenerationState(ClientProgramme programme, bool invoiceGenerationFailed)
+        {
+            if (programme == null)
+                return;
+
+            // Keep the database flag in sync with the latest invoice attempt.
+            // false means the most recent generation completed successfully.
+            programme.InvoiceGenerationFailed = invoiceGenerationFailed;
+
+            if (programme.InformationSheet != null)
+            {
+                var currentStatus = programme.InformationSheet.Status ?? string.Empty;
+                if (currentStatus == "Bound" ||
+                    currentStatus == "Bound and invoice pending" ||
+                    currentStatus == "Bound and invoiced")
+                {
+                    programme.InformationSheet.Status = invoiceGenerationFailed
+                        ? "Bound and invoice pending"
+                        : "Bound and invoiced";
+                }
+            }
+
+            await _programmeService.Update(programme);
         }
 
 
@@ -5897,8 +5920,25 @@ namespace DealEngine.WebUI.Controllers
             decimal globalGuardPLPremium,
             Guid selectedAgreementId)
         {
+            // Guard clauses: if the request is incomplete, mark the attempt as failed
+            // and stop before any Odoo payload is created.
             if (sheet is null || programme is null)
+            {
+                if (programme != null)
+                {
+                    await UpdateInvoiceGenerationState(programme, true);
+                }
+
                 return BadRequest("Invalid input.");
+            }
+
+            // Odoo needs a valid external GUID for the customer record.
+            // Missing GUID is treated as a hard failure because the invoice cannot be created safely.
+            if (sheet.Owner?.External_guid == null || sheet.Owner.External_guid == Guid.Empty)
+            {
+                await UpdateInvoiceGenerationState(programme, true);
+                return BadRequest("Invoice cannot be generated because external GUID is missing.");
+            }
 
             var totalAmount = materialDamageQty + globalGuardPremium + adminFeeQty;
             var MdReserve2026 = "3c9389ba-a8f0-466f-8bb2-a53e0a0f39d1";
@@ -6208,10 +6248,15 @@ namespace DealEngine.WebUI.Controllers
 
                 await RpcAsync<object>(http, api, runFlow);
 
+                // Success path: clear the failure flag and mark the invoice as issued.
+                await UpdateInvoiceGenerationState(programme, false);
+
                 return Ok(new { success = true });
             }
             catch (Exception ex)
             {
+                // Any exception here means the invoice flow did not complete in Odoo.
+                await UpdateInvoiceGenerationState(programme, true);
                 return StatusCode(500, ex.Message);
             }
         }
