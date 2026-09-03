@@ -212,7 +212,7 @@
                                 }
                             }
                         }
-                       @if (item.Status != "Bound" && (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True"))
+                      @if (item.Status != "Bound" && (Model.CurrentUserIsBroker == "True" || Model.CurrentUserIsInsurer == "True" || Model.CurrentUserIsTC == "True"))
                         {
                             <button type="button" class="btn btn-primary btn-sm"
                                     data-bs-toggle="modal"
@@ -229,6 +229,7 @@
         }
     </tbody>
 </table>
+
         
 <div id="myChangeModal" class="modal" aria-hidden="true">
     <form id="ProdForm" class="" action="~/Information/UpdateInformation" method="post">

@@ -5862,10 +5862,11 @@ namespace DealEngine.WebUI.Controllers
         {
             Guid sheetId;
             User user = null;
+            ClientProgramme programme = null;
 
             try
             {
-                var programme = clientInformationSheet.Programme;
+                programme = clientInformationSheet.Programme;
 
                 decimal totalPremium = 0;
                 decimal brokerFee = 0;
@@ -5896,6 +5897,8 @@ namespace DealEngine.WebUI.Controllers
                     programme,
                     invoiceAmount);
 
+                await UpdateInvoiceGenerationState(programme, false);
+
                 return Ok(new
                 {
                     success = true,
@@ -5904,6 +5907,10 @@ namespace DealEngine.WebUI.Controllers
             }
             catch (Exception ex)
             {
+                if (programme != null)
+                {
+                    await UpdateInvoiceGenerationState(programme, true);
+                }
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
@@ -5953,7 +5960,10 @@ namespace DealEngine.WebUI.Controllers
             string globalGuardProductGuid;
 
             if (totalAmount <= 0)
+            {
+                await UpdateInvoiceGenerationState(programme, true);
                 return BadRequest("Invoice amount must be > 0.");
+            }
 
             try
             {
@@ -6463,6 +6473,7 @@ namespace DealEngine.WebUI.Controllers
         {
             ClientInformationSheet sheet = null;
             User user = null;
+            ClientProgramme programme = null;
             try
             {
                 user = await CurrentUser();
@@ -6478,8 +6489,13 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 //Hardcoded variables
-                ClientProgramme programme = sheet.Programme;
+                programme = sheet.Programme;
                 var eGlobalSerializer = new EGlobalSerializerAPI();
+
+                if (programme.BaseProgramme.UsesEGlobal)
+                {
+                    await UpdateInvoiceGenerationState(programme, true);
+                }
 
                 string paymentType = "Invoice";
                 Guid transactionreferenceid = Guid.NewGuid();
@@ -6634,11 +6650,12 @@ namespace DealEngine.WebUI.Controllers
                             using (var uow = _unitOfWork.BeginUnitOfWork())
                             {
                                 agreement.Status = "Bound and invoiced";
-                                programme.InformationSheet.Status = "Bound and invoiced";
 
                                 uow.Commit();
                             }
                         }
+
+                        await UpdateInvoiceGenerationState(programme, false);
                         //var documents = new List<SystemDocument>();
                         //foreach (ClientAgreement agreement in programme.Agreements)
                         //{
@@ -6677,6 +6694,10 @@ namespace DealEngine.WebUI.Controllers
             }
             catch (Exception ex)
             {
+                if (programme != null)
+                {
+                    await UpdateInvoiceGenerationState(programme, true);
+                }
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
@@ -6687,6 +6708,7 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ProcessRequestConfiguration(Guid Id)
         {
             User user = null;
+            ClientProgramme programme = null;
             user = await CurrentUser();
             if (user.IsLoggedout)
                 return PageNotFound();
@@ -6698,7 +6720,7 @@ namespace DealEngine.WebUI.Controllers
                 string queryString = HttpContext.Request.Query["result"].ToString();
                 var status = "Bound";
 
-                ClientProgramme programme = await _programmeService.GetClientProgrammebyId(Id);
+                programme = await _programmeService.GetClientProgrammebyId(Id);
                 Payment payment = await _paymentService.GetPayment(programme.Id);
 
 
@@ -6756,6 +6778,7 @@ namespace DealEngine.WebUI.Controllers
                     if (programme.BaseProgramme.UsesEGlobal)
                     {
                         status = "Bound and invoice pending";
+                        await UpdateInvoiceGenerationState(programme, true);
                     }
 
                     var eGlobalSerializer = new EGlobalSerializerAPI();
@@ -6912,11 +6935,12 @@ namespace DealEngine.WebUI.Controllers
                                 using (var uow = _unitOfWork.BeginUnitOfWork())
                                 {
                                     agreement.Status = "Bound and invoiced";
-                                    programme.InformationSheet.Status = "Bound and invoiced";
 
                                     uow.Commit();
                                 }
                             }
+
+                            await UpdateInvoiceGenerationState(programme, false);
                             //var documents = new List<SystemDocument>();
                             //foreach (ClientAgreement agreement in programme.Agreements)
                             //{
@@ -6975,6 +6999,10 @@ namespace DealEngine.WebUI.Controllers
             }
             catch (Exception ex)
             {
+                if (programme != null)
+                {
+                    await UpdateInvoiceGenerationState(programme, true);
+                }
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }

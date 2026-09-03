@@ -1697,7 +1697,8 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
                             AgreementStatus = agreementSatus,
                             IsSubclientSubmitted = Issubclientsubmitted,
                             DocSendDate = DocSendDate,
-                            OwnerEmail = client.Owner.Email
+                            OwnerEmail = client.Owner.Email,
+                            IsIssued = client.IsIssued
                         });
                     }
 
@@ -1775,7 +1776,8 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
                         Status = status,
                         ReferenceId = referenceId,// Move into ClientProgramme?
                         SubClientProgrammes = client.SubClientProgrammes,
-                        AgreementStatus = agreementSatus
+                        AgreementStatus = agreementSatus,
+                        IsIssued = client.IsIssued
                     }); ;
                 }
             }
@@ -2477,22 +2479,9 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
                 {
                     if (client.DateDeleted == null && client.InformationSheet.Status != "Bound")
                     {
-                        var users = await _userService.GetUsersByPrimaryOrganisationId(client.Owner.Id);
-
-                        if (users.Count > 0)
-                        {
-                            client.AdminEmail = users?.FirstOrDefault().Email;
-                            client.AdminName = users?.FirstOrDefault().FirstName + " " + users?.FirstOrDefault().LastName;
-                        }
-                        else
-                        {
-                            client.AdminEmail = (await _userService
-                                .GetAllUserforOrganisation(client.Owner))
-                                .FirstOrDefault();
-                            User Adminuser = await _userService.GetApplicationUserByEmail(client.AdminEmail);
-                            client.AdminName = Adminuser.FirstName + " " + Adminuser.LastName;
-
-                        }
+                        var recipient = await ResolveIssueUisRecipientAsync(client.Owner);
+                        client.AdminEmail = recipient.Email;
+                        client.AdminName = recipient.Name;
 
                         clientProgrammes.Add(client);
                     }
@@ -4159,6 +4148,56 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
 
 
 
+        private async Task<(string Email, string Name)> ResolveIssueUisRecipientAsync(Organisation owner)
+        {
+            if (owner == null)
+                return (null, null);
+
+            var users = await _userService.GetUsersByPrimaryOrganisationId(owner.Id);
+            var primaryUser = users?.FirstOrDefault();
+            if (primaryUser != null)
+            {
+                return (
+                    primaryUser.Email,
+                    (primaryUser.FirstName + " " + primaryUser.LastName).Trim());
+            }
+
+            var organisationEmail = (await _userService.GetAllUserforOrganisation(owner))
+                .FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(organisationEmail))
+                return (null, null);
+
+            var adminUser = await _userService.GetApplicationUserByEmail(organisationEmail);
+            var adminName = adminUser == null
+                ? null
+                : (adminUser.FirstName + " " + adminUser.LastName).Trim();
+
+            return (organisationEmail, adminName);
+        }
+
+        private async Task MarkIssueUisSentAsync(ClientProgramme clientProgramme, User user)
+        {
+            if (clientProgramme == null)
+                return;
+
+            clientProgramme.IssueDate = DateTime.Now;
+            clientProgramme.IsIssued = true;
+            await _programmeService.Update(clientProgramme);
+
+            var sheet = clientProgramme.InformationSheet;
+            if (sheet != null && sheet.Status == "Started")
+            {
+                sheet.Status = "Not Started";
+                sheet.LastModifiedOn = DateTime.UtcNow;
+                sheet.LastModifiedBy = user;
+
+                using (var uow = _unitOfWork.BeginUnitOfWork())
+                {
+                    await uow.Commit();
+                }
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> IssueUIS(IFormCollection formCollection)
         {
@@ -4182,9 +4221,6 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
                             if (programme.ProgEnableEmail)
                             {
                                 var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(formCollection[key]));
-                                clientProgramme.IssueDate = DateTime.Now;
-                                clientProgramme.IsIssued = true;
-                                await _programmeService.Update(clientProgramme);
 
                                 //get UIS instruction email attachement
                                 Product masterUISProduct = clientProgramme.BaseProgramme.Products.Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
@@ -4227,24 +4263,9 @@ private async Task<List<UserTask>> BuildPendingTasksFromProgrammes(
                                         await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
                                     }
                                 }
+                                await MarkIssueUisSentAsync(clientProgramme, user);
                                 //send out uis issue notification email
                                 //await _emailService.SendSystemEmailUISIssueNotify(programme.BrokerContactUser, programme, sheet, programme.Owner);
-
-                                if (clientProgramme != null) {
-                                    var sheet = clientProgramme.InformationSheet;
-
-                                    if (sheet != null && sheet.Status == "Started")
-                                    {
-                                        sheet.Status = "Not Started";
-                                        sheet.LastModifiedOn = DateTime.UtcNow;
-                                        sheet.LastModifiedBy = user;
-
-                                        using (var uow = _unitOfWork.BeginUnitOfWork())
-                                        {
-                                            await uow.Commit();
-                                        }
-                                    }
-                                }
                             }
                         }
                     }
@@ -4279,14 +4300,15 @@ public async Task<IActionResult> SendSingleUIS(string clientProgrammeId, string 
         programme = await _programmeService.GetProgramme(Guid.Parse(programmeId));
 
         var clientProgramme = await _programmeService.GetClientProgrammebyId(Guid.Parse(clientProgrammeId));
-        email = clientProgramme.Owner.Email;
+        if (programme == null || clientProgramme?.Owner == null)
+            return await RedirectToLocal();
+
+        var recipient = await ResolveIssueUisRecipientAsync(clientProgramme.Owner);
+        email = recipient.Email;
 
         var correctEmail = await _userService.GetUserByEmail(email);
         if (correctEmail != null && programme.ProgEnableEmail)
         {
-            clientProgramme.IssueDate = DateTime.Now;
-            await _programmeService.Update(clientProgramme);
-
             // get UIS instruction email attachment
             Product masterUISProduct = clientProgramme.BaseProgramme.Products
                 .Where(cbpp => cbpp.DateDeleted == null && cbpp.IsMasterProduct).FirstOrDefault();
@@ -4323,6 +4345,8 @@ public async Task<IActionResult> SendSingleUIS(string clientProgrammeId, string 
                     await _emailService.SendEmailViaEmailTemplate(email, emailTemplate, UISAttachmentDocuments, null, null);
                 }
             }
+
+            await MarkIssueUisSentAsync(clientProgramme, user);
         }
 
         return await RedirectToLocal();
