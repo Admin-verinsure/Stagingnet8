@@ -70,9 +70,10 @@
                                 </td>
                                 
                                 <td>
+                                     @{ var showIssued = clientProg.IsIssued || clientProg.InformationSheet.Status != "Not Started"; }
                                     <input type="text"
-                                           class="form-control @(clientProg.IsIssued ? "bg-success text-white" : "bg-danger text-white")"
-                                           value="@(clientProg.IsIssued ? "Issued" : "Not Released")"
+                                         class="form-control @(showIssued ? "bg-success text-white" : "bg-danger text-white")"
+                                         value="@(showIssued ? "Issued" : "Not Released")"
                                            readonly>
                                 </td>                                
                             </tr>

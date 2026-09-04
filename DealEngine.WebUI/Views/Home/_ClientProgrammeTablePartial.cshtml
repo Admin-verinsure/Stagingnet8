@@ -107,8 +107,9 @@
 
                 }
                 <td>
-                    <span class="badge @(item.IsIssued ? "bg-success" : "bg-danger")">
-                        @(item.IsIssued ? "Issued" : "Not Released")
+                    @{ var showIssued = item.IsIssued || item.Status != "Not Started"; }
+                    <span class="badge @(showIssued ? "bg-success" : "bg-danger")">
+                        @(showIssued ? "Issued" : "Not Released")
                     </span>
                     (@item.Status - @item.GetStatusDisplay(item.AgreementStatus) @item.DocSendDate)
                 </td>
