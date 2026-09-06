@@ -4220,6 +4220,7 @@ namespace DealEngine.WebUI.Controllers
             ClientInformationSheet sheet = null;
             User user = null;
             var action = HttpContext.Request.Form["BindAgreement"];
+            var isAjaxRequest = string.Equals(Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
 
             try
             {
@@ -4385,7 +4386,6 @@ namespace DealEngine.WebUI.Controllers
 
 
                 }
-
                 ////send units and invoice to ODOO 
                 if (programme.BaseProgramme.SendInvoiceToOdoo)
                 {
@@ -4467,12 +4467,19 @@ namespace DealEngine.WebUI.Controllers
 
                 }
                  }
-                return Json(new
+                var redirectUrl = action == "BindAgreement"
+                    ? "/Agreement/ViewAcceptedAgreement/" + programme.Id
+                    : "/Agreement/RenderDocuments/" + programme.InformationSheet.Id;
+
+                if (isAjaxRequest)
                 {
-                    redirectUrl = action == "BindAgreement"
-        ? "/Agreement/ViewAcceptedAgreement/" + programme.Id
-        : "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
-                });
+                    return Json(new
+                    {
+                        redirectUrl
+                    });
+                }
+
+                return Redirect(redirectUrl);
             }
             catch (Exception ex)
             {
@@ -5862,11 +5869,10 @@ namespace DealEngine.WebUI.Controllers
         {
             Guid sheetId;
             User user = null;
-            ClientProgramme programme = null;
 
             try
             {
-                programme = clientInformationSheet.Programme;
+                var programme = clientInformationSheet.Programme;
 
                 decimal totalPremium = 0;
                 decimal brokerFee = 0;
@@ -5897,8 +5903,6 @@ namespace DealEngine.WebUI.Controllers
                     programme,
                     invoiceAmount);
 
-                await UpdateInvoiceGenerationState(programme, false);
-
                 return Ok(new
                 {
                     success = true,
@@ -5907,10 +5911,6 @@ namespace DealEngine.WebUI.Controllers
             }
             catch (Exception ex)
             {
-                if (programme != null)
-                {
-                    await UpdateInvoiceGenerationState(programme, true);
-                }
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
@@ -5960,10 +5960,7 @@ namespace DealEngine.WebUI.Controllers
             string globalGuardProductGuid;
 
             if (totalAmount <= 0)
-            {
-                await UpdateInvoiceGenerationState(programme, true);
                 return BadRequest("Invoice amount must be > 0.");
-            }
 
             try
             {
@@ -6006,8 +6003,20 @@ namespace DealEngine.WebUI.Controllers
 
                 if (materialDamageQty > 0)
                 {
-                     materialDamageProductGuid = programme.BaseProgramme.Name.Contains("(2026)", StringComparison.OrdinalIgnoreCase)
-                     ? MdReserve2026 : MdReserve2027;
+                    var baseProgrammeName = programme.BaseProgramme?.Name ?? string.Empty;
+                    // Old logic kept for reference:
+                    // materialDamageProductGuid = programme.BaseProgramme.Name.Contains("(2026)", StringComparison.OrdinalIgnoreCase)
+                    //     ? MdReserve2026 : MdReserve2027;
+                    var selectedMaterialDamageYear = GetRotaryMaterialDamageProductYear(baseProgrammeName);
+
+                    if (selectedMaterialDamageYear == "2026")
+                    {
+                        materialDamageProductGuid = MdReserve2026;
+                    }
+                    else if (selectedMaterialDamageYear == "2027")
+                    {
+                        materialDamageProductGuid = MdReserve2027;
+                    }
 
                     lines.Add(new
                     {
@@ -6270,6 +6279,22 @@ namespace DealEngine.WebUI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        private static string GetRotaryMaterialDamageProductYear(string baseProgrammeName)
+        {
+            if (baseProgrammeName.Contains("2026", StringComparison.OrdinalIgnoreCase))
+            {
+                return "2026";
+            }
+
+            if (baseProgrammeName.Contains("2027", StringComparison.OrdinalIgnoreCase))
+            {
+                return "2027";
+            }
+
+            throw new InvalidOperationException($"Unable to determine Rotary Material Damage product year from base programme name '{baseProgrammeName}'.");
+        }
+
         // --------- tiny JSON-RPC helpers ---------
         private static async Task<T> RpcAsync<T>(HttpClient http, string api, object body)
         {
@@ -6473,7 +6498,6 @@ namespace DealEngine.WebUI.Controllers
         {
             ClientInformationSheet sheet = null;
             User user = null;
-            ClientProgramme programme = null;
             try
             {
                 user = await CurrentUser();
@@ -6489,13 +6513,8 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 //Hardcoded variables
-                programme = sheet.Programme;
+                ClientProgramme programme = sheet.Programme;
                 var eGlobalSerializer = new EGlobalSerializerAPI();
-
-                if (programme.BaseProgramme.UsesEGlobal)
-                {
-                    await UpdateInvoiceGenerationState(programme, true);
-                }
 
                 string paymentType = "Invoice";
                 Guid transactionreferenceid = Guid.NewGuid();
@@ -6650,12 +6669,11 @@ namespace DealEngine.WebUI.Controllers
                             using (var uow = _unitOfWork.BeginUnitOfWork())
                             {
                                 agreement.Status = "Bound and invoiced";
+                                programme.InformationSheet.Status = "Bound and invoiced";
 
                                 uow.Commit();
                             }
                         }
-
-                        await UpdateInvoiceGenerationState(programme, false);
                         //var documents = new List<SystemDocument>();
                         //foreach (ClientAgreement agreement in programme.Agreements)
                         //{
@@ -6694,10 +6712,6 @@ namespace DealEngine.WebUI.Controllers
             }
             catch (Exception ex)
             {
-                if (programme != null)
-                {
-                    await UpdateInvoiceGenerationState(programme, true);
-                }
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
@@ -6708,7 +6722,6 @@ namespace DealEngine.WebUI.Controllers
         public async Task<IActionResult> ProcessRequestConfiguration(Guid Id)
         {
             User user = null;
-            ClientProgramme programme = null;
             user = await CurrentUser();
             if (user.IsLoggedout)
                 return PageNotFound();
@@ -6720,7 +6733,7 @@ namespace DealEngine.WebUI.Controllers
                 string queryString = HttpContext.Request.Query["result"].ToString();
                 var status = "Bound";
 
-                programme = await _programmeService.GetClientProgrammebyId(Id);
+                ClientProgramme programme = await _programmeService.GetClientProgrammebyId(Id);
                 Payment payment = await _paymentService.GetPayment(programme.Id);
 
 
@@ -6778,7 +6791,6 @@ namespace DealEngine.WebUI.Controllers
                     if (programme.BaseProgramme.UsesEGlobal)
                     {
                         status = "Bound and invoice pending";
-                        await UpdateInvoiceGenerationState(programme, true);
                     }
 
                     var eGlobalSerializer = new EGlobalSerializerAPI();
@@ -6935,12 +6947,11 @@ namespace DealEngine.WebUI.Controllers
                                 using (var uow = _unitOfWork.BeginUnitOfWork())
                                 {
                                     agreement.Status = "Bound and invoiced";
+                                    programme.InformationSheet.Status = "Bound and invoiced";
 
                                     uow.Commit();
                                 }
                             }
-
-                            await UpdateInvoiceGenerationState(programme, false);
                             //var documents = new List<SystemDocument>();
                             //foreach (ClientAgreement agreement in programme.Agreements)
                             //{
@@ -6999,10 +7010,6 @@ namespace DealEngine.WebUI.Controllers
             }
             catch (Exception ex)
             {
-                if (programme != null)
-                {
-                    await UpdateInvoiceGenerationState(programme, true);
-                }
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
