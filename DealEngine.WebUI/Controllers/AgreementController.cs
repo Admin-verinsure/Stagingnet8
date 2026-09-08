@@ -6006,7 +6006,7 @@ namespace DealEngine.WebUI.Controllers
 
                 if (materialDamageQty > 0)
                 {
-                     materialDamageProductGuid = programme.BaseProgramme.Name.Contains("(2026)", StringComparison.OrdinalIgnoreCase)
+                     materialDamageProductGuid = programme.BaseProgramme.Name.Contains("2026", StringComparison.OrdinalIgnoreCase)
                      ? MdReserve2026 : MdReserve2027;
 
                     lines.Add(new
