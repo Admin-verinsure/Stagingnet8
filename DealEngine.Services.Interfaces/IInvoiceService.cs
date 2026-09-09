@@ -1,4 +1,4 @@
-﻿using DealEngine.Domain.Entities;
+using DealEngine.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -14,11 +14,13 @@ namespace DealEngine.Services.Interfaces
         Task<InvoiceGenerationResult> GenerateInvoiceAsync( ClientInformationSheet sheet, ClientProgramme programme);
 
         Task<InvoiceGenerationResult> SendInvoicePayloadPOC(
-            ClientInformationSheet sheet,
-            ClientProgramme programme,
-            decimal materialDamageQty,
-            decimal globalGuardPremium,
-            decimal adminFeeQty);
+    ClientInformationSheet sheet,
+    ClientProgramme programme,
+    decimal materialDamageQty,
+    decimal globalGuardPremium,
+    decimal adminFeeQty,
+    bool isOutsideNZ,
+    decimal globalGuardPLPremium);
 
     }
 }
