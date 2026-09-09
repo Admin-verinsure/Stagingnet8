@@ -1,4 +1,4 @@
-﻿using DealEngine.Domain.Entities;
+using DealEngine.Domain.Entities;
 using DealEngine.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,8 +15,9 @@ namespace DealEngine.Services.Impl
      public class InvoiceService : IInvoiceService
      {
         private const string MATERIAL_DAMAGE = "Rotary Material Damage";
-        private const string GLOBAL_GUARD = " Rotary Association-Multinational Liability (Global Guard GL)";
+        private const string GLOBAL_GUARD ="Rotary Association-Multinational Liability (Global Guard GL)";
 
+        private const string GLOBAL_PL_GUARD = "Rotary Associations - Management Liability(Forefront)";
 
         IAppSettingService _appSettingService;
         public InvoiceService(IAppSettingService appSettingService)
@@ -24,8 +25,15 @@ namespace DealEngine.Services.Impl
             _appSettingService = appSettingService;
         }
         public async Task<InvoiceGenerationResult> GenerateInvoiceAsync(
-           ClientInformationSheet sheet, ClientProgramme programme) {
+    ClientInformationSheet sheet,
+    ClientProgramme programme)
+        {
+            // Calculate quantity
             int quantity = CalculateQuantity(sheet);
+
+            // ============================
+            // GLOBAL GUARD PREMIUM
+            // ============================
 
             decimal globalGuardPremium = programme.Agreements
                 .Where(a => a.DateDeleted == null
@@ -35,33 +43,66 @@ namespace DealEngine.Services.Impl
                     .Where(t => t.DateDeleted == null && t.Bound)
                     .Sum(t => t.Premium));
 
+            // Add 1 for Material Damage
             decimal adminFeeQty = quantity + 1;
+
+
+            // ============================
+            // OUTSIDE NZ LOGIC
+            // ============================
+
+            bool isOutsideNZ = sheet.Owner != null
+                && sheet.Owner.IsOutsideNZ;
+
+            decimal globalGuardPLPremium = 0m;
+
+            if (isOutsideNZ)
+            {
+                // Add 1 for ML Reserve Fund
+                adminFeeQty = quantity + 1;
+
+                globalGuardPLPremium = programme.Agreements
+                    .Where(a => a.DateDeleted == null
+                             && a.Product?.Name == GLOBAL_PL_GUARD)
+                    .Sum(a =>
+                        (a.ClientAgreementTerms ?? Enumerable.Empty<ClientAgreementTerm>())
+                        .Where(t => t.DateDeleted == null && t.Bound)
+                        .Sum(t => t.Premium));
+            }
+
+
+            // ============================
+            // SEND INVOICE TO ODOO
+            // ============================
 
             if (programme.BaseProgramme.SendInvoiceToOdoo)
             {
-               return  await SendInvoicePayloadPOC(
+                return await SendInvoicePayloadPOC(
                     programme.InformationSheet,
                     programme,
                     quantity,
                     globalGuardPremium,
-                    adminFeeQty);
+                    adminFeeQty,
+                    isOutsideNZ,
+                    globalGuardPLPremium);
             }
-            else 
+
+            return new InvoiceGenerationResult
             {
-                return new InvoiceGenerationResult
-                {
-                    Success = false,
-                    Message = "Programme not configured to send invoice to Odoo."
-                };
-            }
+                Success = false,
+                Message = "Programme not configured to send invoice to Odoo."
+            };
         }
 
+
         public async Task<InvoiceGenerationResult> SendInvoicePayloadPOC(
-          ClientInformationSheet sheet,
-          ClientProgramme programme,
-          decimal materialDamageQty,
-          decimal globalGuardPremium,
-          decimal adminFeeQty)
+    ClientInformationSheet sheet,
+    ClientProgramme programme,
+    decimal materialDamageQty,
+    decimal globalGuardPremium,
+    decimal adminFeeQty,
+    bool isOutsideNZ,
+    decimal globalGuardPLPremium)
         {
             if (sheet is null || programme is null)
             {
@@ -72,82 +113,164 @@ namespace DealEngine.Services.Impl
                 };
             }
 
-            if (sheet.Owner?.External_guid == null || sheet.Owner.External_guid == Guid.Empty)
+            // Product GUIDs
+            const string MdReserve2026 = "3c9389ba-a8f0-466f-8bb2-a53e0a0f39d1";
+            const string MdReserve2027 = "7efe0e17-0069-4d78-81ad-10cb84c11137";
+
+            const string PlMl2025 = "fe4852f3-de8f-442f-8fd9-60defb9a9d3e";
+
+            const string PacificaPl = "cadc69c9-d664-471e-b1df-6ded0cfc4299";
+            const string PacificaMlReserve2026 = "d0ef7146-8c44-4f48-a3a1-07c06e98123d";
+
+            const string AdminFeeGuid = "0592a35a-4e8c-4139-804f-de4686e691e0";
+
+            const int pacificaclubquantity = 1;
+
+            var totalAmount =
+                materialDamageQty +
+                globalGuardPremium +
+                adminFeeQty;
+
+            if (totalAmount <= 0)
             {
                 return new InvoiceGenerationResult
                 {
                     Success = false,
-                    Message = "Invoice cannot be generated because external GUID is missing."
+                    Message = "Invoice amount must be > 0."
                 };
             }
 
-
-            var totalAmount = materialDamageQty + globalGuardPremium + adminFeeQty;
-
-            if (totalAmount <= 0) return new InvoiceGenerationResult
-            {
-                Success = false,
-                Message = "Invoice amount must be > 0."
-            };
-
             try
             {
-                var api = _appSettingService.OdooServerworkingendpoint.TrimEnd('/');
+                var api = _appSettingService
+                    .OdooServerworkingendpoint
+                    .TrimEnd('/');
+
                 var db = _appSettingService.OdooServerDB;
                 var login = _appSettingService.LoginID;
                 var key = _appSettingService.LoginKey;
 
                 const int COMPANY_ID = 82;
-                const string MATERIAL_DAMAGE = "Rotary Material Damage";
-                const string GLOBAL_GUARD = "Rotary Multinational Liability (Global Guard GL)";
+
+                const string MATERIAL_DAMAGE =
+                    "Rotary Material Damage";
+
+                const string GLOBAL_GUARD =
+                    "Rotary Multinational Liability (Global Guard GL)";
 
                 using var http = new HttpClient
                 {
                     Timeout = TimeSpan.FromMinutes(5)
                 };
 
-                // 🔐 LOGIN
-                var uid = await RpcAsync<int>(http, api, new
-                {
-                    jsonrpc = "2.0",
-                    method = "call",
-                    id = 1,
-                    @params = new
+                // ============================================================
+                // LOGIN TO ODOO
+                // ============================================================
+
+                var uid = await RpcAsync<int>(
+                    http,
+                    api,
+                    new
                     {
-                        service = "common",
-                        method = "login",
-                        args = new object[] { db, login, key }
-                    }
-                });
+                        jsonrpc = "2.0",
+                        method = "call",
+                        id = 1,
+                        @params = new
+                        {
+                            service = "common",
+                            method = "login",
+                            args = new object[]
+                            {
+                        db,
+                        login,
+                        key
+                            }
+                        }
+                    });
 
                 if (uid <= 0)
-                    throw new UnauthorizedAccessException("Odoo login failed.");
+                {
+                    throw new UnauthorizedAccessException(
+                        "Odoo login failed.");
+                }
 
                 // ============================================================
-                // 🧾 BUILD LINES
+                // BUILD INVOICE LINES
                 // ============================================================
 
                 var lines = new List<object>();
 
+
+                // ============================================================
+                // MATERIAL DAMAGE / RESERVE
+                // ============================================================
+
                 if (materialDamageQty > 0)
                 {
+                    var materialDamageProductGuid =
+                        programme.BaseProgramme.Name.Contains(
+                            "2026",
+                            StringComparison.OrdinalIgnoreCase)
+                            ? MdReserve2026
+                            : MdReserve2027;
+
                     lines.Add(new
                     {
                         name = MATERIAL_DAMAGE,
                         qty = materialDamageQty,
-                        product_guid = "bbfc4377-af90-41ae-a69b-e7d23caf1284"
+                        product_guid = Guid.Parse(
+                            materialDamageProductGuid)
                     });
                 }
 
+
+                // ============================================================
+                // GLOBAL GUARD / PL
+                // ============================================================
+
                 if (globalGuardPremium > 0)
+                {
+                    if (isOutsideNZ)
+                    {
+                        // Pacifica
+                        lines.Add(new
+                        {
+                            name = GLOBAL_GUARD,
+                            qty = pacificaclubquantity,
+                            product_guid = PacificaPl
+                        });
+                    }
+                    else
+                    {
+                        // NZ
+                        lines.Add(new
+                        {
+                            name = GLOBAL_GUARD,
+                            qty = globalGuardPremium,
+                            product_guid = PlMl2025
+                        });
+                    }
+                }
+
+
+                // ============================================================
+                // PACIFICA ML RESERVE
+                // ============================================================
+
+                if (isOutsideNZ && globalGuardPLPremium > 0)
                 {
                     lines.Add(new
                     {
                         name = GLOBAL_GUARD,
-                        qty = globalGuardPremium,
-                        product_guid = "fe4852f3-de8f-442f-8fd9-60defb9a9d3e"
+                        qty = pacificaclubquantity,
+                        product_guid = PacificaMlReserve2026
                     });
                 }
+
+
+                // ============================================================
+                // ADMINISTRATOR FEE
+                // ============================================================
 
                 if (adminFeeQty > 0)
                 {
@@ -155,33 +278,27 @@ namespace DealEngine.Services.Impl
                     {
                         name = "Administrator Fee",
                         qty = adminFeeQty,
-                        product_guid = "0592a35a-4e8c-4139-804f-de4686e691e0"
+                        product_guid = AdminFeeGuid
                     });
                 }
 
-                var extRef = $"EXT-POLICY-{DateTime.UtcNow:yyyyMMddHHmmss}";
-                var policyNum = long.Parse("1" + new Random().Next(0, 999_999_999).ToString("D9"));
-                ClientAgreement selectedAgreement = null;
-
-                if (programme.Agreements != null)
-                {
-                    selectedAgreement = programme.Agreements
-                        .FirstOrDefault(a => a != null && a.DateDeleted == null && a.MasterAgreement)
-                        ?? programme.Agreements.FirstOrDefault(a => a != null && a.DateDeleted == null);
-                }
-
-                var hasStartDate = selectedAgreement != null && selectedAgreement.InceptionDate > DateTime.MinValue;
-                var hasEndDate = selectedAgreement != null && selectedAgreement.ExpiryDate > DateTime.MinValue;
-                var startDateText = hasStartDate ? selectedAgreement.InceptionDate.ToString("yyyy-MM-dd") : null;
-                var endDateText = hasEndDate ? selectedAgreement.ExpiryDate.ToString("yyyy-MM-dd") : null;
-                var dates = new
-                {
-                    start_date = startDateText,
-                    end_date = endDateText
-                };
 
                 // ============================================================
-                // 📦 BUILD PAYLOAD
+                // EXTERNAL REFERENCE / POLICY NUMBER
+                // ============================================================
+
+                var extRef =
+                    $"EXT-POLICY-{DateTime.UtcNow:yyyyMMddHHmmss}";
+
+                var policyNum = long.Parse(
+                    "1" +
+                    new Random()
+                        .Next(0, 999_999_999)
+                        .ToString("D9"));
+
+
+                // ============================================================
+                // BUILD ODOO PAYLOAD
                 // ============================================================
 
                 var payload = new
@@ -190,15 +307,28 @@ namespace DealEngine.Services.Impl
 
                     customer = new
                     {
-                        name = sheet.Owner?.Name ?? sheet.Owner?.Email ?? "Customer",
-                        email = sheet.Owner?.Email ?? "admin@verinsure.online",
-                        external_guid = sheet.Owner.External_guid
+                        name =
+                            sheet.Owner?.Name
+                            ?? sheet.Owner?.Email
+                            ?? "Customer",
 
+                        email =
+                            sheet.Owner?.Email
+                            ?? "admin@verinsure.online",
+
+                        external_guid =
+                            sheet.Owner?.External_guid
                     },
 
                     currency = "NZD",
-                    invoice_date = DateTime.UtcNow.ToString("yyyy-MM-dd"),
-                    due_date = DateTime.UtcNow.AddDays(14).ToString("yyyy-MM-dd"),
+
+                    invoice_date =
+                        DateTime.UtcNow.ToString("yyyy-MM-dd"),
+
+                    due_date =
+                        DateTime.UtcNow
+                            .AddDays(14)
+                            .ToString("yyyy-MM-dd"),
 
                     salesperson = new
                     {
@@ -207,15 +337,21 @@ namespace DealEngine.Services.Impl
 
                     policy = new
                     {
-                        type_name = programme?.BaseProgramme?.Name ?? "Policy",
-                        name = programme?.BaseProgramme?.Name ?? "Policy",
+                        type_name =
+                            programme.BaseProgramme?.Name
+                            ?? "Policy",
+
+                        name =
+                            programme.BaseProgramme?.Name
+                            ?? "Policy",
+
                         amount = totalAmount,
+
                         policy_number = policyNum,
+
                         policy_duration = 12,
+
                         payment_type = "fixed",
-                        start_date = startDateText,
-                        end_date = endDateText,
-                        dates,
 
                         agent = new
                         {
@@ -228,10 +364,15 @@ namespace DealEngine.Services.Impl
                     lines = lines.ToArray()
                 };
 
-                var payloadJson = JsonConvert.SerializeObject(payload, Newtonsoft.Json.Formatting.None);
+
+                var payloadJson =
+                    JsonConvert.SerializeObject(
+                        payload,
+                        Newtonsoft.Json.Formatting.None);
+
 
                 // ============================================================
-                // 📝 CREATE invoice.poc.payload
+                // CREATE invoice.poc.payload
                 // ============================================================
 
                 var createPayloadRec = ExecKwEnvelope(
@@ -253,18 +394,28 @@ namespace DealEngine.Services.Impl
                     },
                     new Dictionary<string, object>
                     {
-                        ["context"] = new Dictionary<string, object>
-                        {
-                            ["allowed_company_ids"] = new int[] { COMPANY_ID },
-                            ["force_company"] = COMPANY_ID
-                        }
+                        ["context"] =
+                            new Dictionary<string, object>
+                            {
+                                ["allowed_company_ids"] =
+                                    new int[] { COMPANY_ID },
+
+                                ["force_company"] =
+                                    COMPANY_ID
+                            }
                     }
                 );
 
-                var recId = await RpcAsync<int>(http, api, createPayloadRec);
+
+                var recId =
+                    await RpcAsync<int>(
+                        http,
+                        api,
+                        createPayloadRec);
+
 
                 // ============================================================
-                // 🚀 RUN FLOW
+                // RUN ODOO FLOW
                 // ============================================================
 
                 var runFlow = ExecKwEnvelope(
@@ -273,18 +424,37 @@ namespace DealEngine.Services.Impl
                     key,
                     "invoice.poc.payload",
                     "action_create_policy_and_invoice",
-                    new object[] { new object[] { recId } },
+                    new object[]
+                    {
+                new object[]
+                {
+                    recId
+                }
+                    },
                     new Dictionary<string, object>
                     {
-                        ["context"] = new Dictionary<string, object>
-                        {
-                            ["allowed_company_ids"] = new int[] { COMPANY_ID },
-                            ["force_company"] = COMPANY_ID
-                        }
+                        ["context"] =
+                            new Dictionary<string, object>
+                            {
+                                ["allowed_company_ids"] =
+                                    new int[] { COMPANY_ID },
+
+                                ["force_company"] =
+                                    COMPANY_ID
+                            }
                     }
                 );
 
-                await RpcAsync<object>(http, api, runFlow);
+
+                await RpcAsync<object>(
+                    http,
+                    api,
+                    runFlow);
+
+
+                // ============================================================
+                // SUCCESS
+                // ============================================================
 
                 return new InvoiceGenerationResult
                 {
@@ -301,6 +471,7 @@ namespace DealEngine.Services.Impl
                 };
             }
         }
+
 
         private object ExecKwEnvelope(
        string db,
@@ -397,7 +568,7 @@ namespace DealEngine.Services.Impl
 
             if (clubtrust1onlyCount > 1)
             {
-                quantity += (clubtrust1onlyCount - 1);
+                quantity += clubtrust1onlyCount - 1;
             }
 
             return quantity;
@@ -410,9 +581,3 @@ namespace DealEngine.Services.Impl
 
 
 }
-
-
-    
-
-      
-
