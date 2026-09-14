@@ -510,6 +510,13 @@ namespace DealEngine.Services.Impl.UnderwritingModuleServices
 
             }
 
+            else if (orgType == "RotaryOtherExtraClubTrusts")
+            {
+ 
+               total += rates["plpremium_club_nontrading_trust"];
+               agreement.BrokerFee += 37.50m;
+            }
+
             // =============================================
             // 3️⃣ TRUST (ONE ONLY INCLUDED)
             // =============================================
