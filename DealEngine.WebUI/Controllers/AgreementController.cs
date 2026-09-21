@@ -4387,11 +4387,11 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 ////send units and invoice to ODOO 
-                //if (programme.BaseProgramme.SendInvoiceToOdoo)
-                //{
-                //    await SendInvoicePayloadPOC(programme.InformationSheet, programme,
-                //                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium, selectedAgreementId);
-                //}
+                if (programme.BaseProgramme.SendInvoiceToOdoo)
+                {
+                    await SendInvoicePayloadPOC(programme.InformationSheet, programme,
+                                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium, selectedAgreementId);
+                }
 
 
                 if (programme.InformationSheet.Status != status)
