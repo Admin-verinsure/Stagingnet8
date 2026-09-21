@@ -782,8 +782,15 @@ namespace DealEngine.Services.Impl
                 oldClientProgramme = await GetClientProgrammeChangeForRenew(renewFromProgrammeBaseId);
             }
 
+
+            //var oldOrganisations = oldClientProgramme.InformationSheet.Organisation.Where(o => !o.Removed && o.DateDeleted == null) .ToList();
             ClientInformationSheet newClientInformationSheet = new ClientInformationSheet(createdBy, oldClientProgramme.Owner, null);
-            newClientInformationSheet = cloneMapper.Map<ClientInformationSheet>(oldClientProgramme.InformationSheet);
+            cloneMapper.Map(
+                oldClientProgramme.InformationSheet,
+                newClientInformationSheet);
+
+           
+            //newClientInformationSheet = cloneMapper.Map<ClientInformationSheet>(oldClientProgramme.InformationSheet);
             newClientInformationSheet.ReferenceId = await _referenceService.GetLatestReferenceId();
             //Set for renew
             newClientInformationSheet.IsRenewawl = true;
@@ -831,6 +838,7 @@ namespace DealEngine.Services.Impl
             newClientProgramme.BaseProgramme = currentProgramme;
             newClientProgramme.PaymentType = oldClientProgramme.PaymentType;
             newClientProgramme.IsIssued = true;
+           
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalBranchCode))
                 newClientProgramme.EGlobalBranchCode = oldClientProgramme.EGlobalBranchCode;
             if (!string.IsNullOrEmpty(oldClientProgramme.EGlobalClientNumber))
@@ -848,8 +856,8 @@ namespace DealEngine.Services.Impl
                 newClientProgramme.EGlobalExternalContactNumber = oldClientProgramme.EGlobalExternalContactNumber;
             
                 newClientProgramme.IsClub = oldClientProgramme.IsClub;
-                newClientProgramme.IsClub = oldClientProgramme.IsDistrict;
-                newClientProgramme.IsClub = oldClientProgramme.IsIndependentEntity;
+                newClientProgramme.IsDistrict = oldClientProgramme.IsDistrict;
+                newClientProgramme.IsIndependentEntity = oldClientProgramme.IsIndependentEntity;
 
 
             if (oldClientProgramme.InformationSheet.Vehicles != null)
@@ -972,7 +980,7 @@ namespace DealEngine.Services.Impl
                 }
             }
 
-           
+
             //if (oldClientProgramme.InformationSheet.SubClientInformationSheets != null)
             //{
             //    newClientInformationSheet.SubClientInformationSheets.Clear();
@@ -983,6 +991,24 @@ namespace DealEngine.Services.Impl
             //    }
             //}
             //Renew named parties based on the programme config
+
+            //if (oldClientProgramme.InformationSheet.Organisation != null)
+            //{
+            //    newClientInformationSheet.Organisation.Clear();
+
+            //    foreach (Organisation organisation
+            //             in oldClientProgramme.InformationSheet.Organisation)
+            //    {
+            //        Organisation newOrganisation =
+            //            organisation.CloneForNewSheet(
+            //                newClientInformationSheet);
+
+            //        newOrganisation.OrgBeenMoved = false;
+
+            //        newClientInformationSheet.Organisation.Add(
+            //            newOrganisation);
+            //    }
+            //}
             if (newClientInformationSheet.Organisation != null)
             {
                 foreach (Organisation org in newClientInformationSheet.Organisation)
@@ -1617,6 +1643,20 @@ namespace DealEngine.Services.Impl
                                                                                            && cp.DateDeleted == null ).FirstOrDefault();
             return pendingClientProgramme;
         }
+
+
+        public async Task<ClientProgramme> DeleteClonedClientProgramme( ClientProgramme renewedClientProgramme)
+        {
+            if (renewedClientProgramme == null)
+                return null;
+
+            renewedClientProgramme.DateDeleted = DateTime.UtcNow;
+
+            await _clientProgrammeRepository.UpdateAsync(renewedClientProgramme);
+
+            return renewedClientProgramme;
+        }
+
     }
 }
 

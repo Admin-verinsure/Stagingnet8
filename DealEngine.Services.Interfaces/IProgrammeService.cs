@@ -67,7 +67,7 @@ namespace DealEngine.Services.Interfaces
         Task<ClientProgramme> GetPendingClientProgrammeByOwnerByProgramme(Guid ownerOrganisationId, Guid programmeId);
 
         //Task<ProgrammeInfoViewModel> GetfirstClientProgrammesByOwner(Guid ownerid);
-
+        Task<ClientProgramme> DeleteClonedClientProgramme(ClientProgramme renewedclientProgramme);
     }
 }
 

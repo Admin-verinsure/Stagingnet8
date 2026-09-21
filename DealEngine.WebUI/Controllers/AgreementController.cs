@@ -4387,11 +4387,11 @@ namespace DealEngine.WebUI.Controllers
                 }
 
                 ////send units and invoice to ODOO 
-                if (programme.BaseProgramme.SendInvoiceToOdoo)
-                {
-                    await SendInvoicePayloadPOC(programme.InformationSheet, programme,
-                                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium, selectedAgreementId);
-                }
+                //if (programme.BaseProgramme.SendInvoiceToOdoo)
+                //{
+                //    await SendInvoicePayloadPOC(programme.InformationSheet, programme,
+                //                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium, selectedAgreementId);
+                //}
 
 
                 if (programme.InformationSheet.Status != status)
@@ -4447,26 +4447,40 @@ namespace DealEngine.WebUI.Controllers
                                payload
                 );
 
-                Programme renewedprogramme = await _programmeService.GetProgrammeByRenewalprogramme(programme.BaseProgramme.Id);
-                if (renewedprogramme != null) { 
-                    ClientProgramme renewedclientProgramme = await _programmeService.GetOriginalClientProgrammeByOwnerByProgramme(programme.Owner.Id, renewedprogramme.Id);
-                if ( renewedclientProgramme == null)
+                Programme renewedProgramme = await _programmeService.GetProgrammeByRenewalprogramme(programme.BaseProgramme.Id);
+                if (renewedProgramme != null)
                 {
-                    bool result = await RenewClientProgramme(programme.Id, renewedprogramme.Id);
+                    ClientProgramme existingRenewedClientProgramme =
+                        await _programmeService.GetOriginalClientProgrammeByOwnerByProgramme(
+                            programme.Owner.Id,
+                            renewedProgramme.Id);
+
+                    // If 2027 already exists, blindly soft-delete it.
+                    if (existingRenewedClientProgramme != null)
+                    {
+                        await _programmeService.DeleteClonedClientProgramme(
+                            existingRenewedClientProgramme);
+                    }
+
+                    // Always create a fresh 2027 ClientProgramme from 2026.
+                    bool result = await RenewClientProgramme(
+                        programme.Id,
+                        renewedProgramme.Id);
+
                     if (result)
                     {
                         await SendEmailforRenewedprogramme(
-                                programmeId,
-                                informationSheetId,
-                                emails);
+                            programmeId,
+                            informationSheetId,
+                            emails);
                     }
                     else
                     {
-                        _logger.LogError("ProgrammeCloning failed. ");
+                        _logger.LogError(
+                            "Programme cloning failed for ClientProgramme {ClientProgrammeId}.",
+                            programme.Id);
                     }
-
                 }
-                 }
                 return Json(new
                 {
                     redirectUrl = action == "BindAgreement"

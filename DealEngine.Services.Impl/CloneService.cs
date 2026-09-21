@@ -83,8 +83,6 @@ public class CloneProfile : Profile
             .ForMember(dest => dest.SubClientInformationSheets, map => map.Ignore())
             .ForMember(dest => dest.SubmitDate, map => map.Ignore());
 
-
-
     }
 }
 public class SerialiseProfile : Profile
