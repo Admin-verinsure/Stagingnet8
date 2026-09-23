@@ -279,8 +279,13 @@ namespace DealEngine.Services.Impl
             var jsonOrganisation = (Organisation)await _serializerationService.GetDeserializedObject(typeof(Organisation), collection);
             var OrganisationType = collection["OrganisationViewModel.OrganisationType"];
             string TypeName = collection["OrganisationViewModel.InsuranceAttribute"].ToString();
+            if(organisation.External_guid != Guid.Empty)
+            {
+                jsonOrganisation.External_guid = organisation.External_guid;
+
+            }
             //  var user = await UpdateOrganisationUser(collection, organisation);
-           if(TypeName == "Administrator" && (jsonOrganisation.Name != organisation.Name ))
+            if (TypeName == "Administrator" && (jsonOrganisation.Name != organisation.Name ))
            {
                 jsonOrganisation.Name = organisation.Name;
            }
