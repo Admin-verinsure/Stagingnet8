@@ -4220,6 +4220,10 @@ namespace DealEngine.WebUI.Controllers
             ClientInformationSheet sheet = null;
             User user = null;
             var action = HttpContext.Request.Form["BindAgreement"];
+            var isAjaxRequest = string.Equals(
+                Request.Headers["X-Requested-With"],
+                "XMLHttpRequest",
+                StringComparison.OrdinalIgnoreCase);
 
             try
             {
@@ -4386,17 +4390,23 @@ namespace DealEngine.WebUI.Controllers
 
                 }
 
-                ////send units and invoice to ODOO 
-                if (programme.BaseProgramme.SendInvoiceToOdoo)
-                {
-                    await SendInvoicePayloadPOC(programme.InformationSheet, programme,
-                                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium, selectedAgreementId);
-                }
-
-
                 if (programme.InformationSheet.Status != status)
                 {
                     programme.InformationSheet.Status = status;
+                }
+
+                ////send units and invoice to ODOO 
+                if (programme.BaseProgramme.SendInvoiceToOdoo)
+                {
+                    var invoiceResult = await SendInvoicePayloadPOC(programme.InformationSheet, programme,
+                                          quantity, globalGuardPremium, adminFeeQty, isOutsideNZ, globalGuardPLPremium, selectedAgreementId);
+
+                    if (invoiceResult is BadRequestObjectResult ||
+                        invoiceResult is StatusCodeResult statusCodeResult && statusCodeResult.StatusCode >= 400 ||
+                        invoiceResult is ObjectResult objectResult && objectResult.StatusCode.HasValue && objectResult.StatusCode.Value >= 400)
+                    {
+                        return invoiceResult;
+                    }
                 }
 
                 // ✅ SINGLE COMMIT AT END
@@ -4481,12 +4491,16 @@ namespace DealEngine.WebUI.Controllers
                             programme.Id);
                     }
                 }
-                return Json(new
+                var redirectUrl = action == "BindAgreement"
+                    ? "/Agreement/ViewAcceptedAgreement/" + programme.Id
+                    : "/Agreement/RenderDocuments/" + programme.InformationSheet.Id;
+
+                if (isAjaxRequest)
                 {
-                    redirectUrl = action == "BindAgreement"
-        ? "/Agreement/ViewAcceptedAgreement/" + programme.Id
-        : "/Agreement/RenderDocuments/" + programme.InformationSheet.Id
-                });
+                    return Json(new { redirectUrl });
+                }
+
+                return Redirect(redirectUrl);
             }
             catch (Exception ex)
             {
@@ -4601,6 +4615,9 @@ namespace DealEngine.WebUI.Controllers
             // Keep the database flag in sync with the latest invoice attempt.
             // false means the most recent generation completed successfully.
             programme.InvoiceGenerationFailed = invoiceGenerationFailed;
+            var updatedStatus = invoiceGenerationFailed
+                ? "Bound and invoice pending"
+                : "Bound and invoiced";
 
             if (programme.InformationSheet != null)
             {
@@ -4609,9 +4626,17 @@ namespace DealEngine.WebUI.Controllers
                     currentStatus == "Bound and invoice pending" ||
                     currentStatus == "Bound and invoiced")
                 {
-                    programme.InformationSheet.Status = invoiceGenerationFailed
-                        ? "Bound and invoice pending"
-                        : "Bound and invoiced";
+                    programme.InformationSheet.Status = updatedStatus;
+                }
+            }
+
+            foreach (var agreement in programme.Agreements.Where(agreement => agreement.DateDeleted == null))
+            {
+                if (agreement.Status == "Bound" ||
+                    agreement.Status == "Bound and invoice pending" ||
+                    agreement.Status == "Bound and invoiced")
+                {
+                    agreement.Status = updatedStatus;
                 }
             }
 
@@ -7169,6 +7194,9 @@ namespace DealEngine.WebUI.Controllers
                 ViewBag.IsInsurer = user.PrimaryOrganisation.IsInsurer;
 
                 ClientProgramme programme1 = await _programmeService.GetClientProgrammebyId(id);
+                // Feed the accepted-agreement page with any other still-open subscriptions
+                // for the same client so it can prompt the user immediately after completion.
+                ViewBag.PendingSubscriptions = await GetOtherPendingSubscriptions(user, programme1);
                 ViewBag.Sheetstatus = programme1.InformationSheet.Status;
                 //if (programme1.IsDocsApproved && programme1.BaseProgramme.ProgEnableHidedoctoClient)
                 //{
@@ -7185,6 +7213,63 @@ namespace DealEngine.WebUI.Controllers
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
             }
+        }
+
+        private async Task<List<UserTask>> GetOtherPendingSubscriptions(User user, ClientProgramme currentProgramme)
+        {
+            if (user == null || currentProgramme?.Owner == null)
+            {
+                return new List<UserTask>();
+            }
+
+            var siblingProgrammes = await _programmeService.GetClientProgrammesByOwner(currentProgramme.Owner.Id);
+            if (siblingProgrammes == null)
+            {
+                return new List<UserTask>();
+            }
+
+            // Reuse the dashboard-style task shape so the popup can show the same
+            // direct-to-information links without introducing a new view model.
+            return siblingProgrammes
+                .Where(cp => cp != null && cp.Id != currentProgramme.Id && IsPendingSubscriptionEligible(cp))
+                .OrderBy(cp => GetProgrammeSortDate(cp))
+                .Select(cp => new UserTask(user, "PendingSubscription", null)
+                {
+                    URL = "/Information/EditInformation/" + cp.Id,
+                    Body = cp.BaseProgramme.Name + " subscription is still pending",
+                    IsActive = true,
+                    DueDate = DateTime.Now.AddDays(30)
+                })
+                .ToList();
+        }
+
+        private static bool IsPendingSubscriptionEligible(ClientProgramme cp)
+        {
+            // A pending subscription is one that still has an active information sheet
+            // and has not been bound, closed, deleted, or moved into a closed programme.
+            return cp.InformationSheet != null &&
+                   !cp.InformationSheet.Status.StartsWith("Bound") &&
+                   cp.InformationSheet.Status != "Not Taken Up By Broker" &&
+                   cp.DateDeleted == null &&
+                   cp.InformationSheet.Status != "Closed" &&
+                   !cp.BaseProgramme.Name.Contains("CLOSED");
+        }
+
+        private static DateTime GetProgrammeSortDate(ClientProgramme cp)
+        {
+            if (cp == null)
+            {
+                return DateTime.MinValue;
+            }
+
+            // Prefer the business-facing inception date for ordering; if it is missing,
+            // fall back to creation time so the popup list remains stable.
+            if (cp.ClientProgrammeInceptionDate > DateTime.MinValue)
+            {
+                return cp.ClientProgrammeInceptionDate;
+            }
+
+            return cp.DateCreated ?? DateTime.MinValue;
         }
 
         public async Task<IActionResult> CreateDefaultAgreementRules()

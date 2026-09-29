@@ -1,5 +1,12 @@
 ﻿@model IssueUISViewModel
 
+@{
+    // Show the district report when the normal programme flag is enabled,
+    // or for Rotary programmes where that yearly flag may be left unset.
+    var showDistrictClubReport = Model.programme.EnableDistrictClubReport ||
+        Model.programme.NamedPartyUnitName == "RotaryAssociationsProgramme";
+}
+
 <div class="container">
     <form id="ReportForm" method="POST" action="~/Home/GetReportView" novalidate>
         <input type="text" class="form-control" value="@Model.programme.Id" id="programmeId" name="ProgrammeId" hidden>
@@ -55,35 +62,29 @@
                                         }
 
                                     }
-                                    @{
-                                        if (Model.programme.EnableDistrictClubReport)
-                                        {
-                                            <option value="DistrictReport">District Club Status Report</option>
-
-                                        }
+                                    @if (showDistrictClubReport)
+                                    {
+                                        <option value="DistrictReport">District Club Status Report</option>
                                     }
 
 
 
                                 </select>
 
-                                @{
-                                    if (Model.programme.EnableDistrictClubReport)
-                                    {
-                                        <!-- ✅ District Filter (separate) -->
-                                        <div class="mt-2" id="districtContainer" style="display:none;">
-                                            <select class="form-control" id="DistrictFilter" name="district">
-                                                <option value="">-- Select District --</option>
-                                                <option value="9910">District 9910</option>
-                                                <option value="9920">District 9920</option>
-                                                <option value="9930">District 9930</option>
-                                                <option value="9940">District 9940</option>
-                                                <option value="9999">District 9999</option>
+                                @if (showDistrictClubReport)
+                                {
+                                    <!-- District report is available for Rotary programmes even when the yearly flag is unset. -->
+                                    <div class="mt-2" id="districtContainer" style="display:none;">
+                                        <select class="form-control" id="DistrictFilter" name="district">
+                                            <option value="">-- Select District --</option>
+                                            <option value="9910">District 9910</option>
+                                            <option value="9920">District 9920</option>
+                                            <option value="9930">District 9930</option>
+                                            <option value="9940">District 9940</option>
+                                            <option value="9999">District 9999</option>
 
-                                            </select>
-                                        </div>
-
-                                    }
+                                        </select>
+                                    </div>
                                 }
 
                             </td>

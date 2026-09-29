@@ -2,6 +2,9 @@
 
 @{
     bool multiCoverOptionsStatus = false;
+    // The controller passes sibling pending subscriptions through ViewBag so the
+    // accepted-agreement page can surface them as a post-completion prompt.
+    var pendingSubscriptions = ViewBag.PendingSubscriptions as List<DealEngine.Domain.Entities.UserTask> ?? new List<DealEngine.Domain.Entities.UserTask>();
 
     @foreach (var item in Model)
     {
@@ -15,7 +18,50 @@
 
 <!-- MAIN CONTENT -->
 <div id="content" class="container">
-
+    @if (pendingSubscriptions.Any())
+    {
+        @* Show a modal only when there are other subscriptions still waiting so the
+           user gets an immediate next step after finishing the current insurance. *@
+        <div class="modal fade" id="pendingSubscriptionModal" tabindex="-1" aria-labelledby="pendingSubscriptionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content border-warning">
+                    <div class="modal-header bg-warning-subtle">
+                        <h5 class="modal-title" id="pendingSubscriptionModalLabel">
+                            <i class="fa fa-exclamation-triangle text-warning"></i> Pending subscriptions still outstanding
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-3">Other subscriptions are still pending for this client. Click below to complete them.</p>
+                        @foreach (var task in pendingSubscriptions)
+                        {
+                            <div class="d-flex justify-content-between align-items-center border rounded p-3 mb-2">
+                                <div>
+                                    <div class="fw-bold">@task.Body</div>
+                                    <div class="text-muted">Due by @task.DueDate.ToString("dd/MM/yyyy")</div>
+                                </div>
+                                <a href="@task.URL" class="btn btn-warning btn-sm fw-bold">
+                                    <i class="fa fa-arrow-right"></i> Click here to complete
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+ <!-- Toast to show the result of Generate Invoice (color/icon/text set via JS) -->
+<div aria-live="polite" aria-atomic="true">
+    <div class="toast" id="invoiceToast" style="position: fixed; top: 10%; right: 20px; z-index: 1050;" data-bs-delay="4000">
+        <div class="toast-header" id="invoiceToastHeader">
+            <i class="fa fa-check-circle text-success me-2" id="invoiceToastIcon"></i>
+            <strong class="me-auto" id="invoiceToastTitle">Success</strong>
+            <small class="text-muted">just now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="invoiceToastBody"></div>
+    </div>
+</div>
     <div class="form-group">
         <h1 class="page-title txt-color-blueDark"><i class="fa-fw fa fa-home"></i> Agreement <span>> @ViewBag.Title</span></h1>
     </div>
@@ -85,13 +131,14 @@
                                                 <a href="~/Agreement/ReRunUWM/@item.ClientAgreementId" class="dropdown-item"> Re-run All Underwriting Rules </a>
                                     </li>
                                 }
-                                @if (User.IsInRole("TCUser"))
+                               @if (User.IsInRole("TCUser"))
                                 {
                                     <li class="nav-item">
-                                       <a href="~/Agreement/GenerateInvoice/@item.ClientProgrammeId"
-                                                   class="dropdown-item">
-                                                    Generate Invoice
-                                       </a>
+                                    <a href="javascript:void(0);"
+                                        class="dropdown-item generate-invoice-link"
+                                        data-programme-id="@item.ClientProgrammeId">
+                                            Generate Invoice
+                                    </a>
                                     </li>
                                 }
                                 @if (item.CurrentUser.PrimaryOrganisation.IsTC || item.ProgrammeNamedPartyName == "First Mate Cover")
@@ -407,7 +454,6 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
                 }
 
             </form>
-
         </div>
 
     </div>
@@ -460,6 +506,17 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
         };
 
          $(window).on("load", function () {
+            var pendingSubscriptionCount = @pendingSubscriptions.Count;
+            if (pendingSubscriptionCount > 0) {
+                // Open the modal as soon as the accepted-agreement page finishes loading
+                // so pending subscriptions are visible without any extra user action.
+                var pendingSubscriptionModalElement = document.getElementById("pendingSubscriptionModal");
+                if (pendingSubscriptionModalElement && typeof bootstrap !== "undefined") {
+                    var pendingSubscriptionModal = new bootstrap.Modal(pendingSubscriptionModalElement);
+                    pendingSubscriptionModal.show();
+                }
+            }
+
             if ("@ViewBag.Sheetstatus" != "Started") {
                              debugger;
 
@@ -516,46 +573,62 @@ item.Status != "Bound" || item.Status != "Bound and invoice pending" || item.Sta
               {
                   $("#7").hide();
               }
+    // Intercepts clicks on the "Generate Invoice" link so it triggers an AJAX
+    // call instead of navigating the browser directly to the JSON endpoint.
+    $(document).on("click", ".generate-invoice-link", function (e) {
+        e.preventDefault();
 
-             $(document).on("click", ".generate-invoice-link", function (e) {
-            e.preventDefault();
-            var programmeId = $(this).data("programme-id");
-            var $link = $(this);
+    // The programme this invoice is being generated for, read from the
+    // data-programme-id attribute set on the link in the Razor markup.
+    var programmeId = $(this).data("programme-id");
+    var $link = $(this);
 
-            $link.addClass("disabled").text("Generating...");
+    // Give immediate visual feedback and prevent double-clicking while
+    // the request is in flight.
+    $link.addClass("disabled").text("Generating...");
 
-            $.ajax({
-                url: '@Url.Action("GenerateInvoice", "Agreement")/' + programmeId,
-                type: "GET"
-            })
-            .done(function (response) {
-                if (response.success) {
-                    $("#invoiceToastHeader").removeClass("bg-danger text-white").addClass("bg-success text-white");
-                    $("#invoiceToastIcon").removeClass("fa-times-circle").addClass("fa-check-circle");
-                    $("#invoiceToastTitle").text("Success");
-                } else {
-                    $("#invoiceToastHeader").removeClass("bg-success text-white").addClass("bg-danger text-white");
-                    $("#invoiceToastIcon").removeClass("fa-check-circle").addClass("fa-times-circle");
-                    $("#invoiceToastTitle").text("Error");
-                }
-                $("#invoiceToastBody").text(response.message);
-                $("#invoiceToast").toast("show");
-            })
-            .fail(function () {
-                $("#invoiceToastHeader").removeClass("bg-success text-white").addClass("bg-danger text-white");
-                $("#invoiceToastIcon").removeClass("fa-check-circle").addClass("fa-times-circle");
-                $("#invoiceToastTitle").text("Error");
-                $("#invoiceToastBody").text("Something went wrong while generating the invoice.");
-                $("#invoiceToast").toast("show");
-            })
-            .always(function () {
-                $link.removeClass("disabled").text("Generate Invoice");
-            });
+    $.ajax({
+        url: '@Url.Action("GenerateInvoice", "Agreement")/' + programmeId,
+        type: "GET"
+    })
+    .done(function (response) {
+        // Style the toast green with a checkmark on success, or red with
+        // an X on failure, based on the { success, message } response
+        // returned by GenerateInvoice.
+        if (response.success) {
+            $("#invoiceToastHeader").removeClass("bg-danger text-white").addClass("bg-success text-white");
+            $("#invoiceToastIcon").removeClass("fa-times-circle").addClass("fa-check-circle");
+            $("#invoiceToastTitle").text("Success");
+        } else {
+            $("#invoiceToastHeader").removeClass("bg-success text-white").addClass("bg-danger text-white");
+            $("#invoiceToastIcon").removeClass("fa-check-circle").addClass("fa-times-circle");
+            $("#invoiceToastTitle").text("Error");
+        }
+
+        // Show the server's message (now always a safe, generic message
+        // on failure — see GenerateInvoice's catch block) and display the toast.
+        $("#invoiceToastBody").text(response.message);
+        $("#invoiceToast").toast("show");
+    })
+    .fail(function () {
+        // Covers network-level failures (e.g. request never reached the
+        // server) rather than an application-level error response.
+        $("#invoiceToastHeader").removeClass("bg-success text-white").addClass("bg-danger text-white");
+        $("#invoiceToastIcon").removeClass("fa-check-circle").addClass("fa-times-circle");
+        $("#invoiceToastTitle").text("Error");
+        $("#invoiceToastBody").text("Something went wrong while generating the invoice.");
+        $("#invoiceToast").toast("show");
+    })
+    .always(function () {
+        // Restore the link regardless of success or failure, so the user
+        // can retry if needed.
+        $link.removeClass("disabled").text("Generate Invoice");
+    });
+});
+
         });
 
-         });
-
-
+       
     </script>
 
 }
