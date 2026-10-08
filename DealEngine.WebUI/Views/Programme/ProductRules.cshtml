@@ -34,6 +34,12 @@
             @Html.HiddenFor(m => m.Id)
             @Html.HiddenFor(m => m.ProductId)
 
+            <div class="p-3 text-end">
+                <button type="button" class="btn btn-success" id="saveAllRulesButton">
+                    <i class="fa fa-save"></i> Save All Rules
+                </button>
+            </div>
+
             <form action="~/Agreement/EditAgreement/item" method="POST" id="update-form" class="client-form" enctype="multipart/form-data">
                 <table class="table table-bordered table-responsive-md table-striped text-center" id="refferals">
                     <tr>
@@ -47,16 +53,19 @@
                     {
                         @if (count % 2 == 1)
                         {
-                            <tr class="table-light">
-                                <td class="pt-3-half" width="13%" contenteditable="true" id="ReferralName" style="color:black">
+                            <tr class="table-light rule-row"
+                                data-rule-id="@item.Id"
+                                data-rule-name="@item.Name"
+                                data-rule-order="@item.OrderNumber">
+                                <td class="pt-3-half" width="13%" style="color:black">
                                     @item.Name
                                 </td>
-                                <td class="pt-3-half" width="13%" contenteditable="true" style="color:black">
-                                    @item.Description
+                                <td class="pt-3-half" width="13%" style="color:black">
+                                    <input type="text" class="form-control rule-description" value="@item.Description" />
                                 </td>
                                
-                                <td class="pt-3-half" width="13%" contenteditable="true" style="color:black">
-                                    @item.Value
+                                <td class="pt-3-half" width="13%" style="color:black">
+                                    <input type="text" class="form-control rule-value" value="@item.Value" />
                                 </td>
                                @*  @if (User.HasClaim("EditRules", "EditRules"))
                                 {
@@ -69,15 +78,18 @@
                         }
                         else
                         {
-                            <tr>
-                                <td class="pt-3-half" width="13%" contenteditable="true" id="ReferralName" style="color:black">
+                            <tr class="rule-row"
+                                data-rule-id="@item.Id"
+                                data-rule-name="@item.Name"
+                                data-rule-order="@item.OrderNumber">
+                                <td class="pt-3-half" width="13%" style="color:black">
                                     @item.Name
                                 </td>
-                                <td class="pt-3-half" width="13%" contenteditable="true" style="color:black">
-                                    @item.Description
+                                <td class="pt-3-half" width="13%" style="color:black">
+                                    <input type="text" class="form-control rule-description" value="@item.Description" />
                                 </td>
-                                <td class="pt-3-half" width="13%" contenteditable="true" style="color:black">
-                                    @item.Value
+                                <td class="pt-3-half" width="13%" style="color:black">
+                                    <input type="text" class="form-control rule-value" value="@item.Value" />
                                 </td>
                                 @* @if (User.HasClaim("EditRules", "EditRules"))
                                 {
@@ -151,4 +163,51 @@
 
 @section pagespecific {
     @await Html.PartialAsync("_ProgrammeScripts")
+    <script type="text/javascript">
+        $(function () {
+            $("#saveAllRulesButton").on("click", function () {
+                var rows = $("#refferals .rule-row");
+                var $button = $(this);
+
+                if (rows.length === 0) {
+                    alert("There are no rules to save.");
+                    return;
+                }
+
+                $button.prop("disabled", true).text("Saving...");
+
+                saveRuleRow(rows, 0, $button);
+            });
+
+            function saveRuleRow(rows, index, $button) {
+                if (index >= rows.length) {
+                    $button.prop("disabled", false).html('<i class="fa fa-save"></i> Save All Rules');
+                    alert("Rules saved successfully.");
+                    return;
+                }
+
+                var $row = $(rows[index]);
+                var payload = {
+                    ClientAgreementRuleID: $row.data("rule-id"),
+                    Name: $row.data("rule-name"),
+                    Description: $row.find(".rule-description").val(),
+                    Value: $row.find(".rule-value").val(),
+                    OrderNumber: parseInt($row.data("rule-order"), 10) || 0
+                };
+
+                $.ajax({
+                    url: '@Url.Action("EditRule", "Programme")',
+                    type: 'POST',
+                    data: payload
+                })
+                .done(function () {
+                    saveRuleRow(rows, index + 1, $button);
+                })
+                .fail(function () {
+                    $button.prop("disabled", false).html('<i class="fa fa-save"></i> Save All Rules');
+                    alert("Unable to save all rules. Please try again.");
+                });
+            }
+        });
+    </script>
 }

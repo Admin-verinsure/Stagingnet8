@@ -10,7 +10,7 @@
                 <i class="fa-fw fa fa-home"></i>  <span>
                     <a href="~/Programme/TermSheetConfirguration/@Model.BaseProgrammeID">Package Term Sheet</a>
                     <a href="~/Programme/EmailTemplate/@Model.BaseProgrammeID">> Programme Email Templates</a>
-                    > Add/Edit Email Template
+                    > @(Model.IsSystemTemplate ? "Add/Edit System Email Template" : "Add/Edit Email Template")
 
                 </span>
             </h1>
@@ -26,11 +26,14 @@
                     <h2>@ViewBag.Title </h2>
                 </div>
                 <div class="card-body">
-                    <form action="~/Programme/SendEmailTemplates/@Model.BaseProgrammeID" method="POST" id="update-form" class="client-form" enctype="multipart/form-data">
+                    <form action="@(Model.IsSystemTemplate ? Url.Action("SystemEmailTemplate", "Programme") : Url.Action("SendEmailTemplates", "Programme"))" method="POST" id="update-form" class="client-form" enctype="multipart/form-data">
 
                         @Html.HiddenFor(m => m.BaseProgrammeID)
                         @Html.HiddenFor(m => m.Type)
+                        @Html.HiddenFor(m => m.SystemEmailType)
                         @Html.HiddenFor(m => m.Description)
+                        @Html.HiddenFor(m => m.InternalNotes)
+                        @Html.HiddenFor(m => m.IsSystemTemplate)
 
                         <div class="card">
                             <div class="card-header">
@@ -49,7 +52,7 @@
                                 @if (User.HasClaim("EditEmails", "EditEmails"))
                                 {
                                     <div class="form-group">
-                                        <button class="btn btn-primary" id="SaveEmailTemplate">Save Email Template</button>
+                                        <button class="btn btn-primary" id="SaveEmailTemplate">@(Model.IsSystemTemplate ? "Save System Email Template" : "Save Email Template")</button>
                                     </div>
                                 }
                             </div>

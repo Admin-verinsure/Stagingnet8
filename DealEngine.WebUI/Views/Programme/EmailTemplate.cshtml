@@ -230,4 +230,204 @@
             </div>
         </div>
     </div>
+
+    <div class="form-group">
+        <div class="card">
+            <div class="card-header">
+                <span class="widget-icon">
+                    <h2><i class="fa fa--envelope"></i>System Email Templates </h2>
+                </span>
+            </div>
+            <div class="card-body">
+                <form class="client-form">
+                    <table class="table table-bordered table-striped">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th scope="col" width="30%">System Email Template</th>
+                                <th scope="col" width="70%">Description</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+
+                        <tr>
+                            <td align="left">
+                                Login Instruction Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                System Login Instruction Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "LoginEmail", description = "System Login Instruction Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Information Sheet Issue Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                System Information Sheet Issue Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "UISIssueNotificationEmail", description = "System Information Sheet Issue Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Payment Configuration Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                Payment Configuration Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "PaymentSuccessConfig", description = "Payment Success Configuration Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Payment Failed Configuration Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                Payment Failed Configuration Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "PaymentFailConfig", description = "Payment Failed Configuration Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Invoice Success Configuration Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                Invoice Success Configuration Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "InvoiceSuccessConfig", description = "Invoice Success Configuration Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Invoice Fail Configuration Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                Invoice Fail Configuration Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "InvoiceFailConfig", description = "Invoice Fail Configuration Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Information Sheet Submission Confirmation Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                System Information Sheet Submission Confirmation Email to Insured.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "UISSubmissionConfirmationEmail", description = "System Information Sheet Submission Confirmation Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Information Sheet Submission Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                System Information Sheet Submission Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "UISSubmissionNotificationEmail", description = "System Information Sheet Submission Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Information Sheet Update Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                System Information Sheet Update Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "UISUpdateNotificationEmail", description = "System Information Sheet Update Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Agreement Referral Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                System Agreement Referral Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "AgreementReferralNotificationEmail", description = "System Agreement Referral Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Agreement Issue Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                System Agreement Issue Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "AgreementIssueNotificationEmail", description = "System Agreement Issue Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Agreement Bound Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                System Agreement Bound Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "AgreementBoundNotificationEmail", description = "System Agreement Bound Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Create Other Marina Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                Create Other Marina Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "OtherMarinaTCNotifyEmail", description = "Create Other Marina Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                One Time Password Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                One Time Password Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "OneTimePasswordEmail", description = "One Time Password Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                RSA Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                RSA Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "RSANotificationEmail", description = "RSA Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="left">
+                                Client Number Notification Email
+                            </td>
+                            <td align="left" style="word-wrap: break-word">
+                                System Client Number Notification Email.
+                            </td>
+                            <td>
+                                @Html.ActionLink("View", "SystemEmailTemplate", "Programme", new { Id = Model.Id, systemEmailType = "ClientNumberNotificationEmail", description = "System Client Number Notification Email" }, new { @class = "btn btn-success btn-sm" })
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

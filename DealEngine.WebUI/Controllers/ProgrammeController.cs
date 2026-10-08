@@ -47,6 +47,7 @@ namespace DealEngine.WebUI.Controllers
         ISharedDataRoleService _sharedDataRoleService;
         IFileService _fileService;
         IEmailService _emailService;
+        ISystemEmailService _systemEmailService;
         IRuleService _ruleService;
         IMapper _mapper;
         IHttpClientService _httpClientService;
@@ -79,6 +80,7 @@ namespace DealEngine.WebUI.Controllers
             IProgrammeService programmeService,
             IFileService fileService,
             IEmailService emailService,
+            ISystemEmailService systemEmailService,
             IMapper mapper,
             IHttpClientService httpClientService,
             IEGlobalSubmissionService eGlobalSubmissionService,
@@ -109,6 +111,7 @@ namespace DealEngine.WebUI.Controllers
             _ruleService = ruleService;
             _fileService = fileService;
             _emailService = emailService;
+            _systemEmailService = systemEmailService;
             _mapper = mapper;
             _httpClientService = httpClientService;
             _eGlobalSubmissionService = eGlobalSubmissionService;
@@ -1112,6 +1115,7 @@ namespace DealEngine.WebUI.Controllers
 
                
                     var product = await _productService.GetProductById(productId);
+                    await EnsurePacificaRules(user, product);
 
                     foreach (var rule in product.Rules)
                     {
@@ -1699,6 +1703,8 @@ namespace DealEngine.WebUI.Controllers
                 {
                     foreach (var prod in programme.Products)
                     {
+                        await EnsurePacificaRules(user, prod);
+
                         product.Add(new ProductInfoViewModel()
                         {
                             Id = prod.Id,
@@ -1706,6 +1712,35 @@ namespace DealEngine.WebUI.Controllers
 
                         });
 
+                    }
+
+                    if (string.Equals(RuleType, "UnderWriting", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Surface Pacifica-specific shortcuts as top-level underwriting entries,
+                        // while still reusing the existing underlying ML and PL product rule pages.
+                        var pacificaMlProduct = programme.Products
+                            .FirstOrDefault(prod => prod.Name != null && prod.Name.Contains("Management Liability", StringComparison.OrdinalIgnoreCase));
+
+                        if (pacificaMlProduct != null)
+                        {
+                            product.Add(new ProductInfoViewModel()
+                            {
+                                Id = pacificaMlProduct.Id,
+                                Name = "Pacifica ML"
+                            });
+                        }
+
+                        var pacificaPlProduct = programme.Products
+                            .FirstOrDefault(prod => prod.Name != null && prod.Name.Contains("Global Guard GL", StringComparison.OrdinalIgnoreCase));
+
+                        if (pacificaPlProduct != null)
+                        {
+                            product.Add(new ProductInfoViewModel()
+                            {
+                                Id = pacificaPlProduct.Id,
+                                Name = "Pacifica PL"
+                            });
+                        }
                     }
                 }
                 model.Product = product;
@@ -1719,6 +1754,67 @@ namespace DealEngine.WebUI.Controllers
             {
                 await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
                 return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        private async Task EnsurePacificaRules(User user, Product product)
+        {
+            if (user == null || product == null)
+            {
+                return;
+            }
+
+            var existingRules = await _ruleService.GetAllRuleFor(product);
+            var nextOrderNumber = existingRules.Any() ? existingRules.Max(rule => rule.OrderNumber) : 0;
+
+            if (product.Name.Contains("Management Liability", StringComparison.OrdinalIgnoreCase) &&
+                !existingRules.Any(rule => string.Equals(rule.Name, "Pacifica ML", StringComparison.OrdinalIgnoreCase)))
+            {
+                // Add the Pacifica ML rule only once to the existing Management Liability
+                // product so the page can be managed without introducing a new product type.
+                await _ruleService.AddRule(
+                    user,
+                    "Pacifica ML",
+                    "Rotary Oceania ML Reserve Fund - Pacifica Clubs 30 (12 * 2.5)",
+                    product,
+                    "30");
+
+                var pacificaMlRule = (await _ruleService.GetAllRuleFor(product))
+                    .FirstOrDefault(rule => string.Equals(rule.Name, "Pacifica ML", StringComparison.OrdinalIgnoreCase));
+
+                if (pacificaMlRule != null)
+                {
+                    using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        pacificaMlRule.OrderNumber = nextOrderNumber + 1;
+                        await uow.Commit();
+                    }
+                }
+            }
+
+            if (product.Name.Contains("Global Guard GL", StringComparison.OrdinalIgnoreCase) &&
+                !existingRules.Any(rule => string.Equals(rule.Name, "Pacifica PL", StringComparison.OrdinalIgnoreCase)))
+            {
+                // Add the Pacifica PL rule only once under the current PL/Global Guard product
+                // so Pacifica pricing can be edited alongside the other PL underwriting rules.
+                await _ruleService.AddRule(
+                    user,
+                    "Pacifica PL",
+                    "Rotary Oceania ML Reserve Fund - Pacifica Clubs",
+                    product,
+                    "1");
+
+                var pacificaPlRule = (await _ruleService.GetAllRuleFor(product))
+                    .FirstOrDefault(rule => string.Equals(rule.Name, "Pacifica PL", StringComparison.OrdinalIgnoreCase));
+
+                if (pacificaPlRule != null)
+                {
+                    using (IUnitOfWork uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        pacificaPlRule.OrderNumber = nextOrderNumber + 1;
+                        await uow.Commit();
+                    }
+                }
             }
         }
 
@@ -2357,6 +2453,132 @@ namespace DealEngine.WebUI.Controllers
                 return RedirectToAction("Error500", "Error");
             }
 
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> SystemEmailTemplate(Guid Id, string systemEmailType, string description)
+        {
+            EmailTemplateViewModel model = new EmailTemplateViewModel();
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                if (user.IsLoggedout)
+                    return PageNotFound();
+
+                if (user == null)
+                    return PageNotFound();
+
+                SystemEmail systemEmailTemplate = await _systemEmailService.GetSystemEmailByType(systemEmailType);
+
+                model.BaseProgrammeID = Id;
+                model.Description = description;
+                model.InternalNotes = description;
+                model.IsSystemTemplate = true;
+                model.SystemEmailType = systemEmailType;
+
+                if (systemEmailTemplate != null)
+                {
+                    model.Name = systemEmailTemplate.SystemEmailName;
+                    model.Subject = systemEmailTemplate.Subject;
+                    model.Body = System.Net.WebUtility.HtmlDecode(systemEmailTemplate.Body);
+                }
+                else
+                {
+                    model.Name = "";
+                    model.Subject = "";
+                    model.Body = "";
+                }
+
+                ViewBag.Title = "Add/Edit System Email Template";
+
+                return View("SendEmailTemplates", model);
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SystemEmailTemplate(EmailTemplateViewModel model)
+        {
+            User user = null;
+
+            try
+            {
+                user = await CurrentUser();
+                SystemEmail systemEmailTemplate = await _systemEmailService.GetSystemEmailByType(model.SystemEmailType);
+                string systemEmailTemplateName = GetSystemEmailTemplateName(model.SystemEmailType);
+
+                if (systemEmailTemplate != null)
+                {
+                    using (var uow = _unitOfWork.BeginUnitOfWork())
+                    {
+                        systemEmailTemplate.Subject = model.Subject;
+                        systemEmailTemplate.Body = model.Body;
+                        systemEmailTemplate.LastModifiedBy = user;
+                        systemEmailTemplate.LastModifiedOn = DateTime.UtcNow;
+
+                        await uow.Commit();
+                    }
+                }
+                else
+                {
+                    await _systemEmailService.AddNewSystemEmail(user, systemEmailTemplateName, model.InternalNotes, model.Subject, model.Body, model.SystemEmailType);
+                }
+
+                return RedirectToAction("EmailTemplate", new { Id = model.BaseProgrammeID });
+            }
+            catch (Exception ex)
+            {
+                await _applicationLoggingService.LogWarning(_logger, ex, user, HttpContext);
+                return RedirectToAction("Error500", "Error");
+            }
+        }
+
+        private static string GetSystemEmailTemplateName(string systemEmailType)
+        {
+            switch (systemEmailType)
+            {
+                case "LoginEmail":
+                    return "Login Instruction Email";
+                case "UISIssueNotificationEmail":
+                    return "Information Sheet Issue Notification Email";
+                case "InvoiceSuccessConfig":
+                    return "Invoice Success Configuration Notification Email";
+                case "InvoiceFailConfig":
+                    return "Invoice Fail Configuration Notification Email";
+                case "PaymentSuccessConfig":
+                    return "Payment Success Configuration Notification Email";
+                case "PaymentFailConfig":
+                    return "Payment Fail Configuration Notification Email";
+                case "UISSubmissionConfirmationEmail":
+                    return "Information Sheet Submission Confirmation Email";
+                case "UISSubmissionNotificationEmail":
+                    return "Information Sheet Submission Notification Email";
+                case "UISUpdateNotificationEmail":
+                    return "Information Sheet Update Notification Email";
+                case "ClientNumberNotificationEmail":
+                    return "Client Number Notification Email";
+                case "AgreementReferralNotificationEmail":
+                    return "Agreement Referral Notification Email";
+                case "AgreementIssueNotificationEmail":
+                    return "Agreement Issue Notification Email";
+                case "AgreementBoundNotificationEmail":
+                    return "Agreement Bound Notification Email";
+                case "OtherMarinaTCNotifyEmail":
+                    return "Create Other Marina Notification Email";
+                case "OneTimePasswordEmail":
+                    return "One Time Password Email";
+                case "RSANotificationEmail":
+                    return "RSA Notification Email";
+                default:
+                    throw new Exception(string.Format("Invalid System Email Template Type for {0}", systemEmailType));
+            }
         }
 
 
